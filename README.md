@@ -88,14 +88,14 @@ once we set up these starters @EnableAutoConfiguration will setup during app loa
 ### Spring boot annonation 
 
 
-| Annotation                        | Description                                                                    |
-|-----------------------------------|--------------------------------------------------------------------------------|
-| @Bean                             | declare bean                                                                   |
-| @ComponentScan(value = "package") | custom configuration package                                                   |
-| @Configuration                    | has contains @Bean used in project                                             |
-| @ConfigurationProperties          | advance way to use properies from yml, see example                             |
-| @TestPropertySource(locations ="")  | used to configure properties in junit from different class uses @Configuration |
-| spring-boot-starter-actuator      | support for monitor under /actuator /info /health                              |
-| spring-boot-starter-logging       | support for logback                                                            |
-| spring-boot-starter-cache         | support for cache                                                              |
-| spring-boot-starter-aop           | support for AOP                                                                |
+| Annotation                         | Description                                                                                   |
+|------------------------------------|-----------------------------------------------------------------------------------------------|
+| @Bean                              | declare bean                                                                                  |
+| @ComponentScan(value = "package")  | custom configuration package                                                                  |
+| @Configuration                     | has contains @Bean used in project                                                            |
+| @ConfigurationProperties           | advance way to use properies from yml, see example                                            |
+| @TestPropertySource(locations ="") | used to configure properties in junit from different class uses @Configuration                |
+| @Lazy                              | can use @component/@Bean to load lazy. Keep @Configuartion eager and use Lazy with @Autowired |
+| @Qualifier                         | if one interface has two implementation, this used as @Qualifier(name = "car")                |
+| @Primary                           | select only one implementation of an interface always used with @Configuratiion               |
+| @Value                             | used to pick application.yml file                                                             |
