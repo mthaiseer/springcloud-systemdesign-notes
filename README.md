@@ -85,7 +85,7 @@ This ctx we can use to access application name, profiles, beans etc...
 
 once we set up these starters @EnableAutoConfiguration will setup during app loading
 
-### Spring boot annonation 
+### Spring boot annotation 
 
 
 | Annotation                         | Description                                                                                   |
@@ -99,3 +99,19 @@ once we set up these starters @EnableAutoConfiguration will setup during app loa
 | @Qualifier                         | if one interface has two implementation, this used as @Qualifier(name = "car")                |
 | @Primary                           | select only one implementation of an interface always used with @Configuratiion               |
 | @Value                             | used to pick application.yml file                                                             |
+
+
+### Spring boot stereotype annotation
+
+
+| Annotation                    | Description                                                                                                |
+|-------------------------------|------------------------------------------------------------------------------------------------------------|
+| @Component                    | Mark a class as component and ready to scan                                                                |
+| @Controller                   | sub class of component used in class with @RequestMapping @ResponseBody                                    |
+| @Service                      |                                                                                                            |
+| @Repository                   | advance way to use properies from yml, see example                                                         |
+| @EnableAutoConfiguration      | This is part of @SpringbootApplication, which configure starters, ex: check datasource configured with JPA |
+| @Async                        | enable async operation, method should return void or Future                                                |
+| @EnableScheduling /@Scheduled | Used to create scheduled tasks on given intervals                                                          |
+| @Profile/@ActiveProfile       | Profile used to create env specific configuration                                                          |
+| @PreDestroy/@PostConstruct    | used to setup and cleanup bean lifecycle                                                                   |
