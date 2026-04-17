@@ -62,7 +62,25 @@ important annotations
 |------------------------|--------------------------------------------------------------------------------------------------|
 | @SpringbootApplication | This combination <br/> @SpringBootConfiguration<br/> @EnableAutoConfiguration<br/>@componentScan |
  
+### Bootstrap application context
 
+```java
+ConfigurableApplicationContext ctx = SpringApplication.run(MrFirstApp.class, args)
+```
+This ctx we can use to access application name, profiles, beans etc...
 
+### Spring boot starters
+
+| Starter                      | Description                                       |
+|------------------------------|---------------------------------------------------|
+| spring-boot-strater-parent   | decide version and compilation                    |
+| spring-boot-starter-web      | manage to setup tomact and web                    |
+| spring-boot-starter-jpa      | used for DB access                                |
+| spring-boot-starter-test     | support for unit and integration test             |
+| spring-boot-starter-security | support for authentication and authorization      |
+| spring-boot-starter-actuator | support for monitor under /actuator /info /health |
+| spring-boot-starter-logging  | support for logback                               |
+| spring-boot-starter-cache    | support for cache                                 |
+| spring-boot-starter-aop      | support for AOP                                   |
 
 
