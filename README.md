@@ -83,4 +83,19 @@ This ctx we can use to access application name, profiles, beans etc...
 | spring-boot-starter-cache    | support for cache                                 |
 | spring-boot-starter-aop      | support for AOP                                   |
 
+once we set up these starters @EnableAutoConfiguration will setup during app loading
 
+### Spring boot annonation 
+
+
+| Annotation                        | Description                                                                    |
+|-----------------------------------|--------------------------------------------------------------------------------|
+| @Bean                             | declare bean                                                                   |
+| @ComponentScan(value = "package") | custom configuration package                                                   |
+| @Configuration                    | has contains @Bean used in project                                             |
+| @ConfigurationProperties          | advance way to use properies from yml, see example                             |
+| @TestPropertySource(locations ="")  | used to configure properties in junit from different class uses @Configuration |
+| spring-boot-starter-actuator      | support for monitor under /actuator /info /health                              |
+| spring-boot-starter-logging       | support for logback                                                            |
+| spring-boot-starter-cache         | support for cache                                                              |
+| spring-boot-starter-aop           | support for AOP                                                                |
