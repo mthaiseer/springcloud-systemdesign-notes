@@ -15,6 +15,54 @@
 - [x] process logs - stream logs to log aggragator like splunk 
 - [x] seperate process for ADMIN and priviledged users
 
+### Build tools
+- Maven 
+- Gradle 
+
+#### Structure of Maven
+- ***parent*** : this tag mention current pom version and all dependecies resolved matching to that version 
+- ***properties*** : this contains property needed to this project
+```xml
+<properties>
+    <java.version>1.8</java.version>
+</properties>
+ ```
+- ***dependencies and dependency*** : declare dependencies needed for project 
+- ***build and plugin*** : plugin needed for this project
+
+#### Structure of Gradle 
+
+create ***build.gradle***
+
+```yaml
+plugins{
+}
+group = ''
+version =''
+sourceCompatibility = ''
+
+repositories{
+  mavenCentral()
+}
+
+dependencies{
+  implementation ''
+  developmentOnly ''
+  testImplementation ''
+}
+```
+
+run ***gradle build***
+
+### Anatomy of Spring boot application 
+
+important annotations 
+
+| Annotation             | description                                                                                      |
+|------------------------|--------------------------------------------------------------------------------------------------|
+| @SpringbootApplication | This combination <br/> @SpringBootConfiguration<br/> @EnableAutoConfiguration<br/>@componentScan |
+ 
+
 
 
 
