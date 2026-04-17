@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: springboot-jpa-caching
+  profiles:
+    active: prod
