@@ -313,3 +313,252 @@ Cache = Hot Data × Item Size × 1.3
 
 ## Final Takeaway
 Estimation is not about perfect math. It is about turning vague scale into concrete numbers that drive architecture decisions.
+
+
+---
+
+## Added Worked Formulas and Quick Reference
+
+## Average QPS Formula
+```text
+Average QPS = (Daily Active Users × Actions per User per Day) / 86,400 seconds
+```
+
+### Example
+Given:
+- 100 million DAU
+- Each user views 50 posts per day
+
+```text
+Precise calculation:
+Average QPS = (100,000,000 × 50) / 86,400
+            = 5,000,000,000 / 86,400
+            = 57,870 QPS
+
+Quick estimate:
+QPS = (100M × 50) / 100,000 = 50,000 QPS
+```
+
+---
+
+## Peak QPS
+```text
+Peak QPS = Average QPS × Peak Multiplier
+```
+
+### Peak Multiplier Table
+
+| Application Type | Peak Multiplier | Why |
+|---|---:|---|
+| Enterprise B2B | 2–3x | Business hours concentration |
+| Consumer social | 3–5x | Evening usage peaks |
+| E-commerce | 5–10x | Sales events, flash deals |
+| Gaming | 3–5x | Weekend and evening concentration |
+| Streaming | 5–10x | Popular releases, live events |
+| News/media | 10–50x | Breaking news, viral content |
+
+---
+
+## Read:Write Ratios
+
+| System Type | Read:Write Ratio |
+|---|---:|
+| Social media feed | 100:1 to 1000:1 |
+| URL shortener | 100:1 |
+| E-commerce catalog | 100:1 |
+| Chat messaging | 1:1 to 10:1 |
+| Logging/Analytics | 1:10 to 1:100 |
+| User profiles | 50:1 |
+
+### Example Read / Write Split
+Given:
+- Total QPS: 58,000
+- Read:Write ratio = 100:1
+
+```text
+Write QPS = 58,000 / 101 ≈ 575 QPS
+Read QPS = 58,000 - 575 ≈ 57,425 QPS
+
+At peak (3x):
+Peak Write QPS = 575 × 3 ≈ 1,725 QPS
+Peak Read QPS = 57,425 × 3 ≈ 172,000 QPS
+```
+
+---
+
+## Storage Formula
+```text
+Total Storage = Data per Record × Records per Day × Days Retained × Overhead Factor
+```
+
+### Example: URL Shortener
+Given:
+- 100 million new URLs shortened per month
+- Each record: 500 bytes (short code + long URL + metadata)
+- Retention: 5 years
+
+```text
+Monthly data = 100M × 500 bytes = 50 GB/month
+Annual data = 50 GB × 12 = 600 GB/year
+5 year data = 600 GB × 5 = 3 TB raw data
+
+With 3x replication: 3 TB × 3 = 9 TB
+With indexes and overhead: 9 TB × 1.3 = ~12 TB
+With backups: ~15–20 TB total provisioned
+```
+
+---
+
+## Media Storage Reference
+
+| Media Type | Typical Size | Equivalent Text Records (500 bytes) |
+|---|---:|---:|
+| Profile picture | 200 KB | 400 records |
+| Post image (compressed) | 500 KB – 2 MB | 1,000–4,000 records |
+| Short video (1 min) | 10–50 MB | 20K–100K records |
+| Long video (1 hour) | 500 MB – 2 GB | 1M–4M records |
+
+### Example: Photo Platform
+Given:
+- 10 million photos uploaded per day
+- Store original (2 MB) and thumbnail (200 KB)
+- Retention: indefinite
+
+```text
+Daily storage = 10M × (2 MB + 0.2 MB) = 10M × 2.2 MB = 22 TB/day
+Monthly = 22 TB × 30 = 660 TB/month
+Annual = 660 TB × 12 ≈ 8 PB/year
+
+After 3 years: ~24 PB
+```
+
+**Implication:** use object storage + CDN, not relational DB for images.
+
+---
+
+## Bandwidth Formula
+```text
+Bandwidth = QPS × Average Data Size per Request
+```
+
+### Example: API Service
+Given:
+- 50,000 QPS
+- Average request: 1 KB (incoming)
+- Average response: 10 KB (outgoing)
+
+```text
+Ingress = 50,000 × 1 KB = 50 MB/s = 400 Mbps
+Egress = 50,000 × 10 KB = 500 MB/s = 4 Gbps
+
+With overhead (headers, retries, ~30%):
+Total egress: ~5.2 Gbps
+```
+
+---
+
+## Video Streaming Bandwidth
+
+| Quality | Resolution | Bitrate | 1 hour of video |
+|---|---|---:|---:|
+| SD | 480p | 1.5–2 Mbps | 675–900 MB |
+| HD | 720p | 3–4 Mbps | 1.35–1.8 GB |
+| Full HD | 1080p | 5–8 Mbps | 2.25–3.6 GB |
+| 4K UHD | 2160p | 15–25 Mbps | 6.75–11.25 GB |
+
+### Example: Concurrent Video Viewers
+Given:
+- 10 million concurrent viewers
+- Quality distribution: 20% SD, 50% HD, 25% Full HD, 5% 4K
+
+```text
+Bandwidth calculation:
+SD:    2M viewers × 2 Mbps  = 4 Tbps
+HD:    5M viewers × 4 Mbps  = 20 Tbps
+1080p: 2.5M viewers × 6 Mbps = 15 Tbps
+4K:    0.5M viewers × 20 Mbps = 10 Tbps
+
+Total: 49 Tbps concurrent bandwidth
+```
+
+**Implication:** CDN is mandatory.
+
+---
+
+## Traffic Type Optimization
+
+| Traffic Type | Typical Size | Optimization Strategy |
+|---|---|---|
+| API/JSON | 1–100 KB | Compression (gzip), pagination |
+| Images | 100 KB–5 MB | CDN, responsive images, WebP |
+| Video | 2–25 Mbps stream | CDN, adaptive bitrate, chunked delivery |
+| File downloads | 10 MB–10 GB | CDN, resumable downloads, regional mirrors |
+
+---
+
+## Database Server Sizing
+
+| Database Type | Single Server Capacity | Scaling Strategy |
+|---|---:|---|
+| PostgreSQL (OLTP) | 10K–50K simple QPS | Read replicas, then sharding |
+| MySQL | 10K–30K QPS | Read replicas, then sharding |
+| MongoDB | 20K–50K ops/sec | Sharding from the start |
+| Redis | 100K+ ops/sec | Cluster mode for >100K |
+
+**Rule of thumb:**
+- Read bottleneck → replicas
+- Write bottleneck → sharding
+
+---
+
+## Cache Sizing Formula
+```text
+Cache Size = Hot Data Items × Item Size × Overhead Factor
+```
+
+### Example
+Given:
+- 100 million total users
+- 20 million DAU
+- User profile: 2 KB average
+
+```text
+If we cache DAU profiles:
+Cache size = 20M users × 2 KB × 1.3 overhead = 52 GB
+```
+
+This fits in one large Redis instance or a small cluster.
+
+**Result:** around 80% of profile lookups hit cache, reducing DB load significantly.
+
+---
+
+## Percentile Analysis
+Averages lie. A system with **50 ms average latency** might still have **P99 = 500 ms**, meaning 1% of users have a much worse experience.
+
+| Percentile | Meaning | Planning Use |
+|---|---|---|
+| P50 (median) | Half of requests are faster | Typical user experience |
+| P90 | 90% of requests are faster | Good experience threshold |
+| P95 | 95% of requests are faster | SLA target for most systems |
+| P99 | 99% of requests are faster | Tail latency, often 5–10x P50 |
+| P99.9 | 99.9% of requests are faster | Critical for high-volume systems |
+
+### Example
+```text
+System A: Average 100 QPS, P99 is 150 QPS
+System B: Average 100 QPS, P99 is 500 QPS
+
+Both have same average, but System B needs 5x more peak capacity.
+```
+
+---
+
+## Quick Memory Notes
+- **Use /100K** for quick day-to-second QPS math
+- **Default peak = 3x** for consumer apps
+- **Social feeds are read-heavy**
+- **Storage overhead = 4–5x raw**
+- **Media dominates both storage and bandwidth**
+- **Cache hot 20% to cut 80% of DB load**
+- **Plan for P95/P99, not just averages**
