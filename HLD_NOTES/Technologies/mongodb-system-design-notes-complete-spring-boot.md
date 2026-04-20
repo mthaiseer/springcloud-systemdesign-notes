@@ -1367,3 +1367,842 @@ If asked, “How would you use MongoDB in a scalable design?” a strong short a
 
 > I would use MongoDB when the data is naturally document-shaped and the main access patterns are document reads rather than relational joins. I would embed bounded child data that is read together, use references only for shared or unbounded entities, create compound indexes around the highest-frequency queries, and use single-document atomic updates wherever possible. For higher scale, I would add caching, secondary reads for stale-tolerant traffic, computed fields for expensive reads, and shard only the hottest collections using a shard key chosen from real production query patterns.
 
+
+---
+
+## 18. Complete Spring Boot example you can build from scratch
+
+This section turns the notes above into a small but realistic MongoDB-backed service.
+
+### What this example includes
+- Spring Boot + Spring Data MongoDB
+- embedded order model
+- repository + service + controller
+- idempotent order creation
+- single-document inventory decrement
+- pagination
+- compound indexes
+- Mongo transaction example for transfer-like flows
+- sample requests
+
+### Project structure
+
+```text
+mongo-order-demo/
+├─ pom.xml
+├─ src/main/resources/
+│  └─ application.yml
+└─ src/main/java/com/example/mongo/
+   ├─ MongoOrderDemoApplication.java
+   ├─ config/
+   │  └─ MongoConfig.java
+   ├─ order/
+   │  ├─ Order.java
+   │  ├─ OrderItem.java
+   │  ├─ Address.java
+   │  ├─ CustomerSnapshot.java
+   │  ├─ CreateOrderRequest.java
+   │  ├─ OrderRepository.java
+   │  ├─ OrderService.java
+   │  └─ OrderController.java
+   ├─ inventory/
+   │  ├─ InventoryItem.java
+   │  ├─ InventoryService.java
+   │  └─ InventoryController.java
+   └─ transfer/
+      ├─ Account.java
+      ├─ TransferService.java
+      └─ TransferController.java
+```
+
+### `pom.xml`
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>mongo-order-demo</artifactId>
+    <version>1.0.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.2</version>
+    </parent>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+### `application.yml`
+
+```yaml
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/app
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: INFO
+```
+
+### Run Mongo locally
+
+```bash
+docker run -d --name mongo -p 27017:27017 mongo:7
+```
+
+### Main application
+
+```java
+package com.example.mongo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class MongoOrderDemoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MongoOrderDemoApplication.class, args);
+    }
+}
+```
+
+### Transaction configuration
+
+```java
+package com.example.mongo.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
+
+@Configuration
+public class MongoConfig {
+
+    @Bean
+    MongoTransactionManager transactionManager(MongoDatabaseFactory factory) {
+        return new MongoTransactionManager(factory);
+    }
+}
+```
+
+### Order document model
+
+```java
+package com.example.mongo.order;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+
+@Document("orders")
+@CompoundIndex(name = "user_date_idx", def = "{'userId': 1, 'createdAt': -1}")
+public class Order {
+
+    @Id
+    private String id;
+
+    @Indexed(unique = true)
+    private String requestId;
+
+    private String userId;
+    private CustomerSnapshot customerSnapshot;
+    private List<OrderItem> items;
+    private Address shippingAddress;
+    private BigDecimal total;
+    private String status;
+    private Instant createdAt;
+
+    public Order() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public CustomerSnapshot getCustomerSnapshot() {
+        return customerSnapshot;
+    }
+
+    public void setCustomerSnapshot(CustomerSnapshot customerSnapshot) {
+        this.customerSnapshot = customerSnapshot;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+    }
+
+    public Address getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(Address shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public void setTotal(BigDecimal total) {
+        this.total = total;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+}
+```
+
+### Embedded classes
+
+```java
+package com.example.mongo.order;
+
+import java.math.BigDecimal;
+
+public class OrderItem {
+    private String productId;
+    private String name;
+    private BigDecimal price;
+    private int quantity;
+
+    public OrderItem() {
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+}
+```
+
+```java
+package com.example.mongo.order;
+
+public class Address {
+    private String city;
+    private String zip;
+
+    public Address() {
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
+}
+```
+
+```java
+package com.example.mongo.order;
+
+public class CustomerSnapshot {
+    private String name;
+    private String email;
+
+    public CustomerSnapshot() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+}
+```
+
+### Request DTO
+
+```java
+package com.example.mongo.order;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
+import java.util.List;
+
+public class CreateOrderRequest {
+
+    @NotBlank
+    private String requestId;
+
+    @NotBlank
+    private String userId;
+
+    private CustomerSnapshot customerSnapshot;
+
+    @NotEmpty
+    private List<OrderItem> items;
+
+    private Address shippingAddress;
+
+    public CreateOrderRequest() {
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public CustomerSnapshot getCustomerSnapshot() {
+        return customerSnapshot;
+    }
+
+    public void setCustomerSnapshot(CustomerSnapshot customerSnapshot) {
+        this.customerSnapshot = customerSnapshot;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+    }
+
+    public Address getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(Address shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+}
+```
+
+### Repository
+
+```java
+package com.example.mongo.order;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface OrderRepository extends MongoRepository<Order, String> {
+    Optional<Order> findByRequestId(String requestId);
+    List<Order> findByUserIdOrderByCreatedAtDesc(String userId, Pageable pageable);
+}
+```
+
+### Order service
+
+```java
+package com.example.mongo.order;
+
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+
+@Service
+public class OrderService {
+
+    private final OrderRepository orderRepository;
+
+    public OrderService(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
+
+    public Order create(CreateOrderRequest request) {
+        Order order = new Order();
+        order.setRequestId(request.getRequestId());
+        order.setUserId(request.getUserId());
+        order.setCustomerSnapshot(request.getCustomerSnapshot());
+        order.setItems(request.getItems());
+        order.setShippingAddress(request.getShippingAddress());
+        order.setStatus("PLACED");
+        order.setCreatedAt(Instant.now());
+        order.setTotal(calculateTotal(request.getItems()));
+
+        try {
+            return orderRepository.save(order);
+        } catch (DuplicateKeyException e) {
+            return orderRepository.findByRequestId(request.getRequestId())
+                    .orElseThrow(() -> e);
+        }
+    }
+
+    public Order get(String id) {
+        return orderRepository.findById(id).orElseThrow();
+    }
+
+    public List<Order> latestForUser(String userId, int limit) {
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(
+                userId,
+                PageRequest.of(0, limit)
+        );
+    }
+
+    private BigDecimal calculateTotal(List<OrderItem> items) {
+        return items.stream()
+                .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+}
+```
+
+### Order controller
+
+```java
+package com.example.mongo.order;
+
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/orders")
+public class OrderController {
+
+    private final OrderService orderService;
+
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @PostMapping
+    public Order create(@Valid @RequestBody CreateOrderRequest request) {
+        return orderService.create(request);
+    }
+
+    @GetMapping("/{id}")
+    public Order get(@PathVariable String id) {
+        return orderService.get(id);
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<Order> byUser(
+            @PathVariable String userId,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return orderService.latestForUser(userId, limit);
+    }
+}
+```
+
+### Inventory document for atomic decrement
+
+```java
+package com.example.mongo.inventory;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document("inventory")
+public class InventoryItem {
+
+    @Id
+    private String productId;
+
+    private int available;
+
+    public InventoryItem() {
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public int getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(int available) {
+        this.available = available;
+    }
+}
+```
+
+### Inventory service using single-document atomicity
+
+```java
+package com.example.mongo.inventory;
+
+import com.mongodb.client.result.UpdateResult;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Service;
+
+@Service
+public class InventoryService {
+
+    private final MongoTemplate mongoTemplate;
+
+    public InventoryService(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    public boolean reserveOne(String productId) {
+        Query query = Query.query(
+                Criteria.where("_id").is(productId)
+                        .and("available").gt(0)
+        );
+
+        Update update = new Update().inc("available", -1);
+        UpdateResult result = mongoTemplate.updateFirst(query, update, InventoryItem.class);
+        return result.getModifiedCount() == 1;
+    }
+}
+```
+
+### Inventory controller
+
+```java
+package com.example.mongo.inventory;
+
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/inventory")
+public class InventoryController {
+
+    private final InventoryService inventoryService;
+
+    public InventoryController(InventoryService inventoryService) {
+        this.inventoryService = inventoryService;
+    }
+
+    @PostMapping("/{productId}/reserve")
+    public Map<String, Object> reserve(@PathVariable String productId) {
+        boolean reserved = inventoryService.reserveOne(productId);
+        return Map.of("productId", productId, "reserved", reserved);
+    }
+}
+```
+
+### Account document for transaction example
+
+```java
+package com.example.mongo.transfer;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document("accounts")
+public class Account {
+
+    @Id
+    private String id;
+    private int balance;
+
+    public Account() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
+}
+```
+
+### Transfer service with transaction
+
+```java
+package com.example.mongo.transfer;
+
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+
+@Service
+public class TransferService {
+
+    private final MongoTemplate mongoTemplate;
+
+    public TransferService(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    @Transactional
+    public void transfer(String fromId, String toId, int amount) {
+        Query fromQuery = Query.query(Criteria.where("_id").is(fromId).and("balance").gte(amount));
+        Query toQuery = Query.query(Criteria.where("_id").is(toId));
+
+        var fromResult = mongoTemplate.updateFirst(fromQuery, new Update().inc("balance", -amount), "accounts");
+        if (fromResult.getModifiedCount() != 1) {
+            throw new IllegalStateException("Insufficient funds");
+        }
+
+        mongoTemplate.updateFirst(toQuery, new Update().inc("balance", amount), "accounts");
+
+        Document transfer = new Document()
+                .append("from", fromId)
+                .append("to", toId)
+                .append("amount", amount)
+                .append("createdAt", Instant.now());
+
+        mongoTemplate.insert(transfer, "transfers");
+    }
+}
+```
+
+### Transfer controller
+
+```java
+package com.example.mongo.transfer;
+
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/transfers")
+public class TransferController {
+
+    private final TransferService transferService;
+
+    public TransferController(TransferService transferService) {
+        this.transferService = transferService;
+    }
+
+    @PostMapping
+    public Map<String, Object> transfer(
+            @RequestParam String from,
+            @RequestParam String to,
+            @RequestParam int amount
+    ) {
+        transferService.transfer(from, to, amount);
+        return Map.of("status", "ok", "from", from, "to", to, "amount", amount);
+    }
+}
+```
+
+### Seed data in Mongo shell
+
+```javascript
+use app
+
+db.inventory.insertOne({ _id: "p1", available: 5 })
+
+db.accounts.insertMany([
+  { _id: "A", balance: 1000 },
+  { _id: "B", balance: 500 }
+])
+```
+
+### Test order creation
+
+```bash
+curl -X POST http://localhost:8080/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "requestId": "req-1001",
+    "userId": "user-1",
+    "customerSnapshot": {
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "items": [
+      {
+        "productId": "p1",
+        "name": "Laptop",
+        "price": 999,
+        "quantity": 1
+      },
+      {
+        "productId": "p2",
+        "name": "Mouse",
+        "price": 29,
+        "quantity": 2
+      }
+    ],
+    "shippingAddress": {
+      "city": "San Francisco",
+      "zip": "94102"
+    }
+  }'
+```
+
+### Test idempotency
+
+Send the same request again with the same `requestId`.  
+Because `requestId` is unique, the service returns the existing order instead of creating a duplicate.
+
+### Test inventory reservation
+
+```bash
+curl -X POST http://localhost:8080/inventory/p1/reserve
+```
+
+### Test transfer
+
+```bash
+curl -X POST "http://localhost:8080/transfers?from=A&to=B&amount=100"
+```
+
+### What this example teaches
+
+- **Embedding**: `items` and `customerSnapshot` live inside the order
+- **Idempotency**: `requestId` prevents duplicate creates
+- **Indexing**: compound index supports “latest orders per user”
+- **Atomicity**: inventory decrement uses one conditional document update
+- **Transactions**: account transfer uses a Mongo transaction only where needed
+- **Scalability**: order reads stay fast because documents match access patterns
+
+### What to add next in a real system
+
+- request validation and exception handlers
+- optimistic retry logic for transient transaction failures
+- Redis cache for hot reads
+- Kafka or RabbitMQ for async notifications
+- change streams for order events
+- pagination with cursor tokens instead of simple page size
+- observability and slow-query monitoring
+- sharding only after access patterns are proven
