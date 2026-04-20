@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef69beb9-67e1-4c05-a4ae-9f6c0ccfea71" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/HLD_NOTES/002_Estimation_cheatsheet.md" beforeDir="false" afterPath="$PROJECT_DIR$/HLD_NOTES/002_Estimation_cheatsheet.md" afterDir="false" />
-    </list>
+    <list default="true" id="ef69beb9-67e1-4c05-a4ae-9f6c0ccfea71" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,6 +20,9 @@
   "associatedIndex": 7
 }]]></component>
   <component name="ProjectId" id="3Cc2EZyH5cv3ZePdizXzaSqWHdt" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
