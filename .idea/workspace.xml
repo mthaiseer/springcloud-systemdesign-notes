@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef69beb9-67e1-4c05-a4ae-9f6c0ccfea71" name="Changes" comment="" />
+    <list default="true" id="ef69beb9-67e1-4c05-a4ae-9f6c0ccfea71" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HLD_NOTES/001_How_to_answer_frameword.md" beforeDir="false" afterPath="$PROJECT_DIR$/HLD_NOTES/Interview_tips/001_How_to_answer_frameword.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HLD_NOTES/002_Estimation_cheatsheet.md" beforeDir="false" afterPath="$PROJECT_DIR$/HLD_NOTES/Interview_tips/002_Estimation_cheatsheet.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HLD_NOTES/003_Estimation_short.md" beforeDir="false" afterPath="$PROJECT_DIR$/HLD_NOTES/Interview_tips/003_Estimation_short.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,6 +40,11 @@
     "last_opened_file_path": "D:/WORKSPACE_2/springcloud-systemdesign-notes"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\WORKSPACE_2\springcloud-systemdesign-notes\HLD_NOTES\Interview_Tips" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
