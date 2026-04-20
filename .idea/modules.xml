@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/springcloud-systemdesign-notes.iml" filepath="$PROJECT_DIR$/.idea/springcloud-systemdesign-notes.iml" />
-      <module fileurl="file://$PROJECT_DIR$/springboot-jpa-caching/untitled/untitled.iml" filepath="$PROJECT_DIR$/springboot-jpa-caching/untitled/untitled.iml" />
     </modules>
   </component>
 </project>
