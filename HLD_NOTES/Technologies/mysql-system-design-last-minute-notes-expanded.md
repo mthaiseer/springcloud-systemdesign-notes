@@ -8,6 +8,35 @@ A short, practical guide for interviews and implementation. Focus on **InnoDB**,
 
 Choose MySQL when you have:
 
+**SQL example**
+```sql
+-- Typical OLTP schema
+CREATE TABLE users (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE orders (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_orders_user_created (user_id, created_at),
+    CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Common relational query
+SELECT o.id, o.total, o.created_at
+FROM orders o
+WHERE o.user_id = 42
+ORDER BY o.created_at DESC
+LIMIT 20;
+```
+
+**Example**
+An e-commerce app fits MySQL well: relational schema, ACID order placement, and lots of catalog/profile reads that can move to replicas.
+
+
 - **Read-heavy web apps**: easy read scaling with replicas
 - **Relational data**: users → orders → items → products
 - **ACID needs**: orders, payments, inventory, auth
@@ -29,6 +58,23 @@ Do **not** choose MySQL first when you need:
 ## 2) MySQL architecture you should say out loud
 
 Typical production path:
+
+**SQL example**
+```sql
+-- Write goes to primary
+INSERT INTO orders (user_id, total) VALUES (42, 99.99);
+
+-- Read may go to replica
+SELECT id, total, created_at
+FROM orders
+WHERE user_id = 42
+ORDER BY created_at DESC
+LIMIT 10;
+```
+
+**Example**
+App servers connect through ProxySQL. Writes are routed to primary, read-only traffic goes to replicas, and ProxySQL protects MySQL from connection storms.
+
 
 `App → ProxySQL → MySQL Primary / Read Replicas`
 
@@ -54,6 +100,20 @@ Core pieces:
 ### 3.1 Buffer Pool
 Most important read-performance component.
 
+**SQL example**
+```sql
+-- Frequently-read hot query that benefits from buffer pool hits
+SELECT id, status, total
+FROM orders
+WHERE user_id = 123
+ORDER BY created_at DESC
+LIMIT 20;
+```
+
+**Example**
+If recent orders for active users fit in memory, this query becomes mostly RAM hits instead of random disk reads.
+
+
 ```ini
 # my.cnf
 innodb_buffer_pool_size = 12G
@@ -75,6 +135,18 @@ You want **very high hit ratio** on production workloads.
 ### 3.2 Redo Log
 Enables fast durable commits.
 
+**SQL example**
+```sql
+START TRANSACTION;
+UPDATE account SET balance = balance - 100 WHERE id = 1;
+UPDATE account SET balance = balance + 100 WHERE id = 2;
+COMMIT;
+```
+
+**Example**
+On commit, InnoDB first makes redo durable. Even if data pages are flushed later, MySQL can recover the committed transfer after a crash.
+
+
 ```ini
 innodb_flush_log_at_trx_commit = 1
 innodb_log_file_size = 1G
@@ -88,6 +160,25 @@ innodb_log_file_size = 1G
 ### 3.3 Undo Log + MVCC
 Readers see a consistent snapshot while writers keep updating rows.
 
+**SQL example**
+```sql
+-- Transaction A
+START TRANSACTION;
+SELECT balance FROM account WHERE id = 1;
+
+-- Transaction B concurrently updates same row
+UPDATE account SET balance = 500 WHERE id = 1;
+COMMIT;
+
+-- Transaction A still sees its original snapshot under REPEATABLE READ
+SELECT balance FROM account WHERE id = 1;
+COMMIT;
+```
+
+**Example**
+A reporting transaction can keep reading a stable version of data while checkout transactions continue updating rows.
+
+
 Why this matters:
 - readers usually do **not** block writers
 - writers usually do **not** block readers
@@ -95,6 +186,26 @@ Why this matters:
 
 ### 3.4 Clustered Index
 In InnoDB, the **primary key index stores the row data**.
+
+**SQL example**
+```sql
+CREATE TABLE product (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    sku VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL
+);
+
+-- Fast PK lookup
+SELECT * FROM product WHERE id = 1001;
+
+-- Secondary index lookup needs extra hop through PK
+SELECT * FROM product WHERE sku = 'SKU-123';
+```
+
+**Example**
+If `id` is compact and sequential, inserts stay localized and secondary indexes stay smaller because they store the PK value.
+
 
 That means:
 - PK lookups are fastest
@@ -112,6 +223,10 @@ Best PK choices:
 
 ### 4.1 Default index type: B+Tree
 Good for:
+
+**Example**
+Use a B+Tree for email lookups, date ranges, and `ORDER BY created_at LIMIT 20` style queries.
+
 - equality
 - range
 - prefix search
@@ -128,6 +243,10 @@ SELECT * FROM users ORDER BY email LIMIT 20;
 
 ### 4.2 Composite indexes
 Order matters.
+
+**Example**
+If your main query is “all orders for one user sorted by date,” then `(user_id, created_at)` is the right shape. The reverse order usually hurts.
+
 
 ```sql
 CREATE INDEX idx_orders_user_date ON orders(user_id, created_at);
@@ -146,6 +265,10 @@ SELECT * FROM orders WHERE created_at >= '2026-01-01';
 ### 4.3 Covering indexes
 Avoid the extra table lookup.
 
+**Example**
+A dashboard query that only needs `user_id`, `status`, and `total` can be served directly from the index without touching the base table.
+
+
 ```sql
 CREATE INDEX idx_orders_covering ON orders(user_id, status, total);
 
@@ -158,6 +281,10 @@ Look for `Using index` in `EXPLAIN`.
 
 ### 4.4 Full-text index
 
+**Example**
+For blog/article search, `MATCH ... AGAINST` is better than trying to use `LIKE '%word%'` on large text columns.
+
+
 ```sql
 CREATE FULLTEXT INDEX idx_articles_ft ON articles(title, body);
 
@@ -168,6 +295,9 @@ AGAINST('mysql replication' IN NATURAL LANGUAGE MODE);
 ```
 
 ### 4.5 Index anti-patterns
+
+**Example**
+Applying a function like `YEAR(created_at)` hides the raw indexed value from the optimizer, so MySQL often falls back to a scan.
 
 Bad:
 ```sql
@@ -195,6 +325,21 @@ WHERE phone = '1234567890';
 ### 5.1 Isolation levels
 InnoDB default is **REPEATABLE READ**.
 
+**SQL example**
+```sql
+SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+
+START TRANSACTION;
+SELECT quantity FROM inventory WHERE product_id = 123;
+-- another transaction commits an update here
+SELECT quantity FROM inventory WHERE product_id = 123;
+COMMIT;
+```
+
+**Example**
+Use REPEATABLE READ when you want a stable snapshot during a transaction. Use READ COMMITTED when simpler read behavior and less locking matter more.
+
+
 | Level | Dirty Read | Non-Repeatable Read | Phantom Read |
 |---|---:|---:|---:|
 | READ UNCOMMITTED | Yes | Yes | Yes |
@@ -209,6 +354,10 @@ For interviews:
 
 ### 5.2 Pessimistic locking
 Best when contention is high.
+
+**Example**
+In a flash sale, many users race for the same inventory row. `FOR UPDATE` serializes access and prevents overselling.
+
 
 ```sql
 START TRANSACTION;
@@ -234,6 +383,10 @@ Use for:
 ### 5.3 Optimistic locking
 Best when conflicts are rare.
 
+**Example**
+Profile edits or low-contention inventory updates usually work well with a version column because most requests do not collide.
+
+
 ```sql
 ALTER TABLE inventory ADD COLUMN version BIGINT NOT NULL DEFAULT 0;
 ```
@@ -251,6 +404,9 @@ If `rows affected = 0`, retry or fail.
 
 ### 5.4 Locking reads
 
+**Example**
+`FOR UPDATE SKIP LOCKED` is great for worker queues: multiple workers can safely claim different pending jobs without stepping on each other.
+
 ```sql
 SELECT * FROM accounts WHERE id = 1 FOR SHARE;
 SELECT * FROM accounts WHERE id = 1 FOR UPDATE;
@@ -261,6 +417,23 @@ Useful for worker queues and high-contention updates.
 
 ### 5.5 Deadlocks
 They happen under concurrency.
+
+**SQL example**
+```sql
+-- Transaction 1
+START TRANSACTION;
+SELECT * FROM account WHERE id = 1 FOR UPDATE;
+-- waits later on account 2
+
+-- Transaction 2
+START TRANSACTION;
+SELECT * FROM account WHERE id = 2 FOR UPDATE;
+-- waits later on account 1
+```
+
+**Example**
+Two transfers that lock accounts in opposite order can deadlock. Fix it by always locking smaller account ID first.
+
 
 Reduce them by:
 - always locking rows in the **same order**
@@ -281,6 +454,16 @@ SHOW ENGINE INNODB STATUS;
 ### 6.1 Basic flow
 Primary writes changes to **binlog**. Replicas pull and apply them.
 
+**SQL example**
+```sql
+SHOW BINARY LOG STATUS;
+SHOW REPLICA STATUS\G
+```
+
+**Example**
+A checkout insert is committed on primary, written to binlog, then streamed to replicas so product/order reads can be offloaded.
+
+
 Good for:
 - read scaling
 - failover standby
@@ -288,6 +471,15 @@ Good for:
 
 ### 6.2 Binlog format
 Use **ROW**.
+
+**SQL example**
+```ini
+binlog_format = ROW
+```
+
+**Example**
+With row-based replication, `UPDATE accounts SET balance = balance - 100 WHERE id = 1` replicates as exact row changes, avoiding ambiguity from non-deterministic SQL.
+
 
 ```ini
 binlog_format = ROW
@@ -298,6 +490,15 @@ Why:
 - safer with triggers / functions / non-deterministic SQL
 
 ### 6.3 Async vs Semi-sync
+
+**SQL / config example**
+```ini
+# semi-sync example
+plugin-load-add = semisync_source.so
+rpl_semi_sync_source_enabled = 1
+plugin-load-add = semisync_replica.so
+rpl_semi_sync_replica_enabled = 1
+```
 
 #### Asynchronous
 - primary commits immediately
@@ -314,6 +515,21 @@ Why:
 - reads → replicas
 - read-after-write sensitive flows → read from primary briefly after write
 
+**SQL example**
+```sql
+-- write
+UPDATE users SET last_login_at = NOW() WHERE id = 42;
+
+-- immediate consistency read should go to primary
+SELECT last_login_at FROM users WHERE id = 42;
+```
+
+**Example**
+After a user updates their profile, keep that user’s next few reads on primary so they see their own write immediately.
+
+- reads → replicas
+- read-after-write sensitive flows → read from primary briefly after write
+
 Check lag:
 
 ```sql
@@ -325,6 +541,10 @@ Look at:
 
 ### 6.5 Group Replication
 Use when you want:
+
+**Example**
+For an internal business system that needs automatic failover without custom orchestration, Group Replication can be simpler than building your own promotion flow.
+
 - automatic failover
 - built-in HA
 - consensus-based coordination
@@ -342,6 +562,19 @@ Trade-offs:
 ## 7) Sharding
 
 Sharding is for when:
+
+**SQL example**
+```sql
+-- single-shard query if sharded by user_id
+SELECT * FROM orders WHERE user_id = 123;
+
+-- cross-shard query if not routed by shard key
+SELECT COUNT(*) FROM orders WHERE created_at >= '2026-01-01';
+```
+
+**Example**
+If orders are sharded by `user_id`, “show my orders” hits one shard, but “all orders this month” may require scatter-gather across all shards.
+
 - dataset no longer fits comfortably on one primary
 - write throughput exceeds one primary
 - replicas + caching + tuning are no longer enough
@@ -351,6 +584,12 @@ Sharding is for when:
 #### Range-based
 ```text
 1–1M -> shard1
+1M–2M -> shard2
+```
+
+**Example**
+This works well when tenants are naturally grouped by ID ranges, but new IDs often create hotspots on the latest shard.
+
 1M–2M -> shard2
 ```
 
@@ -365,6 +604,13 @@ Cons:
 #### Hash-based
 ```text
 shard = hash(user_id) % N
+
+user_id 123 -> shard 3
+```
+
+**Example**
+A social app often hashes `user_id` so read and write load spread more evenly.
+
 ```
 
 Pros:
@@ -377,6 +623,10 @@ Cons:
 #### Directory-based
 Lookup service maps key → shard.
 
+**Example**
+Large SaaS systems use this to move a single tenant to a dedicated shard without moving everyone else.
+
+
 Pros:
 - flexible movement
 - tenant-by-tenant migration
@@ -387,6 +637,10 @@ Cons:
 
 ### 7.2 Good shard key
 Choose a key that is:
+
+**Example**
+For orders, shard by `user_id` instead of `order_id` so “get all orders for one user” stays on one shard.
+
 - high cardinality
 - evenly distributed
 - used in most queries
@@ -410,6 +664,10 @@ Always say you would try first:
 ### 7.4 Vitess
 Best-known MySQL sharding platform.
 
+**Example**
+Vitess is a good interview answer when you want MySQL compatibility but do not want shard routing logic spread across application code.
+
+
 Why it matters:
 - query routing
 - pooling
@@ -421,6 +679,9 @@ Why it matters:
 ## 8) Query optimization
 
 ### 8.1 EXPLAIN and EXPLAIN ANALYZE
+
+**Example**
+If `EXPLAIN` shows `type = ALL` on a million-row table, that usually means a full table scan and a likely indexing problem.
 
 ```sql
 EXPLAIN SELECT * FROM orders WHERE user_id = 123;
@@ -446,6 +707,18 @@ Join/access type quality:
 - replace large `OFFSET` pagination with keyset pagination
 - batch inserts
 
+**SQL example**
+```sql
+-- Batch insert is far cheaper than many round trips
+INSERT INTO event_log (user_id, event_type)
+VALUES (1, 'click'), (2, 'view'), (3, 'purchase');
+```
+
+- avoid `SELECT *`
+- make `ORDER BY ... LIMIT` index-friendly
+- replace large `OFFSET` pagination with keyset pagination
+- batch inserts
+
 Bad:
 ```sql
 SELECT * FROM products ORDER BY id LIMIT 20 OFFSET 10000;
@@ -464,6 +737,12 @@ LIMIT 20;
 - Performance Schema
 - process list
 
+**Example**
+Turn on the slow query log first, find the few query patterns eating most of the time, then run `EXPLAIN ANALYZE` on those.
+
+- Performance Schema
+- process list
+
 ```sql
 SET GLOBAL slow_query_log = 'ON';
 SET GLOBAL long_query_time = 1;
@@ -477,6 +756,10 @@ SHOW PROCESSLIST;
 
 ### MySQL vs PostgreSQL
 Choose **MySQL** for:
+
+**Example**
+For a classic CRUD-heavy ecommerce backend with moderate analytics and strong team familiarity, MySQL is often the simpler operational choice.
+
 - simpler operations
 - read-heavy web systems
 - mature replica-based scaling
@@ -489,14 +772,26 @@ Choose **PostgreSQL** for:
 
 ### MySQL vs MongoDB
 Choose **MySQL** when relationships + transactions matter.  
+
+**Example**
+Orders, payments, inventory, and users are easier to keep consistent in a relational schema than across duplicated documents.
+
 Choose **MongoDB** when schema flexibility and document modeling dominate.
 
 ### MySQL vs Cassandra
 Choose **MySQL** for ACID + flexible queries.  
+
+**Example**
+Use Cassandra for massive event ingestion; use MySQL for transactional order management.
+
 Choose **Cassandra** for extreme write throughput and huge distributed scale.
 
 ### MySQL vs TiDB
 Choose **MySQL** if a single-node primary architecture is still enough.  
+
+**Example**
+TiDB becomes attractive when one primary can no longer handle writes and you need distributed SQL with MySQL compatibility.
+
 Choose **TiDB** when you want MySQL compatibility with distributed SQL scaling.
 
 ---
