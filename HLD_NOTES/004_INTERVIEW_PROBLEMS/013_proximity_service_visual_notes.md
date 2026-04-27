@@ -1,99 +1,158 @@
-# Proximity Service — Visual System Design Notes with PostgreSQL PostGIS + Spring Boot
+# Proximity Service — Spring Boot + PostgreSQL/PostGIS Visual Notes
 
-> Goal: design a service that returns nearby businesses, such as restaurants, hotels, gas stations, theaters, or museums, based on a user location and radius.
->
-> Updated implementation choice: use **PostgreSQL + PostGIS** for geospatial search, with **Spring Boot** as the application layer.
+> Goal: design and implement a proximity service that returns nearby businesses such as restaurants, hotels, gas stations, theaters, and museums based on user latitude, longitude, and radius.
 
 ---
 
-## 1. Problem Scope
+# 1. Problem Scope
 
-### Functional Requirements
+## Functional Requirements
+
+- Return nearby businesses for a given latitude, longitude, and radius.
+- Support user-selected radius: `0.5 km`, `1 km`, `2 km`, `5 km`, `20 km`.
+- Business owners can add, update, or delete businesses.
+- Business updates do not need to appear in real time.
+- Customers can view business details.
+- Search results should be paginated.
 
 ```mermaid
 flowchart TB
-    A[Proximity Service] --> B[Search nearby businesses]
-    A --> C[View business details]
-    A --> D[Business owners add/update/delete businesses]
+    A[Proximity Service] --> B[Search Nearby Businesses]
+    A --> C[View Business Details]
+    A --> D[Owner Adds Updates Deletes Business]
 
-    B --> B1[Input: latitude + longitude + radius]
-    B --> B2[Output: ranked nearby businesses]
+    B --> B1[Input latitude longitude radius]
+    B --> B2[Output nearby businesses sorted by distance]
 
-    C --> C1["GET /businesses/{id}"]
-    D --> D1[Writes do not need real-time visibility]
-    D --> D2[Updates effective next day or near real-time]
+    C --> C1[GET business details]
+
+    D --> D1[POST create business]
+    D --> D2[PUT update business]
+    D --> D3[DELETE remove business]
 ```
-
-### Non-Functional Requirements
-
-| Requirement | Why It Matters |
-|---|---|
-| Low latency | Users expect map/search results quickly |
-| High availability | Search should work during traffic spikes |
-| Scalability | 100M DAU, around 5,000 search QPS |
-| Privacy | User location is sensitive data |
-| Read-heavy design | Searches and detail views dominate writes |
-| Geospatial accuracy | Need exact distance filtering, not only grid approximation |
 
 ---
 
-## 2. Back-of-the-Envelope Numbers
+## Non-Functional Requirements
+
+| Requirement | Notes |
+|---|---|
+| Low latency | Nearby search should return quickly |
+| High availability | Service should survive node failures |
+| Scalability | Handle traffic spikes in dense areas |
+| Privacy | User location is sensitive |
+| Read-heavy | Searches and business detail views dominate writes |
+| Eventual update visibility | Business writes can become visible later |
+
+---
+
+# 2. Back-of-the-Envelope Estimation
+
+Assumptions:
 
 ```text
 DAU = 100 million
 Searches per user per day = 5
 Seconds per day ≈ 100,000
+```
 
-Search QPS = 100M * 5 / 100,000
-           ≈ 5,000 QPS
+Search QPS:
+
+```text
+100M * 5 / 100,000 = 5,000 QPS
 ```
 
 ```mermaid
 flowchart LR
-    A[100M DAU] --> B[5 searches / user / day]
-    B --> C[500M searches / day]
-    C --> D[~5,000 QPS]
+    A[100M Daily Active Users] --> B[5 searches per user per day]
+    B --> C[500M searches per day]
+    C --> D[About 5,000 search QPS]
 ```
 
 ---
 
-## 3. API Design
+# 3. Why PostGIS?
 
-### Search Nearby
+In the book-style design, geohash, quadtree, and S2 are common options.
+
+For a practical Spring Boot implementation, **PostgreSQL + PostGIS** is a strong choice because it provides built-in spatial indexing and distance queries.
+
+```mermaid
+flowchart TB
+    A[Nearby Search Problem] --> B[Naive latitude longitude range]
+    A --> C[Geohash]
+    A --> D[Quadtree]
+    A --> E[PostGIS]
+
+    B --> B1[Simple but inefficient at scale]
+    C --> C1[Good interview explanation]
+    D --> D1[Good for k-nearest and density-aware grids]
+    E --> E1[Production-friendly database-backed geospatial search]
+```
+
+## PostGIS Core Idea
+
+PostGIS stores a point as a spatial value and indexes it with a GiST index.
+
+```text
+business location = POINT(longitude latitude)
+```
+
+Then we query:
+
+```text
+Find all businesses whose location is within radius meters of user point.
+```
+
+---
+
+# 4. High-Level Architecture
+
+```mermaid
+flowchart TB
+    Client[Client App Web Mobile] --> LB[Load Balancer]
+
+    LB --> SearchAPI[Spring Boot Search API]
+    LB --> BusinessAPI[Spring Boot Business API]
+
+    SearchAPI --> Redis[(Redis Cache)]
+    SearchAPI --> ReadDB[(PostgreSQL PostGIS Read Replica)]
+
+    BusinessAPI --> PrimaryDB[(PostgreSQL Primary)]
+    BusinessAPI --> Redis
+
+    PrimaryDB -->|Streaming Replication| ReadDB
+
+    subgraph DBCluster[PostgreSQL Cluster]
+        PrimaryDB
+        ReadDB
+    end
+```
+
+## Component Responsibilities
+
+| Component | Responsibility |
+|---|---|
+| Client | Sends location, radius, filters, pagination |
+| Load Balancer | Routes traffic to Spring Boot services |
+| Search API | Executes nearby search using PostGIS |
+| Business API | Handles business CRUD |
+| Redis | Optional cache for popular searches and business details |
+| PostgreSQL Primary | Handles writes |
+| PostgreSQL Read Replicas | Handle read-heavy nearby queries |
+| PostGIS | Provides geospatial data types, functions, and indexes |
+
+---
+
+# 5. API Design
+
+## Nearby Search API
 
 ```http
-GET /v1/search/nearby?latitude=37.776720&longitude=-122.416730&radius=500
+GET /v1/search/nearby?latitude=37.776720&longitude=-122.416730&radiusMeters=500&page=0&size=20
 ```
 
-### Request Parameters
-
-| Field | Type | Notes |
-|---|---|---|
-| latitude | decimal | User latitude |
-| longitude | decimal | User longitude |
-| radius | int | Optional, default 5000 meters |
-| category | string | Optional filter, for example restaurant/gas/hotel |
-| openNow | boolean | Optional filter |
-| page | int | Pagination |
-| size | int | Page size |
-
-### Response
-
-```json
-{
-  "total": 10,
-  "businesses": [
-    {
-      "id": 101,
-      "name": "Taco Palace",
-      "distanceMeters": 240,
-      "rating": 4.5
-    }
-  ]
-}
-```
-
-### Business APIs
+## Business APIs
 
 ```http
 GET    /v1/businesses/{id}
@@ -102,150 +161,109 @@ PUT    /v1/businesses/{id}
 DELETE /v1/businesses/{id}
 ```
 
----
+## Nearby Search Response
 
-## 4. Why PostgreSQL + PostGIS?
-
-Instead of manually managing geohash tables or quadtrees, we can use **PostGIS**, a geospatial extension for PostgreSQL.
-
-PostGIS gives us:
-
-```text
-1. Native geometry/geography data types
-2. Geospatial indexes using GiST/SP-GiST
-3. Fast radius search using ST_DWithin
-4. Exact distance calculation using ST_Distance
-5. Sorting by nearest distance
-6. Easier integration with Spring Boot + SQL
+```json
+{
+  "total": 2,
+  "businesses": [
+    {
+      "id": 101,
+      "name": "Taco Palace",
+      "category": "Restaurant",
+      "distanceMeters": 240.8,
+      "rating": 4.5
+    },
+    {
+      "id": 102,
+      "name": "Coffee Box",
+      "category": "Cafe",
+      "distanceMeters": 410.2,
+      "rating": 4.2
+    }
+  ]
+}
 ```
-
-```mermaid
-flowchart TB
-    A[User location: lat/lon] --> B[Spring Boot LBS]
-    B --> C[PostgreSQL + PostGIS]
-    C --> D[GiST index on location]
-    D --> E[ST_DWithin radius filter]
-    E --> F[ST_Distance ranking]
-    F --> G[Nearby businesses]
-```
-
-### Interview Line
-
-> I would use PostGIS because it gives production-ready geospatial indexing and distance functions, so we avoid building and maintaining a custom quadtree or geohash index in the application.
 
 ---
 
-## 5. High-Level Architecture
+# 6. Data Model with PostGIS
 
-```mermaid
-flowchart TB
-    U[User App / Web] --> LB[Load Balancer]
-
-    LB -->|/search/nearby| LBS[Spring Boot Location Based Service]
-    LB -->|"/businesses/{id}"| BS[Spring Boot Business Service]
-
-    LBS -->|Nearby query| PGRO[(Postgres Read Replicas + PostGIS)]
-    LBS -->|Hot details| BCache[(Redis Business Info Cache)]
-
-    BS -->|Read details| BCache
-    BS -->|Cache miss| PGRO
-    BS -->|Create / update / delete| PGP[(Primary Postgres + PostGIS)]
-
-    PGP -->|Streaming replication| PGRO
-    PGP -->|Cache invalidation event| BCache
-```
-
-### Key Components
-
-| Component | Responsibility |
-|---|---|
-| Load Balancer | Routes traffic to correct service |
-| Spring Boot LBS | Runs nearby search queries using PostGIS |
-| Spring Boot Business Service | Handles business detail reads and owner writes |
-| Primary Postgres + PostGIS | Handles writes and stores geospatial business data |
-| Postgres Read Replicas | Serve read-heavy nearby search traffic |
-| Redis Business Cache | Stores hot business objects |
-
----
-
-## 6. Data Model with PostGIS
-
-### Enable PostGIS
-
-```sql
-CREATE EXTENSION IF NOT EXISTS postgis;
-```
-
-### Business Table
-
-Use `geography(Point, 4326)` when distances are measured in meters on Earth.
-
-```sql
-CREATE TABLE businesses (
-    business_id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    address TEXT,
-    city VARCHAR(128),
-    state VARCHAR(128),
-    country VARCHAR(128),
-    category VARCHAR(64),
-    open_hours JSONB,
-    rating DOUBLE PRECISION,
-    latitude DOUBLE PRECISION NOT NULL,
-    longitude DOUBLE PRECISION NOT NULL,
-    location GEOGRAPHY(Point, 4326) NOT NULL,
-    created_at TIMESTAMP DEFAULT now(),
-    updated_at TIMESTAMP DEFAULT now()
-);
-```
-
-### Geospatial Index
-
-```sql
-CREATE INDEX idx_businesses_location
-ON businesses
-USING GIST (location);
-```
-
-### Optional Filter Indexes
-
-```sql
-CREATE INDEX idx_businesses_category ON businesses(category);
-CREATE INDEX idx_businesses_rating ON businesses(rating);
-CREATE INDEX idx_businesses_city ON businesses(city);
-```
-
-### ER Diagram
+## Business Table
 
 ```mermaid
 erDiagram
-    BUSINESSES {
-        bigint business_id PK
+    BUSINESS {
+        bigint id PK
         string name
         string address
         string city
         string state
         string country
-        string category
-        jsonb open_hours
-        double rating
         double latitude
         double longitude
         geography location
+        string category
+        string open_hours
+        double rating
+        boolean active
         timestamp created_at
         timestamp updated_at
     }
 ```
 
+## SQL Schema
+
+```sql
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+CREATE TABLE businesses (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address TEXT,
+    city VARCHAR(100),
+    state VARCHAR(100),
+    country VARCHAR(100),
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
+    location GEOGRAPHY(POINT, 4326) NOT NULL,
+    category VARCHAR(100),
+    open_hours TEXT,
+    rating DOUBLE PRECISION DEFAULT 0,
+    active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_businesses_location
+ON businesses
+USING GIST (location);
+
+CREATE INDEX idx_businesses_category
+ON businesses(category);
+
+CREATE INDEX idx_businesses_active
+ON businesses(active);
+```
+
+## Why `GEOGRAPHY` instead of `GEOMETRY`?
+
+| Type | Use Case |
+|---|---|
+| `GEOGRAPHY` | Earth distance in meters, good for latitude/longitude search |
+| `GEOMETRY` | Planar coordinates, faster for projected local maps |
+
+For this service, `GEOGRAPHY(POINT, 4326)` is convenient because `ST_DWithin` and `ST_Distance` work in meters.
+
 ---
 
-## 7. PostGIS Nearby Search Query
+# 7. Nearby Search Query with PostGIS
 
-### Radius Search
+## Core SQL
 
 ```sql
 SELECT
-    business_id,
+    id,
     name,
     category,
     rating,
@@ -253,98 +271,90 @@ SELECT
     longitude,
     ST_Distance(
         location,
-        ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography
+        ST_MakePoint(:longitude, :latitude)::geography
     ) AS distance_meters
 FROM businesses
-WHERE ST_DWithin(
-    location,
-    ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography,
-    :radiusMeters
-)
+WHERE active = TRUE
+  AND ST_DWithin(
+        location,
+        ST_MakePoint(:longitude, :latitude)::geography,
+        :radiusMeters
+      )
 ORDER BY distance_meters ASC
 LIMIT :limit OFFSET :offset;
 ```
 
-### Important Detail
-
-PostGIS uses longitude first, then latitude:
-
-```text
-ST_MakePoint(longitude, latitude)
-```
-
-Not:
-
-```text
-ST_MakePoint(latitude, longitude)
-```
-
----
-
-## 8. Search Flow with PostGIS
+## Query Flow
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant LB as Load Balancer
-    participant LBS as Spring Boot LBS
-    participant Cache as Redis Business Cache
-    participant PG as Postgres Read Replica + PostGIS
+    participant Client
+    participant API as Spring Boot Search API
+    participant DB as PostgreSQL PostGIS
+    participant Redis as Redis Optional Cache
 
-    User->>LB: GET /search/nearby?lat&lon&radius
-    LB->>LBS: Route request
-    LBS->>LBS: Validate lat/lon/radius
-    LBS->>PG: ST_DWithin radius query
-    PG-->>LBS: Candidate businesses with distance
-    LBS->>Cache: Fetch hot business metadata if needed
-    Cache-->>LBS: Cached business details
-    LBS->>LBS: Apply category/openNow/rating filters
-    LBS->>LBS: Sort/paginate results
-    LBS-->>User: Nearby businesses
+    Client->>API: GET nearby lat lon radius
+    API->>Redis: Check cached result key
+    alt Cache hit
+        Redis-->>API: Cached businesses
+        API-->>Client: Nearby result
+    else Cache miss
+        API->>DB: ST_DWithin plus ST_Distance query
+        DB-->>API: Nearby businesses sorted by distance
+        API->>Redis: Store short TTL result
+        API-->>Client: Nearby result
+    end
 ```
 
 ---
 
-## 9. Why PostGIS Instead of Quadtree?
-
-### Quadtree Approach
+# 8. PostGIS Search Visual
 
 ```mermaid
 flowchart TB
-    A[Build in-memory tree] --> B[Split world into quadrants]
-    B --> C[Keep subdividing dense areas]
-    C --> D[Search leaf and neighbors]
-    D --> E[Need custom update logic]
-    E --> F[Need rebuild/rebalance strategy]
+    A[User Point] --> B[Create Search Circle Radius]
+    B --> C[PostGIS ST_DWithin]
+    C --> D[Use GiST Spatial Index]
+    D --> E[Return Candidate Businesses]
+    E --> F[ST_Distance exact distance]
+    F --> G[Sort by distance]
+    G --> H[Paginated Response]
 ```
-
-### PostGIS Approach
-
-```mermaid
-flowchart TB
-    A[Store point in database] --> B[Create GiST index]
-    B --> C[Query using ST_DWithin]
-    C --> D[Compute exact distance with ST_Distance]
-    D --> E[Database handles index and query planning]
-```
-
-### Comparison
-
-| Topic | Quadtree | PostgreSQL + PostGIS |
-|---|---|---|
-| Implementation | Custom tree logic | SQL + database extension |
-| Updates | Harder; tree traversal/rebalance | Normal DB insert/update/delete |
-| Persistence | Need separate storage or rebuild | Built into database |
-| Querying | App-level logic | SQL functions |
-| Accuracy | Needs final distance filtering | Built-in distance functions |
-| Operations | More custom maintenance | Standard Postgres operations |
-| Interview practicality | Good concept | Better production-oriented choice |
 
 ---
 
-## 10. Spring Boot Implementation
+# 9. Spring Boot Project Structure
 
-## 10.1 Maven Dependencies
+```text
+src/main/java/com/example/proximity
+  ├── ProximityApplication.java
+  ├── controller
+  │   ├── SearchController.java
+  │   └── BusinessController.java
+  ├── service
+  │   ├── NearbySearchService.java
+  │   └── BusinessService.java
+  ├── repository
+  │   └── BusinessRepository.java
+  ├── dto
+  │   ├── NearbyBusinessResponse.java
+  │   ├── NearbySearchResponse.java
+  │   └── CreateBusinessRequest.java
+  └── entity
+      └── Business.java
+```
+
+```mermaid
+flowchart TB
+    Controller[Controller Layer] --> Service[Service Layer]
+    Service --> Repository[Repository Layer]
+    Repository --> Postgres[(PostgreSQL PostGIS)]
+    Service --> Redis[(Redis Cache Optional)]
+```
+
+---
+
+# 10. Maven Dependencies
 
 ```xml
 <dependencies>
@@ -363,34 +373,118 @@ flowchart TB
         <artifactId>postgresql</artifactId>
         <scope>runtime</scope>
     </dependency>
+
+    <dependency>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-spatial</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.locationtech.jts</groupId>
+        <artifactId>jts-core</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
 </dependencies>
 ```
 
 ---
 
-## 10.2 Spring Boot Config
+# 11. application.yml
 
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/proximity
-    username: proximity_user
-    password: proximity_password
+    url: jdbc:postgresql://localhost:5432/proximity_db
+    username: postgres
+    password: postgres
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
+    show-sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 ```
 
 ---
 
-## 10.3 Business DTO
+# 12. Java Entity
 
 ```java
-public record NearbyBusinessDto(
-        Long businessId,
+package com.example.proximity.entity;
+
+import jakarta.persistence.*;
+import org.locationtech.jts.geom.Point;
+import java.time.Instant;
+
+@Entity
+@Table(name = "businesses")
+public class Business {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String address;
+    private String city;
+    private String state;
+    private String country;
+
+    private Double latitude;
+    private Double longitude;
+
+    @Column(columnDefinition = "geography(Point,4326)")
+    private Point location;
+
+    private String category;
+    private String openHours;
+    private Double rating;
+    private Boolean active;
+    private Instant createdAt;
+    private Instant updatedAt;
+
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public String getCategory() { return category; }
+    public Double getRating() { return rating; }
+    public Double getLatitude() { return latitude; }
+    public Double getLongitude() { return longitude; }
+
+    public void setName(String name) { this.name = name; }
+    public void setAddress(String address) { this.address = address; }
+    public void setCity(String city) { this.city = city; }
+    public void setState(String state) { this.state = state; }
+    public void setCountry(String country) { this.country = country; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+    public void setLocation(Point location) { this.location = location; }
+    public void setCategory(String category) { this.category = category; }
+    public void setOpenHours(String openHours) { this.openHours = openHours; }
+    public void setRating(Double rating) { this.rating = rating; }
+    public void setActive(Boolean active) { this.active = active; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+}
+```
+
+---
+
+# 13. DTOs
+
+```java
+package com.example.proximity.dto;
+
+public record NearbyBusinessResponse(
+        Long id,
         String name,
         String category,
         Double rating,
@@ -400,20 +494,148 @@ public record NearbyBusinessDto(
 ) {}
 ```
 
----
+```java
+package com.example.proximity.dto;
 
-## 10.4 Request Validation Model
+import java.util.List;
+
+public record NearbySearchResponse(
+        int total,
+        List<NearbyBusinessResponse> businesses
+) {}
+```
 
 ```java
-public record NearbySearchRequest(
+package com.example.proximity.dto;
+
+public record CreateBusinessRequest(
+        String name,
+        String address,
+        String city,
+        String state,
+        String country,
         double latitude,
         double longitude,
-        int radiusMeters,
         String category,
-        int page,
-        int size
-) {
-    public NearbySearchRequest {
+        String openHours,
+        double rating
+) {}
+```
+
+---
+
+# 14. Repository with Native PostGIS Query
+
+```java
+package com.example.proximity.repository;
+
+import com.example.proximity.entity.Business;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface BusinessRepository extends JpaRepository<Business, Long> {
+
+    @Query(value = """
+        SELECT
+            id,
+            name,
+            category,
+            rating,
+            latitude,
+            longitude,
+            ST_Distance(
+                location,
+                ST_MakePoint(:longitude, :latitude)::geography
+            ) AS distance_meters
+        FROM businesses
+        WHERE active = TRUE
+          AND (:category IS NULL OR category = :category)
+          AND ST_DWithin(
+                location,
+                ST_MakePoint(:longitude, :latitude)::geography,
+                :radiusMeters
+              )
+        ORDER BY distance_meters ASC
+        LIMIT :limit OFFSET :offset
+        """, nativeQuery = true)
+    List<Object[]> findNearbyRaw(
+            @Param("latitude") double latitude,
+            @Param("longitude") double longitude,
+            @Param("radiusMeters") double radiusMeters,
+            @Param("category") String category,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+}
+```
+
+---
+
+# 15. Nearby Search Service
+
+```java
+package com.example.proximity.service;
+
+import com.example.proximity.dto.NearbyBusinessResponse;
+import com.example.proximity.dto.NearbySearchResponse;
+import com.example.proximity.repository.BusinessRepository;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Service
+public class NearbySearchService {
+
+    private final BusinessRepository businessRepository;
+
+    public NearbySearchService(BusinessRepository businessRepository) {
+        this.businessRepository = businessRepository;
+    }
+
+    public NearbySearchResponse searchNearby(
+            double latitude,
+            double longitude,
+            double radiusMeters,
+            String category,
+            int page,
+            int size
+    ) {
+        validate(latitude, longitude, radiusMeters, page, size);
+
+        int offset = page * size;
+
+        List<NearbyBusinessResponse> businesses = businessRepository
+                .findNearbyRaw(latitude, longitude, radiusMeters, category, size, offset)
+                .stream()
+                .map(this::mapRow)
+                .toList();
+
+        return new NearbySearchResponse(businesses.size(), businesses);
+    }
+
+    private NearbyBusinessResponse mapRow(Object[] row) {
+        return new NearbyBusinessResponse(
+                ((Number) row[0]).longValue(),
+                (String) row[1],
+                (String) row[2],
+                toDouble(row[3]),
+                toDouble(row[4]),
+                toDouble(row[5]),
+                toDouble(row[6])
+        );
+    }
+
+    private Double toDouble(Object value) {
+        if (value == null) return null;
+        if (value instanceof BigDecimal bd) return bd.doubleValue();
+        return ((Number) value).doubleValue();
+    }
+
+    private void validate(double latitude, double longitude, double radiusMeters, int page, int size) {
         if (latitude < -90 || latitude > 90) {
             throw new IllegalArgumentException("Invalid latitude");
         }
@@ -423,11 +645,8 @@ public record NearbySearchRequest(
         if (radiusMeters <= 0 || radiusMeters > 20_000) {
             throw new IllegalArgumentException("Radius must be between 1 and 20,000 meters");
         }
-        if (size <= 0 || size > 100) {
-            size = 20;
-        }
-        if (page < 0) {
-            page = 0;
+        if (page < 0 || size <= 0 || size > 100) {
+            throw new IllegalArgumentException("Invalid pagination");
         }
     }
 }
@@ -435,332 +654,399 @@ public record NearbySearchRequest(
 
 ---
 
-## 10.5 Repository with Native PostGIS Query
+# 16. Search Controller
 
 ```java
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+package com.example.proximity.controller;
 
-import java.util.List;
-
-@Repository
-public class BusinessSearchRepository {
-    private final JdbcTemplate jdbcTemplate;
-
-    public BusinessSearchRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public List<NearbyBusinessDto> searchNearby(
-            double latitude,
-            double longitude,
-            int radiusMeters,
-            String category,
-            int limit,
-            int offset
-    ) {
-        String sql = """
-            SELECT
-                business_id,
-                name,
-                category,
-                rating,
-                latitude,
-                longitude,
-                ST_Distance(
-                    location,
-                    ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography
-                ) AS distance_meters
-            FROM businesses
-            WHERE ST_DWithin(
-                location,
-                ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography,
-                ?
-            )
-            AND (? IS NULL OR category = ?)
-            ORDER BY distance_meters ASC
-            LIMIT ? OFFSET ?
-            """;
-
-        return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> new NearbyBusinessDto(
-                        rs.getLong("business_id"),
-                        rs.getString("name"),
-                        rs.getString("category"),
-                        rs.getDouble("rating"),
-                        rs.getDouble("latitude"),
-                        rs.getDouble("longitude"),
-                        rs.getDouble("distance_meters")
-                ),
-                longitude,
-                latitude,
-                longitude,
-                latitude,
-                radiusMeters,
-                category,
-                category,
-                limit,
-                offset
-        );
-    }
-}
-```
-
----
-
-## 10.6 Service Layer
-
-```java
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-@Service
-public class NearbySearchService {
-    private final BusinessSearchRepository repository;
-
-    public NearbySearchService(BusinessSearchRepository repository) {
-        this.repository = repository;
-    }
-
-    public List<NearbyBusinessDto> search(NearbySearchRequest request) {
-        int limit = request.size();
-        int offset = request.page() * request.size();
-
-        return repository.searchNearby(
-                request.latitude(),
-                request.longitude(),
-                request.radiusMeters(),
-                request.category(),
-                limit,
-                offset
-        );
-    }
-}
-```
-
----
-
-## 10.7 REST Controller
-
-```java
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import com.example.proximity.dto.NearbySearchResponse;
+import com.example.proximity.service.NearbySearchService;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/search")
-public class NearbySearchController {
+public class SearchController {
+
     private final NearbySearchService nearbySearchService;
 
-    public NearbySearchController(NearbySearchService nearbySearchService) {
+    public SearchController(NearbySearchService nearbySearchService) {
         this.nearbySearchService = nearbySearchService;
     }
 
     @GetMapping("/nearby")
-    public List<NearbyBusinessDto> searchNearby(
+    public NearbySearchResponse nearby(
             @RequestParam double latitude,
             @RequestParam double longitude,
-            @RequestParam(defaultValue = "5000") int radius,
+            @RequestParam(defaultValue = "5000") double radiusMeters,
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        NearbySearchRequest request = new NearbySearchRequest(
+        return nearbySearchService.searchNearby(
                 latitude,
                 longitude,
-                radius,
+                radiusMeters,
                 category,
                 page,
                 size
         );
-
-        return nearbySearchService.search(request);
     }
 }
 ```
 
 ---
 
-## 11. Insert / Update Business Location
+# 17. Creating a Business with a PostGIS Point
 
-When inserting or updating a business, always update both raw latitude/longitude and the PostGIS `location` column.
+```java
+package com.example.proximity.service;
 
-```sql
-INSERT INTO businesses (
-    name,
-    address,
-    city,
-    state,
-    country,
-    category,
-    rating,
-    latitude,
-    longitude,
-    location
-)
-VALUES (
-    :name,
-    :address,
-    :city,
-    :state,
-    :country,
-    :category,
-    :rating,
-    :latitude,
-    :longitude,
-    ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography
-);
-```
+import com.example.proximity.dto.CreateBusinessRequest;
+import com.example.proximity.entity.Business;
+import com.example.proximity.repository.BusinessRepository;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.springframework.stereotype.Service;
 
-```mermaid
-sequenceDiagram
-    participant Owner as Business Owner
-    participant API as Spring Boot Business API
-    participant Primary as Primary Postgres + PostGIS
-    participant Replica as Read Replicas
-    participant Cache as Redis Business Cache
+import java.time.Instant;
 
-    Owner->>API: POST/PUT business
-    API->>API: Validate address + lat/lon
-    API->>Primary: Insert/update business + location point
-    Primary->>Replica: Replicate change
-    API->>Cache: Invalidate business:{id}
-    API-->>Owner: Success
+@Service
+public class BusinessService {
+
+    private static final int SRID_WGS84 = 4326;
+
+    private final BusinessRepository businessRepository;
+    private final GeometryFactory geometryFactory = new GeometryFactory(
+            new PrecisionModel(),
+            SRID_WGS84
+    );
+
+    public BusinessService(BusinessRepository businessRepository) {
+        this.businessRepository = businessRepository;
+    }
+
+    public Long createBusiness(CreateBusinessRequest request) {
+        Business business = new Business();
+        business.setName(request.name());
+        business.setAddress(request.address());
+        business.setCity(request.city());
+        business.setState(request.state());
+        business.setCountry(request.country());
+        business.setLatitude(request.latitude());
+        business.setLongitude(request.longitude());
+        business.setCategory(request.category());
+        business.setOpenHours(request.openHours());
+        business.setRating(request.rating());
+        business.setActive(true);
+        business.setCreatedAt(Instant.now());
+        business.setUpdatedAt(Instant.now());
+
+        Point point = geometryFactory.createPoint(
+                new Coordinate(request.longitude(), request.latitude())
+        );
+        point.setSRID(SRID_WGS84);
+        business.setLocation(point);
+
+        return businessRepository.save(business).getId();
+    }
+}
 ```
 
 ---
 
-## 12. Caching Strategy
+# 18. Business Controller
 
-With PostGIS, we may not need a separate geohash cache at first. Start simple:
+```java
+package com.example.proximity.controller;
+
+import com.example.proximity.dto.CreateBusinessRequest;
+import com.example.proximity.service.BusinessService;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/v1/businesses")
+public class BusinessController {
+
+    private final BusinessService businessService;
+
+    public BusinessController(BusinessService businessService) {
+        this.businessService = businessService;
+    }
+
+    @PostMapping
+    public Long create(@RequestBody CreateBusinessRequest request) {
+        return businessService.createBusiness(request);
+    }
+}
+```
+
+---
+
+# 19. Optional Redis Cache Strategy
+
+PostGIS may be fast enough with a good GiST index and read replicas. Add Redis only after benchmarking.
+
+## Cache Types
+
+```mermaid
+flowchart TB
+    A[Redis Cache] --> B[Nearby Search Result Cache]
+    A --> C[Business Detail Cache]
+
+    B --> B1[Key rounded geohash radius filters page]
+    B --> B2[Value list of nearby result DTOs]
+
+    C --> C1[Key business id]
+    C --> C2[Value business object]
+```
+
+## Cache Key Example
 
 ```text
-1. PostGIS index handles nearby search.
-2. Redis caches hot business details.
-3. Add query/result cache only after benchmarking.
+nearby:latBucket:377767:lonBucket:-1224167:r:500:cat:restaurant:p:0:s:20
 ```
+
+Do not use raw GPS coordinates directly because GPS is noisy and tiny movement creates too many cache keys.
+
+```mermaid
+flowchart LR
+    A[Raw GPS key] --> B[Low cache hit rate]
+    C[Rounded location bucket key] --> D[Higher cache hit rate]
+```
+
+---
+
+# 20. Query Option: Quadtree
+
+PostGIS is the recommended practical implementation here, but quadtree is still useful as an interview option or for an in-memory search accelerator.
+
+A quadtree recursively divides the world into four quadrants until each leaf has at most a configured number of businesses.
 
 ```mermaid
 flowchart TB
-    A[Cache Types] --> B[Business Info Cache]
-    A --> C[Optional Nearby Result Cache]
+    Root[World 200M businesses] --> NW[NW 40M]
+    Root --> NE[NE 30M]
+    Root --> SW[SW 70M]
+    Root --> SE[SE 60M]
 
-    B --> B1[Key: business_id]
-    B --> B2[Value: business object]
-
-    C --> C1[Key: rounded lat/lon + radius + filter]
-    C --> C2[Value: list of nearby result IDs]
+    SW --> SW1[Leaf <= 100]
+    SW --> SW2[Leaf <= 100]
+    SW --> SW3[Leaf <= 100]
+    SW --> SW4[More subdivisions]
 ```
 
-### Cache Keys
+## Quadtree Query Flow
 
-| Cache | Key | Value |
+```mermaid
+flowchart TB
+    A[User latitude longitude radius] --> B[Start at root node]
+    B --> C[Find leaf containing user point]
+    C --> D[Collect businesses from leaf]
+    D --> E{Enough candidates?}
+    E -->|No| F[Expand to neighboring leaves]
+    F --> E
+    E -->|Yes| G[Hydrate business details]
+    G --> H[Exact distance filter]
+    H --> I[Sort by distance]
+    I --> J[Return result]
+```
+
+## Quadtree Java Skeleton
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+class BoundingBox {
+    double minLat;
+    double maxLat;
+    double minLon;
+    double maxLon;
+
+    boolean contains(double lat, double lon) {
+        return lat >= minLat && lat <= maxLat
+            && lon >= minLon && lon <= maxLon;
+    }
+
+    boolean intersectsCircle(double lat, double lon, double radiusMeters) {
+        // Simplified placeholder.
+        // Production should calculate shortest distance from point to box.
+        return true;
+    }
+}
+
+class BusinessPoint {
+    long businessId;
+    double latitude;
+    double longitude;
+
+    BusinessPoint(long businessId, double latitude, double longitude) {
+        this.businessId = businessId;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+}
+
+class QuadTreeNode {
+    private static final int MAX_POINTS = 100;
+
+    BoundingBox box;
+    List<BusinessPoint> points = new ArrayList<>();
+    QuadTreeNode[] children;
+
+    QuadTreeNode(BoundingBox box) {
+        this.box = box;
+    }
+
+    boolean isLeaf() {
+        return children == null;
+    }
+
+    void insert(BusinessPoint point) {
+        if (!box.contains(point.latitude, point.longitude)) {
+            return;
+        }
+
+        if (isLeaf() && points.size() < MAX_POINTS) {
+            points.add(point);
+            return;
+        }
+
+        if (isLeaf()) {
+            subdivide();
+            for (BusinessPoint existing : points) {
+                insertIntoChild(existing);
+            }
+            points.clear();
+        }
+
+        insertIntoChild(point);
+    }
+
+    void query(double lat, double lon, double radiusMeters, List<Long> resultIds) {
+        if (!box.intersectsCircle(lat, lon, radiusMeters)) {
+            return;
+        }
+
+        if (isLeaf()) {
+            for (BusinessPoint point : points) {
+                double distance = DistanceUtil.distanceMeters(
+                        lat, lon, point.latitude, point.longitude
+                );
+                if (distance <= radiusMeters) {
+                    resultIds.add(point.businessId);
+                }
+            }
+            return;
+        }
+
+        for (QuadTreeNode child : children) {
+            child.query(lat, lon, radiusMeters, resultIds);
+        }
+    }
+
+    private void insertIntoChild(BusinessPoint point) {
+        for (QuadTreeNode child : children) {
+            child.insert(point);
+        }
+    }
+
+    private void subdivide() {
+        children = new QuadTreeNode[4];
+        // Create NW, NE, SW, SE bounding boxes here.
+    }
+}
+```
+
+## Quadtree vs PostGIS
+
+| Topic | PostGIS | Quadtree |
 |---|---|---|
-| Business info cache | `business:{id}` | Business object |
-| Optional result cache | `nearby:{geocell}:{radius}:{category}` | List of business IDs |
-
-### Why Be Careful with Result Caching?
-
-```mermaid
-flowchart LR
-    A[Raw GPS coordinates] --> B[Too many unique keys]
-    B --> C[Poor cache hit rate]
-
-    D[Rounded coordinates or geocell] --> E[Better cache reuse]
-    E --> F[But results may be slightly stale]
-```
+| Implementation | Easier with database support | More custom code |
+| Index | GiST/SP-GiST database index | In-memory tree |
+| Updates | Normal DB writes | Harder; may need rebuild or locking |
+| Radius search | Excellent | Good |
+| k-nearest search | Good with KNN operators | Natural fit |
+| Operations | DB backups, replicas, monitoring | App-level rollout/rebuild concerns |
+| Best use | Practical Spring Boot backend | Interview deep dive or special accelerator |
 
 ---
 
-## 13. Scaling PostgreSQL + PostGIS
+# 21. Scaling the Database
 
-### Read Scaling
-
-```mermaid
-flowchart TB
-    Client[Clients] --> LB[Load Balancer]
-    LB --> App[Spring Boot LBS Cluster]
-    App --> R1[(PostGIS Read Replica 1)]
-    App --> R2[(PostGIS Read Replica 2)]
-    App --> R3[(PostGIS Read Replica 3)]
-    P[(Primary PostGIS DB)] --> R1
-    P --> R2
-    P --> R3
-```
-
-### Scaling Options
-
-| Problem | Solution |
-|---|---|
-| Read QPS too high | Add Postgres read replicas |
-| One region too slow | Deploy regional read replicas |
-| Write volume grows | Partition/shard by geography or business_id |
-| Huge global dataset | Split by country/region |
-| Hot city traffic | Regional replicas + cache hot results |
-
-### Sharding by Region
+## Read-Heavy Pattern
 
 ```mermaid
 flowchart TB
-    App[Spring Boot LBS] --> Router[Geo DB Router]
-    Router --> US[(US PostGIS Cluster)]
-    Router --> EU[(EU PostGIS Cluster)]
-    Router --> APAC[(APAC PostGIS Cluster)]
+    Write[Business Writes] --> Primary[(PostgreSQL Primary)]
+    Primary --> Replica1[(Read Replica 1)]
+    Primary --> Replica2[(Read Replica 2)]
+    Primary --> Replica3[(Read Replica 3)]
 
-    US --> USR[(US Read Replicas)]
-    EU --> EUR[(EU Read Replicas)]
-    APAC --> APACR[(APAC Read Replicas)]
+    SearchAPI[Search API] --> Replica1
+    SearchAPI --> Replica2
+    SearchAPI --> Replica3
+
+    BusinessAPI[Business API] --> Primary
 ```
+
+## Scaling Notes
+
+- Use read replicas for search traffic.
+- Keep writes on primary.
+- Use connection pooling with HikariCP/PgBouncer.
+- Partition by region/country if the table becomes very large.
+- Keep spatial indexes healthy with `VACUUM`, `ANALYZE`, and monitoring.
+- If global, deploy regional databases and route users to nearest region.
 
 ---
 
-## 14. Filtering Results
+# 22. Filtering Results
 
-Examples:
+Common filters:
 
-- Open now
-- Restaurant only
-- Rating above 4.0
-- Price level
-- Cuisine type
+- Category: restaurant, cafe, hotel, gas station.
+- Open now.
+- Rating above 4.0.
+- Price level.
+- City or country.
 
 ```mermaid
 flowchart LR
-    A[PostGIS ST_DWithin] --> B[Nearby candidate rows]
-    B --> C[SQL filters: category/rating/openNow]
-    C --> D[ST_Distance order]
-    D --> E[Pagination]
-    E --> F[Return page]
+    A[PostGIS radius search] --> B[Category filter]
+    B --> C[Open now filter]
+    C --> D[Rating filter]
+    D --> E[Sort by distance]
+    E --> F[Paginate]
 ```
 
-### SQL Example with Category and Rating
+## SQL Example with Category and Rating
 
 ```sql
 SELECT
-    business_id,
+    id,
     name,
+    category,
     rating,
-    ST_Distance(location, :userPoint) AS distance_meters
+    ST_Distance(location, ST_MakePoint(:lon, :lat)::geography) AS distance_meters
 FROM businesses
-WHERE ST_DWithin(location, :userPoint, :radiusMeters)
+WHERE active = TRUE
   AND category = :category
   AND rating >= :minRating
+  AND ST_DWithin(location, ST_MakePoint(:lon, :lat)::geography, :radiusMeters)
 ORDER BY distance_meters ASC
 LIMIT :limit OFFSET :offset;
 ```
 
 ---
 
-## 15. Multi-Region Deployment
+# 23. Multi-Region Deployment
 
 ```mermaid
 flowchart TB
-    DNS[Geo DNS / Traffic Router]
+    DNS[Geo DNS Traffic Router]
 
     DNS --> US[US Region]
     DNS --> EU[EU Region]
@@ -768,140 +1054,218 @@ flowchart TB
 
     subgraph US[US Region]
         USLB[Load Balancer]
-        USLBS[Spring Boot LBS]
-        USRedis[(Redis Cache)]
-        USPG[(PostGIS Read Replicas)]
-        USLB --> USLBS
-        USLBS --> USRedis
-        USLBS --> USPG
+        USAPI[Spring Boot API]
+        USDB[(PostgreSQL PostGIS)]
+        USRedis[(Redis)]
+        USLB --> USAPI
+        USAPI --> USDB
+        USAPI --> USRedis
     end
 
     subgraph EU[EU Region]
         EULB[Load Balancer]
-        EULBS[Spring Boot LBS]
-        EURedis[(Redis Cache)]
-        EUPG[(PostGIS Read Replicas)]
-        EULB --> EULBS
-        EULBS --> EURedis
-        EULBS --> EUPG
+        EUAPI[Spring Boot API]
+        EUDB[(PostgreSQL PostGIS)]
+        EURedis[(Redis)]
+        EULB --> EUAPI
+        EUAPI --> EUDB
+        EUAPI --> EURedis
     end
 
     subgraph APAC[APAC Region]
-        ALB[Load Balancer]
-        ALBS[Spring Boot LBS]
-        ARedis[(Redis Cache)]
-        APG[(PostGIS Read Replicas)]
-        ALB --> ALBS
-        ALBS --> ARedis
-        ALBS --> APG
+        APACLB[Load Balancer]
+        APACAPI[Spring Boot API]
+        APACDB[(PostgreSQL PostGIS)]
+        APACRedis[(Redis)]
+        APACLB --> APACAPI
+        APACAPI --> APACDB
+        APACAPI --> APACRedis
     end
 ```
 
-### Benefits
+Benefits:
 
-| Benefit | Explanation |
-|---|---|
-| Lower latency | Route users to nearby region |
-| Availability | Region failure does not take down all traffic |
-| Traffic distribution | Handle dense areas separately |
-| Compliance | Store/process sensitive location data locally if required |
+- Lower latency.
+- Better availability.
+- Regional compliance.
+- Easier traffic isolation.
 
 ---
 
-## 16. Failure Handling
+# 24. Failure Handling
 
 | Failure | Handling |
 |---|---|
-| LBS server fails | Stateless; load balancer routes to healthy server |
-| Business service fails | Stateless; restart or route around it |
-| Redis fails | Fall back to DB; rebuild cache lazily |
-| Postgres read replica fails | Route reads to another replica |
-| Primary DB fails | Promote replica to primary |
-| Replica lag | Usually acceptable for business data |
-| PostGIS index bloat | Reindex during maintenance window |
-| Region outage | Route traffic to another region |
+| Spring Boot search node fails | Stateless; load balancer routes to another node |
+| Redis fails | Fallback to PostGIS query |
+| PostgreSQL read replica fails | Remove from pool and route to healthy replica |
+| PostgreSQL primary fails | Promote replica or use managed failover |
+| Spatial index bloats | Reindex during maintenance window |
+| Region outage | Geo DNS routes to another region |
+| Cache stale | Use TTL and invalidate on business updates |
 
 ---
 
-## 17. Interview Talking Points
+# 25. End-to-End Nearby Search Flow
 
 ```mermaid
-mindmap
-  root((Proximity Service))
-    Requirements
-      Nearby search
-      Business details
-      Owner updates
-      Low latency
-      Privacy
-    Architecture
-      Load balancer
-      Spring Boot LBS
-      Business service
-      Redis cache
-      Postgres replicas
-    PostGIS
-      geography Point
-      GiST index
-      ST_DWithin
-      ST_Distance
-      Exact radius search
-    Scaling
-      Read replicas
-      Regional clusters
-      Cache hot business details
-      Optional result cache
-    Tradeoffs
-      Simpler than quadtree
-      Strong SQL support
-      Need DB tuning
-      Sharding by geography later
+sequenceDiagram
+    participant Client
+    participant LB as Load Balancer
+    participant API as Spring Boot Search API
+    participant Cache as Redis Cache
+    participant DB as PostgreSQL PostGIS
+
+    Client->>LB: GET /v1/search/nearby
+    LB->>API: Route request
+    API->>API: Validate lat lon radius
+    API->>Cache: Check rounded-location cache key
+    alt Cache hit
+        Cache-->>API: Nearby result
+        API-->>Client: Return cached result
+    else Cache miss
+        API->>DB: ST_DWithin spatial query
+        DB-->>API: Nearby businesses with distance
+        API->>Cache: Store result with short TTL
+        API-->>Client: Return nearby result
+    end
 ```
 
 ---
 
-## 18. Final Architecture Summary
+# 26. Final Architecture Summary
 
 ```mermaid
 flowchart TB
     Client[Client App] --> LB[Load Balancer]
 
-    LB -->|Nearby search| LBS[Spring Boot LBS Cluster]
-    LB -->|Business APIs| BS[Spring Boot Business Service Cluster]
+    LB --> Search[Spring Boot Search Service]
+    LB --> Business[Spring Boot Business Service]
 
-    LBS --> PGRead[(PostGIS Read Replicas)]
-    LBS --> BizRedis[(Redis: Business ID -> Business Object)]
+    Search --> Redis[(Redis Optional Cache)]
+    Search --> ReadReplica[(PostgreSQL PostGIS Read Replicas)]
 
-    BS --> BizRedis
-    BS --> PGRead
-    BS --> Primary[(Primary PostgreSQL + PostGIS)]
+    Business --> Primary[(PostgreSQL Primary)]
+    Business --> Redis
 
-    Primary --> PGRead
-    BS --> Events[Cache Invalidation Events]
-    Events --> BizRedis
+    Primary --> ReadReplica
+
+    subgraph OptionalAccelerator[Optional In-Memory Accelerator]
+        QT[Quadtree Index]
+    end
+
+    Search -. optional candidate lookup .-> QT
+    QT -. hydrate ids .-> ReadReplica
 ```
-
-> In this version, **PostGIS replaces the custom quadtree/geohash index** for the main nearby search path. Redis is used mainly for hot business details, not as the primary geospatial engine.
 
 ---
 
-## 19. Quick Memory Hook
+# 27. Interview Talking Points
+
+```mermaid
+mindmap
+  root((Proximity Service))
+    Requirements
+      Nearby businesses
+      Business details
+      Owner updates
+      Low latency
+      Read heavy
+    PostGIS
+      GEOGRAPHY POINT 4326
+      ST_DWithin
+      ST_Distance
+      GiST index
+      Read replicas
+    Spring Boot
+      Controller
+      Service
+      Repository
+      DTOs
+      Validation
+    Cache
+      Redis optional
+      Rounded location bucket
+      Business detail cache
+    Alternatives
+      Geohash
+      Quadtree
+      S2
+    Scaling
+      Replicas
+      Multi region
+      Partition by region
+      Connection pooling
+```
+
+---
+
+# 28. Quick Memory Hook
 
 ```text
-User location
-   ↓
-Spring Boot LBS
-   ↓
+Client lat/lon/radius
+        ↓
+Spring Boot Search API
+        ↓
 PostGIS ST_DWithin radius query
-   ↓
-ST_Distance exact ranking
-   ↓
-Business details cache
-   ↓
-Ranked nearby results
+        ↓
+GiST spatial index
+        ↓
+ST_Distance exact distance
+        ↓
+Sort + paginate
+        ↓
+Return nearby businesses
 ```
 
 Best interview phrase:
 
-> I would start with PostgreSQL PostGIS because it gives reliable geospatial search with indexes. I would scale reads using replicas and regional deployment before introducing custom geohash or quadtree infrastructure.
+> For a practical Spring Boot implementation, I would use PostgreSQL with PostGIS. I would store each business as a `GEOGRAPHY(POINT, 4326)`, create a GiST index, use `ST_DWithin` for radius filtering, use `ST_Distance` for ranking, and scale reads through replicas and optional Redis caching.
 
+---
+
+# 29. Minimal cURL Test
+
+```bash
+curl "http://localhost:8080/v1/search/nearby?latitude=37.776720&longitude=-122.416730&radiusMeters=500&category=Restaurant&page=0&size=20"
+```
+
+---
+
+# 30. Minimal Docker Compose for Local Testing
+
+```yaml
+version: "3.9"
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: proximity-postgis
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: proximity_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  redis:
+    image: redis:7
+    container_name: proximity-redis
+    ports:
+      - "6379:6379"
+```
+
+---
+
+# 31. Summary
+
+This design keeps the interview concepts but uses a production-friendly implementation path:
+
+- Use **Spring Boot** for APIs.
+- Use **PostgreSQL + PostGIS** for geospatial search.
+- Use `ST_DWithin` to filter businesses within radius.
+- Use `ST_Distance` to rank by distance.
+- Use a GiST index on the `location` column.
+- Use read replicas for search scale.
+- Use Redis only when benchmarking shows it helps.
+- Keep quadtree as an optional in-memory candidate lookup or interview discussion.
