@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef69beb9-67e1-4c05-a4ae-9f6c0ccfea71" name="Changes" comment="" />
+    <list default="true" id="ef69beb9-67e1-4c05-a4ae-9f6c0ccfea71" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HLD_NOTES/002_TYPES_OF_INTERVIEWS/001_Real_time_updates.md" beforeDir="false" afterPath="$PROJECT_DIR$/HLD_NOTES/002_TYPES_OF_INTERVIEWS/001_Real_time_updates.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HLD_NOTES/002_TYPES_OF_INTERVIEWS/realtime_updates_mermaid_notes.md" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
