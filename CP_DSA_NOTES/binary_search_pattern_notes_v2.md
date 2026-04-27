@@ -8,14 +8,14 @@
 flowchart TD
 A[Problem] --> B{What is asked?}
 
-B -->|Minimize Maximum / Maximize Minimum| C[Binary Search on Answer]
-B -->|Find index in sorted array| D[Lower/Upper Bound]
+B -->|Minimize Maximum or Maximize Minimum| C[Binary Search on Answer]
+B -->|Find index in sorted array| D[Lower Bound or Upper Bound]
 B -->|Continuous values| E[Binary Search on Real]
 B -->|Unimodal function| F[Ternary Search]
 
-C --> G{Can define check(mid)?}
-G -->|Yes monotonic| H[Apply BS]
-G -->|No| I[Try Greedy / DP]
+C --> G{Can define check mid}
+G -->|Yes monotonic| H[Apply Binary Search]
+G -->|No| I[Try Greedy or DP]
 ```
 
 ---
