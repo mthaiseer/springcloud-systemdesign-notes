@@ -15,18 +15,19 @@ Viewer clicks play
 
 But internally it needs:
 
-```text
-uploading
-blob storage
-metadata storage
-video processing
-transcoding
-thumbnail generation
-CDN delivery
-adaptive streaming
-recommendation/feed APIs
-monitoring
-error handling
+```mermaid
+flowchart TD
+    A[Creator uploads video] --> B[Upload service]
+    B --> C[Blob storage]
+    C --> D[Metadata storage]
+    C --> E[Video processing]
+    E --> F[Transcoding]
+    F --> G[Thumbnail generation]
+    F --> H[CDN delivery]
+    H --> I[Adaptive streaming]
+    D --> J[Recommendation and feed APIs]
+    H --> K[Monitoring]
+    E --> L[Error handling]
 ```
 
 For this interview, focus on:
@@ -143,31 +144,11 @@ Interview line:
 
 At a high level:
 
-```text
-Clients
-  |
-  +--> CDN for video streaming
-  |
-  +--> API servers for everything else
-```
-
-Visual:
-
-```text
-+-------------------------+
-| Clients                 |
-| Web / Mobile / Smart TV |
-+-----------+-------------+
-            |
-    +-------+--------+
-    |                |
-    v                v
-+--------+       +-------------+
-| CDN    |       | API Servers |
-| Videos |       | Metadata    |
-+--------+       | Upload APIs |
-                 | Auth        |
-                 +-------------+
+```mermaid
+flowchart TD
+    C[Clients<br/>Web / Mobile / Smart TV]
+    C --> CDN[CDN<br/>Video streaming]
+    C --> API[API Servers<br/>Metadata / Upload APIs / Auth]
 ```
 
 Responsibilities:
@@ -195,37 +176,30 @@ Video upload has two parallel paths:
 2. Update video metadata.
 ```
 
-Visual:
+```mermaid
+flowchart TD
+    Client[Client]
+    API[API Servers]
+    Original[Original Blob Storage]
+    Pipeline[Transcoding Pipeline]
+    Encoded[Transcoded Storage]
+    CDN[CDN]
 
-```text
-Client
-  |
-  | 1. request upload URL
-  v
-API Servers
-  |
-  | 2. return pre-signed URL
-  v
-Client
-  |
-  | 3. upload video chunks
-  v
-Original Blob Storage
-  |
-  v
-Transcoding Pipeline
-  |
-  v
-Transcoded Storage
-  |
-  v
-CDN
+    Client -->|1. request upload URL| API
+    API -->|2. return pre-signed URL| Client
+    Client -->|3. upload video chunks| Original
+    Original --> Pipeline
+    Pipeline --> Encoded
+    Encoded --> CDN
 ```
 
 Metadata path:
 
-```text
-Client -> API Servers -> Metadata Cache / Metadata DB
+```mermaid
+flowchart LR
+    Client[Client] --> API[API Servers]
+    API --> Cache[Metadata Cache]
+    API --> DB[(Metadata DB)]
 ```
 
 ---
@@ -258,8 +232,12 @@ send metadata
 
 Distributes API traffic.
 
-```text
-Client -> Load Balancer -> API Servers
+```mermaid
+flowchart LR
+    Client[Client] --> LB[Load Balancer]
+    LB --> API1[API Server 1]
+    LB --> API2[API Server 2]
+    LB --> API3[API Server 3]
 ```
 
 ---
@@ -370,8 +348,10 @@ watermarked videos
 
 Caches and serves video segments globally.
 
-```text
-Viewer -> nearest CDN edge -> video segments
+```mermaid
+flowchart LR
+    Viewer[Viewer] --> Edge[Nearest CDN Edge]
+    Edge --> Segments[Video Segments]
 ```
 
 ---
@@ -392,31 +372,24 @@ Viewer -> nearest CDN edge -> video segments
 11. Client can stream video.
 ```
 
-Visual:
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant API as API Server
+    participant DB as Metadata DB
+    participant OS as Original Storage
+    participant P as Processing Pipeline
+    participant ES as Encoded Storage
+    participant CDN as CDN
 
-```text
-Client
-  |
-  v
-API Server -----> Metadata DB: status=UPLOADING
-  |
-  v
-Pre-signed URL
-  |
-  v
-Client uploads chunks
-  |
-  v
-Original Storage
-  |
-  v
-Upload Complete Event
-  |
-  v
-Transcoding Pipeline
-  |
-  v
-Metadata DB: status=READY
+    C->>API: POST /videos/upload
+    API->>DB: create metadata, status = UPLOADING
+    API-->>C: return pre-signed URL
+    C->>OS: upload chunks directly
+    OS-->>P: upload-complete event
+    P->>ES: write transcoded renditions
+    P->>DB: update status = READY
+    CDN->>ES: pull and cache encoded files
 ```
 
 ---
@@ -425,8 +398,10 @@ Metadata DB: status=READY
 
 Without pre-signed URL:
 
-```text
-Client -> API Server -> Storage
+```mermaid
+flowchart LR
+    Client[Client] --> API[API Server]
+    API --> Storage[Storage]
 ```
 
 Problem:
@@ -437,27 +412,15 @@ API servers become bottleneck for huge files.
 
 With pre-signed URL:
 
-```text
-Client -> API Server: request upload URL
-API Server -> Client: pre-signed URL
-Client -> Blob Storage: upload directly
-```
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant API as API Server
+    participant S as Original Storage
 
-Visual:
-
-```text
-+--------+       1. request URL       +------------+
-| Client | -------------------------> | API Server |
-+--------+                            +-----+------+
-    ^                                      |
-    | 2. pre-signed URL                    |
-    +--------------------------------------+
-    |
-    | 3. upload directly
-    v
-+------------------+
-| Original Storage |
-+------------------+
+    C->>API: 1. request upload URL
+    API-->>C: 2. pre-signed URL
+    C->>S: 3. upload directly
 ```
 
 Benefits:
@@ -484,19 +447,20 @@ Retry failed chunks.
 Resume from failed chunk.
 ```
 
-Visual:
-
-```text
-Original video
-      |
-      v
-+-------+-------+-------+-------+
-| chunk | chunk | chunk | chunk |
-|  1    |  2    |  3    |  4    |
-+-------+-------+-------+-------+
-      |       |       |       |
-      v       v       v       v
-   upload  upload  upload  upload
+```mermaid
+flowchart TD
+    V[Original video] --> C1[Chunk 1]
+    V --> C2[Chunk 2]
+    V --> C3[Chunk 3]
+    V --> C4[Chunk 4]
+    C1 --> U1[Upload]
+    C2 --> U2[Upload]
+    C3 --> U3[Upload]
+    C4 --> U4[Upload]
+    U1 --> S[Original Storage]
+    U2 --> S
+    U3 --> S
+    U4 --> S
 ```
 
 Benefits:
@@ -514,41 +478,17 @@ better reliability
 
 Videos are streamed from CDN.
 
-```text
-Client requests playback metadata
-        |
-        v
-API server returns manifest URL
-        |
-        v
-Client downloads manifest
-        |
-        v
-Client requests video segments from CDN
-        |
-        v
-CDN streams nearest cached segments
-```
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant API as API Server
+    participant CDN as CDN Edge
 
-Visual:
-
-```text
-Client
-  |
-  | GET /videos/{id}/playback
-  v
-API Server
-  |
-  | manifest URL
-  v
-Client
-  |
-  | GET manifest + segments
-  v
-CDN Edge
-  |
-  v
-Video playback
+    C->>API: GET playback metadata
+    API-->>C: manifest URL
+    C->>CDN: GET manifest
+    C->>CDN: GET video segments
+    CDN-->>C: stream nearest cached segments
 ```
 
 ---
@@ -574,12 +514,12 @@ Client can switch quality depending on network.
 
 Manifest example:
 
-```text
-video.m3u8
-  - 360p playlist
-  - 480p playlist
-  - 720p playlist
-  - 1080p playlist
+```mermaid
+flowchart TD
+    M[video.m3u8] --> P360[360p playlist]
+    M --> P480[480p playlist]
+    M --> P720[720p playlist]
+    M --> P1080[1080p playlist]
 ```
 
 ---
@@ -594,22 +534,15 @@ Medium network -> 720p
 Slow network  -> 360p
 ```
 
-Visual:
-
-```text
-               +---------+
-               | Client  |
-               +----+----+
-                    |
-          measures bandwidth
-                    |
-        +-----------+------------+
-        |                        |
-        v                        v
-    low bandwidth            high bandwidth
-        |                        |
-        v                        v
-      360p                    1080p
+```mermaid
+flowchart TD
+    Client[Client] --> Measure[Measure bandwidth]
+    Measure --> Low[Low bandwidth]
+    Measure --> Medium[Medium bandwidth]
+    Measure --> High[High bandwidth]
+    Low --> R360[360p]
+    Medium --> R720[720p]
+    High --> R1080[1080p]
 ```
 
 Benefits:
@@ -662,31 +595,17 @@ smooth playback
 
 A video processing pipeline can be represented as a DAG.
 
-```text
-Original Video
-      |
-      v
-+-------------+
-| Inspection  |
-+------+------+ 
-       |
-       v
-+-------------+
-| Split A/V   |
-+------+------+
-       |
-+------+------+
-|             |
-v             v
-Video Encode  Audio Encode
-|             |
-v             v
-Thumbnail     Merge
-|             |
-+------+------+ 
-       |
-       v
-Encoded Video
+```mermaid
+flowchart TD
+    O[Original Video] --> I[Inspection]
+    I --> S[Split Audio and Video]
+    S --> VE[Video Encode]
+    S --> AE[Audio Encode]
+    VE --> T[Thumbnail]
+    VE --> M[Merge]
+    AE --> M
+    T --> EV[Encoded Video]
+    M --> EV
 ```
 
 DAG benefits:
@@ -702,68 +621,15 @@ supports thumbnails/watermark/inspection
 
 # Step 14 — Transcoding Architecture
 
-```text
-Original Storage
-       |
-       v
-Preprocessor
-       |
-       v
-DAG Scheduler
-       |
-       v
-Resource Manager
-       |
-       v
-Task Workers
-       |
-       v
-Temporary Storage
-       |
-       v
-Encoded Video Storage
-       |
-       v
-CDN
-```
-
-Visual:
-
-```text
-+------------------+
-| Original Storage |
-+--------+---------+
-         |
-         v
-+------------------+
-| Preprocessor     |
-+--------+---------+
-         |
-         v
-+------------------+
-| DAG Scheduler    |
-+--------+---------+
-         |
-         v
-+------------------+
-| Resource Manager |
-+--------+---------+
-         |
-         v
-+------------------+
-| Task Workers     |
-| encode/thumb/etc |
-+--------+---------+
-         |
-         v
-+------------------+
-| Encoded Storage  |
-+--------+---------+
-         |
-         v
-+------------------+
-| CDN              |
-+------------------+
+```mermaid
+flowchart TD
+    OS[Original Storage] --> PP[Preprocessor]
+    PP --> DAG[DAG Scheduler]
+    DAG --> RM[Resource Manager]
+    RM --> TW[Task Workers<br/>encode / thumbnail / package]
+    TW --> TS[Temporary Storage]
+    TS --> ES[Encoded Video Storage]
+    ES --> CDN[CDN]
 ```
 
 ---
@@ -826,14 +692,12 @@ running queue
 task assignment
 ```
 
-Visual:
-
-```text
-Task Queue ----+
-               |
-Worker Queue --+--> Resource Manager -> Task Worker
-               |
-Running Queue -+
+```mermaid
+flowchart LR
+    TQ[Task Queue] --> RM[Resource Manager]
+    WQ[Worker Queue] --> RM
+    RQ[Running Queue] --> RM
+    RM --> TW[Task Worker]
 ```
 
 ---
@@ -879,32 +743,16 @@ Each step blocks the next.
 
 With queues:
 
-```text
-Original Storage
-   |
-   v
-Download Queue -> Download Workers
-   |
-   v
-Encode Queue -> Encoding Workers
-   |
-   v
-Upload Queue -> Upload Workers
-   |
-   v
-Encoded Storage -> CDN
-```
-
-Visual:
-
-```text
-+----------+     +-----------+     +----------+
-| Download | --> | Encoding  | --> | Upload   |
-| Queue    |     | Queue     |     | Queue    |
-+----------+     +-----------+     +----------+
-     |                 |                |
-     v                 v                v
- Download W        Encode W          Upload W
+```mermaid
+flowchart LR
+    OS[Original Storage] --> DQ[Download Queue]
+    DQ --> DW[Download Workers]
+    DW --> EQ[Encode Queue]
+    EQ --> EW[Encoding Workers]
+    EW --> UQ[Upload Queue]
+    UQ --> UW[Upload Workers]
+    UW --> ES[Encoded Storage]
+    ES --> CDN[CDN]
 ```
 
 Benefits:
@@ -967,6 +815,34 @@ BLOCKED
 DELETED
 ```
 
+```mermaid
+erDiagram
+    VIDEOS ||--o{ VIDEO_RENDITIONS : has
+    VIDEOS {
+        BIGINT video_id PK
+        BIGINT user_id
+        VARCHAR title
+        TEXT description
+        VARCHAR upload_status
+        VARCHAR processing_status
+        TEXT original_url
+        TEXT manifest_url
+        TEXT thumbnail_url
+        INT duration_seconds
+        BIGINT size_bytes
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+    VIDEO_RENDITIONS {
+        BIGINT video_id PK
+        VARCHAR resolution PK
+        INT bitrate
+        VARCHAR codec
+        TEXT storage_url
+        VARCHAR status
+    }
+```
+
 ---
 
 # Step 18 — CDN Cost Optimization
@@ -991,20 +867,11 @@ Strategies:
 6. Use your own CDN or ISP partnerships at massive scale.
 ```
 
-Visual:
-
-```text
-               +--------+
-               | Client |
-               +---+----+
-                   |
-        +----------+----------+
-        |                     |
-        v                     v
- Popular videos        Less popular videos
-        |                     |
-        v                     v
-      CDN              Origin Video Servers
+```mermaid
+flowchart TD
+    Client[Client] --> Decision{Video popularity?}
+    Decision -->|Popular| CDN[CDN]
+    Decision -->|Less popular| Origin[Origin Video Servers]
 ```
 
 ---
@@ -1079,160 +946,94 @@ corrupted file
 
 ## Component Error Playbook
 
-```text
-Upload error:
-    retry failed chunk
+```mermaid
+flowchart TD
+    E[Error] --> U[Upload error]
+    E --> T[Transcoding error]
+    E --> P[Preprocessor error]
+    E --> D[DAG scheduler error]
+    E --> R[Resource manager down]
+    E --> W[Worker down]
+    E --> A[API server down]
+    E --> C[Metadata cache down]
+    E --> M[Metadata DB master down]
+    E --> MR[Metadata DB replica down]
 
-Split video error:
-    split on server if client cannot split
-
-Transcoding error:
-    retry task
-
-Preprocessor error:
-    regenerate DAG
-
-DAG scheduler error:
-    reschedule task
-
-Resource manager down:
-    fail over to replica
-
-Worker down:
-    retry task on another worker
-
-API server down:
-    route to another stateless API server
-
-Metadata cache down:
-    read from replica/cache miss fallback
-
-Metadata DB master down:
-    promote replica
-
-Metadata DB replica down:
-    replace replica
+    U --> U1[Retry failed chunk]
+    T --> T1[Retry task]
+    P --> P1[Regenerate DAG]
+    D --> D1[Reschedule task]
+    R --> R1[Fail over to replica]
+    W --> W1[Retry task on another worker]
+    A --> A1[Route to another stateless API server]
+    C --> C1[Read from DB or fallback]
+    M --> M1[Promote replica]
+    MR --> MR1[Replace replica]
 ```
 
 ---
 
 # Step 21 — Final Upload Architecture
 
-```text
-Client
-  |
-  | POST /upload
-  v
-API Servers
-  |
-  | create video metadata
-  | return pre-signed URL
-  v
-Client uploads chunks directly
-  |
-  v
-Original Blob Storage
-  |
-  v
-Upload Complete Event
-  |
-  v
-Preprocessor
-  |
-  v
-DAG Scheduler
-  |
-  v
-Resource Manager
-  |
-  v
-Task Workers
-  |
-  v
-Encoded Storage
-  |
-  v
-CDN
-  |
-  v
-Metadata status = READY
+```mermaid
+flowchart TD
+    Client[Client] -->|POST upload| API[API Servers]
+    API -->|create video metadata| DB[(Metadata DB)]
+    API -->|return pre-signed URL| Client
+    Client -->|upload chunks directly| OS[Original Blob Storage]
+    OS -->|upload complete event| PP[Preprocessor]
+    PP --> DAG[DAG Scheduler]
+    DAG --> RM[Resource Manager]
+    RM --> TW[Task Workers]
+    TW --> ES[Encoded Storage]
+    ES --> CDN[CDN]
+    TW -->|metadata status = READY| DB
 ```
 
 ---
 
 # Step 22 — Final Streaming Architecture
 
-```text
-Client
-  |
-  | GET /videos/{videoId}/playback
-  v
-API Server
-  |
-  | fetch metadata
-  v
-Metadata Cache / DB
-  |
-  | return manifest URL + signed CDN URL
-  v
-Client
-  |
-  | GET manifest
-  v
-CDN
-  |
-  | GET video segments
-  v
-Playback
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant API as API Server
+    participant MC as Metadata Cache / DB
+    participant CDN as CDN
+
+    C->>API: GET playback metadata
+    API->>MC: fetch metadata
+    MC-->>API: manifest URL + signed CDN URL
+    API-->>C: playback response
+    C->>CDN: GET manifest
+    C->>CDN: GET video segments
+    CDN-->>C: playback stream
 ```
 
 ---
 
 # Step 23 — End-to-End Final Architecture
 
-```text
-                          +-------------------------+
-                          | Clients                 |
-                          | Web / Mobile / Smart TV |
-                          +-----------+-------------+
-                                      |
-                 +--------------------+--------------------+
-                 |                                         |
-                 v                                         v
-          +--------------+                          +---------------+
-          | API Servers  |                          | CDN           |
-          | stateless    |                          | video stream  |
-          +------+-------+                          +-------+-------+
-                 |                                          ^
-                 v                                          |
-          +--------------+                                  |
-          | Metadata     |                                  |
-          | Cache / DB   |                                  |
-          +------+-------+                                  |
-                 |                                          |
-                 v                                          |
-          +--------------+                                  |
-          | Original     |                                  |
-          | Storage      |                                  |
-          +------+-------+                                  |
-                 |                                          |
-                 v                                          |
-          +--------------+                                  |
-          | Processing   |                                  |
-          | Queues       |                                  |
-          +------+-------+                                  |
-                 |                                          |
-                 v                                          |
-          +--------------+                                  |
-          | Transcoding  |                                  |
-          | Workers      |                                  |
-          +------+-------+                                  |
-                 |                                          |
-                 v                                          |
-          +--------------+                                  |
-          | Encoded      | ---------------------------------+
-          | Storage      |
-          +--------------+
+```mermaid
+flowchart TD
+    Clients[Clients<br/>Web / Mobile / Smart TV]
+    API[API Servers<br/>stateless]
+    CDN[CDN<br/>video stream]
+    Meta[Metadata<br/>Cache / DB]
+    Original[Original<br/>Storage]
+    Queues[Processing<br/>Queues]
+    Workers[Transcoding<br/>Workers]
+    Encoded[Encoded<br/>Storage]
+
+    Clients --> API
+    Clients --> CDN
+    API --> Meta
+    API --> Original
+    Original --> Queues
+    Queues --> Workers
+    Workers --> Encoded
+    Encoded --> CDN
+    CDN --> Clients
 ```
 
 ---
@@ -1582,6 +1383,18 @@ Use regional caching.
 Use signed URLs.
 ```
 
+```mermaid
+flowchart TD
+    LB[Load Balancer] --> API[Stateless API Tier]
+    API --> Cache[Metadata Cache]
+    API --> DB[(Sharded Metadata DB)]
+    API --> Blob[Blob Storage<br/>multi-AZ replication]
+    Blob --> Queue[Processing Queues]
+    Queue --> Workers[Autoscaled Transcoding Workers]
+    Workers --> Encoded[Encoded Storage]
+    Encoded --> CDN[CDN Edge Cache]
+```
+
 ---
 
 # Step 35 — Failure Scenarios
@@ -1623,6 +1436,21 @@ Notify creator.
 Do not process further.
 ```
 
+```mermaid
+flowchart TD
+    Failure[Failure] --> Upload[Upload fails]
+    Failure --> Worker[Transcoding worker dies]
+    Failure --> Miss[CDN miss]
+    Failure --> DB[Metadata DB unavailable]
+    Failure --> Bad[Bad video file]
+
+    Upload --> UploadFix[Retry failed chunks and resume]
+    Worker --> WorkerFix[Timeout task and retry on another worker]
+    Miss --> MissFix[Pull from encoded storage and cache]
+    DB --> DBFix[Use safe stale cache or fail over]
+    Bad --> BadFix[Mark FAILED and notify creator]
+```
+
 ---
 
 # Step 36 — FAANG Talking Points
@@ -1655,6 +1483,20 @@ Do not process further.
 ---
 
 # Quick Revision
+
+```mermaid
+flowchart TD
+    Upload[Upload<br/>Client to API to pre-signed URL to Blob Storage to Processing Queue to Transcoding to Encoded Storage to CDN]
+    Streaming[Streaming<br/>Client to API for manifest to CDN for segments to adaptive playback]
+    Core[Core Components<br/>API servers / Metadata DB-cache / Original storage / Workers / Encoded storage / CDN]
+    Opt[Optimizations<br/>chunked upload / parallel transcoding / DAG / queues / CDN / on-demand encoding]
+    Phrase[Best phrase<br/>API servers should not stream videos; videos should be streamed directly from CDN]
+
+    Upload --> Core
+    Streaming --> Core
+    Core --> Opt
+    Opt --> Phrase
+```
 
 ```text
 Upload:
