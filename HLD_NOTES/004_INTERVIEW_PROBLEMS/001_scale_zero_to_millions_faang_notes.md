@@ -19,30 +19,35 @@ At the beginning, everything runs on one server:
 
 ### Simple Diagram
 
-```text
-User
- ├── Web Browser: www.mysite.com
- └── Mobile App : api.mysite.com
-          |
-          v
-        DNS
-          |
-          v
-   Single Web Server
-   ├── Web App
-   ├── API
-   ├── Database
-   ├── Cache
-   └── Static Files
+```mermaid
+flowchart TB
+    U[User] --> B[Web Browser<br/>www.mysite.com]
+    U --> M[Mobile App<br/>api.mysite.com]
+    B --> DNS[DNS]
+    M --> DNS
+    DNS --> S[Single Web Server]
+
+    subgraph S[Single Web Server]
+        WEB[Web App]
+        API[API]
+        DB[(Database)]
+        CACHE[(Cache)]
+        STATIC[Static Files]
+        JOBS[Background Jobs]
+    end
 ```
 
 ### Request Flow
 
-```text
-1. User enters api.mysite.com
-2. DNS returns IP address
-3. Client sends HTTP request to server
-4. Server returns HTML or JSON response
+```mermaid
+sequenceDiagram
+    participant User
+    participant DNS
+    participant Server as Single Web Server
+    User->>DNS: Resolve api.mysite.com
+    DNS-->>User: Return IP address
+    User->>Server: HTTP request
+    Server-->>User: HTML or JSON response
 ```
 
 ### Interview Notes
@@ -68,17 +73,11 @@ As traffic grows, move the database to a separate server.
 
 ### Simple Diagram
 
-```text
-User
-  |
- DNS
-  |
-  v
-Web/API Server
-  |
-  | read/write/update
-  v
-Database Server
+```mermaid
+flowchart TB
+    U[User] --> DNS[DNS]
+    DNS --> WEB[Web / API Server]
+    WEB -->|read / write / update| DB[(Database Server)]
 ```
 
 ### Why Separate Them?
@@ -86,6 +85,13 @@ Database Server
 - Web tier and data tier can scale independently.
 - Database resources are isolated from application traffic.
 - Better security and operational control.
+
+```mermaid
+flowchart LR
+    A[Single Server] --> B[Separate Web Tier]
+    B --> C[Separate Database Tier]
+    C --> D[Independent Scaling]
+```
 
 ---
 
@@ -126,6 +132,17 @@ Best for:
 - Key-value access patterns
 - Flexible schema
 
+### Database Choice Diagram
+
+```mermaid
+flowchart TB
+    A[Choose Database] --> B{Need transactions<br/>joins<br/>strong consistency?}
+    B -->|Yes| SQL[Use SQL<br/>PostgreSQL / MySQL]
+    B -->|No| C{Massive scale<br/>simple access pattern?}
+    C -->|Yes| NOSQL[Use NoSQL<br/>DynamoDB / Cassandra / MongoDB]
+    C -->|No| SQL2[SQL is often a safe default]
+```
+
 ### FAANG Interview Rule of Thumb
 
 Use SQL when:
@@ -149,12 +166,9 @@ Use NoSQL when:
 
 Scale up by adding more resources to one server.
 
-```text
-Single Server
-   |
-   v
-Bigger Server
-More CPU / RAM / Disk
+```mermaid
+flowchart LR
+    A[Single Server] --> B[Bigger Server<br/>More CPU / RAM / Disk]
 ```
 
 Pros:
@@ -174,11 +188,11 @@ Cons:
 
 Scale out by adding more servers.
 
-```text
-        Load Balancer
-        /     |     \
-       v      v      v
-   Server1 Server2 Server3
+```mermaid
+flowchart TB
+    LB[Load Balancer] --> S1[Server 1]
+    LB --> S2[Server 2]
+    LB --> S3[Server 3]
 ```
 
 Pros:
@@ -206,18 +220,13 @@ A load balancer distributes incoming traffic across multiple servers.
 
 ### Simple Diagram
 
-```text
-Users
-  |
-  v
-DNS -> Load Balancer: public IP
-          |
-          | private network
-          v
-   -----------------
-   |       |       |
-   v       v       v
-Server1 Server2 Server3
+```mermaid
+flowchart TB
+    Users[Users] --> DNS[DNS]
+    DNS --> LB[Load Balancer<br/>Public IP]
+    LB -->|private network| S1[Server 1]
+    LB -->|private network| S2[Server 2]
+    LB -->|private network| S3[Server 3]
 ```
 
 ### Benefits
@@ -230,9 +239,12 @@ Server1 Server2 Server3
 
 ### Failure Handling
 
-```text
-If Server1 fails:
-Load Balancer routes all traffic to Server2 and Server3.
+```mermaid
+flowchart TB
+    LB[Load Balancer] --> S1[Server 1<br/>FAILED]
+    LB --> S2[Server 2<br/>Healthy]
+    LB --> S3[Server 3<br/>Healthy]
+    S1 -. removed from rotation .-> X[No traffic]
 ```
 
 ### Implementation Notes
@@ -265,18 +277,15 @@ Common pattern:
 
 ### Simple Diagram
 
-```text
-             Web Servers
-             /        \
-            /          \
-       writes          reads
-          |              |
-          v              v
-      Master DB ---> Replica DB1
-          |
-          +-------> Replica DB2
-          |
-          +-------> Replica DB3
+```mermaid
+flowchart TB
+    WS[Web Servers] -->|writes| M[(Master / Primary DB)]
+    WS -->|reads| R1[(Replica DB 1)]
+    WS -->|reads| R2[(Replica DB 2)]
+    WS -->|reads| R3[(Replica DB 3)]
+    M -->|replication| R1
+    M -->|replication| R2
+    M -->|replication| R3
 ```
 
 ### Benefits
@@ -290,21 +299,21 @@ Common pattern:
 
 #### Replica Failure
 
-```text
-Replica fails
-  -> Route reads to other replicas
-  -> Replace failed replica
-  -> Re-sync data
+```mermaid
+flowchart LR
+    A[Replica fails] --> B[Route reads to other replicas]
+    B --> C[Replace failed replica]
+    C --> D[Re-sync data]
 ```
 
 #### Master Failure
 
-```text
-Master fails
-  -> Promote replica to new master
-  -> Redirect writes
-  -> Create new replica
-  -> Recover missing data if replication lag exists
+```mermaid
+flowchart LR
+    A[Master fails] --> B[Promote replica to new master]
+    B --> C[Redirect writes]
+    C --> D[Create new replica]
+    D --> E[Recover missing data if replication lag exists]
 ```
 
 ### Interview Notes
@@ -320,39 +329,37 @@ Master fails
 
 ### Simple Diagram
 
-```text
-User
- |
-DNS
- |
-v
-Load Balancer
- |
- +-------------------+
- |                   |
- v                   v
-Web Server 1     Web Server 2
- |                   |
- | writes            | writes
- v                   v
-Master Database <----+
- |
- | replication
- v
-Replica Database
- ^
- |
- reads from web servers
+```mermaid
+flowchart TB
+    User[User] --> DNS[DNS]
+    DNS --> LB[Load Balancer]
+    LB --> W1[Web Server 1]
+    LB --> W2[Web Server 2]
+    W1 -->|writes| M[(Master Database)]
+    W2 -->|writes| M
+    M -->|replication| R[(Replica Database)]
+    W1 -->|reads| R
+    W2 -->|reads| R
 ```
 
 ### Request Flow
 
-```text
-1. DNS returns load balancer IP.
-2. Client connects to load balancer.
-3. Load balancer routes request to a web server.
-4. Web server reads from replica database.
-5. Web server writes, updates, and deletes through master database.
+```mermaid
+sequenceDiagram
+    participant Client
+    participant DNS
+    participant LB as Load Balancer
+    participant Web as Web Server
+    participant Replica as Replica DB
+    participant Master as Master DB
+    Client->>DNS: Resolve domain
+    DNS-->>Client: Load balancer IP
+    Client->>LB: HTTP request
+    LB->>Web: Route request
+    Web->>Replica: Read data
+    Replica-->>Web: Return data
+    Web->>Master: Write/update/delete when needed
+    Web-->>Client: Response
 ```
 
 ---
@@ -368,31 +375,25 @@ Examples:
 
 ### Simple Diagram
 
-```text
-Web Server
-   |
-   | 1. Check cache
-   v
- Cache
-   |
-   | cache miss
-   v
-Database
-   |
-   | store result in cache
-   v
- Cache -> Web Server -> User
+```mermaid
+flowchart TB
+    W[Web Server] -->|1. Check cache| C[(Cache)]
+    C -->|Cache hit| W
+    C -->|Cache miss| DB[(Database)]
+    DB -->|Query result| W
+    W -->|Store result| C
+    W --> User[User]
 ```
 
 ### Read-Through Cache Flow
 
-```text
-Request arrives
-  -> Check cache
-      -> Cache hit: return data
-      -> Cache miss: query DB
-             -> Store result in cache
-             -> Return data
+```mermaid
+flowchart TB
+    A[Request arrives] --> B{Cache hit?}
+    B -->|Yes| C[Return cached data]
+    B -->|No| D[Query database]
+    D --> E[Store result in cache]
+    E --> F[Return data]
 ```
 
 ### Cache Example
@@ -431,6 +432,14 @@ Avoid cache when:
 - Cache and database can become inconsistent.
 - Cache invalidation is difficult.
 - Common techniques: write-through, write-around, write-back, cache-aside.
+
+```mermaid
+flowchart LR
+    A[Database updated] --> B[Invalidate cache key]
+    B --> C[Next read misses cache]
+    C --> D[Reload fresh value from DB]
+    D --> E[Write fresh value to cache]
+```
 
 #### Failure Handling
 
@@ -476,27 +485,30 @@ Static content includes:
 
 ### Simple Diagram
 
-```text
-User
- |
- | request static asset
- v
-Nearest CDN Edge
- |
- | cache miss
- v
-Origin Server / Object Storage
+```mermaid
+flowchart TB
+    User[User] -->|request static asset| CDN[Nearest CDN Edge]
+    CDN -->|cache miss| Origin[Origin Server / Object Storage]
+    Origin --> CDN
+    CDN --> User
 ```
 
 ### CDN Workflow
 
-```text
-1. User requests image.png from CDN URL.
-2. CDN checks if image exists in edge cache.
-3. If not found, CDN fetches image from origin.
-4. CDN stores image with TTL.
-5. CDN returns image to user.
-6. Future users get image directly from CDN.
+```mermaid
+sequenceDiagram
+    participant User
+    participant CDN as CDN Edge
+    participant Origin as Origin / Object Storage
+    User->>CDN: Request image.png
+    alt CDN cache hit
+        CDN-->>User: Return image
+    else CDN cache miss
+        CDN->>Origin: Fetch image
+        Origin-->>CDN: Return image
+        CDN->>CDN: Store with TTL
+        CDN-->>User: Return image
+    end
 ```
 
 ### Benefits
@@ -539,21 +551,19 @@ Mention:
 
 ### Simple Diagram
 
-```text
-              +------ CDN ------+
-              |  static assets  |
-              +-----------------+
-                      |
-User -> DNS -> Load Balancer
-              /              \
-             v                v
-       Web Server 1      Web Server 2
-             |                |
-             +------ Cache ---+
-             |                |
-             +------ DB ------+
-                    |
-              Master -> Replica
+```mermaid
+flowchart TB
+    User[User] --> DNS[DNS]
+    User -->|static assets| CDN[CDN]
+    DNS --> LB[Load Balancer]
+    LB --> W1[Web Server 1]
+    LB --> W2[Web Server 2]
+    W1 --> C[(Cache)]
+    W2 --> C
+    W1 --> DB[(Database)]
+    W2 --> DB
+    DB --> M[(Master DB)]
+    M --> R[(Replica DB)]
 ```
 
 ### Improvements
@@ -571,10 +581,11 @@ User -> DNS -> Load Balancer
 
 A stateful server stores client-specific data locally.
 
-```text
-User A -> Server 1 contains User A session
-User B -> Server 2 contains User B session
-User C -> Server 3 contains User C session
+```mermaid
+flowchart TB
+    UA[User A] --> S1[Server 1<br/>User A session]
+    UB[User B] --> S2[Server 2<br/>User B session]
+    UC[User C] --> S3[Server 3<br/>User C session]
 ```
 
 Problem:
@@ -596,17 +607,17 @@ If User A request goes to Server 2, authentication may fail.
 
 Web servers do not store client state locally.
 
-```text
-User A   User B   User C
-  |        |        |
-  v        v        v
-Load Balancer
-  |
-  v
-Any Web Server
-  |
-  v
-Shared Session Store / DB / Redis / NoSQL
+```mermaid
+flowchart TB
+    UA[User A] --> LB[Load Balancer]
+    UB[User B] --> LB
+    UC[User C] --> LB
+    LB --> W1[Any Web Server 1]
+    LB --> W2[Any Web Server 2]
+    LB --> W3[Any Web Server 3]
+    W1 --> S[(Shared Session Store<br/>Redis / DB / NoSQL)]
+    W2 --> S
+    W3 --> S
 ```
 
 ### Benefits
@@ -645,14 +656,11 @@ Autoscaling automatically adds or removes servers based on traffic or resource u
 
 ### Simple Diagram
 
-```text
-Traffic increases
-       |
-       v
-Autoscaling Policy
-       |
-       v
-Add More Web Servers
+```mermaid
+flowchart LR
+    A[Traffic increases] --> B[Autoscaling Policy]
+    B --> C[Add More Web Servers]
+    C --> D[Load Balancer routes to new servers]
 ```
 
 ### Common Scaling Signals
@@ -663,6 +671,16 @@ Add More Web Servers
 - Latency
 - Queue depth
 - Error rate
+
+```mermaid
+flowchart TB
+    Signals[Scaling Signals] --> CPU[CPU]
+    Signals --> MEM[Memory]
+    Signals --> REQ[Request Count]
+    Signals --> LAT[Latency]
+    Signals --> Q[Queue Depth]
+    Signals --> ERR[Error Rate]
+```
 
 ### Implementation Notes
 
@@ -680,19 +698,29 @@ For global users, use multiple data centers or regions.
 
 ### Simple Diagram
 
-```text
-Global Users
-     |
-     v
-GeoDNS / Global Traffic Manager
-     |
-     +-------------------+
-     |                   |
-     v                   v
-Data Center 1        Data Center 2
-US-East              US-West
- |                   |
-Web + Cache + DB     Web + Cache + DB
+```mermaid
+flowchart TB
+    Users[Global Users] --> GTM[GeoDNS / Global Traffic Manager]
+    GTM --> DC1[Data Center 1<br/>US-East]
+    GTM --> DC2[Data Center 2<br/>US-West]
+
+    subgraph Region1[Data Center 1: US-East]
+        W1[Web]
+        C1[(Cache)]
+        D1[(DB)]
+        W1 --> C1
+        W1 --> D1
+    end
+
+    subgraph Region2[Data Center 2: US-West]
+        W2[Web]
+        C2[(Cache)]
+        D2[(DB)]
+        W2 --> C2
+        W2 --> D2
+    end
+
+    D1 <-->|cross-region replication| D2
 ```
 
 ### Normal Operation
@@ -703,9 +731,10 @@ Users are routed to the closest healthy data center.
 
 ### Failover Operation
 
-```text
-If DC2 fails:
-100% traffic -> DC1
+```mermaid
+flowchart LR
+    A[DC2 fails] --> B[GeoDNS marks DC2 unhealthy]
+    B --> C[100% traffic routes to DC1]
 ```
 
 ### Challenges
@@ -755,16 +784,10 @@ Examples:
 
 ### Simple Diagram
 
-```text
-Producer
-   |
-   | publish message
-   v
-Message Queue
-   |
-   | consume message
-   v
-Consumer / Worker
+```mermaid
+flowchart LR
+    P[Producer] -->|publish message| Q[Message Queue]
+    Q -->|consume message| C[Consumer / Worker]
 ```
 
 ### Why Use a Queue?
@@ -777,19 +800,21 @@ Consumer / Worker
 
 ### Photo Processing Example
 
-```text
-Web Servers
-   |
-   | publish photo processing job
-   v
-Message Queue
-   |
-   | workers consume jobs
-   v
-Photo Processing Workers
-   |
-   v
-Object Storage / NoSQL / Database
+```mermaid
+flowchart LR
+    W[Web Servers] -->|publish photo processing job| Q[Message Queue]
+    Q -->|consume jobs| Workers[Photo Processing Workers]
+    Workers --> O[(Object Storage)]
+    Workers --> N[(NoSQL / Database)]
+```
+
+### Queue-Based Autoscaling
+
+```mermaid
+flowchart LR
+    Q[Queue Depth Increases] --> A[Autoscaling Policy]
+    A --> W[Add More Workers]
+    W --> P[Process Backlog Faster]
 ```
 
 ### Implementation Notes
@@ -818,6 +843,20 @@ Mention:
 ## 15. Logging, Metrics, Monitoring, and Automation
 
 At large scale, observability and automation are mandatory.
+
+### Observability Pipeline
+
+```mermaid
+flowchart TB
+    App[Applications / Services] --> Logs[Centralized Logs]
+    App --> Metrics[Metrics]
+    App --> Traces[Distributed Traces]
+    Logs --> Dash[Dashboards]
+    Metrics --> Dash
+    Traces --> Dash
+    Metrics --> Alerts[Alerts]
+    Logs --> Alerts
+```
 
 ### Logging
 
@@ -886,6 +925,17 @@ Automate:
 - Infrastructure provisioning
 - Scaling
 
+### Deployment Flow
+
+```mermaid
+flowchart LR
+    Code[Code Commit] --> Build[Build]
+    Build --> Test[Test]
+    Test --> Deploy[Deploy]
+    Deploy --> Monitor[Monitor]
+    Monitor -->|bad metrics| Rollback[Rollback]
+```
+
 ### FAANG Talking Points
 
 Mention:
@@ -908,6 +958,14 @@ There are two main approaches:
 - Vertical scaling
 - Horizontal scaling / sharding
 
+```mermaid
+flowchart TB
+    DBScaling[Database Scaling] --> V[Vertical Scaling]
+    DBScaling --> H[Horizontal Scaling / Sharding]
+    V --> V1[Bigger machine]
+    H --> H1[Split data across shards]
+```
+
 ---
 
 ## 17. Database Vertical Scaling
@@ -916,12 +974,9 @@ Add more CPU, RAM, disk, or IOPS to one database server.
 
 ### Simple Diagram
 
-```text
-Small DB Server
-      |
-      v
-Bigger DB Server
-More CPU / RAM / Disk
+```mermaid
+flowchart LR
+    Small[Small DB Server] --> Big[Bigger DB Server<br/>More CPU / RAM / Disk]
 ```
 
 ### Pros
@@ -945,14 +1000,12 @@ Sharding splits a large database into smaller databases called shards.
 
 ### Simple Diagram
 
-```text
-              user_id % 4
-                  |
-    +-------------+-------------+
-    |             |             |
-    v             v             v
- Shard 0       Shard 1       Shard 2       Shard 3
- users 0,4     users 1,5     users 2,6     users 3,7
+```mermaid
+flowchart TB
+    K[user_id % 4] --> S0[Shard 0<br/>users 0, 4, 8...]
+    K --> S1[Shard 1<br/>users 1, 5, 9...]
+    K --> S2[Shard 2<br/>users 2, 6, 10...]
+    K --> S3[Shard 3<br/>users 3, 7, 11...]
 ```
 
 ### Example Sharding Function
@@ -1002,6 +1055,14 @@ Solution:
 - Use virtual shards.
 - Rebalance data gradually.
 
+```mermaid
+flowchart LR
+    A[Shard too large] --> B[Add new shard]
+    B --> C[Move virtual shards gradually]
+    C --> D[Update routing metadata]
+    D --> E[Traffic uses new distribution]
+```
+
 #### Celebrity / Hotspot Problem
 
 Problem:
@@ -1016,6 +1077,13 @@ Solutions:
 - Add caching.
 - Use read replicas.
 - Partition celebrity data further.
+
+```mermaid
+flowchart TB
+    Hot[Celebrity User / Hot Key] --> Cache[Cache]
+    Hot --> Replica[Read Replicas]
+    Hot --> Split[Split hot user's data]
+```
 
 #### Joins Across Shards
 
@@ -1050,41 +1118,64 @@ Mention:
 
 ### Simple End-to-End Diagram
 
-```text
-                         +----------------+
-                         |      CDN       |
-                         | Static Assets  |
-                         +----------------+
-                                  |
-Users -> DNS / GeoDNS -> Global Load Balancer
-                                  |
-                    +-------------+-------------+
-                    |                           |
-                    v                           v
-              Data Center 1               Data Center 2
-                    |                           |
-              Load Balancer               Load Balancer
-                    |                           |
-          +---------+---------+       +---------+---------+
-          |                   |       |                   |
-          v                   v       v                   v
-     Web Server 1        Web Server 2 Web Server 3    Web Server 4
-          |                   |       |                   |
-          +---------+---------+-------+---------+---------+
-                    |
-          +---------+---------+
-          |                   |
-          v                   v
-        Cache            Message Queue
-          |                   |
-          v                   v
-   Sharded Databases       Workers
-          |                   |
-          v                   v
-       Replicas            NoSQL / Object Storage
+```mermaid
+flowchart TB
+    Users[Users] --> DNS[DNS / GeoDNS]
+    Users --> CDN[CDN<br/>Static Assets]
+    DNS --> GLB[Global Load Balancer]
+    GLB --> DC1[Data Center 1]
+    GLB --> DC2[Data Center 2]
 
-Observability:
-Logs + Metrics + Monitoring + Alerts + CI/CD + Automation
+    subgraph Region1[Data Center 1]
+        LB1[Load Balancer]
+        W1[Web Server 1]
+        W2[Web Server 2]
+        Cache1[(Cache)]
+        Queue1[Message Queue]
+        Workers1[Workers]
+        DB1[(Sharded Databases)]
+        Rep1[(Replicas)]
+        Obj1[(NoSQL / Object Storage)]
+        LB1 --> W1
+        LB1 --> W2
+        W1 --> Cache1
+        W2 --> Cache1
+        W1 --> Queue1
+        W2 --> Queue1
+        Queue1 --> Workers1
+        W1 --> DB1
+        W2 --> DB1
+        DB1 --> Rep1
+        Workers1 --> Obj1
+    end
+
+    subgraph Region2[Data Center 2]
+        LB2[Load Balancer]
+        W3[Web Server 3]
+        W4[Web Server 4]
+        Cache2[(Cache)]
+        Queue2[Message Queue]
+        Workers2[Workers]
+        DB2[(Sharded Databases)]
+        Rep2[(Replicas)]
+        Obj2[(NoSQL / Object Storage)]
+        LB2 --> W3
+        LB2 --> W4
+        W3 --> Cache2
+        W4 --> Cache2
+        W3 --> Queue2
+        W4 --> Queue2
+        Queue2 --> Workers2
+        W3 --> DB2
+        W4 --> DB2
+        DB2 --> Rep2
+        Workers2 --> Obj2
+    end
+
+    DB1 <-->|replication / sync| DB2
+    OBS[Observability<br/>Logs + Metrics + Monitoring + Alerts + CI/CD]
+    Region1 --> OBS
+    Region2 --> OBS
 ```
 
 ---
@@ -1107,6 +1198,22 @@ To scale from zero to millions of users:
 12. Add logging, metrics, monitoring, and automation.
 13. Scale the database using sharding.
 14. Split large systems into smaller services when needed.
+
+```mermaid
+flowchart LR
+    A[Single Server] --> B[Separate DB]
+    B --> C[Load Balancer]
+    C --> D[Multiple Web Servers]
+    D --> E[DB Replication]
+    E --> F[Cache]
+    F --> G[CDN]
+    G --> H[Stateless Web Tier]
+    H --> I[Autoscaling]
+    I --> J[Multi-Region]
+    J --> K[Message Queue + Workers]
+    K --> L[Sharding]
+    L --> M[Observability + Automation]
+```
 
 ---
 
@@ -1212,6 +1319,49 @@ Cache improves latency, but introduces consistency challenges.
 Multi-region improves availability, but increases data synchronization complexity.
 ```
 
+### Interview Checklist Mind Map
+
+```mermaid
+mindmap
+  root((System Design Answer))
+    Requirements
+      Functional
+      Non-functional
+    Estimation
+      QPS
+      Storage
+      Bandwidth
+      Cache
+    API
+      REST
+      Pagination
+      Auth
+    Data
+      Schema
+      Indexes
+      Sharding key
+    Architecture
+      DNS
+      CDN
+      Load balancer
+      Web tier
+      Cache
+      DB
+      Queue
+    Deep Dive
+      Replication
+      Sharding
+      Cache invalidation
+      Multi-region
+      Failure handling
+    Production
+      Metrics
+      Logs
+      Traces
+      Alerts
+      CI/CD
+```
+
 ---
 
 ## 22. Common Interview Phrases
@@ -1244,6 +1394,19 @@ Avoid these mistakes in interviews:
 - Ignoring hot keys and celebrity users.
 - Ignoring deployment and rollback strategy.
 - Ignoring cost.
+
+```mermaid
+flowchart TB
+    Pitfalls[Common Pitfalls] --> P1[Over-engineering too early]
+    Pitfalls --> P2[Ignoring DB bottlenecks]
+    Pitfalls --> P3[Forgetting cache invalidation]
+    Pitfalls --> P4[No failure handling]
+    Pitfalls --> P5[No monitoring]
+    Pitfalls --> P6[Poor sharding key]
+    Pitfalls --> P7[Ignoring hot keys]
+    Pitfalls --> P8[No rollback plan]
+    Pitfalls --> P9[Ignoring cost]
+```
 
 ---
 
@@ -1302,6 +1465,17 @@ Disaster recovery testing
 Cost optimization
 ```
 
+### Roadmap Diagram
+
+```mermaid
+flowchart LR
+    P1[Phase 1<br/>MVP<br/>Single server + SQL] --> P2[Phase 2<br/>Early Growth<br/>Separate DB + LB]
+    P2 --> P3[Phase 3<br/>Performance<br/>Cache + CDN + Replicas]
+    P3 --> P4[Phase 4<br/>Reliability<br/>Stateless + Autoscaling + Monitoring]
+    P4 --> P5[Phase 5<br/>Large Scale<br/>Queues + Workers + Sharding]
+    P5 --> P6[Phase 6<br/>Production Maturity<br/>CI/CD + Tracing + DR + Cost]
+```
+
 ---
 
 ## 25. One-Minute Interview Summary
@@ -1325,4 +1499,23 @@ Design for failure.
 Monitor everything.
 Automate deployments.
 Explain tradeoffs clearly.
+```
+
+### Golden Rules Mind Map
+
+```mermaid
+mindmap
+  root((Golden Rules))
+    Stateless web tier
+    Redundancy
+    Cache carefully
+    CDN for static assets
+    Queues for async work
+    Replicas for reads
+    Sharding for writes
+    Good shard key
+    Design for failure
+    Monitor everything
+    Automate deployments
+    Explain tradeoffs
 ```
