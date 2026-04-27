@@ -5,6 +5,17 @@ Tic-Tac-Toe is a two-player game played on a **3x3 board**. Players take turns p
 
 This document focuses on the **low-level design** of the game, not the full implementation.
 
+```mermaid
+flowchart LR
+    A["Player 1 places X"] --> B["Player 2 places O"]
+    B --> C["Alternate turns"]
+    C --> D{"Three same symbols in row, column, or diagonal?"}
+    D -->|Yes| E["Winner"]
+    D -->|No| F{"Board full?"}
+    F -->|Yes| G["Draw"]
+    F -->|No| A
+```
+
 ---
 
 ## 2. Scope and Assumptions
@@ -26,6 +37,27 @@ This document focuses on the **low-level design** of the game, not the full impl
 - Multiplayer/networking
 - Variable board sizes in the first version
 
+```mermaid
+mindmap
+  root((Tic-Tac-Toe LLD Scope))
+    In Scope
+      Standard 3x3 board
+      Two human players
+      Alternate turns
+      Invalid move rejection
+      Winner detection
+      Draw detection
+      Scoreboard across games
+      Console demo flow
+    Out of Scope
+      AI player
+      Undo redo
+      Move history replay
+      GUI or web API
+      Multiplayer networking
+      Variable board sizes v1
+```
+
 ---
 
 ## 3. Functional Requirements
@@ -38,6 +70,20 @@ This document focuses on the **low-level design** of the game, not the full impl
 7. The game should detect when the board is full and declare a draw.
 8. The system should maintain a **scoreboard across multiple games**.
 9. A new game should be creatable without resetting the entire system.
+
+```mermaid
+flowchart TD
+    R1["Create 3x3 game"] --> R2["Assign unique symbols X and O"]
+    R2 --> R3["Alternate player turns"]
+    R3 --> R4{"Move valid and cell empty?"}
+    R4 -->|No| R5["Reject move"]
+    R4 -->|Yes| R6["Place symbol"]
+    R6 --> R7{"Winner?"}
+    R7 -->|Yes| R8["End game and update scoreboard"]
+    R7 -->|No| R9{"Board full?"}
+    R9 -->|Yes| R10["Declare draw"]
+    R9 -->|No| R3
+```
 
 ---
 
@@ -68,6 +114,110 @@ This document focuses on the **low-level design** of the game, not the full impl
 ### Interfaces
 - `WinningStrategy`
 - `GameObserver`
+
+```mermaid
+classDiagram
+    class Symbol {
+        <<enumeration>>
+        X
+        O
+        EMPTY
+    }
+
+    class GameStatus {
+        <<enumeration>>
+        IN_PROGRESS
+        WINNER_X
+        WINNER_O
+        DRAW
+    }
+
+    class Player {
+        -String name
+        -Symbol symbol
+        +getName() String
+        +getSymbol() Symbol
+    }
+
+    class Cell {
+        -Symbol symbol
+        +isEmpty() boolean
+        +getSymbol() Symbol
+        +setSymbol(Symbol symbol) void
+    }
+
+    class Board {
+        -int size
+        -Cell[][] grid
+        +placeSymbol(int row, int col, Symbol symbol) void
+        +isCellEmpty(int row, int col) boolean
+        +isWithinBounds(int row, int col) boolean
+        +isFull() boolean
+        +getCell(int row, int col) Cell
+        +printBoard() void
+    }
+
+    class Game {
+        -Board board
+        -Player[] players
+        -int currentPlayerIndex
+        -GameStatus status
+        -List~WinningStrategy~ winningStrategies
+        -List~GameObserver~ observers
+        +makeMove(int row, int col) void
+        +getCurrentPlayer() Player
+        +switchTurn() void
+        +addObserver(GameObserver observer) void
+        +getStatus() GameStatus
+    }
+
+    class WinningStrategy {
+        <<interface>>
+        +checkWin(Board board, int row, int col, Symbol symbol) boolean
+    }
+
+    class RowWinningStrategy
+    class ColumnWinningStrategy
+    class DiagonalWinningStrategy
+
+    class GameObserver {
+        <<interface>>
+        +update(Game game) void
+    }
+
+    class Scoreboard {
+        -Map~String, Integer~ scores
+        +recordWin(Player player) void
+        +getScore(String playerName) int
+        +printScoreboard() void
+        +update(Game game) void
+    }
+
+    class TicTacToeSystem {
+        -Scoreboard scoreboard
+        -Game currentGame
+        +getInstance() TicTacToeSystem
+        +createGame(Player player1, Player player2) Game
+        +makeMove(int row, int col) void
+        +printScoreboard() void
+        +getCurrentGame() Game
+    }
+
+    Board *-- Cell : contains
+    Game *-- Board : contains
+    Game o-- Player : uses
+    Game o-- WinningStrategy : uses
+    Game o-- GameObserver : notifies
+    RowWinningStrategy ..|> WinningStrategy
+    ColumnWinningStrategy ..|> WinningStrategy
+    DiagonalWinningStrategy ..|> WinningStrategy
+    Scoreboard ..|> GameObserver
+    TicTacToeSystem o-- Game : uses
+    TicTacToeSystem *-- Scoreboard : owns
+    Player --> Symbol
+    Cell --> Symbol
+    Game --> GameStatus
+```
 
 ---
 
@@ -128,6 +278,18 @@ Facade and entry point for external callers.
 - delegates moves
 - owns shared scoreboard
 
+```mermaid
+flowchart TB
+    System["TicTacToeSystem\nFacade / Entry Point"] --> Game["Game\nCoordinates gameplay"]
+    System --> Scoreboard["Scoreboard\nTracks wins"]
+    Game --> Board["Board\n3x3 grid"]
+    Board --> Cell["Cell\nStores one Symbol"]
+    Game --> Player["Player\nName + Symbol"]
+    Game --> Strategies["WinningStrategy\nRow / Column / Diagonal"]
+    Game --> Observer["GameObserver\nCompletion notification"]
+    Observer --> Scoreboard
+```
+
 ---
 
 ## 7. Class Relationships
@@ -148,6 +310,28 @@ Facade and entry point for external callers.
 - `DiagonalWinningStrategy` implements `WinningStrategy`
 - `Scoreboard` implements `GameObserver`
 
+```mermaid
+flowchart LR
+    subgraph Composition
+        B["Board"] --> C["Cell[][]"]
+        G["Game"] --> B
+    end
+
+    subgraph Association
+        G --> P["Player[]"]
+        G --> WS["WinningStrategy implementations"]
+        T["TicTacToeSystem"] --> G
+        T --> S["Scoreboard"]
+    end
+
+    subgraph Interfaces
+        R["RowWinningStrategy"] -. implements .-> IWS["WinningStrategy"]
+        Col["ColumnWinningStrategy"] -. implements .-> IWS
+        D["DiagonalWinningStrategy"] -. implements .-> IWS
+        S -. implements .-> GO["GameObserver"]
+    end
+```
+
 ---
 
 ## 8. High-Level Flow
@@ -160,6 +344,42 @@ Facade and entry point for external callers.
 7. If no winner and board is full, game becomes `DRAW`.
 8. If game ends, observers are notified.
 9. `Scoreboard` updates total wins.
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant System as TicTacToeSystem
+    participant Game
+    participant Board
+    participant Strategy as WinningStrategies
+    participant Scoreboard
+
+    Client->>System: createGame(player1, player2)
+    System->>Game: new Game(player1, player2, boardSize)
+    Game->>Board: create 3x3 board
+    Game->>Game: register winning strategies
+    Game->>Scoreboard: addObserver(scoreboard)
+
+    Client->>System: makeMove(row, col)
+    System->>Game: makeMove(row, col)
+    Game->>Board: validate bounds and empty cell
+    Board-->>Game: valid or invalid
+    alt Invalid move
+        Game-->>Client: reject move
+    else Valid move
+        Game->>Board: place current player's symbol
+        Game->>Strategy: check row, column, diagonal
+        Strategy-->>Game: win or no win
+        alt Winner
+            Game->>Scoreboard: notify game ended
+            Scoreboard->>Scoreboard: update total wins
+        else Draw
+            Game->>Scoreboard: notify game ended
+        else Continue
+            Game->>Game: switchTurn()
+        end
+    end
+```
 
 ---
 
@@ -182,6 +402,28 @@ Different winning rules should be encapsulated independently instead of being ha
 - `ColumnWinningStrategy`
 - `DiagonalWinningStrategy`
 
+```mermaid
+classDiagram
+    class Game {
+        -List~WinningStrategy~ winningStrategies
+        +makeMove(int row, int col) void
+    }
+
+    class WinningStrategy {
+        <<interface>>
+        +checkWin(Board board, int row, int col, Symbol symbol) boolean
+    }
+
+    class RowWinningStrategy
+    class ColumnWinningStrategy
+    class DiagonalWinningStrategy
+
+    Game --> WinningStrategy : uses
+    RowWinningStrategy ..|> WinningStrategy
+    ColumnWinningStrategy ..|> WinningStrategy
+    DiagonalWinningStrategy ..|> WinningStrategy
+```
+
 ---
 
 ### 9.2 Observer Pattern
@@ -200,6 +442,32 @@ Different winning rules should be encapsulated independently instead of being ha
 - `Game`
 - `Scoreboard`
 
+```mermaid
+classDiagram
+    class Game {
+        -List~GameObserver~ observers
+        +addObserver(GameObserver observer) void
+        -notifyObservers() void
+    }
+
+    class GameObserver {
+        <<interface>>
+        +update(Game game) void
+    }
+
+    class Scoreboard {
+        +update(Game game) void
+    }
+
+    class FutureAnalyticsObserver {
+        +update(Game game) void
+    }
+
+    Game --> GameObserver : notifies
+    Scoreboard ..|> GameObserver
+    FutureAnalyticsObserver ..|> GameObserver
+```
+
 ---
 
 ### 9.3 Facade Pattern
@@ -210,6 +478,15 @@ External clients should interact with one simple object instead of directly mana
 
 **Classes involved:**
 - `TicTacToeSystem`
+
+```mermaid
+flowchart LR
+    Client["External Client / Demo"] --> Facade["TicTacToeSystem Facade"]
+    Facade --> Game["Game"]
+    Facade --> Scoreboard["Scoreboard"]
+    Game --> Board["Board"]
+    Game --> Strategies["Winning Strategies"]
+```
 
 ---
 
@@ -223,6 +500,15 @@ If the system should expose one global entry point and one shared scoreboard, `T
 
 **Note:**
 In production code, dependency injection is often preferred over Singleton.
+
+```mermaid
+flowchart TD
+    A["Caller asks TicTacToeSystem.getInstance()"] --> B{"Instance already exists?"}
+    B -->|No| C["Create TicTacToeSystem"]
+    B -->|Yes| D["Return existing instance"]
+    C --> D
+    D --> E["Shared Scoreboard remains available"]
+```
 
 ---
 
@@ -566,6 +852,18 @@ public class Demo {
   - cell already occupied
 - `createGame()` should replace any previous finished game.
 
+```mermaid
+flowchart TD
+    A["makeMove(row, col)"] --> B{"Game already ended?"}
+    B -->|Yes| X["Reject move"]
+    B -->|No| C{"Row and column within bounds?"}
+    C -->|No| X
+    C -->|Yes| D{"Cell empty?"}
+    D -->|No| X
+    D -->|Yes| E["Place symbol"]
+    E --> F["Check winner or draw"]
+```
+
 ---
 
 ## 12. Extension Points
@@ -588,6 +886,24 @@ This design supports future enhancements with limited changes:
 ### GUI/API Layer
 - keep `TicTacToeSystem` as application service/facade
 
+```mermaid
+mindmap
+  root((Extension Points))
+    Variable Board Size
+      Keep Board.size
+      Adjust strategies
+    AI Opponent
+      MoveStrategy
+      PlayerType
+    Move History and Undo
+      Move class
+      Move stack in Game
+    Replay and Analytics
+      More GameObserver implementations
+    GUI or API Layer
+      TicTacToeSystem as facade
+```
+
 ---
 
 ## 13. Why This Design Works
@@ -596,6 +912,15 @@ This design supports future enhancements with limited changes:
 - **Loose coupling:** observer and strategy abstractions reduce dependencies
 - **Testability:** strategies, board rules, and game flow can be tested independently
 - **Extensibility:** future variants fit naturally into the design
+
+```mermaid
+flowchart LR
+    A["SRP\nFocused classes"] --> B["Clean responsibilities"]
+    C["OCP\nAdd strategies and observers"] --> D["Less core modification"]
+    E["Loose coupling"] --> F["Observer and Strategy abstractions"]
+    G["Testability"] --> H["Test Board, Game, Strategies independently"]
+    I["Extensibility"] --> J["AI, bigger boards, history, GUI"]
+```
 
 ---
 
@@ -608,3 +933,15 @@ If asked to summarize this design in an interview:
 - Use `TicTacToeSystem` as the external entry point.
 - Keep version 1 simple, but design it so bigger boards, AI, and history can be added later.
 
+```mermaid
+flowchart TD
+    A["TicTacToeSystem"] --> B["Game"]
+    B --> C["Board + Cell"]
+    B --> D["Player X and Player O"]
+    B --> E["WinningStrategy"]
+    E --> E1["Row"]
+    E --> E2["Column"]
+    E --> E3["Diagonal"]
+    B --> F["GameObserver"]
+    F --> G["Scoreboard"]
+```
