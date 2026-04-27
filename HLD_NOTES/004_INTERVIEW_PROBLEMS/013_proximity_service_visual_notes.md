@@ -17,7 +17,7 @@ flowchart TB
     B --> B1[Input: latitude + longitude + radius]
     B --> B2[Output: ranked nearby businesses]
 
-    C --> C1[GET /businesses/{id}]
+    C --> C1["GET /businesses/{id}"]
     D --> D1[Writes do not need real-time visibility]
     D --> D2[Updates effective next day]
 ```
@@ -104,7 +104,7 @@ flowchart TB
     U[User App / Web] --> LB[Load Balancer]
 
     LB -->|/search/nearby| LBS[Location Based Service]
-    LB -->|/businesses/{id}| BS[Business Service]
+    LB -->|"/businesses/{id}"| BS[Business Service]
 
     LBS -->|Read nearby IDs| GDB[(Geo Index Read Replicas)]
     LBS -->|Fetch business details| BCache[(Business Info Cache)]
