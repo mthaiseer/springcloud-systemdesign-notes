@@ -21,6 +21,15 @@ So the core problem is:
 How does the server push new data to the client instantly?
 ```
 
+```mermaid
+flowchart LR
+    A[Server data changes] --> B{Does client know?}
+    B -->|Traditional HTTP closed| C[Client does not know]
+    C --> D[Client must ask again]
+    B -->|Real-time channel open| E[Server pushes update]
+    E --> F[Client UI updates immediately]
+```
+
 ---
 
 ## Where This Pattern Shows Up
@@ -31,6 +40,29 @@ How does the server push new data to the client instantly?
 - **Collaborative editors** → live edits
 - **Notifications** → instant alerts
 - **Live sports** → score and play-by-play updates
+
+```mermaid
+mindmap
+  root((Real-Time Updates))
+    Chat
+      Messages
+      Typing indicators
+    Ride sharing
+      Driver location
+      ETA changes
+    Trading
+      Price updates
+      Order status
+    Collaboration
+      Live edits
+      Cursor presence
+    Notifications
+      Alerts
+      Mentions
+    Live sports
+      Scores
+      Play-by-play
+```
 
 ---
 
@@ -46,6 +78,13 @@ Think of them as a spectrum:
 ```text
 Simple ------------------------------------------ Complex
 Short Polling -> Long Polling -> SSE -> WebSockets
+```
+
+```mermaid
+flowchart LR
+    A[Short Polling<br/>Simplest] --> B[Long Polling]
+    B --> C[SSE]
+    C --> D[WebSockets<br/>Most powerful]
 ```
 
 ---
@@ -69,6 +108,20 @@ Wait
 Repeat
 ```
 
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    loop Every few seconds
+        C->>S: HTTP request: Any updates?
+        alt Updates exist
+            S-->>C: Return new data
+        else No updates
+            S-->>C: Return empty response
+        end
+    end
+```
+
 ## Example
 Poll every **5 sec**
 
@@ -77,6 +130,14 @@ Poll every **5 sec**
 ```
 
 Most requests return **nothing**.
+
+```mermaid
+flowchart TD
+    A[1M clients] --> B[Poll every 5 seconds]
+    B --> C[About 200K requests per second]
+    C --> D[Most responses are empty]
+    D --> E[Wasted server work and bandwidth]
+```
 
 ## Pros
 - Very simple
@@ -119,8 +180,27 @@ Server -> respond immediately
 Client -> opens new request
 ```
 
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    participant E as Event Source
+    C->>S: Request updates
+    S-->>S: Hold connection open
+    E->>S: New data arrives
+    S-->>C: Respond with update
+    C->>S: Open next long-poll request
+```
+
 ## Why Better than Short Polling
 Instead of repeated empty requests, server answers **only when useful**.
+
+```mermaid
+flowchart LR
+    A[Short Polling] --> A1[Many empty responses]
+    B[Long Polling] --> B1[Server waits]
+    B1 --> B2[Responds when update exists or timeout occurs]
+```
 
 ## Pros
 - Near real-time
@@ -152,6 +232,25 @@ Long polling in 30 sec:
 2 requests, both useful
 ```
 
+```mermaid
+flowchart TB
+    subgraph SP[Short Polling over 30 seconds]
+        SP1[Request 1 empty]
+        SP2[Request 2 empty]
+        SP3[Request 3 empty]
+        SP4[Request 4 update]
+        SP5[Request 5 empty]
+        SP6[Request 6 empty]
+    end
+
+    subgraph LP[Long Polling over 30 seconds]
+        LP1[Request waits]
+        LP2[Response when update arrives]
+        LP3[Next request waits]
+        LP4[Response when update arrives]
+    end
+```
+
 ---
 
 # 3) Server-Sent Events (SSE)
@@ -167,6 +266,17 @@ Server -> keep connection open
 Server -> send events continuously
 ```
 
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    C->>S: Open EventSource connection
+    S-->>C: event: notification
+    S-->>C: event: price-update
+    S-->>C: event: score-update
+    S-->>C: event: progress-update
+```
+
 ## Event Format
 ```text
 event: price-update
@@ -179,6 +289,17 @@ Browser automatically handles:
 - reconnect
 - retry
 - Last-Event-ID resume
+
+```mermaid
+flowchart TD
+    A[Client opens SSE connection] --> B[Server streams events]
+    B --> C{Connection drops?}
+    C -->|No| B
+    C -->|Yes| D[Browser reconnects automatically]
+    D --> E[Client sends Last-Event-ID]
+    E --> F[Server resumes from last event]
+    F --> B
+```
 
 ## Pros
 - Very simple client API
@@ -216,6 +337,20 @@ SSE:
 Many events over one connection
 ```
 
+```mermaid
+flowchart LR
+    subgraph LongPolling[Long Polling]
+        LP1[Request] --> LP2[One response]
+        LP2 --> LP3[New request needed]
+    end
+
+    subgraph SSEFlow[SSE]
+        S1[One connection] --> S2[Event 1]
+        S1 --> S3[Event 2]
+        S1 --> S4[Event 3]
+    end
+```
+
 ---
 
 # 4) WebSockets
@@ -228,6 +363,19 @@ Client and server can both send messages anytime.
 ```text
 HTTP Upgrade -> 101 Switching Protocols
 Then full-duplex WebSocket connection
+```
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    C->>S: HTTP Upgrade request
+    S-->>C: 101 Switching Protocols
+    Note over C,S: Persistent full-duplex WebSocket connection
+    C->>S: Client message anytime
+    S-->>C: Server message anytime
+    C->>S: Typing indicator / action
+    S-->>C: New message / state update
 ```
 
 ## Why Powerful
@@ -263,10 +411,27 @@ If Alice is connected to **Server 1** and Bob to **Server 2**:
 Alice -> Server 1 -> Redis/Kafka -> Server 2 -> Bob
 ```
 
+```mermaid
+flowchart LR
+    A[Alice] --> S1[WebSocket Server 1]
+    S1 --> B[(Redis or Kafka Pub/Sub)]
+    B --> S2[WebSocket Server 2]
+    S2 --> BO[Bob]
+```
+
 So you usually need:
 - message bus
 - connection registry
 - pub/sub routing
+
+```mermaid
+flowchart TD
+    A[WebSocket Gateway] --> B[Connection Registry]
+    A --> C[Pub/Sub Bus]
+    C --> D[Message Router]
+    D --> E[Target WebSocket Server]
+    E --> F[Connected Client]
+```
 
 ---
 
@@ -282,6 +447,21 @@ So you usually need:
 | Reconnection | Not needed | Manual | Automatic | Manual |
 | Binary Support | No | No | No | Yes |
 | Firewall Friendly | Yes | Yes | Yes | Sometimes blocked |
+
+```mermaid
+quadrantChart
+    title Real-Time Update Options
+    x-axis Lower complexity --> Higher complexity
+    y-axis Higher latency --> Lower latency
+    quadrant-1 Powerful but complex
+    quadrant-2 Simple and fast enough
+    quadrant-3 Simple but delayed
+    quadrant-4 Complex without enough benefit
+    Short Polling: [0.15, 0.20]
+    Long Polling: [0.35, 0.65]
+    SSE: [0.55, 0.75]
+    WebSockets: [0.90, 0.95]
+```
 
 ---
 
@@ -307,6 +487,19 @@ So you usually need:
 - low latency is critical
 - interaction is high-frequency
 
+```mermaid
+flowchart TD
+    A[Need real-time updates?] --> B{Is slight delay okay?}
+    B -->|Yes| C[Use Short Polling]
+    B -->|No| D{Is communication mostly server to client?}
+    D -->|Yes| E{Need continuous stream and auto reconnect?}
+    E -->|Yes| F[Use SSE]
+    E -->|No| G[Use Long Polling]
+    D -->|No| H{Both sides send frequently?}
+    H -->|Yes| I[Use WebSockets]
+    H -->|No| J[Long Polling or SSE plus normal POST requests]
+```
+
 ---
 
 # Recommendations by Use Case
@@ -326,6 +519,21 @@ So you usually need:
 | Collaborative editor | WebSockets |
 | Live trading | WebSockets |
 
+```mermaid
+flowchart LR
+    A[Use Case] --> B[Email or status checks]
+    B --> C[Short Polling]
+
+    A --> D[Notifications / scores / feeds / progress]
+    D --> E[SSE]
+
+    A --> F[Moderate chat or HTTP-only infra]
+    F --> G[Long Polling]
+
+    A --> H[Chat / games / collaboration / trading]
+    H --> I[WebSockets]
+```
+
 ---
 
 # Common Production Concerns
@@ -338,12 +546,31 @@ Exponential backoff + jitter
 1s -> 2s -> 4s -> 8s -> ... cap at 30s
 ```
 
+```mermaid
+flowchart LR
+    A[Connection lost] --> B[Retry after 1s]
+    B --> C[Retry after 2s]
+    C --> D[Retry after 4s]
+    D --> E[Retry after 8s]
+    E --> F[Cap at 30s with jitter]
+```
+
 ## 2. Heartbeats
 A silent connection may be dead.
 
 Use:
 ```text
 PING / PONG every ~30 sec
+```
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    loop Every 30 seconds
+        S-->>C: PING
+        C-->>S: PONG
+    end
 ```
 
 ## 3. Message Ordering
@@ -355,6 +582,15 @@ Use:
 - deduplication
 - buffering gaps
 
+```mermaid
+flowchart TD
+    A[Incoming message] --> B{Have we seen this ID?}
+    B -->|Yes| C[Drop duplicate]
+    B -->|No| D{Is sequence next expected?}
+    D -->|Yes| E[Apply message]
+    D -->|No| F[Buffer and request missing events]
+```
+
 ## 4. Backpressure
 Slow clients cannot keep up.
 
@@ -363,12 +599,29 @@ Options:
 - batch updates
 - disconnect slow clients
 
+```mermaid
+flowchart TD
+    A[Server sends updates] --> B{Client keeping up?}
+    B -->|Yes| C[Continue streaming]
+    B -->|No| D{Can batch?}
+    D -->|Yes| E[Batch updates]
+    D -->|No| F{Low priority?}
+    F -->|Yes| G[Drop low-priority updates]
+    F -->|No| H[Disconnect or slow down producer]
+```
+
 ## 5. Compression
 Useful for large JSON/text traffic.
 
 - WebSocket: `permessage-deflate`
 - Good for text
 - Not useful for already-compressed media
+
+```mermaid
+flowchart LR
+    A[Large text or JSON] --> B[Compression helps]
+    C[Images / video / already compressed data] --> D[Compression usually not useful]
+```
 
 ---
 
@@ -387,6 +640,13 @@ Why:
 - built-in reconnect
 - simpler than WebSockets
 
+```mermaid
+flowchart LR
+    A[Notification Service] --> B[SSE Stream]
+    B --> C[Browser / Mobile Client]
+    C --> D[Show instant alert]
+```
+
 ---
 
 ## Example 2: Chat App
@@ -402,6 +662,14 @@ Why:
 - true bidirectional communication
 - low-latency interactive messaging
 
+```mermaid
+flowchart LR
+    A[Alice Client] <--> B[WebSocket Server]
+    B <--> C[Bob Client]
+    B --> D[(Message Store)]
+    B --> E[(Pub/Sub)]
+```
+
 ---
 
 ## Example 3: Stock Ticker
@@ -414,6 +682,13 @@ Need:
 
 Why:
 - perfect for streaming updates one way
+
+```mermaid
+flowchart LR
+    A[Market Data Feed] --> B[Price Update Service]
+    B --> C[SSE Stream]
+    C --> D[Trader Dashboard]
+```
 
 ---
 
@@ -429,6 +704,14 @@ Why:
 - if one-way updates dominate, SSE is simpler
 - long polling is okay if infra is HTTP-only
 
+```mermaid
+flowchart LR
+    A[Driver Location Updates] --> B[Location Service]
+    B --> C{Infra supports persistent streams?}
+    C -->|Yes| D[SSE to rider app]
+    C -->|No| E[Long polling to rider app]
+```
+
 ---
 
 ## Example 5: Multiplayer Game
@@ -441,6 +724,14 @@ Need:
 
 Why:
 - full-duplex low-latency communication
+
+```mermaid
+flowchart LR
+    A[Player 1] <--> B[Game WebSocket Gateway]
+    C[Player 2] <--> B
+    D[Player 3] <--> B
+    B <--> E[Game State Service]
+```
 
 ---
 
@@ -458,6 +749,19 @@ If updates are mostly server-to-client, I’d use SSE because it is simpler and 
 If both client and server need frequent low-latency communication, I’d use WebSockets.
 ```
 
+```mermaid
+flowchart TD
+    A[Interview Question: Real-time updates] --> B[Clarify direction]
+    B --> C[One-way server to client]
+    B --> D[Bidirectional]
+    C --> E[Clarify frequency and latency]
+    D --> F[Clarify low-latency interaction]
+    E --> G[SSE or Long Polling]
+    F --> H[WebSockets]
+    A --> I[If delay is acceptable]
+    I --> J[Short Polling]
+```
+
 ---
 
 # Key Takeaways
@@ -471,6 +775,25 @@ If both client and server need frequent low-latency communication, I’d use Web
     - ordering
     - backpressure
 
+```mermaid
+mindmap
+  root((Key Takeaways))
+    Start simple
+      Short polling when delay is fine
+    SSE is often enough
+      One-way push
+      Built-in reconnect
+    Use WebSockets carefully
+      Bidirectional
+      Low latency
+      Stateful scaling
+    Production concerns
+      Reconnects
+      Heartbeats
+      Ordering
+      Backpressure
+```
+
 ---
 
 ## Final Shortcut
@@ -480,4 +803,11 @@ Short Polling = simple but wasteful
 Long Polling = better HTTP real-time
 SSE = best for one-way push
 WebSockets = best for full duplex
+```
+
+```mermaid
+flowchart LR
+    A[Short Polling<br/>simple but wasteful] --> B[Long Polling<br/>better HTTP real-time]
+    B --> C[SSE<br/>best for one-way push]
+    C --> D[WebSockets<br/>best for full duplex]
 ```
