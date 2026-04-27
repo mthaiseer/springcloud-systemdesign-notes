@@ -1,6 +1,6 @@
-# CP Maths Visual Reference
+# CP DSA Math Visual Reference
 
-Compact visual reference for competitive programming math with small C++ snippets, Mermaid diagrams, mental models, and small Java helpers where useful.
+Visual, step-by-step reference for CP math with Mermaid diagrams, small C++ snippets, Java helpers where useful, plug-in examples, and mental tricks.
 
 ---
 
@@ -8,29 +8,41 @@ Compact visual reference for competitive programming math with small C++ snippet
 
 ```mermaid
 flowchart TD
-    A[CP Maths] --> B[Modulo and arithmetic]
-    A --> C[Exponents and logs]
-    A --> D[Algebra and equations]
-    A --> E[Sequences and sums]
-    A --> F[Prefix and range sums]
-    A --> G[Bit manipulation]
-    A --> H[Counting]
-    A --> I[Permutation combination probability]
-    A --> J[Divisibility primes GCD LCM]
-    A --> K[Geometry]
-    A --> L[Big O]
+    A[CP Math Problem] --> B{What type}
+    B --> C[Modulo]
+    B --> D[Powers]
+    B --> E[Logs and Bits]
+    B --> F[Algebra]
+    B --> G[Sequences]
+    B --> H[Counting]
+    B --> I[Primes GCD LCM]
+    B --> J[Geometry]
+    B --> K[Complexity]
 ```
+
+**Core idea:** CP math converts slow simulation into formulas.
 
 ---
 
-# 1. Arithmetic and Modulo
+## 1. Ceiling Division
 
-## Ceiling Division
-
-Use when asking: how many groups of size `b` are needed for `a` items?
+Formula:
 
 ```text
 ceil(a / b) = (a + b - 1) / b
+```
+
+Example:
+
+```text
+ceil(10 / 3) = (10 + 3 - 1) / 3 = 12 / 3 = 4
+```
+
+```mermaid
+flowchart LR
+    A[10 items] --> B[Group size 3]
+    B --> C[3 plus 3 plus 3 plus 1]
+    C --> D[4 groups]
 ```
 
 ```cpp
@@ -39,31 +51,52 @@ long long ceilDiv(long long a, long long b) {
 }
 ```
 
-```mermaid
-flowchart LR
-    A[a items] --> B[group size b]
-    B --> C[ceil division]
-    C --> D[number of groups]
+**Mental trick:** if division has leftover, add one group.
+
+---
+
+## 2. Modulo
+
+Modulo means position inside a cycle.
+
+Example:
+
+```text
+Today is day 3
+After 100 days:
+(3 + 100) % 7 = 5
 ```
 
-## Modulo
-
-Modulo gives remainder.
+```mermaid
+flowchart LR
+    A[Start position] --> B[Add steps]
+    B --> C[Take mod cycle length]
+    C --> D[Final position]
+```
 
 ```cpp
-long long normMod(long long a, long long m) {
-    return ((a % m) + m) % m;
+int afterDays(int today, int add) {
+    return (today + add) % 7;
 }
 ```
 
-Common formulas:
+---
+
+## 3. Power of Two Check
+
+Formula:
 
 ```text
-(a + b) mod m = ((a mod m) + (b mod m)) mod m
-(a * b) mod m = ((a mod m) * (b mod m)) mod m
+n > 0 and (n & (n - 1)) == 0
 ```
 
-## Power of Two Check
+Example:
+
+```text
+8  = 1000
+7  = 0111
+8 & 7 = 0000
+```
 
 ```cpp
 bool isPowerOfTwo(long long n) {
@@ -71,39 +104,39 @@ bool isPowerOfTwo(long long n) {
 }
 ```
 
-```mermaid
-flowchart TD
-    A[n] --> B[n and n minus one]
-    B --> C{result is zero}
-    C -->|yes| D[power of two]
-    C -->|no| E[not power of two]
-```
-
 ---
 
-# 2. Exponents and Roots
-
-## Exponent Laws
+## 4. Exponent Rules
 
 ```text
 x^a * x^b = x^(a+b)
 x^a / x^b = x^(a-b)
-(x^a)^b = x^(a*b)
+(x^a)^b = x^(ab)
 x^0 = 1
-x^(-a) = 1 / x^a
-x^(1/n) = nth root of x
+x^-a = 1 / x^a
 ```
 
-## Fast Power Mental Model
+Example:
+
+```text
+2^3 * 2^4 = 2^7 = 128
+```
 
 ```mermaid
-flowchart TD
-    A[power x n] --> B{n is zero}
-    B -->|yes| C[return one]
-    B -->|no| D[compute half]
-    D --> E{n is even}
-    E -->|yes| F[half times half]
-    E -->|no| G[half times half times x]
+flowchart LR
+    A[Same base] --> B[Multiplication]
+    B --> C[Add powers]
+```
+
+---
+
+## 5. Fast Power
+
+Recursive idea:
+
+```text
+x^n = x^(n/2) * x^(n/2)          if n even
+x^n = x^(n/2) * x^(n/2) * x      if n odd
 ```
 
 ```cpp
@@ -115,12 +148,25 @@ long long power(long long x, long long n) {
 }
 ```
 
-## Binary Exponentiation
+---
 
-Best CP version.
+## 6. Binary Exponentiation
+
+```mermaid
+flowchart TD
+    A[res equals 1] --> B{exponent greater than zero}
+    B -->|yes| C{exponent odd}
+    C -->|yes| D[res equals res times base]
+    C -->|no| E[skip multiply]
+    D --> F[base equals base squared]
+    E --> F
+    F --> G[exponent divide by 2]
+    G --> B
+    B -->|no| H[return res]
+```
 
 ```cpp
-long long binpow(long long base, long long exp) {
+long long binPow(long long base, long long exp) {
     long long res = 1;
     while (exp > 0) {
         if (exp & 1) res *= base;
@@ -131,30 +177,34 @@ long long binpow(long long base, long long exp) {
 }
 ```
 
-## Modular Power
+Modular version:
 
 ```cpp
-long long modPow(long long base, long long exp, long long MOD) {
-    long long res = 1 % MOD;
-    base %= MOD;
+long long modPow(long long base, long long exp, long long mod) {
+    long long res = 1 % mod;
+    base %= mod;
     while (exp > 0) {
-        if (exp & 1) res = (res * base) % MOD;
-        base = (base * base) % MOD;
+        if (exp & 1) res = (res * base) % mod;
+        base = (base * base) % mod;
         exp >>= 1;
     }
     return res;
 }
 ```
 
-### Java helper
+**Mental trick:** `13 = 8 + 4 + 1`, so `x^13 = x^8 * x^4 * x`.
+
+---
+
+## 7. Java Fast Power
 
 ```java
-static long modPow(long base, long exp, long MOD) {
-    long res = 1 % MOD;
-    base %= MOD;
+static long modPow(long base, long exp, long mod) {
+    long res = 1 % mod;
+    base %= mod;
     while (exp > 0) {
-        if ((exp & 1) == 1) res = (res * base) % MOD;
-        base = (base * base) % MOD;
+        if ((exp & 1) == 1) res = (res * base) % mod;
+        base = (base * base) % mod;
         exp >>= 1;
     }
     return res;
@@ -163,130 +213,232 @@ static long modPow(long base, long exp, long MOD) {
 
 ---
 
-# 3. Logarithms
+## 8. Logarithms
 
-## Meaning
+Meaning:
 
 ```text
-log_b(x) = y means b^y = x
+2^3 = 8
+log2(8) = 3
+```
+
+Log asks: **what power gives this number?**
+
+Rules:
+
+```text
+log(xy) = log(x) + log(y)
+log(x/y) = log(x) - log(y)
+log(x^k) = k log(x)
 ```
 
 Example:
 
 ```text
-log_2(8) = 3 because 2^3 = 8
+log2(32) = log2(8 * 4) = 3 + 2 = 5
+```
+
+---
+
+## 9. Halving Pattern
+
+```text
+8 -> 4 -> 2 -> 1
+```
+
+Steps:
+
+```text
+log2(8) = 3
 ```
 
 ```mermaid
 flowchart LR
-    A[b power y] --> B[x]
-    B --> C[log base b of x equals y]
+    A[8] --> B[4]
+    B --> C[2]
+    C --> D[1]
 ```
 
-## Rules
+Where used:
+- binary search
+- divide and conquer
+- heap height
+- binary exponentiation
+
+---
+
+## 10. Bits and Digits
+
+Bits needed:
 
 ```text
-log(x*y) = log(x) + log(y)
-log(x/y) = log(x) - log(y)
-log(x^k) = k * log(x)
+floor(log2(n)) + 1
 ```
 
-## Change of Base
+Example:
 
-```cpp
-double logBase(double n, double b) {
-    return log10(n) / log10(b);
-}
+```text
+n = 8
+binary 1000
+bits = 4
 ```
 
-## Bits and Digits
+Digits needed:
+
+```text
+floor(log10(n)) + 1
+```
 
 ```cpp
-int bitsNeeded(long long n) {
-    return (int)log2(n) + 1;
+int bitCount(long long n) {
+    if (n == 0) return 1;
+    return 64 - __builtin_clzll(n);
 }
 
 int digits(long long n) {
+    if (n == 0) return 1;
     return (int)log10(n) + 1;
 }
 ```
 
 ---
 
-# 4. Basic Algebra
+## 11. Basic Algebra
 
-## Core Ideas
+Expression:
 
 ```text
-Expression: 3x + 4
-Equation:   3x + 2 = 11
+3x + 4
+```
+
+Equation:
+
+```text
+3x + 2 = 11
+```
+
+Substitution:
+
+```text
+x = 5
+y = 3x + 2 = 17
 ```
 
 Distributive property:
 
 ```text
-a(b + c) = ab + ac
-a(b - c) = ab - ac
+a(b+c) = ab + ac
 ```
 
-Inequality trick:
+Factoring:
 
 ```text
-Multiplying or dividing by a negative number flips sign.
+6x + 9 = 3(2x + 3)
 ```
 
-## Quadratic Formula
+Inequality warning:
+
+```text
+-2x > 6
+x < -3
+```
+
+**Mental trick:** multiply or divide by negative flips the sign.
+
+---
+
+## 12. Quadratic Formula
+
+For:
 
 ```text
 ax^2 + bx + c = 0
+```
+
+Formula:
+
+```text
 x = (-b ± sqrt(b^2 - 4ac)) / 2a
 ```
 
 Discriminant:
 
 ```text
-D > 0 means two real roots
-D = 0 means one real root
-D < 0 means no real root
+D = b^2 - 4ac
+```
+
+```mermaid
+flowchart TD
+    A[Compute D] --> B{D}
+    B -->|greater than zero| C[Two roots]
+    B -->|equal zero| D[One root]
+    B -->|less than zero| E[No real root]
+```
+
+Example:
+
+```text
+x^2 - 5x + 6 = 0
+a = 1 b = -5 c = 6
+D = 25 - 24 = 1
+x = (5 ± 1)/2 = 3 or 2
 ```
 
 ```cpp
-vector<double> quadraticRoots(double a, double b, double c) {
-    double D = b * b - 4 * a * c;
+vector<double> quadratic(double a, double b, double c) {
+    double D = b*b - 4*a*c;
     vector<double> roots;
     if (D < 0) return roots;
-    roots.push_back((-b + sqrt(D)) / (2 * a));
-    if (D > 0) roots.push_back((-b - sqrt(D)) / (2 * a));
+    roots.push_back((-b + sqrt(D)) / (2*a));
+    if (D > 0) roots.push_back((-b - sqrt(D)) / (2*a));
     return roots;
 }
 ```
 
-## System of Equations
+---
 
-```mermaid
-flowchart TD
-    A[equation one] --> C[add or subtract]
-    B[equation two] --> C
-    C --> D[cancel one variable]
-    D --> E[solve remaining variable]
-```
+## 13. System of Equations
 
 Example:
 
 ```text
 x + y = 10
 x - y = 4
-add them: 2x = 14, so x = 7 and y = 3
+```
+
+Add:
+
+```text
+2x = 14
+x = 7
+y = 3
+```
+
+```mermaid
+flowchart TD
+    A[Two equations] --> B[Add or subtract]
+    B --> C[Cancel one variable]
+    C --> D[Solve]
+    D --> E[Substitute back]
 ```
 
 ---
 
-# 5. Sequences and Summations
+## 14. Arithmetic Sequence
 
-## Arithmetic Sequence
+Formula:
 
 ```text
-a_n = a_1 + (n - 1)d
+an = a1 + (n - 1)d
+```
+
+Example:
+
+```text
+5, 8, 11, 14
+a1 = 5
+d = 3
+a4 = 5 + (4 - 1)*3 = 14
 ```
 
 ```cpp
@@ -295,28 +447,49 @@ long long arithmeticTerm(long long a1, long long d, long long n) {
 }
 ```
 
-## Sum of First N Integers
+---
+
+## 15. Geometric Sequence
+
+Formula:
+
+```text
+an = a1 * r^(n - 1)
+```
+
+Example:
+
+```text
+3, 6, 12, 24
+a1 = 3
+r = 2
+a4 = 3 * 2^3 = 24
+```
+
+---
+
+## 16. Sum Formulas
 
 ```text
 1 + 2 + ... + n = n(n+1)/2
+1^2 + 2^2 + ... + n^2 = n(n+1)(2n+1)/6
+1^3 + 2^3 + ... + n^3 = [n(n+1)/2]^2
+```
+
+Plug values:
+
+```text
+n = 5
+sum first n = 5*6/2 = 15
 ```
 
 ```cpp
 long long sumN(long long n) {
     return n * (n + 1) / 2;
 }
-```
 
-## Sum of First N Squares and Cubes
-
-```text
-1^2 + 2^2 + ... + n^2 = n(n+1)(2n+1)/6
-1^3 + 2^3 + ... + n^3 = (n(n+1)/2)^2
-```
-
-```cpp
 long long sumSquares(long long n) {
-    return n * (n + 1) * (2 * n + 1) / 6;
+    return n * (n + 1) * (2*n + 1) / 6;
 }
 
 long long sumCubes(long long n) {
@@ -325,66 +498,115 @@ long long sumCubes(long long n) {
 }
 ```
 
-## Arithmetic Sum
+---
+
+## 17. Arithmetic Series Sum
+
+Formula:
 
 ```text
-sum = n(a1 + an)/2
+sum = n(a1 + an) / 2
 ```
 
-```cpp
-long long arithmeticSum(long long a1, long long an, long long n) {
-    return n * (a1 + an) / 2;
-}
-```
-
-## Geometric Sequence
+Example:
 
 ```text
-a_n = a_1 * r^(n-1)
+5, 8, 11, 14, 17
+sum = 5(5+17)/2 = 55
 ```
 
-```cpp
-long long geometricTerm(long long a1, long long r, long long n) {
-    return a1 * binpow(r, n - 1);
-}
-```
+---
 
-## Geometric Sum
+## 18. Geometric Series Sum
+
+Formula:
 
 ```text
-S = a1 * (r^n - 1) / (r - 1)
+S = a1(r^n - 1)/(r - 1)
 ```
 
-```cpp
-long long geometricSum(long long a1, long long r, long long n) {
-    if (r == 1) return a1 * n;
-    return a1 * (binpow(r, n) - 1) / (r - 1);
-}
+Example:
+
+```text
+1 + 2 + 4 + 8 + 16
+a1 = 1 r = 2 n = 5
+S = (2^5 - 1)/(2 - 1) = 31
 ```
 
-## Powers of Two Sum
+Powers of two:
 
 ```text
 1 + 2 + 4 + ... + 2^(n-1) = 2^n - 1
 ```
 
-Useful for subsets, binary tree nodes, and bitmask counting.
+---
+
+## 19. Nested Loops
+
+Full nested loop:
+
+```cpp
+for (int i = 1; i <= n; i++) {
+    for (int j = 1; j <= n; j++) {
+        // O(1)
+    }
+}
+```
+
+Time:
+
+```text
+n * n = O(n^2)
+```
+
+Triangular loop:
+
+```text
+n + (n-1) + ... + 1 = n(n+1)/2 = O(n^2)
+```
+
+```mermaid
+flowchart TD
+    A[Outer loop] --> B[Inner work]
+    B --> C{Does inner run n times}
+    C -->|yes| D[O n squared]
+    C -->|halves| E[O n log n or log n]
+```
 
 ---
 
-# 6. Prefix Sum and Range Sum
+## 20. Telescoping Sum
+
+Example:
 
 ```text
-arr:  1 2 3 4 5
-pref: 0 1 3 6 10 15
-range l to r = pref[r+1] - pref[l]
+(2-1) + (3-2) + (4-3) + (5-4)
+= 5 - 1
+= 4
 ```
 
 ```mermaid
 flowchart LR
-    A[array] --> B[build prefix]
-    B --> C[range query]
-    C --> D[pref r plus one minus pref l]
+    A[Middle terms cancel] --> B[Last minus first remains]
+```
+
+Mental trick: if terms cancel in chain, think telescoping.
+
+---
+
+## 21. Prefix Sum
+
+Array:
+
+```text
+a = [1,2,3,4,5]
+pref = [0,1,3,6,10,15]
+```
+
+Range sum `[l,r]`:
+
+```text
+pref[r+1] - pref[l]
 ```
 
 ```cpp
@@ -403,201 +625,86 @@ long long rangeSum(vector<long long>& pref, int l, int r) {
 
 ---
 
-# 7. Nested Loops and Big O
+## 22. Summation Properties
 
-## Full nested loop
-
-```cpp
-for (int i = 1; i <= n; i++) {
-    for (int j = 1; j <= n; j++) {
-        // O(1)
-    }
-}
-```
-
-Time:
+Factor out constant:
 
 ```text
-O(n^2)
+sum c*ai = c * sum ai
 ```
 
-## Triangular nested loop
-
-```cpp
-for (int i = 1; i <= n; i++) {
-    for (int j = i; j <= n; j++) {
-        // O(1)
-    }
-}
-```
-
-Count:
+Split sum:
 
 ```text
-n + (n-1) + ... + 1 = n(n+1)/2
-```
-
-Still `O(n^2)`.
-
-## Big O ladder
-
-```mermaid
-flowchart TD
-    A[O one] --> B[O log n]
-    B --> C[O n]
-    C --> D[O n log n]
-    D --> E[O n squared]
-    E --> F[O two power n]
-```
-
----
-
-# 8. Telescopic Sum
-
-Terms cancel in the middle.
-
-```text
-(a2 - a1) + (a3 - a2) + ... + (an - a(n-1)) = an - a1
-```
-
-```mermaid
-flowchart LR
-    A[a2 minus a1] --> B[a3 minus a2]
-    B --> C[a4 minus a3]
-    C --> D[only last minus first remains]
-```
-
----
-
-# 9. Summation Properties
-
-```text
-Σ c*a_i = c * Σ a_i
-Σ(a_i + b_i) = Σa_i + Σb_i
+sum(ai + bi) = sum(ai) + sum(bi)
 ```
 
 Example:
 
 ```text
-Σ(3i + 2) = 3Σi + 2n
+sum from i=1 to n of (3i + 2)
+= 3 * n(n+1)/2 + 2n
 ```
 
-```cpp
-long long sumThreeIPlusTwo(long long n) {
-    return 3 * sumN(n) + 2 * n;
-}
-```
-
----
-
-# 10. Bit Manipulation
-
-```cpp
-bool isSet(int n, int bit) {
-    return (n & (1 << bit)) != 0;
-}
-
-int setBit(int n, int bit) {
-    return n | (1 << bit);
-}
-
-int clearBit(int n, int bit) {
-    return n & ~(1 << bit);
-}
-
-int toggleBit(int n, int bit) {
-    return n ^ (1 << bit);
-}
-
-int countBits(int n) {
-    return __builtin_popcount(n);
-}
-```
-
----
-
-# 11. Sets
-
-A set stores unique values.
-
-```cpp
-set<int> s;
-s.insert(5);
-s.insert(2);
-s.insert(5);
-cout << s.size(); // 2
-```
-
-Use when you need uniqueness or sorted unique values.
-
----
-
-# 12. Counting Principle
-
-## Multiplication Rule
-
-If one choice has `a` options and second choice has `b` options:
+For `n=5`:
 
 ```text
-total = a * b
+3*5*6/2 + 10 = 55
 ```
 
-```mermaid
-flowchart LR
-    A[first choice] --> B[a options]
-    B --> C[second choice]
-    C --> D[b options]
-    D --> E[a times b]
+---
+
+## 23. Counting Principles
+
+Product rule:
+
+```text
+3 shirts and 2 pants = 3*2 = 6 outfits
 ```
 
-## Complement Counting
+Sum rule:
+
+```text
+3 tea options OR 4 coffee options = 7 options
+```
+
+Complement:
 
 ```text
 good = total - bad
 ```
 
-Use when bad cases are easier to count.
+```mermaid
+flowchart TD
+    A[Total cases] --> B[Bad cases]
+    A --> C[Good cases]
+    B --> C
+```
 
 ---
 
-# 13. Factorial Permutation Combination
+## 24. Factorial Permutation Combination
 
-## Factorial
-
-```cpp
-long long fact(int n) {
-    long long ans = 1;
-    for (int i = 1; i <= n; i++) ans *= i;
-    return ans;
-}
-```
-
-## Permutation
-
-Order matters.
+Factorial:
 
 ```text
-P(n,r) = n! / (n-r)!
+5! = 5*4*3*2*1 = 120
 ```
 
-```cpp
-long long perm(int n, int r) {
-    long long ans = 1;
-    for (int i = 0; i < r; i++) ans *= (n - i);
-    return ans;
-}
-```
-
-## Combination
-
-Order does not matter.
+Permutation order matters:
 
 ```text
-C(n,r) = n! / (r! * (n-r)!)
+nPr = n! / (n-r)!
+```
+
+Combination order does not matter:
+
+```text
+nCr = n! / (r!(n-r)!)
 ```
 
 ```cpp
-long long comb(int n, int r) {
+long long nCr(int n, int r) {
     if (r < 0 || r > n) return 0;
     r = min(r, n - r);
     long long ans = 1;
@@ -610,35 +717,32 @@ long long comb(int n, int r) {
 
 ---
 
-# 14. Probability
+## 25. Probability
+
+Formula:
 
 ```text
-Probability = favorable outcomes / total outcomes
-P(not A) = 1 - P(A)
+probability = favorable / total
 ```
 
-```cpp
-double probability(double favorable, double total) {
-    return favorable / total;
-}
+Example:
+
+```text
+P(even on die) = 3/6 = 1/2
 ```
 
 ---
 
-# 15. Divisibility and Primes
+## 26. Primes
 
-## Divisibility
+Prime = exactly two divisors: `1` and itself.
 
-```text
-a divides b if b % a == 0
-```
-
-## Prime check
+Check only up to sqrt:
 
 ```cpp
 bool isPrime(long long n) {
     if (n < 2) return false;
-    for (long long d = 2; d * d <= n; d++) {
+    for (long long d = 2; d*d <= n; d++) {
         if (n % d == 0) return false;
     }
     return true;
@@ -647,37 +751,24 @@ bool isPrime(long long n) {
 
 ```mermaid
 flowchart TD
-    A[n] --> B[test divisors up to sqrt n]
-    B --> C{found divisor}
-    C -->|yes| D[not prime]
-    C -->|no| E[prime]
-```
-
-## Sieve
-
-```cpp
-vector<bool> sieve(int n) {
-    vector<bool> prime(n + 1, true);
-    if (n >= 0) prime[0] = false;
-    if (n >= 1) prime[1] = false;
-
-    for (int p = 2; p * p <= n; p++) {
-        if (prime[p]) {
-            for (int x = p * p; x <= n; x += p) {
-                prime[x] = false;
-            }
-        }
-    }
-    return prime;
-}
+    A[n] --> B[Test divisors up to sqrt n]
+    B --> C{Found divisor}
+    C -->|yes| D[Not prime]
+    C -->|no| E[Prime]
 ```
 
 ---
 
-# 16. GCD and LCM
+## 27. GCD and LCM
+
+Euclid:
+
+```text
+gcd(a,b) = gcd(b, a%b)
+```
 
 ```cpp
-long long gcdLL(long long a, long long b) {
+long long gcdll(long long a, long long b) {
     while (b != 0) {
         long long r = a % b;
         a = b;
@@ -686,106 +777,133 @@ long long gcdLL(long long a, long long b) {
     return a;
 }
 
-long long lcmLL(long long a, long long b) {
-    return a / gcdLL(a, b) * b;
-}
-```
-
-```mermaid
-flowchart LR
-    A[a and b] --> B[gcd]
-    B --> C[lcm equals a divided by gcd times b]
-```
-
----
-
-# 17. Modular Arithmetic
-
-```cpp
-const long long MOD = 1000000007;
-
-long long addMod(long long a, long long b) {
-    return (a % MOD + b % MOD) % MOD;
-}
-
-long long mulMod(long long a, long long b) {
-    return (a % MOD * (b % MOD)) % MOD;
-}
-```
-
-## Modular inverse for prime MOD
-
-```text
-a inverse = a^(MOD-2) mod MOD
-```
-
-```cpp
-long long modInverse(long long a, long long MOD) {
-    return modPow(a, MOD - 2, MOD);
+long long lcmll(long long a, long long b) {
+    return a / gcdll(a, b) * b;
 }
 ```
 
 ---
 
-# 18. Geometry
+## 28. Modular Arithmetic
 
-## Rectangle
-
-```text
-area = length * width
-perimeter = 2 * (length + width)
-```
-
-## Circle
+Rules:
 
 ```text
-area = pi * r^2
-circumference = 2 * pi * r
+(a+b)%M = ((a%M)+(b%M))%M
+(a*b)%M = ((a%M)*(b%M))%M
 ```
 
-## Distance between points
+Normalize negative:
 
 ```cpp
-double dist(double x1, double y1, double x2, double y2) {
-    double dx = x2 - x1;
-    double dy = y2 - y1;
-    return sqrt(dx * dx + dy * dy);
+long long norm(long long x, long long mod) {
+    x %= mod;
+    if (x < 0) x += mod;
+    return x;
+}
+```
+
+Modular inverse for prime mod:
+
+```text
+a^-1 = a^(mod-2) mod mod
+```
+
+```cpp
+long long modInverse(long long a, long long mod) {
+    return modPow(a, mod - 2, mod);
 }
 ```
 
 ---
 
-# 19. Final Architecture Diagram
+## 29. Geometry Basics
+
+Rectangle:
+
+```text
+area = l*w
+perimeter = 2(l+w)
+```
+
+Triangle:
+
+```text
+area = base*height/2
+```
+
+Circle:
+
+```text
+area = pi*r*r
+circumference = 2*pi*r
+```
 
 ```mermaid
 flowchart TD
-    A[new CP math problem] --> B{Need remainder}
-    B -->|yes| C[modulo]
-    A --> D{Repeated multiplication}
-    D -->|yes| E[binary exponentiation]
-    A --> F{Range query}
-    F -->|yes| G[prefix sum]
-    A --> H{Counting ways}
-    H -->|yes| I[counting permutation combination]
-    A --> J{Need factors}
-    J -->|yes| K[prime sieve gcd lcm]
-    A --> L{Need coordinates}
-    L -->|yes| M[geometry]
+    A[Geometry problem] --> B[Identify shape]
+    B --> C[Choose formula]
+    C --> D[Plug values]
 ```
 
 ---
 
-# 20. Last Minute Quick Notes
+## 30. Big O
 
-- Use `long long` by default.
-- Use `ceilDiv(a,b)` for groups.
-- Use binary exponentiation for powers.
-- Use prefix sums for range queries.
-- Use `n & (n-1)` for power of two.
-- Use complement counting when direct counting is hard.
-- Use `gcd` before `lcm`.
-- Modular division needs modular inverse.
-- Estimate time complexity before coding.
+```text
+O(1)       constant
+O(log n)   halving
+O(n)       one loop
+O(n log n) sorting or divide plus linear
+O(n^2)     nested loops
+```
+
+Mental tricks:
+- one loop = `O(n)`
+- nested loop = `O(n^2)`
+- divide by 2 = `O(log n)`
+- sorting = `O(n log n)`
+
+---
+
+## 31. Final CP Formula Sheet
+
+```text
+ceil(a/b) = (a+b-1)/b
+sum 1..n = n(n+1)/2
+sum squares = n(n+1)(2n+1)/6
+sum cubes = [n(n+1)/2]^2
+arithmetic nth = a1 + (n-1)d
+arithmetic sum = n(a1+an)/2
+geometric nth = a1*r^(n-1)
+geometric sum = a1(r^n-1)/(r-1)
+bits = floor(log2 n)+1
+digits = floor(log10 n)+1
+nCr = n!/(r!(n-r)!)
+lcm(a,b) = a/gcd(a,b)*b
+```
+
+---
+
+## 32. Final Mental Checklist
+
+```mermaid
+flowchart TD
+    A[Stuck] --> B[Try small example]
+    B --> C[Find pattern]
+    C --> D[Write formula]
+    D --> E[Check overflow]
+    E --> F[Code helper]
+```
+
+Ask:
+1. Can I use modulo cycle?
+2. Can I replace loops with a sum formula?
+3. Can I use prefix sum?
+4. Can I count complement?
+5. Is there a log or halving pattern?
+6. Do I need `long long`?
+7. Can I divide before multiplying?
 
 ---
 
