@@ -1,69 +1,86 @@
-# 17. Proximity Service — Visual System Design Notes
+# Proximity Service — Visual System Design Notes
 
-> Goal: design a service like Yelp / Google Maps nearby search that returns nearby businesses for a user location and radius.
+> Goal: design a service that returns nearby businesses, such as restaurants, hotels, gas stations, theaters, or museums, based on a user location and radius.
 
 ---
 
 ## 1. Problem Scope
 
-### Core features
+### Functional Requirements
 
-```text
-┌──────────────────────────────────────────────┐
-│              Proximity Service               │
-├──────────────────────────────────────────────┤
-│  1. Search nearby businesses                 │
-│  2. View business details                    │
-│  3. Add / update / delete business info      │
-└──────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    A[Proximity Service] --> B[Search nearby businesses]
+    A --> C[View business details]
+    A --> D[Business owners add/update/delete businesses]
+
+    B --> B1[Input: latitude + longitude + radius]
+    B --> B2[Output: ranked nearby businesses]
+
+    C --> C1[GET /businesses/{id}]
+    D --> D1[Writes do not need real-time visibility]
+    D --> D2[Updates effective next day]
 ```
 
-### Requirements
+### Non-Functional Requirements
 
-```text
-┌───────────────────────┐      ┌────────────────────────┐
-│ Functional Requirements│      │ Non-Functional Req.     │
-├───────────────────────┤      ├────────────────────────┤
-│ Return nearby places  │      │ Low latency             │
-│ Radius-based search   │      │ High availability       │
-│ Business CRUD         │      │ Scalable reads          │
-│ View business detail  │      │ Privacy-aware location  │
-└───────────────────────┘      └────────────────────────┘
-```
-
-### Assumptions
-
-| Item | Assumption |
-|---|---:|
-| Daily active users | 100M |
-| Businesses | 200M |
-| Searches per user/day | 5 |
-| Search QPS | ~5,000 |
-| Max radius | 20 km |
-| Business updates | Effective next day |
+| Requirement | Why It Matters |
+|---|---|
+| Low latency | Users expect map/search results quickly |
+| High availability | Search should work during traffic spikes |
+| Scalability | 100M DAU, around 5,000 search QPS |
+| Privacy | User location is sensitive data |
+| Read-heavy design | Searches and detail views dominate writes |
 
 ---
 
-## 2. API Design
+## 2. Back-of-the-Envelope Numbers
 
-### Search nearby businesses
+```text
+DAU = 100 million
+Searches per user per day = 5
+Seconds per day ≈ 100,000
+
+Search QPS = 100M * 5 / 100,000
+           ≈ 5,000 QPS
+```
+
+```mermaid
+flowchart LR
+    A[100M DAU] --> B[5 searches / user / day]
+    B --> C[500M searches / day]
+    C --> D[~5,000 QPS]
+```
+
+---
+
+## 3. API Design
+
+### Search Nearby
 
 ```http
 GET /v1/search/nearby?latitude=37.776720&longitude=-122.416730&radius=500
 ```
 
-Response:
+### Request Parameters
+
+| Field | Type | Notes |
+|---|---|---|
+| latitude | decimal | User latitude |
+| longitude | decimal | User longitude |
+| radius | int | Optional, default 5000 meters |
+
+### Response
 
 ```json
 {
   "total": 10,
   "businesses": [
     {
-      "businessId": 101,
-      "name": "Taco Place",
-      "latitude": 37.7768,
-      "longitude": -122.4169,
-      "distanceMeters": 36
+      "id": 101,
+      "name": "Taco Palace",
+      "distanceMeters": 240,
+      "rating": 4.5
     }
   ]
 }
@@ -71,398 +88,281 @@ Response:
 
 ### Business APIs
 
-```text
-┌──────────────────────────────┬───────────────────────────────┐
-│ API                          │ Purpose                       │
-├──────────────────────────────┼───────────────────────────────┤
-│ GET /v1/businesses/{id}      │ Get business detail           │
-│ POST /v1/businesses          │ Add business                  │
-│ PUT /v1/businesses/{id}      │ Update business               │
-│ DELETE /v1/businesses/{id}   │ Delete business               │
-└──────────────────────────────┴───────────────────────────────┘
+```http
+GET    /v1/businesses/{id}
+POST   /v1/businesses
+PUT    /v1/businesses/{id}
+DELETE /v1/businesses/{id}
 ```
 
 ---
 
-## 3. High-Level Architecture
+## 4. High-Level Architecture
 
-```text
-                         ┌─────────────────┐
-                         │      User       │
-                         │ Web / Mobile App│
-                         └────────┬────────┘
-                                  │
-                                  ▼
-                         ┌─────────────────┐
-                         │  Load Balancer  │
-                         └───────┬─────────┘
-                                 │
-              ┌──────────────────┴──────────────────┐
-              ▼                                     ▼
-┌──────────────────────────┐          ┌──────────────────────────┐
-│ Location-Based Service   │          │ Business Service          │
-│ /search/nearby           │          │ /businesses/{id}          │
-│ Read-heavy, stateless    │          │ Read + low-volume writes  │
-└─────────────┬────────────┘          └─────────────┬────────────┘
-              │                                     │
-              ▼                                     ▼
-┌──────────────────────────┐          ┌──────────────────────────┐
-│ Redis Cache              │          │ Database Cluster          │
-├──────────────────────────┤          ├──────────────────────────┤
-│ geohash -> business IDs  │          │ Primary: writes           │
-│ businessId -> business   │          │ Replicas: reads           │
-└──────────────────────────┘          └──────────────────────────┘
+```mermaid
+flowchart TB
+    U[User App / Web] --> LB[Load Balancer]
+
+    LB -->|/search/nearby| LBS[Location Based Service]
+    LB -->|/businesses/{id}| BS[Business Service]
+
+    LBS -->|Read nearby IDs| GDB[(Geo Index Read Replicas)]
+    LBS -->|Fetch business details| BCache[(Business Info Cache)]
+
+    BS -->|Read details| BCache
+    BS -->|Cache miss| DBR[(DB Read Replicas)]
+    BS -->|Create / update / delete| DBP[(Primary DB)]
+
+    DBP -->|Replicate| DBR
+    DBP -->|Nightly sync| GDB
+    DBP -->|Nightly refresh| BCache
 ```
 
-### Why split LBS and Business Service?
+### Key Components
 
-```text
-┌─────────────────────────────┐
-│ LBS                         │
-├─────────────────────────────┤
-│ Search nearby places        │
-│ Very high QPS               │
-│ Read-only                   │
-│ Easy horizontal scaling     │
-└─────────────────────────────┘
+| Component | Responsibility |
+|---|---|
+| Load Balancer | Routes traffic to correct service |
+| LBS | Finds nearby businesses using geo index |
+| Business Service | Handles business detail reads and owner writes |
+| Primary DB | Handles writes |
+| Read Replicas | Serve read traffic |
+| Geo Index | Maps location grid to business IDs |
+| Business Cache | Stores hydrated business objects |
 
-┌─────────────────────────────┐
-│ Business Service            │
-├─────────────────────────────┤
-│ Business details            │
-│ Add / update / delete       │
-│ Writes go to primary DB     │
-│ Reads use cache / replicas  │
-└─────────────────────────────┘
+---
+
+## 5. Data Model
+
+### Business Table
+
+```mermaid
+erDiagram
+    BUSINESS {
+        bigint business_id PK
+        string name
+        string address
+        string city
+        string state
+        string country
+        double latitude
+        double longitude
+        string category
+        string open_hours
+        double rating
+        timestamp created_at
+        timestamp updated_at
+    }
+```
+
+### Geospatial Index Table
+
+Recommended design: one row per `(geohash, business_id)` pair.
+
+```mermaid
+erDiagram
+    GEOSPATIAL_INDEX {
+        string geohash PK
+        bigint business_id PK
+    }
+
+    BUSINESS ||--o{ GEOSPATIAL_INDEX : indexed_by
+```
+
+### Why Not Store Business IDs as a JSON Array?
+
+```mermaid
+flowchart LR
+    A[Option 1: geohash -> JSON array] --> A1[Hard to update]
+    A --> A2[Needs row locking]
+    A --> A3[Must scan array]
+
+    B[Option 2: geohash + business_id rows] --> B1[Easy insert]
+    B --> B2[Easy delete]
+    B --> B3[Compound primary key]
 ```
 
 ---
 
-## 4. Why Simple Latitude/Longitude Search Is Bad
+## 6. Nearby Search Algorithms
 
-Naive SQL:
+## Option A — Naive 2D Search
 
 ```sql
 SELECT business_id, latitude, longitude
 FROM business
-WHERE latitude BETWEEN :lat - :radius AND :lat + :radius
-  AND longitude BETWEEN :lng - :radius AND :lng + :radius;
+WHERE latitude BETWEEN :lat_min AND :lat_max
+  AND longitude BETWEEN :lon_min AND :lon_max;
 ```
 
-Problem:
+### Problem
 
-```text
-Latitude index gives many rows
-Longitude index gives many rows
-Then DB must intersect them
-
-┌──────────────────────┐       ┌──────────────────────┐
-│ Latitude candidate   │       │ Longitude candidate  │
-│ set can be huge      │       │ set can be huge      │
-└──────────┬───────────┘       └──────────┬───────────┘
-           └──────────────┬───────────────┘
-                          ▼
-                ┌──────────────────┐
-                │ Expensive filter │
-                └──────────────────┘
+```mermaid
+flowchart TB
+    A[Latitude index] --> C[Large candidate set]
+    B[Longitude index] --> C
+    C --> D[Expensive intersection]
+    D --> E[Still need distance filtering]
 ```
 
-Better idea: map 2D location into a 1D index.
+This is inefficient for large datasets because latitude and longitude are two-dimensional data.
 
 ---
 
-## 5. Geospatial Index Choices
+## Option B — Even Grid
 
-```text
-┌───────────────────────────────┐
-│      Geospatial Indexes       │
-└───────────────┬───────────────┘
-                │
-       ┌────────┴────────┐
-       ▼                 ▼
-┌─────────────┐   ┌─────────────┐
-│ Hash-based  │   │ Tree-based  │
-├─────────────┤   ├─────────────┤
-│ Even grid   │   │ Quadtree    │
-│ Geohash     │   │ Google S2   │
-│ Cartesian   │   │ R-tree      │
-└─────────────┘   └─────────────┘
+```mermaid
+flowchart TB
+    World[World Map] --> G1[Grid 1]
+    World --> G2[Grid 2]
+    World --> G3[Grid 3]
+    World --> G4[Grid 4]
+
+    G1 --> D1[Sparse: ocean/desert]
+    G2 --> D2[Dense: city center]
 ```
 
-Recommended for interviews:
+### Issue
 
-```text
-┌──────────────┬──────────────────────────────────────┐
-│ Option       │ Good interview choice?               │
-├──────────────┼──────────────────────────────────────┤
-│ Geohash      │ Yes. Simple and practical.           │
-│ Quadtree     │ Yes. Good for k-nearest search.      │
-│ Google S2    │ Mention, but internals are complex.  │
-└──────────────┴──────────────────────────────────────┘
-```
+Even grids do not adapt to business density. Downtown areas may contain thousands of businesses while rural grids may contain none.
 
 ---
 
-## 6. Geohash Visual Explanation
+## Option C — Geohash
 
-Geohash recursively divides the world into smaller cells.
+Geohash converts 2D coordinates into a 1D string.
 
-```text
-World
-┌───────────────────────────────┐
-│              North            │
-│        ┌────────┬────────┐    │
-│        │   01   │   11   │    │
-│        ├────────┼────────┤    │
-│        │   00   │   10   │    │
-│        └────────┴────────┘    │
-│              South            │
-└───────────────────────────────┘
+```mermaid
+flowchart LR
+    A[Latitude + Longitude] --> B[Recursive world subdivision]
+    B --> C[Binary bits]
+    C --> D[Base32 string]
+    D --> E[Example: 9q8zn]
 ```
 
-More characters = smaller area.
+### Geohash Precision
 
-```text
-9        → huge region
-9q       → smaller region
-9q8      → city-size-ish region
-9q8zn    → neighborhood-ish region
-9q8znf   → small cell
-```
-
-### Radius to geohash precision
-
-| Radius | Geohash length |
-|---:|---:|
+| Radius | Geohash Length |
+|---|---:|
 | 0.5 km | 6 |
 | 1 km | 5 |
 | 2 km | 5 |
 | 5 km | 4 |
 | 20 km | 4 |
 
-### Boundary problem
+### Query Strategy
 
-A user can be near a geohash border. Searching only the current cell may miss nearby places.
-
-```text
-┌───────────┬───────────┬───────────┐
-│ Neighbor  │ Neighbor  │ Neighbor  │
-├───────────┼───────────┼───────────┤
-│ Neighbor  │ User Cell │ Neighbor  │
-├───────────┼───────────┼───────────┤
-│ Neighbor  │ Neighbor  │ Neighbor  │
-└───────────┴───────────┴───────────┘
+```mermaid
+flowchart TB
+    A[User location + radius] --> B[Choose geohash precision]
+    B --> C[Compute current geohash]
+    C --> D[Compute 8 neighboring geohashes]
+    D --> E[Fetch business IDs for all cells]
+    E --> F[Hydrate business objects]
+    F --> G[Calculate exact distance]
+    G --> H[Sort and return results]
 ```
 
-Solution: search current geohash + 8 neighbors.
+### Boundary Problem
 
----
+Nearby locations may fall into different geohash cells.
 
-## 7. Nearby Search Flow With Geohash
+```mermaid
+flowchart LR
+    A[Cell A] --- B[Cell B]
+    A --> A1[User near border]
+    B --> B1[Nearby business]
+    A1 -. missed if only current cell .-> B1
+```
 
-```text
-┌──────────────┐
-│ User Request │
-│ lat,lng,r    │
-└──────┬───────┘
-       ▼
-┌──────────────────────────────┐
-│ Choose geohash precision     │
-│ Example: 500m -> length 6    │
-└──────┬───────────────────────┘
-       ▼
-┌──────────────────────────────┐
-│ Calculate current geohash    │
-│ + 8 neighboring geohashes    │
-└──────┬───────────────────────┘
-       ▼
-┌──────────────────────────────┐
-│ Fetch business IDs from      │
-│ geohash cache / index table  │
-└──────┬───────────────────────┘
-       ▼
-┌──────────────────────────────┐
-│ Fetch business objects       │
-│ from business cache / DB     │
-└──────┬───────────────────────┘
-       ▼
-┌──────────────────────────────┐
-│ Calculate exact distance     │
-│ Filter within radius         │
-│ Rank nearest first           │
-└──────┬───────────────────────┘
-       ▼
-┌──────────────────────────────┐
-│ Return paginated results     │
-└──────────────────────────────┘
+### Fix
+
+Always search the current geohash plus neighbors.
+
+```mermaid
+flowchart TB
+    N1[Neighbor] --- N2[Neighbor] --- N3[Neighbor]
+    N4[Neighbor] --- C[Current Cell] --- N5[Neighbor]
+    N6[Neighbor] --- N7[Neighbor] --- N8[Neighbor]
 ```
 
 ---
 
-## 8. Data Model
+## Option D — Quadtree
 
-### Business table
+A quadtree recursively divides space into 4 quadrants until each leaf contains a manageable number of businesses.
 
-```text
-┌─────────────────────────────┐
-│ business                    │
-├─────────────────────────────┤
-│ business_id       PK        │
-│ name                        │
-│ address                     │
-│ city                        │
-│ state                       │
-│ country                     │
-│ latitude                    │
-│ longitude                   │
-│ category                    │
-│ opening_hours               │
-│ created_at                  │
-│ updated_at                  │
-└─────────────────────────────┘
+```mermaid
+flowchart TB
+    Root[World: 200M businesses] --> NW[NW: 40M]
+    Root --> NE[NE: 30M]
+    Root --> SW[SW: 70M]
+    Root --> SE[SE: 60M]
+
+    SW --> SW1[Leaf: <=100]
+    SW --> SW2[Leaf: <=100]
+    SW --> SW3[Leaf: <=100]
+    SW --> SW4[More subdivisions]
 ```
 
-### Geospatial index table
+### Quadtree Pros and Cons
 
-Recommended option: one row per `(geohash, business_id)`.
-
-```text
-┌─────────────────────────────┐
-│ geospatial_index            │
-├─────────────────────────────┤
-│ geohash          PK part    │
-│ business_id      PK part    │
-└─────────────────────────────┘
-```
-
-Example:
-
-| geohash | business_id |
-|---|---:|
-| 9q8znf | 101 |
-| 9q8znf | 102 |
-| 9q8znd | 201 |
-
-Why this is better than storing a JSON array:
-
-```text
-┌──────────────────────────────┐
-│ JSON array per geohash       │
-├──────────────────────────────┤
-│ Harder insert/delete         │
-│ Need row lock                │
-│ Need duplicate scan          │
-└──────────────────────────────┘
-
-┌──────────────────────────────┐
-│ One row per business         │
-├──────────────────────────────┤
-│ Easy insert/delete           │
-│ Compound key prevents dupes  │
-│ Cleaner scaling              │
-└──────────────────────────────┘
-```
+| Pros | Cons |
+|---|---|
+| Adapts to dense/sparse areas | More complex to implement |
+| Good for k-nearest search | Needs in-memory tree build |
+| Smaller cells in dense cities | Updates require tree traversal/locking |
 
 ---
 
-## 9. Cache Design
+## 7. Geohash vs Quadtree
 
-### Cache keys
-
-Do not use raw latitude/longitude as cache key because GPS coordinates can change slightly.
-
-Use geohash instead.
-
-```text
-Bad cache key:
-  37.776720:-122.416730:500
-  37.776721:-122.416729:500
-  These may represent almost the same place but create different keys.
-
-Good cache key:
-  geohash:9q8znf
-```
-
-### Cache layers
-
-```text
-┌─────────────────────────────────────────────┐
-│ Redis Cluster                               │
-├─────────────────────────────────────────────┤
-│ geohash -> List<businessId>                 │
-│ businessId -> Business object               │
-└─────────────────────────────────────────────┘
-```
-
-### Cache read flow
-
-```text
-┌──────────────┐
-│ LBS Service  │
-└──────┬───────┘
-       ▼
-┌─────────────────────┐
-│ Redis geohash cache │
-└──────┬──────────────┘
-       │ hit
-       ▼
-┌─────────────────────┐
-│ business IDs        │
-└─────────────────────┘
-
-       │ miss
-       ▼
-┌─────────────────────┐
-│ DB read replica     │
-└──────┬──────────────┘
-       ▼
-┌─────────────────────┐
-│ Fill Redis cache    │
-└─────────────────────┘
-```
+| Topic | Geohash | Quadtree |
+|---|---|---|
+| Implementation | Simpler | More complex |
+| Data structure | String prefix | Tree |
+| Updates | Easy | Harder |
+| Radius search | Good | Good |
+| k-nearest search | Less natural | Better |
+| Density-aware | Not by default | Yes |
+| Interview choice | Great default | Great for deeper discussion |
 
 ---
 
-## 10. Java Reference Code
+## 8. Java Reference Code
 
-### Business model
-
-```java
-public record Business(
-        long businessId,
-        String name,
-        double latitude,
-        double longitude,
-        String category
-) {}
-```
-
-### Radius to geohash precision
+## 8.1 Radius to Geohash Precision
 
 ```java
 public class GeoPrecision {
 
-    public static int geohashLengthForRadiusMeters(int radiusMeters) {
-        if (radiusMeters <= 500) return 6;
-        if (radiusMeters <= 2_000) return 5;
-        return 4; // good enough for 5km to 20km in this simplified design
+    public static int geohashLengthForRadiusKm(double radiusKm) {
+        if (radiusKm <= 0.5) return 6;
+        if (radiusKm <= 2.0) return 5;
+        return 4;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(geohashLengthForRadiusKm(0.5)); // 6
+        System.out.println(geohashLengthForRadiusKm(1.0)); // 5
+        System.out.println(geohashLengthForRadiusKm(5.0)); // 4
     }
 }
 ```
 
-### Haversine distance
+---
 
-Used to calculate exact distance after fetching candidates from geohash cells.
+## 8.2 Haversine Distance
+
+Used to calculate the exact distance after fetching candidates from nearby geohash cells.
 
 ```java
 public class DistanceUtil {
     private static final double EARTH_RADIUS_METERS = 6_371_000;
 
     public static double distanceMeters(
-            double lat1,
-            double lon1,
-            double lat2,
-            double lon2
+            double lat1, double lon1,
+            double lat2, double lon2
     ) {
         double latRad1 = Math.toRadians(lat1);
         double latRad2 = Math.toRadians(lat2);
@@ -479,426 +379,432 @@ public class DistanceUtil {
 }
 ```
 
-### Nearby search service — simplified
+---
+
+## 8.3 Nearby Search Service Skeleton
 
 ```java
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class NearbySearchService {
+class Business {
+    long id;
+    String name;
+    double latitude;
+    double longitude;
+    double distanceMeters;
 
-    private final GeoHashIndex geoHashIndex;
+    Business(long id, String name, double latitude, double longitude) {
+        this.id = id;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+}
+
+interface GeoIndexRepository {
+    List<Long> findBusinessIdsByGeohashPrefix(String geohashPrefix);
+}
+
+interface BusinessRepository {
+    List<Business> findBusinessesByIds(List<Long> ids);
+}
+
+class NearbySearchService {
+    private final GeoIndexRepository geoIndexRepository;
     private final BusinessRepository businessRepository;
 
-    public NearbySearchService(
-            GeoHashIndex geoHashIndex,
+    NearbySearchService(
+            GeoIndexRepository geoIndexRepository,
             BusinessRepository businessRepository
     ) {
-        this.geoHashIndex = geoHashIndex;
+        this.geoIndexRepository = geoIndexRepository;
         this.businessRepository = businessRepository;
     }
 
-    public List<BusinessResult> searchNearby(
+    public List<Business> searchNearby(
             double userLat,
             double userLon,
-            int radiusMeters,
-            int limit
+            double radiusMeters
     ) {
-        int precision = GeoPrecision.geohashLengthForRadiusMeters(radiusMeters);
+        int precision = GeoPrecision.geohashLengthForRadiusKm(radiusMeters / 1000.0);
 
-        String currentHash = GeoHash.encode(userLat, userLon, precision);
-        List<String> hashesToSearch = new ArrayList<>();
-        hashesToSearch.add(currentHash);
-        hashesToSearch.addAll(GeoHash.neighbors(currentHash));
+        String currentGeohash = encodeGeohash(userLat, userLon, precision);
+        List<String> geohashes = getCurrentAndNeighborGeohashes(currentGeohash);
 
-        Set<Long> businessIds = new HashSet<>();
-        for (String geohash : hashesToSearch) {
-            businessIds.addAll(geoHashIndex.getBusinessIds(geohash));
+        List<Long> candidateIds = new ArrayList<>();
+        for (String geohash : geohashes) {
+            candidateIds.addAll(geoIndexRepository.findBusinessIdsByGeohashPrefix(geohash));
         }
 
-        return businessRepository.findByIds(businessIds)
-                .stream()
-                .map(b -> new BusinessResult(
-                        b,
-                        DistanceUtil.distanceMeters(
-                                userLat,
-                                userLon,
-                                b.latitude(),
-                                b.longitude()
-                        )
-                ))
-                .filter(result -> result.distanceMeters() <= radiusMeters)
-                .sorted(Comparator.comparingDouble(BusinessResult::distanceMeters))
-                .limit(limit)
+        List<Business> candidates = businessRepository.findBusinessesByIds(candidateIds);
+
+        return candidates.stream()
+                .peek(b -> b.distanceMeters = DistanceUtil.distanceMeters(
+                        userLat, userLon, b.latitude, b.longitude))
+                .filter(b -> b.distanceMeters <= radiusMeters)
+                .sorted(Comparator.comparingDouble(b -> b.distanceMeters))
                 .collect(Collectors.toList());
     }
-}
-```
 
-### Result wrapper
-
-```java
-public record BusinessResult(
-        Business business,
-        double distanceMeters
-) {}
-```
-
-### Interfaces for cache / DB access
-
-```java
-import java.util.*;
-
-public interface GeoHashIndex {
-    List<Long> getBusinessIds(String geohash);
-}
-
-public interface BusinessRepository {
-    List<Business> findByIds(Collection<Long> businessIds);
-}
-```
-
-### Redis-backed geohash index — pseudocode style
-
-```java
-import java.util.*;
-
-public class CachedGeoHashIndex implements GeoHashIndex {
-
-    private final RedisClient redis;
-    private final GeoIndexRepository geoIndexRepository;
-
-    public CachedGeoHashIndex(RedisClient redis, GeoIndexRepository geoIndexRepository) {
-        this.redis = redis;
-        this.geoIndexRepository = geoIndexRepository;
+    // In real systems, use a proven geohash library.
+    private String encodeGeohash(double lat, double lon, int precision) {
+        return "mocked".substring(0, Math.min(precision, 6));
     }
 
-    @Override
-    public List<Long> getBusinessIds(String geohash) {
-        String cacheKey = "geohash:" + geohash;
-
-        List<Long> cachedIds = redis.getList(cacheKey);
-        if (cachedIds != null) {
-            return cachedIds;
-        }
-
-        List<Long> idsFromDb = geoIndexRepository.findBusinessIdsByGeohashPrefix(geohash);
-        redis.setList(cacheKey, idsFromDb, 24 * 60 * 60); // TTL: 1 day
-        return idsFromDb;
-    }
-}
-```
-
-### Placeholder interfaces
-
-```java
-import java.util.*;
-
-public interface RedisClient {
-    List<Long> getList(String key);
-    void setList(String key, List<Long> value, int ttlSeconds);
-}
-
-public interface GeoIndexRepository {
-    List<Long> findBusinessIdsByGeohashPrefix(String geohashPrefix);
-}
-```
-
-### Geohash placeholder
-
-In production, use a tested geohash library. This placeholder shows the service shape.
-
-```java
-import java.util.*;
-
-public class GeoHash {
-
-    public static String encode(double latitude, double longitude, int precision) {
-        // Use a real geohash library in production.
-        // Example output: "9q8znf"
-        throw new UnsupportedOperationException("Use a real geohash implementation");
-    }
-
-    public static List<String> neighbors(String geohash) {
-        // Return 8 neighboring geohashes.
-        // Use a real geohash library in production.
-        throw new UnsupportedOperationException("Use a real geohash implementation");
+    // Real implementation calculates 8 adjacent cells.
+    private List<String> getCurrentAndNeighborGeohashes(String geohash) {
+        return List.of(
+                geohash,
+                geohash + "_N",
+                geohash + "_S",
+                geohash + "_E",
+                geohash + "_W",
+                geohash + "_NE",
+                geohash + "_NW",
+                geohash + "_SE",
+                geohash + "_SW"
+        );
     }
 }
 ```
 
 ---
 
-## 11. Quadtree Visual Explanation
-
-Quadtree recursively divides the map into four parts until each leaf has a small enough number of businesses.
-
-```text
-                         ┌──────────────┐
-                         │ World: 200M  │
-                         └──────┬───────┘
-                                │
-        ┌───────────────────────┼───────────────────────┐
-        ▼                       ▼                       ▼
-┌──────────────┐        ┌──────────────┐        ┌──────────────┐
-│ NW: 40M      │        │ NE: 30M      │        │ SW: 70M      │ ...
-└──────┬───────┘        └──────────────┘        └──────────────┘
-       │
-       ▼
-┌──────────────────────────────────────┐
-│ Keep splitting until each leaf has   │
-│ <= 100 businesses                    │
-└──────────────────────────────────────┘
-```
-
-### Quadtree build pseudocode
+## 8.4 Simple Cache-Aside Pattern
 
 ```java
-public class QuadTreeBuilder {
+import java.time.Duration;
+import java.util.List;
 
+interface CacheClient {
+    List<Long> getList(String key);
+    void setList(String key, List<Long> value, Duration ttl);
+}
+
+class CachedGeoIndexService {
+    private final CacheClient cache;
+    private final GeoIndexRepository geoIndexRepository;
+
+    CachedGeoIndexService(CacheClient cache, GeoIndexRepository geoIndexRepository) {
+        this.cache = cache;
+        this.geoIndexRepository = geoIndexRepository;
+    }
+
+    public List<Long> getBusinessIds(String geohash) {
+        String cacheKey = "geo:" + geohash;
+
+        List<Long> cached = cache.getList(cacheKey);
+        if (cached != null) {
+            return cached;
+        }
+
+        List<Long> ids = geoIndexRepository.findBusinessIdsByGeohashPrefix(geohash);
+        cache.setList(cacheKey, ids, Duration.ofDays(1));
+        return ids;
+    }
+}
+```
+
+---
+
+## 8.5 Quadtree Build Pseudocode in Java
+
+```java
+class QuadTreeNode {
+    BoundingBox box;
+    List<Long> businessIds;
+    QuadTreeNode[] children;
+
+    boolean isLeaf() {
+        return children == null;
+    }
+
+    void subdivide() {
+        children = new QuadTreeNode[4];
+        // NW, NE, SW, SE child boxes are created here.
+    }
+}
+
+class BoundingBox {
+    double minLat;
+    double maxLat;
+    double minLon;
+    double maxLon;
+}
+
+class QuadTreeBuilder {
     private static final int MAX_BUSINESSES_PER_LEAF = 100;
 
-    public void buildQuadTree(QuadTreeNode node) {
-        if (node.businessCount() <= MAX_BUSINESSES_PER_LEAF) {
+    public void build(QuadTreeNode node) {
+        if (node.businessIds.size() <= MAX_BUSINESSES_PER_LEAF) {
             return;
         }
 
         node.subdivide();
 
-        for (QuadTreeNode child : node.children()) {
-            buildQuadTree(child);
+        for (QuadTreeNode child : node.children) {
+            // Move matching businesses from parent to child.
+            build(child);
         }
     }
 }
 ```
 
-### Quadtree node shape
+---
 
-```java
-import java.util.*;
+## 9. Final Search Flow
 
-public class QuadTreeNode {
-    private double minLat;
-    private double maxLat;
-    private double minLon;
-    private double maxLon;
-    private List<Long> businessIds;
-    private List<QuadTreeNode> children;
+```mermaid
+sequenceDiagram
+    participant User
+    participant LB as Load Balancer
+    participant LBS as Location Based Service
+    participant GeoCache as Redis: Geohash Cache
+    participant BizCache as Redis: Business Info Cache
+    participant DB as Database Replicas
 
-    public int businessCount() {
-        return businessIds == null ? 0 : businessIds.size();
-    }
-
-    public void subdivide() {
-        // Split current rectangle into NW, NE, SW, SE.
-        // Move business IDs into child nodes.
-    }
-
-    public List<QuadTreeNode> children() {
-        return children == null ? List.of() : children;
-    }
-}
-```
-
-### Geohash vs Quadtree
-
-```text
-┌─────────────────┬───────────────────────┬───────────────────────┐
-│ Feature         │ Geohash               │ Quadtree              │
-├─────────────────┼───────────────────────┼───────────────────────┤
-│ Simplicity      │ Easier                │ Harder                │
-│ Update index    │ Easy                  │ More complex          │
-│ Radius search   │ Good                  │ Good                  │
-│ k-nearest       │ Less natural          │ Better                │
-│ Dense areas     │ Fixed cell size issue │ Adapts better         │
-└─────────────────┴───────────────────────┴───────────────────────┘
+    User->>LB: GET /search/nearby?lat&lon&radius
+    LB->>LBS: Route request
+    LBS->>LBS: Convert lat/lon to geohash
+    LBS->>LBS: Add 8 neighboring geohashes
+    LBS->>GeoCache: Get business IDs for cells
+    GeoCache-->>LBS: Candidate business IDs
+    LBS->>BizCache: Get business objects
+    BizCache-->>LBS: Cached business data
+    LBS->>DB: Fetch missing business data
+    DB-->>LBS: Missing business data
+    LBS->>LBS: Filter by exact distance
+    LBS->>LBS: Sort by distance/ranking
+    LBS-->>User: Nearby businesses
 ```
 
 ---
 
-## 12. Scaling the Database
+## 10. Business Update Flow
 
-### Business table scaling
+Because updates do not need to be visible immediately, we can refresh geo index and cache with a nightly job.
 
-Shard by `business_id`.
+```mermaid
+sequenceDiagram
+    participant Owner as Business Owner
+    participant BS as Business Service
+    participant Primary as Primary DB
+    participant Replica as Read Replicas
+    participant Job as Nightly Sync Job
+    participant GeoCache as Geohash Cache
+    participant BizCache as Business Cache
 
-```text
-                  ┌────────────────────┐
-                  │ Business Service   │
-                  └─────────┬──────────┘
-                            │
-                  hash(business_id)
-                            │
-        ┌───────────────────┼───────────────────┐
-        ▼                   ▼                   ▼
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│ Business DB  │    │ Business DB  │    │ Business DB  │
-│ Shard 1      │    │ Shard 2      │    │ Shard 3      │
-└──────────────┘    └──────────────┘    └──────────────┘
-```
+    Owner->>BS: POST/PUT/DELETE business
+    BS->>Primary: Write business change
+    Primary->>Replica: Replicate data
 
-### Geospatial index scaling
-
-Prefer replicas first because the index is relatively small but read-heavy.
-
-```text
-                      ┌──────────────────┐
-                      │ Primary Geo DB   │
-                      └────────┬─────────┘
-                               │ replicate
-          ┌────────────────────┼────────────────────┐
-          ▼                    ▼                    ▼
-┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐
-│ Geo Replica 1   │   │ Geo Replica 2   │   │ Geo Replica 3   │
-│ read traffic    │   │ read traffic    │   │ read traffic    │
-└─────────────────┘   └─────────────────┘   └─────────────────┘
+    Note over Job: Runs nightly
+    Job->>Primary: Read changed businesses
+    Job->>GeoCache: Refresh geohash entries
+    Job->>BizCache: Refresh business objects
 ```
 
 ---
 
-## 13. Multi-Region Deployment
+## 11. Caching Strategy
 
-```text
-┌──────────────────────────────────────────────────────────────┐
-│ Global DNS / Traffic Router                                 │
-└───────────────┬──────────────────────────┬──────────────────┘
-                │                          │
-                ▼                          ▼
-┌──────────────────────────┐    ┌──────────────────────────┐
-│ US-West Region           │    │ Europe Region            │
-├──────────────────────────┤    ├──────────────────────────┤
-│ LBS servers              │    │ LBS servers              │
-│ Redis geohash cache      │    │ Redis geohash cache      │
-│ Business info cache      │    │ Business info cache      │
-│ DB replicas              │    │ DB replicas              │
-└──────────────────────────┘    └──────────────────────────┘
+```mermaid
+flowchart TB
+    A[Cache Types] --> B[Geohash Cache]
+    A --> C[Business Info Cache]
+
+    B --> B1[Key: geohash]
+    B --> B2[Value: list of business IDs]
+
+    C --> C1[Key: business_id]
+    C --> C2[Value: business object]
 ```
 
-Benefits:
+### Cache Keys
 
-```text
-┌──────────────────────────────┐
-│ Lower latency                │
-│ Better availability          │
-│ Regional traffic isolation   │
-│ Easier privacy compliance    │
-└──────────────────────────────┘
+| Cache | Key | Value |
+|---|---|---|
+| Geohash cache | `geo:{geohash}` | List of business IDs |
+| Business info cache | `business:{id}` | Business object |
+
+### Why Not Cache Raw Coordinates?
+
+```mermaid
+flowchart LR
+    A[Raw GPS coordinates] --> B[Small movement changes key]
+    A --> C[Phone GPS is noisy]
+    A --> D[Poor cache hit rate]
+
+    E[Geohash key] --> F[Nearby points map to same cell]
+    E --> G[Better cache hit rate]
 ```
 
 ---
 
-## 14. Filtering Results
+## 12. Multi-Region Deployment
+
+```mermaid
+flowchart TB
+    DNS[Geo DNS / Traffic Router]
+
+    DNS --> US[US Region]
+    DNS --> EU[EU Region]
+    DNS --> APAC[APAC Region]
+
+    subgraph US[US Region]
+        USLB[Load Balancer]
+        USLBS[LBS Cluster]
+        USRedis[(Redis Cluster)]
+        USDB[(DB Read Replicas)]
+        USLB --> USLBS
+        USLBS --> USRedis
+        USLBS --> USDB
+    end
+
+    subgraph EU[EU Region]
+        EULB[Load Balancer]
+        EULBS[LBS Cluster]
+        EURedis[(Redis Cluster)]
+        EUDB[(DB Read Replicas)]
+        EULB --> EULBS
+        EULBS --> EURedis
+        EULBS --> EUDB
+    end
+
+    subgraph APAC[APAC Region]
+        ALB[Load Balancer]
+        ALBS[LBS Cluster]
+        ARedis[(Redis Cluster)]
+        ADB[(DB Read Replicas)]
+        ALB --> ALBS
+        ALBS --> ARedis
+        ALBS --> ADB
+    end
+```
+
+### Benefits
+
+| Benefit | Explanation |
+|---|---|
+| Lower latency | Route users to nearby region |
+| Availability | Region failure does not take down all traffic |
+| Traffic distribution | Handle dense areas separately |
+| Compliance | Store/process sensitive location data locally if required |
+
+---
+
+## 13. Filtering Results
 
 Examples:
 
 - Open now
 - Restaurant only
-- Price range
-- Rating threshold
+- Rating above 4.0
+- Price level
+- Cuisine type
 
-Simple approach:
-
-```text
-1. Fetch candidate business IDs by geohash
-2. Hydrate business objects
-3. Filter by type / open time / rating
-4. Rank by distance and relevance
+```mermaid
+flowchart LR
+    A[Fetch nearby candidate IDs] --> B[Hydrate business objects]
+    B --> C[Filter category / open now / rating]
+    C --> D[Calculate distance]
+    D --> E[Rank results]
+    E --> F[Return page]
 ```
 
-Why this works: after geohash filtering, the candidate set is relatively small.
+Since each geohash cell returns a limited candidate set, filtering after fetching candidates is usually acceptable.
 
 ---
 
-## 15. Final Architecture Diagram
+## 14. Failure Handling
 
-```text
-                                ┌──────────────────┐
-                                │      Client      │
-                                └────────┬─────────┘
-                                         │
-                                         ▼
-                                ┌──────────────────┐
-                                │  Load Balancer   │
-                                └───────┬──────────┘
-                                        │
-                ┌───────────────────────┴───────────────────────┐
-                ▼                                               ▼
-┌─────────────────────────────────┐             ┌─────────────────────────────────┐
-│ Location-Based Service          │             │ Business Service                │
-│ /search/nearby                  │             │ /businesses/{id}                │
-├─────────────────────────────────┤             ├─────────────────────────────────┤
-│ 1. Pick geohash precision       │             │ Read business detail            │
-│ 2. Get current + neighbors      │             │ Add/update/delete business      │
-│ 3. Fetch candidate IDs          │             │ Update DB primary               │
-│ 4. Hydrate business objects     │             │ Invalidate/update cache nightly │
-│ 5. Distance filter + rank       │             │                                 │
-└───────────────┬─────────────────┘             └───────────────┬─────────────────┘
-                │                                               │
-                ▼                                               ▼
-┌─────────────────────────────────┐             ┌─────────────────────────────────┐
-│ Redis Cluster                   │             │ Database Cluster                │
-├─────────────────────────────────┤             ├─────────────────────────────────┤
-│ geohash -> business IDs         │             │ Primary DB: writes              │
-│ businessId -> business object   │             │ Replica DBs: reads              │
-└─────────────────────────────────┘             └─────────────────────────────────┘
-```
+| Failure | Handling |
+|---|---|
+| LBS server fails | Stateless; load balancer routes to healthy server |
+| Business service fails | Stateless; restart or route around it |
+| Redis fails | Use Redis replication / fallback to DB |
+| Primary DB fails | Promote replica to primary |
+| Replica lag | Acceptable because business updates need not be real-time |
+| Region outage | Route traffic to another region |
+| Nightly job fails | Retry job; use previous day index temporarily |
 
 ---
 
-## 16. Interview Talking Points
+## 15. Interview Talking Points
 
-```text
-┌────────────────────────────────────────────────────────────┐
-│ Key things to say                                          │
-├────────────────────────────────────────────────────────────┤
-│ This is read-heavy, so LBS must scale horizontally.         │
-│ Raw lat/lng range query is inefficient for large datasets.  │
-│ Use geospatial indexing: geohash, quadtree, or S2.          │
-│ Geohash is simple and works well for radius search.         │
-│ Search current cell + neighbors to avoid boundary misses.   │
-│ Cache geohash -> business IDs and businessId -> object.     │
-│ Business updates are low QPS and can be effective next day. │
-│ Deploy LBS regionally for latency and privacy compliance.   │
-└────────────────────────────────────────────────────────────┘
+```mermaid
+mindmap
+  root((Proximity Service))
+    Requirements
+      Nearby search
+      Business details
+      Owner updates
+      Low latency
+      Privacy
+    Architecture
+      Load balancer
+      LBS
+      Business service
+      Primary DB
+      Read replicas
+      Redis cache
+    Geo Indexing
+      Naive 2D search
+      Even grid
+      Geohash
+      Quadtree
+      S2
+    Deep Dive
+      Cache keys
+      Neighbor cells
+      Boundary issue
+      Multi-region
+      Filtering
 ```
 
 ---
 
-## 17. Quick Memory Map
+## 16. Final Architecture Summary
 
-```text
-Proximity Service
-│
-├── API
-│   ├── /search/nearby
-│   └── /businesses/{id}
-│
-├── Core Services
-│   ├── LBS Service
-│   └── Business Service
-│
-├── Geo Index
-│   ├── Geohash
-│   ├── Quadtree
-│   └── S2
-│
-├── Cache
-│   ├── geohash -> business IDs
-│   └── businessId -> business object
-│
-├── DB
-│   ├── business table
-│   └── geospatial_index table
-│
-└── Scaling
-    ├── stateless services
-    ├── read replicas
-    ├── regional deployment
-    └── cache replication
+```mermaid
+flowchart TB
+    Client[Client App] --> LB[Load Balancer]
+
+    LB -->|Nearby search| LBS[LBS Cluster]
+    LB -->|Business APIs| BS[Business Service Cluster]
+
+    LBS --> GeoRedis[(Redis: Geohash -> Business IDs)]
+    LBS --> BizRedis[(Redis: Business ID -> Business Object)]
+    LBS --> DBReplica[(DB Read Replicas)]
+
+    BS --> BizRedis
+    BS --> DBReplica
+    BS --> Primary[(Primary DB)]
+
+    Primary --> DBReplica
+    Primary --> Nightly[ रात Nightly Sync Job]
+    Nightly --> GeoRedis
+    Nightly --> BizRedis
 ```
+
+> Note: In the final diagram, the nightly sync job refreshes geohash and business caches because business updates do not need to be reflected in real time.
 
 ---
 
-## 18. One-Minute Summary
+## 17. Quick Memory Hook
 
-A proximity service is a read-heavy location-based system. The main challenge is finding nearby businesses quickly from hundreds of millions of records. A naive latitude/longitude search is inefficient, so we use a geospatial index such as geohash or quadtree. For geohash, the system maps the user location to a geohash cell, also searches neighboring cells, fetches candidate business IDs, hydrates business details, filters by exact distance, ranks results, and returns a paginated response. Caching and read replicas reduce latency, while regional deployment improves availability, latency, and privacy compliance.
+```text
+User location
+   ↓
+Geohash + neighbors
+   ↓
+Candidate business IDs
+   ↓
+Business details
+   ↓
+Exact distance filter
+   ↓
+Ranked nearby results
+```
+
