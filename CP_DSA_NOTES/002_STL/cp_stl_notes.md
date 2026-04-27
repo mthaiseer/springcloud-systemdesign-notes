@@ -1174,7 +1174,7 @@ flowchart TD
     B -->|Capital letter| C["Parse element"]
     C --> D["Parse number if any"]
     D --> E["Add to map"]
-    B -->|'('| F["Find matching bracket"]
+    B -->|open parenthesis| F["Find matching bracket"]
     F --> G["Parse inside recursively"]
     G --> H["Parse multiplier"]
     H --> I["Multiply inside map"]
