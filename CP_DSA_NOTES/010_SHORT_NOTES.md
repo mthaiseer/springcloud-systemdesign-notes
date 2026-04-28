@@ -142,9 +142,9 @@ next  2^i values  -> bit is 1
 
 ```mermaid
 flowchart LR
-    A[i-th bit] --> B[0 block length 2^i]
-    B --> C[1 block length 2^i]
-    C --> D[period 2^(i+1)]
+    A[i-th bit] --> B[First block bit is zero]
+    B --> C[Next block bit is one]
+    C --> D[Repeat period length is two power i plus one]
 ```
 
 ```cpp
@@ -211,7 +211,7 @@ flowchart TD
     A[Pair bit expression] --> B[Split by bit]
     B --> C[Count zeros and ones]
     C --> D[Find pairs contributing 1]
-    D --> E[Multiply by 2^bit]
+    D --> E[Multiply by 2 power bit]
 ```
 
 ### XOR pair contribution
