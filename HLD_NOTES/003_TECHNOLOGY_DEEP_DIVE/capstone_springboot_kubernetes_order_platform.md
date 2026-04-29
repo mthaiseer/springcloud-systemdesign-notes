@@ -1461,9 +1461,9 @@ It can handle:
 ```mermaid
 flowchart LR
     Client[Client] --> Gateway[API Gateway]
-    Gateway --> Products[/api/products]
-    Gateway --> Orders[/api/orders]
-    Gateway --> Inventory[/api/inventory]
+    Gateway --> Products["API route: /api/products"]
+    Gateway --> Orders["API route: /api/orders"]
+    Gateway --> Inventory["API route: /api/inventory"]
     Products --> ProductService[product-service]
     Orders --> OrderService[order-service]
     Inventory --> InventoryService[inventory-service]
@@ -2892,3 +2892,278 @@ To become confident building large-scale applications, study these next:
 9. Multi-region deployment patterns
 10. Disaster recovery planning
 
+
+
+---
+
+# Appendix A: Corrected Chapter 4 Mermaid Diagram for Spring Boot Consumer
+
+Use this version if GitHub cannot render a diagram that contains labels such as `@KafkaListener`, `orders.created`, or `/actuator/prometheus`.
+GitHub Mermaid can fail when special characters are placed directly inside node labels. The safest approach is to wrap labels in double quotes and avoid using `@`, `/`, parentheses, and dots as raw node text.
+
+## Chapter 4: Spring Boot Consumer
+
+### 4.1 Goal
+
+Build a Spring Boot Kafka consumer that listens to order events from the `orders.created` topic and updates downstream services such as inventory, notifications, analytics, or reporting.
+
+### 4.2 Correct Mermaid Diagram
+
+```mermaid
+flowchart LR
+    Producer["order-service publishes event"] --> Topic["Kafka topic: orders.created"]
+    Topic --> Listener["Spring Kafka listener"]
+    Listener --> Consumer["order-event-consumer service"]
+    Consumer --> Validator["Validate event payload"]
+    Validator --> Handler["Process order created event"]
+    Handler --> Inventory["Call inventory-service"]
+    Handler --> Notification["Publish notification command"]
+    Handler --> AuditDB[("Audit database")]
+```
+
+### 4.3 Example Event Payload
+
+```json
+{
+  "eventId": "6b1c8d4e-0db1-4e2f-9d83-12b7b6b74f01",
+  "eventType": "ORDER_CREATED",
+  "orderId": "ORD-1001",
+  "customerId": "CUST-9001",
+  "items": [
+    {
+      "productId": "P100",
+      "quantity": 2
+    }
+  ],
+  "createdAt": "2026-04-29T10:15:30Z"
+}
+```
+
+### 4.4 Maven Dependencies
+
+Add these dependencies to the consumer service `pom.xml`.
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+</dependencies>
+```
+
+### 4.5 Application Configuration
+
+Create `src/main/resources/application.yml`.
+
+```yaml
+server:
+  port: 8084
+
+spring:
+  application:
+    name: order-event-consumer
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: order-event-consumer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+```
+
+### 4.6 Event DTOs
+
+Create `OrderCreatedEvent.java`.
+
+```java
+package com.example.consumer.events;
+
+import java.time.Instant;
+import java.util.List;
+
+public record OrderCreatedEvent(
+        String eventId,
+        String eventType,
+        String orderId,
+        String customerId,
+        List<OrderItemEvent> items,
+        Instant createdAt
+) {}
+```
+
+Create `OrderItemEvent.java`.
+
+```java
+package com.example.consumer.events;
+
+public record OrderItemEvent(
+        String productId,
+        int quantity
+) {}
+```
+
+### 4.7 Kafka Listener
+
+Create `OrderCreatedConsumer.java`.
+
+```java
+package com.example.consumer.kafka;
+
+import com.example.consumer.events.OrderCreatedEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class OrderCreatedConsumer {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderCreatedConsumer.class);
+
+    private final ObjectMapper objectMapper;
+
+    public OrderCreatedConsumer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    @KafkaListener(topics = "orders.created", groupId = "order-event-consumer-group")
+    public void consume(String message) {
+        try {
+            OrderCreatedEvent event = objectMapper.readValue(message, OrderCreatedEvent.class);
+            log.info("Received order created event. eventId={}, orderId={}", event.eventId(), event.orderId());
+
+            // Step 1: validate event
+            validate(event);
+
+            // Step 2: process event
+            process(event);
+
+            // Step 3: record success metrics or audit logs
+            log.info("Successfully processed order created event. orderId={}", event.orderId());
+        } catch (Exception ex) {
+            log.error("Failed to process order event. message={}", message, ex);
+            throw new RuntimeException("Kafka consumer failed", ex);
+        }
+    }
+
+    private void validate(OrderCreatedEvent event) {
+        if (event.orderId() == null || event.orderId().isBlank()) {
+            throw new IllegalArgumentException("orderId is required");
+        }
+        if (event.items() == null || event.items().isEmpty()) {
+            throw new IllegalArgumentException("items are required");
+        }
+    }
+
+    private void process(OrderCreatedEvent event) {
+        // Replace this with real business logic:
+        // - update read model
+        // - notify warehouse
+        // - send notification command
+        // - store audit log
+        log.info("Processing orderId={} with {} items", event.orderId(), event.items().size());
+    }
+}
+```
+
+### 4.8 Docker Compose Kafka Test Environment
+
+```yaml
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+```
+
+### 4.9 Kubernetes Consumer Deployment
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-event-consumer
+  namespace: order-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-event-consumer
+  template:
+    metadata:
+      labels:
+        app: order-event-consumer
+    spec:
+      containers:
+        - name: order-event-consumer
+          image: order-event-consumer:1.0.0
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: kafka.order-platform.svc.cluster.local:9092
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8084
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8084
+            initialDelaySeconds: 30
+            periodSeconds: 10
+```
+
+### 4.10 Consumer Checklist
+
+- Create topic `orders.created`.
+- Start Kafka locally using Docker Compose.
+- Start the Spring Boot consumer.
+- Publish a test event to the topic.
+- Confirm the listener receives the event.
+- Add retry and dead-letter topic handling before production use.
+- Add Prometheus metrics and log correlation IDs.
+- Run at least two replicas in Kubernetes for high availability.
