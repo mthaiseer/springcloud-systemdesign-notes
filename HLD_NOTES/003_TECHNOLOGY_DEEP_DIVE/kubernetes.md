@@ -1293,10 +1293,10 @@ management:
 
 ```mermaid
 flowchart LR
-    App[Spring Boot Pod] --> Metrics[/actuator/prometheus]
-    Prom[Prometheus] --> Metrics
-    Grafana[Grafana] --> Prom
-    User[Engineer] --> Grafana
+    App["Spring Boot Pod"] --> Endpoint["/actuator/prometheus"]
+    Prom["Prometheus"] -->|scrapes| Endpoint
+    Grafana["Grafana"] -->|queries| Prom
+    Engineer["Engineer"] -->|views dashboards| Grafana
 ```
 
 ## 11.5 Distributed Tracing
