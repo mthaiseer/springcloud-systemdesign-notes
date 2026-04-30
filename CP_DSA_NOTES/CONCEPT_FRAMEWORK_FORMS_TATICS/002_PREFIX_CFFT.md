@@ -1,372 +1,857 @@
-# Prefix Sum Problem Solving Playbook (Concepts • Frameworks • Forms • Tactics)
+# Prefix Sum Problem Solving Playbook
 
-> A structured guide to solve any **Prefix Sum–related problem** in competitive programming.  
-> Built from your notes and extended with additional patterns, frameworks, and tactics.
+> Goal: solve almost any competitive-programming problem related to **prefix sum**, **partial sum**, **difference array**, and their 2D versions.
 
 ---
 
-# 0. Big Picture
+# 0. Master Map
 
 ```mermaid
 flowchart TD
-    A[Prefix Sum Thinking] --> B[Concepts]
-    A --> C[Frameworks]
-    A --> D[Forms]
-    A --> E[Tactics]
-    B --> B1[1D Prefix]
-    B --> B2[Difference Array]
-    B --> B3[2D Prefix]
-    B --> B4[2D Difference]
-    C --> C1[Query Framework]
-    C --> C2[Update Framework]
-    D --> D1[Subarray Problems]
-    D --> D2[Range Update Problems]
-    D --> D3[Grid Problems]
-    E --> E1[Optimization Tricks]
-    E --> E2[Pattern Recognition]
+    A["Prefix Sum Family"] --> B["Concepts"]
+    A --> C["Frameworks"]
+    A --> D["Problem Forms"]
+    A --> E["Tactics"]
+    A --> F["C++ Templates"]
+
+    B --> B1["1D Prefix Sum"]
+    B --> B2["1D Difference Array"]
+    B --> B3["2D Prefix Sum"]
+    B --> B4["2D Difference Array"]
+
+    C --> C1["Static Range Query Framework"]
+    C --> C2["Offline Range Update Framework"]
+    C --> C3["Prefix plus Hash Map Framework"]
+
+    D --> D1["Range Sum"]
+    D --> D2["Subarray Sum Equals K"]
+    D --> D3["Range Add Updates"]
+    D --> D4["Rectangle Sum"]
+    D --> D5["Rectangle Add Updates"]
+
+    E --> E1["Indexing Tricks"]
+    E --> E2["Boundary Tricks"]
+    E --> E3["Overflow Tricks"]
 ```
 
 ---
 
-# 1. CONCEPTS (Core Building Blocks)
+# 1. Concepts
 
-## 1.1 1D Prefix Sum
+## 1.1 Prefix Sum
 
-**Idea:** Precompute cumulative sums.
-
-```mermaid
-flowchart LR
-    A[a[i]] --> B[pref[i] = pref[i-1] + a[i]]
-```
-
-### Use When
-- Static array
-- Many range sum queries
-
-### Formula
+Prefix sum stores the cumulative total up to each index.
 
 ```text
-sum(l, r) = pref[r] - pref[l-1]
+pref[i] = a[0] + a[1] + ... + a[i]
+```
+
+For range sum:
+
+```text
+sum(l, r) = pref[r] - pref[l - 1]
+```
+
+Safer 1-indexed version:
+
+```text
+pref[0] = 0
+pref[i] = pref[i - 1] + a[i - 1]
+sum(l, r) = pref[r + 1] - pref[l]
+```
+
+```mermaid
+flowchart LR
+    A["Original Array"] --> B["Build Prefix Sum"]
+    B --> C["Answer Range Sum in O(1)"]
+```
+
+### C++
+
+```cpp
+vector<long long> buildPrefix(const vector<long long>& a) {
+    int n = (int)a.size();
+    vector<long long> pref(n + 1, 0);
+
+    for (int i = 1; i <= n; i++) {
+        pref[i] = pref[i - 1] + a[i - 1];
+    }
+
+    return pref;
+}
+
+long long rangeSum(const vector<long long>& pref, int l, int r) {
+    return pref[r + 1] - pref[l];
+}
 ```
 
 ---
 
-## 1.2 Difference Array (Inverse Prefix)
+## 1.2 Difference Array
 
-**Idea:** Mark where updates start and stop.
+Difference array is the inverse idea of prefix sum.
+
+Use it when many range updates are given and final array is needed later.
+
+For adding `x` to `[l, r]`:
+
+```text
+diff[l] += x
+diff[r + 1] -= x
+```
+
+Then take prefix sum over `diff`.
 
 ```mermaid
 flowchart LR
-    A[+X on L..R] --> B[diff[L]+=X]
-    A --> C[diff[R+1]-=X]
-    B --> D[Prefix rebuild]
+    A["Add x on range l to r"] --> B["Increase diff at l"]
+    A --> C["Decrease diff after r"]
+    B --> D["Build prefix of diff"]
     C --> D
+    D --> E["Final array"]
+```
+
+### C++
+
+```cpp
+vector<long long> applyRangeAdds(
+    int n,
+    const vector<tuple<int, int, long long>>& queries
+) {
+    vector<long long> diff(n + 1, 0);
+
+    for (auto [l, r, x] : queries) {
+        diff[l] += x;
+        diff[r + 1] -= x;
+    }
+
+    vector<long long> ans(n);
+    long long running = 0;
+
+    for (int i = 0; i < n; i++) {
+        running += diff[i];
+        ans[i] = running;
+    }
+
+    return ans;
+}
 ```
 
 ---
 
 ## 1.3 2D Prefix Sum
 
-**Idea:** Extend prefix to matrix.
+Use it for fast rectangle sum queries in a matrix.
+
+```text
+pref[i][j] = sum of rectangle from top-left to cell i,j
+```
 
 ```mermaid
 flowchart TD
-    A[a[i][j]] --> B[pref[i][j]]
-    B --> C[use inclusion-exclusion]
+    A["Cell value"] --> B["2D Prefix Cell"]
+    C["Area above"] --> B
+    D["Area left"] --> B
+    E["Overlapped area"] --> F["Subtract overlap"]
+    F --> B
 ```
 
-Formula:
+1-indexed formula:
 
 ```text
-pref[i][j] = a[i][j] + up + left - overlap
+pref[i][j] = a[i - 1][j - 1]
+           + pref[i - 1][j]
+           + pref[i][j - 1]
+           - pref[i - 1][j - 1]
+```
+
+Rectangle query:
+
+```text
+sum(U, D, L, R)
+= pref[D + 1][R + 1]
+- pref[U][R + 1]
+- pref[D + 1][L]
++ pref[U][L]
+```
+
+### C++
+
+```cpp
+struct Prefix2D {
+    int n, m;
+    vector<vector<long long>> pref;
+
+    Prefix2D(const vector<vector<long long>>& a) {
+        n = (int)a.size();
+        m = (int)a[0].size();
+
+        pref.assign(n + 1, vector<long long>(m + 1, 0));
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                pref[i][j] = a[i - 1][j - 1]
+                           + pref[i - 1][j]
+                           + pref[i][j - 1]
+                           - pref[i - 1][j - 1];
+            }
+        }
+    }
+
+    long long query(int U, int D, int L, int R) {
+        return pref[D + 1][R + 1]
+             - pref[U][R + 1]
+             - pref[D + 1][L]
+             + pref[U][L];
+    }
+};
 ```
 
 ---
 
 ## 1.4 2D Difference Array
 
-**Idea:** 4-corner marking.
+Use it for many rectangle add updates.
+
+For adding `x` to rectangle rows `[U, D]` and columns `[L, R]`:
+
+```text
+diff[U][L] += x
+diff[U][R + 1] -= x
+diff[D + 1][L] -= x
+diff[D + 1][R + 1] += x
+```
 
 ```mermaid
 flowchart TD
-    A[Rectangle update] --> B[top-left +X]
-    A --> C[top-right -X]
-    A --> D[bottom-left -X]
-    A --> E[bottom-right +X]
+    A["Add x to rectangle"] --> B["Mark top-left plus x"]
+    A --> C["Mark top-right boundary minus x"]
+    A --> D["Mark bottom-left boundary minus x"]
+    A --> E["Mark bottom-right overlap plus x"]
+    B --> F["Build 2D prefix"]
+    C --> F
+    D --> F
+    E --> F
+    F --> G["Final matrix"]
 ```
 
----
-
-# 2. FRAMEWORKS (How to Think)
-
-## 2.1 Query Framework
-
-```mermaid
-flowchart TD
-    A[Need many queries] --> B[Precompute prefix]
-    B --> C[Answer in O(1)]
-```
-
-Mental Model:
-
-```text
-Store cumulative info → subtract to isolate range
-```
-
----
-
-## 2.2 Update Framework
-
-```mermaid
-flowchart TD
-    A[Many updates] --> B[Use difference array]
-    B --> C[Apply prefix once]
-```
-
-Mental Model:
-
-```text
-Mark changes → propagate later
-```
-
----
-
-## 2.3 Hybrid Framework
-
-```mermaid
-flowchart TD
-    A[Updates + Queries mixed] --> B[Prefix insufficient]
-    B --> C[Fenwick / Segment Tree]
-```
-
----
-
-# 3. PROBLEM FORMS (Recognize Patterns)
-
-## 3.1 Subarray Sum Problems
-
-### Form
-
-```text
-Find sum(l, r)
-Count subarrays with sum = X
-```
-
-### Pattern
-
-```mermaid
-flowchart TD
-    A[Subarray] --> B[Prefix Sum]
-    B --> C[Map previous prefixes]
-```
-
----
-
-## 3.2 Range Update Problems
-
-### Form
-
-```text
-Add X to all elements in [L, R]
-```
-
-### Pattern
-
-```text
-Difference array
-```
-
----
-
-## 3.3 Subarray Sum = K (Important)
-
-### Core Idea
-
-```text
-pref[r] - pref[l] = K
-=> pref[l] = pref[r] - K
-```
-
-### Pattern
-
-```mermaid
-flowchart TD
-    A[current prefix] --> B[need prefix - K]
-    B --> C[count using map]
-```
-
----
-
-## 3.4 Grid / Matrix Problems
-
-### Form
-
-```text
-Sum of rectangle
-Update rectangle
-```
-
-### Pattern
-
-```text
-2D prefix or 2D difference
-```
-
----
-
-## 3.5 Contribution Technique (Advanced)
-
-Instead of iterating subarrays:
-
-```text
-Count contribution per element
-```
-
----
-
-# 4. TACTICS (What to Do in Contest)
-
-## 4.1 Constraint-Based Decision
-
-```text
-n <= 1e5, q large → prefix sum
-many updates → difference array
-2D grid → 2D prefix
-```
-
----
-
-## 4.2 Pattern Recognition Cheatsheet
-
-| Clue | Technique |
-|------|---------|
-| many sum queries | prefix sum |
-| range add | difference array |
-| subarray sum = K | prefix + map |
-| grid sum | 2D prefix |
-| rectangle updates | 2D difference |
-
----
-
-## 4.3 Edge Case Tactics
-
-- Always initialize:
+### C++
 
 ```cpp
+vector<vector<long long>> applyRectangleAdds(
+    int n,
+    int m,
+    const vector<tuple<int, int, int, int, long long>>& queries
+) {
+    vector<vector<long long>> diff(n + 1, vector<long long>(m + 1, 0));
+
+    for (auto [U, D, L, R, x] : queries) {
+        diff[U][L] += x;
+        diff[U][R + 1] -= x;
+        diff[D + 1][L] -= x;
+        diff[D + 1][R + 1] += x;
+    }
+
+    vector<vector<long long>> ans(n, vector<long long>(m, 0));
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            long long up = (i > 0 ? ans[i - 1][j] : 0);
+            long long left = (j > 0 ? ans[i][j - 1] : 0);
+            long long diag = (i > 0 && j > 0 ? ans[i - 1][j - 1] : 0);
+
+            ans[i][j] = diff[i][j] + up + left - diag;
+        }
+    }
+
+    return ans;
+}
+```
+
+---
+
+# 2. Frameworks
+
+## 2.1 Static Range Query Framework
+
+Use when array does not change.
+
+```mermaid
+flowchart TD
+    A["Static array"] --> B["Build prefix once"]
+    B --> C["Answer each query in O(1)"]
+```
+
+```text
+Preprocess: O(n)
+Each query: O(1)
+Total: O(n + q)
+```
+
+---
+
+## 2.2 Offline Range Update Framework
+
+Use when all updates are known first, and final array is needed after.
+
+```mermaid
+flowchart TD
+    A["Many range updates"] --> B["Mark starts and stops"]
+    B --> C["Prefix rebuild once"]
+    C --> D["Final array"]
+```
+
+```text
+Each update: O(1)
+Rebuild: O(n)
+Total: O(n + q)
+```
+
+---
+
+## 2.3 Prefix Plus Hash Map Framework
+
+Use when counting subarrays with a target sum.
+
+```text
+pref[r] - pref[l - 1] = k
+pref[l - 1] = pref[r] - k
+```
+
+```mermaid
+flowchart TD
+    A["Maintain current prefix"] --> B["Need previous prefix equal current minus k"]
+    B --> C["Add frequency to answer"]
+    C --> D["Store current prefix"]
+```
+
+### C++
+
+```cpp
+long long countSubarraysWithSumK(const vector<long long>& a, long long k) {
+    unordered_map<long long, long long> freq;
+    freq[0] = 1;
+
+    long long pref = 0;
+    long long ans = 0;
+
+    for (long long x : a) {
+        pref += x;
+        ans += freq[pref - k];
+        freq[pref]++;
+    }
+
+    return ans;
+}
+```
+
+---
+
+## 2.4 When Prefix Is Not Enough
+
+```mermaid
+flowchart TD
+    A["Problem has updates and queries mixed online"] --> B["Plain prefix is not enough"]
+    B --> C["Use Fenwick Tree"]
+    B --> D["Use Segment Tree"]
+```
+
+Use:
+- Fenwick Tree for point update + range sum
+- Fenwick Tree with tricks for range update + point query
+- Segment Tree for flexible range updates and queries
+
+---
+
+# 3. Problem Forms
+
+## 3.1 Range Sum Query
+
+Clue:
+
+```text
+Given l and r, find sum of a[l..r]
+```
+
+Use:
+
+```text
+1D prefix sum
+```
+
+---
+
+## 3.2 Count Subarrays With Sum K
+
+Clue:
+
+```text
+How many subarrays have sum exactly k?
+```
+
+Use:
+
+```text
+prefix sum + frequency map
+```
+
+Works with:
+- positive numbers
+- zero
+- negative numbers
+
+---
+
+## 3.3 Longest Subarray With Sum K
+
+Use earliest position of each prefix sum.
+
+```cpp
+int longestSubarraySumK(const vector<long long>& a, long long k) {
+    unordered_map<long long, int> first;
+    first[0] = -1;
+
+    long long pref = 0;
+    int best = 0;
+
+    for (int i = 0; i < (int)a.size(); i++) {
+        pref += a[i];
+
+        if (first.count(pref - k)) {
+            best = max(best, i - first[pref - k]);
+        }
+
+        if (!first.count(pref)) {
+            first[pref] = i;
+        }
+    }
+
+    return best;
+}
+```
+
+---
+
+## 3.4 Subarray Sum Divisible by M
+
+Two prefix sums with same remainder create a subarray divisible by `m`.
+
+```cpp
+long long countDivisibleByM(const vector<long long>& a, int m) {
+    vector<long long> cnt(m, 0);
+    cnt[0] = 1;
+
+    long long pref = 0;
+    long long ans = 0;
+
+    for (long long x : a) {
+        pref = (pref + x) % m;
+        if (pref < 0) pref += m;
+
+        ans += cnt[pref];
+        cnt[pref]++;
+    }
+
+    return ans;
+}
+```
+
+---
+
+## 3.5 Binary Array Count Problems
+
+For binary arrays:
+- number of ones in range
+- number of zeros in range
+- count subarrays with exact number of ones
+
+Use prefix count.
+
+```cpp
+vector<int> prefOnes(n + 1, 0);
+for (int i = 1; i <= n; i++) {
+    prefOnes[i] = prefOnes[i - 1] + (a[i - 1] == 1);
+}
+```
+
+---
+
+## 3.6 Range Add Updates
+
+Clue:
+
+```text
+Add x to every element from l to r
+```
+
+Use:
+
+```text
+difference array
+```
+
+---
+
+## 3.7 Rectangle Sum Query
+
+Clue:
+
+```text
+Find sum inside submatrix
+```
+
+Use:
+
+```text
+2D prefix sum
+```
+
+---
+
+## 3.8 Rectangle Add Updates
+
+Clue:
+
+```text
+Add x to every cell inside rectangle
+```
+
+Use:
+
+```text
+2D difference array
+```
+
+---
+
+## 3.9 Prefix XOR
+
+For XOR range queries:
+
+```text
+xor(l, r) = pxor[r + 1] XOR pxor[l]
+```
+
+```cpp
+vector<int> buildPrefixXor(const vector<int>& a) {
+    int n = (int)a.size();
+    vector<int> px(n + 1, 0);
+
+    for (int i = 1; i <= n; i++) {
+        px[i] = px[i - 1] ^ a[i - 1];
+    }
+
+    return px;
+}
+```
+
+---
+
+## 3.10 Weighted Prefix Sum
+
+Sometimes query needs weighted value.
+
+Example:
+
+```text
+sum of i * a[i]
+```
+
+Build:
+
+```cpp
+weightedPref[i] = weightedPref[i - 1] + i * a[i]
+```
+
+Useful in:
+- distance sum
+- cost shifting
+- contribution problems
+
+---
+
+# 4. Tactics
+
+## 4.1 Decision Table
+
+| Problem clue | Use |
+|---|---|
+| Many range sum queries | 1D prefix |
+| Many range add updates, final array only | 1D difference |
+| Count subarrays with sum K | Prefix + map |
+| Longest subarray with sum K | Prefix + earliest index |
+| Subarray sum divisible by M | Prefix remainder count |
+| Matrix rectangle sum | 2D prefix |
+| Matrix rectangle add | 2D difference |
+| Updates and queries mixed online | Fenwick / Segment Tree |
+| XOR range query | Prefix XOR |
+
+---
+
+## 4.2 Indexing Tactic
+
+Prefer 1-indexed prefix:
+
+```text
+pref[0] = 0
+pref[i] = sum of first i elements
+```
+
+Then:
+
+```text
+sum(l, r) = pref[r + 1] - pref[l]
+```
+
+This avoids `if (l == 0)`.
+
+---
+
+## 4.3 Overflow Tactic
+
+Use `long long`.
+
+```cpp
+long long sum = 0;
+vector<long long> pref(n + 1);
+```
+
+Even if values are `int`, sums may overflow.
+
+---
+
+## 4.4 Boundary Tactic for Difference Array
+
+Allocate one extra cell.
+
+```cpp
+vector<long long> diff(n + 1, 0);
+diff[l] += x;
+diff[r + 1] -= x;
+```
+
+No need to check `r + 1 < n`.
+
+---
+
+## 4.5 Hash Map Tactic
+
+For subarray sum with negative numbers, sliding window may fail.
+
+Use:
+
+```text
+prefix + map
+```
+
+---
+
+## 4.6 Modulo Tactic
+
+In C++, negative modulo can stay negative.
+
+Fix it:
+
+```cpp
+pref %= m;
+if (pref < 0) pref += m;
+```
+
+---
+
+# 5. Common Mistakes
+
+```mermaid
+flowchart TD
+    A["Common Prefix Mistakes"] --> B["Forgetting pref zero"]
+    A --> C["Using int instead of long long"]
+    A --> D["Wrong inclusive or exclusive index"]
+    A --> E["Forgetting freq zero equals one"]
+    A --> F["Using sliding window with negative numbers"]
+    A --> G["Wrong 2D inclusion-exclusion signs"]
+```
+
+## Mistake 1: Forgetting `freq[0] = 1`
+
+Wrong:
+
+```cpp
+unordered_map<long long, long long> freq;
+```
+
+Correct:
+
+```cpp
+unordered_map<long long, long long> freq;
 freq[0] = 1;
 ```
 
-- Use `long long`
-
-- Prefer 1-indexing
-
 ---
 
-## 4.4 Optimization Ladder
+## Mistake 2: Off-by-One in Prefix
 
-```mermaid
-flowchart TD
-    A[Brute Force O(n^2)] --> B[Prefix Sum O(n)]
-    B --> C[Map Optimization O(n)]
-    C --> D[Advanced DS if needed]
-```
-
----
-
-## 4.5 Mental Trick
+Always define clearly:
 
 ```text
-Prefix = accumulate
-Difference = distribute
+Is pref[i] sum up to index i?
+Or sum of first i elements?
 ```
 
----
-
-# 5. COMMON EXTENSIONS (IMPORTANT)
-
-## 5.1 Prefix XOR
-
-Used when XOR instead of sum.
+Recommended:
 
 ```text
-xor(l,r) = pref[r] ^ pref[l-1]
+pref[i] = sum of first i elements
 ```
 
 ---
 
-## 5.2 Prefix Min/Max
+## Mistake 3: Wrong Difference Boundary
 
-Not subtractable → need segment tree.
-
----
-
-## 5.3 Weighted Prefix
-
-```text
-Store weighted sums (index * value)
-```
-
----
-
-## 5.4 Circular Prefix
-
-Handle wrap-around using duplication.
-
----
-
-# 6. MASTER FLOW (Solve Any Problem)
-
-```mermaid
-flowchart TD
-    A[Problem] --> B{Type?}
-    B -->|Subarray| C[Prefix + Map]
-    B -->|Range Query| D[Prefix Sum]
-    B -->|Range Update| E[Difference Array]
-    B -->|Grid| F[2D Prefix]
-    B -->|Grid Update| G[2D Difference]
-    C --> H[Optimize]
-    D --> H
-    E --> H
-    F --> H
-    G --> H
-```
-
----
-
-# 7. FINAL CHECKLIST
-
-Before coding:
-
-```text
-1. Is array static?
-2. Are queries many?
-3. Are updates many?
-4. Is it 1D or 2D?
-5. Can I use prefix?
-6. Do I need map?
-7. Do I need difference array?
-```
-
----
-
-# 8. GOLDEN RULES
-
-```text
-Prefix solves queries
-Difference solves updates
-Map solves counting
-2D = extend logic
-```
-
----
-
-# 9. MINIMAL TEMPLATE
+Correct for inclusive `[l, r]`:
 
 ```cpp
-vector<long long> pref(n+1,0);
-for(int i=1;i<=n;i++) pref[i]=pref[i-1]+a[i-1];
+diff[l] += x;
+diff[r + 1] -= x;
 ```
 
 ---
 
-# END
+# 6. Final Problem-Solving Flow
+
+```mermaid
+flowchart TD
+    A["New Problem"] --> B{"Array or Matrix?"}
+    B -->|"Array"| C{"Query or Update?"}
+    B -->|"Matrix"| D{"Query or Update?"}
+
+    C -->|"Range sum query"| E["1D Prefix Sum"]
+    C -->|"Range add update"| F["1D Difference Array"]
+    C -->|"Subarray count"| G["Prefix plus Map"]
+    C -->|"Mixed online"| H["Fenwick or Segment Tree"]
+
+    D -->|"Rectangle sum"| I["2D Prefix Sum"]
+    D -->|"Rectangle add"| J["2D Difference Array"]
+    D -->|"Mixed online"| K["2D BIT or Segment Tree"]
+```
+
+---
+
+# 7. Minimal Contest Templates
+
+## 7.1 1D Prefix
+
+```cpp
+vector<long long> pref(n + 1, 0);
+
+for (int i = 1; i <= n; i++) {
+    pref[i] = pref[i - 1] + a[i - 1];
+}
+
+auto sum = [&](int l, int r) {
+    return pref[r + 1] - pref[l];
+};
+```
+
+---
+
+## 7.2 1D Difference
+
+```cpp
+vector<long long> diff(n + 1, 0);
+
+auto addRange = [&](int l, int r, long long x) {
+    diff[l] += x;
+    diff[r + 1] -= x;
+};
+
+for (int i = 1; i < n; i++) {
+    diff[i] += diff[i - 1];
+}
+```
+
+---
+
+## 7.3 Prefix + Map
+
+```cpp
+unordered_map<long long, long long> freq;
+freq[0] = 1;
+
+long long pref = 0;
+long long ans = 0;
+
+for (long long x : a) {
+    pref += x;
+    ans += freq[pref - k];
+    freq[pref]++;
+}
+```
+
+---
+
+## 7.4 2D Prefix
+
+```cpp
+vector<vector<long long>> pref(n + 1, vector<long long>(m + 1, 0));
+
+for (int i = 1; i <= n; i++) {
+    for (int j = 1; j <= m; j++) {
+        pref[i][j] = a[i - 1][j - 1]
+                   + pref[i - 1][j]
+                   + pref[i][j - 1]
+                   - pref[i - 1][j - 1];
+    }
+}
+
+auto query = [&](int U, int D, int L, int R) {
+    return pref[D + 1][R + 1]
+         - pref[U][R + 1]
+         - pref[D + 1][L]
+         + pref[U][L];
+};
+```
+
+---
+
+## 7.5 2D Difference
+
+```cpp
+vector<vector<long long>> diff(n + 1, vector<long long>(m + 1, 0));
+
+auto addRect = [&](int U, int D, int L, int R, long long x) {
+    diff[U][L] += x;
+    diff[U][R + 1] -= x;
+    diff[D + 1][L] -= x;
+    diff[D + 1][R + 1] += x;
+};
+
+for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+        long long up = (i ? diff[i - 1][j] : 0);
+        long long left = (j ? diff[i][j - 1] : 0);
+        long long diag = (i && j ? diff[i - 1][j - 1] : 0);
+        diff[i][j] += up + left - diag;
+    }
+}
+```
+
+---
+
+# 8. Final Memory Hooks
+
+```text
+Prefix Sum:
+    accumulate first, subtract later.
+
+Difference Array:
+    mark start and stop, rebuild later.
+
+Prefix + Map:
+    current prefix asks for old prefix.
+
+2D Prefix:
+    add big rectangle, subtract outside, add overlap.
+
+2D Difference:
+    four corners control one rectangle.
+```
