@@ -1,62 +1,58 @@
 # Two Pointers & Sliding Window Problem Solving Playbook
 
-> A structured competitive-programming guide for solving problems related to **two pointers**, **sliding window**, and **same-direction window techniques**.
+> A structured competitive-programming guide for solving **Two Pointers** and **Sliding Window** problems.
 >
-> Main goal: reduce brute force by moving pointers with a safe rule.
+> Goal: recognize the form, choose the right pointer movement rule, maintain the right window state, and solve in `O(n)` or `O(n log n)`.
 
 ---
 
-# Index
+# Clickable Index
 
-```text
-0. Master Map
-1. Concepts
-   1.1 What Two Pointers Means
-   1.2 Opposite Ends
-   1.3 Same Direction Window
-   1.4 Fixed Sliding Window
-   1.5 Variable Sliding Window
-   1.6 Multi-List Traversal
-   1.7 Fix One Then Two Pointers
-   1.8 Counting Windows
-   1.9 Exact K via At Most K
-2. Frameworks
-   2.1 Two Pointer Thinking Framework
-   2.2 Opposite Ends Framework
-   2.3 Expand and Shrink Framework
-   2.4 Fixed Window Framework
-   2.5 Count Subarrays Framework
-   2.6 Multi-List Traversal Framework
-   2.7 Sort plus Fix One Framework
-3. Problem Forms
-   3.1 Two Sum Sorted
-   3.2 Palindrome
-   3.3 Container With Most Water
-   3.4 Longest Subarray With At Most K Zeros
-   3.5 At Most K Distinct
-   3.6 Exactly K Distinct
-   3.7 Count Subarrays With Sum Less Than K
-   3.8 Minimum Size Subarray Sum
-   3.9 Fixed Window Sum
-   3.10 Sliding Window Maximum
-   3.11 Sliding Window Minimum
-   3.12 Subsequence Check
-   3.13 Intersection of Sorted Arrays
-   3.14 3Sum
-   3.15 4Sum
-   3.16 Remove Duplicates
-   3.17 Merge Two Sorted Arrays
-4. Tactics
-   4.1 Pattern Recognition
-   4.2 Pointer Movement Rules
-   4.3 Counting Tactics
-   4.4 Frequency Tactics
-   4.5 Duplicate Tactics
-   4.6 When Sliding Window Fails
-   4.7 Complexity Tactics
-5. C++ Template Library
-6. Final Checklist
-```
+- [0. Master Map](#0-master-map)
+- [1. Concepts](#1-concepts)
+  - [1.1 What Two Pointers Means](#11-what-two-pointers-means)
+  - [1.2 Sliding Window vs Two Pointers](#12-sliding-window-vs-two-pointers)
+  - [1.3 Opposite Ends](#13-opposite-ends)
+  - [1.4 Same Direction Window](#14-same-direction-window)
+  - [1.5 Fixed Size Window](#15-fixed-size-window)
+  - [1.6 Variable Size Window](#16-variable-size-window)
+  - [1.7 Multi-List Traversal](#17-multi-list-traversal)
+  - [1.8 Fix One Then Two Pointers](#18-fix-one-then-two-pointers)
+  - [1.9 Monotonic Window Property](#19-monotonic-window-property)
+- [2. Frameworks](#2-frameworks)
+  - [2.1 Pattern Selection Framework](#21-pattern-selection-framework)
+  - [2.2 Opposite Ends Framework](#22-opposite-ends-framework)
+  - [2.3 Expand-Shrink Window Framework](#23-expand-shrink-window-framework)
+  - [2.4 Head-Tail Maximal Window Framework](#24-head-tail-maximal-window-framework)
+  - [2.5 Count Subarrays Framework](#25-count-subarrays-framework)
+  - [2.6 Exact K via At Most Framework](#26-exact-k-via-at-most-framework)
+  - [2.7 Multi-List Merge Framework](#27-multi-list-merge-framework)
+  - [2.8 Sort-Fix-Search Framework](#28-sort-fix-search-framework)
+- [3. Problem Forms](#3-problem-forms)
+  - [3.1 Two Sum in Sorted Array](#31-two-sum-in-sorted-array)
+  - [3.2 Palindrome Check](#32-palindrome-check)
+  - [3.3 Container With Most Water](#33-container-with-most-water)
+  - [3.4 Remove Duplicates from Sorted Array](#34-remove-duplicates-from-sorted-array)
+  - [3.5 Merge Two Sorted Arrays](#35-merge-two-sorted-arrays)
+  - [3.6 Longest Subarray With At Most K Zeros](#36-longest-subarray-with-at-most-k-zeros)
+  - [3.7 Minimum Size Subarray Sum](#37-minimum-size-subarray-sum)
+  - [3.8 Count Subarrays With Sum Less Than K](#38-count-subarrays-with-sum-less-than-k)
+  - [3.9 Count Subarrays With At Most K Distinct](#39-count-subarrays-with-at-most-k-distinct)
+  - [3.10 Count Subarrays With Exactly K Distinct](#310-count-subarrays-with-exactly-k-distinct)
+  - [3.11 Longest Substring Without Repeating Characters](#311-longest-substring-without-repeating-characters)
+  - [3.12 Minimum Window Substring](#312-minimum-window-substring)
+  - [3.13 Subsequence Check](#313-subsequence-check)
+  - [3.14 Intersection of Two Sorted Lists](#314-intersection-of-two-sorted-lists)
+  - [3.15 Three Sum](#315-three-sum)
+  - [3.16 Four Sum Pattern](#316-four-sum-pattern)
+  - [3.17 Count Pairs With Difference K](#317-count-pairs-with-difference-k)
+  - [3.18 Trapping Rain Water Two-Pointer Version](#318-trapping-rain-water-two-pointer-version)
+  - [3.19 Sliding Window Maximum](#319-sliding-window-maximum)
+  - [3.20 Sliding Window Median](#320-sliding-window-median)
+- [4. Tactics](#4-tactics)
+- [5. C++ Template Library](#5-c-template-library)
+- [6. Final Checklist](#6-final-checklist)
+- [7. Memory Hooks](#7-memory-hooks)
 
 ---
 
@@ -77,19 +73,20 @@ flowchart TD
     B --> B5["Multi-List Traversal"]
 
     C --> C1["Expand and Shrink"]
-    C --> C2["Discard One Side"]
+    C --> C2["Move Smaller or Larger Side"]
     C --> C3["Count Valid Windows"]
-    C --> C4["Fix One Then Pair Search"]
+    C --> C4["Exact K from At Most K"]
 
-    D --> D1["Pair Sum"]
-    D --> D2["Subarray"]
-    D --> D3["Distinct Count"]
-    D --> D4["Subsequence"]
-    D --> D5["3Sum and 4Sum"]
+    D --> D1["Pair Problems"]
+    D --> D2["Subarray Problems"]
+    D --> D3["Substring Problems"]
+    D --> D4["K Sum Problems"]
+    D --> D5["Merge Problems"]
 
-    E --> E1["Move Rule"]
-    E --> E2["Frequency Map"]
+    E --> E1["Pointer Movement"]
+    E --> E2["Frequency State"]
     E --> E3["Duplicate Handling"]
+    E --> E4["Monotonic Conditions"]
 ```
 
 ---
@@ -98,83 +95,104 @@ flowchart TD
 
 ## 1.1 What Two Pointers Means
 
-Two pointers reduce brute force by moving indexes intelligently.
-
-Instead of trying every pair or every subarray:
+Two pointers means using two indices that move intelligently so we avoid brute force.
 
 ```text
-try all pairs      -> O(n^2)
-move pointers      -> O(n)
-sort plus pointers -> O(n log n)
+Brute force: try all pairs or all subarrays
+Two pointers: move left, right, head, tail, i, j based on a rule
 ```
 
 ```mermaid
 flowchart LR
-    A["Brute force tries many combinations"] --> B["Find safe movement rule"]
+    A["Brute force O n squared"] --> B["Find safe pointer movement"]
     B --> C["Each pointer moves limited times"]
-    C --> D["Faster solution"]
+    C --> D["Usually O n or O n log n"]
 ```
 
 Core question:
 
 ```text
-Which pointer can I move without losing the answer?
+Which side can I safely discard?
 ```
 
 ---
 
-## 1.2 Opposite Ends
+## 1.2 Sliding Window vs Two Pointers
 
-Pointers start from both ends.
+Sliding window is a specific form of two pointers focused on a contiguous subarray or substring.
+
+```mermaid
+flowchart TD
+    A["Problem asks about subarray or substring"] --> B{"Window length fixed?"}
+    B -->|"Yes"| C["Fixed sliding window"]
+    B -->|"No"| D["Variable sliding window"]
+```
+
+| Type | Meaning |
+|---|---|
+| Two pointers | General two-index technique |
+| Sliding window | Two pointers over a contiguous range |
+| Fixed window | Window size stays `k` |
+| Variable window | Window expands and shrinks |
+
+---
+
+## 1.3 Opposite Ends
+
+Pointers start at both ends.
+
+```text
+l = 0
+r = n - 1
+```
+
+Used for:
+
+- sorted pair sum
+- palindrome
+- container with most water
+- trapping rain water
+- partitioning
 
 ```mermaid
 flowchart LR
     A["left pointer"] --> B["array or string"]
     C["right pointer"] --> B
+    B --> D["move one pointer inward"]
 ```
-
-Used for:
-- sorted pair sum
-- palindrome
-- container with most water
-- reverse or partition
-- 3Sum inner loop
 
 ---
 
-## 1.3 Same Direction Window
+## 1.4 Same Direction Window
 
 Both pointers move forward.
 
 ```text
-tail ... head
+tail <= head
 ```
+
+Used for:
+
+- longest valid subarray
+- shortest valid subarray
+- count subarrays
+- at most K distinct
+- at most K zeros
+- substrings with frequency constraints
 
 ```mermaid
 flowchart LR
     A["tail"] --> B["current window"]
     B --> C["head"]
+    C --> D["expand"]
+    B --> E["shrink from tail"]
 ```
-
-Used for:
-- longest subarray
-- shortest subarray
-- count subarrays
-- at most K distinct
-- at most K zeros
-- positive-sum constraints
 
 ---
 
-## 1.4 Fixed Sliding Window
+## 1.5 Fixed Size Window
 
-Window size is fixed.
-
-```text
-length = k
-```
-
-At each step:
+Window size is exactly `k`.
 
 ```text
 add new right element
@@ -184,96 +202,221 @@ answer current window
 
 ```mermaid
 flowchart TD
-    A["Move right"] --> B["Add incoming value"]
-    B --> C["Remove outgoing value if size exceeds k"]
-    C --> D["Answer current window"]
+    A["Move right"] --> B["Add incoming element"]
+    B --> C{"Window size greater than k?"}
+    C -->|"Yes"| D["Remove outgoing element"]
+    C -->|"No"| E["Wait"]
+    D --> F{"Window size equals k?"}
+    E --> F
+    F -->|"Yes"| G["Update answer"]
 ```
 
 ---
 
-## 1.5 Variable Sliding Window
+## 1.6 Variable Size Window
 
-Window size changes based on validity.
+Window size changes according to validity.
+
+```text
+expand while valid or until invalid
+shrink until valid again
+```
 
 ```mermaid
 flowchart TD
-    A["Expand right"] --> B["Add element"]
+    A["Expand right"] --> B["Update window state"]
     B --> C{"Window valid?"}
     C -->|"Yes"| D["Update answer"]
-    C -->|"No"| E["Shrink left until valid"]
-    E --> D
-```
-
-Common validity examples:
-
-```text
-zeros <= k
-distinct <= k
-sum <= target
-frequency condition satisfied
+    C -->|"No"| E["Shrink left"]
+    E --> C
 ```
 
 ---
 
-## 1.6 Multi-List Traversal
+## 1.7 Multi-List Traversal
 
-Use one pointer per list/string.
-
-```mermaid
-flowchart TD
-    A["Compare current elements"] --> B{"Which pointer moves?"}
-    B --> C["Move smaller or unmatched pointer"]
-    B --> D["Move both if matched"]
-```
+Use one pointer per list.
 
 Used for:
-- subsequence check
+
 - merging sorted arrays
 - intersection of sorted arrays
-- interval merging
+- subsequence check
+- comparing strings
+- matching sequences
+
+```mermaid
+flowchart TD
+    A["Compare current elements"] --> B{"Which pointer should move?"}
+    B --> C["Move pointer in list A"]
+    B --> D["Move pointer in list B"]
+    B --> E["Move both"]
+```
 
 ---
 
-## 1.7 Fix One Then Two Pointers
+## 1.8 Fix One Then Two Pointers
 
-For 3Sum, 4Sum, and triplet problems:
+For 3Sum and higher `k`-sum problems:
 
 ```text
-sort array
+sort
 fix one element
-run two-sum with two pointers
+solve remaining pair problem with two pointers
 ```
 
 ```mermaid
 flowchart TD
-    A["Sort"] --> B["Fix one element"]
+    A["Sort array"] --> B["Fix one element"]
     B --> C["Reduce target"]
-    C --> D["Use opposite-end two pointers"]
+    C --> D["Run two sum with opposite ends"]
 ```
 
 ---
 
-## 1.8 Counting Windows
+## 1.9 Monotonic Window Property
 
-If a window `[left, right]` is valid and all smaller endings are also valid:
+Sliding window usually needs a property that changes predictably as the window expands.
+
+| Property | Expanding right does what? |
+|---|---|
+| sum of positive numbers | never decreases |
+| number of zeros | never decreases unless left moves |
+| distinct count | increases or stays |
+| frequency violation | can be fixed by moving left |
+
+If the condition is not monotonic, sliding window may fail.
+
+---
+
+# 2. Frameworks
+
+## 2.1 Pattern Selection Framework
+
+```mermaid
+flowchart TD
+    A["Read problem"] --> B{"Pair, subarray, substring, or multiple lists?"}
+    B -->|"Pair"| C{"Sorted or can sort?"}
+    C -->|"Yes"| D["Opposite ends"]
+    C -->|"No"| E["Hash map or sort first"]
+
+    B -->|"Subarray or substring"| F{"Contiguous?"}
+    F -->|"Yes"| G{"Fixed size?"}
+    G -->|"Yes"| H["Fixed sliding window"]
+    G -->|"No"| I["Variable sliding window"]
+
+    B -->|"Multiple lists"| J["Multi-list traversal"]
+    B -->|"Triplet or k-sum"| K["Sort, fix, then two pointers"]
+```
+
+---
+
+## 2.2 Opposite Ends Framework
+
+Use when sorted order lets you discard one side.
+
+```mermaid
+flowchart TD
+    A["Compute using left and right"] --> B{"Too small, too large, or valid?"}
+    B -->|"Too small"| C["Move left rightward"]
+    B -->|"Too large"| D["Move right leftward"]
+    B -->|"Valid"| E["Record answer"]
+```
+
+Template idea:
+
+```cpp
+int l = 0;
+int r = n - 1;
+
+while (l < r) {
+    // evaluate a[l], a[r]
+    // move l or r based on rule
+}
+```
+
+---
+
+## 2.3 Expand-Shrink Window Framework
+
+Most common variable sliding window.
+
+```mermaid
+flowchart TD
+    A["Add a[right]"] --> B["Update state"]
+    B --> C{"State invalid?"}
+    C -->|"Yes"| D["Remove a[left] and left++"]
+    D --> C
+    C -->|"No"| E["Update answer"]
+```
+
+Template idea:
+
+```cpp
+int left = 0;
+
+for (int right = 0; right < n; right++) {
+    add(a[right]);
+
+    while (invalid()) {
+        remove(a[left]);
+        left++;
+    }
+
+    updateAnswer(left, right);
+}
+```
+
+---
+
+## 2.4 Head-Tail Maximal Window Framework
+
+Use when for each `tail`, you want farthest valid `head`.
+
+```mermaid
+flowchart TD
+    A["Fix tail"] --> B["Move head as far as valid"]
+    B --> C["Use window from tail to head"]
+    C --> D["Remove tail"]
+    D --> E["tail moves forward"]
+```
+
+Useful for:
+
+- count subarrays
+- maximal valid segment
+- at most K distinct
+- at most K zeros
+
+---
+
+## 2.5 Count Subarrays Framework
+
+If window `[left, right]` is valid and all subwindows ending at `right` are also valid:
 
 ```text
-number of valid subarrays ending at right = right - left + 1
+add right - left + 1
 ```
 
 ```mermaid
 flowchart TD
-    A["Valid window from left to right"] --> B["All suffixes ending at right are valid"]
+    A["Window left to right is valid"] --> B["All starts from left to right are valid"]
     B --> C["Add window length"]
 ```
 
+Example:
+
+```cpp
+ans += right - left + 1;
+```
+
 ---
 
-## 1.9 Exact K via At Most K
+## 2.6 Exact K via At Most Framework
 
 Exact conditions are often hard.
 
-Convert:
+Use:
 
 ```text
 exactly K = atMost(K) - atMost(K - 1)
@@ -285,110 +428,46 @@ flowchart LR
     B["At most K minus 1"] --> C
 ```
 
-Used for:
+Works for:
+
 - exactly K distinct
-- exactly K odd numbers
 - exactly K zeros
-- exactly K consonants or vowels in some string problems
+- exactly K odd numbers
+- exactly K consonants
+- exactly K different values
 
 ---
 
-# 2. Frameworks
-
-## 2.1 Two Pointer Thinking Framework
+## 2.7 Multi-List Merge Framework
 
 ```mermaid
 flowchart TD
-    A["Read problem"] --> B{"Pair, subarray, or multi-list?"}
-    B -->|"Pair"| C{"Can sort or already sorted?"}
-    B -->|"Subarray"| D{"Is condition monotonic when expanding?"}
-    B -->|"Multi-list"| E["Move pointer that is behind"]
-
-    C -->|"Yes"| F["Opposite ends"]
-    C -->|"No"| G["Hash map or brute force alternative"]
-
-    D -->|"Yes"| H["Sliding window"]
-    D -->|"No"| I["Try prefix sum, DP, or segment tree"]
+    A["Compare current elements"] --> B{"Equal?"}
+    B -->|"Yes"| C["Use value and move both"]
+    B -->|"A smaller"| D["Move A pointer"]
+    B -->|"B smaller"| E["Move B pointer"]
 ```
 
+Used when both lists are sorted or ordered.
+
 ---
 
-## 2.2 Opposite Ends Framework
+## 2.8 Sort-Fix-Search Framework
 
-Use when moving one side can safely discard bad candidates.
+For `kSum`:
 
-```mermaid
-flowchart TD
-    A["Start left and right"] --> B["Compute current value"]
-    B --> C{"Compare with target or rule"}
-    C -->|"Too small"| D["Move left forward"]
-    C -->|"Too large"| E["Move right backward"]
-    C -->|"Good"| F["Record answer"]
+```text
+sort
+fix one or more elements
+solve 2Sum on remaining range
+skip duplicates
 ```
 
----
-
-## 2.3 Expand and Shrink Framework
-
-Use for variable windows.
-
 ```mermaid
 flowchart TD
-    A["Initialize left"] --> B["Move right forward"]
-    B --> C["Add a[right]"]
-    C --> D{"Window invalid?"}
-    D -->|"Yes"| E["Remove a[left] and increment left"]
-    E --> D
-    D -->|"No"| F["Update answer"]
-```
-
----
-
-## 2.4 Fixed Window Framework
-
-Use when problem gives exact size `k`.
-
-```mermaid
-flowchart TD
-    A["Add new element"] --> B["If window size exceeds k remove left"]
-    B --> C{"Window size equals k?"}
-    C -->|"Yes"| D["Update answer"]
-    C -->|"No"| E["Continue"]
-```
-
----
-
-## 2.5 Count Subarrays Framework
-
-For each `right`, maintain smallest valid `left`.
-
-```mermaid
-flowchart TD
-    A["Move right"] --> B["Fix window until valid"]
-    B --> C["All subarrays ending at right and starting from left to right are valid"]
-    C --> D["Add right minus left plus one"]
-```
-
----
-
-## 2.6 Multi-List Traversal Framework
-
-```mermaid
-flowchart TD
-    A["Compare current values"] --> B{"Equal?"}
-    B -->|"Yes"| C["Process match and move both"]
-    B -->|"No"| D["Move pointer with smaller value"]
-```
-
----
-
-## 2.7 Sort plus Fix One Framework
-
-```mermaid
-flowchart TD
-    A["Sort array"] --> B["Loop fixed index"]
-    B --> C["Skip duplicate fixed value"]
-    C --> D["Run two pointers on remaining range"]
+    A["Sort"] --> B["Loop fixed index"]
+    B --> C["Skip duplicate fixed values"]
+    C --> D["Run two pointers"]
     D --> E["Skip duplicate pair values"]
 ```
 
@@ -396,32 +475,34 @@ flowchart TD
 
 # 3. Problem Forms
 
-## 3.1 Two Sum Sorted
+## 3.1 Two Sum in Sorted Array
 
-Problem:
+### Intuition
 
-```text
-Given sorted array, find if two numbers sum to target.
+If sum is too small, increase it by moving `left`.
+If sum is too large, decrease it by moving `right`.
+
+```mermaid
+flowchart TD
+    A["sum equals a left plus a right"] --> B{"Compare with target"}
+    B -->|"Equal"| C["Found"]
+    B -->|"Too small"| D["left++"]
+    B -->|"Too large"| E["right--"]
 ```
 
-Move rule:
-
-```text
-sum too small -> left++
-sum too large -> right--
-```
+### C++
 
 ```cpp
 bool twoSumSorted(vector<int>& a, int target) {
-    int left = 0;
-    int right = (int)a.size() - 1;
+    int l = 0;
+    int r = (int)a.size() - 1;
 
-    while (left < right) {
-        int sum = a[left] + a[right];
+    while (l < r) {
+        long long sum = (long long)a[l] + a[r];
 
         if (sum == target) return true;
-        if (sum < target) left++;
-        else right--;
+        if (sum < target) l++;
+        else r--;
     }
 
     return false;
@@ -430,23 +511,28 @@ bool twoSumSorted(vector<int>& a, int target) {
 
 ---
 
-## 3.2 Palindrome
+## 3.2 Palindrome Check
 
-Problem:
-
-```text
-Check whether string is palindrome.
+```mermaid
+flowchart LR
+    A["left character"] --> B["compare"]
+    C["right character"] --> B
+    B --> D{"same?"}
+    D -->|"Yes"| E["move inward"]
+    D -->|"No"| F["not palindrome"]
 ```
+
+### C++
 
 ```cpp
 bool isPalindrome(const string& s) {
-    int left = 0;
-    int right = (int)s.size() - 1;
+    int l = 0;
+    int r = (int)s.size() - 1;
 
-    while (left < right) {
-        if (s[left] != s[right]) return false;
-        left++;
-        right--;
+    while (l < r) {
+        if (s[l] != s[r]) return false;
+        l++;
+        r--;
     }
 
     return true;
@@ -457,28 +543,33 @@ bool isPalindrome(const string& s) {
 
 ## 3.3 Container With Most Water
 
-Move the shorter wall because it limits the area.
+### Intuition
+
+Area is limited by the shorter wall.  
+Move the shorter wall because moving the taller wall cannot improve the height limit while width shrinks.
 
 ```mermaid
 flowchart TD
     A["Compute area"] --> B{"Which wall is shorter?"}
-    B -->|"Left"| C["Move left"]
-    B -->|"Right"| D["Move right"]
+    B -->|"Left"| C["left++"]
+    B -->|"Right"| D["right--"]
 ```
+
+### C++
 
 ```cpp
 int maxArea(vector<int>& height) {
-    int left = 0;
-    int right = (int)height.size() - 1;
+    int l = 0;
+    int r = (int)height.size() - 1;
     int ans = 0;
 
-    while (left < right) {
-        int width = right - left;
-        int h = min(height[left], height[right]);
+    while (l < r) {
+        int width = r - l;
+        int h = min(height[l], height[r]);
         ans = max(ans, width * h);
 
-        if (height[left] < height[right]) left++;
-        else right--;
+        if (height[l] < height[r]) l++;
+        else r--;
     }
 
     return ans;
@@ -487,7 +578,86 @@ int maxArea(vector<int>& height) {
 
 ---
 
-## 3.4 Longest Subarray With At Most K Zeros
+## 3.4 Remove Duplicates from Sorted Array
+
+Use slow and fast pointers.
+
+```mermaid
+flowchart TD
+    A["fast scans array"] --> B{"new unique value?"}
+    B -->|"Yes"| C["write at slow"]
+    B -->|"No"| D["skip"]
+```
+
+### C++
+
+```cpp
+int removeDuplicates(vector<int>& a) {
+    if (a.empty()) return 0;
+
+    int slow = 1;
+
+    for (int fast = 1; fast < (int)a.size(); fast++) {
+        if (a[fast] != a[fast - 1]) {
+            a[slow] = a[fast];
+            slow++;
+        }
+    }
+
+    return slow;
+}
+```
+
+---
+
+## 3.5 Merge Two Sorted Arrays
+
+```mermaid
+flowchart TD
+    A["Compare a i and b j"] --> B{"Which is smaller?"}
+    B -->|"a i"| C["push a i and i++"]
+    B -->|"b j"| D["push b j and j++"]
+```
+
+### C++
+
+```cpp
+vector<int> mergeSorted(vector<int>& a, vector<int>& b) {
+    int i = 0;
+    int j = 0;
+    vector<int> ans;
+
+    while (i < (int)a.size() && j < (int)b.size()) {
+        if (a[i] <= b[j]) {
+            ans.push_back(a[i]);
+            i++;
+        } else {
+            ans.push_back(b[j]);
+            j++;
+        }
+    }
+
+    while (i < (int)a.size()) ans.push_back(a[i++]);
+    while (j < (int)b.size()) ans.push_back(b[j++]);
+
+    return ans;
+}
+```
+
+---
+
+## 3.6 Longest Subarray With At Most K Zeros
+
+```mermaid
+flowchart TD
+    A["Move right"] --> B["Add zero count if needed"]
+    B --> C{"zeros greater than k?"}
+    C -->|"Yes"| D["Move left until valid"]
+    C -->|"No"| E["Update answer"]
+    D --> E
+```
+
+### C++
 
 ```cpp
 int longestOnes(vector<int>& a, int k) {
@@ -512,9 +682,101 @@ int longestOnes(vector<int>& a, int k) {
 
 ---
 
-## 3.5 At Most K Distinct
+## 3.7 Minimum Size Subarray Sum
 
-Maintain frequency map and distinct count.
+Works when all numbers are positive.
+
+Problem:
+
+```text
+Find shortest subarray with sum >= target.
+```
+
+```mermaid
+flowchart TD
+    A["Expand right and add sum"] --> B{"sum at least target?"}
+    B -->|"Yes"| C["Update minimum length"]
+    C --> D["Shrink left"]
+    D --> B
+    B -->|"No"| E["Continue expanding"]
+```
+
+### C++
+
+```cpp
+int minSubarrayLen(int target, vector<int>& a) {
+    int n = a.size();
+    int left = 0;
+    long long sum = 0;
+    int ans = n + 1;
+
+    for (int right = 0; right < n; right++) {
+        sum += a[right];
+
+        while (sum >= target) {
+            ans = min(ans, right - left + 1);
+            sum -= a[left];
+            left++;
+        }
+    }
+
+    return ans == n + 1 ? 0 : ans;
+}
+```
+
+---
+
+## 3.8 Count Subarrays With Sum Less Than K
+
+Works when all numbers are positive.
+
+```mermaid
+flowchart TD
+    A["Add right value"] --> B{"sum greater or equal k?"}
+    B -->|"Yes"| C["remove left"]
+    C --> B
+    B -->|"No"| D["add window length"]
+```
+
+### C++
+
+```cpp
+long long countSubarraysSumLessThanK(vector<int>& a, long long k) {
+    int left = 0;
+    long long sum = 0;
+    long long ans = 0;
+
+    for (int right = 0; right < (int)a.size(); right++) {
+        sum += a[right];
+
+        while (left <= right && sum >= k) {
+            sum -= a[left];
+            left++;
+        }
+
+        ans += right - left + 1;
+    }
+
+    return ans;
+}
+```
+
+Warning: if negative numbers exist, this sliding window logic may fail.
+
+---
+
+## 3.9 Count Subarrays With At Most K Distinct
+
+```mermaid
+flowchart TD
+    A["Add right value"] --> B["Update frequency"]
+    B --> C{"distinct greater than k?"}
+    C -->|"Yes"| D["Remove left value"]
+    D --> C
+    C -->|"No"| E["Add right minus left plus one"]
+```
+
+### C++
 
 ```cpp
 long long countAtMostKDistinct(vector<int>& a, int k) {
@@ -544,7 +806,13 @@ long long countAtMostKDistinct(vector<int>& a, int k) {
 
 ---
 
-## 3.6 Exactly K Distinct
+## 3.10 Count Subarrays With Exactly K Distinct
+
+```text
+exactly K = atMost K - atMost K minus 1
+```
+
+### C++
 
 ```cpp
 long long countExactlyKDistinct(vector<int>& a, int k) {
@@ -555,123 +823,33 @@ long long countExactlyKDistinct(vector<int>& a, int k) {
 
 ---
 
-## 3.7 Count Subarrays With Sum Less Than K
-
-Works cleanly when all numbers are non-negative or positive.
-
-```cpp
-long long countSubarraysSumLessThanK(vector<int>& a, long long k) {
-    int left = 0;
-    long long sum = 0;
-    long long ans = 0;
-
-    for (int right = 0; right < (int)a.size(); right++) {
-        sum += a[right];
-
-        while (left <= right && sum >= k) {
-            sum -= a[left];
-            left++;
-        }
-
-        ans += right - left + 1;
-    }
-
-    return ans;
-}
-```
-
-Important:
-
-```text
-If negative numbers exist, this monotonic window logic may fail.
-Use prefix sum plus map or tree instead.
-```
-
----
-
-## 3.8 Minimum Size Subarray Sum
-
-For positive numbers:
-
-```cpp
-int minSubarrayLen(long long target, vector<int>& a) {
-    int n = a.size();
-    int left = 0;
-    long long sum = 0;
-    int ans = n + 1;
-
-    for (int right = 0; right < n; right++) {
-        sum += a[right];
-
-        while (sum >= target) {
-            ans = min(ans, right - left + 1);
-            sum -= a[left];
-            left++;
-        }
-    }
-
-    return ans == n + 1 ? 0 : ans;
-}
-```
-
----
-
-## 3.9 Fixed Window Sum
-
-```cpp
-long long maxSumWindowK(vector<int>& a, int k) {
-    long long sum = 0;
-    long long ans = LLONG_MIN;
-
-    for (int right = 0; right < (int)a.size(); right++) {
-        sum += a[right];
-
-        if (right >= k) {
-            sum -= a[right - k];
-        }
-
-        if (right >= k - 1) {
-            ans = max(ans, sum);
-        }
-    }
-
-    return ans;
-}
-```
-
----
-
-## 3.10 Sliding Window Maximum
-
-Use monotonic deque.
+## 3.11 Longest Substring Without Repeating Characters
 
 ```mermaid
 flowchart TD
-    A["Add new index"] --> B["Pop smaller values from back"]
-    B --> C["Push new index"]
-    C --> D["Remove expired front"]
-    D --> E["Front is maximum"]
+    A["Add character at right"] --> B{"duplicate exists?"}
+    B -->|"Yes"| C["remove from left"]
+    C --> B
+    B -->|"No"| D["update answer"]
 ```
 
+### C++
+
 ```cpp
-vector<int> maxSlidingWindow(vector<int>& a, int k) {
-    deque<int> dq;
-    vector<int> ans;
+int lengthOfLongestSubstring(string s) {
+    vector<int> freq(256, 0);
+    int left = 0;
+    int ans = 0;
 
-    for (int i = 0; i < (int)a.size(); i++) {
-        while (!dq.empty() && a[dq.back()] <= a[i]) {
-            dq.pop_back();
+    for (int right = 0; right < (int)s.size(); right++) {
+        freq[(unsigned char)s[right]]++;
+
+        while (freq[(unsigned char)s[right]] > 1) {
+            freq[(unsigned char)s[left]]--;
+            left++;
         }
 
-        dq.push_back(i);
-
-        if (!dq.empty() && dq.front() <= i - k) {
-            dq.pop_front();
-        }
-
-        if (i >= k - 1) {
-            ans.push_back(a[dq.front()]);
-        }
+        ans = max(ans, right - left + 1);
     }
 
     return ans;
@@ -680,38 +858,83 @@ vector<int> maxSlidingWindow(vector<int>& a, int k) {
 
 ---
 
-## 3.11 Sliding Window Minimum
+## 3.12 Minimum Window Substring
 
-Same idea as maximum, but keep deque increasing.
+Problem:
+
+```text
+Find shortest substring of s containing all characters of t.
+```
+
+```mermaid
+flowchart TD
+    A["Expand right"] --> B["Update formed requirements"]
+    B --> C{"All requirements satisfied?"}
+    C -->|"Yes"| D["Update best answer"]
+    D --> E["Shrink left"]
+    E --> C
+    C -->|"No"| F["Keep expanding"]
+```
+
+### C++
 
 ```cpp
-vector<int> minSlidingWindow(vector<int>& a, int k) {
-    deque<int> dq;
-    vector<int> ans;
+string minWindow(string s, string t) {
+    vector<int> need(256, 0);
+    vector<int> have(256, 0);
 
-    for (int i = 0; i < (int)a.size(); i++) {
-        while (!dq.empty() && a[dq.back()] >= a[i]) {
-            dq.pop_back();
+    int required = 0;
+    for (char c : t) {
+        if (need[(unsigned char)c] == 0) required++;
+        need[(unsigned char)c]++;
+    }
+
+    int formed = 0;
+    int left = 0;
+    int bestLen = INT_MAX;
+    int bestStart = 0;
+
+    for (int right = 0; right < (int)s.size(); right++) {
+        unsigned char c = s[right];
+        have[c]++;
+
+        if (need[c] > 0 && have[c] == need[c]) {
+            formed++;
         }
 
-        dq.push_back(i);
+        while (formed == required) {
+            if (right - left + 1 < bestLen) {
+                bestLen = right - left + 1;
+                bestStart = left;
+            }
 
-        if (!dq.empty() && dq.front() <= i - k) {
-            dq.pop_front();
-        }
+            unsigned char d = s[left];
+            have[d]--;
 
-        if (i >= k - 1) {
-            ans.push_back(a[dq.front()]);
+            if (need[d] > 0 && have[d] < need[d]) {
+                formed--;
+            }
+
+            left++;
         }
     }
 
-    return ans;
+    return bestLen == INT_MAX ? "" : s.substr(bestStart, bestLen);
 }
 ```
 
 ---
 
-## 3.12 Subsequence Check
+## 3.13 Subsequence Check
+
+```mermaid
+flowchart TD
+    A["i points to s and j points to t"] --> B{"characters match?"}
+    B -->|"Yes"| C["i++ and j++"]
+    B -->|"No"| D["j++ only"]
+```
+
+### C++
 
 ```cpp
 bool isSubsequence(string s, string t) {
@@ -729,7 +952,17 @@ bool isSubsequence(string s, string t) {
 
 ---
 
-## 3.13 Intersection of Sorted Arrays
+## 3.14 Intersection of Two Sorted Lists
+
+```mermaid
+flowchart TD
+    A["Compare current values"] --> B{"Equal?"}
+    B -->|"Yes"| C["record and move both"]
+    B -->|"First smaller"| D["move first pointer"]
+    B -->|"Second smaller"| E["move second pointer"]
+```
+
+### C++
 
 ```cpp
 vector<int> intersectionSorted(vector<int>& a, vector<int>& b) {
@@ -755,12 +988,24 @@ vector<int> intersectionSorted(vector<int>& a, vector<int>& b) {
 
 ---
 
-## 3.14 3Sum
+## 3.15 Three Sum
 
-Sort, fix one, solve two-sum on the rest.
+Sort, fix one value, solve remaining two-sum.
+
+```mermaid
+flowchart TD
+    A["Sort array"] --> B["Fix index i"]
+    B --> C["Run left and right pointers"]
+    C --> D{"sum equals target?"}
+    D -->|"Yes"| E["record triplet and skip duplicates"]
+    D -->|"Too small"| F["left++"]
+    D -->|"Too large"| G["right--"]
+```
+
+### C++
 
 ```cpp
-vector<vector<int>> threeSum(vector<int>& a) {
+vector<vector<int>> threeSumTarget(vector<int>& a, int target) {
     sort(a.begin(), a.end());
 
     vector<vector<int>> ans;
@@ -769,24 +1014,24 @@ vector<vector<int>> threeSum(vector<int>& a) {
     for (int i = 0; i < n; i++) {
         if (i > 0 && a[i] == a[i - 1]) continue;
 
-        int left = i + 1;
-        int right = n - 1;
+        int l = i + 1;
+        int r = n - 1;
 
-        while (left < right) {
-            long long sum = (long long)a[i] + a[left] + a[right];
+        while (l < r) {
+            long long sum = (long long)a[i] + a[l] + a[r];
 
-            if (sum == 0) {
-                ans.push_back({a[i], a[left], a[right]});
+            if (sum == target) {
+                ans.push_back({a[i], a[l], a[r]});
 
-                int leftValue = a[left];
-                int rightValue = a[right];
+                int lv = a[l];
+                int rv = a[r];
 
-                while (left < right && a[left] == leftValue) left++;
-                while (left < right && a[right] == rightValue) right--;
-            } else if (sum < 0) {
-                left++;
+                while (l < r && a[l] == lv) l++;
+                while (l < r && a[r] == rv) r--;
+            } else if (sum < target) {
+                l++;
             } else {
-                right--;
+                r--;
             }
         }
     }
@@ -797,9 +1042,11 @@ vector<vector<int>> threeSum(vector<int>& a) {
 
 ---
 
-## 3.15 4Sum
+## 3.16 Four Sum Pattern
 
-Fix two values, then two pointers.
+Four sum = fix two values, then run two pointers.
+
+### C++
 
 ```cpp
 vector<vector<int>> fourSum(vector<int>& a, long long target) {
@@ -814,24 +1061,24 @@ vector<vector<int>> fourSum(vector<int>& a, long long target) {
         for (int j = i + 1; j < n; j++) {
             if (j > i + 1 && a[j] == a[j - 1]) continue;
 
-            int left = j + 1;
-            int right = n - 1;
+            int l = j + 1;
+            int r = n - 1;
 
-            while (left < right) {
-                long long sum = (long long)a[i] + a[j] + a[left] + a[right];
+            while (l < r) {
+                long long sum = (long long)a[i] + a[j] + a[l] + a[r];
 
                 if (sum == target) {
-                    ans.push_back({a[i], a[j], a[left], a[right]});
+                    ans.push_back({a[i], a[j], a[l], a[r]});
 
-                    int leftValue = a[left];
-                    int rightValue = a[right];
+                    int lv = a[l];
+                    int rv = a[r];
 
-                    while (left < right && a[left] == leftValue) left++;
-                    while (left < right && a[right] == rightValue) right--;
+                    while (l < r && a[l] == lv) l++;
+                    while (l < r && a[r] == rv) r--;
                 } else if (sum < target) {
-                    left++;
+                    l++;
                 } else {
-                    right--;
+                    r--;
                 }
             }
         }
@@ -843,49 +1090,91 @@ vector<vector<int>> fourSum(vector<int>& a, long long target) {
 
 ---
 
-## 3.16 Remove Duplicates from Sorted Array
+## 3.17 Count Pairs With Difference K
 
-Fast/slow pointer.
+For sorted array.
+
+```mermaid
+flowchart TD
+    A["Compare a right minus a left"] --> B{"Difference"}
+    B -->|"Too small"| C["right++"]
+    B -->|"Too large"| D["left++"]
+    B -->|"Equal"| E["count and move"]
+```
+
+### C++
 
 ```cpp
-int removeDuplicates(vector<int>& a) {
-    if (a.empty()) return 0;
+int countPairsDiffK(vector<int> a, int k) {
+    sort(a.begin(), a.end());
 
-    int write = 1;
+    int n = a.size();
+    int l = 0;
+    int r = 1;
+    int ans = 0;
 
-    for (int read = 1; read < (int)a.size(); read++) {
-        if (a[read] != a[write - 1]) {
-            a[write] = a[read];
-            write++;
+    while (r < n) {
+        if (l == r) {
+            r++;
+            continue;
+        }
+
+        int diff = a[r] - a[l];
+
+        if (diff == k) {
+            ans++;
+            l++;
+            r++;
+        } else if (diff < k) {
+            r++;
+        } else {
+            l++;
         }
     }
 
-    return write;
+    return ans;
 }
 ```
 
+For unique pairs, skip duplicate values after counting.
+
 ---
 
-## 3.17 Merge Two Sorted Arrays
+## 3.18 Trapping Rain Water Two-Pointer Version
+
+### Intuition
+
+Water at a side depends on the smaller max boundary.
+
+```mermaid
+flowchart TD
+    A["Track leftMax and rightMax"] --> B{"left height smaller?"}
+    B -->|"Yes"| C["process left side"]
+    B -->|"No"| D["process right side"]
+```
+
+### C++
 
 ```cpp
-vector<int> mergeSorted(vector<int>& a, vector<int>& b) {
-    int i = 0;
-    int j = 0;
-    vector<int> ans;
+int trap(vector<int>& h) {
+    int l = 0;
+    int r = (int)h.size() - 1;
 
-    while (i < (int)a.size() && j < (int)b.size()) {
-        if (a[i] <= b[j]) {
-            ans.push_back(a[i]);
-            i++;
+    int leftMax = 0;
+    int rightMax = 0;
+    int ans = 0;
+
+    while (l < r) {
+        if (h[l] < h[r]) {
+            leftMax = max(leftMax, h[l]);
+            ans += leftMax - h[l];
+            l++;
         } else {
-            ans.push_back(b[j]);
-            j++;
+            rightMax = max(rightMax, h[r]);
+            ans += rightMax - h[r];
+            r--;
         }
     }
-
-    while (i < (int)a.size()) ans.push_back(a[i++]);
-    while (j < (int)b.size()) ans.push_back(b[j++]);
 
     return ans;
 }
@@ -893,158 +1182,334 @@ vector<int> mergeSorted(vector<int>& a, vector<int>& b) {
 
 ---
 
-# 4. Tactics
+## 3.19 Sliding Window Maximum
 
-## 4.1 Pattern Recognition
-
-| Problem clue | Pattern |
-|---|---|
-| sorted pair sum | opposite ends |
-| palindrome | opposite ends |
-| max water container | opposite ends |
-| longest subarray with condition | variable window |
-| shortest subarray with positive sum | variable window |
-| exact size k | fixed window |
-| at most k distinct | frequency window |
-| exactly k | atMost k minus atMost k minus one |
-| subsequence | multi-list traversal |
-| intersection of sorted arrays | multi-list traversal |
-| 3Sum | sort plus fix one plus two pointers |
-| sliding max or min | monotonic deque |
-
----
-
-## 4.2 Pointer Movement Rules
+For fixed window max, use monotonic deque.
 
 ```mermaid
 flowchart TD
-    A["Need movement rule"] --> B{"Sorted pair sum?"}
-    B -->|"sum too small"| C["Move left forward"]
-    B -->|"sum too large"| D["Move right backward"]
+    A["Add new index"] --> B["Remove smaller values from back"]
+    B --> C["Remove expired front"]
+    C --> D["Front is maximum"]
+```
 
-    A --> E{"Window invalid?"}
-    E -->|"Yes"| F["Move left until valid"]
-    E -->|"No"| G["Move right forward"]
+### C++
 
-    A --> H{"Multi-list?"}
-    H --> I["Move smaller or unmatched pointer"]
+```cpp
+vector<int> maxSlidingWindow(vector<int>& a, int k) {
+    deque<int> dq;
+    vector<int> ans;
+
+    for (int i = 0; i < (int)a.size(); i++) {
+        while (!dq.empty() && a[dq.back()] <= a[i]) {
+            dq.pop_back();
+        }
+
+        dq.push_back(i);
+
+        if (dq.front() <= i - k) {
+            dq.pop_front();
+        }
+
+        if (i >= k - 1) {
+            ans.push_back(a[dq.front()]);
+        }
+    }
+
+    return ans;
+}
 ```
 
 ---
 
-## 4.3 Counting Tactics
+## 3.20 Sliding Window Median
 
-For valid window `[left, right]`:
+For fixed window median, use two multisets.
+
+```mermaid
+flowchart TD
+    A["Insert incoming value"] --> B["Erase outgoing value"]
+    B --> C["Balance two halves"]
+    C --> D["Median is top of lower half"]
+```
+
+### C++
+
+```cpp
+struct SlidingMedian {
+    multiset<int> lo;
+    multiset<int> hi;
+
+    void rebalance() {
+        while (lo.size() < hi.size()) {
+            auto it = hi.begin();
+            lo.insert(*it);
+            hi.erase(it);
+        }
+
+        while (lo.size() > hi.size() + 1) {
+            auto it = prev(lo.end());
+            hi.insert(*it);
+            lo.erase(it);
+        }
+    }
+
+    void insert(int x) {
+        if (lo.empty() || x <= *lo.rbegin()) lo.insert(x);
+        else hi.insert(x);
+
+        rebalance();
+    }
+
+    void erase(int x) {
+        auto it = lo.find(x);
+        if (it != lo.end()) {
+            lo.erase(it);
+        } else {
+            it = hi.find(x);
+            if (it != hi.end()) hi.erase(it);
+        }
+
+        rebalance();
+    }
+
+    double median() {
+        if (lo.size() > hi.size()) return *lo.rbegin();
+        return ((double)*lo.rbegin() + *hi.begin()) / 2.0;
+    }
+};
+```
+
+---
+
+# 4. Tactics
+
+## 4.1 Pattern Recognition Table
+
+| Problem clue | Technique |
+|---|---|
+| sorted pair sum | opposite ends |
+| palindrome | opposite ends |
+| max area with two borders | opposite ends |
+| contiguous subarray | sliding window |
+| fixed length `k` | fixed window |
+| longest valid subarray | expand right, shrink left |
+| shortest valid subarray | expand right, shrink while valid |
+| count valid subarrays | add window length |
+| exactly K | atMost K minus atMost K minus one |
+| sorted lists | multi-list traversal |
+| triplets | sort, fix one, two pointers |
+| window max/min | monotonic deque |
+| window median | two multisets |
+| negative numbers in sum condition | usually prefix or balanced tree, not sliding window |
+
+---
+
+## 4.2 Movement Rules
+
+| Situation | Move |
+|---|---|
+| sorted pair sum too small | `left++` |
+| sorted pair sum too large | `right--` |
+| palindrome chars equal | both inward |
+| palindrome chars different | fail |
+| window invalid | move left |
+| window valid and seeking longest | update answer |
+| window valid and seeking shortest | shrink left |
+| sorted merge smaller value | move smaller pointer |
+| container problem | move shorter wall |
+
+---
+
+## 4.3 Window State Tactics
+
+Common window state:
 
 ```text
-count += right - left + 1
+sum
+zero count
+odd count
+frequency map
+distinct count
+max/min deque
+two multisets
+matched character count
 ```
 
-This counts all valid subarrays ending at `right`.
+When moving right:
 
-For fixed `left` and farthest `right`:
+```cpp
+add(a[right]);
+```
+
+When moving left:
+
+```cpp
+remove(a[left]);
+left++;
+```
+
+---
+
+## 4.4 Counting Tactics
+
+If all subarrays ending at `right` and starting from `left..right` are valid:
+
+```cpp
+ans += right - left + 1;
+```
+
+If for fixed `left`, farthest `right` is valid:
+
+```cpp
+ans += right - left + 1;
+```
+
+If counting invalid is easier:
 
 ```text
-count += right - left + 1
+valid = total - invalid
 ```
 
 ---
 
-## 4.4 Frequency Tactics
+## 4.5 Exact vs At Most vs At Least
 
-Use frequency map when the condition depends on counts.
-
-```cpp
-unordered_map<int, int> freq;
+```text
+exactly K = atMost(K) - atMost(K - 1)
+atLeast K = total - atMost(K - 1)
 ```
 
-Use vector frequency when values are small:
+Common uses:
 
-```cpp
-vector<int> freq(maxValue + 1, 0);
-```
+- exactly K distinct
+- exactly K zeros
+- exactly K odd numbers
+- at least K distinct
 
 ---
 
-## 4.5 Duplicate Tactics
+## 4.6 Sorting Tactics
 
-In sorted arrays:
+Sorting enables:
 
-```cpp
-while (left < right && a[left] == oldLeft) left++;
-while (left < right && a[right] == oldRight) right--;
-```
-
-Use this in:
+- two sum sorted
 - 3Sum
 - 4Sum
-- unique pair/triplet generation
+- pair difference
+- interval-like pair reasoning
+
+But sorting destroys original order.
+
+Use sorting only if order is not important.
 
 ---
 
-## 4.6 When Sliding Window Fails
+## 4.7 Duplicate Handling
 
-Sliding window usually needs monotonic behavior.
+For unique pairs/triplets:
 
-Fails often when:
-- array has negative numbers and condition is sum-based
-- removing left does not predictably improve validity
-- condition is not monotonic
+```cpp
+while (l < r && a[l] == leftValue) l++;
+while (l < r && a[r] == rightValue) r--;
+```
 
-Use alternatives:
-- prefix sum plus hash map
-- balanced tree
+For fixed index:
+
+```cpp
+if (i > 0 && a[i] == a[i - 1]) continue;
+```
+
+For counting duplicates, count duplicate blocks instead of skipping blindly.
+
+---
+
+## 4.8 When Two Pointers Fails
+
+Two pointers may fail when:
+
+- array has negative numbers and condition depends on sum monotonicity
+- order cannot be changed but sorted order is needed
+- window validity is not monotonic
+- removing left does not predictably fix the condition
+- query updates are mixed online
+
+Try:
+
+- prefix sum + hash map
+- binary search
+- Fenwick tree
 - segment tree
 - dynamic programming
+- heap or multiset
 
 ---
 
-## 4.7 Complexity Tactics
+## 4.9 Complexity Proof Tactic
 
-Nested loops are not always quadratic.
+Nested loops can still be `O(n)`.
 
-If both pointers only move forward:
+Reason:
 
 ```text
-left moves at most n times
-right moves at most n times
-total O(n)
+left only moves forward at most n times
+right only moves forward at most n times
+total pointer moves <= 2n
 ```
 
 ```mermaid
 flowchart LR
-    A["left moves forward only"] --> C["O n total moves"]
-    B["right moves forward only"] --> C
+    A["left moves at most n"] --> C["O n total"]
+    B["right moves at most n"] --> C
 ```
 
 ---
 
 # 5. C++ Template Library
 
-## 5.1 Opposite Ends Template
+## 5.1 Opposite Ends
 
 ```cpp
-int left = 0;
-int right = n - 1;
+int l = 0;
+int r = n - 1;
 
-while (left < right) {
-    auto value = combine(a[left], a[right]);
+while (l < r) {
+    if (condition(a[l], a[r])) {
+        // use answer
+    }
 
-    if (good(value)) {
-        recordAnswer();
-        left++;
-        right--;
-    } else if (needBigger(value)) {
-        left++;
+    if (shouldMoveLeft()) {
+        l++;
     } else {
-        right--;
+        r--;
     }
 }
 ```
 
 ---
 
-## 5.2 Variable Window Template
+## 5.2 Fixed Size Window
+
+```cpp
+long long sum = 0;
+
+for (int right = 0; right < n; right++) {
+    sum += a[right];
+
+    if (right >= k) {
+        sum -= a[right - k];
+    }
+
+    if (right >= k - 1) {
+        // window is [right-k+1, right]
+        updateAnswer(sum);
+    }
+}
+```
+
+---
+
+## 5.3 Expand-Shrink Variable Window
 
 ```cpp
 int left = 0;
@@ -1052,7 +1517,7 @@ int left = 0;
 for (int right = 0; right < n; right++) {
     add(a[right]);
 
-    while (!valid()) {
+    while (invalid()) {
         remove(a[left]);
         left++;
     }
@@ -1063,45 +1528,45 @@ for (int right = 0; right < n; right++) {
 
 ---
 
-## 5.3 Count At Most Template
+## 5.4 Count At Most K
 
 ```cpp
-long long ans = 0;
-int left = 0;
+long long atMostK(vector<int>& a, int k) {
+    if (k < 0) return 0;
 
-for (int right = 0; right < n; right++) {
-    add(a[right]);
+    int left = 0;
+    long long ans = 0;
 
-    while (!valid()) {
-        remove(a[left]);
-        left++;
+    // state variables here
+
+    for (int right = 0; right < (int)a.size(); right++) {
+        add(a[right]);
+
+        while (stateGreaterThanK()) {
+            remove(a[left]);
+            left++;
+        }
+
+        ans += right - left + 1;
     }
 
-    ans += right - left + 1;
+    return ans;
 }
 ```
 
 ---
 
-## 5.4 Fixed Window Template
+## 5.5 Exactly K
 
 ```cpp
-for (int right = 0; right < n; right++) {
-    add(a[right]);
-
-    if (right >= k) {
-        remove(a[right - k]);
-    }
-
-    if (right >= k - 1) {
-        updateAnswer();
-    }
+long long exactlyK(vector<int>& a, int k) {
+    return atMostK(a, k) - atMostK(a, k - 1);
 }
 ```
 
 ---
 
-## 5.5 Head-Tail Maximal Window Template
+## 5.6 Head-Tail Maximal Window
 
 ```cpp
 int head = -1;
@@ -1113,6 +1578,7 @@ while (tail < n) {
         add(a[head]);
     }
 
+    // current valid window is [tail, head]
     updateAnswer(tail, head);
 
     if (tail > head) {
@@ -1127,7 +1593,7 @@ while (tail < n) {
 
 ---
 
-## 5.6 Multi-List Traversal Template
+## 5.7 Multi-List Traversal
 
 ```cpp
 int i = 0;
@@ -1135,7 +1601,7 @@ int j = 0;
 
 while (i < n && j < m) {
     if (a[i] == b[j]) {
-        processMatch();
+        // use match
         i++;
         j++;
     } else if (a[i] < b[j]) {
@@ -1148,7 +1614,7 @@ while (i < n && j < m) {
 
 ---
 
-## 5.7 Sort plus Fix One Template
+## 5.8 Three Sum Template
 
 ```cpp
 sort(a.begin(), a.end());
@@ -1156,25 +1622,48 @@ sort(a.begin(), a.end());
 for (int i = 0; i < n; i++) {
     if (i > 0 && a[i] == a[i - 1]) continue;
 
-    int left = i + 1;
-    int right = n - 1;
+    int l = i + 1;
+    int r = n - 1;
 
-    while (left < right) {
-        long long sum = (long long)a[i] + a[left] + a[right];
+    while (l < r) {
+        long long sum = (long long)a[i] + a[l] + a[r];
 
         if (sum == target) {
-            recordAnswer();
+            // record
+            int lv = a[l];
+            int rv = a[r];
 
-            int leftValue = a[left];
-            int rightValue = a[right];
-
-            while (left < right && a[left] == leftValue) left++;
-            while (left < right && a[right] == rightValue) right--;
+            while (l < r && a[l] == lv) l++;
+            while (l < r && a[r] == rv) r--;
         } else if (sum < target) {
-            left++;
+            l++;
         } else {
-            right--;
+            r--;
         }
+    }
+}
+```
+
+---
+
+## 5.9 Monotonic Deque Window Max
+
+```cpp
+deque<int> dq;
+
+for (int i = 0; i < n; i++) {
+    while (!dq.empty() && a[dq.back()] <= a[i]) {
+        dq.pop_back();
+    }
+
+    dq.push_back(i);
+
+    if (dq.front() <= i - k) {
+        dq.pop_front();
+    }
+
+    if (i >= k - 1) {
+        int currentMax = a[dq.front()];
     }
 }
 ```
@@ -1186,42 +1675,50 @@ for (int i = 0; i < n; i++) {
 Before coding, ask:
 
 ```text
-1. Is this about pair, subarray, or multiple lists?
+1. Is it pair, subarray, substring, or multi-list?
 2. Is the array sorted, or can I sort it?
-3. Are pointers moving opposite directions or same direction?
-4. What is the exact validity condition?
-5. When invalid, how do I shrink?
-6. When valid, do I update max length, min length, or count?
-7. Do I need frequency map?
-8. Do I need to handle duplicates?
-9. Does sliding window fail because of negative numbers?
-10. Is each pointer moving only forward?
+3. Is the window fixed size or variable size?
+4. What is the window state?
+5. What makes the window invalid?
+6. When do I move left?
+7. When do I move right?
+8. Am I counting windows or finding best length?
+9. Is exact K better solved using atMost?
+10. Are duplicates important?
+11. Does the array contain negative values?
+12. Is the condition monotonic as the window expands?
 ```
 
 ---
 
-# 7. Final Memory Hooks
+# 7. Memory Hooks
 
 ```text
-Two pointers = safely discard possibilities.
+Two Sum sorted:
+    small sum -> left++
+    big sum -> right--
 
-Opposite ends:
-    sorted pair logic.
+Container:
+    move shorter wall
 
-Sliding window:
-    expand right, shrink left.
+Window:
+    expand right
+    shrink left when invalid
 
-Count windows:
-    add right - left + 1.
+Count valid subarrays:
+    add window length
 
 Exactly K:
-    atMost(K) - atMost(K - 1).
+    atMost K - atMost K-1
 
 3Sum:
-    sort, fix one, two-sum.
+    sort, fix one, two sum
 
-If negative numbers break sum monotonicity:
-    use prefix sum instead.
+Multi-list:
+    move the pointer that is behind
+
+Nested while is still O(n):
+    each pointer moves forward at most n times
 ```
 
 ---
