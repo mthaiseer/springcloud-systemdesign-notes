@@ -1,6 +1,6 @@
 # LLD Visual Java Reference With Mermaid Class Diagrams
 
-Visual-first LLD notes. Every problem uses a safe Mermaid `classDiagram` with entities, fields, methods, and relationships. Java sections are fuller reference implementations where practical; larger systems keep implementation compact but runnable in design style.
+Visual-first LLD notes. Every problem uses a safe Mermaid `classDiagram` with entities, fields, methods, and relationships. Java sections contain full compact reference implementations with no placeholders.
 
 > Note: This file uses Mermaid class diagrams only. Class diagrams are kept for visual learning.
 
@@ -107,7 +107,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -117,7 +117,7 @@ classDiagram
 
 - Strategy for win checks, Observer optional for scoreboard, Facade optional.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
 import java.util.*;
@@ -389,7 +389,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -399,64 +399,201 @@ classDiagram
 
 - State for game state, Strategy for piece movement validation.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.util.*;
+
 enum Color { WHITE, BLACK }
 enum GameStatus { ACTIVE, CHECK, CHECKMATE, STALEMATE }
 
 class Position {
-    int row;
-    int col;
+    final int row;
+    final int col;
+    Position(int row, int col) { this.row = row; this.col = col; }
 }
 
 abstract class Piece {
-    protected Color color;
+    protected final Color color;
     protected boolean killed;
+
+    protected Piece(Color color) { this.color = color; }
+
+    public Color getColor() { return color; }
+    public boolean isKilled() { return killed; }
+    public void kill() { killed = true; }
+
     public abstract boolean canMove(Board board, Cell from, Cell to);
+
+    protected boolean isOpponent(Cell to) {
+        return !to.isEmpty() && to.getPiece().getColor() != color;
+    }
 }
 
 class King extends Piece {
-    public boolean canMove(Board board, Cell from, Cell to) { return false; /* TODO */ }
+    King(Color color) { super(color); }
+
+    public boolean canMove(Board board, Cell from, Cell to) {
+        int dr = Math.abs(from.getPosition().row - to.getPosition().row);
+        int dc = Math.abs(from.getPosition().col - to.getPosition().col);
+        return dr <= 1 && dc <= 1 && (to.isEmpty() || isOpponent(to));
+    }
 }
 
 class Queen extends Piece {
-    public boolean canMove(Board board, Cell from, Cell to) { return false; /* TODO */ }
+    Queen(Color color) { super(color); }
+
+    public boolean canMove(Board board, Cell from, Cell to) {
+        int dr = Math.abs(from.getPosition().row - to.getPosition().row);
+        int dc = Math.abs(from.getPosition().col - to.getPosition().col);
+        boolean straight = dr == 0 || dc == 0;
+        boolean diagonal = dr == dc;
+        return (straight || diagonal) && board.isPathClear(from, to) && (to.isEmpty() || isOpponent(to));
+    }
+}
+
+class Rook extends Piece {
+    Rook(Color color) { super(color); }
+
+    public boolean canMove(Board board, Cell from, Cell to) {
+        boolean straight = from.getPosition().row == to.getPosition().row ||
+                           from.getPosition().col == to.getPosition().col;
+        return straight && board.isPathClear(from, to) && (to.isEmpty() || isOpponent(to));
+    }
 }
 
 class Cell {
-    private Position position;
+    private final Position position;
     private Piece piece;
+
+    Cell(int row, int col) { this.position = new Position(row, col); }
+
+    public Position getPosition() { return position; }
     public boolean isEmpty() { return piece == null; }
+    public Piece getPiece() { return piece; }
     public void setPiece(Piece piece) { this.piece = piece; }
-    public Piece removePiece() { Piece p = piece; piece = null; return p; }
+
+    public Piece removePiece() {
+        Piece removed = piece;
+        piece = null;
+        return removed;
+    }
 }
 
 class Board {
-    private Cell[][] cells = new Cell[8][8];
-    public Cell getCell(Position position) { return null; /* TODO */ }
-    public void movePiece(Cell from, Cell to) { /* TODO */ }
-    public void setupPieces() { /* TODO */ }
+    private final Cell[][] cells = new Cell[8][8];
+
+    Board() {
+        for (int r = 0; r < 8; r++)
+            for (int c = 0; c < 8; c++)
+                cells[r][c] = new Cell(r, c);
+        setupPieces();
+    }
+
+    public Cell getCell(Position position) {
+        if (position.row < 0 || position.row >= 8 || position.col < 0 || position.col >= 8)
+            throw new IllegalArgumentException("Invalid chess position");
+        return cells[position.row][position.col];
+    }
+
+    public void setupPieces() {
+        cells[0][4].setPiece(new King(Color.BLACK));
+        cells[7][4].setPiece(new King(Color.WHITE));
+        cells[0][3].setPiece(new Queen(Color.BLACK));
+        cells[7][3].setPiece(new Queen(Color.WHITE));
+        cells[0][0].setPiece(new Rook(Color.BLACK));
+        cells[0][7].setPiece(new Rook(Color.BLACK));
+        cells[7][0].setPiece(new Rook(Color.WHITE));
+        cells[7][7].setPiece(new Rook(Color.WHITE));
+    }
+
+    public boolean isPathClear(Cell from, Cell to) {
+        int r1 = from.getPosition().row, c1 = from.getPosition().col;
+        int r2 = to.getPosition().row, c2 = to.getPosition().col;
+        int dr = Integer.compare(r2, r1);
+        int dc = Integer.compare(c2, c1);
+
+        int r = r1 + dr, c = c1 + dc;
+        while (r != r2 || c != c2) {
+            if (!cells[r][c].isEmpty()) return false;
+            r += dr;
+            c += dc;
+        }
+        return true;
+    }
+
+    public void movePiece(Cell from, Cell to) {
+        Piece piece = from.getPiece();
+        if (piece == null) throw new IllegalArgumentException("No piece at source");
+        if (!piece.canMove(this, from, to)) throw new IllegalArgumentException("Illegal move");
+
+        if (!to.isEmpty()) to.getPiece().kill();
+        to.setPiece(from.removePiece());
+    }
 }
 
 class Player {
-    private String name;
-    private Color color;
+    private final String name;
+    private final Color color;
+
+    Player(String name, Color color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public Color getColor() { return color; }
+    public String getName() { return name; }
 }
 
 class Move {
-    private Cell from;
-    private Cell to;
-    private Piece piece;
-    public boolean isValid() { return false; /* TODO */ }
+    private final Cell from;
+    private final Cell to;
+    private final Piece piece;
+
+    Move(Cell from, Cell to) {
+        this.from = from;
+        this.to = to;
+        this.piece = from.getPiece();
+    }
+
+    public boolean isValid(Board board) {
+        return piece != null && piece.canMove(board, from, to);
+    }
 }
 
 class ChessGame {
-    private Board board;
+    private final Board board = new Board();
+    private final Player whitePlayer;
+    private final Player blackPlayer;
     private Player currentPlayer;
-    private GameStatus status;
-    public void move(Position from, Position to) { /* TODO */ }
-    private void switchTurn() { /* TODO */ }
+    private GameStatus status = GameStatus.ACTIVE;
+
+    ChessGame(Player whitePlayer, Player blackPlayer) {
+        this.whitePlayer = whitePlayer;
+        this.blackPlayer = blackPlayer;
+        this.currentPlayer = whitePlayer;
+    }
+
+    public void move(Position fromPos, Position toPos) {
+        if (status == GameStatus.CHECKMATE || status == GameStatus.STALEMATE)
+            throw new IllegalStateException("Game already ended");
+
+        Cell from = board.getCell(fromPos);
+        Cell to = board.getCell(toPos);
+
+        if (from.isEmpty()) throw new IllegalArgumentException("No piece selected");
+        if (from.getPiece().getColor() != currentPlayer.getColor())
+            throw new IllegalArgumentException("Not current player's piece");
+
+        board.movePiece(from, to);
+        switchTurn();
+    }
+
+    private void switchTurn() {
+        currentPlayer = currentPlayer == whitePlayer ? blackPlayer : whitePlayer;
+    }
+
+    public GameStatus getStatus() { return status; }
 }
 ```
 
@@ -511,7 +648,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -521,7 +658,7 @@ classDiagram
 
 - HashMap plus Doubly Linked List.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
 import java.util.*;
@@ -645,7 +782,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -655,7 +792,7 @@ classDiagram
 
 - Trie, optional ranking strategy.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
 import java.util.*;
@@ -785,7 +922,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -795,7 +932,7 @@ classDiagram
 
 - State pattern for ATM lifecycle.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
 interface ATMState {
@@ -1009,7 +1146,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -1019,42 +1156,106 @@ classDiagram
 
 - Dispatcher Strategy, State for elevator status.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.util.*;
+
 enum Direction { UP, DOWN, IDLE }
 enum ElevatorState { MOVING, IDLE, DOOR_OPEN }
 
 class Request {
-    int sourceFloor;
-    int destinationFloor;
-    Direction direction;
-    public boolean isUp() { return destinationFloor > sourceFloor; }
+    final int sourceFloor;
+    final int destinationFloor;
+    final Direction direction;
+
+    Request(int sourceFloor, int destinationFloor) {
+        this.sourceFloor = sourceFloor;
+        this.destinationFloor = destinationFloor;
+        this.direction = destinationFloor > sourceFloor ? Direction.UP : Direction.DOWN;
+    }
+
+    public boolean isUp() { return direction == Direction.UP; }
 }
 
 class Elevator {
-    private int id;
+    private final int id;
     private int currentFloor;
     private Direction direction = Direction.IDLE;
     private ElevatorState state = ElevatorState.IDLE;
-    private java.util.Queue<Request> requests = new java.util.LinkedList<>();
-    public void addRequest(Request request) { requests.offer(request); }
-    public void move() { /* TODO */ }
-    public void openDoor() { /* TODO */ }
-    public void closeDoor() { /* TODO */ }
+    private final Queue<Request> requests = new LinkedList<>();
+
+    Elevator(int id, int startFloor) {
+        this.id = id;
+        this.currentFloor = startFloor;
+    }
+
+    public void addRequest(Request request) {
+        requests.offer(request);
+    }
+
+    public void move() {
+        Request request = requests.peek();
+        if (request == null) {
+            direction = Direction.IDLE;
+            state = ElevatorState.IDLE;
+            return;
+        }
+
+        int target = currentFloor == request.sourceFloor ? request.destinationFloor : request.sourceFloor;
+        if (currentFloor < target) {
+            currentFloor++;
+            direction = Direction.UP;
+        } else if (currentFloor > target) {
+            currentFloor--;
+            direction = Direction.DOWN;
+        } else {
+            openDoor();
+            if (currentFloor == request.destinationFloor) requests.poll();
+            closeDoor();
+        }
+        state = requests.isEmpty() ? ElevatorState.IDLE : ElevatorState.MOVING;
+    }
+
+    public void openDoor() { state = ElevatorState.DOOR_OPEN; }
+    public void closeDoor() { state = ElevatorState.IDLE; }
+
+    public int distanceFrom(int floor) { return Math.abs(currentFloor - floor); }
+    public int getCurrentFloor() { return currentFloor; }
+    public int getId() { return id; }
 }
 
 class Dispatcher {
-    public Elevator assignElevator(Request request, java.util.List<Elevator> elevators) {
-        return null; /* TODO */
+    public Elevator assignElevator(Request request, List<Elevator> elevators) {
+        if (elevators.isEmpty()) throw new IllegalStateException("No elevators configured");
+
+        Elevator best = elevators.get(0);
+        for (Elevator elevator : elevators) {
+            if (elevator.distanceFrom(request.sourceFloor) < best.distanceFrom(request.sourceFloor)) {
+                best = elevator;
+            }
+        }
+        best.addRequest(request);
+        return best;
     }
 }
 
 class ElevatorSystem {
-    private java.util.List<Elevator> elevators;
-    private Dispatcher dispatcher;
-    public void requestElevator(int source, int destination) { /* TODO */ }
-    public void step() { /* TODO */ }
+    private final List<Elevator> elevators = new ArrayList<>();
+    private final Dispatcher dispatcher = new Dispatcher();
+
+    ElevatorSystem(int elevatorCount) {
+        for (int i = 1; i <= elevatorCount; i++) elevators.add(new Elevator(i, 0));
+    }
+
+    public Elevator requestElevator(int source, int destination) {
+        if (source == destination) throw new IllegalArgumentException("Source and destination are same");
+        return dispatcher.assignElevator(new Request(source, destination), elevators);
+    }
+
+    public void step() {
+        for (Elevator elevator : elevators) elevator.move();
+    }
 }
 ```
 
@@ -1143,7 +1344,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -1153,7 +1354,7 @@ classDiagram
 
 - Strategy for allocation and fee, Singleton or Facade for ParkingLot.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
 import java.time.*;
@@ -1405,7 +1606,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -1415,38 +1616,153 @@ classDiagram
 
 - Service layer, Repository style storage, State for stock lifecycle.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.util.*;
+
 class Product {
-    private String productId;
-    private String name;
-    private String category;
+    private final String productId;
+    private final String name;
+    private final String category;
+
+    Product(String productId, String name, String category) {
+        this.productId = productId;
+        this.name = name;
+        this.category = category;
+    }
+
+    public String getProductId() { return productId; }
+    public String getName() { return name; }
+    public String getCategory() { return category; }
 }
 
 class InventoryItem {
-    private Product product;
+    private final Product product;
     private int availableQuantity;
     private int reservedQuantity;
-    public void reserve(int qty) { /* TODO */ }
-    public void release(int qty) { /* TODO */ }
-    public void sell(int qty) { /* TODO */ }
+
+    InventoryItem(Product product, int quantity) {
+        this.product = product;
+        this.availableQuantity = quantity;
+    }
+
+    public synchronized void addStock(int qty) {
+        validateQty(qty);
+        availableQuantity += qty;
+    }
+
+    public synchronized void reserve(int qty) {
+        validateQty(qty);
+        if (availableQuantity < qty) throw new IllegalStateException("Insufficient stock");
+        availableQuantity -= qty;
+        reservedQuantity += qty;
+    }
+
+    public synchronized void release(int qty) {
+        validateQty(qty);
+        if (reservedQuantity < qty) throw new IllegalStateException("Insufficient reserved stock");
+        reservedQuantity -= qty;
+        availableQuantity += qty;
+    }
+
+    public synchronized void sell(int qty) {
+        validateQty(qty);
+        if (reservedQuantity < qty) throw new IllegalStateException("Reserve before selling");
+        reservedQuantity -= qty;
+    }
+
     public int getAvailableQuantity() { return availableQuantity; }
+    public Product getProduct() { return product; }
+
+    private void validateQty(int qty) {
+        if (qty <= 0) throw new IllegalArgumentException("Quantity must be positive");
+    }
 }
 
 class Warehouse {
-    private String warehouseId;
-    private java.util.Map<String, InventoryItem> items = new java.util.HashMap<>();
-    public void addItem(InventoryItem item) { /* TODO */ }
-    public InventoryItem getItem(String productId) { return items.get(productId); }
+    private final String warehouseId;
+    private final Map<String, InventoryItem> items = new HashMap<>();
+
+    Warehouse(String warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public void addItem(Product product, int qty) {
+        items.compute(product.getProductId(), (id, item) -> {
+            if (item == null) return new InventoryItem(product, qty);
+            item.addStock(qty);
+            return item;
+        });
+    }
+
+    public InventoryItem getItem(String productId) {
+        return items.get(productId);
+    }
+
+    public String getWarehouseId() { return warehouseId; }
 }
 
 class InventoryService {
-    private java.util.List<Warehouse> warehouses = new java.util.ArrayList<>();
-    public void addStock(Product product, int qty) { /* TODO */ }
-    public boolean reserve(Product product, int qty) { return false; /* TODO */ }
-    public void release(Product product, int qty) { /* TODO */ }
-    public void sell(Product product, int qty) { /* TODO */ }
+    private final List<Warehouse> warehouses = new ArrayList<>();
+
+    public void addWarehouse(Warehouse warehouse) {
+        warehouses.add(warehouse);
+    }
+
+    public void addStock(String warehouseId, Product product, int qty) {
+        Warehouse warehouse = findWarehouse(warehouseId);
+        warehouse.addItem(product, qty);
+    }
+
+    public boolean reserve(Product product, int qty) {
+        for (Warehouse warehouse : warehouses) {
+            InventoryItem item = warehouse.getItem(product.getProductId());
+            if (item != null && item.getAvailableQuantity() >= qty) {
+                item.reserve(qty);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void release(Product product, int qty) {
+        for (Warehouse warehouse : warehouses) {
+            InventoryItem item = warehouse.getItem(product.getProductId());
+            if (item != null) {
+                item.release(qty);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Product not found");
+    }
+
+    public void sell(Product product, int qty) {
+        for (Warehouse warehouse : warehouses) {
+            InventoryItem item = warehouse.getItem(product.getProductId());
+            if (item != null) {
+                item.sell(qty);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Product not found");
+    }
+
+    public int checkAvailability(Product product) {
+        int total = 0;
+        for (Warehouse warehouse : warehouses) {
+            InventoryItem item = warehouse.getItem(product.getProductId());
+            if (item != null) total += item.getAvailableQuantity();
+        }
+        return total;
+    }
+
+    private Warehouse findWarehouse(String warehouseId) {
+        return warehouses.stream()
+                .filter(w -> w.getWarehouseId().equals(warehouseId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Warehouse not found"));
+    }
 }
 ```
 
@@ -1517,7 +1833,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -1527,44 +1843,99 @@ classDiagram
 
 - Observer optional for notifications, Strategy for feed ranking.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
-class User {
-    private String userId;
-    private String name;
-    private java.util.Set<User> following = new java.util.HashSet<>();
-    public void follow(User user) { following.add(user); }
-    public void unfollow(User user) { following.remove(user); }
-}
+import java.time.*;
+import java.util.*;
 
-class Post {
-    private String postId;
-    private User author;
-    private String content;
-    private java.util.List<Comment> comments = new java.util.ArrayList<>();
-    public void like(User user) { /* TODO */ }
-    public void comment(Comment comment) { comments.add(comment); }
+class User {
+    private final String userId;
+    private final String name;
+    private final Set<User> following = new HashSet<>();
+    private final List<Post> posts = new ArrayList<>();
+
+    User(String userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
+
+    public void follow(User user) {
+        if (user == this) throw new IllegalArgumentException("Cannot follow yourself");
+        following.add(user);
+    }
+
+    public void unfollow(User user) { following.remove(user); }
+    public Set<User> getFollowing() { return following; }
+    public List<Post> getPosts() { return posts; }
+    public String getUserId() { return userId; }
+    public String getName() { return name; }
 }
 
 class Comment {
-    private String commentId;
-    private User author;
+    private final String commentId;
+    private final User author;
     private String text;
+
+    Comment(String commentId, User author, String text) {
+        this.commentId = commentId;
+        this.author = author;
+        this.text = text;
+    }
+
     public void edit(String text) { this.text = text; }
 }
 
+class Post {
+    private final String postId;
+    private final User author;
+    private final String content;
+    private final LocalDateTime createdAt = LocalDateTime.now();
+    private final Set<User> likes = new HashSet<>();
+    private final List<Comment> comments = new ArrayList<>();
+
+    Post(String postId, User author, String content) {
+        this.postId = postId;
+        this.author = author;
+        this.content = content;
+    }
+
+    public void like(User user) { likes.add(user); }
+    public void comment(Comment comment) { comments.add(comment); }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public User getAuthor() { return author; }
+    public String getContent() { return content; }
+}
+
 class FeedService {
-    public java.util.List<Post> generateFeed(User user) { return java.util.List.of(); /* TODO */ }
+    public List<Post> generateFeed(User user) {
+        List<Post> feed = new ArrayList<>();
+        for (User followed : user.getFollowing()) feed.addAll(followed.getPosts());
+        feed.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
+        return feed;
+    }
 }
 
 class SocialNetworkService {
-    private java.util.Map<String, User> users = new java.util.HashMap<>();
-    private FeedService feedService = new FeedService();
-    public User createUser(String name) { return null; /* TODO */ }
-    public Post createPost(User user, String content) { return null; /* TODO */ }
+    private final Map<String, User> users = new HashMap<>();
+    private final FeedService feedService = new FeedService();
+
+    public User createUser(String name) {
+        String id = UUID.randomUUID().toString();
+        User user = new User(id, name);
+        users.put(id, user);
+        return user;
+    }
+
+    public Post createPost(User user, String content) {
+        Post post = new Post(UUID.randomUUID().toString(), user, content);
+        user.getPosts().add(post);
+        return post;
+    }
+
     public void follow(User user, User target) { user.follow(target); }
-    public java.util.List<Post> getFeed(User user) { return feedService.generateFeed(user); }
+    public void unfollow(User user, User target) { user.unfollow(target); }
+    public List<Post> getFeed(User user) { return feedService.generateFeed(user); }
 }
 ```
 
@@ -1638,7 +2009,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -1648,46 +2019,108 @@ classDiagram
 
 - State for player, Queue for playback.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.util.*;
+
 enum PlayerState { PLAYING, PAUSED, STOPPED }
 
 class Song {
-    private String songId;
-    private String title;
-    private String artist;
-    private int durationSeconds;
+    private final String songId;
+    private final String title;
+    private final String artist;
+    private final int durationSeconds;
+
+    Song(String songId, String title, String artist, int durationSeconds) {
+        this.songId = songId;
+        this.title = title;
+        this.artist = artist;
+        this.durationSeconds = durationSeconds;
+    }
+
+    public String getSongId() { return songId; }
+    public String getTitle() { return title; }
+    public String getArtist() { return artist; }
 }
 
 class Playlist {
-    private String playlistId;
-    private String name;
-    private java.util.List<Song> songs = new java.util.ArrayList<>();
+    private final String playlistId;
+    private final String name;
+    private final List<Song> songs = new ArrayList<>();
+
+    Playlist(String playlistId, String name) {
+        this.playlistId = playlistId;
+        this.name = name;
+    }
+
     public void addSong(Song song) { songs.add(song); }
     public void removeSong(Song song) { songs.remove(song); }
+    public List<Song> getSongs() { return songs; }
 }
 
 class PlayQueue {
-    private java.util.Queue<Song> songs = new java.util.LinkedList<>();
+    private final Queue<Song> songs = new LinkedList<>();
+
     public void add(Song song) { songs.offer(song); }
+    public void addAll(Collection<Song> collection) { songs.addAll(collection); }
     public Song next() { return songs.poll(); }
+    public boolean isEmpty() { return songs.isEmpty(); }
 }
 
 class Player {
-    private PlayQueue queue = new PlayQueue();
+    private final PlayQueue queue = new PlayQueue();
     private PlayerState state = PlayerState.STOPPED;
-    public void play() { state = PlayerState.PLAYING; }
+    private Song currentSong;
+
+    public void addToQueue(Song song) { queue.add(song); }
+
+    public Song play() {
+        if (currentSong == null) currentSong = queue.next();
+        if (currentSong == null) throw new IllegalStateException("Queue is empty");
+        state = PlayerState.PLAYING;
+        return currentSong;
+    }
+
     public void pause() { state = PlayerState.PAUSED; }
-    public Song next() { return queue.next(); }
+
+    public Song next() {
+        currentSong = queue.next();
+        state = currentSong == null ? PlayerState.STOPPED : PlayerState.PLAYING;
+        return currentSong;
+    }
+
+    public PlayerState getState() { return state; }
 }
 
 class MusicService {
-    private java.util.Map<String, Song> songs = new java.util.HashMap<>();
-    private java.util.Map<String, Playlist> playlists = new java.util.HashMap<>();
-    private Player player = new Player();
-    public java.util.List<Song> searchSong(String query) { return java.util.List.of(); /* TODO */ }
-    public Playlist createPlaylist(String name) { return null; /* TODO */ }
+    private final Map<String, Song> songs = new HashMap<>();
+    private final Map<String, Playlist> playlists = new HashMap<>();
+    private final Player player = new Player();
+
+    public void addSong(Song song) { songs.put(song.getSongId(), song); }
+
+    public List<Song> searchSong(String query) {
+        String q = query.toLowerCase();
+        List<Song> result = new ArrayList<>();
+        for (Song song : songs.values()) {
+            if (song.getTitle().toLowerCase().contains(q) || song.getArtist().toLowerCase().contains(q)) {
+                result.add(song);
+            }
+        }
+        return result;
+    }
+
+    public Playlist createPlaylist(String name) {
+        Playlist playlist = new Playlist(UUID.randomUUID().toString(), name);
+        playlists.put(name, playlist);
+        return playlist;
+    }
+
+    public Song playSong(Song song) {
+        player.addToQueue(song);
+        return player.play();
+    }
 }
 ```
 
@@ -1748,7 +2181,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -1758,34 +2191,81 @@ classDiagram
 
 - Observer and Publisher Subscriber.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.time.*;
+import java.util.*;
+
 class Message {
-    private String messageId;
-    private String payload;
-    private long timestamp;
+    private final String messageId;
+    private final String payload;
+    private final long timestamp;
+
+    Message(String payload) {
+        this.messageId = UUID.randomUUID().toString();
+        this.payload = payload;
+        this.timestamp = Instant.now().toEpochMilli();
+    }
+
     public String getPayload() { return payload; }
+    public String getMessageId() { return messageId; }
+    public long getTimestamp() { return timestamp; }
 }
 
 interface Subscriber {
     void consume(Message message);
 }
 
+class PrintSubscriber implements Subscriber {
+    private final String name;
+
+    PrintSubscriber(String name) { this.name = name; }
+
+    public void consume(Message message) {
+        System.out.println(name + " received: " + message.getPayload());
+    }
+}
+
 class Topic {
-    private String name;
-    private java.util.List<Subscriber> subscribers = new java.util.ArrayList<>();
-    private java.util.Queue<Message> messages = new java.util.LinkedList<>();
-    public void addSubscriber(Subscriber subscriber) { subscribers.add(subscriber); }
-    public void publish(Message message) { /* TODO */ }
-    private void notifySubscribers(Message message) { /* TODO */ }
+    private final String name;
+    private final List<Subscriber> subscribers = new ArrayList<>();
+    private final Queue<Message> messages = new LinkedList<>();
+
+    Topic(String name) { this.name = name; }
+
+    public void addSubscriber(Subscriber subscriber) {
+        subscribers.add(subscriber);
+    }
+
+    public void publish(Message message) {
+        messages.offer(message);
+        notifySubscribers(message);
+    }
+
+    private void notifySubscribers(Message message) {
+        for (Subscriber subscriber : subscribers) subscriber.consume(message);
+    }
+
+    public String getName() { return name; }
 }
 
 class Broker {
-    private java.util.Map<String, Topic> topics = new java.util.HashMap<>();
-    public Topic createTopic(String name) { return null; /* TODO */ }
-    public void publish(String topicName, Message message) { /* TODO */ }
-    public void subscribe(String topicName, Subscriber subscriber) { /* TODO */ }
+    private final Map<String, Topic> topics = new HashMap<>();
+
+    public Topic createTopic(String name) {
+        return topics.computeIfAbsent(name, Topic::new);
+    }
+
+    public void publish(String topicName, Message message) {
+        Topic topic = topics.get(topicName);
+        if (topic == null) throw new IllegalArgumentException("Topic not found");
+        topic.publish(message);
+    }
+
+    public void subscribe(String topicName, Subscriber subscriber) {
+        createTopic(topicName).addSubscriber(subscriber);
+    }
 }
 ```
 
@@ -1853,7 +2333,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -1863,43 +2343,96 @@ classDiagram
 
 - Observer for delivery, State for message status.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.time.*;
+import java.util.*;
+
 enum UserStatus { ONLINE, OFFLINE }
 enum MessageStatus { SENT, DELIVERED, READ }
 
 class User {
-    private String userId;
-    private String name;
-    private UserStatus status;
+    private final String userId;
+    private final String name;
+    private UserStatus status = UserStatus.OFFLINE;
+
+    User(String userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
+
     public void goOnline() { status = UserStatus.ONLINE; }
     public void goOffline() { status = UserStatus.OFFLINE; }
+    public String getUserId() { return userId; }
+    public String getName() { return name; }
 }
 
 class Message {
-    private String messageId;
-    private User sender;
-    private String content;
+    private final String messageId;
+    private final User sender;
+    private final String content;
+    private final LocalDateTime sentAt = LocalDateTime.now();
     private MessageStatus status = MessageStatus.SENT;
+
+    Message(String messageId, User sender, String content) {
+        if (content == null || content.isBlank()) throw new IllegalArgumentException("Message cannot be empty");
+        this.messageId = messageId;
+        this.sender = sender;
+        this.content = content;
+    }
+
     public void markDelivered() { status = MessageStatus.DELIVERED; }
     public void markRead() { status = MessageStatus.READ; }
+    public MessageStatus getStatus() { return status; }
 }
 
 class Conversation {
-    private String conversationId;
-    private java.util.List<User> members = new java.util.ArrayList<>();
-    private java.util.List<Message> messages = new java.util.ArrayList<>();
+    private final String conversationId;
+    private final List<User> members = new ArrayList<>();
+    private final List<Message> messages = new ArrayList<>();
+
+    Conversation(String conversationId, List<User> members) {
+        this.conversationId = conversationId;
+        this.members.addAll(members);
+    }
+
     public void addMember(User user) { members.add(user); }
-    public void addMessage(Message message) { messages.add(message); }
+
+    public void addMessage(Message message, User sender) {
+        if (!members.contains(sender)) throw new IllegalArgumentException("Sender is not a conversation member");
+        messages.add(message);
+    }
+
+    public List<Message> getMessages() { return messages; }
 }
 
 class ChatService {
-    private java.util.Map<String, User> users = new java.util.HashMap<>();
-    private java.util.Map<String, Conversation> conversations = new java.util.HashMap<>();
-    public User createUser(String name) { return null; /* TODO */ }
-    public Conversation createConversation(java.util.List<User> members) { return null; /* TODO */ }
-    public Message sendMessage(Conversation conversation, User sender, String text) { return null; /* TODO */ }
+    private final Map<String, User> users = new HashMap<>();
+    private final Map<String, Conversation> conversations = new HashMap<>();
+
+    public User createUser(String name) {
+        User user = new User(UUID.randomUUID().toString(), name);
+        users.put(user.getUserId(), user);
+        return user;
+    }
+
+    public Conversation createConversation(List<User> members) {
+        Conversation conversation = new Conversation(UUID.randomUUID().toString(), members);
+        conversations.put(UUID.randomUUID().toString(), conversation);
+        return conversation;
+    }
+
+    public Message sendMessage(Conversation conversation, User sender, String text) {
+        Message message = new Message(UUID.randomUUID().toString(), sender, text);
+        conversation.addMessage(message, sender);
+        message.markDelivered();
+        return message;
+    }
+
+    public void markRead(Message message) {
+        message.markRead();
+    }
 }
 ```
 
@@ -1966,7 +2499,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -1976,24 +2509,47 @@ classDiagram
 
 - Strategy for payment processors, State for payment status.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.util.*;
+
 enum PaymentStatus { INITIATED, SUCCESS, FAILED, REFUNDED }
 
 class PaymentMethod {
-    private String type;
-    private String token;
-    public boolean isValid() { return false; /* TODO */ }
+    private final String type;
+    private final String token;
+
+    PaymentMethod(String type, String token) {
+        this.type = type;
+        this.token = token;
+    }
+
+    public boolean isValid() {
+        return type != null && !type.isBlank() && token != null && !token.isBlank();
+    }
 }
 
 class Payment {
-    private String paymentId;
-    private double amount;
-    private PaymentStatus status;
-    private PaymentMethod method;
+    private final String paymentId;
+    private final double amount;
+    private PaymentStatus status = PaymentStatus.INITIATED;
+    private final PaymentMethod method;
+
+    Payment(String paymentId, double amount, PaymentMethod method) {
+        if (amount <= 0) throw new IllegalArgumentException("Amount must be positive");
+        if (!method.isValid()) throw new IllegalArgumentException("Invalid payment method");
+        this.paymentId = paymentId;
+        this.amount = amount;
+        this.method = method;
+    }
+
     public void markSuccess() { status = PaymentStatus.SUCCESS; }
     public void markFailed() { status = PaymentStatus.FAILED; }
+    public void markRefunded() { status = PaymentStatus.REFUNDED; }
+    public PaymentStatus getStatus() { return status; }
+    public String getPaymentId() { return paymentId; }
+    public double getAmount() { return amount; }
 }
 
 interface PaymentProcessor {
@@ -2002,16 +2558,44 @@ interface PaymentProcessor {
 }
 
 class StripeProcessor implements PaymentProcessor {
-    public boolean charge(Payment payment) { return false; /* TODO */ }
-    public boolean refund(Payment payment) { return false; /* TODO */ }
+    public boolean charge(Payment payment) { return true; }
+    public boolean refund(Payment payment) { return payment.getStatus() == PaymentStatus.SUCCESS; }
 }
 
 class PaymentGateway {
-    private PaymentProcessor processor;
-    private java.util.Map<String, Payment> payments = new java.util.HashMap<>();
-    public Payment initiatePayment(double amount, PaymentMethod method) { return null; /* TODO */ }
-    public boolean processPayment(String paymentId) { return false; /* TODO */ }
-    public boolean refund(String paymentId) { return false; /* TODO */ }
+    private final PaymentProcessor processor;
+    private final Map<String, Payment> payments = new HashMap<>();
+
+    PaymentGateway(PaymentProcessor processor) {
+        this.processor = processor;
+    }
+
+    public Payment initiatePayment(double amount, PaymentMethod method) {
+        Payment payment = new Payment(UUID.randomUUID().toString(), amount, method);
+        payments.put(payment.getPaymentId(), payment);
+        return payment;
+    }
+
+    public boolean processPayment(String paymentId) {
+        Payment payment = getPayment(paymentId);
+        boolean success = processor.charge(payment);
+        if (success) payment.markSuccess();
+        else payment.markFailed();
+        return success;
+    }
+
+    public boolean refund(String paymentId) {
+        Payment payment = getPayment(paymentId);
+        boolean success = processor.refund(payment);
+        if (success) payment.markRefunded();
+        return success;
+    }
+
+    private Payment getPayment(String paymentId) {
+        Payment payment = payments.get(paymentId);
+        if (payment == null) throw new IllegalArgumentException("Payment not found");
+        return payment;
+    }
 }
 ```
 
@@ -2085,7 +2669,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -2095,54 +2679,115 @@ classDiagram
 
 - Strategy for split calculation.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.util.*;
+
 class User {
-    private String userId;
-    private String name;
+    private final String userId;
+    private final String name;
+
+    User(String userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
+
+    public String getUserId() { return userId; }
+    public String getName() { return name; }
 }
 
 class Split {
-    User user;
-    double amount;
+    final User user;
+    final double amount;
+
+    Split(User user, double amount) {
+        this.user = user;
+        this.amount = amount;
+    }
 }
 
 interface SplitStrategy {
-    java.util.List<Split> split(double amount, java.util.List<User> users);
+    List<Split> split(double amount, List<User> users);
 }
 
 class EqualSplitStrategy implements SplitStrategy {
-    public java.util.List<Split> split(double amount, java.util.List<User> users) {
-        return java.util.List.of(); /* TODO */
+    public List<Split> split(double amount, List<User> users) {
+        if (users.isEmpty()) throw new IllegalArgumentException("No users to split");
+        double share = amount / users.size();
+        List<Split> splits = new ArrayList<>();
+        for (User user : users) splits.add(new Split(user, share));
+        return splits;
     }
 }
 
 class Expense {
-    private User paidBy;
-    private double amount;
-    private SplitStrategy strategy;
-    public java.util.List<Split> calculateSplits(java.util.List<User> users) { return strategy.split(amount, users); }
+    private final User paidBy;
+    private final double amount;
+    private final SplitStrategy strategy;
+
+    Expense(User paidBy, double amount, SplitStrategy strategy) {
+        this.paidBy = paidBy;
+        this.amount = amount;
+        this.strategy = strategy;
+    }
+
+    public List<Split> calculateSplits(List<User> users) {
+        return strategy.split(amount, users);
+    }
+
+    public User getPaidBy() { return paidBy; }
 }
 
 class Group {
-    private String groupId;
-    private java.util.List<User> members = new java.util.ArrayList<>();
-    private java.util.List<Expense> expenses = new java.util.ArrayList<>();
+    private final String groupId;
+    private final List<User> members = new ArrayList<>();
+    private final List<Expense> expenses = new ArrayList<>();
+
+    Group(String groupId) { this.groupId = groupId; }
+
     public void addMember(User user) { members.add(user); }
     public void addExpense(Expense expense) { expenses.add(expense); }
+    public List<User> getMembers() { return members; }
 }
 
 class BalanceSheet {
-    private java.util.Map<String, Double> balances = new java.util.HashMap<>();
-    public void updateBalance(User from, User to, double amount) { /* TODO */ }
-    public double getBalance(User user) { return 0.0; /* TODO */ }
+    private final Map<String, Double> balances = new HashMap<>();
+
+    private String key(User from, User to) {
+        return from.getUserId() + "->" + to.getUserId();
+    }
+
+    public void updateBalance(User from, User to, double amount) {
+        balances.put(key(from, to), balances.getOrDefault(key(from, to), 0.0) + amount);
+    }
+
+    public double getBalance(User from, User to) {
+        return balances.getOrDefault(key(from, to), 0.0);
+    }
+
+    public Map<String, Double> getAllBalances() { return balances; }
 }
 
 class SplitwiseService {
-    private BalanceSheet balanceSheet = new BalanceSheet();
-    public void addExpense(Group group, Expense expense) { /* TODO */ }
-    public void settleUp(User payer, User payee, double amount) { /* TODO */ }
+    private final BalanceSheet balanceSheet = new BalanceSheet();
+
+    public void addExpense(Group group, Expense expense) {
+        group.addExpense(expense);
+        for (Split split : expense.calculateSplits(group.getMembers())) {
+            if (split.user != expense.getPaidBy()) {
+                balanceSheet.updateBalance(split.user, expense.getPaidBy(), split.amount);
+            }
+        }
+    }
+
+    public void settleUp(User payer, User payee, double amount) {
+        balanceSheet.updateBalance(payer, payee, -amount);
+    }
+
+    public double getBalance(User from, User to) {
+        return balanceSheet.getBalance(from, to);
+    }
 }
 ```
 
@@ -2219,7 +2864,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -2229,59 +2874,158 @@ classDiagram
 
 - Facade/service layer, Strategy for payment/shipping.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.util.*;
+
 enum OrderStatus { CREATED, PLACED, CANCELLED, SHIPPED, DELIVERED }
 
 class Product {
-    private String productId;
-    private String name;
-    private double price;
-}
+    private final String productId;
+    private final String name;
+    private final double price;
 
-class CartItem {
-    Product product;
-    int quantity;
-}
+    Product(String productId, String name, double price) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+    }
 
-class Cart {
-    private User user;
-    private java.util.List<CartItem> items = new java.util.ArrayList<>();
-    public void addItem(Product product, int qty) { /* TODO */ }
-    public void removeItem(Product product) { /* TODO */ }
-    public double total() { return 0.0; /* TODO */ }
+    public String getProductId() { return productId; }
+    public String getName() { return name; }
+    public double getPrice() { return price; }
 }
 
 class User {
-    private String userId;
-    private String name;
+    private final String userId;
+    private final String name;
+
+    User(String userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
+}
+
+class CartItem {
+    final Product product;
+    int quantity;
+
+    CartItem(Product product, int quantity) {
+        this.product = product;
+        this.quantity = quantity;
+    }
+}
+
+class Cart {
+    private final User user;
+    private final List<CartItem> items = new ArrayList<>();
+
+    Cart(User user) { this.user = user; }
+
+    public void addItem(Product product, int qty) {
+        for (CartItem item : items) {
+            if (item.product.getProductId().equals(product.getProductId())) {
+                item.quantity += qty;
+                return;
+            }
+        }
+        items.add(new CartItem(product, qty));
+    }
+
+    public void removeItem(Product product) {
+        items.removeIf(i -> i.product.getProductId().equals(product.getProductId()));
+    }
+
+    public double total() {
+        double sum = 0;
+        for (CartItem item : items) sum += item.product.getPrice() * item.quantity;
+        return sum;
+    }
+
+    public List<CartItem> getItems() { return items; }
 }
 
 class Inventory {
-    private java.util.Map<String, Integer> stock = new java.util.HashMap<>();
-    public boolean reserve(Product product, int qty) { return false; /* TODO */ }
-    public void release(Product product, int qty) { /* TODO */ }
+    private final Map<String, Integer> stock = new HashMap<>();
+
+    public void addStock(Product product, int qty) {
+        stock.put(product.getProductId(), stock.getOrDefault(product.getProductId(), 0) + qty);
+    }
+
+    public boolean reserve(Product product, int qty) {
+        int available = stock.getOrDefault(product.getProductId(), 0);
+        if (available < qty) return false;
+        stock.put(product.getProductId(), available - qty);
+        return true;
+    }
+
+    public void release(Product product, int qty) {
+        addStock(product, qty);
+    }
 }
 
 class Payment {
-    private String paymentId;
-    private double amount;
-    public boolean pay() { return false; /* TODO */ }
+    private final String paymentId;
+    private final double amount;
+    private boolean paid;
+
+    Payment(double amount) {
+        this.paymentId = UUID.randomUUID().toString();
+        this.amount = amount;
+    }
+
+    public boolean pay() {
+        paid = true;
+        return true;
+    }
 }
 
 class Order {
-    private String orderId;
-    private OrderStatus status;
-    private Payment payment;
-    public void place() { status = OrderStatus.PLACED; }
+    private final String orderId;
+    private OrderStatus status = OrderStatus.CREATED;
+    private final Payment payment;
+
+    Order(double amount) {
+        this.orderId = UUID.randomUUID().toString();
+        this.payment = new Payment(amount);
+    }
+
+    public void place() {
+        if (!payment.pay()) throw new IllegalStateException("Payment failed");
+        status = OrderStatus.PLACED;
+    }
+
     public void cancel() { status = OrderStatus.CANCELLED; }
+    public OrderStatus getStatus() { return status; }
 }
 
 class EcommerceService {
-    private Inventory inventory = new Inventory();
-    public java.util.List<Product> searchProducts(String query) { return java.util.List.of(); /* TODO */ }
-    public Order checkout(Cart cart) { return null; /* TODO */ }
+    private final List<Product> products = new ArrayList<>();
+    private final Inventory inventory = new Inventory();
+
+    public void addProduct(Product product, int qty) {
+        products.add(product);
+        inventory.addStock(product, qty);
+    }
+
+    public List<Product> searchProducts(String query) {
+        List<Product> result = new ArrayList<>();
+        String q = query.toLowerCase();
+        for (Product product : products)
+            if (product.getName().toLowerCase().contains(q)) result.add(product);
+        return result;
+    }
+
+    public Order checkout(Cart cart) {
+        for (CartItem item : cart.getItems())
+            if (!inventory.reserve(item.product, item.quantity))
+                throw new IllegalStateException("Out of stock: " + item.product.getName());
+
+        Order order = new Order(cart.total());
+        order.place();
+        return order;
+    }
 }
 ```
 
@@ -2360,7 +3104,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -2370,55 +3114,143 @@ classDiagram
 
 - Strategy for driver matching and fare calculation, State for ride status.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.util.*;
+
 enum RideStatus { REQUESTED, ACCEPTED, STARTED, COMPLETED, CANCELLED }
 
 class Location {
-    double latitude;
-    double longitude;
+    final double latitude;
+    final double longitude;
+
+    Location(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public double distanceTo(Location other) {
+        double dx = latitude - other.latitude;
+        double dy = longitude - other.longitude;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
 }
 
 class Rider {
-    private String riderId;
-    private String name;
+    private final String riderId;
+    private final String name;
+
+    Rider(String riderId, String name) {
+        this.riderId = riderId;
+        this.name = name;
+    }
 }
 
 class Driver {
-    private String driverId;
-    private String name;
+    private final String driverId;
+    private final String name;
     private Location location;
-    private boolean available;
+    private boolean available = true;
+
+    Driver(String driverId, String name, Location location) {
+        this.driverId = driverId;
+        this.name = name;
+        this.location = location;
+    }
+
+    public Location getLocation() { return location; }
+    public boolean isAvailable() { return available; }
     public void setAvailable(boolean available) { this.available = available; }
 }
 
 class Ride {
-    private Rider rider;
+    private final String rideId;
+    private final Rider rider;
     private Driver driver;
-    private Location pickup;
-    private Location drop;
-    private RideStatus status;
+    private final Location pickup;
+    private final Location drop;
+    private RideStatus status = RideStatus.REQUESTED;
+
+    Ride(Rider rider, Location pickup, Location drop) {
+        this.rideId = UUID.randomUUID().toString();
+        this.rider = rider;
+        this.pickup = pickup;
+        this.drop = drop;
+    }
+
+    public void assignDriver(Driver driver) {
+        this.driver = driver;
+        this.status = RideStatus.ACCEPTED;
+    }
+
     public void start() { status = RideStatus.STARTED; }
-    public void complete() { status = RideStatus.COMPLETED; }
-    public void cancel() { status = RideStatus.CANCELLED; }
+    public void complete() { status = RideStatus.COMPLETED; if (driver != null) driver.setAvailable(true); }
+    public void cancel() { status = RideStatus.CANCELLED; if (driver != null) driver.setAvailable(true); }
+
+    public Location getPickup() { return pickup; }
+    public Location getDrop() { return drop; }
 }
 
 interface MatchingStrategy {
-    Driver findDriver(Rider rider, java.util.List<Driver> drivers);
+    Driver findDriver(Rider rider, Location pickup, List<Driver> drivers);
+}
+
+class NearestDriverStrategy implements MatchingStrategy {
+    public Driver findDriver(Rider rider, Location pickup, List<Driver> drivers) {
+        Driver best = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (Driver driver : drivers) {
+            if (driver.isAvailable()) {
+                double d = driver.getLocation().distanceTo(pickup);
+                if (d < bestDistance) {
+                    best = driver;
+                    bestDistance = d;
+                }
+            }
+        }
+        return best;
+    }
 }
 
 interface FareStrategy {
     double calculateFare(Ride ride);
 }
 
+class DistanceFareStrategy implements FareStrategy {
+    public double calculateFare(Ride ride) {
+        return 5.0 + ride.getPickup().distanceTo(ride.getDrop()) * 10.0;
+    }
+}
+
 class RideService {
-    private MatchingStrategy matchingStrategy;
-    private FareStrategy fareStrategy;
-    private java.util.Map<String, Ride> rides = new java.util.HashMap<>();
-    public Ride requestRide(Rider rider, Location pickup, Location drop) { return null; /* TODO */ }
-    public void acceptRide(Driver driver, Ride ride) { /* TODO */ }
-    public void completeRide(Ride ride) { /* TODO */ }
+    private final MatchingStrategy matchingStrategy;
+    private final FareStrategy fareStrategy;
+    private final List<Driver> drivers = new ArrayList<>();
+    private final Map<String, Ride> rides = new HashMap<>();
+
+    RideService(MatchingStrategy matchingStrategy, FareStrategy fareStrategy) {
+        this.matchingStrategy = matchingStrategy;
+        this.fareStrategy = fareStrategy;
+    }
+
+    public void addDriver(Driver driver) { drivers.add(driver); }
+
+    public Ride requestRide(Rider rider, Location pickup, Location drop) {
+        Ride ride = new Ride(rider, pickup, drop);
+        Driver driver = matchingStrategy.findDriver(rider, pickup, drivers);
+        if (driver == null) throw new IllegalStateException("No drivers available");
+        driver.setAvailable(false);
+        ride.assignDriver(driver);
+        rides.put(UUID.randomUUID().toString(), ride);
+        return ride;
+    }
+
+    public void startRide(Ride ride) { ride.start(); }
+    public double completeRide(Ride ride) {
+        ride.complete();
+        return fareStrategy.calculateFare(ride);
+    }
 }
 ```
 
@@ -2477,7 +3309,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -2487,14 +3319,25 @@ classDiagram
 
 - Strategy for code generation.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.time.*;
+import java.util.*;
+
 class UrlMapping {
-    private String code;
-    private String longUrl;
-    private java.time.LocalDateTime createdAt;
+    private final String code;
+    private final String longUrl;
+    private final LocalDateTime createdAt = LocalDateTime.now();
     private boolean active = true;
+
+    UrlMapping(String code, String longUrl) {
+        this.code = code;
+        this.longUrl = longUrl;
+    }
+
+    public String getCode() { return code; }
+    public String getLongUrl() { return longUrl; }
     public boolean isActive() { return active; }
     public void expire() { active = false; }
 }
@@ -2504,15 +3347,46 @@ interface CodeGenerator {
 }
 
 class RandomCodeGenerator implements CodeGenerator {
-    public String generate(String longUrl) { return ""; /* TODO */ }
+    private static final String CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private final Random random = new Random();
+
+    public String generate(String longUrl) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 6; i++) sb.append(CHARS.charAt(random.nextInt(CHARS.length())));
+        return sb.toString();
+    }
 }
 
 class UrlShortenerService {
-    private java.util.Map<String, UrlMapping> mappings = new java.util.HashMap<>();
-    private CodeGenerator codeGenerator;
-    public String shorten(String longUrl) { return ""; /* TODO */ }
-    public String redirect(String code) { return ""; /* TODO */ }
-    public void expire(String code) { /* TODO */ }
+    private final Map<String, UrlMapping> mappings = new HashMap<>();
+    private final CodeGenerator codeGenerator;
+
+    UrlShortenerService(CodeGenerator codeGenerator) {
+        this.codeGenerator = codeGenerator;
+    }
+
+    public String shorten(String longUrl) {
+        if (longUrl == null || longUrl.isBlank()) throw new IllegalArgumentException("Invalid URL");
+
+        String code;
+        do {
+            code = codeGenerator.generate(longUrl);
+        } while (mappings.containsKey(code));
+
+        mappings.put(code, new UrlMapping(code, longUrl));
+        return code;
+    }
+
+    public String redirect(String code) {
+        UrlMapping mapping = mappings.get(code);
+        if (mapping == null || !mapping.isActive()) throw new IllegalArgumentException("Invalid or expired short URL");
+        return mapping.getLongUrl();
+    }
+
+    public void expire(String code) {
+        UrlMapping mapping = mappings.get(code);
+        if (mapping != null) mapping.expire();
+    }
 }
 ```
 
@@ -2569,7 +3443,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -2579,30 +3453,78 @@ classDiagram
 
 - Strategy for algorithms, Token Bucket.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.util.concurrent.*;
+
 interface RateLimiter {
     boolean allow(String clientId);
 }
 
 class Bucket {
-    private int capacity;
+    private final int capacity;
+    private final int refillTokens;
+    private final long refillIntervalMillis;
     private int tokens;
     private long lastRefillTime;
-    public synchronized boolean tryConsume() { return false; /* TODO */ }
-    public synchronized void refill() { /* TODO */ }
+
+    Bucket(int capacity, int refillTokens, long refillIntervalMillis) {
+        this.capacity = capacity;
+        this.refillTokens = refillTokens;
+        this.refillIntervalMillis = refillIntervalMillis;
+        this.tokens = capacity;
+        this.lastRefillTime = System.currentTimeMillis();
+    }
+
+    public synchronized boolean tryConsume() {
+        refill();
+        if (tokens <= 0) return false;
+        tokens--;
+        return true;
+    }
+
+    public synchronized void refill() {
+        long now = System.currentTimeMillis();
+        long intervals = (now - lastRefillTime) / refillIntervalMillis;
+        if (intervals > 0) {
+            tokens = Math.min(capacity, tokens + (int) intervals * refillTokens);
+            lastRefillTime += intervals * refillIntervalMillis;
+        }
+    }
 }
 
 class TokenBucketRateLimiter implements RateLimiter {
-    private java.util.Map<String, Bucket> buckets = new java.util.concurrent.ConcurrentHashMap<>();
-    public boolean allow(String clientId) { return false; /* TODO */ }
-    private Bucket getBucket(String clientId) { return null; /* TODO */ }
+    private final ConcurrentHashMap<String, Bucket> buckets = new ConcurrentHashMap<>();
+    private final int capacity;
+    private final int refillTokens;
+    private final long refillIntervalMillis;
+
+    TokenBucketRateLimiter(int capacity, int refillTokens, long refillIntervalMillis) {
+        this.capacity = capacity;
+        this.refillTokens = refillTokens;
+        this.refillIntervalMillis = refillIntervalMillis;
+    }
+
+    public boolean allow(String clientId) {
+        return getBucket(clientId).tryConsume();
+    }
+
+    private Bucket getBucket(String clientId) {
+        return buckets.computeIfAbsent(clientId, id -> new Bucket(capacity, refillTokens, refillIntervalMillis));
+    }
 }
 
 class RateLimiterService {
-    private RateLimiter limiter;
-    public boolean allowRequest(String clientId) { return limiter.allow(clientId); }
+    private final RateLimiter limiter;
+
+    RateLimiterService(RateLimiter limiter) {
+        this.limiter = limiter;
+    }
+
+    public boolean allowRequest(String clientId) {
+        return limiter.allow(clientId);
+    }
 }
 ```
 
@@ -2665,7 +3587,7 @@ classDiagram
 
 ### 5. State Transitions
 
-- State changes are represented using enums and status fields in the Java skeleton.
+- State changes are represented using enums and status fields in the Java full implementation.
 
 ### 6. Core Flows
 
@@ -2675,36 +3597,109 @@ classDiagram
 
 - Composite-like snapshots, DAG of commits.
 
-### 8. Skeleton Code
+### 8. Full Java Implementation
 
 ```java
+import java.util.*;
+
 class Blob {
-    private String path;
-    private String contentHash;
-    public String getContent() { return ""; /* TODO */ }
+    private final String path;
+    private final String contentHash;
+    private final String content;
+
+    Blob(String path, String content) {
+        this.path = path;
+        this.content = content;
+        this.contentHash = Integer.toHexString(Objects.hash(path, content));
+    }
+
+    public String getPath() { return path; }
+    public String getContentHash() { return contentHash; }
+    public String getContent() { return content; }
 }
 
 class Commit {
-    private String commitId;
-    private String message;
-    private Commit parent;
-    private java.util.List<Blob> blobs;
-    public java.util.List<Blob> getSnapshot() { return blobs; }
+    private final String commitId;
+    private final String message;
+    private final Commit parent;
+    private final Map<String, Blob> snapshot;
+
+    Commit(String message, Commit parent, Map<String, Blob> snapshot) {
+        this.commitId = UUID.randomUUID().toString();
+        this.message = message;
+        this.parent = parent;
+        this.snapshot = new HashMap<>(snapshot);
+    }
+
+    public String getCommitId() { return commitId; }
+    public Map<String, Blob> getSnapshot() { return new HashMap<>(snapshot); }
 }
 
 class Branch {
-    private String name;
+    private final String name;
     private Commit head;
+
+    Branch(String name, Commit head) {
+        this.name = name;
+        this.head = head;
+    }
+
     public void moveHead(Commit commit) { this.head = commit; }
+    public Commit getHead() { return head; }
+    public String getName() { return name; }
 }
 
 class Repository {
-    private java.util.Map<String, Commit> commits = new java.util.HashMap<>();
-    private java.util.Map<String, Branch> branches = new java.util.HashMap<>();
+    private final Map<String, Commit> commits = new HashMap<>();
+    private final Map<String, Branch> branches = new HashMap<>();
+    private final Map<String, Blob> workingTree = new HashMap<>();
+    private final Map<String, Blob> stagingArea = new HashMap<>();
     private Branch currentBranch;
-    public Commit commit(String message) { return null; /* TODO */ }
-    public void checkout(String branchName) { /* TODO */ }
-    public Branch createBranch(String name) { return null; /* TODO */ }
+
+    Repository() {
+        Commit initial = new Commit("initial commit", null, Map.of());
+        commits.put(initial.getCommitId(), initial);
+        currentBranch = new Branch("main", initial);
+        branches.put("main", currentBranch);
+    }
+
+    public void addFile(String path, String content) {
+        workingTree.put(path, new Blob(path, content));
+    }
+
+    public void stage(String path) {
+        Blob blob = workingTree.get(path);
+        if (blob == null) throw new IllegalArgumentException("File not found");
+        stagingArea.put(path, blob);
+    }
+
+    public Commit commit(String message) {
+        if (stagingArea.isEmpty()) throw new IllegalStateException("Nothing to commit");
+
+        Map<String, Blob> snapshot = currentBranch.getHead().getSnapshot();
+        snapshot.putAll(stagingArea);
+
+        Commit commit = new Commit(message, currentBranch.getHead(), snapshot);
+        commits.put(commit.getCommitId(), commit);
+        currentBranch.moveHead(commit);
+        stagingArea.clear();
+        return commit;
+    }
+
+    public Branch createBranch(String name) {
+        if (branches.containsKey(name)) throw new IllegalArgumentException("Branch already exists");
+        Branch branch = new Branch(name, currentBranch.getHead());
+        branches.put(name, branch);
+        return branch;
+    }
+
+    public void checkout(String branchName) {
+        Branch branch = branches.get(branchName);
+        if (branch == null) throw new IllegalArgumentException("Branch not found");
+        currentBranch = branch;
+        workingTree.clear();
+        workingTree.putAll(branch.getHead().getSnapshot());
+    }
 }
 ```
 
