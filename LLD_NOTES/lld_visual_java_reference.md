@@ -1133,22 +1133,22 @@ class ParkingLot {
 
 ### 4. Relationships
 ```mermaid
-classDiagram
-  class InventoryService
-  class Warehouse
-  class InventoryItem
-  class Product
+flowchart LR
+  InventoryService[InventoryService]
+  Warehouse[Warehouse]
+  InventoryItem[InventoryItem]
+  Product[Product]
   InventoryService --> Warehouse
-  Warehouse *-- InventoryItem
+  Warehouse --> InventoryItem
   InventoryItem --> Product
 ```
 
 ### 5. State Transitions
 ```mermaid
-stateDiagram-v2
-  [*] --> AVAILABLE
-  AVAILABLE --> RESERVED
-  RESERVED --> SOLD
+flowchart LR
+  Start((Start)) --> AVAILABLE[AVAILABLE]
+  AVAILABLE --> RESERVED[RESERVED]
+  RESERVED --> SOLD[SOLD]
   RESERVED --> AVAILABLE
 ```
 
@@ -2184,10 +2184,10 @@ class RideService {
 
 ### 4. Relationships
 ```mermaid
-classDiagram
-  class UrlShortenerService
-  class UrlMapping
-  class CodeGenerator
+flowchart LR
+  UrlShortenerService[UrlShortenerService]
+  UrlMapping[UrlMapping]
+  CodeGenerator[CodeGenerator]
   UrlShortenerService --> UrlMapping
   UrlShortenerService --> CodeGenerator
 ```
@@ -2295,9 +2295,9 @@ classDiagram
 
 ### 5. State Transitions
 ```mermaid
-stateDiagram-v2
-  [*] --> ALLOWED
-  ALLOWED --> LIMITED
+flowchart LR
+  Start((Start)) --> ALLOWED[ALLOWED]
+  ALLOWED --> LIMITED[LIMITED]
   LIMITED --> ALLOWED
 ```
 
