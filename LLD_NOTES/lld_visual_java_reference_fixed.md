@@ -2,16 +2,11 @@
 
 A visual-first Low-Level Design reference for common interview problems.
 
-> **Mermaid rendering fix:** If your Markdown viewer shows `Unable to render rich display`, use fenced blocks exactly like this:
->
-> ````md
-> ```mermaid
-> flowchart TD
->   A[Read Requirements] --> B[Draw Entities]
-> ```
-> ````
->
-> Avoid unsupported Mermaid syntax, avoid invisible special characters, and keep node IDs simple like `A`, `B`, `C`.
+## How to Read This File
+
+- Each problem follows the same 9-section structure.
+- Class diagrams include important entities, attributes, and methods.
+- Java code is compact reference code, meant for learning and interview revision.
 
 ---
 
@@ -105,12 +100,39 @@ flowchart TD
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class Game
-  class Board
-  class Cell
-  class Player
-  class WinningStrategy
-  class Scoreboard
+  class Game {
+    -Board board
+    -Player currentPlayer
+    -GameStatus status
+    +makeMove(row, col)
+    +switchTurn()
+    +checkGameStatus()
+  }
+  class Board {
+    -Cell cells
+    +placeMark(row, col, symbol)
+    +isFull()
+    +printBoard()
+  }
+  class Cell {
+    -Symbol symbol
+    +isEmpty()
+    +mark(symbol)
+  }
+  class Player {
+    -String name
+    -Symbol symbol
+    +getSymbol()
+  }
+  class WinningStrategy {
+    <<interface>>
+    +checkWin(board, symbol)
+  }
+  class Scoreboard {
+    -Map scores
+    +recordWin(player)
+    +printScores()
+  }
   Game --> Board
   Game --> Player
   Game --> WinningStrategy
@@ -295,15 +317,55 @@ class Game {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class Game
-  class Board
-  class Cell
-  class Piece
-  class Player
-  class Move
-  Game --> Board
-  Game --> Player
-  Game --> Move
+  class ChessGame {
+    -Board board
+    -Player white
+    -Player black
+    -GameStatus status
+    +move(from, to)
+    +switchTurn()
+    +isCheckmate()
+  }
+  class Board {
+    -Cell cells
+    +getCell(position)
+    +movePiece(from, to)
+    +isInside(position)
+  }
+  class Cell {
+    -Position position
+    -Piece piece
+    +isEmpty()
+    +setPiece(piece)
+  }
+  class Piece {
+    <<abstract>>
+    -Color color
+    +canMove(board, from, to)
+  }
+  class King {
+    +canMove(board, from, to)
+  }
+  class Queen {
+    +canMove(board, from, to)
+  }
+  class Rook {
+    +canMove(board, from, to)
+  }
+  class Move {
+    -Cell from
+    -Cell to
+    -Piece piece
+    +isValid()
+  }
+  class Player {
+    -String name
+    -Color color
+    +makeMove()
+  }
+  ChessGame --> Board
+  ChessGame --> Player
+  ChessGame --> Move
   Board *-- Cell
   Cell --> Piece
   Piece <|-- King
@@ -455,8 +517,23 @@ class ChessGame {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class LRUCache
-  class Node
+  class LRUCache {
+    -int capacity
+    -Map cache
+    -Node head
+    -Node tail
+    +get(key)
+    +put(key, value)
+    -moveToFront(node)
+    -removeLeastUsed()
+  }
+  class Node {
+    -int key
+    -int value
+    -Node prev
+    -Node next
+    +detach()
+  }
   LRUCache --> Node
   Node --> Node
 ```
@@ -569,8 +646,19 @@ class LRUCache<K, V> {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class AutocompleteSystem
-  class TrieNode
+  class AutocompleteSystem {
+    -TrieNode root
+    +insert(word)
+    +search(prefix)
+    +getSuggestions(prefix)
+  }
+  class TrieNode {
+    -Map children
+    -boolean isWord
+    -List suggestions
+    +addChild(char)
+    +getChild(char)
+  }
   AutocompleteSystem --> TrieNode
   TrieNode --> TrieNode
 ```
@@ -689,12 +777,38 @@ class AutocompleteSystem {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class ATM
-  class ATMState
-  class IdleState
-  class AuthenticatedState
-  class Account
-  class Card
+  class ATM {
+    -ATMState state
+    -CashDispenser dispenser
+    -BankService bankService
+    +insertCard(card)
+    +enterPin(pin)
+    +withdraw(amount)
+    +ejectCard()
+  }
+  class ATMState {
+    <<interface>>
+    +insertCard(atm, card)
+    +enterPin(atm, pin)
+    +withdraw(atm, amount)
+  }
+  class IdleState {
+    +insertCard(atm, card)
+  }
+  class AuthenticatedState {
+    +withdraw(atm, amount)
+  }
+  class Account {
+    -String accountNumber
+    -double balance
+    +debit(amount)
+    +credit(amount)
+  }
+  class Card {
+    -String cardNumber
+    -String pin
+    +validatePin(pin)
+  }
   ATM --> ATMState
   ATMState <|.. IdleState
   ATMState <|.. AuthenticatedState
@@ -829,10 +943,29 @@ class AuthenticatedState implements ATMState {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class ElevatorSystem
-  class Dispatcher
-  class Elevator
-  class Request
+  class ElevatorSystem {
+    -List elevators
+    -Dispatcher dispatcher
+    +requestElevator(floor, direction)
+    +step()
+  }
+  class Dispatcher {
+    +assignElevator(request, elevators)
+  }
+  class Elevator {
+    -int currentFloor
+    -Direction direction
+    -ElevatorState state
+    +addRequest(request)
+    +move()
+    +openDoor()
+  }
+  class Request {
+    -int sourceFloor
+    -int destinationFloor
+    -Direction direction
+    +isUp()
+  }
   ElevatorSystem --> Dispatcher
   Dispatcher --> Elevator
   Elevator --> Request
@@ -963,20 +1096,60 @@ class ElevatorSystem {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class ParkingLot
-  class ParkingFloor
-  class ParkingSpot
-  class Vehicle
-  class ParkingTicket
-  class FeeStrategy
-  class AllocationStrategy
+  class ParkingLot {
+    -List floors
+    -Map activeTickets
+    -FeeStrategy feeStrategy
+    -SpotAllocationStrategy allocationStrategy
+    +parkVehicle(vehicle)
+    +unparkVehicle(ticketId)
+    +displayAvailability()
+  }
+  class ParkingFloor {
+    -int floorNumber
+    -List spots
+    +findAvailableSpot(size)
+    +availableCount(size)
+  }
+  class ParkingSpot {
+    -String spotId
+    -VehicleSize size
+    -Vehicle vehicle
+    +isAvailable()
+    +canFit(vehicle)
+    +park(vehicle)
+    +unpark()
+  }
+  class Vehicle {
+    <<abstract>>
+    -String licensePlate
+    -VehicleSize size
+    +getSize()
+  }
+  class ParkingTicket {
+    -String ticketId
+    -Vehicle vehicle
+    -ParkingSpot spot
+    -LocalDateTime entryTime
+    -LocalDateTime exitTime
+    +close()
+    +durationHours()
+  }
+  class FeeStrategy {
+    <<interface>>
+    +calculateFee(ticket)
+  }
+  class SpotAllocationStrategy {
+    <<interface>>
+    +findSpot(floors, vehicle)
+  }
   ParkingLot *-- ParkingFloor
   ParkingFloor *-- ParkingSpot
   ParkingSpot --> Vehicle
   ParkingTicket --> Vehicle
   ParkingTicket --> ParkingSpot
   ParkingLot --> FeeStrategy
-  ParkingLot --> AllocationStrategy
+  ParkingLot --> SpotAllocationStrategy
 ```
 
 ### 5. State Transitions
@@ -1133,22 +1306,44 @@ class ParkingLot {
 
 ### 4. Relationships
 ```mermaid
-flowchart LR
-  InventoryService[InventoryService]
-  Warehouse[Warehouse]
-  InventoryItem[InventoryItem]
-  Product[Product]
+classDiagram
+  class InventoryService {
+    -List warehouses
+    +addStock(product, qty)
+    +reserve(product, qty)
+    +release(product, qty)
+    +checkAvailability(product)
+  }
+  class Warehouse {
+    -String id
+    -Map items
+    +addItem(item)
+    +getItem(productId)
+  }
+  class InventoryItem {
+    -Product product
+    -int availableQty
+    -int reservedQty
+    +reserve(qty)
+    +release(qty)
+    +sell(qty)
+  }
+  class Product {
+    -String id
+    -String name
+    +getId()
+  }
   InventoryService --> Warehouse
-  Warehouse --> InventoryItem
+  Warehouse *-- InventoryItem
   InventoryItem --> Product
 ```
 
 ### 5. State Transitions
 ```mermaid
-flowchart LR
-  Start((Start)) --> AVAILABLE[AVAILABLE]
-  AVAILABLE --> RESERVED[RESERVED]
-  RESERVED --> SOLD[SOLD]
+stateDiagram-v2
+  [*] --> AVAILABLE
+  AVAILABLE --> RESERVED
+  RESERVED --> SOLD
   RESERVED --> AVAILABLE
 ```
 
@@ -1251,14 +1446,40 @@ class InventoryService {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class User
-  class Post
-  class Comment
-  class FeedService
+  class SocialNetworkService {
+    -Map users
+    -FeedService feedService
+    +createUser(name)
+    +createPost(user, text)
+    +follow(user, target)
+    +getFeed(user)
+  }
+  class User {
+    -String id
+    -String name
+    -Set friends
+    +follow(user)
+    +unfollow(user)
+  }
+  class Post {
+    -String id
+    -User author
+    -String content
+    +like(user)
+    +addComment(comment)
+  }
+  class Comment {
+    -User author
+    -String text
+    +edit(text)
+  }
+  class FeedService {
+    +generateFeed(user)
+  }
+  SocialNetworkService --> User
+  SocialNetworkService --> FeedService
   User --> Post
   Post --> Comment
-  FeedService --> User
-  FeedService --> Post
 ```
 
 ### 5. State Transitions
@@ -1361,11 +1582,37 @@ class SocialNetworkService {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class MusicService
-  class Song
-  class Playlist
-  class Player
-  class PlayQueue
+  class MusicService {
+    -Map songs
+    -Map playlists
+    +searchSong(query)
+    +createPlaylist(user)
+    +play(song)
+  }
+  class Song {
+    -String id
+    -String title
+    -String artist
+    +getMetadata()
+  }
+  class Playlist {
+    -String id
+    -List songs
+    +addSong(song)
+    +removeSong(song)
+  }
+  class Player {
+    -PlayQueue queue
+    -PlayerState state
+    +play()
+    +pause()
+    +next()
+  }
+  class PlayQueue {
+    -Queue songs
+    +enqueue(song)
+    +next()
+  }
   MusicService --> Song
   MusicService --> Playlist
   MusicService --> Player
@@ -1480,10 +1727,28 @@ class MusicService {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class Broker
-  class Topic
-  class Subscriber
-  class Message
+  class Broker {
+    -Map topics
+    +createTopic(name)
+    +publish(topic, message)
+    +subscribe(topic, subscriber)
+  }
+  class Topic {
+    -String name
+    -List subscribers
+    -Queue messages
+    +addSubscriber(subscriber)
+    +publish(message)
+  }
+  class Subscriber {
+    -String id
+    +consume(message)
+  }
+  class Message {
+    -String id
+    -String payload
+    +getPayload()
+  }
   Broker --> Topic
   Topic --> Subscriber
   Topic --> Message
@@ -1574,10 +1839,33 @@ class Broker {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class ChatService
-  class User
-  class Conversation
-  class Message
+  class ChatService {
+    -Map users
+    -Map conversations
+    +sendMessage(conversation, sender, text)
+    +createConversation(users)
+    +markRead(message)
+  }
+  class User {
+    -String id
+    -String name
+    +goOnline()
+    +goOffline()
+  }
+  class Conversation {
+    -String id
+    -List members
+    -List messages
+    +addMessage(message)
+  }
+  class Message {
+    -String id
+    -User sender
+    -String text
+    -MessageStatus status
+    +markDelivered()
+    +markRead()
+  }
   ChatService --> User
   ChatService --> Conversation
   Conversation --> Message
@@ -1688,11 +1976,35 @@ class ChatService {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class PaymentGateway
-  class Payment
-  class PaymentProcessor
-  class StripeProcessor
-  class PaymentMethod
+  class PaymentGateway {
+    -PaymentProcessor processor
+    -Map payments
+    +initiatePayment(request)
+    +processPayment(paymentId)
+    +refund(paymentId)
+  }
+  class Payment {
+    -String id
+    -double amount
+    -PaymentStatus status
+    -PaymentMethod method
+    +markSuccess()
+    +markFailed()
+  }
+  class PaymentProcessor {
+    <<interface>>
+    +charge(payment)
+    +refund(payment)
+  }
+  class StripeProcessor {
+    +charge(payment)
+    +refund(payment)
+  }
+  class PaymentMethod {
+    -String type
+    -String token
+    +isValid()
+  }
   PaymentGateway --> Payment
   PaymentGateway --> PaymentProcessor
   PaymentProcessor <|.. StripeProcessor
@@ -1810,11 +2122,35 @@ class PaymentGateway {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class SplitwiseService
-  class Group
-  class User
-  class Expense
-  class SplitStrategy
+  class SplitwiseService {
+    -Map users
+    -Map groups
+    +addExpense(group, expense)
+    +settleUp(payer, payee)
+    +getBalances(user)
+  }
+  class Group {
+    -String id
+    -List users
+    -List expenses
+    +addMember(user)
+    +addExpense(expense)
+  }
+  class User {
+    -String id
+    -String name
+    +getBalance()
+  }
+  class Expense {
+    -User paidBy
+    -double amount
+    -SplitStrategy strategy
+    +calculateSplits()
+  }
+  class SplitStrategy {
+    <<interface>>
+    +split(amount, users)
+  }
   SplitwiseService --> Group
   Group --> User
   Group --> Expense
@@ -1927,12 +2263,44 @@ class SplitwiseService {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class EcommerceService
-  class Product
-  class Cart
-  class Order
-  class Payment
-  class Inventory
+  class EcommerceService {
+    -Catalog catalog
+    -Inventory inventory
+    -OrderService orderService
+    +searchProducts(query)
+    +addToCart(user, product)
+    +checkout(cart)
+  }
+  class Product {
+    -String id
+    -String name
+    -double price
+    +getPrice()
+  }
+  class Cart {
+    -User user
+    -List items
+    +addItem(product, qty)
+    +removeItem(product)
+    +total()
+  }
+  class Order {
+    -String id
+    -OrderStatus status
+    -Payment payment
+    +place()
+    +cancel()
+  }
+  class Payment {
+    -String id
+    -double amount
+    +pay()
+  }
+  class Inventory {
+    -Map stock
+    +reserve(product, qty)
+    +release(product, qty)
+  }
   EcommerceService --> Product
   EcommerceService --> Cart
   EcommerceService --> Order
@@ -2050,12 +2418,41 @@ class EcommerceService {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class RideService
-  class Rider
-  class Driver
-  class Ride
-  class MatchingStrategy
-  class FareStrategy
+  class RideService {
+    -MatchingStrategy matchingStrategy
+    -FareStrategy fareStrategy
+    -Map rides
+    +requestRide(rider, pickup, drop)
+    +acceptRide(driver, ride)
+    +completeRide(ride)
+  }
+  class Rider {
+    -String id
+    -String name
+    +requestRide()
+  }
+  class Driver {
+    -String id
+    -Location location
+    -boolean available
+    +acceptRide(ride)
+  }
+  class Ride {
+    -Rider rider
+    -Driver driver
+    -RideStatus status
+    +start()
+    +complete()
+    +cancel()
+  }
+  class MatchingStrategy {
+    <<interface>>
+    +findDriver(rider, drivers)
+  }
+  class FareStrategy {
+    <<interface>>
+    +calculateFare(ride)
+  }
   RideService --> Rider
   RideService --> Driver
   RideService --> Ride
@@ -2184,12 +2581,32 @@ class RideService {
 
 ### 4. Relationships
 ```mermaid
-flowchart LR
-  UrlShortenerService[UrlShortenerService]
-  UrlMapping[UrlMapping]
-  CodeGenerator[CodeGenerator]
+classDiagram
+  class UrlShortenerService {
+    -Map mappings
+    -CodeGenerator generator
+    +shorten(longUrl)
+    +redirect(code)
+    +expire(code)
+  }
+  class UrlMapping {
+    -String code
+    -String longUrl
+    -LocalDateTime createdAt
+    -boolean active
+    +isActive()
+    +expire()
+  }
+  class CodeGenerator {
+    <<interface>>
+    +generate(longUrl)
+  }
+  class RandomCodeGenerator {
+    +generate(longUrl)
+  }
   UrlShortenerService --> UrlMapping
   UrlShortenerService --> CodeGenerator
+  CodeGenerator <|.. RandomCodeGenerator
 ```
 
 ### 5. State Transitions
@@ -2284,10 +2701,26 @@ class UrlShortenerService {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class RateLimiterService
-  class RateLimiter
-  class TokenBucketRateLimiter
-  class Bucket
+  class RateLimiterService {
+    -RateLimiter limiter
+    +allowRequest(clientId)
+  }
+  class RateLimiter {
+    <<interface>>
+    +allow(clientId)
+  }
+  class TokenBucketRateLimiter {
+    -Map buckets
+    +allow(clientId)
+    -refill(bucket)
+  }
+  class Bucket {
+    -int capacity
+    -int tokens
+    -long lastRefillTime
+    +tryConsume()
+    +refill()
+  }
   RateLimiterService --> RateLimiter
   RateLimiter <|.. TokenBucketRateLimiter
   TokenBucketRateLimiter --> Bucket
@@ -2295,9 +2728,9 @@ classDiagram
 
 ### 5. State Transitions
 ```mermaid
-flowchart LR
-  Start((Start)) --> ALLOWED[ALLOWED]
-  ALLOWED --> LIMITED[LIMITED]
+stateDiagram-v2
+  [*] --> ALLOWED
+  ALLOWED --> LIMITED
   LIMITED --> ALLOWED
 ```
 
@@ -2391,10 +2824,31 @@ class TokenBucketRateLimiter implements RateLimiter {
 ### 4. Relationships
 ```mermaid
 classDiagram
-  class Repository
-  class Commit
-  class Blob
-  class Branch
+  class Repository {
+    -Map commits
+    -Map branches
+    -Branch currentBranch
+    +commit(message)
+    +checkout(branch)
+    +createBranch(name)
+  }
+  class Commit {
+    -String id
+    -String message
+    -Commit parent
+    -List blobs
+    +getSnapshot()
+  }
+  class Blob {
+    -String path
+    -String contentHash
+    +getContent()
+  }
+  class Branch {
+    -String name
+    -Commit head
+    +moveHead(commit)
+  }
   Repository --> Commit
   Repository --> Branch
   Commit --> Blob
