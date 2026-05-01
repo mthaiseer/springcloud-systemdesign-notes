@@ -1,35 +1,50 @@
-# LLD Visual Java Reference With Mermaid Class Diagrams
+# LLD Visual Java Reference With Mermaid Class Diagrams and Full Java Implementations
 
-Visual-first LLD notes. Every problem uses a safe Mermaid `classDiagram` with entities, fields, methods, and relationships. Java sections contain full compact reference implementations with no placeholders.
+A visual-first Low-Level Design reference for common interview problems.
 
-> Note: This file uses Mermaid class diagrams only. Class diagrams are kept for visual learning.
+
+This version includes:
+
+- Mermaid **class diagrams** with entities, fields, methods, relationships, and cardinality.
+
+- Clear requirements, core flows, design-pattern explanations, edge cases, and full compact Java implementations.
+
+- All Java sections are full compact implementations with no placeholder markers.
 
 ## Clickable Index
 
 ### Games & Puzzles
 - [Design Tic Tac Toe](#design-tic-tac-toe)
 - [Design Chess Game](#design-chess-game)
+
 ### Data Structures & Search
 - [Design LRU Cache](#design-lru-cache)
 - [Design Search Autocomplete System](#design-search-autocomplete-system)
+
 ### Managing States
 - [Design ATM](#design-atm)
 - [Design Elevator System](#design-elevator-system)
+
 ### Management Systems
 - [Design Parking Lot](#design-parking-lot)
 - [Design Inventory Management System](#design-inventory-management-system)
+
 ### Social & Content Platforms
 - [Design a Social Network](#design-a-social-network)
 - [Design Spotify](#design-spotify)
+
 ### Communication & Messaging
 - [Design Pub Sub System](#design-pub-sub-system)
 - [Design Chat Application](#design-chat-application)
+
 ### Financial & Payment Systems
 - [Design Payment Gateway](#design-payment-gateway)
 - [Design Splitwise](#design-splitwise)
+
 ### E-commerce & Booking Systems
 - [Design Amazon](#design-amazon)
 - [Design Ride Hailing Service](#design-ride-hailing-service)
+
 ### Developer Tools & Infrastructure
 - [Design URL Shortener](#design-url-shortener)
 - [Design Rate Limiter](#design-rate-limiter)
@@ -39,21 +54,33 @@ Visual-first LLD notes. Every problem uses a safe Mermaid `classDiagram` with en
 
 ## Design Tic Tac Toe
 
+**Category:** Games & Puzzles
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Support a 3x3 board with two players using X and O.
+- Reject invalid moves such as occupied cells or out-of-bound positions.
+- Detect row, column, diagonal wins and draw state.
+- Keep the game logic independent from display and scoring.
 
 ### 2. Core Use Cases
 
-- Start game, make move, validate move, detect win or draw.
+- Player chooses cell
+- Game validates cell
+- Board marks symbol
+- Game checks win or draw
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `TicTacToeGame` | Orchestrates turns, moves, status, and win checks. |
+| `Board` | Owns the grid of cells. |
+| `Cell` | Stores one symbol. |
+| `Player` | Stores name and assigned symbol. |
+| `WinningStrategy` | Defines win-checking behavior. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -103,19 +130,37 @@ classDiagram
   TicTacToeGame --> WinningStrategy
   Board *-- Cell
   Scoreboard --> Player
+  %% Cardinality relationships
+  TicTacToeGame "1" --> "1" Board : owns
+  Board "1" --> "9" Cell : contains
+  TicTacToeGame "1" --> "2" Player : uses
+  TicTacToeGame "1" --> "*" WinningStrategy : uses
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `TicTacToeGame` | 1 | `Board` | 1 | owns |
+| `Board` | 1 | `Cell` | 9 | contains |
+| `TicTacToeGame` | 1 | `Player` | 2 | uses |
+| `TicTacToeGame` | 1 | `WinningStrategy` | * | uses |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Start game, make move, validate move, detect win or draw.
+```text
+Core Flow:
+1. Player chooses cell ->
+2. Game validates cell ->
+3. Board marks symbol ->
+4. Game checks win or draw ->
+5. Game switches turn or ends
+```
 
 ### 7. Design Patterns Used
 
-- Strategy for win checks, Observer optional for scoreboard, Facade optional.
+- **Strategy:** Win detection is separated into row, column, and diagonal strategies. Adding a new win rule does not change the game orchestration.
+- **Single Responsibility:** Board manages cells, Game manages gameplay, Player stores identity.
 
 ### 8. Full Java Implementation
 
@@ -307,27 +352,42 @@ class TicTacToeGame {
 
 ### 9. Edge Cases
 
-- Move outside board, occupied cell, move after game over.
+- Move outside board
+- Occupied cell
+- Move after game over
+- Draw after final move
 
 ---
 
 ## Design Chess Game
 
+**Category:** Games & Puzzles
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Represent an 8x8 board, players, cells, and chess pieces.
+- Validate moves based on each piece type.
+- Support capturing opponent pieces.
+- Maintain current player and game status.
 
 ### 2. Core Use Cases
 
-- Move piece, validate legal move, detect check/checkmate.
+- Player selects source and target
+- Game validates ownership
+- Piece validates movement
+- Board moves or captures
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `ChessGame` | Coordinates players, board, moves, and status. |
+| `Board` | Owns all chess cells. |
+| `Cell` | Stores position and optional piece. |
+| `Piece` | Base abstraction for chess pieces. |
+| `Move` | Represents a source-to-target move. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -385,19 +445,37 @@ classDiagram
   Cell --> Piece
   Piece <|-- King
   Piece <|-- Queen
+  %% Cardinality relationships
+  ChessGame "1" --> "1" Board : owns
+  Board "1" --> "64" Cell : contains
+  Cell "0..1" --> "1" Piece : holds
+  ChessGame "1" --> "2" Player : uses
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `ChessGame` | 1 | `Board` | 1 | owns |
+| `Board` | 1 | `Cell` | 64 | contains |
+| `Cell` | 0..1 | `Piece` | 1 | holds |
+| `ChessGame` | 1 | `Player` | 2 | uses |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Move piece, validate legal move, detect check/checkmate.
+```text
+Core Flow:
+1. Player selects source and target ->
+2. Game validates ownership ->
+3. Piece validates movement ->
+4. Board moves or captures ->
+5. Game switches turn
+```
 
 ### 7. Design Patterns Used
 
-- State for game state, Strategy for piece movement validation.
+- **Polymorphism:** Each Piece subclass owns its movement rule through canMove.
+- **State:** GameStatus tracks active, check, checkmate, and stalemate states.
 
 ### 8. Full Java Implementation
 
@@ -599,27 +677,39 @@ class ChessGame {
 
 ### 9. Edge Cases
 
-- Illegal move, moving into check, empty source cell.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design LRU Cache
 
+**Category:** Data Structures & Search
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Support get and put in O(1) average time.
+- Evict the least recently used item when capacity is full.
+- Update recency on both get and put.
+- Keep cache storage and recency tracking consistent.
 
 ### 2. Core Use Cases
 
-- Get key, put key, evict least recently used item.
+- get/put called
+- Map locates node
+- Node moves to front
+- If capacity exceeded remove tail node
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `LRUCache` | Coordinates HashMap and linked list. |
+| `Node` | Stores key/value and list pointers. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -644,19 +734,33 @@ classDiagram
     +getValue()
   }
   LRUCache --> Node
+  %% Cardinality relationships
+  LRUCache "1" --> "0..capacity" Node : stores
+  Node "1" --> "0..2" Node : links
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `LRUCache` | 1 | `Node` | 0..capacity | stores |
+| `Node` | 1 | `Node` | 0..2 | links |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Get key, put key, evict least recently used item.
+```text
+Core Flow:
+1. get/put called ->
+2. Map locates node ->
+3. Node moves to front ->
+4. If capacity exceeded remove tail node ->
+5. Map and list stay synchronized
+```
 
 ### 7. Design Patterns Used
 
-- HashMap plus Doubly Linked List.
+- **Data Structure Composition:** HashMap gives O(1) lookup and doubly linked list gives O(1) recency updates.
+- **Sentinel Nodes:** Dummy head and tail simplify insert/remove edge cases.
 
 ### 8. Full Java Implementation
 
@@ -737,27 +841,39 @@ class LRUCache {
 
 ### 9. Edge Cases
 
-- Capacity zero, update existing key, get missing key.
+- Capacity full
+- Update existing key
+- Read missing key
+- Capacity must be positive
 
 ---
 
 ## Design Search Autocomplete System
 
+**Category:** Data Structures & Search
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Insert searchable words or sentences.
+- Return suggestions for a prefix.
+- Keep suggestions sorted and limited.
+- Use a Trie for efficient prefix lookup.
 
 ### 2. Core Use Cases
 
-- Insert words, search prefix, return suggestions.
+- Insert word into Trie
+- Update suggestions along prefix path
+- Search walks prefix nodes
+- Return stored suggestions
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `AutocompleteSystem` | Exposes insert and prefix search. |
+| `TrieNode` | Stores children and prefix suggestions. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -778,19 +894,32 @@ classDiagram
   }
   AutocompleteSystem --> TrieNode
   TrieNode --> TrieNode
+  %% Cardinality relationships
+  AutocompleteSystem "1" --> "1" TrieNode : root
+  TrieNode "1" --> "0..26" TrieNode : children
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `AutocompleteSystem` | 1 | `TrieNode` | 1 | root |
+| `TrieNode` | 1 | `TrieNode` | 0..26 | children |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Insert words, search prefix, return suggestions.
+```text
+Core Flow:
+1. Insert word into Trie ->
+2. Update suggestions along prefix path ->
+3. Search walks prefix nodes ->
+4. Return stored suggestions
+```
 
 ### 7. Design Patterns Used
 
-- Trie, optional ranking strategy.
+- **Trie:** Each prefix maps to a node, making prefix search efficient.
+- **Precomputed Suggestions:** Suggestions are stored along the path to make lookup fast.
 
 ### 8. Full Java Implementation
 
@@ -849,27 +978,42 @@ class AutocompleteSystem {
 
 ### 9. Edge Cases
 
-- Unknown prefix, duplicate word, empty query.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design ATM
 
+**Category:** Managing States
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Support card insertion, PIN validation, cash withdrawal, and card ejection.
+- Prevent invalid operations based on current ATM state.
+- Validate balance and ATM cash before dispensing.
+- Separate bank validation from ATM state handling.
 
 ### 2. Core Use Cases
 
-- Insert card, authenticate, withdraw cash, eject card.
+- Insert card
+- Enter PIN
+- Bank validates PIN
+- Withdraw requested
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `ATM` | Context object delegating actions to current state. |
+| `ATMState` | State behavior contract. |
+| `CashDispenser` | Tracks and dispenses cash. |
+| `BankService` | Validates PIN and debits account. |
+| `Card` | Represents customer card/account. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -918,19 +1062,37 @@ classDiagram
   ATM --> CashDispenser
   ATM --> BankService
   ATM --> Card
+  %% Cardinality relationships
+  ATM "1" --> "1" ATMState : current state
+  ATM "1" --> "0..1" Card : current card
+  ATM "1" --> "1" CashDispenser : has
+  ATM "1" --> "1" BankService : uses
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `ATM` | 1 | `ATMState` | 1 | current state |
+| `ATM` | 1 | `Card` | 0..1 | current card |
+| `ATM` | 1 | `CashDispenser` | 1 | has |
+| `ATM` | 1 | `BankService` | 1 | uses |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Insert card, authenticate, withdraw cash, eject card.
+```text
+Core Flow:
+1. Insert card ->
+2. Enter PIN ->
+3. Bank validates PIN ->
+4. Withdraw requested ->
+5. ATM debits account and dispenses cash
+```
 
 ### 7. Design Patterns Used
 
-- State pattern for ATM lifecycle.
+- **State:** ATM behavior changes depending on Idle, CardInserted, and Authenticated states.
+- **Separation of Concerns:** BankService validates account rules while CashDispenser handles cash.
 
 ### 8. Full Java Implementation
 
@@ -1089,27 +1251,41 @@ class ATM {
 
 ### 9. Edge Cases
 
-- Wrong PIN, insufficient balance, insufficient ATM cash.
+- Wrong PIN
+- Insufficient account balance
+- Insufficient ATM cash
+- Withdraw before authentication
 
 ---
 
 ## Design Elevator System
 
+**Category:** Managing States
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Support multiple elevators and passenger requests.
+- Assign the best elevator using a dispatcher.
+- Move elevator step by step toward pickup/drop floors.
+- Track elevator direction and state.
 
 ### 2. Core Use Cases
 
-- Request elevator, assign elevator, move, open and close doors.
+- Request submitted
+- Dispatcher selects nearest elevator
+- Elevator queues request
+- Elevator moves to pickup
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `ElevatorSystem` | Entry point for elevator requests. |
+| `Dispatcher` | Chooses elevator for request. |
+| `Elevator` | Tracks floor, state, direction, and queue. |
+| `Request` | Represents pickup and destination. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -1142,19 +1318,35 @@ classDiagram
   ElevatorSystem --> Dispatcher
   ElevatorSystem --> Elevator
   Elevator --> Request
+  %% Cardinality relationships
+  ElevatorSystem "1" --> "*" Elevator : manages
+  ElevatorSystem "1" --> "1" Dispatcher : uses
+  Elevator "1" --> "*" Request : queues
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `ElevatorSystem` | 1 | `Elevator` | * | manages |
+| `ElevatorSystem` | 1 | `Dispatcher` | 1 | uses |
+| `Elevator` | 1 | `Request` | * | queues |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Request elevator, assign elevator, move, open and close doors.
+```text
+Core Flow:
+1. Request submitted ->
+2. Dispatcher selects nearest elevator ->
+3. Elevator queues request ->
+4. Elevator moves to pickup ->
+5. Elevator moves to destination
+```
 
 ### 7. Design Patterns Used
 
-- Dispatcher Strategy, State for elevator status.
+- **Strategy:** Dispatcher can be replaced with nearest, least-loaded, or zone-based assignment.
+- **Queue:** Each elevator stores requests and processes them step by step.
 
 ### 8. Full Java Implementation
 
@@ -1261,27 +1453,42 @@ class ElevatorSystem {
 
 ### 9. Edge Cases
 
-- Multiple requests, same floor request, overloaded elevator.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design Parking Lot
 
+**Category:** Management Systems
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Support multiple floors and different vehicle/spot sizes.
+- Allocate compatible available spots automatically.
+- Issue parking tickets and calculate fees on exit.
+- Handle concurrent parking operations safely.
 
 ### 2. Core Use Cases
 
-- Park vehicle, issue ticket, unpark vehicle, calculate fee.
+- Vehicle enters
+- Allocation strategy finds spot
+- Spot parks vehicle
+- Ticket is issued
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `ParkingLot` | Facade for park/unpark operations. |
+| `ParkingFloor` | Groups parking spots. |
+| `ParkingSpot` | Stores spot size and parked vehicle. |
+| `Vehicle` | Base type for Bike, Car, Truck. |
+| `ParkingTicket` | Tracks vehicle, spot, and time. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -1340,19 +1547,39 @@ classDiagram
   ParkingTicket --> ParkingSpot
   ParkingLot --> FeeStrategy
   ParkingLot --> SpotAllocationStrategy
+  %% Cardinality relationships
+  ParkingLot "1" --> "*" ParkingFloor : contains
+  ParkingFloor "1" --> "*" ParkingSpot : contains
+  ParkingSpot "1" --> "0..1" Vehicle : parks
+  ParkingTicket "1" --> "1" Vehicle : references
+  ParkingTicket "1" --> "1" ParkingSpot : references
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `ParkingLot` | 1 | `ParkingFloor` | * | contains |
+| `ParkingFloor` | 1 | `ParkingSpot` | * | contains |
+| `ParkingSpot` | 1 | `Vehicle` | 0..1 | parks |
+| `ParkingTicket` | 1 | `Vehicle` | 1 | references |
+| `ParkingTicket` | 1 | `ParkingSpot` | 1 | references |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Park vehicle, issue ticket, unpark vehicle, calculate fee.
+```text
+Core Flow:
+1. Vehicle enters ->
+2. Allocation strategy finds spot ->
+3. Spot parks vehicle ->
+4. Ticket is issued ->
+5. On exit fee is calculated and spot freed
+```
 
 ### 7. Design Patterns Used
 
-- Strategy for allocation and fee, Singleton or Facade for ParkingLot.
+- **Strategy:** Spot allocation and fee calculation are interchangeable.
+- **Facade:** ParkingLot exposes simple park/unpark methods while hiding floors/spots internals.
 
 ### 8. Full Java Implementation
 
@@ -1544,27 +1771,41 @@ class ParkingLot {
 
 ### 9. Edge Cases
 
-- No compatible spot, invalid ticket, concurrent park/unpark.
+- No compatible spot
+- Invalid ticket
+- Unpark already free spot
+- Concurrent entry lanes
 
 ---
 
 ## Design Inventory Management System
 
+**Category:** Management Systems
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Track products across warehouses.
+- Support stock addition, reservation, release, and sale.
+- Prevent overselling and invalid quantities.
+- Expose availability across warehouses.
 
 ### 2. Core Use Cases
 
-- Add stock, reserve stock, sell stock, release reservation.
+- Stock is added
+- Order reserves quantity
+- Reserved stock is sold or released
+- Availability is updated
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `InventoryService` | Coordinates warehouses. |
+| `Warehouse` | Stores inventory items. |
+| `InventoryItem` | Tracks available and reserved stock. |
+| `Product` | Product identity and metadata. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -1602,19 +1843,34 @@ classDiagram
   InventoryService --> Warehouse
   Warehouse *-- InventoryItem
   InventoryItem --> Product
+  %% Cardinality relationships
+  InventoryService "1" --> "*" Warehouse : manages
+  Warehouse "1" --> "*" InventoryItem : contains
+  InventoryItem "1" --> "1" Product : references
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `InventoryService` | 1 | `Warehouse` | * | manages |
+| `Warehouse` | 1 | `InventoryItem` | * | contains |
+| `InventoryItem` | 1 | `Product` | 1 | references |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Add stock, reserve stock, sell stock, release reservation.
+```text
+Core Flow:
+1. Stock is added ->
+2. Order reserves quantity ->
+3. Reserved stock is sold or released ->
+4. Availability is updated
+```
 
 ### 7. Design Patterns Used
 
-- Service layer, Repository style storage, State for stock lifecycle.
+- **Service Layer:** InventoryService coordinates stock operations across warehouses.
+- **Encapsulation:** InventoryItem protects available/reserved quantity updates.
 
 ### 8. Full Java Implementation
 
@@ -1768,27 +2024,42 @@ class InventoryService {
 
 ### 9. Edge Cases
 
-- Insufficient stock, negative quantity, duplicate product.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design a Social Network
 
+**Category:** Social & Content Platforms
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Create users, posts, comments, likes, and follow relationships.
+- Generate a user feed from followed users.
+- Prevent invalid relationships such as self-follow.
+- Keep feed generation separate from user/post storage.
 
 ### 2. Core Use Cases
 
-- Create user, follow user, create post, view feed.
+- User creates post
+- Other users follow author
+- Feed service collects followed posts
+- Posts are sorted by time
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `SocialNetworkService` | Creates users, posts, and relationships. |
+| `User` | Stores profile, posts, and followings. |
+| `Post` | Stores content, comments, likes. |
+| `Comment` | Stores comment author and text. |
+| `FeedService` | Builds feed for a user. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -1829,19 +2100,36 @@ classDiagram
   SocialNetworkService --> FeedService
   User --> Post
   Post --> Comment
+  %% Cardinality relationships
+  SocialNetworkService "1" --> "*" User : manages
+  User "1" --> "*" Post : creates
+  Post "1" --> "*" Comment : contains
+  User "*" --> "*" User : follows
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `SocialNetworkService` | 1 | `User` | * | manages |
+| `User` | 1 | `Post` | * | creates |
+| `Post` | 1 | `Comment` | * | contains |
+| `User` | * | `User` | * | follows |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Create user, follow user, create post, view feed.
+```text
+Core Flow:
+1. User creates post ->
+2. Other users follow author ->
+3. Feed service collects followed posts ->
+4. Posts are sorted by time
+```
 
 ### 7. Design Patterns Used
 
-- Observer optional for notifications, Strategy for feed ranking.
+- **Service Layer:** SocialNetworkService coordinates users, posts, and relationships.
+- **Strategy-ready Feed:** FeedService can later support ranking, pagination, or ML-based feeds.
 
 ### 8. Full Java Implementation
 
@@ -1941,27 +2229,42 @@ class SocialNetworkService {
 
 ### 9. Edge Cases
 
-- Self follow, duplicate follow, deleted post.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design Spotify
 
+**Category:** Social & Content Platforms
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Manage songs, playlists, playback queue, and player state.
+- Support search by title or artist.
+- Support play, pause, and next operations.
+- Separate catalog management from player behavior.
 
 ### 2. Core Use Cases
 
-- Search songs, create playlist, play/pause/next.
+- Song added to catalog
+- User searches or creates playlist
+- Song added to queue
+- Player plays, pauses, or skips
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `MusicService` | Catalog and playlist entry point. |
+| `Song` | Song metadata. |
+| `Playlist` | Collection of songs. |
+| `Player` | Playback state machine. |
+| `PlayQueue` | Upcoming songs. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -2005,19 +2308,36 @@ classDiagram
   MusicService --> Player
   Playlist --> Song
   Player --> PlayQueue
+  %% Cardinality relationships
+  MusicService "1" --> "*" Song : catalog
+  MusicService "1" --> "*" Playlist : manages
+  Playlist "1" --> "*" Song : contains
+  Player "1" --> "1" PlayQueue : uses
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `MusicService` | 1 | `Song` | * | catalog |
+| `MusicService` | 1 | `Playlist` | * | manages |
+| `Playlist` | 1 | `Song` | * | contains |
+| `Player` | 1 | `PlayQueue` | 1 | uses |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Search songs, create playlist, play/pause/next.
+```text
+Core Flow:
+1. Song added to catalog ->
+2. User searches or creates playlist ->
+3. Song added to queue ->
+4. Player plays, pauses, or skips
+```
 
 ### 7. Design Patterns Used
 
-- State for player, Queue for playback.
+- **State:** PlayerState tracks playing, paused, and stopped.
+- **Queue:** PlayQueue isolates ordering of upcoming songs.
 
 ### 8. Full Java Implementation
 
@@ -2126,27 +2446,41 @@ class MusicService {
 
 ### 9. Edge Cases
 
-- Empty queue, unavailable song, duplicate playlist song.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design Pub Sub System
 
+**Category:** Communication & Messaging
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Create topics and allow subscribers to subscribe.
+- Publish messages to a topic.
+- Deliver messages to all subscribers of the topic.
+- Keep publishers decoupled from subscribers.
 
 ### 2. Core Use Cases
 
-- Create topic, subscribe, publish, consume.
+- Subscriber subscribes to topic
+- Publisher publishes message
+- Topic stores message
+- Topic notifies subscribers
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `Broker` | Manages topics. |
+| `Topic` | Stores subscribers and messages. |
+| `Subscriber` | Consumes messages. |
+| `Message` | Payload plus metadata. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -2177,19 +2511,34 @@ classDiagram
   Broker --> Topic
   Topic --> Subscriber
   Topic --> Message
+  %% Cardinality relationships
+  Broker "1" --> "*" Topic : manages
+  Topic "1" --> "*" Subscriber : notifies
+  Topic "1" --> "*" Message : receives
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `Broker` | 1 | `Topic` | * | manages |
+| `Topic` | 1 | `Subscriber` | * | notifies |
+| `Topic` | 1 | `Message` | * | receives |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Create topic, subscribe, publish, consume.
+```text
+Core Flow:
+1. Subscriber subscribes to topic ->
+2. Publisher publishes message ->
+3. Topic stores message ->
+4. Topic notifies subscribers
+```
 
 ### 7. Design Patterns Used
 
-- Observer and Publisher Subscriber.
+- **Observer / Pub-Sub:** Topic notifies all subscribers without publisher knowing subscriber details.
+- **Broker:** Broker centralizes topic management.
 
 ### 8. Full Java Implementation
 
@@ -2271,27 +2620,41 @@ class Broker {
 
 ### 9. Edge Cases
 
-- Topic not found, slow subscriber, duplicate subscription.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design Chat Application
 
+**Category:** Communication & Messaging
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Create users and conversations.
+- Allow members to send messages.
+- Track message status such as sent, delivered, and read.
+- Reject messages from non-members.
 
 ### 2. Core Use Cases
 
-- Create conversation, send message, mark delivered/read.
+- Conversation created
+- Member sends message
+- Conversation stores message
+- Status changes to delivered/read
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `ChatService` | Creates users, conversations, messages. |
+| `Conversation` | Stores members and messages. |
+| `Message` | Stores sender, content, and status. |
+| `User` | Chat participant. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -2329,19 +2692,36 @@ classDiagram
   ChatService --> Conversation
   Conversation --> User
   Conversation --> Message
+  %% Cardinality relationships
+  ChatService "1" --> "*" User : manages
+  ChatService "1" --> "*" Conversation : manages
+  Conversation "1" --> "2..*" User : members
+  Conversation "1" --> "*" Message : contains
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `ChatService` | 1 | `User` | * | manages |
+| `ChatService` | 1 | `Conversation` | * | manages |
+| `Conversation` | 1 | `User` | 2..* | members |
+| `Conversation` | 1 | `Message` | * | contains |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Create conversation, send message, mark delivered/read.
+```text
+Core Flow:
+1. Conversation created ->
+2. Member sends message ->
+3. Conversation stores message ->
+4. Status changes to delivered/read
+```
 
 ### 7. Design Patterns Used
 
-- Observer for delivery, State for message status.
+- **State:** MessageStatus tracks sent, delivered, and read.
+- **Aggregate:** Conversation owns the message list and validates members.
 
 ### 8. Full Java Implementation
 
@@ -2438,27 +2818,41 @@ class ChatService {
 
 ### 9. Edge Cases
 
-- User offline, empty message, non-member sends message.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design Payment Gateway
 
+**Category:** Financial & Payment Systems
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Initiate, process, and refund payments.
+- Validate payment method and amount.
+- Use pluggable payment processors.
+- Track payment lifecycle status.
 
 ### 2. Core Use Cases
 
-- Initiate payment, process payment, refund payment.
+- Payment initiated
+- Processor charges method
+- Payment status updated
+- Refund can reverse successful payment
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `PaymentGateway` | Coordinates payment processing. |
+| `Payment` | Payment amount, method, and status. |
+| `PaymentMethod` | Tokenized payment method. |
+| `PaymentProcessor` | Processor abstraction. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -2495,19 +2889,34 @@ classDiagram
   PaymentGateway --> PaymentProcessor
   Payment --> PaymentMethod
   PaymentProcessor <|.. StripeProcessor
+  %% Cardinality relationships
+  PaymentGateway "1" --> "*" Payment : tracks
+  Payment "1" --> "1" PaymentMethod : uses
+  PaymentGateway "1" --> "1" PaymentProcessor : delegates
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `PaymentGateway` | 1 | `Payment` | * | tracks |
+| `Payment` | 1 | `PaymentMethod` | 1 | uses |
+| `PaymentGateway` | 1 | `PaymentProcessor` | 1 | delegates |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Initiate payment, process payment, refund payment.
+```text
+Core Flow:
+1. Payment initiated ->
+2. Processor charges method ->
+3. Payment status updated ->
+4. Refund can reverse successful payment
+```
 
 ### 7. Design Patterns Used
 
-- Strategy for payment processors, State for payment status.
+- **Strategy:** PaymentProcessor can be Stripe, Razorpay, PayPal, etc.
+- **State:** PaymentStatus protects lifecycle transitions.
 
 ### 8. Full Java Implementation
 
@@ -2601,27 +3010,42 @@ class PaymentGateway {
 
 ### 9. Edge Cases
 
-- Duplicate payment, processor failure, refund after failure.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design Splitwise
 
+**Category:** Financial & Payment Systems
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Create groups, members, expenses, and balances.
+- Split expenses using configurable split strategies.
+- Track who owes whom.
+- Support settlements between users.
 
 ### 2. Core Use Cases
 
-- Create expense, split among users, settle balances.
+- Expense is created
+- Split strategy calculates shares
+- Balance sheet records debts
+- Settlement reduces balance
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `SplitwiseService` | Coordinates expenses and settlements. |
+| `Group` | Members and expenses. |
+| `Expense` | Amount, payer, strategy. |
+| `SplitStrategy` | Defines split calculation. |
+| `BalanceSheet` | Tracks user-to-user balances. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -2665,19 +3089,38 @@ classDiagram
   Group --> User
   Group --> Expense
   Expense --> SplitStrategy
+  %% Cardinality relationships
+  SplitwiseService "1" --> "*" Group : manages
+  Group "1" --> "*" User : members
+  Group "1" --> "*" Expense : contains
+  Expense "1" --> "1" SplitStrategy : uses
+  SplitwiseService "1" --> "1" BalanceSheet : updates
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `SplitwiseService` | 1 | `Group` | * | manages |
+| `Group` | 1 | `User` | * | members |
+| `Group` | 1 | `Expense` | * | contains |
+| `Expense` | 1 | `SplitStrategy` | 1 | uses |
+| `SplitwiseService` | 1 | `BalanceSheet` | 1 | updates |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Create expense, split among users, settle balances.
+```text
+Core Flow:
+1. Expense is created ->
+2. Split strategy calculates shares ->
+3. Balance sheet records debts ->
+4. Settlement reduces balance
+```
 
 ### 7. Design Patterns Used
 
-- Strategy for split calculation.
+- **Strategy:** SplitStrategy supports equal, exact, percentage, or custom splits.
+- **Balance Sheet:** Central structure records who owes whom.
 
 ### 8. Full Java Implementation
 
@@ -2793,27 +3236,43 @@ class SplitwiseService {
 
 ### 9. Edge Cases
 
-- Unequal split mismatch, duplicate settlement, negative expense.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design Amazon
 
+**Category:** E-commerce & Booking Systems
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Search products, manage cart, reserve inventory, and place orders.
+- Prevent checkout when inventory is insufficient.
+- Process payment before order placement.
+- Separate product, cart, inventory, order, and payment responsibilities.
 
 ### 2. Core Use Cases
 
-- Search product, add to cart, checkout, create order.
+- User searches product
+- Product added to cart
+- Inventory reserved
+- Payment succeeds
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `EcommerceService` | Coordinates product search and checkout. |
+| `Product` | Product metadata and price. |
+| `Cart` | User cart. |
+| `Inventory` | Stock reservation and release. |
+| `Order` | Order lifecycle. |
+| `Payment` | Payment execution. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -2860,19 +3319,37 @@ classDiagram
   EcommerceService --> Order
   EcommerceService --> Inventory
   Order --> Payment
+  %% Cardinality relationships
+  EcommerceService "1" --> "*" Product : catalog
+  Cart "1" --> "*" CartItem : contains
+  Order "1" --> "1" Payment : requires
+  EcommerceService "1" --> "1" Inventory : uses
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `EcommerceService` | 1 | `Product` | * | catalog |
+| `Cart` | 1 | `CartItem` | * | contains |
+| `Order` | 1 | `Payment` | 1 | requires |
+| `EcommerceService` | 1 | `Inventory` | 1 | uses |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Search product, add to cart, checkout, create order.
+```text
+Core Flow:
+1. User searches product ->
+2. Product added to cart ->
+3. Inventory reserved ->
+4. Payment succeeds ->
+5. Order is placed
+```
 
 ### 7. Design Patterns Used
 
-- Facade/service layer, Strategy for payment/shipping.
+- **Facade:** EcommerceService hides catalog, inventory, cart, order, and payment details.
+- **Transaction Boundary:** Checkout reserves inventory before creating the order.
 
 ### 8. Full Java Implementation
 
@@ -3031,27 +3508,43 @@ class EcommerceService {
 
 ### 9. Edge Cases
 
-- Out of stock, payment failure, cart changed during checkout.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design Ride Hailing Service
 
+**Category:** E-commerce & Booking Systems
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Allow riders to request rides.
+- Match riders with available drivers.
+- Track ride status from request to completion.
+- Calculate fare using a configurable strategy.
 
 ### 2. Core Use Cases
 
-- Request ride, match driver, start ride, complete ride.
+- Rider requests ride
+- Matching strategy selects driver
+- Driver accepts
+- Ride starts
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `RideService` | Coordinates ride request and completion. |
+| `Rider` | Customer requesting ride. |
+| `Driver` | Available driver with location. |
+| `Ride` | Ride lifecycle. |
+| `MatchingStrategy` | Driver matching algorithm. |
+| `FareStrategy` | Fare calculation algorithm. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -3100,19 +3593,39 @@ classDiagram
   RideService --> Ride
   RideService --> MatchingStrategy
   RideService --> FareStrategy
+  %% Cardinality relationships
+  RideService "1" --> "*" Ride : tracks
+  Ride "1" --> "1" Rider : has
+  Ride "1" --> "0..1" Driver : assigned
+  RideService "1" --> "1" MatchingStrategy : uses
+  RideService "1" --> "1" FareStrategy : uses
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `RideService` | 1 | `Ride` | * | tracks |
+| `Ride` | 1 | `Rider` | 1 | has |
+| `Ride` | 1 | `Driver` | 0..1 | assigned |
+| `RideService` | 1 | `MatchingStrategy` | 1 | uses |
+| `RideService` | 1 | `FareStrategy` | 1 | uses |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Request ride, match driver, start ride, complete ride.
+```text
+Core Flow:
+1. Rider requests ride ->
+2. Matching strategy selects driver ->
+3. Driver accepts ->
+4. Ride starts ->
+5. Fare calculated on completion
+```
 
 ### 7. Design Patterns Used
 
-- Strategy for driver matching and fare calculation, State for ride status.
+- **Strategy:** MatchingStrategy and FareStrategy are replaceable.
+- **State:** RideStatus tracks request, accepted, started, completed, cancelled.
 
 ### 8. Full Java Implementation
 
@@ -3256,27 +3769,40 @@ class RideService {
 
 ### 9. Edge Cases
 
-- No drivers, driver cancels, rider cancels.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design URL Shortener
 
+**Category:** Developer Tools & Infrastructure
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Create short codes for long URLs.
+- Redirect short code to original URL.
+- Support link expiration.
+- Ensure generated codes are unique.
 
 ### 2. Core Use Cases
 
-- Shorten URL, redirect by code, expire link.
+- Long URL submitted
+- Code generator creates code
+- Mapping stored
+- Redirect resolves code
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `UrlShortenerService` | Creates and resolves short URLs. |
+| `UrlMapping` | Code to long URL mapping. |
+| `CodeGenerator` | Short-code generation strategy. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -3305,19 +3831,33 @@ classDiagram
   UrlShortenerService --> UrlMapping
   UrlShortenerService --> CodeGenerator
   CodeGenerator <|.. RandomCodeGenerator
+  %% Cardinality relationships
+  UrlShortenerService "1" --> "*" UrlMapping : stores
+  UrlShortenerService "1" --> "1" CodeGenerator : uses
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `UrlShortenerService` | 1 | `UrlMapping` | * | stores |
+| `UrlShortenerService` | 1 | `CodeGenerator` | 1 | uses |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Shorten URL, redirect by code, expire link.
+```text
+Core Flow:
+1. Long URL submitted ->
+2. Code generator creates code ->
+3. Mapping stored ->
+4. Redirect resolves code ->
+5. Expired code is rejected
+```
 
 ### 7. Design Patterns Used
 
-- Strategy for code generation.
+- **Strategy:** CodeGenerator can use random, base62 counter, or hash-based generation.
+- **Repository Map:** UrlShortenerService stores and resolves mappings.
 
 ### 8. Full Java Implementation
 
@@ -3392,27 +3932,41 @@ class UrlShortenerService {
 
 ### 9. Edge Cases
 
-- Duplicate code, expired link, invalid URL.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
 
 ## Design Rate Limiter
 
+**Category:** Developer Tools & Infrastructure
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Allow or reject requests based on client quota.
+- Refill quota over time.
+- Support per-client buckets.
+- Keep algorithm pluggable.
 
 ### 2. Core Use Cases
 
-- Receive request, check limit, allow or reject.
+- Request arrives
+- Client bucket is loaded
+- Bucket refills by time
+- Token consumed if available
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `RateLimiterService` | Public entry point. |
+| `RateLimiter` | Algorithm abstraction. |
+| `TokenBucketRateLimiter` | Token bucket implementation. |
+| `Bucket` | Per-client token bucket. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -3439,19 +3993,33 @@ classDiagram
   RateLimiterService --> RateLimiter
   RateLimiter <|.. TokenBucketRateLimiter
   TokenBucketRateLimiter --> Bucket
+  %% Cardinality relationships
+  RateLimiterService "1" --> "1" RateLimiter : uses
+  TokenBucketRateLimiter "1" --> "*" Bucket : per client
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `RateLimiterService` | 1 | `RateLimiter` | 1 | uses |
+| `TokenBucketRateLimiter` | 1 | `Bucket` | * | per client |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Receive request, check limit, allow or reject.
+```text
+Core Flow:
+1. Request arrives ->
+2. Client bucket is loaded ->
+3. Bucket refills by time ->
+4. Token consumed if available ->
+5. Request allowed or rejected
+```
 
 ### 7. Design Patterns Used
 
-- Strategy for algorithms, Token Bucket.
+- **Strategy:** RateLimiter interface allows token bucket, leaky bucket, fixed window, or sliding window.
+- **Token Bucket:** Bucket refills over time and consumes one token per request.
 
 ### 8. Full Java Implementation
 
@@ -3530,27 +4098,41 @@ class RateLimiterService {
 
 ### 9. Edge Cases
 
-- Burst traffic, unknown client, clock skew.
+- Unknown client
+- Burst traffic
+- Refill timing
+- Multiple requests at same time
 
 ---
 
 ## Design Version Control System
 
+**Category:** Developer Tools & Infrastructure
+
 ### 1. Requirements
 
-- Use object-oriented design with clear responsibilities.
-- Keep the system modular and extensible.
-- Support core operations and important edge cases.
+- Track working tree, staging area, commits, and branches.
+- Commit staged file snapshots.
+- Create and checkout branches.
+- Restore working tree from branch head.
 
 ### 2. Core Use Cases
 
-- Track file snapshot, commit, branch, checkout.
+- File added to working tree
+- File staged
+- Commit creates snapshot
+- Branch head moves
 
 ### 3. Entities + Responsibilities
 
-- See the Mermaid class diagram below. It includes key entities, fields, methods, and relationships.
+| Entity | Responsibility |
+|---|---|
+| `Repository` | Coordinates working tree, staging, commits, branches. |
+| `Commit` | Immutable snapshot node. |
+| `Blob` | File content object. |
+| `Branch` | Named pointer to a commit. |
 
-### 4. Relationships
+### 4. System Visualization Diagram
 
 ```mermaid
 classDiagram
@@ -3583,19 +4165,37 @@ classDiagram
   Repository --> Branch
   Commit --> Blob
   Branch --> Commit
+  %% Cardinality relationships
+  Repository "1" --> "*" Branch : manages
+  Repository "1" --> "*" Commit : stores
+  Branch "1" --> "1" Commit : head
+  Commit "1" --> "*" Blob : snapshot
 ```
 
-### 5. State Transitions
+### 5. Relationships and Cardinality
 
-- State changes are represented using enums and status fields in the Java full implementation.
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `Repository` | 1 | `Branch` | * | manages |
+| `Repository` | 1 | `Commit` | * | stores |
+| `Branch` | 1 | `Commit` | 1 | head |
+| `Commit` | 1 | `Blob` | * | snapshot |
 
-### 6. Core Flows
+### 6. Core Flow
 
-- Main flow: Track file snapshot, commit, branch, checkout.
+```text
+Core Flow:
+1. File added to working tree ->
+2. File staged ->
+3. Commit creates snapshot ->
+4. Branch head moves ->
+5. Checkout restores snapshot
+```
 
 ### 7. Design Patterns Used
 
-- Composite-like snapshots, DAG of commits.
+- **Snapshot:** Commit stores a file snapshot through blobs.
+- **Graph Model:** Branches point to commits; commits link to parents.
 
 ### 8. Full Java Implementation
 
@@ -3705,6 +4305,9 @@ class Repository {
 
 ### 9. Edge Cases
 
-- Commit without changes, branch not found, merge conflict.
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
 
 ---
