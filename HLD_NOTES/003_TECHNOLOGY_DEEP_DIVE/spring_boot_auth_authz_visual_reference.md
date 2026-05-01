@@ -1101,10 +1101,10 @@ Use method security when URL rules are not enough.
 
 ```mermaid
 flowchart TD
-    Request[Request allowed by URL security] --> Service[Service method]
-    Service --> Check{Method annotation}
-    Check -->|@PreAuthorize passes| Run[Run method]
-    Check -->|Fails| Deny[403 Forbidden]
+    Request["Request allowed by URL security"] --> Service["Service method"]
+    Service --> Check{"Method annotation"}
+    Check -->|"PreAuthorize passes"| Run["Run method"]
+    Check -->|"Fails"| Deny["403 Forbidden"]
 ```
 
 ## Step 1: Enable method security
@@ -1140,8 +1140,8 @@ public class AccountService {
 
 ```mermaid
 flowchart LR
-    Role[ROLE_ADMIN] --> HasRole[hasRole("ADMIN")]
-    Authority[SCOPE_read] --> HasAuthority[hasAuthority("SCOPE_read")]
+    Role["ROLE_ADMIN"] --> HasRole["hasRole ADMIN"]
+    Authority["SCOPE_read"] --> HasAuthority["hasAuthority SCOPE_read"]
 ```
 
 | Concept | Stored as | Check with |
