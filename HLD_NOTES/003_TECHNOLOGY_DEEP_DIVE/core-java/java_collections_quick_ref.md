@@ -1,514 +1,547 @@
 # Java Collections Visual Reference
 
-> Visual-first notes for mastering Java Collections from scratch.  
-> Best for quick revision, interviews, backend development, and daily coding.
+> Visual-first guide for Java Collections: what to use, when to use, data structure behind it, time complexity, and small code snippets.
 
 ---
 
 ## Clickable Index
 
-- [1. What Are Collections?](#1-what-are-collections)
-- [2. Collection Family Tree](#2-collection-family-tree)
-- [3. Project Setup](#3-project-setup)
-- [4. Array vs Collection](#4-array-vs-collection)
-- [5. List](#5-list)
-  - [ArrayList](#arraylist)
-  - [LinkedList](#linkedlist)
-- [6. Set](#6-set)
-  - [HashSet](#hashset)
-  - [LinkedHashSet](#linkedhashset)
-  - [TreeSet](#treeset)
-- [7. Map](#7-map)
-  - [HashMap](#hashmap)
-  - [LinkedHashMap](#linkedhashmap)
-  - [TreeMap](#treemap)
-- [8. Queue](#8-queue)
-- [9. Deque](#9-deque)
-- [10. PriorityQueue](#10-priorityqueue)
-- [11. Stack Style Using Deque](#11-stack-style-using-deque)
-- [12. Iterator](#12-iterator)
-- [13. Sorting Collections](#13-sorting-collections)
-- [14. Comparable vs Comparator](#14-comparable-vs-comparator)
-- [15. Streams With Collections](#15-streams-with-collections)
-- [16. Immutable Collections](#16-immutable-collections)
-- [17. Concurrent Collections](#17-concurrent-collections)
-- [18. Real Use Cases](#18-real-use-cases)
-- [19. Which Collection Should I Choose?](#19-which-collection-should-i-choose)
-- [20. Interview Patterns](#20-interview-patterns)
-- [21. Mini Practice Project](#21-mini-practice-project)
-- [22. Cheat Sheet](#22-cheat-sheet)
+1. [Big Picture](#1-big-picture)
+2. [Collection vs Collections](#2-collection-vs-collections)
+3. [List](#3-list)
+   - [ArrayList](#31-arraylist)
+   - [LinkedList](#32-linkedlist)
+4. [Set](#4-set)
+   - [HashSet](#41-hashset)
+   - [LinkedHashSet](#42-linkedhashset)
+   - [TreeSet](#43-treeset)
+5. [Queue and Deque](#5-queue-and-deque)
+   - [ArrayDeque](#51-arraydeque)
+   - [PriorityQueue](#52-priorityqueue)
+6. [Map](#6-map)
+   - [HashMap](#61-hashmap)
+   - [LinkedHashMap](#62-linkedhashmap)
+   - [TreeMap](#63-treemap)
+   - [ConcurrentHashMap](#64-concurrenthashmap)
+7. [Stack-like Use Cases](#7-stack-like-use-cases)
+8. [Sorting and Comparators](#8-sorting-and-comparators)
+9. [Streams with Collections](#9-streams-with-collections)
+10. [Common Real Use Cases](#10-common-real-use-cases)
+11. [Time Complexity Cheat Sheet](#11-time-complexity-cheat-sheet)
+12. [Decision Guide](#12-decision-guide)
+13. [Practice Problems](#13-practice-problems)
 
 ---
 
-# 1. What Are Collections?
+# 1. Big Picture
 
-Collections are ready-made data structures in Java.
+```mermaid
+flowchart TD
+    Iterable[Iterable] --> Collection[Collection]
+    Collection --> List[List]
+    Collection --> Set[Set]
+    Collection --> Queue[Queue]
+    Queue --> Deque[Deque]
+    Map[Map is separate hierarchy]
 
-Instead of manually building arrays, lists, maps, queues, and sets, Java gives you reusable classes.
+    List --> ArrayList[ArrayList]
+    List --> LinkedList[LinkedList]
+
+    Set --> HashSet[HashSet]
+    Set --> LinkedHashSet[LinkedHashSet]
+    Set --> TreeSet[TreeSet]
+
+    Queue --> PriorityQueue[PriorityQueue]
+    Deque --> ArrayDeque[ArrayDeque]
+
+    Map --> HashMap[HashMap]
+    Map --> LinkedHashMap[LinkedHashMap]
+    Map --> TreeMap[TreeMap]
+    Map --> ConcurrentHashMap[ConcurrentHashMap]
+```
+
+## Mental Model
 
 ```mermaid
 flowchart LR
-    Data["Data"] --> Store["Store"]
-    Store --> Search["Search"]
-    Store --> Sort["Sort"]
-    Store --> Remove["Remove"]
-    Store --> Update["Update"]
+    Need[What do you need?]
+    Need --> Ordered[Keep insertion order?]
+    Need --> Unique[Unique values?]
+    Need --> KeyValue[Key-value lookup?]
+    Need --> Sorted[Sorted data?]
+    Need --> FastEnds[Add/remove from ends?]
+
+    Ordered --> ArrayList
+    Unique --> HashSet
+    KeyValue --> HashMap
+    Sorted --> TreeSetOrTreeMap[TreeSet / TreeMap]
+    FastEnds --> ArrayDeque
 ```
 
-Example:
+---
+
+# 2. Collection vs Collections
+
+| Name | Meaning | Example |
+|---|---|---|
+| `Collection` | Interface root for List, Set, Queue | `Collection<String> names` |
+| `Collections` | Utility class | `Collections.sort(list)` |
 
 ```java
 import java.util.*;
 
-public class Main {
+public class CollectionVsCollections {
     public static void main(String[] args) {
-        List<String> names = new ArrayList<>();
+        Collection<String> names = new ArrayList<>();
         names.add("Asha");
         names.add("Ravi");
 
-        System.out.println(names);
+        List<String> list = new ArrayList<>(names);
+        Collections.sort(list);
+
+        System.out.println(list);
     }
 }
 ```
 
-Output:
-
-```text
-[Asha, Ravi]
-```
-
 ---
 
-# 2. Collection Family Tree
+# 3. List
+
+Use `List` when:
+
+- Duplicate values are allowed.
+- Index access matters.
+- Order matters.
 
 ```mermaid
-flowchart TD
-    Iterable["Iterable"] --> Collection["Collection"]
-
-    Collection --> List["List"]
-    Collection --> Set["Set"]
-    Collection --> Queue["Queue"]
-
-    List --> ArrayList["ArrayList"]
-    List --> LinkedList["LinkedList"]
-
-    Set --> HashSet["HashSet"]
-    Set --> LinkedHashSet["LinkedHashSet"]
-    Set --> TreeSet["TreeSet"]
-
-    Queue --> PriorityQueue["PriorityQueue"]
-    Queue --> Deque["Deque"]
-    Deque --> ArrayDeque["ArrayDeque"]
-
-    Map["Map"] --> HashMap["HashMap"]
-    Map --> LinkedHashMap["LinkedHashMap"]
-    Map --> TreeMap["TreeMap"]
-    Map --> ConcurrentHashMap["ConcurrentHashMap"]
+flowchart LR
+    List[List] --> AllowsDuplicates[Allows duplicates]
+    List --> KeepsOrder[Keeps order]
+    List --> IndexAccess[Index based access]
 ```
-
-Important:
-
-`Map` is part of Java Collections Framework, but it does **not** extend `Collection`.
 
 ---
 
-# 3. Project Setup
+## 3.1 ArrayList
 
-## Folder
+### Behind the scenes
 
-```text
-java-collections-demo/
- └── src/
-     └── Main.java
+`ArrayList` uses a **dynamic array**.
+
+```mermaid
+flowchart LR
+    A[ArrayList] --> B[Internal Object Array]
+    B --> I0[0: Alice]
+    B --> I1[1: Bob]
+    B --> I2[2: Chen]
+    B --> I3[3: null capacity]
 ```
 
-## Main.java
+### Best for
+
+- Fast read by index.
+- Most common list choice.
+- Append-heavy list.
+
+### Time complexity
+
+| Operation | Complexity |
+|---|---:|
+| Get by index | `O(1)` |
+| Add at end | `O(1)` amortized |
+| Add/remove in middle | `O(n)` |
+| Search by value | `O(n)` |
+
+### Code
 
 ```java
 import java.util.*;
 
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Java Collections Demo");
-    }
-}
-```
-
-Run:
-
-```bash
-javac src/Main.java
-java -cp src Main
-```
-
----
-
-# 4. Array vs Collection
-
-```mermaid
-flowchart LR
-    Array["Array"] --> Fixed["Fixed size"]
-    Array --> FastIndex["Fast index access"]
-
-    Collection["Collection"] --> Dynamic["Dynamic size"]
-    Collection --> Methods["Built-in methods"]
-    Collection --> Flexible["More flexible"]
-```
-
-Array:
-
-```java
-String[] names = new String[2];
-names[0] = "Asha";
-names[1] = "Ravi";
-```
-
-Collection:
-
-```java
-List<String> names = new ArrayList<>();
-names.add("Asha");
-names.add("Ravi");
-names.add("Meera");
-```
-
-Use collection when size can change.
-
----
-
-# 5. List
-
-A `List` keeps insertion order and allows duplicates.
-
-```mermaid
-flowchart LR
-    List["List"] --> Ordered["Ordered"]
-    List --> Duplicate["Allows duplicates"]
-    List --> Index["Index based access"]
-```
-
-## ArrayList
-
-Best for fast reading by index.
-
-```mermaid
-flowchart LR
-    A0["0: Asha"] --> A1["1: Ravi"] --> A2["2: Meera"]
-```
-
-```java
-import java.util.*;
-
-public class ArrayListDemo {
+public class ArrayListExample {
     public static void main(String[] args) {
         List<String> users = new ArrayList<>();
 
-        users.add("Asha");
-        users.add("Ravi");
-        users.add("Meera");
+        users.add("Alice");
+        users.add("Bob");
+        users.add("Chen");
 
-        System.out.println(users.get(1)); // Ravi
-        System.out.println(users.size()); // 3
+        System.out.println(users.get(1)); // Bob
 
-        users.remove("Ravi");
-        System.out.println(users); // [Asha, Meera]
+        users.remove("Alice");
+
+        for (String user : users) {
+            System.out.println(user);
+        }
     }
 }
 ```
 
-Use cases:
+### Use case: Store feed posts
 
-```text
-Product list
-Search results
-Student names
-API response list
+```java
+List<String> feed = new ArrayList<>();
+feed.add("Post 1");
+feed.add("Post 2");
+feed.add("Post 3");
+
+System.out.println(feed.get(0)); // first post
 ```
 
-## LinkedList
+---
 
-Best when frequent insert/delete happens at beginning or middle.
+## 3.2 LinkedList
+
+### Behind the scenes
+
+`LinkedList` uses a **doubly linked list**.
 
 ```mermaid
 flowchart LR
-    N1["Asha"] <--> N2["Ravi"] <--> N3["Meera"]
+    A[Node A] <--> B[Node B]
+    B <--> C[Node C]
+    C <--> D[Node D]
 ```
+
+Each node stores:
+
+```mermaid
+flowchart LR
+    Prev[previous] <--> Value[value]
+    Value <--> Next[next]
+```
+
+### Best for
+
+- Adding/removing from beginning or end.
+- Queue/deque behavior.
+
+### Time complexity
+
+| Operation | Complexity |
+|---|---:|
+| Get by index | `O(n)` |
+| Add/remove first | `O(1)` |
+| Add/remove last | `O(1)` |
+| Search | `O(n)` |
+
+### Code
 
 ```java
 import java.util.*;
 
-public class LinkedListDemo {
+public class LinkedListExample {
     public static void main(String[] args) {
         LinkedList<String> tasks = new LinkedList<>();
 
-        tasks.add("Task 1");
-        tasks.addFirst("Urgent Task");
-        tasks.addLast("Task 2");
+        tasks.addLast("Login");
+        tasks.addLast("Load profile");
+        tasks.addFirst("Start app");
 
-        System.out.println(tasks);
-        System.out.println(tasks.removeFirst());
+        System.out.println(tasks.removeFirst()); // Start app
+        System.out.println(tasks.removeLast());  // Load profile
     }
 }
 ```
 
-Use cases:
-
-```text
-Undo history
-Recent actions
-Task chain
-Queue-like work
-```
-
 ---
 
-# 6. Set
+# 4. Set
 
-A `Set` stores unique values.
+Use `Set` when:
+
+- Duplicates are not allowed.
+- You need membership checking.
 
 ```mermaid
 flowchart LR
-    Input["A, B, A, C"] --> Set["Set"] --> Output["A, B, C"]
-```
-
-## HashSet
-
-Fast unique storage. No guaranteed order.
-
-```java
-import java.util.*;
-
-public class HashSetDemo {
-    public static void main(String[] args) {
-        Set<String> emails = new HashSet<>();
-
-        emails.add("a@test.com");
-        emails.add("b@test.com");
-        emails.add("a@test.com");
-
-        System.out.println(emails);
-    }
-}
-```
-
-Use cases:
-
-```text
-Remove duplicate emails
-Unique user IDs
-Visited pages
-```
-
-## LinkedHashSet
-
-Unique values + insertion order.
-
-```java
-Set<String> cities = new LinkedHashSet<>();
-cities.add("Delhi");
-cities.add("Mumbai");
-cities.add("Delhi");
-
-System.out.println(cities); // [Delhi, Mumbai]
-```
-
-Use when you need uniqueness and order.
-
-## TreeSet
-
-Unique values + sorted order.
-
-```java
-Set<Integer> scores = new TreeSet<>();
-scores.add(50);
-scores.add(10);
-scores.add(30);
-
-System.out.println(scores); // [10, 30, 50]
-```
-
-Use cases:
-
-```text
-Sorted rankings
-Sorted unique names
-Leaderboard scores
+    Input[A, B, A, C, B] --> Set[Set]
+    Set --> Output[A, B, C]
 ```
 
 ---
 
-# 7. Map
+## 4.1 HashSet
 
-A `Map` stores key-value pairs.
+### Behind the scenes
 
-```mermaid
-flowchart LR
-    Key1["userId: 101"] --> Value1["Asha"]
-    Key2["userId: 102"] --> Value2["Ravi"]
-```
-
-## HashMap
-
-Fast key-value lookup. No guaranteed order.
-
-```java
-import java.util.*;
-
-public class HashMapDemo {
-    public static void main(String[] args) {
-        Map<Integer, String> users = new HashMap<>();
-
-        users.put(101, "Asha");
-        users.put(102, "Ravi");
-        users.put(103, "Meera");
-
-        System.out.println(users.get(102)); // Ravi
-        System.out.println(users.containsKey(101)); // true
-    }
-}
-```
-
-Use cases:
-
-```text
-User ID -> User name
-Product ID -> Product object
-Token -> Session data
-Word -> Count
-```
-
-## LinkedHashMap
-
-Keeps insertion order.
-
-```java
-Map<String, Integer> cart = new LinkedHashMap<>();
-cart.put("Book", 2);
-cart.put("Pen", 5);
-cart.put("Bag", 1);
-
-System.out.println(cart);
-```
-
-Use cases:
-
-```text
-Shopping cart
-Ordered API response
-Recent item history
-```
-
-## TreeMap
-
-Sorted by key.
-
-```java
-Map<Integer, String> ranks = new TreeMap<>();
-ranks.put(3, "Bronze");
-ranks.put(1, "Gold");
-ranks.put(2, "Silver");
-
-System.out.println(ranks); // {1=Gold, 2=Silver, 3=Bronze}
-```
-
-Use cases:
-
-```text
-Ranking
-Date sorted records
-Range search
-```
-
----
-
-# 8. Queue
-
-Queue follows FIFO: First In, First Out.
-
-```mermaid
-flowchart LR
-    A["First"] --> B["Second"] --> C["Third"] --> Out["Remove first"]
-```
-
-```java
-import java.util.*;
-
-public class QueueDemo {
-    public static void main(String[] args) {
-        Queue<String> queue = new LinkedList<>();
-
-        queue.offer("Job 1");
-        queue.offer("Job 2");
-        queue.offer("Job 3");
-
-        System.out.println(queue.poll()); // Job 1
-        System.out.println(queue.peek()); // Job 2
-    }
-}
-```
-
-Use cases:
-
-```text
-Print jobs
-Background tasks
-Message processing
-Order processing
-```
-
----
-
-# 9. Deque
-
-Deque means double-ended queue.
-
-Add/remove from both sides.
-
-```mermaid
-flowchart LR
-    Left["addFirst / removeFirst"] <--> D["Deque"] <--> Right["addLast / removeLast"]
-```
-
-```java
-import java.util.*;
-
-public class DequeDemo {
-    public static void main(String[] args) {
-        Deque<String> deque = new ArrayDeque<>();
-
-        deque.addFirst("Front");
-        deque.addLast("Back");
-
-        System.out.println(deque.removeFirst());
-        System.out.println(deque.removeLast());
-    }
-}
-```
-
-Use cases:
-
-```text
-Browser history
-Undo/redo
-Sliding window problems
-Stack replacement
-```
-
----
-
-# 10. PriorityQueue
-
-PriorityQueue removes items by priority, not insertion order.
+`HashSet` internally uses a **HashMap**.
 
 ```mermaid
 flowchart TD
-    Input["30, 10, 20"] --> PQ["PriorityQueue"] --> Output["10 first"]
+    HashSet[HashSet] --> HashMap[Internal HashMap]
+    HashMap --> Bucket1[Bucket 1]
+    HashMap --> Bucket2[Bucket 2]
+    HashMap --> Bucket3[Bucket 3]
 ```
+
+### Best for
+
+- Fast duplicate removal.
+- Fast `contains()` check.
+- No order required.
+
+### Time complexity
+
+| Operation | Average | Worst case |
+|---|---:|---:|
+| Add | `O(1)` | `O(n)` |
+| Remove | `O(1)` | `O(n)` |
+| Contains | `O(1)` | `O(n)` |
+
+### Code
 
 ```java
 import java.util.*;
 
-public class PriorityQueueDemo {
+public class HashSetExample {
+    public static void main(String[] args) {
+        Set<String> emails = new HashSet<>();
+
+        emails.add("a@mail.com");
+        emails.add("b@mail.com");
+        emails.add("a@mail.com");
+
+        System.out.println(emails); // duplicate removed
+        System.out.println(emails.contains("b@mail.com"));
+    }
+}
+```
+
+### Use case: Remove duplicate user IDs
+
+```java
+List<Long> userIds = List.of(10L, 20L, 10L, 30L);
+Set<Long> uniqueUserIds = new HashSet<>(userIds);
+System.out.println(uniqueUserIds);
+```
+
+---
+
+## 4.2 LinkedHashSet
+
+### Behind the scenes
+
+`LinkedHashSet` uses a **hash table + linked list**.
+
+```mermaid
+flowchart LR
+    A[Hash table for fast lookup] --> B[Linked list for insertion order]
+```
+
+### Best for
+
+- Unique values.
+- Keep insertion order.
+
+### Time complexity
+
+| Operation | Complexity |
+|---|---:|
+| Add | `O(1)` average |
+| Remove | `O(1)` average |
+| Contains | `O(1)` average |
+| Iteration | In insertion order |
+
+### Code
+
+```java
+import java.util.*;
+
+public class LinkedHashSetExample {
+    public static void main(String[] args) {
+        Set<String> pages = new LinkedHashSet<>();
+
+        pages.add("Home");
+        pages.add("Profile");
+        pages.add("Home");
+        pages.add("Settings");
+
+        System.out.println(pages); // [Home, Profile, Settings]
+    }
+}
+```
+
+---
+
+## 4.3 TreeSet
+
+### Behind the scenes
+
+`TreeSet` uses a **Red-Black Tree**.
+
+```mermaid
+flowchart TD
+    Root[50 black] --> L[30 red]
+    Root --> R[70 red]
+    L --> LL[20 black]
+    L --> LR[40 black]
+    R --> RL[60 black]
+    R --> RR[80 black]
+```
+
+### Best for
+
+- Unique values.
+- Sorted order.
+- Range queries.
+
+### Time complexity
+
+| Operation | Complexity |
+|---|---:|
+| Add | `O(log n)` |
+| Remove | `O(log n)` |
+| Contains | `O(log n)` |
+| First/last | `O(log n)` |
+
+### Code
+
+```java
+import java.util.*;
+
+public class TreeSetExample {
+    public static void main(String[] args) {
+        TreeSet<Integer> scores = new TreeSet<>();
+
+        scores.add(80);
+        scores.add(95);
+        scores.add(70);
+        scores.add(80);
+
+        System.out.println(scores);        // [70, 80, 95]
+        System.out.println(scores.first()); // 70
+        System.out.println(scores.last());  // 95
+    }
+}
+```
+
+### Use case: Leaderboard score levels
+
+```java
+TreeSet<Integer> scores = new TreeSet<>(List.of(100, 50, 70, 90));
+System.out.println(scores.ceiling(75)); // 90
+System.out.println(scores.floor(75));   // 70
+```
+
+---
+
+# 5. Queue and Deque
+
+```mermaid
+flowchart LR
+    Queue[Queue FIFO] --> FirstIn[First in]
+    FirstIn --> FirstOut[First out]
+
+    Deque[Deque] --> Front[Add/remove front]
+    Deque --> Back[Add/remove back]
+```
+
+---
+
+## 5.1 ArrayDeque
+
+### Behind the scenes
+
+`ArrayDeque` uses a **resizable circular array**.
+
+```mermaid
+flowchart LR
+    A[front] --> B[Task 1]
+    B --> C[Task 2]
+    C --> D[Task 3]
+    D --> E[back]
+```
+
+### Best for
+
+- Queue behavior.
+- Stack behavior.
+- Faster than `Stack` and often faster than `LinkedList`.
+
+### Time complexity
+
+| Operation | Complexity |
+|---|---:|
+| Add first/last | `O(1)` amortized |
+| Remove first/last | `O(1)` |
+| Peek first/last | `O(1)` |
+| Search | `O(n)` |
+
+### Queue code
+
+```java
+import java.util.*;
+
+public class QueueExample {
+    public static void main(String[] args) {
+        Queue<String> queue = new ArrayDeque<>();
+
+        queue.offer("Order-1");
+        queue.offer("Order-2");
+        queue.offer("Order-3");
+
+        System.out.println(queue.poll()); // Order-1
+        System.out.println(queue.peek()); // Order-2
+    }
+}
+```
+
+### Stack code
+
+```java
+import java.util.*;
+
+public class StackUsingDeque {
+    public static void main(String[] args) {
+        Deque<String> stack = new ArrayDeque<>();
+
+        stack.push("Page A");
+        stack.push("Page B");
+        stack.push("Page C");
+
+        System.out.println(stack.pop()); // Page C
+    }
+}
+```
+
+---
+
+## 5.2 PriorityQueue
+
+### Behind the scenes
+
+`PriorityQueue` uses a **binary heap**.
+
+```mermaid
+flowchart TD
+    A[1 highest priority] --> B[3]
+    A --> C[5]
+    B --> D[8]
+    B --> E[10]
+```
+
+### Best for
+
+- Always process smallest/largest item first.
+- Scheduling.
+- Top K problems.
+
+### Time complexity
+
+| Operation | Complexity |
+|---|---:|
+| Offer/add | `O(log n)` |
+| Poll/remove top | `O(log n)` |
+| Peek top | `O(1)` |
+| Search | `O(n)` |
+
+### Min-heap code
+
+```java
+import java.util.*;
+
+public class PriorityQueueExample {
     public static void main(String[] args) {
         PriorityQueue<Integer> pq = new PriorityQueue<>();
 
@@ -522,7 +555,7 @@ public class PriorityQueueDemo {
 }
 ```
 
-Max priority queue:
+### Max-heap code
 
 ```java
 PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Comparator.reverseOrder());
@@ -533,179 +566,506 @@ maxHeap.offer(20);
 System.out.println(maxHeap.poll()); // 30
 ```
 
-Use cases:
-
-```text
-Top K elements
-Task priority
-Shortest job first
-Leaderboard
-```
-
----
-
-# 11. Stack Style Using Deque
-
-Avoid old `Stack`. Prefer `Deque`.
-
-```mermaid
-flowchart TD
-    Push["push item"] --> Top["Top of stack"]
-    Top --> Pop["pop item"]
-```
+### Use case: Top 3 highest scores
 
 ```java
 import java.util.*;
 
-public class StackUsingDequeDemo {
+public class TopKExample {
     public static void main(String[] args) {
-        Deque<String> stack = new ArrayDeque<>();
+        int[] scores = {90, 50, 70, 100, 85};
+        int k = 3;
 
-        stack.push("Page 1");
-        stack.push("Page 2");
-        stack.push("Page 3");
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
 
-        System.out.println(stack.pop()); // Page 3
-        System.out.println(stack.peek()); // Page 2
-    }
-}
-```
-
-Use cases:
-
-```text
-Undo feature
-Back button
-Expression evaluation
-DFS traversal
-```
-
----
-
-# 12. Iterator
-
-Iterator safely loops and removes items.
-
-```java
-import java.util.*;
-
-public class IteratorDemo {
-    public static void main(String[] args) {
-        List<String> names = new ArrayList<>(List.of("Asha", "Ravi", "Meera"));
-
-        Iterator<String> iterator = names.iterator();
-
-        while (iterator.hasNext()) {
-            String name = iterator.next();
-
-            if (name.equals("Ravi")) {
-                iterator.remove();
+        for (int score : scores) {
+            minHeap.offer(score);
+            if (minHeap.size() > k) {
+                minHeap.poll();
             }
         }
 
-        System.out.println(names); // [Asha, Meera]
+        System.out.println(minHeap); // top 3, order not guaranteed
     }
 }
 ```
 
-Do not remove like this inside enhanced for-loop:
-
-```java
-for (String name : names) {
-    names.remove(name); // can throw ConcurrentModificationException
-}
-```
-
 ---
 
-# 13. Sorting Collections
+# 6. Map
 
-## Sort numbers
+Use `Map` when:
 
-```java
-List<Integer> numbers = new ArrayList<>(List.of(5, 1, 3));
-Collections.sort(numbers);
-System.out.println(numbers); // [1, 3, 5]
-```
-
-## Sort reverse
-
-```java
-numbers.sort(Comparator.reverseOrder());
-System.out.println(numbers); // [5, 3, 1]
-```
-
-## Sort strings
-
-```java
-List<String> names = new ArrayList<>(List.of("Ravi", "Asha", "Meera"));
-names.sort(Comparator.naturalOrder());
-System.out.println(names); // [Asha, Meera, Ravi]
-```
-
----
-
-# 14. Comparable vs Comparator
+- You need key-value lookup.
+- You want fast access by ID, username, email, etc.
 
 ```mermaid
 flowchart LR
-    Comparable["Comparable"] --> Natural["Default sorting inside class"]
-    Comparator["Comparator"] --> Custom["External custom sorting"]
+    Key[userId] --> Value[User Object]
+    Key2[email] --> Value2[Account Object]
 ```
 
-## Comparable
+---
+
+## 6.1 HashMap
+
+### Behind the scenes
+
+`HashMap` uses an **array of buckets**. Each bucket can contain nodes. In modern Java, large collision chains may become trees.
+
+```mermaid
+flowchart TD
+    HashMap[HashMap] --> Bucket0[Bucket 0]
+    HashMap --> Bucket1[Bucket 1]
+    HashMap --> Bucket2[Bucket 2]
+    Bucket1 --> EntryA[key: 101, value: Alice]
+    Bucket1 --> EntryB[key: 209, value: Bob]
+```
+
+### Best for
+
+- Fast lookup by key.
+- Counting frequency.
+- Grouping data.
+
+### Time complexity
+
+| Operation | Average | Worst case |
+|---|---:|---:|
+| Put | `O(1)` | `O(n)` |
+| Get | `O(1)` | `O(n)` |
+| Remove | `O(1)` | `O(n)` |
+| Contains key | `O(1)` | `O(n)` |
+
+### Code
 
 ```java
 import java.util.*;
 
-class Student implements Comparable<Student> {
-    int id;
-    String name;
-
-    Student(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    @Override
-    public int compareTo(Student other) {
-        return this.id - other.id;
-    }
-
-    @Override
-    public String toString() {
-        return id + " - " + name;
-    }
-}
-
-public class ComparableDemo {
+public class HashMapExample {
     public static void main(String[] args) {
-        List<Student> students = new ArrayList<>();
-        students.add(new Student(3, "Ravi"));
-        students.add(new Student(1, "Asha"));
-        students.add(new Student(2, "Meera"));
+        Map<Long, String> users = new HashMap<>();
 
-        Collections.sort(students);
-        System.out.println(students);
+        users.put(1L, "Alice");
+        users.put(2L, "Bob");
+
+        System.out.println(users.get(1L));
+        System.out.println(users.containsKey(2L));
     }
 }
 ```
 
-## Comparator
+### Use case: Count words
 
 ```java
-students.sort(Comparator.comparing(student -> student.name));
+import java.util.*;
+
+public class WordCount {
+    public static void main(String[] args) {
+        List<String> words = List.of("java", "spring", "java", "sql");
+        Map<String, Integer> count = new HashMap<>();
+
+        for (String word : words) {
+            count.put(word, count.getOrDefault(word, 0) + 1);
+        }
+
+        System.out.println(count); // {java=2, spring=1, sql=1}
+    }
+}
 ```
 
-Better with method reference:
+---
 
-```java
-students.sort(Comparator.comparing(Student::toString));
+## 6.2 LinkedHashMap
+
+### Behind the scenes
+
+`LinkedHashMap` uses a **HashMap + doubly linked list**.
+
+```mermaid
+flowchart LR
+    Hash[Hash table lookup] --> Links[Linked order]
+    Links --> A[Alice]
+    A --> B[Bob]
+    B --> C[Chen]
 ```
 
-Real object sorting:
+### Best for
+
+- Fast lookup.
+- Maintain insertion order.
+- LRU cache pattern.
+
+### Time complexity
+
+| Operation | Complexity |
+|---|---:|
+| Put | `O(1)` average |
+| Get | `O(1)` average |
+| Remove | `O(1)` average |
+| Iteration | In insertion/access order |
+
+### Code
 
 ```java
+import java.util.*;
+
+public class LinkedHashMapExample {
+    public static void main(String[] args) {
+        Map<Integer, String> map = new LinkedHashMap<>();
+
+        map.put(3, "C");
+        map.put(1, "A");
+        map.put(2, "B");
+
+        System.out.println(map); // {3=C, 1=A, 2=B}
+    }
+}
+```
+
+### LRU cache mini example
+
+```java
+import java.util.*;
+
+class LruCache<K, V> extends LinkedHashMap<K, V> {
+    private final int capacity;
+
+    LruCache(int capacity) {
+        super(capacity, 0.75f, true); // true = access order
+        this.capacity = capacity;
+    }
+
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+        return size() > capacity;
+    }
+}
+
+public class LruExample {
+    public static void main(String[] args) {
+        Map<Integer, String> cache = new LruCache<>(2);
+        cache.put(1, "A");
+        cache.put(2, "B");
+        cache.get(1);
+        cache.put(3, "C");
+
+        System.out.println(cache); // key 2 removed
+    }
+}
+```
+
+---
+
+## 6.3 TreeMap
+
+### Behind the scenes
+
+`TreeMap` uses a **Red-Black Tree**.
+
+```mermaid
+flowchart TD
+    Root[Key 50] --> L[Key 30]
+    Root --> R[Key 70]
+    L --> LL[Key 20]
+    L --> LR[Key 40]
+```
+
+### Best for
+
+- Sorted keys.
+- Range queries by key.
+- `floorKey`, `ceilingKey`, `firstKey`, `lastKey`.
+
+### Time complexity
+
+| Operation | Complexity |
+|---|---:|
+| Put | `O(log n)` |
+| Get | `O(log n)` |
+| Remove | `O(log n)` |
+| Range query | `O(log n + result size)` |
+
+### Code
+
+```java
+import java.util.*;
+
+public class TreeMapExample {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> events = new TreeMap<>();
+
+        events.put(900, "Login");
+        events.put(1100, "Payment");
+        events.put(1000, "Search");
+
+        System.out.println(events); // sorted by key
+        System.out.println(events.ceilingKey(950)); // 1000
+    }
+}
+```
+
+---
+
+## 6.4 ConcurrentHashMap
+
+### Behind the scenes
+
+`ConcurrentHashMap` is a **thread-safe hash table** optimized for concurrent reads and updates.
+
+```mermaid
+flowchart LR
+    T1[Thread 1] --> CHM[ConcurrentHashMap]
+    T2[Thread 2] --> CHM
+    T3[Thread 3] --> CHM
+    CHM --> Data[Shared key-value data]
+```
+
+### Best for
+
+- Multi-threaded applications.
+- Shared counters.
+- Caches.
+
+### Time complexity
+
+| Operation | Average |
+|---|---:|
+| Put | `O(1)` |
+| Get | `O(1)` |
+| Remove | `O(1)` |
+
+### Code
+
+```java
+import java.util.concurrent.*;
+
+public class ConcurrentHashMapExample {
+    public static void main(String[] args) {
+        ConcurrentHashMap<String, Integer> visits = new ConcurrentHashMap<>();
+
+        visits.merge("/home", 1, Integer::sum);
+        visits.merge("/home", 1, Integer::sum);
+
+        System.out.println(visits); // {/home=2}
+    }
+}
+```
+
+---
+
+# 7. Stack-like Use Cases
+
+Avoid old `Stack` class for new code. Prefer `ArrayDeque`.
+
+```mermaid
+flowchart TD
+    Push1[push A] --> Push2[push B]
+    Push2 --> Push3[push C]
+    Push3 --> Pop[pop returns C]
+```
+
+### Use case: Valid parentheses
+
+```java
+import java.util.*;
+
+public class ValidParentheses {
+    public static boolean isValid(String text) {
+        Deque<Character> stack = new ArrayDeque<>();
+
+        for (char ch : text.toCharArray()) {
+            if (ch == '(' || ch == '[' || ch == '{') {
+                stack.push(ch);
+            } else if (ch == ')' || ch == ']' || ch == '}') {
+                if (stack.isEmpty()) return false;
+
+                char open = stack.pop();
+                if (ch == ')' && open != '(') return false;
+                if (ch == ']' && open != '[') return false;
+                if (ch == '}' && open != '{') return false;
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(isValid("{[()]}") ); // true
+        System.out.println(isValid("{[(])}") ); // false
+    }
+}
+```
+
+---
+
+# 8. Sorting and Comparators
+
+```mermaid
+flowchart LR
+    Data[Unsorted list] --> Comparator[Comparator rule]
+    Comparator --> Sorted[Sorted list]
+```
+
+### Sort numbers
+
+```java
+List<Integer> nums = new ArrayList<>(List.of(5, 2, 9, 1));
+Collections.sort(nums);
+System.out.println(nums); // [1, 2, 5, 9]
+```
+
+### Sort objects
+
+```java
+import java.util.*;
+
+class User {
+    String name;
+    int age;
+
+    User(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String toString() {
+        return name + ":" + age;
+    }
+}
+
+public class ComparatorExample {
+    public static void main(String[] args) {
+        List<User> users = new ArrayList<>();
+        users.add(new User("Alice", 30));
+        users.add(new User("Bob", 20));
+        users.add(new User("Chen", 25));
+
+        users.sort(Comparator.comparingInt(user -> user.age));
+
+        System.out.println(users);
+    }
+}
+```
+
+### Sort by multiple fields
+
+```java
+users.sort(
+    Comparator.comparingInt((User user) -> user.age)
+              .thenComparing(user -> user.name)
+);
+```
+
+---
+
+# 9. Streams with Collections
+
+Streams are useful for readable transformations.
+
+```mermaid
+flowchart LR
+    Source[List] --> Filter[filter]
+    Filter --> Map[map]
+    Map --> Collect[collect]
+```
+
+### Filter and collect
+
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class StreamExample {
+    public static void main(String[] args) {
+        List<String> names = List.of("Alice", "Bob", "Andrew", "Chen");
+
+        List<String> result = names.stream()
+            .filter(name -> name.startsWith("A"))
+            .map(String::toUpperCase)
+            .collect(Collectors.toList());
+
+        System.out.println(result); // [ALICE, ANDREW]
+    }
+}
+```
+
+### Group by value
+
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class GroupingExample {
+    public static void main(String[] args) {
+        List<String> words = List.of("java", "spring", "sql", "react");
+
+        Map<Integer, List<String>> byLength = words.stream()
+            .collect(Collectors.groupingBy(String::length));
+
+        System.out.println(byLength);
+    }
+}
+```
+
+---
+
+# 10. Common Real Use Cases
+
+## Use Case 1: Remove duplicate emails but keep first-seen order
+
+Use `LinkedHashSet`.
+
+```mermaid
+flowchart LR
+    Input[a,b,a,c] --> LinkedHashSet[LinkedHashSet]
+    LinkedHashSet --> Output[a,b,c]
+```
+
+```java
+List<String> emails = List.of("a@mail.com", "b@mail.com", "a@mail.com", "c@mail.com");
+Set<String> unique = new LinkedHashSet<>(emails);
+System.out.println(unique);
+```
+
+---
+
+## Use Case 2: Fast user lookup by ID
+
+Use `HashMap`.
+
+```java
+Map<Long, String> userById = new HashMap<>();
+userById.put(101L, "Alice");
+userById.put(102L, "Bob");
+
+System.out.println(userById.get(101L));
+```
+
+---
+
+## Use Case 3: Process orders first-in-first-out
+
+Use `ArrayDeque` as `Queue`.
+
+```java
+Queue<String> orders = new ArrayDeque<>();
+orders.offer("Order-1");
+orders.offer("Order-2");
+
+while (!orders.isEmpty()) {
+    System.out.println("Processing " + orders.poll());
+}
+```
+
+---
+
+## Use Case 4: Find top 2 expensive products
+
+Use `PriorityQueue`.
+
+```java
+import java.util.*;
+
 class Product {
     String name;
     int price;
@@ -714,324 +1074,183 @@ class Product {
         this.name = name;
         this.price = price;
     }
+
+    public String toString() {
+        return name + ":" + price;
+    }
 }
 
-List<Product> products = new ArrayList<>();
-products.add(new Product("Phone", 50000));
-products.add(new Product("Book", 500));
-products.add(new Product("Laptop", 80000));
-
-products.sort(Comparator.comparingInt(product -> product.price));
-```
-
----
-
-# 15. Streams With Collections
-
-Streams help filter, map, sort, and collect data.
-
-```mermaid
-flowchart LR
-    List["List"] --> Filter["filter"] --> Map["map"] --> Collect["collect"]
-```
-
-```java
-import java.util.*;
-import java.util.stream.*;
-
-public class StreamDemo {
+public class TopProducts {
     public static void main(String[] args) {
-        List<String> names = List.of("Asha", "Ravi", "Amit", "Meera");
+        List<Product> products = List.of(
+            new Product("Phone", 800),
+            new Product("Mouse", 30),
+            new Product("Laptop", 1500),
+            new Product("Keyboard", 100)
+        );
 
-        List<String> result = names.stream()
-                .filter(name -> name.startsWith("A"))
-                .map(String::toUpperCase)
-                .toList();
+        PriorityQueue<Product> heap = new PriorityQueue<>(Comparator.comparingInt(p -> p.price));
 
-        System.out.println(result); // [ASHA, AMIT]
+        for (Product product : products) {
+            heap.offer(product);
+            if (heap.size() > 2) {
+                heap.poll();
+            }
+        }
+
+        System.out.println(heap);
     }
 }
 ```
 
-Count words:
+---
+
+## Use Case 5: Sorted event timeline
+
+Use `TreeMap`.
 
 ```java
-List<String> words = List.of("java", "spring", "java", "sql");
+TreeMap<Integer, String> timeline = new TreeMap<>();
+timeline.put(930, "Login");
+timeline.put(945, "Search");
+timeline.put(1000, "Checkout");
 
-Map<String, Long> count = words.stream()
-        .collect(Collectors.groupingBy(word -> word, Collectors.counting()));
-
-System.out.println(count); // {spring=1, java=2, sql=1}
+System.out.println(timeline.subMap(930, true, 950, true));
 ```
 
 ---
 
-# 16. Immutable Collections
+## Use Case 6: Frequency counter
 
-Immutable means cannot change after creation.
-
-```java
-List<String> roles = List.of("USER", "ADMIN");
-Set<String> permissions = Set.of("READ", "WRITE");
-Map<String, Integer> limits = Map.of("FREE", 10, "PRO", 100);
-```
-
-This fails:
-
-```java
-roles.add("MANAGER"); // UnsupportedOperationException
-```
-
-Use cases:
-
-```text
-Constants
-Default roles
-Configuration values
-Safe API response data
-```
-
----
-
-# 17. Concurrent Collections
-
-Use concurrent collections when multiple threads update data.
+Use `HashMap`.
 
 ```mermaid
 flowchart LR
-    T1["Thread 1"] --> Map["ConcurrentHashMap"]
-    T2["Thread 2"] --> Map
-    T3["Thread 3"] --> Map
+    Words[java java sql] --> CountMap[HashMap word to count]
+    CountMap --> Result[java=2 sql=1]
 ```
-
-## ConcurrentHashMap
-
-```java
-import java.util.concurrent.*;
-
-public class ConcurrentMapDemo {
-    public static void main(String[] args) {
-        ConcurrentHashMap<String, Integer> scores = new ConcurrentHashMap<>();
-
-        scores.put("Asha", 10);
-        scores.merge("Asha", 5, Integer::sum);
-
-        System.out.println(scores); // {Asha=15}
-    }
-}
-```
-
-## CopyOnWriteArrayList
-
-Good when reads are frequent and writes are rare.
-
-```java
-import java.util.concurrent.*;
-
-CopyOnWriteArrayList<String> users = new CopyOnWriteArrayList<>();
-users.add("Asha");
-users.add("Ravi");
-```
-
-Use cases:
-
-```text
-Cache map
-Online user sessions
-Read-heavy listener list
-Shared counters
-```
-
----
-
-# 18. Real Use Cases
-
-## Use Case 1: Remove duplicate users
-
-```java
-List<String> users = List.of("Asha", "Ravi", "Asha", "Meera");
-Set<String> uniqueUsers = new HashSet<>(users);
-
-System.out.println(uniqueUsers);
-```
-
-Visual:
-
-```mermaid
-flowchart LR
-    List["Asha, Ravi, Asha, Meera"] --> Set["HashSet"] --> Unique["Asha, Ravi, Meera"]
-```
-
-## Use Case 2: Count word frequency
 
 ```java
 String text = "java spring java sql java";
-String[] words = text.split(" ");
-
 Map<String, Integer> frequency = new HashMap<>();
 
-for (String word : words) {
-    frequency.put(word, frequency.getOrDefault(word, 0) + 1);
+for (String word : text.split(" ")) {
+    frequency.merge(word, 1, Integer::sum);
 }
 
 System.out.println(frequency);
 ```
 
-Visual:
+---
+
+# 11. Time Complexity Cheat Sheet
+
+## List
+
+| Collection | Data structure | Get | Add end | Add/remove middle | Contains |
+|---|---|---:|---:|---:|---:|
+| `ArrayList` | Dynamic array | `O(1)` | `O(1)` amortized | `O(n)` | `O(n)` |
+| `LinkedList` | Doubly linked list | `O(n)` | `O(1)` | `O(n)` | `O(n)` |
+
+## Set
+
+| Collection | Data structure | Add | Remove | Contains | Order |
+|---|---|---:|---:|---:|---|
+| `HashSet` | Hash table | `O(1)` avg | `O(1)` avg | `O(1)` avg | No guarantee |
+| `LinkedHashSet` | Hash table + linked list | `O(1)` avg | `O(1)` avg | `O(1)` avg | Insertion order |
+| `TreeSet` | Red-black tree | `O(log n)` | `O(log n)` | `O(log n)` | Sorted |
+
+## Queue / Deque
+
+| Collection | Data structure | Add | Remove | Peek | Special use |
+|---|---|---:|---:|---:|---|
+| `ArrayDeque` | Circular array | `O(1)` amortized | `O(1)` | `O(1)` | Queue/stack |
+| `PriorityQueue` | Binary heap | `O(log n)` | `O(log n)` | `O(1)` | Priority processing |
+
+## Map
+
+| Collection | Data structure | Put | Get | Remove | Order |
+|---|---|---:|---:|---:|---|
+| `HashMap` | Hash table | `O(1)` avg | `O(1)` avg | `O(1)` avg | No guarantee |
+| `LinkedHashMap` | Hash table + linked list | `O(1)` avg | `O(1)` avg | `O(1)` avg | Insertion/access order |
+| `TreeMap` | Red-black tree | `O(log n)` | `O(log n)` | `O(log n)` | Sorted keys |
+| `ConcurrentHashMap` | Concurrent hash table | `O(1)` avg | `O(1)` avg | `O(1)` avg | No guarantee |
+
+---
+
+# 12. Decision Guide
 
 ```mermaid
 flowchart TD
-    Words["java spring java sql java"] --> Split["split"]
-    Split --> Map["Map word to count"]
-    Map --> Result["java=3, spring=1, sql=1"]
-```
+    Start[Choose collection] --> NeedKeyValue{Need key-value?}
+    NeedKeyValue -->|Yes| NeedSortedKeys{Need sorted keys?}
+    NeedSortedKeys -->|Yes| TreeMap[TreeMap]
+    NeedSortedKeys -->|No| NeedOrderMap{Need insertion order?}
+    NeedOrderMap -->|Yes| LinkedHashMap[LinkedHashMap]
+    NeedOrderMap -->|No| HashMap[HashMap]
 
-## Use Case 3: Shopping cart
+    NeedKeyValue -->|No| NeedUnique{Need unique values?}
+    NeedUnique -->|Yes| NeedSortedSet{Need sorted values?}
+    NeedSortedSet -->|Yes| TreeSet[TreeSet]
+    NeedSortedSet -->|No| NeedInsertionOrderSet{Need insertion order?}
+    NeedInsertionOrderSet -->|Yes| LinkedHashSet[LinkedHashSet]
+    NeedInsertionOrderSet -->|No| HashSet[HashSet]
 
-```java
-Map<String, Integer> cart = new LinkedHashMap<>();
-
-cart.put("Book", 2);
-cart.put("Pen", 5);
-cart.put("Bag", 1);
-
-for (Map.Entry<String, Integer> item : cart.entrySet()) {
-    System.out.println(item.getKey() + " quantity: " + item.getValue());
-}
-```
-
-## Use Case 4: Top 3 scores
-
-```java
-PriorityQueue<Integer> minHeap = new PriorityQueue<>();
-int[] scores = {90, 30, 100, 70, 80};
-
-for (int score : scores) {
-    minHeap.offer(score);
-
-    if (minHeap.size() > 3) {
-        minHeap.poll();
-    }
-}
-
-System.out.println(minHeap); // top 3 values remain
-```
-
-## Use Case 5: Recent search history
-
-```java
-Deque<String> history = new ArrayDeque<>();
-
-history.addFirst("java collections");
-history.addFirst("spring boot");
-history.addFirst("sql joins");
-
-System.out.println(history.peekFirst()); // latest search
+    NeedUnique -->|No| NeedIndex{Need index access?}
+    NeedIndex -->|Yes| ArrayList[ArrayList]
+    NeedIndex -->|No| NeedPriority{Need priority order?}
+    NeedPriority -->|Yes| PriorityQueue[PriorityQueue]
+    NeedPriority -->|No| ArrayDeque[ArrayDeque]
 ```
 
 ---
 
-# 19. Which Collection Should I Choose?
+# 13. Practice Problems
 
-```mermaid
-flowchart TD
-    Start["Need to store data?"] --> Duplicate{"Allow duplicates?"}
-    Duplicate -->|"Yes"| Order{"Need index/order?"}
-    Duplicate -->|"No"| Unique{"Need sorted?"}
+## Easy
 
-    Order -->|"Yes"| List["ArrayList"]
-    Order -->|"Frequent insert/delete"| LinkedList["LinkedList"]
+### 1. Remove duplicate numbers
 
-    Unique -->|"No"| HashSet["HashSet"]
-    Unique -->|"Insertion order"| LinkedHashSet["LinkedHashSet"]
-    Unique -->|"Sorted"| TreeSet["TreeSet"]
-
-    Start --> KeyValue{"Key-value pair?"}
-    KeyValue -->|"Yes"| MapChoice{"Need sorted key?"}
-    MapChoice -->|"No"| HashMap["HashMap"]
-    MapChoice -->|"Insertion order"| LinkedHashMap["LinkedHashMap"]
-    MapChoice -->|"Sorted"| TreeMap["TreeMap"]
-```
-
-Quick table:
-
-| Need | Use |
-|---|---|
-| Fast list read | `ArrayList` |
-| Frequent first/last operations | `LinkedList` or `ArrayDeque` |
-| Unique values | `HashSet` |
-| Unique + insertion order | `LinkedHashSet` |
-| Unique + sorted | `TreeSet` |
-| Key-value lookup | `HashMap` |
-| Key-value + insertion order | `LinkedHashMap` |
-| Key-value + sorted keys | `TreeMap` |
-| FIFO queue | `Queue` |
-| Stack | `ArrayDeque` |
-| Priority tasks | `PriorityQueue` |
-| Thread-safe map | `ConcurrentHashMap` |
-
----
-
-# 20. Interview Patterns
-
-## Pattern 1: Frequency Map
+Use: `HashSet`
 
 ```java
-Map<Character, Integer> freq = new HashMap<>();
+List<Integer> nums = List.of(1, 2, 2, 3, 1);
+Set<Integer> unique = new HashSet<>(nums);
+System.out.println(unique);
+```
+
+### 2. Count characters
+
+Use: `HashMap`
+
+```java
 String s = "banana";
+Map<Character, Integer> count = new HashMap<>();
 
 for (char ch : s.toCharArray()) {
-    freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+    count.merge(ch, 1, Integer::sum);
 }
 
-System.out.println(freq);
+System.out.println(count);
 ```
 
-## Pattern 2: Two Sum
+---
+
+## Medium
+
+### 3. First non-repeating character
+
+Use: `LinkedHashMap`
 
 ```java
-import java.util.*;
-
-public class TwoSum {
-    public static int[] twoSum(int[] nums, int target) {
-        Map<Integer, Integer> map = new HashMap<>();
-
-        for (int i = 0; i < nums.length; i++) {
-            int need = target - nums[i];
-
-            if (map.containsKey(need)) {
-                return new int[] { map.get(need), i };
-            }
-
-            map.put(nums[i], i);
-        }
-
-        return new int[] {};
-    }
-}
-```
-
-Visual:
-
-```mermaid
-flowchart LR
-    Current["Current number"] --> Need["target - current"]
-    Need --> Check["Check in HashMap"]
-    Check --> Found["Return indexes"]
-    Check --> Missing["Store current"]
-```
-
-## Pattern 3: First Non-Repeating Character
-
-```java
-String s = "aabbcde";
-Map<Character, Integer> freq = new LinkedHashMap<>();
+String s = "swiss";
+Map<Character, Integer> count = new LinkedHashMap<>();
 
 for (char ch : s.toCharArray()) {
-    freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+    count.merge(ch, 1, Integer::sum);
 }
 
-for (Map.Entry<Character, Integer> entry : freq.entrySet()) {
+for (Map.Entry<Character, Integer> entry : count.entrySet()) {
     if (entry.getValue() == 1) {
         System.out.println(entry.getKey());
         break;
@@ -1039,226 +1258,116 @@ for (Map.Entry<Character, Integer> entry : freq.entrySet()) {
 }
 ```
 
-## Pattern 4: Valid Parentheses
+### 4. Top K numbers
+
+Use: `PriorityQueue`
 
 ```java
-import java.util.*;
+int[] nums = {5, 1, 9, 3, 7};
+int k = 2;
+PriorityQueue<Integer> heap = new PriorityQueue<>();
 
-public class ValidParentheses {
-    public static boolean isValid(String s) {
-        Deque<Character> stack = new ArrayDeque<>();
-
-        for (char ch : s.toCharArray()) {
-            if (ch == '(' || ch == '[' || ch == '{') {
-                stack.push(ch);
-            } else {
-                if (stack.isEmpty()) return false;
-
-                char top = stack.pop();
-
-                if (ch == ')' && top != '(') return false;
-                if (ch == ']' && top != '[') return false;
-                if (ch == '}' && top != '{') return false;
-            }
-        }
-
-        return stack.isEmpty();
-    }
+for (int num : nums) {
+    heap.offer(num);
+    if (heap.size() > k) heap.poll();
 }
+
+System.out.println(heap);
 ```
 
 ---
 
-# 21. Mini Practice Project
+## Hard
 
-Build an in-memory student manager using collections.
+### 5. LRU cache
 
-## Features
-
-```text
-1. Add student
-2. Find student by ID
-3. List all students
-4. Sort students by marks
-5. Remove duplicate emails
-```
-
-## Visual design
-
-```mermaid
-flowchart TD
-    App["Student Manager"] --> Add["Add student"]
-    App --> Find["Find by ID"]
-    App --> List["List all"]
-    App --> Sort["Sort by marks"]
-    App --> Unique["Unique emails"]
-
-    Add --> Map["HashMap ID to Student"]
-    List --> ArrayList["ArrayList Students"]
-    Unique --> HashSet["HashSet Emails"]
-```
-
-## Student class
+Use: `LinkedHashMap`
 
 ```java
-class Student {
-    int id;
-    String name;
-    String email;
-    int marks;
+class LRUCache extends LinkedHashMap<Integer, Integer> {
+    private final int capacity;
 
-    Student(int id, String name, String email, int marks) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.marks = marks;
+    LRUCache(int capacity) {
+        super(capacity, 0.75f, true);
+        this.capacity = capacity;
     }
 
     @Override
-    public String toString() {
-        return id + " " + name + " " + marks;
+    protected boolean removeEldestEntry(Map.Entry<Integer, Integer> eldest) {
+        return size() > capacity;
     }
 }
 ```
 
-## Manager class
+### 6. Sliding window unique characters
+
+Use: `HashSet`
 
 ```java
-import java.util.*;
+public class LongestUniqueSubstring {
+    public static int lengthOfLongestSubstring(String s) {
+        Set<Character> window = new HashSet<>();
+        int left = 0;
+        int best = 0;
 
-class StudentManager {
-    private final Map<Integer, Student> studentById = new HashMap<>();
-
-    public void addStudent(Student student) {
-        studentById.put(student.id, student);
-    }
-
-    public Student findById(int id) {
-        return studentById.get(id);
-    }
-
-    public List<Student> findAll() {
-        return new ArrayList<>(studentById.values());
-    }
-
-    public List<Student> sortByMarksDesc() {
-        List<Student> students = findAll();
-        students.sort(Comparator.comparingInt((Student s) -> s.marks).reversed());
-        return students;
-    }
-
-    public Set<String> uniqueEmails() {
-        Set<String> emails = new HashSet<>();
-
-        for (Student student : studentById.values()) {
-            emails.add(student.email);
+        for (int right = 0; right < s.length(); right++) {
+            while (window.contains(s.charAt(right))) {
+                window.remove(s.charAt(left));
+                left++;
+            }
+            window.add(s.charAt(right));
+            best = Math.max(best, right - left + 1);
         }
 
-        return emails;
+        return best;
     }
-}
-```
 
-## Main class
-
-```java
-public class Main {
     public static void main(String[] args) {
-        StudentManager manager = new StudentManager();
-
-        manager.addStudent(new Student(1, "Asha", "a@test.com", 90));
-        manager.addStudent(new Student(2, "Ravi", "r@test.com", 75));
-        manager.addStudent(new Student(3, "Meera", "m@test.com", 95));
-
-        System.out.println(manager.findById(2));
-        System.out.println(manager.findAll());
-        System.out.println(manager.sortByMarksDesc());
-        System.out.println(manager.uniqueEmails());
+        System.out.println(lengthOfLongestSubstring("abcabcbb")); // 3
     }
 }
 ```
 
 ---
 
-# 22. Cheat Sheet
-
-## Basic methods
-
-```java
-list.add(item);
-list.get(index);
-list.remove(item);
-list.size();
-list.contains(item);
-```
-
-```java
-set.add(item);
-set.contains(item);
-set.remove(item);
-```
-
-```java
-map.put(key, value);
-map.get(key);
-map.remove(key);
-map.containsKey(key);
-map.getOrDefault(key, defaultValue);
-```
-
-```java
-queue.offer(item);
-queue.poll();
-queue.peek();
-```
-
-```java
-deque.push(item);
-deque.pop();
-deque.peek();
-deque.addFirst(item);
-deque.addLast(item);
-```
-
-## Big picture
+# Final Memory Map
 
 ```mermaid
-flowchart TD
-    Collections["Java Collections"] --> List["List: ordered duplicates"]
-    Collections --> Set["Set: unique values"]
-    Collections --> Queue["Queue: processing order"]
-    Collections --> Map["Map: key-value lookup"]
-
-    List --> ArrayList["ArrayList: fast read"]
-    List --> LinkedList["LinkedList: fast links"]
-
-    Set --> HashSet["HashSet: unique fast"]
-    Set --> TreeSet["TreeSet: unique sorted"]
-
-    Queue --> PriorityQueue["PriorityQueue: priority"]
-    Queue --> ArrayDeque["ArrayDeque: stack/deque"]
-
-    Map --> HashMap["HashMap: fast lookup"]
-    Map --> TreeMap["TreeMap: sorted keys"]
+mindmap
+  root((Java Collections))
+    List
+      ArrayList
+        Dynamic array
+        Fast get
+      LinkedList
+        Doubly linked list
+        Fast ends
+    Set
+      HashSet
+        Unique
+        Fast contains
+      LinkedHashSet
+        Unique
+        Insertion order
+      TreeSet
+        Unique
+        Sorted
+    Queue
+      ArrayDeque
+        FIFO
+        Stack
+      PriorityQueue
+        Heap
+        Top K
+    Map
+      HashMap
+        Fast lookup
+      LinkedHashMap
+        Ordered map
+        LRU
+      TreeMap
+        Sorted keys
+      ConcurrentHashMap
+        Thread safe
 ```
-
----
-
-## Final Learning Path
-
-```mermaid
-flowchart LR
-    A["ArrayList"] --> B["HashSet"] --> C["HashMap"] --> D["Queue"] --> E["Deque"] --> F["Sorting"] --> G["Streams"] --> H["Concurrent Collections"]
-```
-
-Recommended order:
-
-1. Learn `ArrayList`
-2. Learn `HashSet`
-3. Learn `HashMap`
-4. Practice frequency problems
-5. Learn `Queue` and `Deque`
-6. Learn sorting with `Comparator`
-7. Learn streams
-8. Learn concurrent collections
 
