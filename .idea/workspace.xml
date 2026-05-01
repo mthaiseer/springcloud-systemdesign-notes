@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef69beb9-67e1-4c05-a4ae-9f6c0ccfea71" name="Changes" comment="" />
+    <list default="true" id="ef69beb9-67e1-4c05-a4ae-9f6c0ccfea71" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/CP_DSA_NOTES/000_MATH/cp_math_master_playbook.md" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
