@@ -2,8 +2,9 @@
 
 A visual-first Low-Level Design reference for common interview problems.
 
-## How to Read This File
+> This version intentionally uses **plain text diagrams only**. No Mermaid diagrams are used, so it works in any Markdown viewer without rich-display render errors.
 
+## How to Read This File
 - Each problem follows the same 9-section structure.
 - Class diagrams include important entities, attributes, and methods.
 - Java code is compact reference code, meant for learning and interview revision.
@@ -53,21 +54,14 @@ A visual-first Low-Level Design reference for common interview problems.
 
 ## Universal LLD Flow
 
-```mermaid
-flowchart TD
-  A["Read Requirements"]
-  B["Draw Entities"]
-  C["Define Relationships"]
-  D["Add State Machine"]
-  E["Write Skeleton Code"]
-  F["Implement Core Flow"]
-  G["Test Edge Cases"]
-A --> B
-B --> C
-C --> D
-D --> E
-E --> F
-F --> G
+```text
+Diagram:
+Read Requirements -> Draw Entities
+Draw Entities -> Define Relationships
+Define Relationships -> Add State Machine
+Add State Machine -> Write Skeleton Code
+Write Skeleton Code -> Implement Core Flow
+Implement Core Flow -> Test Edge Cases
 ```
 
 ---
@@ -105,19 +99,13 @@ F --> G
 | Scoreboard | Tracks wins |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["Game | Board board | Player currentPlayer | GameStatus status | ..."]
-  C2["Board | Cell cells | placeMark row col symbol | isFull | ..."]
-  C3["Cell | Symbol symbol | isEmpty | mark symbol"]
-  C4["Player | String name | Symbol symbol | getSymbol"]
-  C5["WinningStrategy | interface | checkWin board symbol"]
-  C6["Scoreboard | Map scores | recordWin player | printScores"]
-C1 --> C2
-C1 --> C4
-C1 --> C5
-C2 --> C3
-C6 --> C1
+```text
+Diagram:
+Game | Board board | Player currentPlayer | GameStatus status | ... -> Board | Cell cells | placeMark row col symbol | isFull | ...
+Game | Board board | Player currentPlayer | GameStatus status | ... -> Player | String name | Symbol symbol | getSymbol
+Game | Board board | Player currentPlayer | GameStatus status | ... -> WinningStrategy | interface | checkWin board symbol
+Board | Cell cells | placeMark row col symbol | isFull | ... -> Cell | Symbol symbol | isEmpty | mark symbol
+Scoreboard | Map scores | recordWin player | printScores -> Game | Board board | Player currentPlayer | GameStatus status | ...
 ```
 
 ### 5. State Transitions
@@ -133,25 +121,16 @@ C6 --> C1
 | "DRAW" | "Start End" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Player makes move"]
-  B["Cell empty?"]
-  C["Reject move"]
-  D["Place symbol"]
-  E["Win?"]
-  F["Update score"]
-  G["Board full?"]
-  H["Declare draw"]
-  I["Switch turn"]
-A --> B
-B --> C
-B --> D
-D --> E
-E --> F
-E --> G
-G --> H
-G --> I
+```text
+Diagram:
+Player makes move -> Cell empty?
+Cell empty? -> Reject move
+Cell empty? -> Place symbol
+Place symbol -> Win?
+Win? -> Update score
+Win? -> Board full?
+Board full? -> Declare draw
+Board full? -> Switch turn
 ```
 
 ### 7. Design Patterns Used
@@ -304,25 +283,16 @@ class Game {
 | Game | Turn and game status |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["ChessGame | Board board | Player white | Player black | ..."]
-  C2["Board | Cell cells | getCell position | movePiece from to | ..."]
-  C3["Cell | Position position | Piece piece | isEmpty | ..."]
-  C4["Piece | abstract | Color color | canMove board from to"]
-  C5["King | canMove board from to"]
-  C6["Queen | canMove board from to"]
-  C7["Rook | canMove board from to"]
-  C8["Move | Cell from | Cell to | Piece piece | ..."]
-  C9["Player | String name | Color color | makeMove"]
-C1 --> C2
-C1 --> C9
-C1 --> C8
-C2 --> C3
-C3 --> C4
-C4 --> C5
-C4 --> C6
-C4 --> C7
+```text
+Diagram:
+ChessGame | Board board | Player white | Player black | ... -> Board | Cell cells | getCell position | movePiece from to | ...
+ChessGame | Board board | Player white | Player black | ... -> Player | String name | Color color | makeMove
+ChessGame | Board board | Player white | Player black | ... -> Move | Cell from | Cell to | Piece piece | ...
+Board | Cell cells | getCell position | movePiece from to | ... -> Cell | Position position | Piece piece | isEmpty | ...
+Cell | Position position | Piece piece | isEmpty | ... -> Piece | abstract | Color color | canMove board from to
+Piece | abstract | Color color | canMove board from to -> King | canMove board from to
+Piece | abstract | Color color | canMove board from to -> Queen | canMove board from to
+Piece | abstract | Color color | canMove board from to -> Rook | canMove board from to
 ```
 
 ### 5. State Transitions
@@ -338,23 +308,16 @@ C4 --> C7
 | "STALEMATE" | "Start End" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Move request"]
-  B["Piece belongs to player?"]
-  C["Reject"]
-  D["Valid piece move?"]
-  E["King safe after move?"]
-  F["Apply move"]
-  G["Switch turn"]
-A --> B
-B --> C
-B --> D
-D --> C
-D --> E
-E --> C
-E --> F
-F --> G
+```text
+Diagram:
+Move request -> Piece belongs to player?
+Piece belongs to player? -> Reject
+Piece belongs to player? -> Valid piece move?
+Valid piece move? -> Reject
+Valid piece move? -> King safe after move?
+King safe after move? -> Reject
+King safe after move? -> Apply move
+Apply move -> Switch turn
 ```
 
 ### 7. Design Patterns Used
@@ -474,12 +437,10 @@ class ChessGame {
 | LRUCache | Map + list orchestration |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["LRUCache | int capacity | Map cache | Node head | ..."]
-  C2["Node | int key | int value | Node prev | ..."]
-C1 --> C2
-C2 --> C2
+```text
+Diagram:
+LRUCache | int capacity | Map cache | Node head | ... -> Node | int key | int value | Node prev | ...
+Node | int key | int value | Node prev | ... -> Node | int key | int value | Node prev | ...
 ```
 
 ### 5. State Transitions
@@ -492,17 +453,12 @@ C2 --> C2
 | "FULL" | "HAS_ITEMS" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Get key"]
-  B["Exists?"]
-  C["Return -1"]
-  D["Move node to front"]
-  E["Return value"]
-A --> B
-B --> C
-B --> D
-D --> E
+```text
+Diagram:
+Get key -> Exists?
+Exists? -> Return -1
+Exists? -> Move node to front
+Move node to front -> Return value
 ```
 
 ### 7. Design Patterns Used
@@ -593,12 +549,10 @@ class LRUCache<K, V> {
 | AutocompleteSystem | Insert and search |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["AutocompleteSystem | TrieNode root | insert word | search prefix | ..."]
-  C2["TrieNode | Map children | boolean isWord | List suggestions | ..."]
-C1 --> C2
-C2 --> C2
+```text
+Diagram:
+AutocompleteSystem | TrieNode root | insert word | search prefix | ... -> TrieNode | Map children | boolean isWord | List suggestions | ...
+TrieNode | Map children | boolean isWord | List suggestions | ... -> TrieNode | Map children | boolean isWord | List suggestions | ...
 ```
 
 ### 5. State Transitions
@@ -612,19 +566,13 @@ C2 --> C2
 | "COMMITTED" | "WAITING" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Input char"]
-  B["Is #?"]
-  C["Save query"]
-  D["Append to prefix"]
-  E["Find trie node"]
-  F["Return top suggestions"]
-A --> B
-B --> C
-B --> D
-D --> E
-E --> F
+```text
+Diagram:
+Input char -> Is #?
+Is #? -> Save query
+Is #? -> Append to prefix
+Append to prefix -> Find trie node
+Find trie node -> Return top suggestions
 ```
 
 ### 7. Design Patterns Used
@@ -719,19 +667,13 @@ class AutocompleteSystem {
 | CashDispenser | Dispenses cash |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["ATM | ATMState state | CashDispenser dispenser | BankService bankService | ..."]
-  C2["ATMState | interface | insertCard atm card | enterPin atm pin | ..."]
-  C3["IdleState | insertCard atm card"]
-  C4["AuthenticatedState | withdraw atm amount"]
-  C5["Account | String accountNumber | double balance | debit amount | ..."]
-  C6["Card | String cardNumber | String pin | validatePin pin"]
-C1 --> C2
-C2 --> C3
-C2 --> C4
-C1 --> C5
-C1 --> C6
+```text
+Diagram:
+ATM | ATMState state | CashDispenser dispenser | BankService bankService | ... -> ATMState | interface | insertCard atm card | enterPin atm pin | ...
+ATMState | interface | insertCard atm card | enterPin atm pin | ... -> IdleState | insertCard atm card
+ATMState | interface | insertCard atm card | enterPin atm pin | ... -> AuthenticatedState | withdraw atm amount
+ATM | ATMState state | CashDispenser dispenser | BankService bankService | ... -> Account | String accountNumber | double balance | debit amount | ...
+ATM | ATMState state | CashDispenser dispenser | BankService bankService | ... -> Card | String cardNumber | String pin | validatePin pin
 ```
 
 ### 5. State Transitions
@@ -747,25 +689,16 @@ C1 --> C6
 | "AUTHENTICATED" | "IDLE" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Insert card"]
-  B["Enter PIN"]
-  C["Valid PIN?"]
-  D["Eject card"]
-  E["Choose transaction"]
-  F["Withdraw"]
-  G["Enough balance and cash?"]
-  H["Dispense cash"]
-  I["Reject"]
-A --> B
-B --> C
-C --> D
-C --> E
-E --> F
-F --> G
-G --> H
-G --> I
+```text
+Diagram:
+Insert card -> Enter PIN
+Enter PIN -> Valid PIN?
+Valid PIN? -> Eject card
+Valid PIN? -> Choose transaction
+Choose transaction -> Withdraw
+Withdraw -> Enough balance and cash?
+Enough balance and cash? -> Dispense cash
+Enough balance and cash? -> Reject
 ```
 
 ### 7. Design Patterns Used
@@ -868,15 +801,11 @@ class AuthenticatedState implements ATMState {
 | ElevatorSystem | Facade |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["ElevatorSystem | List elevators | Dispatcher dispatcher | requestElevator floor direction | ..."]
-  C2["Dispatcher | assignElevator request elevators"]
-  C3["Elevator | int currentFloor | Direction direction | ElevatorState state | ..."]
-  C4["Request | int sourceFloor | int destinationFloor | Direction direction | ..."]
-C1 --> C2
-C2 --> C3
-C3 --> C4
+```text
+Diagram:
+ElevatorSystem | List elevators | Dispatcher dispatcher | requestElevator floor direction | ... -> Dispatcher | assignElevator request elevators
+Dispatcher | assignElevator request elevators -> Elevator | int currentFloor | Direction direction | ElevatorState state | ...
+Elevator | int currentFloor | Direction direction | ElevatorState state | ... -> Request | int sourceFloor | int destinationFloor | Direction direction | ...
 ```
 
 ### 5. State Transitions
@@ -893,21 +822,14 @@ C3 --> C4
 | "DOOR_OPEN" | "MOVING_DOWN" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Request elevator"]
-  B["Dispatcher selects elevator"]
-  C["Add pickup floor"]
-  D["Elevator moves"]
-  E["Open door"]
-  F["Add destination"]
-  G["Move to destination"]
-A --> B
-B --> C
-C --> D
-D --> E
-E --> F
-F --> G
+```text
+Diagram:
+Request elevator -> Dispatcher selects elevator
+Dispatcher selects elevator -> Add pickup floor
+Add pickup floor -> Elevator moves
+Elevator moves -> Open door
+Open door -> Add destination
+Add destination -> Move to destination
 ```
 
 ### 7. Design Patterns Used
@@ -1009,22 +931,15 @@ class ElevatorSystem {
 | AllocationStrategy | Chooses spot |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["ParkingLot | List floors | Map activeTickets | FeeStrategy feeStrategy | ..."]
-  C2["ParkingFloor | int floorNumber | List spots | findAvailableSpot size | ..."]
-  C3["ParkingSpot | String spotId | VehicleSize size | Vehicle vehicle | ..."]
-  C4["Vehicle | abstract | String licensePlate | VehicleSize size | ..."]
-  C5["ParkingTicket | String ticketId | Vehicle vehicle | ParkingSpot spot | ..."]
-  C6["FeeStrategy | interface | calculateFee ticket"]
-  C7["SpotAllocationStrategy | interface | findSpot floors vehicle"]
-C1 --> C2
-C2 --> C3
-C3 --> C4
-C5 --> C4
-C5 --> C3
-C1 --> C6
-C1 --> C7
+```text
+Diagram:
+ParkingLot | List floors | Map activeTickets | FeeStrategy feeStrategy | ... -> ParkingFloor | int floorNumber | List spots | findAvailableSpot size | ...
+ParkingFloor | int floorNumber | List spots | findAvailableSpot size | ... -> ParkingSpot | String spotId | VehicleSize size | Vehicle vehicle | ...
+ParkingSpot | String spotId | VehicleSize size | Vehicle vehicle | ... -> Vehicle | abstract | String licensePlate | VehicleSize size | ...
+ParkingTicket | String ticketId | Vehicle vehicle | ParkingSpot spot | ... -> Vehicle | abstract | String licensePlate | VehicleSize size | ...
+ParkingTicket | String ticketId | Vehicle vehicle | ParkingSpot spot | ... -> ParkingSpot | String spotId | VehicleSize size | Vehicle vehicle | ...
+ParkingLot | List floors | Map activeTickets | FeeStrategy feeStrategy | ... -> FeeStrategy | interface | calculateFee ticket
+ParkingLot | List floors | Map activeTickets | FeeStrategy feeStrategy | ... -> SpotAllocationStrategy | interface | findSpot floors vehicle
 ```
 
 ### 5. State Transitions
@@ -1036,25 +951,16 @@ C1 --> C7
 | "OCCUPIED" | "AVAILABLE" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Vehicle enters"]
-  B["Find compatible spot"]
-  C["Spot found?"]
-  D["Reject"]
-  E["Park vehicle"]
-  F["Issue ticket"]
-  G["Vehicle exits"]
-  H["Calculate fee"]
-  I["Free spot"]
-A --> B
-B --> C
-C --> D
-C --> E
-E --> F
-F --> G
-G --> H
-H --> I
+```text
+Diagram:
+Vehicle enters -> Find compatible spot
+Find compatible spot -> Spot found?
+Spot found? -> Reject
+Spot found? -> Park vehicle
+Park vehicle -> Issue ticket
+Issue ticket -> Vehicle exits
+Vehicle exits -> Calculate fee
+Calculate fee -> Free spot
 ```
 
 ### 7. Design Patterns Used
@@ -1189,15 +1095,11 @@ class ParkingLot {
 | InventoryService | Core operations |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["InventoryService | List warehouses | addStock product qty | reserve product qty | ..."]
-  C2["Warehouse | String id | Map items | addItem item | ..."]
-  C3["InventoryItem | Product product | int availableQty | int reservedQty | ..."]
-  C4["Product | String id | String name | getId"]
-C1 --> C2
-C2 --> C3
-C3 --> C4
+```text
+Diagram:
+InventoryService | List warehouses | addStock product qty | reserve product qty | ... -> Warehouse | String id | Map items | addItem item | ...
+Warehouse | String id | Map items | addItem item | ... -> InventoryItem | Product product | int availableQty | int reservedQty | ...
+InventoryItem | Product product | int availableQty | int reservedQty | ... -> Product | String id | String name | getId
 ```
 
 ### 5. State Transitions
@@ -1210,21 +1112,14 @@ C3 --> C4
 | "RESERVED" | "AVAILABLE" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Order request"]
-  B["Enough stock?"]
-  C["Reject"]
-  D["Reserve stock"]
-  E["Payment success?"]
-  F["Deduct stock"]
-  G["Release stock"]
-A --> B
-B --> C
-B --> D
-D --> E
-E --> F
-E --> G
+```text
+Diagram:
+Order request -> Enough stock?
+Enough stock? -> Reject
+Enough stock? -> Reserve stock
+Reserve stock -> Payment success?
+Payment success? -> Deduct stock
+Payment success? -> Release stock
 ```
 
 ### 7. Design Patterns Used
@@ -1313,17 +1208,12 @@ class InventoryService {
 | FeedService | Builds feed |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["SocialNetworkService | Map users | FeedService feedService | createUser name | ..."]
-  C2["User | String id | String name | Set friends | ..."]
-  C3["Post | String id | User author | String content | ..."]
-  C4["Comment | User author | String text | edit text"]
-  C5["FeedService | generateFeed user"]
-C1 --> C2
-C1 --> C5
-C2 --> C3
-C3 --> C4
+```text
+Diagram:
+SocialNetworkService | Map users | FeedService feedService | createUser name | ... -> User | String id | String name | Set friends | ...
+SocialNetworkService | Map users | FeedService feedService | createUser name | ... -> FeedService | generateFeed user
+User | String id | String name | Set friends | ... -> Post | String id | User author | String content | ...
+Post | String id | User author | String content | ... -> Comment | User author | String text | edit text
 ```
 
 ### 5. State Transitions
@@ -1335,17 +1225,12 @@ C3 --> C4
 | "PUBLISHED" | "DELETED" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["User opens feed"]
-  B["Get followed users"]
-  C["Fetch recent posts"]
-  D["Sort by time"]
-  E["Return feed"]
-A --> B
-B --> C
-C --> D
-D --> E
+```text
+Diagram:
+User opens feed -> Get followed users
+Get followed users -> Fetch recent posts
+Fetch recent posts -> Sort by time
+Sort by time -> Return feed
 ```
 
 ### 7. Design Patterns Used
@@ -1429,18 +1314,13 @@ class SocialNetworkService {
 | MusicService | Facade |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["MusicService | Map songs | Map playlists | searchSong query | ..."]
-  C2["Song | String id | String title | String artist | ..."]
-  C3["Playlist | String id | List songs | addSong song | ..."]
-  C4["Player | PlayQueue queue | PlayerState state | play | ..."]
-  C5["PlayQueue | Queue songs | enqueue song | next"]
-C1 --> C2
-C1 --> C3
-C1 --> C4
-C4 --> C5
-C3 --> C2
+```text
+Diagram:
+MusicService | Map songs | Map playlists | searchSong query | ... -> Song | String id | String title | String artist | ...
+MusicService | Map songs | Map playlists | searchSong query | ... -> Playlist | String id | List songs | addSong song | ...
+MusicService | Map songs | Map playlists | searchSong query | ... -> Player | PlayQueue queue | PlayerState state | play | ...
+Player | PlayQueue queue | PlayerState state | play | ... -> PlayQueue | Queue songs | enqueue song | next
+Playlist | String id | List songs | addSong song | ... -> Song | String id | String title | String artist | ...
 ```
 
 ### 5. State Transitions
@@ -1454,18 +1334,13 @@ C3 --> C2
 | "PLAYING" | "STOPPED" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Select song"]
-  B["Add to queue"]
-  C["Play"]
-  D["Next clicked?"]
-  E["Play next song"]
-A --> B
-B --> C
-C --> D
-D --> E
-D --> C
+```text
+Diagram:
+Select song -> Add to queue
+Add to queue -> Play
+Play -> Next clicked?
+Next clicked? -> Play next song
+Next clicked? -> Play
 ```
 
 ### 7. Design Patterns Used
@@ -1553,15 +1428,11 @@ class MusicService {
 | Broker | Coordinates topics |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["Broker | Map topics | createTopic name | publish topic message | ..."]
-  C2["Topic | String name | List subscribers | Queue messages | ..."]
-  C3["Subscriber | String id | consume message"]
-  C4["Message | String id | String payload | getPayload"]
-C1 --> C2
-C2 --> C3
-C2 --> C4
+```text
+Diagram:
+Broker | Map topics | createTopic name | publish topic message | ... -> Topic | String name | List subscribers | Queue messages | ...
+Topic | String name | List subscribers | Queue messages | ... -> Subscriber | String id | consume message
+Topic | String name | List subscribers | Queue messages | ... -> Message | String id | String payload | getPayload
 ```
 
 ### 5. State Transitions
@@ -1573,15 +1444,11 @@ C2 --> C4
 | "PUBLISHED" | "DELIVERED" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Publisher sends message"]
-  B["Broker finds topic"]
-  C["Topic gets subscribers"]
-  D["Deliver message"]
-A --> B
-B --> C
-C --> D
+```text
+Diagram:
+Publisher sends message -> Broker finds topic
+Broker finds topic -> Topic gets subscribers
+Topic gets subscribers -> Deliver message
 ```
 
 ### 7. Design Patterns Used
@@ -1651,16 +1518,12 @@ class Broker {
 | ChatService | Core operations |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["ChatService | Map users | Map conversations | sendMessage conversation sender text | ..."]
-  C2["User | String id | String name | goOnline | ..."]
-  C3["Conversation | String id | List members | List messages | ..."]
-  C4["Message | String id | User sender | String text | ..."]
-C1 --> C2
-C1 --> C3
-C3 --> C4
-C3 --> C2
+```text
+Diagram:
+ChatService | Map users | Map conversations | sendMessage conversation sender text | ... -> User | String id | String name | goOnline | ...
+ChatService | Map users | Map conversations | sendMessage conversation sender text | ... -> Conversation | String id | List members | List messages | ...
+Conversation | String id | List members | List messages | ... -> Message | String id | User sender | String text | ...
+Conversation | String id | List members | List messages | ... -> User | String id | String name | goOnline | ...
 ```
 
 ### 5. State Transitions
@@ -1672,19 +1535,13 @@ C3 --> C2
 | "DELIVERED" | "READ" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["User sends message"]
-  B["Find conversation"]
-  C["Save message"]
-  D["Receiver online?"]
-  E["Push message"]
-  F["Store for later"]
-A --> B
-B --> C
-C --> D
-D --> E
-D --> F
+```text
+Diagram:
+User sends message -> Find conversation
+Find conversation -> Save message
+Save message -> Receiver online?
+Receiver online? -> Push message
+Receiver online? -> Store for later
 ```
 
 ### 7. Design Patterns Used
@@ -1771,17 +1628,12 @@ class ChatService {
 | PaymentGateway | Main facade |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["PaymentGateway | PaymentProcessor processor | Map payments | initiatePayment request | ..."]
-  C2["Payment | String id | double amount | PaymentStatus status | ..."]
-  C3["PaymentProcessor | interface | charge payment | refund payment"]
-  C4["StripeProcessor | charge payment | refund payment"]
-  C5["PaymentMethod | String type | String token | isValid"]
-C1 --> C2
-C1 --> C3
-C3 --> C4
-C2 --> C5
+```text
+Diagram:
+PaymentGateway | PaymentProcessor processor | Map payments | initiatePayment request | ... -> Payment | String id | double amount | PaymentStatus status | ...
+PaymentGateway | PaymentProcessor processor | Map payments | initiatePayment request | ... -> PaymentProcessor | interface | charge payment | refund payment
+PaymentProcessor | interface | charge payment | refund payment -> StripeProcessor | charge payment | refund payment
+Payment | String id | double amount | PaymentStatus status | ... -> PaymentMethod | String type | String token | isValid
 ```
 
 ### 5. State Transitions
@@ -1795,19 +1647,13 @@ C2 --> C5
 | "SUCCESS" | "REFUNDED" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Create payment"]
-  B["Select processor"]
-  C["Call provider"]
-  D["Success?"]
-  E["Mark success"]
-  F["Mark failed"]
-A --> B
-B --> C
-C --> D
-D --> E
-D --> F
+```text
+Diagram:
+Create payment -> Select processor
+Select processor -> Call provider
+Call provider -> Success?
+Success? -> Mark success
+Success? -> Mark failed
 ```
 
 ### 7. Design Patterns Used
@@ -1899,17 +1745,12 @@ class PaymentGateway {
 | BalanceSheet | Owe/lent tracking |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["SplitwiseService | Map users | Map groups | addExpense group expense | ..."]
-  C2["Group | String id | List users | List expenses | ..."]
-  C3["User | String id | String name | getBalance"]
-  C4["Expense | User paidBy | double amount | SplitStrategy strategy | ..."]
-  C5["SplitStrategy | interface | split amount users"]
-C1 --> C2
-C2 --> C3
-C2 --> C4
-C4 --> C5
+```text
+Diagram:
+SplitwiseService | Map users | Map groups | addExpense group expense | ... -> Group | String id | List users | List expenses | ...
+Group | String id | List users | List expenses | ... -> User | String id | String name | getBalance
+Group | String id | List users | List expenses | ... -> Expense | User paidBy | double amount | SplitStrategy strategy | ...
+Expense | User paidBy | double amount | SplitStrategy strategy | ... -> SplitStrategy | interface | split amount users
 ```
 
 ### 5. State Transitions
@@ -1920,17 +1761,12 @@ C4 --> C5
 | "CREATED" | "SETTLED" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Add expense"]
-  B["Calculate splits"]
-  C["Update payer balance"]
-  D["Update borrower balances"]
-  E["Show balances"]
-A --> B
-B --> C
-C --> D
-D --> E
+```text
+Diagram:
+Add expense -> Calculate splits
+Calculate splits -> Update payer balance
+Update payer balance -> Update borrower balances
+Update borrower balances -> Show balances
 ```
 
 ### 7. Design Patterns Used
@@ -2021,19 +1857,13 @@ class SplitwiseService {
 | Inventory | Stock tracking |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["EcommerceService | Catalog catalog | Inventory inventory | OrderService orderService | ..."]
-  C2["Product | String id | String name | double price | ..."]
-  C3["Cart | User user | List items | addItem product qty | ..."]
-  C4["Order | String id | OrderStatus status | Payment payment | ..."]
-  C5["Payment | String id | double amount | pay"]
-  C6["Inventory | Map stock | reserve product qty | release product qty"]
-C1 --> C2
-C1 --> C3
-C1 --> C4
-C4 --> C5
-C1 --> C6
+```text
+Diagram:
+EcommerceService | Catalog catalog | Inventory inventory | OrderService orderService | ... -> Product | String id | String name | double price | ...
+EcommerceService | Catalog catalog | Inventory inventory | OrderService orderService | ... -> Cart | User user | List items | addItem product qty | ...
+EcommerceService | Catalog catalog | Inventory inventory | OrderService orderService | ... -> Order | String id | OrderStatus status | Payment payment | ...
+Order | String id | OrderStatus status | Payment payment | ... -> Payment | String id | double amount | pay
+EcommerceService | Catalog catalog | Inventory inventory | OrderService orderService | ... -> Inventory | Map stock | reserve product qty | release product qty
 ```
 
 ### 5. State Transitions
@@ -2047,21 +1877,14 @@ C1 --> C6
 | "CREATED" | "CANCELLED" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Checkout cart"]
-  B["Reserve inventory"]
-  C["Create order"]
-  D["Take payment"]
-  E["Payment success?"]
-  F["Confirm order"]
-  G["Release inventory"]
-A --> B
-B --> C
-C --> D
-D --> E
-E --> F
-E --> G
+```text
+Diagram:
+Checkout cart -> Reserve inventory
+Reserve inventory -> Create order
+Create order -> Take payment
+Take payment -> Payment success?
+Payment success? -> Confirm order
+Payment success? -> Release inventory
 ```
 
 ### 7. Design Patterns Used
@@ -2151,19 +1974,13 @@ class EcommerceService {
 | FareStrategy | Calculates price |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["RideService | MatchingStrategy matchingStrategy | FareStrategy fareStrategy | Map rides | ..."]
-  C2["Rider | String id | String name | requestRide"]
-  C3["Driver | String id | Location location | boolean available | ..."]
-  C4["Ride | Rider rider | Driver driver | RideStatus status | ..."]
-  C5["MatchingStrategy | interface | findDriver rider drivers"]
-  C6["FareStrategy | interface | calculateFare ride"]
-C1 --> C2
-C1 --> C3
-C1 --> C4
-C1 --> C5
-C1 --> C6
+```text
+Diagram:
+RideService | MatchingStrategy matchingStrategy | FareStrategy fareStrategy | Map rides | ... -> Rider | String id | String name | requestRide
+RideService | MatchingStrategy matchingStrategy | FareStrategy fareStrategy | Map rides | ... -> Driver | String id | Location location | boolean available | ...
+RideService | MatchingStrategy matchingStrategy | FareStrategy fareStrategy | Map rides | ... -> Ride | Rider rider | Driver driver | RideStatus status | ...
+RideService | MatchingStrategy matchingStrategy | FareStrategy fareStrategy | Map rides | ... -> MatchingStrategy | interface | findDriver rider drivers
+RideService | MatchingStrategy matchingStrategy | FareStrategy fareStrategy | Map rides | ... -> FareStrategy | interface | calculateFare ride
 ```
 
 ### 5. State Transitions
@@ -2177,23 +1994,15 @@ C1 --> C6
 | "REQUESTED" | "CANCELLED" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Rider requests ride"]
-  B["Find nearby driver"]
-  C["Driver found?"]
-  D["Reject request"]
-  E["Create ride"]
-  F["Driver accepts"]
-  G["Start ride"]
-  H["End ride and calculate fare"]
-A --> B
-B --> C
-C --> D
-C --> E
-E --> F
-F --> G
-G --> H
+```text
+Diagram:
+Rider requests ride -> Find nearby driver
+Find nearby driver -> Driver found?
+Driver found? -> Reject request
+Driver found? -> Create ride
+Create ride -> Driver accepts
+Driver accepts -> Start ride
+Start ride -> End ride and calculate fare
 ```
 
 ### 7. Design Patterns Used
@@ -2294,15 +2103,11 @@ class RideService {
 | UrlShortenerService | Main operations |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["UrlShortenerService | Map mappings | CodeGenerator generator | shorten longUrl | ..."]
-  C2["UrlMapping | String code | String longUrl | LocalDateTime createdAt | ..."]
-  C3["CodeGenerator | interface | generate longUrl"]
-  C4["RandomCodeGenerator | generate longUrl"]
-C1 --> C2
-C1 --> C3
-C3 --> C4
+```text
+Diagram:
+UrlShortenerService | Map mappings | CodeGenerator generator | shorten longUrl | ... -> UrlMapping | String code | String longUrl | LocalDateTime createdAt | ...
+UrlShortenerService | Map mappings | CodeGenerator generator | shorten longUrl | ... -> CodeGenerator | interface | generate longUrl
+CodeGenerator | interface | generate longUrl -> RandomCodeGenerator | generate longUrl
 ```
 
 ### 5. State Transitions
@@ -2313,20 +2118,13 @@ C3 --> C4
 | "ACTIVE" | "EXPIRED" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Long URL"]
-  B["Generate code"]
-  C["Save mapping"]
-  D["Return short URL"]
-  E["Short URL request"]
-  F["Lookup mapping"]
-  G["Redirect"]
-A --> B
-B --> C
-C --> D
-E --> F
-F --> G
+```text
+Diagram:
+Long URL -> Generate code
+Generate code -> Save mapping
+Save mapping -> Return short URL
+Short URL request -> Lookup mapping
+Lookup mapping -> Redirect
 ```
 
 ### 7. Design Patterns Used
@@ -2402,15 +2200,11 @@ class UrlShortenerService {
 | RateLimiterService | User buckets |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["RateLimiterService | RateLimiter limiter | allowRequest clientId"]
-  C2["RateLimiter | interface | allow clientId"]
-  C3["TokenBucketRateLimiter | Map buckets | allow clientId | refill bucket"]
-  C4["Bucket | int capacity | int tokens | long lastRefillTime | ..."]
-C1 --> C2
-C2 --> C3
-C3 --> C4
+```text
+Diagram:
+RateLimiterService | RateLimiter limiter | allowRequest clientId -> RateLimiter | interface | allow clientId
+RateLimiter | interface | allow clientId -> TokenBucketRateLimiter | Map buckets | allow clientId | refill bucket
+TokenBucketRateLimiter | Map buckets | allow clientId | refill bucket -> Bucket | int capacity | int tokens | long lastRefillTime | ...
 ```
 
 ### 5. State Transitions
@@ -2422,19 +2216,13 @@ C3 --> C4
 | "LIMITED" | "ALLOWED" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Request arrives"]
-  B["Find user bucket"]
-  C["Refill tokens"]
-  D["Token available?"]
-  E["Allow"]
-  F["Reject"]
-A --> B
-B --> C
-C --> D
-D --> E
-D --> F
+```text
+Diagram:
+Request arrives -> Find user bucket
+Find user bucket -> Refill tokens
+Refill tokens -> Token available?
+Token available? -> Allow
+Token available? -> Reject
 ```
 
 ### 7. Design Patterns Used
@@ -2515,16 +2303,12 @@ class TokenBucketRateLimiter implements RateLimiter {
 | Repository | Main facade |
 
 ### 4. Relationships
-```mermaid
-flowchart TD
-  C1["Repository | Map commits | Map branches | Branch currentBranch | ..."]
-  C2["Commit | String id | String message | Commit parent | ..."]
-  C3["Blob | String path | String contentHash | getContent"]
-  C4["Branch | String name | Commit head | moveHead commit"]
-C1 --> C2
-C1 --> C4
-C2 --> C3
-C4 --> C2
+```text
+Diagram:
+Repository | Map commits | Map branches | Branch currentBranch | ... -> Commit | String id | String message | Commit parent | ...
+Repository | Map commits | Map branches | Branch currentBranch | ... -> Branch | String name | Commit head | moveHead commit
+Commit | String id | String message | Commit parent | ... -> Blob | String path | String contentHash | getContent
+Branch | String name | Commit head | moveHead commit -> Commit | String id | String message | Commit parent | ...
 ```
 
 ### 5. State Transitions
@@ -2537,17 +2321,12 @@ C4 --> C2
 | "COMMITTED" | "WORKING_TREE" |
 
 ### 6. Core Flows
-```mermaid
-flowchart TD
-  A["Modify file"]
-  B["Add to staging"]
-  C["Commit"]
-  D["Create commit object"]
-  E["Move branch pointer"]
-A --> B
-B --> C
-C --> D
-D --> E
+```text
+Diagram:
+Modify file -> Add to staging
+Add to staging -> Commit
+Commit -> Create commit object
+Create commit object -> Move branch pointer
 ```
 
 ### 7. Design Patterns Used
