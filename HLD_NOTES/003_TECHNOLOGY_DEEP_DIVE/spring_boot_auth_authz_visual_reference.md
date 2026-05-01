@@ -208,14 +208,21 @@ Endpoint map:
 
 ```mermaid
 flowchart TD
-    Client[Client]
-    Client --> Public[/api/public/hello]
-    Client --> User[/api/user/profile]
-    Client --> Admin[/api/admin/dashboard]
+    Client["Client"]
+    Public["/api/public/hello"]
+    User["/api/user/profile"]
+    Admin["/api/admin/dashboard"]
+    Anyone["Anyone can access"]
+    Login["Requires login"]
+    AdminRole["Requires ADMIN role"]
 
-    Public --> Anyone[Anyone can access]
-    User --> Login[Requires login]
-    Admin --> AdminRole[Requires ADMIN role]
+    Client --> Public
+    Client --> User
+    Client --> Admin
+
+    Public --> Anyone
+    User --> Login
+    Admin --> AdminRole
 ```
 
 ---
