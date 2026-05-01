@@ -1,6 +1,6 @@
 # LLD Visual Java Reference With Mermaid Class Diagrams
 
-Visual-first LLD notes. Every problem uses a safe Mermaid `classDiagram` with entities, fields, methods, and relationships.
+Visual-first LLD notes. Every problem uses a safe Mermaid `classDiagram` with entities, fields, methods, and relationships. Java sections are fuller reference implementations where practical; larger systems keep implementation compact but runnable in design style.
 
 > Note: This file uses Mermaid class diagrams only. Class diagrams are kept for visual learning.
 
@@ -120,53 +120,188 @@ classDiagram
 ### 8. Skeleton Code
 
 ```java
+import java.util.*;
+
 enum Symbol { X, O, EMPTY }
 enum GameStatus { IN_PROGRESS, X_WON, O_WON, DRAW }
 
 class Player {
     private final String name;
     private final Symbol symbol;
-    public Player(String name, Symbol symbol) { this.name = name; this.symbol = symbol; }
+
+    public Player(String name, Symbol symbol) {
+        if (symbol == Symbol.EMPTY) throw new IllegalArgumentException("Player cannot use EMPTY symbol");
+        this.name = name;
+        this.symbol = symbol;
+    }
+
     public String getName() { return name; }
     public Symbol getSymbol() { return symbol; }
 }
 
 class Cell {
     private Symbol symbol = Symbol.EMPTY;
+
     public boolean isEmpty() { return symbol == Symbol.EMPTY; }
-    public void mark(Symbol symbol) { this.symbol = symbol; }
-    public void clear() { this.symbol = Symbol.EMPTY; }
+
+    public void mark(Symbol symbol) {
+        if (!isEmpty()) throw new IllegalStateException("Cell already occupied");
+        this.symbol = symbol;
+    }
+
+    public Symbol getSymbol() { return symbol; }
+    public void clear() { symbol = Symbol.EMPTY; }
 }
 
 class Board {
     private final Cell[][] cells;
     private final int size;
-    public Board(int size) { this.size = size; this.cells = new Cell[size][size]; }
-    public void placeSymbol(int row, int col, Symbol symbol) { /* TODO */ }
-    public boolean isCellEmpty(int row, int col) { return false; /* TODO */ }
-    public boolean isFull() { return false; /* TODO */ }
-    public void printBoard() { /* TODO */ }
+
+    public Board(int size) {
+        this.size = size;
+        this.cells = new Cell[size][size];
+        for (int r = 0; r < size; r++)
+            for (int c = 0; c < size; c++)
+                cells[r][c] = new Cell();
+    }
+
+    public int getSize() { return size; }
+
+    public Cell getCell(int row, int col) {
+        validate(row, col);
+        return cells[row][col];
+    }
+
+    public void placeSymbol(int row, int col, Symbol symbol) {
+        getCell(row, col).mark(symbol);
+    }
+
+    public boolean isCellEmpty(int row, int col) {
+        return getCell(row, col).isEmpty();
+    }
+
+    public boolean isFull() {
+        for (Cell[] row : cells)
+            for (Cell cell : row)
+                if (cell.isEmpty()) return false;
+        return true;
+    }
+
+    private void validate(int row, int col) {
+        if (row < 0 || row >= size || col < 0 || col >= size)
+            throw new IllegalArgumentException("Invalid board position");
+    }
+
+    public void printBoard() {
+        for (Cell[] row : cells) {
+            for (Cell cell : row) {
+                System.out.print((cell.getSymbol() == Symbol.EMPTY ? "_" : cell.getSymbol()) + " ");
+            }
+            System.out.println();
+        }
+    }
 }
 
 interface WinningStrategy {
     boolean checkWin(Board board, Symbol symbol);
 }
 
-class TicTacToeGame {
-    private Board board;
-    private Player playerX;
-    private Player playerO;
-    private Player currentPlayer;
-    private GameStatus status;
-    public void makeMove(int row, int col) { /* TODO */ }
-    private void switchTurn() { /* TODO */ }
-    private void checkWinner() { /* TODO */ }
+class RowWinningStrategy implements WinningStrategy {
+    public boolean checkWin(Board board, Symbol symbol) {
+        for (int r = 0; r < board.getSize(); r++) {
+            boolean win = true;
+            for (int c = 0; c < board.getSize(); c++)
+                win &= board.getCell(r, c).getSymbol() == symbol;
+            if (win) return true;
+        }
+        return false;
+    }
+}
+
+class ColumnWinningStrategy implements WinningStrategy {
+    public boolean checkWin(Board board, Symbol symbol) {
+        for (int c = 0; c < board.getSize(); c++) {
+            boolean win = true;
+            for (int r = 0; r < board.getSize(); r++)
+                win &= board.getCell(r, c).getSymbol() == symbol;
+            if (win) return true;
+        }
+        return false;
+    }
+}
+
+class DiagonalWinningStrategy implements WinningStrategy {
+    public boolean checkWin(Board board, Symbol symbol) {
+        boolean d1 = true, d2 = true;
+        int n = board.getSize();
+        for (int i = 0; i < n; i++) {
+            d1 &= board.getCell(i, i).getSymbol() == symbol;
+            d2 &= board.getCell(i, n - 1 - i).getSymbol() == symbol;
+        }
+        return d1 || d2;
+    }
 }
 
 class Scoreboard {
-    private final java.util.Map<String, Integer> scores = new java.util.HashMap<>();
-    public void recordWin(Player player) { /* TODO */ }
-    public int getScore(String playerName) { return scores.getOrDefault(playerName, 0); }
+    private final Map<String, Integer> scores = new HashMap<>();
+
+    public void recordWin(Player player) {
+        scores.put(player.getName(), getScore(player.getName()) + 1);
+    }
+
+    public int getScore(String playerName) {
+        return scores.getOrDefault(playerName, 0);
+    }
+
+    public void printScores() {
+        scores.forEach((name, score) -> System.out.println(name + ": " + score));
+    }
+}
+
+class TicTacToeGame {
+    private final Board board;
+    private final Player playerX;
+    private final Player playerO;
+    private Player currentPlayer;
+    private GameStatus status = GameStatus.IN_PROGRESS;
+    private final List<WinningStrategy> strategies = List.of(
+            new RowWinningStrategy(),
+            new ColumnWinningStrategy(),
+            new DiagonalWinningStrategy()
+    );
+
+    public TicTacToeGame(Player playerX, Player playerO) {
+        this.board = new Board(3);
+        this.playerX = playerX;
+        this.playerO = playerO;
+        this.currentPlayer = playerX;
+    }
+
+    public void makeMove(int row, int col) {
+        if (status != GameStatus.IN_PROGRESS) throw new IllegalStateException("Game already over");
+        board.placeSymbol(row, col, currentPlayer.getSymbol());
+
+        if (isWinner(currentPlayer.getSymbol())) {
+            status = currentPlayer.getSymbol() == Symbol.X ? GameStatus.X_WON : GameStatus.O_WON;
+        } else if (board.isFull()) {
+            status = GameStatus.DRAW;
+        } else {
+            switchTurn();
+        }
+    }
+
+    private boolean isWinner(Symbol symbol) {
+        for (WinningStrategy strategy : strategies)
+            if (strategy.checkWin(board, symbol)) return true;
+        return false;
+    }
+
+    private void switchTurn() {
+        currentPlayer = currentPlayer == playerX ? playerO : playerX;
+    }
+
+    public GameStatus getStatus() { return status; }
+    public void printBoard() { board.printBoard(); }
 }
 ```
 
@@ -389,32 +524,77 @@ classDiagram
 ### 8. Skeleton Code
 
 ```java
+import java.util.*;
+
 class Node {
     int key;
     int value;
     Node prev;
     Node next;
-    Node(int key, int value) { this.key = key; this.value = value; }
+
+    Node(int key, int value) {
+        this.key = key;
+        this.value = value;
+    }
 }
 
 class LRUCache {
     private final int capacity;
-    private final java.util.Map<Integer, Node> cache = new java.util.HashMap<>();
+    private final Map<Integer, Node> cache = new HashMap<>();
     private final Node head = new Node(0, 0);
     private final Node tail = new Node(0, 0);
 
     public LRUCache(int capacity) {
+        if (capacity <= 0) throw new IllegalArgumentException("Capacity must be positive");
         this.capacity = capacity;
         head.next = tail;
         tail.prev = head;
     }
 
-    public int get(int key) { return -1; /* TODO */ }
-    public void put(int key, int value) { /* TODO */ }
-    private void addToFront(Node node) { /* TODO */ }
-    private void removeNode(Node node) { /* TODO */ }
-    private void moveToFront(Node node) { /* TODO */ }
-    private void evictLeastUsed() { /* TODO */ }
+    public int get(int key) {
+        Node node = cache.get(key);
+        if (node == null) return -1;
+        moveToFront(node);
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+        Node node = cache.get(key);
+        if (node != null) {
+            node.value = value;
+            moveToFront(node);
+            return;
+        }
+
+        if (cache.size() == capacity) evictLeastUsed();
+
+        Node newNode = new Node(key, value);
+        cache.put(key, newNode);
+        addToFront(newNode);
+    }
+
+    private void addToFront(Node node) {
+        node.next = head.next;
+        node.prev = head;
+        head.next.prev = node;
+        head.next = node;
+    }
+
+    private void removeNode(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void moveToFront(Node node) {
+        removeNode(node);
+        addToFront(node);
+    }
+
+    private void evictLeastUsed() {
+        Node lru = tail.prev;
+        removeNode(lru);
+        cache.remove(lru.key);
+    }
 }
 ```
 
@@ -478,20 +658,55 @@ classDiagram
 ### 8. Skeleton Code
 
 ```java
+import java.util.*;
+
 class TrieNode {
-    java.util.Map<Character, TrieNode> children = new java.util.HashMap<>();
+    Map<Character, TrieNode> children = new HashMap<>();
     boolean isWord;
-    java.util.List<String> suggestions = new java.util.ArrayList<>();
+    List<String> suggestions = new ArrayList<>();
 }
 
 class AutocompleteSystem {
     private final TrieNode root = new TrieNode();
     private final int limit;
 
-    public AutocompleteSystem(int limit) { this.limit = limit; }
-    public void insert(String word) { /* TODO */ }
-    public java.util.List<String> search(String prefix) { return java.util.List.of(); /* TODO */ }
-    public java.util.List<String> getSuggestions(String prefix) { return search(prefix); }
+    public AutocompleteSystem(int limit) {
+        this.limit = limit;
+    }
+
+    public void insert(String word) {
+        TrieNode current = root;
+        for (char ch : word.toCharArray()) {
+            current.children.putIfAbsent(ch, new TrieNode());
+            current = current.children.get(ch);
+            addSuggestion(current.suggestions, word);
+        }
+        current.isWord = true;
+    }
+
+    private void addSuggestion(List<String> suggestions, String word) {
+        if (!suggestions.contains(word)) suggestions.add(word);
+        Collections.sort(suggestions);
+        if (suggestions.size() > limit) suggestions.remove(suggestions.size() - 1);
+    }
+
+    public List<String> search(String prefix) {
+        TrieNode node = findNode(prefix);
+        return node == null ? List.of() : new ArrayList<>(node.suggestions);
+    }
+
+    public List<String> getSuggestions(String prefix) {
+        return search(prefix);
+    }
+
+    private TrieNode findNode(String prefix) {
+        TrieNode current = root;
+        for (char ch : prefix.toCharArray()) {
+            current = current.children.get(ch);
+            if (current == null) return null;
+        }
+        return current;
+    }
 }
 ```
 
@@ -591,46 +806,147 @@ interface ATMState {
 }
 
 class IdleState implements ATMState {
-    public void insertCard(ATM atm, Card card) { /* TODO */ }
-    public void enterPin(ATM atm, String pin) { /* TODO */ }
-    public void withdraw(ATM atm, double amount) { /* TODO */ }
-    public void ejectCard(ATM atm) { /* TODO */ }
+    public void insertCard(ATM atm, Card card) {
+        atm.setCurrentCard(card);
+        atm.setState(new CardInsertedState());
+    }
+
+    public void enterPin(ATM atm, String pin) {
+        throw new IllegalStateException("Insert card first");
+    }
+
+    public void withdraw(ATM atm, double amount) {
+        throw new IllegalStateException("Insert card first");
+    }
+
+    public void ejectCard(ATM atm) {
+        System.out.println("No card inserted");
+    }
+}
+
+class CardInsertedState implements ATMState {
+    public void insertCard(ATM atm, Card card) {
+        throw new IllegalStateException("Card already inserted");
+    }
+
+    public void enterPin(ATM atm, String pin) {
+        if (atm.getBankService().validatePin(atm.getCurrentCard(), pin)) {
+            atm.setState(new AuthenticatedState());
+        } else {
+            atm.setCurrentCard(null);
+            atm.setState(new IdleState());
+            throw new IllegalArgumentException("Invalid PIN");
+        }
+    }
+
+    public void withdraw(ATM atm, double amount) {
+        throw new IllegalStateException("Authenticate first");
+    }
+
+    public void ejectCard(ATM atm) {
+        atm.setCurrentCard(null);
+        atm.setState(new IdleState());
+    }
 }
 
 class AuthenticatedState implements ATMState {
-    public void insertCard(ATM atm, Card card) { /* TODO */ }
-    public void enterPin(ATM atm, String pin) { /* TODO */ }
-    public void withdraw(ATM atm, double amount) { /* TODO */ }
-    public void ejectCard(ATM atm) { /* TODO */ }
+    public void insertCard(ATM atm, Card card) {
+        throw new IllegalStateException("Card already inserted");
+    }
+
+    public void enterPin(ATM atm, String pin) {
+        System.out.println("Already authenticated");
+    }
+
+    public void withdraw(ATM atm, double amount) {
+        Card card = atm.getCurrentCard();
+        if (!atm.getDispenser().canDispense(amount)) throw new IllegalStateException("ATM has insufficient cash");
+        if (!atm.getBankService().debit(card.getAccountNumber(), amount)) throw new IllegalStateException("Insufficient balance");
+
+        atm.getDispenser().dispense(amount);
+        atm.setCurrentCard(null);
+        atm.setState(new IdleState());
+    }
+
+    public void ejectCard(ATM atm) {
+        atm.setCurrentCard(null);
+        atm.setState(new IdleState());
+    }
 }
 
 class Card {
-    private String cardNumber;
-    private String accountNumber;
+    private final String cardNumber;
+    private final String accountNumber;
+    private final String pin;
+
+    public Card(String cardNumber, String accountNumber, String pin) {
+        this.cardNumber = cardNumber;
+        this.accountNumber = accountNumber;
+        this.pin = pin;
+    }
+
     public String getAccountNumber() { return accountNumber; }
+    public boolean validatePin(String inputPin) { return pin.equals(inputPin); }
 }
 
 class CashDispenser {
-    private int cashAvailable;
-    public boolean canDispense(double amount) { return false; /* TODO */ }
-    public void dispense(double amount) { /* TODO */ }
+    private double cashAvailable;
+
+    public CashDispenser(double cashAvailable) {
+        this.cashAvailable = cashAvailable;
+    }
+
+    public boolean canDispense(double amount) {
+        return amount > 0 && cashAvailable >= amount;
+    }
+
+    public void dispense(double amount) {
+        if (!canDispense(amount)) throw new IllegalStateException("Cannot dispense");
+        cashAvailable -= amount;
+        System.out.println("Dispensed: " + amount);
+    }
 }
 
 class BankService {
-    public boolean validatePin(Card card, String pin) { return false; /* TODO */ }
-    public boolean debit(String accountNumber, double amount) { return false; /* TODO */ }
+    private final java.util.Map<String, Double> balances = new java.util.HashMap<>();
+
+    public void addAccount(String accountNumber, double balance) {
+        balances.put(accountNumber, balance);
+    }
+
+    public boolean validatePin(Card card, String pin) {
+        return card.validatePin(pin);
+    }
+
+    public boolean debit(String accountNumber, double amount) {
+        double balance = balances.getOrDefault(accountNumber, 0.0);
+        if (balance < amount) return false;
+        balances.put(accountNumber, balance - amount);
+        return true;
+    }
 }
 
 class ATM {
     private ATMState state = new IdleState();
-    private CashDispenser dispenser;
-    private BankService bankService;
+    private final CashDispenser dispenser;
+    private final BankService bankService;
     private Card currentCard;
+
+    public ATM(CashDispenser dispenser, BankService bankService) {
+        this.dispenser = dispenser;
+        this.bankService = bankService;
+    }
+
     public void insertCard(Card card) { state.insertCard(this, card); }
     public void enterPin(String pin) { state.enterPin(this, pin); }
     public void withdraw(double amount) { state.withdraw(this, amount); }
     public void ejectCard() { state.ejectCard(this); }
+
     public void setState(ATMState state) { this.state = state; }
+    public Card getCurrentCard() { return currentCard; }
+    public void setCurrentCard(Card card) { this.currentCard = card; }
+    public CashDispenser getDispenser() { return dispenser; }
+    public BankService getBankService() { return bankService; }
 }
 ```
 
@@ -840,15 +1156,21 @@ classDiagram
 ### 8. Skeleton Code
 
 ```java
+import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
+
 enum VehicleSize { SMALL, MEDIUM, LARGE }
 
 abstract class Vehicle {
     private final String licensePlate;
     private final VehicleSize size;
+
     protected Vehicle(String licensePlate, VehicleSize size) {
         this.licensePlate = licensePlate;
         this.size = size;
     }
+
     public String getLicensePlate() { return licensePlate; }
     public VehicleSize getSize() { return size; }
 }
@@ -858,43 +1180,164 @@ class Car extends Vehicle { public Car(String plate) { super(plate, VehicleSize.
 class Truck extends Vehicle { public Truck(String plate) { super(plate, VehicleSize.LARGE); } }
 
 class ParkingSpot {
-    private String spotId;
-    private VehicleSize size;
+    private final String spotId;
+    private final VehicleSize size;
     private Vehicle parkedVehicle;
+
+    public ParkingSpot(String spotId, VehicleSize size) {
+        this.spotId = spotId;
+        this.size = size;
+    }
+
+    public String getSpotId() { return spotId; }
+    public VehicleSize getSize() { return size; }
     public boolean isAvailable() { return parkedVehicle == null; }
-    public boolean canFitVehicle(Vehicle vehicle) { return false; /* TODO */ }
-    public synchronized void parkVehicle(Vehicle vehicle) { /* TODO */ }
-    public synchronized Vehicle unparkVehicle() { return null; /* TODO */ }
+
+    public boolean canFitVehicle(Vehicle vehicle) {
+        return isAvailable() && size.ordinal() >= vehicle.getSize().ordinal();
+    }
+
+    public synchronized void parkVehicle(Vehicle vehicle) {
+        if (!canFitVehicle(vehicle)) throw new IllegalStateException("Spot unavailable or incompatible");
+        parkedVehicle = vehicle;
+    }
+
+    public synchronized Vehicle unparkVehicle() {
+        if (parkedVehicle == null) throw new IllegalStateException("Spot already empty");
+        Vehicle vehicle = parkedVehicle;
+        parkedVehicle = null;
+        return vehicle;
+    }
 }
 
 class ParkingFloor {
-    private int floorNumber;
-    private java.util.List<ParkingSpot> spots;
-    public ParkingSpot findAvailableSpot(Vehicle vehicle) { return null; /* TODO */ }
-    public int getAvailableCount(VehicleSize size) { return 0; /* TODO */ }
+    private final int floorNumber;
+    private final List<ParkingSpot> spots = new ArrayList<>();
+
+    public ParkingFloor(int floorNumber, Map<VehicleSize, Integer> spotCounts) {
+        this.floorNumber = floorNumber;
+        int seq = 1;
+        for (Map.Entry<VehicleSize, Integer> entry : spotCounts.entrySet()) {
+            for (int i = 0; i < entry.getValue(); i++) {
+                spots.add(new ParkingSpot("F" + floorNumber + "-" + seq++, entry.getKey()));
+            }
+        }
+    }
+
+    public ParkingSpot findAvailableSpot(Vehicle vehicle) {
+        for (ParkingSpot spot : spots)
+            if (spot.canFitVehicle(vehicle)) return spot;
+        return null;
+    }
+
+    public int getAvailableCount(VehicleSize size) {
+        int count = 0;
+        for (ParkingSpot spot : spots)
+            if (spot.isAvailable() && spot.getSize() == size) count++;
+        return count;
+    }
+
+    public int getFloorNumber() { return floorNumber; }
+    public List<ParkingSpot> getSpots() { return spots; }
 }
 
 class ParkingTicket {
-    private String ticketId;
-    private Vehicle vehicle;
-    private ParkingSpot spot;
-    private java.time.LocalDateTime entryTime;
-    private java.time.LocalDateTime exitTime;
-    public void close() { this.exitTime = java.time.LocalDateTime.now(); }
-    public long getDurationHours() { return 0; /* TODO */ }
+    private final String ticketId;
+    private final Vehicle vehicle;
+    private final ParkingSpot spot;
+    private final LocalDateTime entryTime;
+    private LocalDateTime exitTime;
+
+    public ParkingTicket(String ticketId, Vehicle vehicle, ParkingSpot spot) {
+        this.ticketId = ticketId;
+        this.vehicle = vehicle;
+        this.spot = spot;
+        this.entryTime = LocalDateTime.now();
+    }
+
+    public String getTicketId() { return ticketId; }
+    public Vehicle getVehicle() { return vehicle; }
+    public ParkingSpot getSpot() { return spot; }
+    public LocalDateTime getEntryTime() { return entryTime; }
+
+    public void close() { this.exitTime = LocalDateTime.now(); }
+
+    public long getDurationHours() {
+        LocalDateTime end = exitTime == null ? LocalDateTime.now() : exitTime;
+        long minutes = Duration.between(entryTime, end).toMinutes();
+        return Math.max(1, (long) Math.ceil(minutes / 60.0));
+    }
 }
 
-interface FeeStrategy { double calculateFee(ParkingTicket ticket); }
-interface SpotAllocationStrategy { ParkingSpot findSpot(java.util.List<ParkingFloor> floors, Vehicle vehicle); }
+interface FeeStrategy {
+    double calculateFee(ParkingTicket ticket);
+}
+
+class HourlyFeeStrategy implements FeeStrategy {
+    private final double hourlyRate;
+
+    public HourlyFeeStrategy(double hourlyRate) {
+        this.hourlyRate = hourlyRate;
+    }
+
+    public double calculateFee(ParkingTicket ticket) {
+        return ticket.getDurationHours() * hourlyRate;
+    }
+}
+
+interface SpotAllocationStrategy {
+    ParkingSpot findSpot(List<ParkingFloor> floors, Vehicle vehicle);
+}
+
+class NearestFirstAllocationStrategy implements SpotAllocationStrategy {
+    public ParkingSpot findSpot(List<ParkingFloor> floors, Vehicle vehicle) {
+        for (ParkingFloor floor : floors) {
+            ParkingSpot spot = floor.findAvailableSpot(vehicle);
+            if (spot != null) return spot;
+        }
+        return null;
+    }
+}
 
 class ParkingLot {
-    private java.util.List<ParkingFloor> floors;
-    private java.util.Map<String, ParkingTicket> activeTickets = new java.util.concurrent.ConcurrentHashMap<>();
-    private FeeStrategy feeStrategy;
-    private SpotAllocationStrategy allocationStrategy;
-    public ParkingTicket parkVehicle(Vehicle vehicle) { return null; /* TODO */ }
-    public double unparkVehicle(String ticketId) { return 0.0; /* TODO */ }
-    public void displayAvailability() { /* TODO */ }
+    private final List<ParkingFloor> floors;
+    private final Map<String, ParkingTicket> activeTickets = new ConcurrentHashMap<>();
+    private final FeeStrategy feeStrategy;
+    private final SpotAllocationStrategy allocationStrategy;
+
+    public ParkingLot(List<ParkingFloor> floors, FeeStrategy feeStrategy, SpotAllocationStrategy allocationStrategy) {
+        this.floors = floors;
+        this.feeStrategy = feeStrategy;
+        this.allocationStrategy = allocationStrategy;
+    }
+
+    public synchronized ParkingTicket parkVehicle(Vehicle vehicle) {
+        ParkingSpot spot = allocationStrategy.findSpot(floors, vehicle);
+        if (spot == null) throw new IllegalStateException("No compatible spot available");
+
+        spot.parkVehicle(vehicle);
+        ParkingTicket ticket = new ParkingTicket(UUID.randomUUID().toString(), vehicle, spot);
+        activeTickets.put(ticket.getTicketId(), ticket);
+        return ticket;
+    }
+
+    public synchronized double unparkVehicle(String ticketId) {
+        ParkingTicket ticket = activeTickets.remove(ticketId);
+        if (ticket == null) throw new IllegalArgumentException("Invalid ticket");
+
+        ticket.close();
+        ticket.getSpot().unparkVehicle();
+        return feeStrategy.calculateFee(ticket);
+    }
+
+    public void displayAvailability() {
+        for (ParkingFloor floor : floors) {
+            System.out.println("Floor " + floor.getFloorNumber());
+            for (VehicleSize size : VehicleSize.values()) {
+                System.out.println(size + ": " + floor.getAvailableCount(size));
+            }
+        }
+    }
 }
 ```
 
