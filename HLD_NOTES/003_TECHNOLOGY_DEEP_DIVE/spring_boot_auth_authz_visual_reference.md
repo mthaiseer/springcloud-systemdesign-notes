@@ -1,126 +1,101 @@
 # Spring Boot Authentication & Authorization — Visual Reference
 
-> Visual-first, step-by-step guide for securing REST APIs in Spring Boot.
->
-> Example domain: **Social media / Friends network**.
+> **Goal:** Learn Spring Boot security visually, with small Java examples and step-by-step project setup for multiple ways to secure REST APIs.
 
 ---
 
 ## Clickable Index
 
-### Basics
-1. [Authentication vs Authorization](#1-authentication-vs-authorization)
-2. [Core Spring Security Flow](#2-core-spring-security-flow)
-3. [Demo Use Case: Friends Network API](#3-demo-use-case-friends-network-api)
-4. [Project Dependencies](#4-project-dependencies)
+### 0. Foundations
+- [What are Authentication and Authorization?](#what-are-authentication-and-authorization)
+- [Core Spring Security Flow](#core-spring-security-flow)
+- [Project Setup Used in Examples](#project-setup-used-in-examples)
+- [Common Demo REST Controller](#common-demo-rest-controller)
+- [Common Roles and Access Model](#common-roles-and-access-model)
 
-### Securing REST APIs
-5. [Way 1: Public + Protected Endpoints](#5-way-1-public--protected-endpoints)
-6. [Way 2: HTTP Basic Auth](#6-way-2-http-basic-auth)
-7. [Way 3: Form Login / Session Security](#7-way-3-form-login--session-security)
-8. [Way 4: JWT Token Authentication](#8-way-4-jwt-token-authentication)
-9. [Way 5: OAuth2 Resource Server](#9-way-5-oauth2-resource-server)
-10. [Way 6: API Key Security](#10-way-6-api-key-security)
+### 1. Ways to Secure REST APIs
+- [Way 1: Public + Protected Endpoints](#way-1-public--protected-endpoints)
+- [Way 2: HTTP Basic Auth](#way-2-http-basic-auth)
+- [Way 3: Form Login / Session Security](#way-3-form-login--session-security)
+- [Way 4: JWT Token Authentication](#way-4-jwt-token-authentication)
+- [Way 5: OAuth2 Resource Server](#way-5-oauth2-resource-server)
+- [Way 6: API Key Security](#way-6-api-key-security)
 
-### Authorization
-11. [Roles vs Permissions](#11-roles-vs-permissions)
-12. [URL-Based Authorization](#12-url-based-authorization)
-13. [Method-Level Authorization](#13-method-level-authorization)
-14. [Ownership Rules: Only Friends Can View](#14-ownership-rules-only-friends-can-view)
-
-### Advanced
-15. [Refresh Tokens](#15-refresh-tokens)
-16. [Password Hashing](#16-password-hashing)
-17. [CORS and CSRF](#17-cors-and-csrf)
-18. [Exception Handling](#18-exception-handling)
-19. [Security Testing](#19-security-testing)
-20. [Production Checklist](#20-production-checklist)
+### 2. Advanced Topics
+- [Method-Level Authorization](#method-level-authorization)
+- [Role vs Authority](#role-vs-authority)
+- [CSRF: When to Enable or Disable](#csrf-when-to-enable-or-disable)
+- [CORS for Frontend Apps](#cors-for-frontend-apps)
+- [Password Hashing](#password-hashing)
+- [Security Testing with MockMvc](#security-testing-with-mockmvc)
+- [Choosing the Right Security Method](#choosing-the-right-security-method)
+- [Mini Project Roadmap](#mini-project-roadmap)
 
 ---
 
-# 1. Authentication vs Authorization
+# What are Authentication and Authorization?
 
 ```mermaid
 flowchart LR
-    A[User] --> B[Authentication]
-    B --> C{Who are you?}
-    C --> D[Logged in as alice]
-    D --> E[Authorization]
-    E --> F{What can you access?}
-    F --> G[Read own profile]
-    F --> H[Send friend request]
-    F --> I[Admin delete user]
+    User[User / Client] --> AuthN[Authentication]
+    AuthN -->|Who are you?| Identity[Identity: alice]
+    Identity --> AuthZ[Authorization]
+    AuthZ -->|What can you access?| Resource[Protected API]
 ```
 
-| Concept | Meaning | Example |
+| Term | Meaning | Example |
 |---|---|---|
 | Authentication | Verifies identity | Login with username/password |
-| Authorization | Checks permission | Can Alice delete Bob? |
+| Authorization | Checks permissions | USER can read profile, ADMIN can delete users |
+
+Simple idea:
+
+```text
+Authentication = login
+Authorization  = permission check
+```
 
 ---
 
-# 2. Core Spring Security Flow
+# Core Spring Security Flow
 
 ```mermaid
 sequenceDiagram
-    participant C as Client
-    participant F as Security Filter Chain
-    participant A as Authentication Manager
-    participant U as UserDetailsService
-    participant R as REST Controller
+    participant Client
+    participant Filter as Spring Security Filter Chain
+    participant Auth as Authentication Manager
+    participant App as Controller
 
-    C->>F: Request /api/friends
-    F->>A: Validate credentials/token
-    A->>U: Load user
-    U-->>A: User + roles
-    A-->>F: Authenticated user
-    F->>F: Check authorization rules
-    F->>R: Allow request
-    R-->>C: JSON response
+    Client->>Filter: Request /api/private
+    Filter->>Filter: Check if endpoint is public
+    Filter->>Auth: Validate credentials/token/session
+    Auth-->>Filter: Authenticated user + authorities
+    Filter->>Filter: Check authorization rules
+    Filter->>App: Allow request
+    App-->>Client: Response
 ```
 
-Key idea:
+Most Spring Boot security code starts with this bean:
 
-```text
-Request -> Security Filters -> Authentication -> Authorization -> Controller
-```
-
----
-
-# 3. Demo Use Case: Friends Network API
-
-We will secure these endpoints:
-
-| Endpoint | Access Rule |
-|---|---|
-| `POST /api/auth/register` | Public |
-| `POST /api/auth/login` | Public |
-| `GET /api/users/me` | Logged-in user |
-| `GET /api/users/{id}` | Logged-in user |
-| `POST /api/friends/request/{id}` | Logged-in user |
-| `POST /api/friends/accept/{id}` | Logged-in user |
-| `GET /api/friends` | Logged-in user |
-| `DELETE /api/admin/users/{id}` | Admin only |
-
-```mermaid
-flowchart TD
-    A[Anonymous User] --> B[Register]
-    A --> C[Login]
-    C --> D[JWT / Session]
-    D --> E[View Profile]
-    D --> F[Send Friend Request]
-    D --> G[Accept Friend]
-    D --> H[List Friends]
-    D --> I{Role = ADMIN?}
-    I -->|Yes| J[Delete User]
-    I -->|No| K[403 Forbidden]
+```java
+@Bean
+SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/public/**").permitAll()
+            .anyRequest().authenticated()
+        )
+        .build();
+}
 ```
 
 ---
 
-# 4. Project Dependencies
+# Project Setup Used in Examples
 
-## Maven
+## Maven dependencies
+
+Use these for most examples:
 
 ```xml
 <dependencies>
@@ -136,33 +111,184 @@ flowchart TD
 
     <dependency>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-jpa</artifactId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
     </dependency>
 
     <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <scope>runtime</scope>
-    </dependency>
-
-    <!-- JWT example -->
-    <dependency>
-        <groupId>io.jsonwebtoken</groupId>
-        <artifactId>jjwt-api</artifactId>
-        <version>0.12.6</version>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-test</artifactId>
+        <scope>test</scope>
     </dependency>
 </dependencies>
 ```
 
+For OAuth2 Resource Server and JWT decoding, add:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+</dependency>
+```
+
+For your own JWT creation, commonly add:
+
+```xml
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.12.6</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.12.6</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.12.6</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+## Suggested package structure
+
+```text
+src/main/java/com/example/securitydemo
+├── SecurityDemoApplication.java
+├── controller
+│   ├── PublicController.java
+│   ├── UserController.java
+│   └── AdminController.java
+├── security
+│   ├── SecurityConfig.java
+│   ├── JwtService.java
+│   ├── JwtAuthFilter.java
+│   └── ApiKeyFilter.java
+└── model
+    └── LoginRequest.java
+```
+
 ---
 
-# 5. Way 1: Public + Protected Endpoints
+# Common Demo REST Controller
 
-Start simple: allow login/register, protect everything else.
+Use this controller for most ways.
 
 ```java
+package com.example.securitydemo.controller;
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api")
+public class DemoController {
+
+    @GetMapping("/public/hello")
+    public String publicHello() {
+        return "Hello from public API";
+    }
+
+    @GetMapping("/user/profile")
+    public String userProfile() {
+        return "User profile data";
+    }
+
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard() {
+        return "Admin dashboard data";
+    }
+}
+```
+
+Endpoint map:
+
+```mermaid
+flowchart TD
+    Client[Client]
+    Client --> Public[/api/public/hello]
+    Client --> User[/api/user/profile]
+    Client --> Admin[/api/admin/dashboard]
+
+    Public --> Anyone[Anyone can access]
+    User --> Login[Requires login]
+    Admin --> AdminRole[Requires ADMIN role]
+```
+
+---
+
+# Common Roles and Access Model
+
+```mermaid
+flowchart LR
+    ANON[Anonymous] --> PUBLIC[Public endpoints]
+    USER[ROLE_USER] --> PUBLIC
+    USER --> PROFILE[User profile]
+    ADMIN[ROLE_ADMIN] --> PUBLIC
+    ADMIN --> PROFILE
+    ADMIN --> ADMIN_API[Admin APIs]
+```
+
+Recommended test users:
+
+```text
+user  / password / ROLE_USER
+admin / password / ROLE_ADMIN
+```
+
+---
+
+# Way 1: Public + Protected Endpoints
+
+## When to use
+
+Use this when your app has:
+
+- Public APIs such as health, docs, login, signup
+- Protected APIs that require login
+- Simple role-based access
+
+## Visual flow
+
+```mermaid
+flowchart TD
+    Request[Incoming Request] --> Match{Endpoint?}
+    Match -->|/api/public/**| Permit[Permit All]
+    Match -->|/api/user/**| Authenticated[Must be Authenticated]
+    Match -->|/api/admin/**| Admin[Must have ADMIN role]
+    Permit --> Controller[Controller]
+    Authenticated --> Controller
+    Admin --> Controller
+```
+
+## Step 1: Create project
+
+Add:
+
+```text
+spring-boot-starter-web
+spring-boot-starter-security
+```
+
+## Step 2: Add SecurityConfig
+
+```java
+package com.example.securitydemo.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
@@ -170,292 +296,461 @@ public class SecurityConfig {
         return http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/user/**").authenticated()
+                .anyRequest().denyAll()
+            )
+            .httpBasic(basic -> {})
+            .build();
+    }
+
+    @Bean
+    InMemoryUserDetailsManager users(PasswordEncoder encoder) {
+        UserDetails user = User.withUsername("user")
+            .password(encoder.encode("password"))
+            .roles("USER")
+            .build();
+
+        UserDetails admin = User.withUsername("admin")
+            .password(encoder.encode("password"))
+            .roles("ADMIN")
+            .build();
+
+        return new InMemoryUserDetailsManager(user, admin);
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+
+## Step 3: Test
+
+```bash
+curl http://localhost:8080/api/public/hello
+
+curl -u user:password http://localhost:8080/api/user/profile
+
+curl -u admin:password http://localhost:8080/api/admin/dashboard
+```
+
+---
+
+# Way 2: HTTP Basic Auth
+
+## When to use
+
+Use HTTP Basic Auth for:
+
+- Internal tools
+- Local development
+- Server-to-server APIs over HTTPS
+- Simple admin endpoints
+
+Do **not** use it without HTTPS.
+
+## Visual flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+
+    Client->>API: GET /api/user/profile
+    API-->>Client: 401 Unauthorized + WWW-Authenticate
+    Client->>API: Authorization: Basic base64(user:password)
+    API-->>Client: 200 OK
+```
+
+## Step 1: Dependency
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
+
+## Step 2: SecurityConfig
+
+```java
+@Configuration
+public class BasicAuthSecurityConfig {
+
+    @Bean
+    SecurityFilterChain basicSecurity(HttpSecurity http) throws Exception {
+        return http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/public/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .httpBasic(Customizer.withDefaults())
+            .httpBasic(basic -> {})
+            .build();
+    }
+
+    @Bean
+    InMemoryUserDetailsManager users(PasswordEncoder encoder) {
+        return new InMemoryUserDetailsManager(
+            User.withUsername("user")
+                .password(encoder.encode("password"))
+                .roles("USER")
+                .build()
+        );
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+
+## Step 3: Test
+
+```bash
+curl -u user:password http://localhost:8080/api/user/profile
+```
+
+## Mental image
+
+```text
+Authorization header
+└── Basic dXNlcjpwYXNzd29yZA==
+    └── base64("user:password")
+```
+
+---
+
+# Way 3: Form Login / Session Security
+
+## When to use
+
+Use Form Login for:
+
+- Server-rendered websites
+- Admin dashboards
+- Browser apps using cookies and sessions
+
+## Visual flow
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant Spring
+    participant SessionStore
+
+    Browser->>Spring: GET /admin
+    Spring-->>Browser: Redirect /login
+    Browser->>Spring: POST /login username/password
+    Spring->>SessionStore: Create session
+    Spring-->>Browser: Set-Cookie JSESSIONID
+    Browser->>Spring: GET /admin with cookie
+    Spring-->>Browser: Admin page/API
+```
+
+## Step 1: Add dependencies
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
+
+Optional if using Thymeleaf pages:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+```
+
+## Step 2: SecurityConfig
+
+```java
+@Configuration
+public class FormLoginSecurityConfig {
+
+    @Bean
+    SecurityFilterChain formSecurity(HttpSecurity http) throws Exception {
+        return http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/", "/login", "/css/**").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/home", true)
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+            )
             .build();
     }
 }
 ```
 
-```mermaid
-flowchart LR
-    A[/api/auth/login] --> B[Permit All]
-    C[/api/users/me] --> D[Must Login]
-    E[/api/friends] --> D
-    F[/api/admin/users] --> D
-```
-
----
-
-# 6. Way 2: HTTP Basic Auth
-
-Basic Auth is useful for internal tools, testing, or simple service-to-service APIs.
-
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant API as Spring Boot API
-
-    C->>API: GET /api/users/me + Basic username:password
-    API->>API: Validate username/password
-    API-->>C: 200 OK or 401 Unauthorized
-```
-
-## In-memory users
+## Step 3: Login page controller
 
 ```java
-@Bean
-UserDetailsService users(PasswordEncoder encoder) {
-    UserDetails user = User.builder()
-        .username("alice")
-        .password(encoder.encode("pass123"))
-        .roles("USER")
-        .build();
+@Controller
+public class PageController {
 
-    UserDetails admin = User.builder()
-        .username("admin")
-        .password(encoder.encode("admin123"))
-        .roles("ADMIN")
-        .build();
-
-    return new InMemoryUserDetailsManager(user, admin);
-}
-
-@Bean
-PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-}
-```
-
-## Test with curl
-
-```bash
-curl -u alice:pass123 http://localhost:8080/api/users/me
-```
-
-Best for:
-
-```text
-Internal admin API
-Developer testing
-Simple non-browser clients
-```
-
-Avoid for:
-
-```text
-Public mobile apps
-Public SPAs
-Large production auth systems
-```
-
----
-
-# 7. Way 3: Form Login / Session Security
-
-Session login is common for server-rendered web apps.
-
-```mermaid
-sequenceDiagram
-    participant B as Browser
-    participant S as Spring Boot
-    participant DB as Session Store
-
-    B->>S: POST /login username/password
-    S->>S: Authenticate user
-    S->>DB: Create session
-    S-->>B: Set-Cookie: JSESSIONID
-    B->>S: GET /profile with cookie
-    S->>DB: Load session
-    S-->>B: Profile page
-```
-
-```java
-@Bean
-SecurityFilterChain sessionSecurity(HttpSecurity http) throws Exception {
-    return http
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login", "/register").permitAll()
-            .anyRequest().authenticated()
-        )
-        .formLogin(Customizer.withDefaults())
-        .logout(Customizer.withDefaults())
-        .build();
-}
-```
-
-Best for:
-
-```text
-Traditional web app
-Server-side rendered UI
-Admin panels
-```
-
----
-
-# 8. Way 4: JWT Token Authentication
-
-JWT is common for REST APIs used by mobile apps, SPAs, and microservices.
-
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant API as Spring Boot API
-
-    C->>API: POST /api/auth/login
-    API-->>C: JWT token
-    C->>API: GET /api/friends Authorization: Bearer JWT
-    API->>API: Validate token
-    API-->>C: Friends JSON
-```
-
-## JWT request flow
-
-```mermaid
-flowchart LR
-    A[Login] --> B[Server creates JWT]
-    B --> C[Client stores token]
-    C --> D[Client sends Bearer token]
-    D --> E[JWT Filter validates token]
-    E --> F[Controller]
-```
-
-## Login request DTO
-
-```java
-public record LoginRequest(
-    String username,
-    String password
-) {}
-```
-
-## Login response DTO
-
-```java
-public record LoginResponse(
-    String accessToken
-) {}
-```
-
-## Auth Controller
-
-```java
-@RestController
-@RequestMapping("/api/auth")
-public class AuthController {
-
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
-
-    public AuthController(AuthenticationManager authenticationManager,
-                          JwtService jwtService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 
-    @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
-        Authentication auth = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                request.username(),
-                request.password()
-            )
-        );
-
-        String token = jwtService.generateToken(auth.getName());
-        return new LoginResponse(token);
+    @GetMapping("/home")
+    @ResponseBody
+    public String home() {
+        return "Logged in with session";
     }
 }
 ```
 
-## JWT Service - simplified
+## Step 4: Very small login.html
+
+```html
+<form method="post" action="/login">
+    <input name="username" placeholder="Username" />
+    <input name="password" type="password" placeholder="Password" />
+    <button type="submit">Login</button>
+</form>
+```
+
+## Important note
+
+For browser session security, keep CSRF enabled unless you know why you are disabling it.
+
+```text
+Browser + cookies + form login = CSRF protection usually ON
+REST API + JWT token = CSRF usually OFF
+```
+
+---
+
+# Way 4: JWT Token Authentication
+
+## When to use
+
+Use JWT when:
+
+- Frontend and backend are separate
+- Mobile app calls backend APIs
+- You want stateless REST APIs
+- You want token-based authentication
+
+## Visual flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant AuthAPI
+    participant Backend
+
+    Client->>AuthAPI: POST /auth/login username/password
+    AuthAPI-->>Client: JWT token
+    Client->>Backend: GET /api/user/profile Authorization: Bearer token
+    Backend->>Backend: Validate JWT
+    Backend-->>Client: Protected data
+```
+
+## JWT structure
+
+```mermaid
+flowchart LR
+    JWT[JWT Token] --> Header[Header]
+    JWT --> Payload[Payload / Claims]
+    JWT --> Signature[Signature]
+
+    Payload --> Sub[sub: username]
+    Payload --> Roles[roles: USER, ADMIN]
+    Payload --> Exp[exp: expiry time]
+```
+
+## Step 1: Add dependencies
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.12.6</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.12.6</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.12.6</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+## Step 2: LoginRequest DTO
 
 ```java
+package com.example.securitydemo.model;
+
+public record LoginRequest(String username, String password) {}
+```
+
+## Step 3: JwtService
+
+```java
+package com.example.securitydemo.security;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.Map;
+
 @Service
 public class JwtService {
 
-    private final String secret = "change-this-secret-change-this-secret";
+    private final String secret = "change-this-secret-key-change-this-secret-key";
+    private final SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
-    public String generateToken(String username) {
-        Instant now = Instant.now();
-
+    public String createToken(String username, String role) {
         return Jwts.builder()
             .subject(username)
-            .issuedAt(Date.from(now))
-            .expiration(Date.from(now.plus(Duration.ofHours(1))))
-            .signWith(getKey())
+            .claims(Map.of("role", role))
+            .issuedAt(new Date())
+            .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+            .signWith(key)
             .compact();
     }
 
     public String extractUsername(String token) {
         return Jwts.parser()
-            .verifyWith(getKey())
+            .verifyWith(key)
             .build()
             .parseSignedClaims(token)
             .getPayload()
             .getSubject();
     }
 
-    private SecretKey getKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    public String extractRole(String token) {
+        return Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .get("role", String.class);
     }
 }
 ```
 
-## JWT Filter - simplified
+## Step 4: AuthController
 
 ```java
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+
+    private final JwtService jwtService;
+
+    public AuthController(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
+
+    @PostMapping("/login")
+    public Map<String, String> login(@RequestBody LoginRequest request) {
+        // Demo only. In real apps, validate user from DB using AuthenticationManager.
+        if (request.username().equals("admin") && request.password().equals("password")) {
+            return Map.of("token", jwtService.createToken("admin", "ROLE_ADMIN"));
+        }
+        if (request.username().equals("user") && request.password().equals("password")) {
+            return Map.of("token", jwtService.createToken("user", "ROLE_USER"));
+        }
+        throw new RuntimeException("Invalid login");
+    }
+}
+```
+
+## Step 5: JwtAuthFilter
+
+```java
+package com.example.securitydemo.security;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.List;
+
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
 
-    public JwtAuthFilter(JwtService jwtService,
-                         UserDetailsService userDetailsService) {
+    public JwtAuthFilter(JwtService jwtService) {
         this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain filterChain
+    ) throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
 
-        if (header == null || !header.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
-            return;
-        }
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+            String username = jwtService.extractUsername(token);
+            String role = jwtService.extractRole(token);
 
-        String token = header.substring(7);
-        String username = jwtService.extractUsername(token);
-
-        UserDetails user = userDetailsService.loadUserByUsername(username);
-
-        UsernamePasswordAuthenticationToken auth =
-            new UsernamePasswordAuthenticationToken(
-                user,
+            var auth = new UsernamePasswordAuthenticationToken(
+                username,
                 null,
-                user.getAuthorities()
+                List.of(new SimpleGrantedAuthority(role))
             );
 
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        chain.doFilter(request, response);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+
+        filterChain.doFilter(request, response);
     }
 }
 ```
 
-## JWT Security Config
+## Step 6: JWT SecurityConfig
 
 ```java
 @Configuration
-@EnableWebSecurity
 public class JwtSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -465,14 +760,14 @@ public class JwtSecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain security(HttpSecurity http) throws Exception {
+    SecurityFilterChain jwtSecurity(HttpSecurity http) throws Exception {
         return http
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/auth/login", "/api/public/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
@@ -482,35 +777,78 @@ public class JwtSecurityConfig {
 }
 ```
 
----
+Required imports:
 
-# 9. Way 5: OAuth2 Resource Server
+```java
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+```
 
-Use this when login is handled by an external provider:
+## Step 7: Test
+
+```bash
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"user","password":"password"}'
+```
+
+Then:
+
+```bash
+curl http://localhost:8080/api/user/profile \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+## JWT mental model
 
 ```text
-Keycloak
-Auth0
-Okta
-Google Identity
-Azure AD
+Login once
+   ↓
+Receive token
+   ↓
+Send token with every request
+   ↓
+Backend validates token, no session needed
 ```
+
+---
+
+# Way 5: OAuth2 Resource Server
+
+## When to use
+
+Use OAuth2 Resource Server when tokens come from an Identity Provider such as:
+
+- Keycloak
+- Auth0
+- Okta
+- Azure AD / Microsoft Entra ID
+- Google identity platform
+- Custom OAuth2 server
+
+## Visual flow
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant Provider as OAuth Provider
-    participant Client
-    participant API as Spring Boot API
+    participant Frontend
+    participant IdP as Identity Provider
+    participant API as Spring Boot Resource Server
 
-    User->>Provider: Login
-    Provider-->>Client: Access Token
-    Client->>API: Authorization: Bearer token
-    API->>API: Validate token signature
-    API-->>Client: Protected data
+    User->>Frontend: Login
+    Frontend->>IdP: Authenticate user
+    IdP-->>Frontend: Access Token JWT
+    Frontend->>API: Authorization: Bearer JWT
+    API->>IdP: Fetch public keys / jwk-set-uri
+    API->>API: Validate signature + claims
+    API-->>Frontend: Protected API response
 ```
 
-## Dependency
+## Step 1: Add dependency
 
 ```xml
 <dependency>
@@ -519,23 +857,9 @@ sequenceDiagram
 </dependency>
 ```
 
-## Config
+## Step 2: application.yml
 
-```java
-@Bean
-SecurityFilterChain oauth2Security(HttpSecurity http) throws Exception {
-    return http
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/public/**").permitAll()
-            .requestMatchers("/api/admin/**").hasAuthority("SCOPE_admin")
-            .anyRequest().authenticated()
-        )
-        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-        .build();
-}
-```
-
-## application.yml
+Example using issuer URI:
 
 ```yaml
 spring:
@@ -543,134 +867,240 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8081/realms/social-app
+          issuer-uri: https://your-issuer.example.com/realms/demo
 ```
 
-Best for:
+Or using JWK Set URI:
 
-```text
-Enterprise apps
-SSO
-Microservices
-Central auth provider
+```yaml
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://your-issuer.example.com/.well-known/jwks.json
 ```
 
----
-
-# 10. Way 6: API Key Security
-
-API keys are useful for service-to-service calls or simple partner APIs.
-
-```mermaid
-flowchart LR
-    A[Client] -->|X-API-Key| B[API Key Filter]
-    B --> C{Valid key?}
-    C -->|Yes| D[Controller]
-    C -->|No| E[401 Unauthorized]
-```
-
-## API Key Filter
+## Step 3: Resource Server SecurityConfig
 
 ```java
-@Component
-public class ApiKeyFilter extends OncePerRequestFilter {
+@Configuration
+public class OAuth2ResourceServerSecurityConfig {
 
-    private static final String API_KEY = "dev-secret-key";
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain)
-            throws ServletException, IOException {
-
-        String apiKey = request.getHeader("X-API-Key");
-
-        if (!API_KEY.equals(apiKey)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid API key");
-            return;
-        }
-
-        chain.doFilter(request, response);
+    @Bean
+    SecurityFilterChain oauth2Security(HttpSecurity http) throws Exception {
+        return http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/admin/**").hasAuthority("SCOPE_admin")
+                .anyRequest().authenticated()
+            )
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {}))
+            .build();
     }
 }
 ```
 
-Use for:
-
-```text
-Internal services
-Webhook senders
-Simple partner integrations
-```
-
-Do not use alone for:
-
-```text
-User login
-Mobile apps where key can be extracted
-High-security systems
-```
-
----
-
-# 11. Roles vs Permissions
-
-```mermaid
-flowchart TD
-    A[User alice] --> B[Role USER]
-    B --> C[Permission READ_PROFILE]
-    B --> D[Permission SEND_FRIEND_REQUEST]
-
-    E[User admin] --> F[Role ADMIN]
-    F --> G[Permission DELETE_USER]
-    F --> H[Permission VIEW_REPORTS]
-```
-
-| Type | Example | Meaning |
-|---|---|---|
-| Role | `ROLE_USER` | Big group |
-| Role | `ROLE_ADMIN` | Admin group |
-| Permission | `friend:send` | Fine-grained action |
-| Permission | `user:delete` | Specific action |
-
----
-
-# 12. URL-Based Authorization
+## Step 4: Read user claims
 
 ```java
-@Bean
-SecurityFilterChain security(HttpSecurity http) throws Exception {
-    return http
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
-            .requestMatchers("/api/friends/**").hasRole("USER")
-            .requestMatchers("/api/admin/**").hasRole("ADMIN")
-            .anyRequest().denyAll()
-        )
-        .httpBasic(Customizer.withDefaults())
-        .build();
+@RestController
+@RequestMapping("/api/me")
+public class MeController {
+
+    @GetMapping
+    public Map<String, Object> me(@AuthenticationPrincipal Jwt jwt) {
+        return Map.of(
+            "subject", jwt.getSubject(),
+            "email", jwt.getClaimAsString("email"),
+            "scopes", jwt.getClaimAsStringList("scope")
+        );
+    }
 }
 ```
 
-```mermaid
-flowchart TD
-    A[Request] --> B{Path?}
-    B -->|/api/auth/**| C[Permit]
-    B -->|/api/friends/**| D[USER role]
-    B -->|/api/admin/**| E[ADMIN role]
-    B -->|Other| F[Deny]
+Import:
+
+```java
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+```
+
+## Step 5: Test
+
+```bash
+curl http://localhost:8080/api/me \
+  -H "Authorization: Bearer ACCESS_TOKEN_FROM_IDENTITY_PROVIDER"
+```
+
+## OAuth2 mental model
+
+```text
+Your Spring Boot app does not login users directly.
+It trusts signed tokens from an external Identity Provider.
 ```
 
 ---
 
-# 13. Method-Level Authorization
+# Way 6: API Key Security
 
-Use this when rules belong near business logic.
+## When to use
 
-## Enable method security
+Use API Key security for:
+
+- Partner APIs
+- Internal service calls
+- Webhooks
+- Simple machine-to-machine access
+
+Do not use API keys as a full replacement for user login in complex apps.
+
+## Visual flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Filter as API Key Filter
+    participant API
+
+    Client->>Filter: X-API-KEY: abc123
+    Filter->>Filter: Compare key with configured value
+    Filter->>API: If valid, continue
+    API-->>Client: Response
+```
+
+## Step 1: application.yml
+
+```yaml
+app:
+  security:
+    api-key: dev-secret-api-key
+```
+
+## Step 2: ApiKeyFilter
+
+```java
+package com.example.securitydemo.security;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.List;
+
+@Component
+public class ApiKeyFilter extends OncePerRequestFilter {
+
+    @Value("${app.security.api-key}")
+    private String validApiKey;
+
+    @Override
+    protected void doFilterInternal(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        String apiKey = request.getHeader("X-API-KEY");
+
+        if (validApiKey.equals(apiKey)) {
+            var auth = new UsernamePasswordAuthenticationToken(
+                "api-client",
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_API_CLIENT"))
+            );
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+
+        filterChain.doFilter(request, response);
+    }
+}
+```
+
+## Step 3: API Key SecurityConfig
+
+```java
+@Configuration
+public class ApiKeySecurityConfig {
+
+    private final ApiKeyFilter apiKeyFilter;
+
+    public ApiKeySecurityConfig(ApiKeyFilter apiKeyFilter) {
+        this.apiKeyFilter = apiKeyFilter;
+    }
+
+    @Bean
+    SecurityFilterChain apiKeySecurity(HttpSecurity http) throws Exception {
+        return http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/partner/**").hasRole("API_CLIENT")
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
+    }
+}
+```
+
+## Step 4: Partner endpoint
+
+```java
+@RestController
+@RequestMapping("/api/partner")
+public class PartnerController {
+
+    @GetMapping("/orders")
+    public String partnerOrders() {
+        return "Partner orders data";
+    }
+}
+```
+
+## Step 5: Test
+
+```bash
+curl http://localhost:8080/api/partner/orders \
+  -H "X-API-KEY: dev-secret-api-key"
+```
+
+## API Key mental model
+
+```text
+Client proves it knows a secret key.
+Spring filter converts valid key into an authenticated principal.
+```
+
+---
+
+# Method-Level Authorization
+
+Use method security when URL rules are not enough.
+
+## Visual flow
+
+```mermaid
+flowchart TD
+    Request[Request allowed by URL security] --> Service[Service method]
+    Service --> Check{Method annotation}
+    Check -->|@PreAuthorize passes| Run[Run method]
+    Check -->|Fails| Deny[403 Forbidden]
+```
+
+## Step 1: Enable method security
 
 ```java
 @Configuration
@@ -679,153 +1109,135 @@ public class MethodSecurityConfig {
 }
 ```
 
-## Controller
-
-```java
-@RestController
-@RequestMapping("/api/admin")
-public class AdminController {
-
-    @DeleteMapping("/users/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteUser(@PathVariable Long id) {
-        // delete user
-    }
-}
-```
-
-## Service
+## Step 2: Secure service methods
 
 ```java
 @Service
-public class FriendService {
+public class AccountService {
 
-    @PreAuthorize("hasRole('USER')")
-    public void sendFriendRequest(Long targetUserId) {
-        // send request
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteAccount(Long id) {
+        return "Deleted account " + id;
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public String viewAccount(Long id) {
+        return "Viewing account " + id;
     }
 }
 ```
 
 ---
 
-# 14. Ownership Rules: Only Friends Can View
+# Role vs Authority
 
-Sometimes role is not enough.
-
-Example rule:
-
-```text
-Alice can view Bob's private profile only if Alice and Bob are friends.
+```mermaid
+flowchart LR
+    Role[ROLE_ADMIN] --> HasRole[hasRole("ADMIN")]
+    Authority[SCOPE_read] --> HasAuthority[hasAuthority("SCOPE_read")]
 ```
+
+| Concept | Stored as | Check with |
+|---|---|---|
+| Role | `ROLE_ADMIN` | `hasRole("ADMIN")` |
+| Authority | `user:read` or `SCOPE_read` | `hasAuthority("user:read")` |
+
+Small example:
+
+```java
+.requestMatchers("/api/admin/**").hasRole("ADMIN")
+.requestMatchers("/api/reports/**").hasAuthority("report:read")
+```
+
+---
+
+# CSRF: When to Enable or Disable
 
 ```mermaid
 flowchart TD
-    A[Alice requests Bob profile] --> B{Is Alice logged in?}
-    B -->|No| C[401 Unauthorized]
-    B -->|Yes| D{Is Alice Bob?}
-    D -->|Yes| E[Allow]
-    D -->|No| F{Are Alice and Bob friends?}
-    F -->|Yes| E
-    F -->|No| G[403 Forbidden]
+    AppType{App type?}
+    AppType -->|Browser cookies / session| Enable[Keep CSRF enabled]
+    AppType -->|Stateless REST + JWT| Disable[Usually disable CSRF]
+    AppType -->|HTTP Basic from browser| Careful[Think carefully]
+    AppType -->|Machine-to-machine API| Disable2[Usually disable CSRF]
 ```
 
-## Friend security service
+Rule of thumb:
 
-```java
-@Service
-public class FriendSecurity {
-
-    private final FriendshipRepository friendshipRepository;
-
-    public FriendSecurity(FriendshipRepository friendshipRepository) {
-        this.friendshipRepository = friendshipRepository;
-    }
-
-    public boolean canViewProfile(Authentication auth, Long profileOwnerId) {
-        String username = auth.getName();
-
-        Long currentUserId = findUserIdByUsername(username);
-
-        if (currentUserId.equals(profileOwnerId)) {
-            return true;
-        }
-
-        return friendshipRepository.existsAcceptedFriendship(
-            currentUserId,
-            profileOwnerId
-        );
-    }
-
-    private Long findUserIdByUsername(String username) {
-        // Load from UserRepository in real app
-        return 1L;
-    }
-}
-```
-
-## Use custom authorization in controller
-
-```java
-@GetMapping("/api/users/{id}")
-@PreAuthorize("@friendSecurity.canViewProfile(authentication, #id)")
-public UserProfileResponse getProfile(@PathVariable Long id) {
-    return userService.getProfile(id);
-}
+```text
+Cookies automatically sent by browser? CSRF matters.
+Bearer token manually sent by client? CSRF usually not needed.
 ```
 
 ---
 
-# 15. Refresh Tokens
+# CORS for Frontend Apps
 
-Access tokens should be short-lived. Refresh tokens help create new access tokens.
+Use CORS when frontend and backend run on different origins.
 
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant API as API
-    participant DB as DB
+Example:
 
-    C->>API: Login
-    API->>DB: Store refresh token
-    API-->>C: Access token + refresh token
-    C->>API: Access token expires
-    C->>API: POST /api/auth/refresh
-    API->>DB: Validate refresh token
-    API-->>C: New access token
+```text
+Frontend: http://localhost:3000
+Backend:  http://localhost:8080
 ```
 
-## Token lifetime example
-
-| Token | Lifetime | Stored Where |
-|---|---:|---|
-| Access token | 15 minutes | Client memory |
-| Refresh token | 7 days | DB + secure cookie |
-
-## Refresh endpoint sketch
+## SecurityConfig with CORS
 
 ```java
-@PostMapping("/refresh")
-public LoginResponse refresh(@RequestBody RefreshRequest request) {
-    String username = refreshTokenService.validate(request.refreshToken());
-    String newAccessToken = jwtService.generateToken(username);
-    return new LoginResponse(newAccessToken);
+@Bean
+SecurityFilterChain security(HttpSecurity http) throws Exception {
+    return http
+        .cors(cors -> {})
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/public/**").permitAll()
+            .anyRequest().authenticated()
+        )
+        .build();
 }
+```
+
+## CORS configuration
+
+```java
+@Bean
+CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(List.of("http://localhost:3000"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+    config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-API-KEY"));
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
+}
+```
+
+Imports:
+
+```java
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.List;
 ```
 
 ---
 
-# 16. Password Hashing
+# Password Hashing
 
 Never store plain passwords.
 
 ```mermaid
 flowchart LR
-    A[User password] --> B[BCrypt hash]
-    B --> C[Store hash in DB]
-    D[Login password] --> E[BCrypt matches?]
-    C --> E
+    Password[password123] --> Hash[BCrypt hash]
+    Hash --> DB[(Database)]
+    Login[Login password] --> Compare[BCrypt matches]
+    DB --> Compare
 ```
+
+Use BCrypt:
 
 ```java
 @Bean
@@ -834,217 +1246,291 @@ PasswordEncoder passwordEncoder() {
 }
 ```
 
-## Register user
+Create hashed password:
 
 ```java
-@Service
-public class RegistrationService {
+String hash = passwordEncoder.encode("password");
+```
 
-    private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
+Verify:
 
-    public RegistrationService(PasswordEncoder passwordEncoder,
-                               UserRepository userRepository) {
-        this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
-    }
-
-    public void register(String username, String rawPassword) {
-        AppUser user = new AppUser();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(rawPassword));
-        user.setRole("ROLE_USER");
-
-        userRepository.save(user);
-    }
-}
+```java
+boolean ok = passwordEncoder.matches("password", hash);
 ```
 
 ---
 
-# 17. CORS and CSRF
+# Security Testing with MockMvc
 
-## CORS
+## Dependency
 
-CORS controls which frontends can call your API.
+```xml
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+## Test role-based access
 
 ```java
-@Bean
-CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(List.of("http://localhost:3000"));
-    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-    config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", config);
-    return source;
-}
-```
-
-```java
-@Bean
-SecurityFilterChain security(HttpSecurity http) throws Exception {
-    return http
-        .cors(Customizer.withDefaults())
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .anyRequest().authenticated()
-        )
-        .build();
-}
-```
-
-## CSRF decision map
-
-```mermaid
-flowchart TD
-    A[Your API Auth Style] --> B{Uses browser cookies?}
-    B -->|Yes| C[Enable CSRF]
-    B -->|No, uses Bearer JWT| D[Usually disable CSRF]
-    B -->|Basic Auth in browser| E[Consider CSRF risk]
-```
-
----
-
-# 18. Exception Handling
-
-```mermaid
-flowchart LR
-    A[Unauthenticated] --> B[401 Unauthorized]
-    C[Authenticated but not allowed] --> D[403 Forbidden]
-```
-
-## Custom responses
-
-```java
-@Bean
-SecurityFilterChain security(HttpSecurity http) throws Exception {
-    return http
-        .exceptionHandling(ex -> ex
-            .authenticationEntryPoint((request, response, authException) -> {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Login required");
-            })
-            .accessDeniedHandler((request, response, accessDeniedException) -> {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                response.getWriter().write("Access denied");
-            })
-        )
-        .authorizeHttpRequests(auth -> auth
-            .anyRequest().authenticated()
-        )
-        .build();
-}
-```
-
----
-
-# 19. Security Testing
-
-## Test secured controller
-
-```java
-@WebMvcTest(UserController.class)
-@Import(SecurityConfig.class)
-class UserControllerTest {
+@SpringBootTest
+@AutoConfigureMockMvc
+class SecurityTests {
 
     @Autowired
     MockMvc mockMvc;
 
     @Test
-    void shouldRejectAnonymousUser() throws Exception {
-        mockMvc.perform(get("/api/users/me"))
-            .andExpect(status().isUnauthorized());
+    void publicEndpointWorksWithoutLogin() throws Exception {
+        mockMvc.perform(get("/api/public/hello"))
+            .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "alice", roles = "USER")
-    void shouldAllowLoggedInUser() throws Exception {
-        mockMvc.perform(get("/api/users/me"))
+    @WithMockUser(roles = "USER")
+    void userCanAccessProfile() throws Exception {
+        mockMvc.perform(get("/api/user/profile"))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void userCannotAccessAdmin() throws Exception {
+        mockMvc.perform(get("/api/admin/dashboard"))
+            .andExpect(status().isForbidden());
     }
 }
 ```
 
-## Test admin rule
+Imports:
 
 ```java
-@Test
-@WithMockUser(username = "alice", roles = "USER")
-void userCannotDeleteAnotherUser() throws Exception {
-    mockMvc.perform(delete("/api/admin/users/10"))
-        .andExpect(status().isForbidden());
-}
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
 
-@Test
-@WithMockUser(username = "admin", roles = "ADMIN")
-void adminCanDeleteUser() throws Exception {
-    mockMvc.perform(delete("/api/admin/users/10"))
-        .andExpect(status().isOk());
-}
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 ```
 
 ---
 
-# 20. Production Checklist
+# Choosing the Right Security Method
 
 ```mermaid
 flowchart TD
-    A[Production Security] --> B[Use HTTPS]
-    A --> C[Hash passwords with BCrypt]
-    A --> D[Short access token lifetime]
-    A --> E[Refresh token rotation]
-    A --> F[Least privilege roles]
-    A --> G[Validate input]
-    A --> H[Log security events]
-    A --> I[Rate limit login]
-    A --> J[Use secure secrets manager]
+    Start[Need security?] --> App{What kind of app?}
+    App -->|Public + private API| PublicProtected[Way 1]
+    App -->|Internal simple API| Basic[Way 2: HTTP Basic]
+    App -->|Server-rendered web app| Form[Way 3: Form Login]
+    App -->|SPA / mobile app| JWT[Way 4: JWT]
+    App -->|Enterprise login / external IdP| OAuth2[Way 5: OAuth2 Resource Server]
+    App -->|Partner / service API| ApiKey[Way 6: API Key]
 ```
 
-## Checklist
-
-- [ ] Use HTTPS only
-- [ ] Store passwords with BCrypt or Argon2
-- [ ] Never log passwords or tokens
-- [ ] Keep JWT expiration short
-- [ ] Store secrets outside source code
-- [ ] Use refresh token rotation
-- [ ] Add rate limiting for login
-- [ ] Use CORS allowlist, not `*`
-- [ ] Return `401` for unauthenticated users
-- [ ] Return `403` for authenticated but forbidden users
-- [ ] Add tests for every sensitive endpoint
-- [ ] Prefer method security for business rules
+| Way | Best for | State | Common credential |
+|---|---|---|---|
+| Public + Protected | Basic REST access rules | Depends | Login/basic/JWT |
+| HTTP Basic | Internal/simple APIs | Stateless-ish | Username/password header |
+| Form Login | Browser web apps | Stateful | Session cookie |
+| JWT | SPA/mobile/stateless APIs | Stateless | Bearer token |
+| OAuth2 Resource Server | Enterprise/external IdP | Stateless | Bearer access token |
+| API Key | Partner/service calls | Stateless | `X-API-KEY` |
 
 ---
 
-# Mini Decision Guide
+# Mini Project Roadmap
+
+Build this step by step.
 
 ```mermaid
 flowchart TD
-    A[Need to secure Spring Boot app] --> B{What type of app?}
-    B -->|Server-rendered web app| C[Session + Form Login]
-    B -->|REST API for SPA/mobile| D[JWT]
-    B -->|Enterprise SSO| E[OAuth2 Resource Server]
-    B -->|Internal simple API| F[Basic Auth]
-    B -->|Partner/service API| G[API Key or OAuth2]
+    S1[Step 1: Public hello API]
+    S2[Step 2: Protected user API]
+    S3[Step 3: Admin-only API]
+    S4[Step 4: Basic Auth]
+    S5[Step 5: Form login]
+    S6[Step 6: JWT login]
+    S7[Step 7: OAuth2 Resource Server]
+    S8[Step 8: API key partner API]
+    S9[Step 9: Tests]
+
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> S9
 ```
 
----
-
-# Final Mental Model
+## Suggested endpoints
 
 ```text
-Authentication = Who are you?
-Authorization  = What can you do?
+GET  /api/public/hello        anyone
+GET  /api/user/profile        logged-in user
+GET  /api/admin/dashboard     admin only
+POST /auth/login              JWT login
+GET  /api/partner/orders      API key client only
+```
 
-Spring Security protects requests before they reach controllers.
+## Final architecture
 
-For REST APIs:
-- Public endpoints: login/register
-- Protected endpoints: require token/session
-- Admin endpoints: require ADMIN role
-- Business rules: use method security
+```mermaid
+flowchart LR
+    Browser[Browser App] -->|Form Login / Session| Spring[Spring Boot API]
+    Mobile[Mobile App] -->|JWT Bearer Token| Spring
+    Partner[Partner Service] -->|X-API-KEY| Spring
+    Enterprise[Enterprise Frontend] -->|OAuth2 Access Token| Spring
+
+    Spring --> Security[Spring Security Filter Chain]
+    Security --> Controllers[REST Controllers]
+    Controllers --> Services[Services]
+    Services --> DB[(Database)]
+```
+
+---
+
+# Quick Cheat Sheet
+
+## Permit public endpoint
+
+```java
+.requestMatchers("/api/public/**").permitAll()
+```
+
+## Require login
+
+```java
+.anyRequest().authenticated()
+```
+
+## Require role
+
+```java
+.requestMatchers("/api/admin/**").hasRole("ADMIN")
+```
+
+## Enable HTTP Basic
+
+```java
+.httpBasic(basic -> {})
+```
+
+## Enable Form Login
+
+```java
+.formLogin(form -> form.permitAll())
+```
+
+## Stateless API
+
+```java
+.sessionManagement(session ->
+    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+)
+```
+
+## Add custom filter
+
+```java
+.addFilterBefore(myFilter, UsernamePasswordAuthenticationFilter.class)
+```
+
+## OAuth2 Resource Server
+
+```java
+.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {}))
+```
+
+---
+
+# Practice Use Cases
+
+## Use Case 1: Blog API
+
+```text
+GET    /posts             public
+POST   /posts             USER
+DELETE /posts/{id}        ADMIN
+```
+
+Best option: JWT or Form Login.
+
+## Use Case 2: Admin Dashboard
+
+```text
+GET /admin/users
+GET /admin/reports
+```
+
+Best option: Form Login or OAuth2.
+
+## Use Case 3: Mobile Banking API
+
+```text
+POST /auth/login
+GET  /accounts
+POST /transfer
+```
+
+Best option: JWT or OAuth2.
+
+## Use Case 4: Partner Order API
+
+```text
+GET /api/partner/orders
+POST /api/partner/status
+```
+
+Best option: API Key, OAuth2 client credentials, or mTLS.
+
+## Use Case 5: Enterprise Company App
+
+```text
+Login with company account
+Access depends on department/role
+```
+
+Best option: OAuth2 Resource Server.
+
+---
+
+# Common Mistakes
+
+| Mistake | Fix |
+|---|---|
+| Storing plain passwords | Use BCrypt |
+| Using JWT but keeping sessions | Set stateless session policy |
+| Disabling CSRF for form login without reason | Keep CSRF enabled for browser sessions |
+| Putting secrets directly in code | Use environment variables or secret manager |
+| Using API key for real user login | Use JWT/OAuth2 instead |
+| Confusing role and authority | `hasRole("ADMIN")` means `ROLE_ADMIN` |
+
+---
+
+# Final Memory Picture
+
+```mermaid
+mindmap
+  root((Spring Security))
+    Authentication
+      Basic Auth
+      Form Login
+      JWT
+      OAuth2
+      API Key
+    Authorization
+      URL rules
+      Roles
+      Authorities
+      Method security
+    REST API
+      Stateless
+      Bearer token
+      API key
+    Browser App
+      Session
+      Cookie
+      CSRF
 ```
 
