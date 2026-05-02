@@ -976,13 +976,13 @@ This reduces the solution from O(n^2) to O(n).
 
 ```mermaid
 flowchart TD
-    A[Read constraints] --> B{Can O(n^2) pass?}
-    B -->|Yes| C[Maybe enumerate starts + prefix O(1)]
-    B -->|No| D{Need count pairs of prefixes?}
-    D -->|Hashable equality| E[Map]
-    D -->|Order/range condition| F[Sort/Fenwick/Merge]
-    D -->|Dynamic updates| G[Segment Tree/Fenwick]
-    D -->|2D| H[Compress dimension or 2D prefix]
+    A["Read constraints"] --> B{"Can O(n^2) pass?"}
+    B -->|"Yes"| C["Enumerate starts and use prefix for O(1) range query"]
+    B -->|"No"| D{"What prefix relation is needed?"}
+    D -->|"Equality or exact sum"| E["Hash map of prefix frequencies"]
+    D -->|"Order or range condition"| F["Sort plus Fenwick tree or merge sort"]
+    D -->|"Dynamic updates"| G["Fenwick tree or segment tree"]
+    D -->|"2D problem"| H["2D prefix or dimension compression"]
 ```
 
 ---
