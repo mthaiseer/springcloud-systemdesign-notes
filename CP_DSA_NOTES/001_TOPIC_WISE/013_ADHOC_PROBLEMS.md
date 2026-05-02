@@ -1,142 +1,144 @@
-# Ultimate Ad Hoc Problems Master Guide  
-## Forms, Patterns, Dry Runs, C++ Templates, FAANG/OA + Codeforces CM Practice
+# Ad Hoc Ultra Master Guide  
+## FAANG + Codeforces/CM Observation Training with C++ and Mermaid
 
-> Ad hoc problems are observation problems.  
-> The goal is not to memorize one algorithm, but to learn how to read, dry run, split cases, find invariants, and implement cleanly.
+> Ad hoc problems are not random. They are “observation + edge case + clean implementation” problems.  
+> This file is designed like a prefix-sum style pattern book: form → recognition → tactic → dry run → diagram → code → traps → variants.
 
 ---
 
 # Clickable Index
 
-- [0. What Are Ad Hoc Problems?](#0-what-are-ad-hoc-problems)
-- [1. How to Think in Ad Hoc](#1-how-to-think-in-ad-hoc)
-- [2. Master Decision Flow](#2-master-decision-flow)
+- [0. What Ad Hoc Really Means](#0-what-ad-hoc-really-means)
+- [1. Ultra Thinking Framework](#1-ultra-thinking-framework)
+- [2. Master Decision Tree](#2-master-decision-tree)
 - [3. Pattern Map](#3-pattern-map)
-- [4. Core C++ Template Pack](#4-core-c-template-pack)
+- [4. C++ Base Template](#4-c-base-template)
 - [5. Form A: Direct Simulation](#5-form-a-direct-simulation)
 - [6. Form B: Casework](#6-form-b-casework)
-- [7. Form C: Counting and Frequency](#7-form-c-counting-and-frequency)
-- [8. Form D: String Rules and Parsing](#8-form-d-string-rules-and-parsing)
-- [9. Form E: Grid and Matrix Ad Hoc](#9-form-e-grid-and-matrix-ad-hoc)
-- [10. Form F: Parity and Remainder Observation](#10-form-f-parity-and-remainder-observation)
-- [11. Form G: Min Max Boundary Tracking](#11-form-g-min-max-boundary-tracking)
+- [7. Form C: Frequency / Counting](#7-form-c-frequency--counting)
+- [8. Form D: String Rules](#8-form-d-string-rules)
+- [9. Form E: Grid / Matrix Observation](#9-form-e-grid--matrix-observation)
+- [10. Form F: Parity / Modulo / Game Observation](#10-form-f-parity--modulo--game-observation)
+- [11. Form G: Boundary Tracking](#11-form-g-boundary-tracking)
 - [12. Form H: Sorting Observation](#12-form-h-sorting-observation)
 - [13. Form I: Constructive Ad Hoc](#13-form-i-constructive-ad-hoc)
-- [14. Form J: Operation Process Problems](#14-form-j-operation-process-problems)
+- [14. Form J: Operation / Stack Process](#14-form-j-operation--stack-process)
 - [15. Form K: Formula After Dry Run](#15-form-k-formula-after-dry-run)
-- [16. Form L: Index Mapping and Inverse Mapping](#16-form-l-index-mapping-and-inverse-mapping)
-- [17. Form M: Formatting and Output Construction](#17-form-m-formatting-and-output-construction)
-- [18. Form N: Edge-Case Driven Problems](#18-form-n-edge-case-driven-problems)
-- [19. Form O: Observation + Invariant](#19-form-o-observation--invariant)
-- [20. FAANG/OA Ad Hoc Patterns](#20-faangoa-ad-hoc-patterns)
-- [21. Codeforces Ad Hoc Rating Ladder](#21-codeforces-ad-hoc-rating-ladder)
-- [22. Difficulty-Sorted Problem Set](#22-difficulty-sorted-problem-set)
-- [23. Final Revision Sheet](#23-final-revision-sheet)
+- [16. Form L: State Design Ad Hoc](#16-form-l-state-design-ad-hoc)
+- [17. Codeforces Observation Ladder](#17-codeforces-observation-ladder)
+- [18. Final Revision Checklist](#18-final-revision-checklist)
 
 ---
 
-# 0. What Are Ad Hoc Problems?
+# 0. What Ad Hoc Really Means
 
-Ad hoc problems are problems where the solution is usually not a famous algorithm like DP, graph, segment tree, or binary search.
-
-They usually need:
+Ad hoc problems usually do not say:
 
 ```text
-careful reading
-manual dry run
-small examples
-case analysis
-edge case handling
-simple implementation
+Use DP
+Use graph
+Use binary search
+Use segment tree
 ```
 
-Ad hoc does **not** mean random.
-
-It means:
+Instead, they say something like:
 
 ```text
-The main trick is problem-specific observation.
+simulate this process
+check if this condition is possible
+construct any valid answer
+count based on simple rule
+follow weird string operation
 ```
 
-## Examples of Ad Hoc Thinking
+## The Real Skill
 
-| Problem Type | Hidden Trick |
+```text
+Read carefully
+→ dry run small cases
+→ discover invariant or rule
+→ handle edge cases
+→ implement simply
+```
+
+## Common Signals
+
+| Signal | Form |
 |---|---|
-| Long word abbreviation | check length and format output |
-| Move robot on grid | count x and y displacement |
-| Beautiful matrix | find position and Manhattan distance |
-| Mountain array | climb then descend |
-| Bulb switcher | perfect squares only |
-| Roman numeral | special subtractive cases |
-| Spiral matrix | maintain four boundaries |
-| Stack validation | simulate pushes and pops |
+| “perform operations” | Simulation / Stack process |
+| “is it possible?” | Casework / invariant |
+| “return any valid” | Constructive |
+| “characters appear” | Frequency / string scan |
+| “grid cell neighbours” | Matrix observation |
+| “odd/even” | Parity |
+| “minimum/maximum index/value” | Boundary tracking |
+| “sort maybe helps” | Sorting observation |
+| “answers for small n show pattern” | Formula |
 
 ---
 
-# 1. How to Think in Ad Hoc
+# 1. Ultra Thinking Framework
 
-## The Real Ad Hoc Loop
-
-```text
-1. Read statement slowly.
-2. Translate rules into your own words.
-3. Write tiny examples.
-4. Dry run manually.
-5. Find what actually changes.
-6. Check if counts / parity / min max / sorting is enough.
-7. Write cases.
-8. Code simply.
-9. Test edge cases.
-```
-
-## What You Should Ask
+## The 7-Step Ad Hoc Loop
 
 ```text
-Can I simulate it?
-Can I count instead of store everything?
-Does parity decide?
-Does sorting reveal answer?
-Do I only need min/max/first/last?
-Can I build any valid answer?
-Can small cases reveal a formula?
-Is the operation reversible?
-Are there impossible cases?
+1. Restate the problem in your own words.
+2. Dry run tiny inputs.
+3. Identify what information actually matters.
+4. Remove irrelevant details.
+5. Create cases or invariant.
+6. Test the rule on edge cases.
+7. Code the simplest version.
 ```
-
-## Common Ad Hoc Mistakes
-
-| Mistake | Fix |
-|---|---|
-| coding immediately | dry run first |
-| overusing advanced algorithms | check if simple observation works |
-| missing `n = 1` | test tiny cases |
-| wrong output format | copy format carefully |
-| off-by-one | define index meaning |
-| integer overflow | use `long long` |
-| forgetting reset per test | initialize inside `solve()` |
-| overcomplicated casework | simplify by invariant |
-
----
-
-# 2. Master Decision Flow
 
 ```mermaid
 flowchart TD
-    A["Read problem carefully"] --> B["Write two or three tiny examples"]
-    B --> C["Dry run manually"]
-    C --> D{"Does statement describe operations?"}
-    D -->|Yes| E["Direct simulation or process problem"]
-    D -->|No| F{"Do counts decide answer?"}
-    F -->|Yes| G["Frequency pattern"]
-    F -->|No| H{"Does parity or modulo decide?"}
-    H -->|Yes| I["Parity or remainder pattern"]
-    H -->|No| J{"Does sorting reveal structure?"}
-    J -->|Yes| K["Sorting observation"]
-    J -->|No| L{"Need output any valid object?"}
-    L -->|Yes| M["Constructive ad hoc"]
-    L -->|No| N{"Small cases reveal formula?"}
-    N -->|Yes| O["Formula after dry run"]
-    N -->|No| P["Use casework and invariants"]
+    A["Read problem"] --> B["Restate goal"]
+    B --> C["Dry run tiny cases"]
+    C --> D["Ask what actually matters"]
+    D --> E["Find cases or invariant"]
+    E --> F["Test against edge cases"]
+    F --> G{"Rule survives?"}
+    G -->|Yes| H["Code simple solution"]
+    G -->|No| C
+```
+
+## Ad Hoc Invariant Checklist
+
+| Question | Why |
+|---|---|
+| Does total sum matter? | formula/casework |
+| Does parity matter? | odd/even invariant |
+| Do only counts matter? | frequency |
+| Does order matter? | scan/simulation |
+| Does sorted order matter? | sort observation |
+| Can I build answer greedily? | constructive |
+| Can I reverse process? | operation problems |
+| Is there a fixed boundary? | min/max/first/last |
+
+---
+
+# 2. Master Decision Tree
+
+```mermaid
+flowchart TD
+    A["Ad hoc problem"] --> B{"Process described?"}
+    B -->|Yes| C["Simulate"]
+    B -->|No| D{"Only counts matter?"}
+    D -->|Yes| E["Frequency"]
+    D -->|No| F{"String tokens or chars?"}
+    F -->|Yes| G["String scan"]
+    F -->|No| H{"Grid or matrix?"}
+    H -->|Yes| I["Neighbour or row column check"]
+    H -->|No| J{"Odd even modulo?"}
+    J -->|Yes| K["Parity or remainder"]
+    J -->|No| L{"Need any valid output?"}
+    L -->|Yes| M["Constructive"]
+    L -->|No| N{"Sorting reveals extremes?"}
+    N -->|Yes| O["Sort observation"]
+    N -->|No| P{"Small cases form formula?"}
+    P -->|Yes| Q["Formula"]
+    P -->|No| R["Write cases and brute force small values"]
 ```
 
 ---
@@ -145,42 +147,64 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["Ad Hoc"] --> B["Simulation"]
+    A["Ad Hoc Forms"] --> B["Direct Simulation"]
     A --> C["Casework"]
     A --> D["Frequency"]
     A --> E["String Rules"]
-    A --> F["Grid Rules"]
+    A --> F["Grid"]
     A --> G["Parity"]
-    A --> H["Boundary Tracking"]
+    A --> H["Boundary"]
     A --> I["Sorting"]
     A --> J["Constructive"]
     A --> K["Formula"]
-    A --> L["Index Mapping"]
-    A --> M["Formatting"]
-    A --> N["Edge Cases"]
-    A --> O["Invariant"]
+    A --> L["State Design"]
 
-    B --> B1["Follow operations"]
-    C --> C1["Split by conditions"]
-    D --> D1["Counts enough"]
-    E --> E1["Scan characters"]
-    F --> F1["Rows columns neighbours"]
-    G --> G1["Odd even modulo"]
-    H --> H1["Min max first last"]
-    I --> I1["Compare after sort"]
-    J --> J1["Build valid object"]
-    K --> K1["Derive equation"]
-    L --> L1["Map positions"]
-    M --> M1["Output rules"]
-    N --> N1["Tiny impossible cases"]
-    O --> O1["Preserved property"]
+    B --> B1["Vector stack"]
+    B --> B2["Counters"]
+    B --> B3["Queue"]
+
+    C --> C1["n equals one"]
+    C --> C2["Impossible cases"]
+    C --> C3["Split by sign"]
+
+    D --> D1["Map count"]
+    D --> D2["Set of counts"]
+    D --> D3["Boyer Moore"]
+
+    E --> E1["Token parsing"]
+    E --> E2["Two pointers"]
+    E --> E3["Run length"]
+
+    F --> F1["Directions"]
+    F --> F2["Diagonal check"]
+    F --> F3["Boundary simulation"]
+
+    G --> G1["Modulo losing states"]
+    G --> G2["Parity invariant"]
+
+    H --> H1["Min so far"]
+    H --> H2["Last position"]
+    H --> H3["Two boundaries"]
+
+    I --> I1["Extremes"]
+    I --> I2["Neighbour gaps"]
+    I --> I3["Custom order"]
+
+    J --> J1["Low high"]
+    J --> J2["Evens odds"]
+    J --> J3["Build sequence"]
+
+    K --> K1["sqrt formula"]
+    K --> K2["sum formula"]
+    K --> K3["digital root"]
+
+    L --> L1["Vector plus map"]
+    L --> L2["Linked list plus map"]
 ```
 
 ---
 
-# 4. Core C++ Template Pack
-
-## 4.1 Basic Multi-Test Template
+# 4. C++ Base Template
 
 ```cpp
 #include <bits/stdc++.h>
@@ -209,17 +233,13 @@ int main() {
 }
 ```
 
-## 4.2 YES / NO Helper
+## Useful Helpers
 
 ```cpp
-void printYes(bool ok) {
+void yes(bool ok) {
     cout << (ok ? "YES" : "NO") << '\n';
 }
-```
 
-## 4.3 Vector Print Helper
-
-```cpp
 template <class T>
 void printVector(const vector<T>& a) {
     for (int i = 0; i < (int)a.size(); i++) {
@@ -230,124 +250,123 @@ void printVector(const vector<T>& a) {
 }
 ```
 
-## 4.4 Safe Sum Helper
-
-```cpp
-long long sumVector(const vector<int>& a) {
-    long long s = 0;
-
-    for (int x : a) {
-        s += x;
-    }
-
-    return s;
-}
-```
-
 ---
 
 # 5. Form A: Direct Simulation
 
-## Pattern
+## Recognition
 
-Follow the rule exactly.
+Use this when the problem gives rules and asks for final state.
+
+| Signal | Example |
+|---|---|
+| operation list | Baseball Game |
+| movement commands | Robot Return to Origin |
+| folder logs | Crawler Log Folder |
+| repeated generated sequence | Count and Say |
+
+## Tactic
+
+```text
+Choose state
+Loop through operations
+Apply rule exactly
+Return final state
+```
 
 ```mermaid
 flowchart TD
     A["Initial state"] --> B["Read next operation"]
-    B --> C["Apply operation exactly"]
+    B --> C["Apply exact rule"]
     C --> D["Update state"]
     D --> E{"More operations?"}
     E -->|Yes| B
-    E -->|No| F["Return final state"]
+    E -->|No| F["Return answer"]
 ```
 
-## Recognition Signals
+---
 
-| Signal | Meaning |
+## Problem A1: Baseball Game
+
+**Link:** https://leetcode.com/problems/baseball-game/
+
+### Statement
+
+Given operations, calculate final score.
+
+| Operation | Meaning |
 |---|---|
-| operations are given | simulate |
-| game/process described | simulate |
-| state changes step by step | maintain variables/data structure |
-| final state asked | direct process |
+| integer | push score |
+| `+` | push sum of last two scores |
+| `D` | push double last score |
+| `C` | remove last score |
 
-## Template
+### Recognition Signals
 
-```cpp
-for (auto op : operations) {
-    if (op == "type one") {
-        // update state
-    } else if (op == "type two") {
-        // update state
-    } else {
-        // update state
-    }
-}
-```
+- Operations depend on previous valid scores.
+- Need undo/remove.
+- Stack-like behaviour.
 
-## Example A1: Baseball Game
+### Wrong Intuition
 
-### Problem Idea
+Do not keep a simple running sum only, because `C`, `D`, and `+` need previous scores.
 
-Operations:
+### Correct Approach
 
-```text
-integer -> add score
-"+" -> sum previous two scores
-"D" -> double previous score
-"C" -> remove previous score
-```
+Use vector as stack.
 
 ### Dry Run
 
 ```text
-operations = ["5","2","C","D","+"]
+operations = ["5", "2", "C", "D", "+"]
+```
 
-scores = []
+| Step | Operation | Stack Before | Action | Stack After |
+|---:|---|---|---|---|
+| 1 | 5 | `[]` | push 5 | `[5]` |
+| 2 | 2 | `[5]` | push 2 | `[5,2]` |
+| 3 | C | `[5,2]` | pop | `[5]` |
+| 4 | D | `[5]` | push 10 | `[5,10]` |
+| 5 | + | `[5,10]` | push 15 | `[5,10,15]` |
 
-"5":
-scores = [5]
+Total = `30`.
 
-"2":
-scores = [5,2]
+### Mermaid Flow
 
-"C":
-remove last
-scores = [5]
-
-"D":
-double last = 10
-scores = [5,10]
-
-"+":
-5 + 10 = 15
-scores = [5,10,15]
-
-sum = 30
+```mermaid
+flowchart TD
+    A["Read operation"] --> B{"Operation type?"}
+    B -->|Integer| C["Push score"]
+    B -->|C| D["Remove last score"]
+    B -->|D| E["Push double last score"]
+    B -->|Plus| F["Push sum of last two"]
+    C --> G["Continue"]
+    D --> G
+    E --> G
+    F --> G
 ```
 
 ### C++
 
 ```cpp
 int calPoints(vector<string>& operations) {
-    vector<int> scores;
+    vector<int> st;
 
     for (string op : operations) {
         if (op == "+") {
-            int n = scores.size();
-            scores.push_back(scores[n - 1] + scores[n - 2]);
+            int n = st.size();
+            st.push_back(st[n - 1] + st[n - 2]);
         } else if (op == "D") {
-            scores.push_back(2 * scores.back());
+            st.push_back(2 * st.back());
         } else if (op == "C") {
-            scores.pop_back();
+            st.pop_back();
         } else {
-            scores.push_back(stoi(op));
+            st.push_back(stoi(op));
         }
     }
 
     int ans = 0;
-    for (int x : scores) ans += x;
-
+    for (int x : st) ans += x;
     return ans;
 }
 ```
@@ -359,128 +378,84 @@ Time: O(n)
 Space: O(n)
 ```
 
-### Mistakes
+### Variants
 
-- Calling `scores.back()` when empty.
-- Forgetting that `+` uses last two valid scores.
-- Using string comparison incorrectly.
+| Variant | Change |
+|---|---|
+| operations with undo | stack |
+| calculator operations | stack |
+| browser history | two stacks / index |
 
 ---
 
-## Example A2: Crawler Log Folder
+## Problem A2: Robot Return to Origin
+
+**Link:** https://leetcode.com/problems/robot-return-to-origin/
+
+### Statement
+
+Robot starts at `(0,0)`. Moves are `U`, `D`, `L`, `R`. Return true if robot returns to origin.
+
+### Recognition Signals
+
+- Direct movement simulation.
+- Only final coordinate matters.
+- No need to store path.
+
+### Approach
+
+Track `x` and `y`.
 
 ### Dry Run
 
 ```text
-logs = ["d1/","d2/","../","d21/","./"]
-
-depth = 0
-"d1/"  -> depth 1
-"d2/"  -> depth 2
-"../"  -> depth 1
-"d21/" -> depth 2
-"./"   -> depth 2
-
-answer = 2
+moves = "UDLR"
 ```
 
-### C++
+| Move | x | y |
+|---|---:|---:|
+| start | 0 | 0 |
+| U | 0 | 1 |
+| D | 0 | 0 |
+| L | -1 | 0 |
+| R | 0 | 0 |
 
-```cpp
-int minOperations(vector<string>& logs) {
-    int depth = 0;
+Return `true`.
 
-    for (string log : logs) {
-        if (log == "./") {
-            continue;
-        } else if (log == "../") {
-            if (depth > 0) depth--;
-        } else {
-            depth++;
-        }
-    }
-
-    return depth;
-}
-```
-
----
-
-# 6. Form B: Casework
-
-## Pattern
-
-Split into clear cases.
+### Mermaid Flow
 
 ```mermaid
 flowchart TD
-    A["Read input"] --> B{"Case one?"}
-    B -->|Yes| C["Handle case one"]
-    B -->|No| D{"Case two?"}
-    D -->|Yes| E["Handle case two"]
-    D -->|No| F["Handle general case"]
-```
-
-## Recognition Signals
-
-| Signal | Meaning |
-|---|---|
-| many constraints | split cases |
-| different behavior for small n | handle separately |
-| parity changes answer | even/odd cases |
-| impossible cases exist | check first |
-
-## Template
-
-```cpp
-if (special_case) {
-    // handle
-} else if (another_case) {
-    // handle
-} else {
-    // general case
-}
-```
-
-## Example B1: Valid Mountain Array
-
-### Dry Run
-
-```text
-arr = [0,3,2,1]
-
-Step 1: climb
-0 < 3, i = 1
-
-Step 2: check peak
-i is not 0
-i is not n-1
-
-Step 3: descend
-3 > 2, i = 2
-2 > 1, i = 3
-
-i == n - 1, valid
+    A["Start at origin"] --> B["Read move"]
+    B --> C{"Move type?"}
+    C -->|U| D["Increase y"]
+    C -->|D| E["Decrease y"]
+    C -->|L| F["Decrease x"]
+    C -->|R| G["Increase x"]
+    D --> H["Next move"]
+    E --> H
+    F --> H
+    G --> H
+    H --> I{"All moves done?"}
+    I -->|No| B
+    I -->|Yes| J["Check x and y are zero"]
 ```
 
 ### C++
 
 ```cpp
-bool validMountainArray(vector<int>& arr) {
-    int n = arr.size();
-    int i = 0;
+bool judgeCircle(string moves) {
+    int x = 0;
+    int y = 0;
 
-    while (i + 1 < n && arr[i] < arr[i + 1]) {
-        i++;
+    for (char c : moves) {
+        if (c == 'U') y++;
+        else if (c == 'D') y--;
+        else if (c == 'L') x--;
+        else if (c == 'R') x++;
     }
 
-    if (i == 0 || i == n - 1) return false;
-
-    while (i + 1 < n && arr[i] > arr[i + 1]) {
-        i++;
-    }
-
-    return i == n - 1;
+    return x == 0 && y == 0;
 }
 ```
 
@@ -491,30 +466,238 @@ Time: O(n)
 Space: O(1)
 ```
 
-### Traps
+---
 
-- `[1,2,3]` is not mountain.
-- `[3,2,1]` is not mountain.
-- Equal adjacent values break mountain.
+## Problem A3: Count and Say
+
+**Link:** https://leetcode.com/problems/count-and-say/
+
+### Statement
+
+Generate the `n-th` count-and-say string. Each term describes the previous term.
+
+### Recognition Signals
+
+- Repeated process.
+- Need build next state from previous state.
+- Run-length counting.
+
+### Approach
+
+Start with `"1"`. Repeat `n-1` times. Convert current string into run-length description.
+
+### Dry Run
+
+```text
+n = 5
+```
+
+| Term | String | Explanation |
+|---:|---|---|
+| 1 | `1` | base |
+| 2 | `11` | one 1 |
+| 3 | `21` | two 1s |
+| 4 | `1211` | one 2, one 1 |
+| 5 | `111221` | one 1, one 2, two 1s |
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Start with string one"] --> B["Build next term"]
+    B --> C["Count consecutive equal chars"]
+    C --> D["Append count and char"]
+    D --> E{"Reached n?"}
+    E -->|No| B
+    E -->|Yes| F["Return current string"]
+```
+
+### C++
+
+```cpp
+string countAndSay(int n) {
+    string cur = "1";
+
+    for (int step = 2; step <= n; step++) {
+        string nxt;
+
+        for (int i = 0; i < (int)cur.size();) {
+            int j = i;
+
+            while (j < (int)cur.size() && cur[j] == cur[i]) {
+                j++;
+            }
+
+            nxt += to_string(j - i);
+            nxt.push_back(cur[i]);
+
+            i = j;
+        }
+
+        cur = nxt;
+    }
+
+    return cur;
+}
+```
+
+### Complexity
+
+```text
+Time: O(total generated length)
+Space: O(current string length)
+```
 
 ---
 
-## Example B2: Lemonade Change
+# 6. Form B: Casework
+
+## Recognition
+
+Use when solution depends on separate conditions.
+
+| Signal | Example |
+|---|---|
+| special small n | Beautiful Permutation |
+| impossible cases | Coin Piles |
+| different behaviour by bill/value | Lemonade Change |
+| shape validation | Valid Mountain Array |
+
+```mermaid
+flowchart TD
+    A["Input"] --> B{"Special case?"}
+    B -->|Yes| C["Handle special case"]
+    B -->|No| D{"Another case?"}
+    D -->|Yes| E["Handle another case"]
+    D -->|No| F["General case"]
+```
+
+---
+
+## Problem B1: Valid Mountain Array
+
+**Link:** https://leetcode.com/problems/valid-mountain-array/
+
+### Statement
+
+Array is valid mountain if it strictly increases then strictly decreases, with peak not at start or end.
+
+### Recognition Signals
+
+- Shape validation.
+- Strict inequality.
+- Edge cases matter.
+
+### Wrong Intuition
+
+Checking if there is one maximum is not enough. Duplicates or flat parts invalidate.
+
+### Approach
+
+Climb while increasing, validate peak, then descend while decreasing.
+
+### Dry Run
+
+```text
+arr = [0,3,2,1]
+```
+
+| Phase | Index | Condition | Result |
+|---|---:|---|---|
+| climb | 0 | `0 < 3` | move |
+| climb stops | 1 | `3 < 2` false | peak |
+| peak check | 1 | not first or last | ok |
+| descend | 1 | `3 > 2` | move |
+| descend | 2 | `2 > 1` | move |
+| end | 3 | reached end | valid |
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Start at index zero"] --> B["Move while strictly increasing"]
+    B --> C{"Peak at boundary?"}
+    C -->|Yes| D["Return false"]
+    C -->|No| E["Move while strictly decreasing"]
+    E --> F{"Reached last index?"}
+    F -->|Yes| G["Return true"]
+    F -->|No| H["Return false"]
+```
+
+### C++
+
+```cpp
+bool validMountainArray(vector<int>& arr) {
+    int n = arr.size();
+    int i = 0;
+
+    while (i + 1 < n && arr[i] < arr[i + 1]) i++;
+
+    if (i == 0 || i == n - 1) return false;
+
+    while (i + 1 < n && arr[i] > arr[i + 1]) i++;
+
+    return i == n - 1;
+}
+```
+
+### Traps
+
+| Trap | Example |
+|---|---|
+| flat part | `[0,2,2,1]` |
+| only increasing | `[1,2,3]` |
+| only decreasing | `[3,2,1]` |
+
+---
+
+## Problem B2: Lemonade Change
+
+**Link:** https://leetcode.com/problems/lemonade-change/
+
+### Statement
+
+Each lemonade costs 5. Customers pay with 5, 10, or 20. Return whether correct change can be given.
+
+### Recognition Signals
+
+- Multiple cases by bill value.
+- State is counts of bills.
+- Need greedy case for 20.
+
+### Approach
+
+Track number of 5 and 10 bills. For 20, prefer using 10+5 over 5+5+5.
 
 ### Dry Run
 
 ```text
 bills = [5,5,5,10,20]
+```
 
-five = 0, ten = 0
+| Bill | Five Before | Ten Before | Action | Five After | Ten After |
+|---:|---:|---:|---|---:|---:|
+| 5 | 0 | 0 | take 5 | 1 | 0 |
+| 5 | 1 | 0 | take 5 | 2 | 0 |
+| 5 | 2 | 0 | take 5 | 3 | 0 |
+| 10 | 3 | 0 | give 5 | 2 | 1 |
+| 20 | 2 | 1 | give 10 and 5 | 1 | 0 |
 
-5  -> five = 1
-5  -> five = 2
-5  -> five = 3
-10 -> need one 5, five = 2, ten = 1
-20 -> prefer 10 + 5, five = 1, ten = 0
+### Mermaid Flow
 
-true
+```mermaid
+flowchart TD
+    A["Read bill"] --> B{"Bill is five?"}
+    B -->|Yes| C["Increase five"]
+    B -->|No| D{"Bill is ten?"}
+    D -->|Yes| E{"Have five?"}
+    E -->|Yes| F["Decrease five increase ten"]
+    E -->|No| G["Return false"]
+    D -->|No| H{"Have ten and five?"}
+    H -->|Yes| I["Use ten and five"]
+    H -->|No| J{"Have three fives?"}
+    J -->|Yes| K["Use three fives"]
+    J -->|No| G
 ```
 
 ### C++
@@ -549,59 +732,126 @@ bool lemonadeChange(vector<int>& bills) {
 
 ---
 
-# 7. Form C: Counting and Frequency
+## Problem B3: Partition Array Into Three Parts With Equal Sum
 
-## Pattern
+**Link:** https://leetcode.com/problems/partition-array-into-three-parts-with-equal-sum/
 
-If order does not matter, count.
+### Statement
+
+Can array be split into three non-empty parts with equal sum?
+
+### Recognition Signals
+
+- Total sum condition.
+- Prefix accumulation.
+- Need count repeated target segments.
+
+### Approach
+
+Total must be divisible by 3. Count how many times running sum reaches target.
+
+### Dry Run
+
+```text
+arr = [0,2,1,-6,6,-7,9,1,2,0,1]
+total = 9
+target = 3
+```
+
+| Index | Value | Running Sum | Action |
+|---:|---:|---:|---|
+| 0 | 0 | 0 | continue |
+| 1 | 2 | 2 | continue |
+| 2 | 1 | 3 | found part 1, reset |
+| 3 | -6 | -6 | continue |
+| 4 | 6 | 0 | continue |
+| 5 | -7 | -7 | continue |
+| 6 | 9 | 2 | continue |
+| 7 | 1 | 3 | found part 2, reset |
+| 8 | 2 | 2 | continue |
+| 9 | 0 | 2 | continue |
+| 10 | 1 | 3 | found part 3 |
+
+Answer: `true`.
+
+### C++
+
+```cpp
+bool canThreePartsEqualSum(vector<int>& arr) {
+    int total = accumulate(arr.begin(), arr.end(), 0);
+
+    if (total % 3 != 0) return false;
+
+    int target = total / 3;
+    int sum = 0;
+    int parts = 0;
+
+    for (int x : arr) {
+        sum += x;
+
+        if (sum == target) {
+            parts++;
+            sum = 0;
+        }
+    }
+
+    return parts >= 3;
+}
+```
+
+---
+
+# 7. Form C: Frequency / Counting
+
+## Recognition
+
+Use when order does not matter.
 
 ```mermaid
 flowchart TD
-    A["Read items"] --> B["Build frequency"]
+    A["Read data"] --> B["Count values"]
     B --> C["Apply frequency condition"]
     C --> D["Return answer"]
 ```
 
-## Recognition Signals
+---
 
-| Signal | Meaning |
-|---|---|
-| repeated values/chars | frequency |
-| anagrams | count/sort signature |
-| unique occurrence | frequency + set |
-| majority | count or voting |
-| pairs from equal values | combinations from counts |
+## Problem C1: Unique Number of Occurrences
 
-## Template
+**Link:** https://leetcode.com/problems/unique-number-of-occurrences/
 
-```cpp
-unordered_map<int, int> freq;
+### Statement
 
-for (int x : a) {
-    freq[x]++;
-}
+Return true if occurrence counts of all values are unique.
 
-for (auto [value, count] : freq) {
-    // use count
-}
-```
+### Approach
 
-## Example C1: Unique Number of Occurrences
+Map value to frequency, then check duplicate frequencies using set.
 
 ### Dry Run
 
 ```text
 arr = [1,2,2,1,1,3]
+```
 
-freq:
-1 -> 3
-2 -> 2
-3 -> 1
+| Value | Count |
+|---:|---:|
+| 1 | 3 |
+| 2 | 2 |
+| 3 | 1 |
 
-occurrence counts:
-3, 2, 1
+Counts `{3,2,1}` are unique.
 
-all unique -> true
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Count each value"] --> B["Create empty set"]
+    B --> C["Read frequency"]
+    C --> D{"Frequency already seen?"}
+    D -->|Yes| E["Return false"]
+    D -->|No| F["Insert frequency"]
+    F --> C
 ```
 
 ### C++
@@ -610,9 +860,7 @@ all unique -> true
 bool uniqueOccurrences(vector<int>& arr) {
     unordered_map<int, int> freq;
 
-    for (int x : arr) {
-        freq[x]++;
-    }
+    for (int x : arr) freq[x]++;
 
     unordered_set<int> seen;
 
@@ -627,29 +875,35 @@ bool uniqueOccurrences(vector<int>& arr) {
 
 ---
 
-## Example C2: Majority Element With Boyer Moore
+## Problem C2: Majority Element
+
+**Link:** https://leetcode.com/problems/majority-element/
+
+### Statement
+
+Find element appearing more than `n / 2`.
+
+### Approach
+
+Boyer-Moore cancels one majority with one non-majority. Majority remains.
 
 ### Dry Run
 
 ```text
 nums = [2,2,1,1,1,2,2]
-
-candidate = none, count = 0
-
-2 -> candidate 2, count 1
-2 -> count 2
-1 -> count 1
-1 -> count 0
-1 -> candidate 1, count 1
-2 -> count 0
-2 -> candidate 2, count 1
-
-answer = 2
 ```
 
-### Intuition
+| x | Candidate Before | Count Before | Candidate After | Count After |
+|---:|---:|---:|---:|---:|
+| 2 | none | 0 | 2 | 1 |
+| 2 | 2 | 1 | 2 | 2 |
+| 1 | 2 | 2 | 2 | 1 |
+| 1 | 2 | 1 | 2 | 0 |
+| 1 | 2 | 0 | 1 | 1 |
+| 2 | 1 | 1 | 1 | 0 |
+| 2 | 1 | 0 | 2 | 1 |
 
-Majority element cannot be fully cancelled by all other elements.
+Answer: `2`.
 
 ### C++
 
@@ -675,50 +929,125 @@ int majorityElement(vector<int>& nums) {
 
 ---
 
-# 8. Form D: String Rules and Parsing
+## Problem C3: Palindrome Reorder
 
-## Pattern
+**Link:** https://cses.fi/problemset/task/1755
 
-Scan characters and apply rules.
+### Statement
 
-```mermaid
-flowchart TD
-    A["Read string"] --> B["Scan characters"]
-    B --> C{"Rule matched?"}
-    C -->|Yes| D["Update answer"]
-    C -->|No| E["Continue"]
-    D --> B
-    E --> B
-```
+Given uppercase string, reorder it into a palindrome if possible.
 
-## Recognition Signals
+### Recognition Signals
 
-| Signal | Meaning |
-|---|---|
-| lowercase/uppercase | character transform |
-| vowels/consonants | filter/count |
-| tokens like parentheses | parser scan |
-| compare strings ignoring case | normalize |
-| repeated groups | run-length scan |
+- Only character counts matter.
+- Palindrome allows at most one odd count.
 
-## Example D1: Goal Parser Interpretation
+### Approach
+
+Count characters. If more than one odd count, impossible. Build half + middle + reverse half.
 
 ### Dry Run
 
 ```text
-command = "G()(al)"
-
-i = 0, char G
-append "G"
-
-i = 1, sees "()"
-append "o"
-
-i = 3, sees "(al)"
-append "al"
-
-answer = "Goal"
+s = "AAAACACBA"
 ```
+
+| Char | Count |
+|---|---:|
+| A | 5 |
+| B | 1 |
+| C | 3 |
+
+Odd counts = 3, impossible.
+
+For:
+
+```text
+s = "AAAACAC"
+```
+
+| Char | Count |
+|---|---:|
+| A | 5 |
+| C | 2 |
+
+Half = `AAC`, middle = `A`, reverse half = `CAA`.  
+Answer = `AACA CAA` → `AACACAA`.
+
+### C++
+
+```cpp
+string palindromeReorder(string s) {
+    vector<int> freq(26, 0);
+
+    for (char c : s) freq[c - 'A']++;
+
+    int odd = 0;
+    int oddIndex = -1;
+
+    for (int i = 0; i < 26; i++) {
+        if (freq[i] % 2) {
+            odd++;
+            oddIndex = i;
+        }
+    }
+
+    if (odd > 1) return "NO SOLUTION";
+
+    string left, mid;
+
+    for (int i = 0; i < 26; i++) {
+        left += string(freq[i] / 2, char('A' + i));
+    }
+
+    if (oddIndex != -1) {
+        mid = string(freq[oddIndex] % 2, char('A' + oddIndex));
+    }
+
+    string right = left;
+    reverse(right.begin(), right.end());
+
+    return left + mid + right;
+}
+```
+
+---
+
+# 8. Form D: String Rules
+
+## Recognition
+
+Use when characters, tokens, formatting, or adjacent groups matter.
+
+```mermaid
+flowchart TD
+    A["Scan string"] --> B{"Current token type?"}
+    B -->|Type one| C["Apply rule one"]
+    B -->|Type two| D["Apply rule two"]
+    B -->|Other| E["Apply default rule"]
+```
+
+---
+
+## Problem D1: Goal Parser Interpretation
+
+**Link:** https://leetcode.com/problems/goal-parser-interpretation/
+
+### Statement
+
+Interpret `G`, `()`, and `(al)`.
+
+### Approach
+
+Scan and map token to output.
+
+### Dry Run
+
+| Input Token | Output | Answer |
+|---|---|---|
+| G | G | G |
+| () | o | Go |
+| (al) | al | Goal |
 
 ### C++
 
@@ -744,19 +1073,49 @@ string interpret(string command) {
 
 ---
 
-## Example D2: String Compression
+## Problem D2: String Compression
+
+**Link:** https://leetcode.com/problems/string-compression/
+
+### Statement
+
+Compress consecutive groups in-place: `["a","a","b"]` becomes `["a","2","b"]`.
+
+### Recognition Signals
+
+- Consecutive runs.
+- Need write pointer.
+- In-place modification.
+
+### Approach
+
+Use two pointers: one to scan groups, one to write compressed output.
 
 ### Dry Run
 
 ```text
 chars = ["a","a","b","b","c","c","c"]
+```
 
-group a length 2 -> write a 2
-group b length 2 -> write b 2
-group c length 3 -> write c 3
+| Group | Count | Write |
+|---|---:|---|
+| a | 2 | `a2` |
+| b | 2 | `b2` |
+| c | 3 | `c3` |
 
-compressed = ["a","2","b","2","c","3"]
-length = 6
+Compressed prefix: `a2b2c3`.
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Start group"] --> B["Move until character changes"]
+    B --> C["Write group character"]
+    C --> D{"Count greater than one?"}
+    D -->|Yes| E["Write count digits"]
+    D -->|No| F["Skip count"]
+    E --> G["Next group"]
+    F --> G
 ```
 
 ### C++
@@ -765,9 +1124,8 @@ length = 6
 int compress(vector<char>& chars) {
     int n = chars.size();
     int write = 0;
-    int i = 0;
 
-    while (i < n) {
+    for (int i = 0; i < n;) {
         char c = chars[i];
         int j = i;
 
@@ -777,10 +1135,9 @@ int compress(vector<char>& chars) {
 
         chars[write++] = c;
 
-        int len = j - i;
-
-        if (len > 1) {
-            string s = to_string(len);
+        int count = j - i;
+        if (count > 1) {
+            string s = to_string(count);
             for (char digit : s) {
                 chars[write++] = digit;
             }
@@ -795,50 +1152,99 @@ int compress(vector<char>& chars) {
 
 ---
 
-# 9. Form E: Grid and Matrix Ad Hoc
+## Problem D3: Roman to Integer
 
-## Pattern
+**Link:** https://leetcode.com/problems/roman-to-integer/
 
-Check rows, columns, diagonals, neighbours, or simulate boundaries.
+### Statement
+
+Convert Roman numeral to integer. If a smaller value appears before larger value, subtract it.
+
+### Approach
+
+Scan left to right. If current value is less than next value, subtract; otherwise add.
+
+### Dry Run
+
+```text
+s = "MCMXCIV"
+```
+
+| Char | Value | Next | Action | Total |
+|---|---:|---:|---|---:|
+| M | 1000 | 100 | add | 1000 |
+| C | 100 | 1000 | subtract | 900 |
+| M | 1000 | 10 | add | 1900 |
+| X | 10 | 100 | subtract | 1890 |
+| C | 100 | 1 | add | 1990 |
+| I | 1 | 5 | subtract | 1989 |
+| V | 5 | none | add | 1994 |
+
+### C++
+
+```cpp
+int romanToInt(string s) {
+    unordered_map<char, int> val = {
+        {'I', 1}, {'V', 5}, {'X', 10}, {'L', 50},
+        {'C', 100}, {'D', 500}, {'M', 1000}
+    };
+
+    int ans = 0;
+
+    for (int i = 0; i < (int)s.size(); i++) {
+        if (i + 1 < (int)s.size() && val[s[i]] < val[s[i + 1]]) {
+            ans -= val[s[i]];
+        } else {
+            ans += val[s[i]];
+        }
+    }
+
+    return ans;
+}
+```
+
+---
+
+# 9. Form E: Grid / Matrix Observation
+
+## Recognition
+
+Use for row, column, diagonal, neighbour, or boundary rules.
 
 ```mermaid
 flowchart TD
-    A["Read grid"] --> B{"Need neighbour check?"}
+    A["Grid problem"] --> B{"Neighbour based?"}
     B -->|Yes| C["Use direction arrays"]
-    B -->|No| D{"Need boundary movement?"}
-    D -->|Yes| E["Use top bottom left right"]
-    D -->|No| F["Check rows columns diagonals"]
+    B -->|No| D{"Diagonal based?"}
+    D -->|Yes| E["Compare diagonal cells"]
+    D -->|No| F["Use boundary simulation"]
 ```
 
-## Template: Direction Arrays
+---
 
-```cpp
-int dr[4] = {1, -1, 0, 0};
-int dc[4] = {0, 0, 1, -1};
-```
+## Problem E1: Island Perimeter
 
-## Example E1: Island Perimeter
+**Link:** https://leetcode.com/problems/island-perimeter/
 
-### Dry Run Table
+### Approach
 
-Grid:
+Each land side touching water or boundary contributes one.
+
+### Dry Run
 
 ```text
+grid:
 1 1
 1 0
 ```
 
-| Cell | Up | Down | Left | Right | Contribution |
-|---|---|---|---|---|---|
-| `(0,0)` | border | land | border | land | 2 |
-| `(0,1)` | border | water | land | border | 3 |
-| `(1,0)` | land | border | border | water | 3 |
+| Cell | Up | Down | Left | Right | Add |
+|---|---|---|---|---|---:|
+| `(0,0)` | outside | land | outside | land | 2 |
+| `(0,1)` | outside | water | land | outside | 3 |
+| `(1,0)` | land | outside | outside | water | 3 |
 
-Total:
-
-```text
-2 + 3 + 3 = 8
-```
+Answer = `8`.
 
 ### C++
 
@@ -871,27 +1277,69 @@ int islandPerimeter(vector<vector<int>>& grid) {
 }
 ```
 
-## Example E2: Spiral Matrix
+---
 
-### Boundary Idea
+## Problem E2: Spiral Matrix
+
+**Link:** https://leetcode.com/problems/spiral-matrix/
+
+### Statement
+
+Return all elements of matrix in spiral order.
+
+### Approach
+
+Maintain four boundaries: top, bottom, left, right.
+
+### Dry Run
 
 ```text
-top row
-right column
-bottom row
-left column
-shrink boundaries
-repeat
+matrix:
+1 2 3
+4 5 6
+7 8 9
+```
+
+| Step | Direction | Elements |
+|---:|---|---|
+| 1 | left to right top row | 1 2 3 |
+| 2 | top to bottom right col | 6 9 |
+| 3 | right to left bottom row | 8 7 |
+| 4 | bottom to top left col | 4 |
+| 5 | inner row | 5 |
+
+Answer: `1 2 3 6 9 8 7 4 5`.
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Have top bottom left right"] --> B["Traverse top row"]
+    B --> C["Increase top"]
+    C --> D["Traverse right column"]
+    D --> E["Decrease right"]
+    E --> F{"Rows still valid?"}
+    F -->|Yes| G["Traverse bottom row"]
+    G --> H["Decrease bottom"]
+    H --> I{"Columns still valid?"}
+    I -->|Yes| J["Traverse left column"]
+    J --> K["Increase left"]
+    K --> L{"Boundaries valid?"}
+    L -->|Yes| B
+    L -->|No| M["Return answer"]
 ```
 
 ### C++
 
 ```cpp
 vector<int> spiralOrder(vector<vector<int>>& matrix) {
+    int n = matrix.size();
+    int m = matrix[0].size();
+
     int top = 0;
-    int bottom = matrix.size() - 1;
+    int bottom = n - 1;
     int left = 0;
-    int right = matrix[0].size() - 1;
+    int right = m - 1;
 
     vector<int> ans;
 
@@ -927,155 +1375,138 @@ vector<int> spiralOrder(vector<vector<int>>& matrix) {
 
 ---
 
-# 10. Form F: Parity and Remainder Observation
+# 10. Form F: Parity / Modulo / Game Observation
 
-## Pattern
+## Recognition
 
-Odd/even or modulo class decides.
+Use when odd/even or remainders determine states.
 
 ```mermaid
 flowchart TD
-    A["Compute parity or remainder"] --> B{"Bad remainder or parity?"}
-    B -->|Yes| C["Return losing or impossible"]
-    B -->|No| D["Return winning or possible"]
+    A["Write small cases"] --> B["Mark win lose or possible impossible"]
+    B --> C["Find modulo pattern"]
+    C --> D["Implement condition"]
 ```
 
-## Example F1: Nim Game
+---
+
+## Problem F1: Nim Game
+
+Already shown above. Key formula:
+
+```cpp
+return n % 4 != 0;
+```
+
+---
+
+## Problem F2: Bulb Switcher
+
+**Link:** https://leetcode.com/problems/bulb-switcher/
+
+### Statement
+
+Bulbs toggle by divisor rounds. Count bulbs left on.
+
+### Approach
+
+Only perfect squares have odd number of divisors.
 
 ### Dry Run
 
-```text
-n = 1 -> win
-n = 2 -> win
-n = 3 -> win
-n = 4 -> lose
-n = 5 -> win
-n = 6 -> win
-n = 7 -> win
-n = 8 -> lose
-```
+| Bulb | Divisors | Toggle Count | Final |
+|---:|---|---:|---|
+| 1 | 1 | 1 | on |
+| 2 | 1,2 | 2 | off |
+| 3 | 1,3 | 2 | off |
+| 4 | 1,2,4 | 3 | on |
+| 9 | 1,3,9 | 3 | on |
 
-Pattern:
-
-```text
-multiples of 4 lose
-```
+Answer for `n` is `floor(sqrt(n))`.
 
 ### C++
 
 ```cpp
-bool canWinNim(int n) {
-    return n % 4 != 0;
-}
-```
-
-## Example F2: Coin Piles
-
-Problem:
-
-```text
-You can remove 2 from one pile and 1 from another.
-Can both piles become zero?
-```
-
-Observation:
-
-```text
-a + b must be divisible by 3.
-max(a,b) <= 2 * min(a,b)
-```
-
-### C++
-
-```cpp
-bool canEmptyCoinPiles(long long a, long long b) {
-    if ((a + b) % 3 != 0) return false;
-    if (max(a, b) > 2 * min(a, b)) return false;
-    return true;
+int bulbSwitch(int n) {
+    return (int)sqrt(n);
 }
 ```
 
 ---
 
-# 11. Form G: Min Max Boundary Tracking
+# 11. Form G: Boundary Tracking
 
-## Pattern
+## Recognition
 
-Only track boundary information.
+Use when answer depends on min/max/first/last/nearest.
 
 ```mermaid
 flowchart TD
-    A["Scan values"] --> B["Track min max first last"]
-    B --> C["Update answer"]
-    C --> D["Move next"]
+    A["Scan array"] --> B["Update boundary value"]
+    B --> C["Use boundary to update answer"]
+    C --> D["Next element"]
 ```
 
-## Example G1: Maximum Difference Between Increasing Elements
+---
+
+## Problem G1: Maximum Difference Between Increasing Elements
+
+Already shown. Key idea: track minimum before current element.
+
+---
+
+## Problem G2: Product of Array Except Self
+
+**Link:** https://leetcode.com/problems/product-of-array-except-self/
+
+### Statement
+
+Return array where `ans[i]` is product of all values except `nums[i]`, without division.
+
+### Approach
+
+Use product of left side and right side.
 
 ### Dry Run
 
 ```text
-nums = [7,1,5,4]
-
-mn = 7
-i = 1, x = 1
-x <= mn, update mn = 1
-
-i = 2, x = 5
-x > mn, best = 4
-
-i = 3, x = 4
-x > mn, best remains 4
-
-answer = 4
+nums = [1,2,3,4]
 ```
+
+| i | Left Product Before | ans after left pass |
+|---:|---:|---|
+| 0 | 1 | `[1,_,_,_]` |
+| 1 | 1 | `[1,1,_,_]` |
+| 2 | 2 | `[1,1,2,_]` |
+| 3 | 6 | `[1,1,2,6]` |
+
+Right pass:
+
+| i | Right Product Before | ans updated |
+|---:|---:|---|
+| 3 | 1 | `[1,1,2,6]` |
+| 2 | 4 | `[1,1,8,6]` |
+| 1 | 12 | `[1,12,8,6]` |
+| 0 | 24 | `[24,12,8,6]` |
 
 ### C++
 
 ```cpp
-int maximumDifference(vector<int>& nums) {
-    int mn = nums[0];
-    int best = -1;
+vector<int> productExceptSelf(vector<int>& nums) {
+    int n = nums.size();
+    vector<int> ans(n, 1);
 
-    for (int i = 1; i < (int)nums.size(); i++) {
-        if (nums[i] > mn) {
-            best = max(best, nums[i] - mn);
-        }
-
-        mn = min(mn, nums[i]);
-    }
-
-    return best;
-}
-```
-
-## Example G2: Arrival of the General
-
-Observation:
-
-```text
-Move tallest first occurrence to front.
-Move shortest last occurrence to back.
-If tallest index is after shortest index, one swap overlaps.
-```
-
-### C++ Skeleton
-
-```cpp
-int arrivalSwaps(vector<int>& a) {
-    int n = a.size();
-
-    int maxPos = 0;
-    int minPos = 0;
-
+    int left = 1;
     for (int i = 0; i < n; i++) {
-        if (a[i] > a[maxPos]) maxPos = i;
-        if (a[i] <= a[minPos]) minPos = i;
+        ans[i] = left;
+        left *= nums[i];
     }
 
-    int ans = maxPos + (n - 1 - minPos);
-
-    if (maxPos > minPos) ans--;
+    int right = 1;
+    for (int i = n - 1; i >= 0; i--) {
+        ans[i] *= right;
+        right *= nums[i];
+    }
 
     return ans;
 }
@@ -1085,64 +1516,53 @@ int arrivalSwaps(vector<int>& a) {
 
 # 12. Form H: Sorting Observation
 
-## Pattern
+## Recognition
 
-Sort to reveal neighbours/extremes/order.
+Use when sorted order exposes extremes, adjacent gaps, or custom order.
 
 ```mermaid
 flowchart TD
-    A["Sort array"] --> B["Check neighbours or extremes"]
-    B --> C["Apply observation"]
-    C --> D["Return answer"]
+    A["Sort input"] --> B{"Need extremes?"}
+    B -->|Yes| C["Compare smallest and largest cases"]
+    B -->|No| D{"Need gaps?"}
+    D -->|Yes| E["Compare neighbours"]
+    D -->|No| F["Use custom order"]
 ```
 
-## Example H1: Maximum Product of Three Numbers
+---
 
-### Dry Run
+## Problem H1: Maximum Product of Three Numbers
 
-```text
-nums = [-10, -10, 5, 2]
-sorted = [-10, -10, 2, 5]
+Already shown.
 
-option 1:
-largest three = -10 * 2 * 5 = -100
+---
 
-option 2:
-two smallest and largest = -10 * -10 * 5 = 500
+## Problem H2: Minimum Difference Between Highest and Lowest of K Scores
 
-answer = 500
-```
+**Link:** https://leetcode.com/problems/minimum-difference-between-highest-and-lowest-of-k-scores/
 
-### C++
+### Statement
 
-```cpp
-int maximumProduct(vector<int>& nums) {
-    sort(nums.begin(), nums.end());
+Choose `k` scores minimizing difference between max and min.
 
-    int n = nums.size();
+### Approach
 
-    int option1 = nums[n - 1] * nums[n - 2] * nums[n - 3];
-    int option2 = nums[0] * nums[1] * nums[n - 1];
-
-    return max(option1, option2);
-}
-```
-
-## Example H2: Minimum Difference Between Highest and Lowest of K Scores
+Sort scores. Any chosen group minimizing range will be contiguous in sorted order.
 
 ### Dry Run
 
 ```text
 nums = [9,4,1,7], k = 2
 sorted = [1,4,7,9]
-
-windows:
-[1,4] diff 3
-[4,7] diff 3
-[7,9] diff 2
-
-answer = 2
 ```
+
+| Window | Difference |
+|---|---:|
+| `[1,4]` | 3 |
+| `[4,7]` | 3 |
+| `[7,9]` | 2 |
+
+Answer: `2`.
 
 ### C++
 
@@ -1164,179 +1584,167 @@ int minimumDifference(vector<int>& nums, int k) {
 
 # 13. Form I: Constructive Ad Hoc
 
-## Pattern
+## Recognition
 
-Build any valid answer.
+Use when output can be any valid object.
 
 ```mermaid
 flowchart TD
-    A["Need valid object"] --> B["Find impossible cases"]
+    A["Need construct answer"] --> B["Find impossible cases"]
     B --> C{"Impossible?"}
     C -->|Yes| D["Print impossible"]
-    C -->|No| E["Build using simple rule"]
-    E --> F["Verify"]
+    C -->|No| E["Build simple valid object"]
+    E --> F["Verify constraints"]
 ```
 
-## Example I1: DI String Match
+---
+
+## Problem I1: DI String Match
+
+Already shown.
+
+---
+
+## Problem I2: CSES Beautiful Permutation
+
+Already shown.
+
+---
+
+## Problem I3: CSES Two Sets
+
+**Link:** https://cses.fi/problemset/task/1092
+
+### Statement
+
+Split numbers `1..n` into two sets with equal sum.
+
+### Approach
+
+Total sum must be even. Then greedily take largest numbers until reaching half.
 
 ### Dry Run
 
 ```text
-s = IDID
-low = 0
-high = 4
-
-I -> choose low 0, low = 1
-D -> choose high 4, high = 3
-I -> choose low 1, low = 2
-D -> choose high 3, high = 2
-last -> 2
-
-answer = [0,4,1,3,2]
+n = 7
+total = 28
+target = 14
 ```
+
+| Pick Candidate | Target Before | Action | Target After |
+|---:|---:|---|---:|
+| 7 | 14 | take | 7 |
+| 6 | 7 | take | 1 |
+| 5 | 1 | skip | 1 |
+| 4 | 1 | skip | 1 |
+| 3 | 1 | skip | 1 |
+| 2 | 1 | skip | 1 |
+| 1 | 1 | take | 0 |
+
+Set A = `{7,6,1}`. Set B = `{2,3,4,5}`.
 
 ### C++
 
 ```cpp
-vector<int> diStringMatch(string s) {
-    int n = s.size();
-    int low = 0;
-    int high = n;
+pair<vector<int>, vector<int>> twoSets(int n) {
+    long long total = 1LL * n * (n + 1) / 2;
 
-    vector<int> ans;
+    if (total % 2) return {{}, {}};
 
-    for (char c : s) {
-        if (c == 'I') {
-            ans.push_back(low++);
-        } else {
-            ans.push_back(high--);
+    long long target = total / 2;
+    vector<int> a, b;
+    vector<int> used(n + 1, 0);
+
+    for (int x = n; x >= 1; x--) {
+        if (target >= x) {
+            a.push_back(x);
+            used[x] = 1;
+            target -= x;
         }
     }
 
-    ans.push_back(low);
-    return ans;
-}
-```
-
-## Example I2: Beautiful Permutation
-
-### Rule
-
-```text
-For n = 1, answer is 1.
-For n = 2 or 3, impossible.
-For n >= 4, print evens then odds.
-```
-
-### C++
-
-```cpp
-vector<int> beautifulPermutation(int n) {
-    if (n == 1) return {1};
-    if (n <= 3) return {};
-
-    vector<int> ans;
-
-    for (int x = 2; x <= n; x += 2) {
-        ans.push_back(x);
+    for (int x = 1; x <= n; x++) {
+        if (!used[x]) b.push_back(x);
     }
 
-    for (int x = 1; x <= n; x += 2) {
-        ans.push_back(x);
-    }
-
-    return ans;
+    return {a, b};
 }
 ```
 
 ---
 
-# 14. Form J: Operation Process Problems
+# 14. Form J: Operation / Stack Process
 
-## Pattern
+## Recognition
 
-Maintain state after each operation.
+Use when operations interact with previous unresolved items.
 
 ```mermaid
 flowchart TD
-    A["Start state"] --> B["Apply operation"]
-    B --> C["Update data structure"]
-    C --> D{"More operations?"}
-    D -->|Yes| B
-    D -->|No| E["Return final result"]
+    A["Read current item"] --> B{"Interacts with stack top?"}
+    B -->|Yes| C["Resolve interaction"]
+    C --> B
+    B -->|No| D["Push current item"]
 ```
 
-## Example J1: Robot Return to Origin
+---
+
+## Problem J1: Validate Stack Sequences
+
+Already shown.
+
+---
+
+## Problem J2: Asteroid Collision
+
+Already shown.
+
+---
+
+## Problem J3: Remove All Adjacent Duplicates In String
+
+**Link:** https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/
+
+### Statement
+
+Repeatedly remove adjacent equal characters.
+
+### Approach
+
+Use stack. If current char equals top, pop top; else push current.
 
 ### Dry Run
 
 ```text
-moves = "UDLR"
-
-start = (0,0)
-U -> (0,1)
-D -> (0,0)
-L -> (-1,0)
-R -> (0,0)
-
-answer = true
+s = "abbaca"
 ```
+
+| Char | Stack Before | Action | Stack After |
+|---|---|---|---|
+| a | empty | push | a |
+| b | a | push | ab |
+| b | ab | pop b | a |
+| a | a | pop a | empty |
+| c | empty | push | c |
+| a | c | push | ca |
+
+Answer: `ca`.
 
 ### C++
 
 ```cpp
-bool judgeCircle(string moves) {
-    int x = 0;
-    int y = 0;
+string removeDuplicates(string s) {
+    string st;
 
-    for (char c : moves) {
-        if (c == 'U') y++;
-        else if (c == 'D') y--;
-        else if (c == 'R') x++;
-        else if (c == 'L') x--;
-    }
-
-    return x == 0 && y == 0;
-}
-```
-
-## Example J2: Validate Stack Sequences
-
-### Dry Run
-
-```text
-pushed = [1,2,3,4,5]
-popped = [4,5,3,2,1]
-
-push 1 -> stack [1]
-push 2 -> stack [1,2]
-push 3 -> stack [1,2,3]
-push 4 -> stack [1,2,3,4], pop 4
-push 5 -> stack [1,2,3,5], pop 5
-pop 3
-pop 2
-pop 1
-
-valid
-```
-
-### C++
-
-```cpp
-bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
-    vector<int> st;
-    int j = 0;
-
-    for (int x : pushed) {
-        st.push_back(x);
-
-        while (!st.empty() && j < (int)popped.size() && st.back() == popped[j]) {
+    for (char c : s) {
+        if (!st.empty() && st.back() == c) {
             st.pop_back();
-            j++;
+        } else {
+            st.push_back(c);
         }
     }
 
-    return j == (int)popped.size();
+    return st;
 }
 ```
 
@@ -1344,441 +1752,356 @@ bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
 
 # 15. Form K: Formula After Dry Run
 
-## Pattern
+## Recognition
 
-Small cases reveal equation.
+Use when small values reveal repeated numeric pattern.
 
 ```mermaid
 flowchart TD
-    A["Write small answers"] --> B["Find pattern"]
-    B --> C["Convert to formula"]
-    C --> D["Test more examples"]
-    D --> E["Code formula"]
+    A["List answers for small n"] --> B["Find sequence"]
+    B --> C["Derive formula"]
+    C --> D["Test formula"]
+    D --> E["Code"]
 ```
 
-## Example K1: Bulb Switcher
+---
+
+## Problem K1: Add Digits
+
+**Link:** https://leetcode.com/problems/add-digits/
+
+### Statement
+
+Repeatedly add digits until one digit remains.
+
+### Approach
+
+Digital root formula.
 
 ### Dry Run
 
 ```text
-n = 1 -> bulbs on: 1 -> answer 1
-n = 2 -> bulbs on: 1 -> answer 1
-n = 3 -> bulbs on: 1 -> answer 1
-n = 4 -> bulbs on: 1,4 -> answer 2
-n = 9 -> bulbs on: 1,4,9 -> answer 3
+num = 38
+3 + 8 = 11
+1 + 1 = 2
 ```
 
-### Observation
+Modulo pattern:
 
-```text
-Bulb i is toggled once for each divisor of i.
-Only perfect squares have odd number of divisors.
-So answer = floor(sqrt(n)).
-```
+| num | answer |
+|---:|---:|
+| 1 | 1 |
+| 2 | 2 |
+| 9 | 9 |
+| 10 | 1 |
+| 18 | 9 |
+| 19 | 1 |
 
 ### C++
 
 ```cpp
-int bulbSwitch(int n) {
-    return (int)sqrt(n);
-}
-```
-
-## Example K2: Minimum Moves to Equal Array Elements
-
-### Observation
-
-Incrementing `n - 1` elements by 1 is same as decrementing one element by 1.  
-Make all elements equal to minimum.
-
-### C++
-
-```cpp
-int minMoves(vector<int>& nums) {
-    int mn = *min_element(nums.begin(), nums.end());
-
-    long long ans = 0;
-
-    for (int x : nums) {
-        ans += x - mn;
-    }
-
-    return (int)ans;
+int addDigits(int num) {
+    if (num == 0) return 0;
+    return 1 + (num - 1) % 9;
 }
 ```
 
 ---
 
-# 16. Form L: Index Mapping and Inverse Mapping
+## Problem K2: Domino Piling
 
-## Pattern
+**Link:** https://codeforces.com/problemset/problem/50/A
 
-Map value to position, or invert a relation.
+### Statement
 
-```mermaid
-flowchart TD
-    A["Have mapping"] --> B["Create inverse array or map"]
-    B --> C["Fill answer by reversed relation"]
-    C --> D["Output mapped result"]
-```
+Given `m x n` board, place maximum dominoes of size `2 x 1`.
 
-## Example L1: Presents
+### Approach
 
-Problem idea:
-
-```text
-p[i] = person who receives gift from i.
-Need output who gave gift to each person.
-```
+Each domino covers 2 cells. Maximum is floor of area divided by 2.
 
 ### Dry Run
 
 ```text
-p = [2,3,4,1]
+m = 2, n = 4
+area = 8
+answer = 4
+```
 
-person 1 gives to 2 -> ans[2] = 1
-person 2 gives to 3 -> ans[3] = 2
-person 3 gives to 4 -> ans[4] = 3
-person 4 gives to 1 -> ans[1] = 4
-
-answer = [4,1,2,3]
+```text
+m = 3, n = 3
+area = 9
+answer = 4
 ```
 
 ### C++
 
 ```cpp
-vector<int> inverseGift(vector<int>& p) {
-    int n = p.size();
-    vector<int> ans(n + 1);
-
-    for (int giver = 1; giver <= n; giver++) {
-        int receiver = p[giver - 1];
-        ans[receiver] = giver;
-    }
-
-    vector<int> res;
-
-    for (int person = 1; person <= n; person++) {
-        res.push_back(ans[person]);
-    }
-
-    return res;
+int dominoPiling(int m, int n) {
+    return (m * n) / 2;
 }
 ```
 
 ---
 
-# 17. Form M: Formatting and Output Construction
+# 16. Form L: State Design Ad Hoc
 
-## Pattern
+## Recognition
 
-The logic is simple, but output format is the main challenge.
+Use when problem asks to design operations with strict complexity.
 
-```mermaid
-flowchart TD
-    A["Understand required format"] --> B["Build output string or list"]
-    B --> C["Avoid extra separators"]
-    C --> D["Print result"]
-```
-
-## Example M1: Helpful Maths
-
-### Dry Run
-
-```text
-s = "3+2+1"
-
-extract digits:
-3, 2, 1
-
-sort:
-1, 2, 3
-
-output:
-1+2+3
-```
-
-### C++
-
-```cpp
-string helpfulMaths(string s) {
-    vector<char> digits;
-
-    for (char c : s) {
-        if (isdigit(c)) digits.push_back(c);
-    }
-
-    sort(digits.begin(), digits.end());
-
-    string ans;
-
-    for (int i = 0; i < (int)digits.size(); i++) {
-        if (i) ans.push_back('+');
-        ans.push_back(digits[i]);
-    }
-
-    return ans;
-}
-```
-
----
-
-# 18. Form N: Edge-Case Driven Problems
-
-## Pattern
-
-Most wrong answers come from one tiny special case.
-
-```mermaid
-flowchart TD
-    A["List edge cases"] --> B["Handle tiny cases first"]
-    B --> C["Handle impossible cases"]
-    C --> D["Run general logic"]
-```
-
-## Edge Cases to Always Test
-
-```text
-n = 0
-n = 1
-n = 2
-all equal
-all different
-already sorted
-reverse sorted
-zero values
-negative values
-duplicate values
-empty string
-one character string
-maximum constraints
-```
-
-## Example N1: Text Justification
-
-Key cases:
-
-```text
-last line
-line with one word
-normal line with many words
-extra spaces distributed left first
-```
-
----
-
-# 19. Form O: Observation + Invariant
-
-## Pattern
-
-Find a property that never changes, or a condition that must always hold.
-
-```mermaid
-flowchart TD
-    A["Inspect operation"] --> B["Find preserved property"]
-    B --> C{"Target has same property?"}
-    C -->|No| D["Impossible"]
-    C -->|Yes| E["Try construction or simulation"]
-```
-
-## Example O1: Coin Piles
-
-Invariant:
-
-```text
-Each move removes total 3 coins.
-No pile can be more than double the other.
-```
-
-C++ shown in parity section.
-
----
-
-# 20. FAANG/OA Ad Hoc Patterns
-
-| Pattern | Recognition Signal | Tactic | Example |
-|---|---|---|---|
-| process simulation | operations list | stack/vector/counters | Baseball Game |
-| parser scan | symbolic string | scan by token | Goal Parser |
-| boundary formatting | output line rules | handle last/single cases | Text Justification |
-| state design | O(1) operations | map + list/vector | LRU Cache, RandomizedSet |
-| matrix simulation | movement or update rules | boundaries / encoded states | Spiral Matrix, Game of Life |
-| formula from process | repeated operation | derive invariant | Bulb Switcher |
-| case-heavy validation | many invalid states | early returns | Valid Number |
-| frequency signature | grouping strings | sort/count key | Group Anagrams |
-| index placement | values map to positions | cyclic swap/mark | First Missing Positive |
-
----
-
-# 21. Codeforces Ad Hoc Rating Ladder
-
-| Level | Rating Range | Focus |
-|---|---:|---|
-| Newbie | 800 | implementation, strings, counts |
-| Pupil | 900-1100 | casework, sorting observation |
-| Specialist | 1200-1400 | constructive + invariants |
-| Expert | 1500-1700 | non-obvious observation |
-| CM | 1800-2000 | proof, invariant, tricky construction |
-
-## Training Rule
-
-```text
-Solve 30 problems at each rating band before moving up.
-Upsolve every failed problem.
-Write the hidden observation in one sentence.
-```
-
----
-
-# 22. Difficulty-Sorted Problem Set
-
-## 22.1 Newbie
-
-| # | Problem | Platform | Link | Form | Tactic |
-|---:|---|---|---|---|---|
-| 1 | Robot Return to Origin | LeetCode | https://leetcode.com/problems/robot-return-to-origin/ | Process | coordinate counters |
-| 2 | Goal Parser Interpretation | LeetCode | https://leetcode.com/problems/goal-parser-interpretation/ | String | scan |
-| 3 | Baseball Game | LeetCode | https://leetcode.com/problems/baseball-game/ | Simulation | vector stack |
-| 4 | Valid Mountain Array | LeetCode | https://leetcode.com/problems/valid-mountain-array/ | Casework | climb descend |
-| 5 | Island Perimeter | LeetCode | https://leetcode.com/problems/island-perimeter/ | Grid | exposed sides |
-| 6 | Add Digits | LeetCode | https://leetcode.com/problems/add-digits/ | Formula | digital root |
-| 7 | Nim Game | LeetCode | https://leetcode.com/problems/nim-game/ | Modulo | multiples of 4 |
-| 8 | Maximum Product of Three Numbers | LeetCode | https://leetcode.com/problems/maximum-product-of-three-numbers/ | Sorting | extremes |
-| 9 | Missing Number | CSES | https://cses.fi/problemset/task/1083 | Formula | expected sum |
-| 10 | Weird Algorithm | CSES | https://cses.fi/problemset/task/1068 | Simulation | Collatz |
-
-## 22.2 Easy-Medium
-
-| # | Problem | Platform | Link | Form | Tactic |
-|---:|---|---|---|---|---|
-| 1 | Lemonade Change | LeetCode | https://leetcode.com/problems/lemonade-change/ | Casework | bill counters |
-| 2 | Partition Array Into Three Parts | LeetCode | https://leetcode.com/problems/partition-array-into-three-parts-with-equal-sum/ | Prefix case | count target parts |
-| 3 | String Compression | LeetCode | https://leetcode.com/problems/string-compression/ | String | run length |
-| 4 | Spiral Matrix | LeetCode | https://leetcode.com/problems/spiral-matrix/ | Grid | four boundaries |
-| 5 | Validate Stack Sequences | LeetCode | https://leetcode.com/problems/validate-stack-sequences/ | Process | stack |
-| 6 | Asteroid Collision | LeetCode | https://leetcode.com/problems/asteroid-collision/ | Simulation | collision stack |
-| 7 | Group Anagrams | LeetCode | https://leetcode.com/problems/group-anagrams/ | Frequency | signature |
-| 8 | Relative Sort Array | LeetCode | https://leetcode.com/problems/relative-sort-array/ | Sorting | custom order |
-| 9 | Repetitions | CSES | https://cses.fi/problemset/task/1069 | String | longest run |
-| 10 | Increasing Array | CSES | https://cses.fi/problemset/task/1094 | Boundary | previous max |
-
-## 22.3 Medium
-
-| # | Problem | Platform | Link | Form | Tactic |
-|---:|---|---|---|---|---|
-| 1 | Game of Life | LeetCode | https://leetcode.com/problems/game-of-life/ | Grid simulation | encode states |
-| 2 | Bulb Switcher | LeetCode | https://leetcode.com/problems/bulb-switcher/ | Formula | square count |
-| 3 | Poor Pigs | LeetCode | https://leetcode.com/problems/poor-pigs/ | Formula | states per pig |
-| 4 | Integer to Roman | LeetCode | https://leetcode.com/problems/integer-to-roman/ | Direct mapping | symbols |
-| 5 | Roman to Integer | LeetCode | https://leetcode.com/problems/roman-to-integer/ | String rule | subtractive cases |
-| 6 | Zigzag Conversion | LeetCode | https://leetcode.com/problems/zigzag-conversion/ | Simulation | direction flag |
-| 7 | Count and Say | LeetCode | https://leetcode.com/problems/count-and-say/ | Process | run length |
-| 8 | Product of Array Except Self | LeetCode | https://leetcode.com/problems/product-of-array-except-self/ | Boundary | prefix suffix |
-| 9 | Next Permutation | LeetCode | https://leetcode.com/problems/next-permutation/ | Sorting observation | pivot suffix |
-| 10 | Palindrome Reorder | CSES | https://cses.fi/problemset/task/1755 | Frequency | odd count |
-| 11 | Coin Piles | CSES | https://cses.fi/problemset/task/1754 | Invariant | sum and max |
-| 12 | Gray Code | CSES | https://cses.fi/problemset/task/2205 | Constructive | xor formula |
-
-## 22.4 Hard / FAANG-Heavy
-
-| # | Problem | Platform | Link | Form | Tactic |
-|---:|---|---|---|---|---|
-| 1 | First Missing Positive | LeetCode | https://leetcode.com/problems/first-missing-positive/ | Index placement | cyclic marking |
-| 2 | Text Justification | LeetCode | https://leetcode.com/problems/text-justification/ | Formatting | space distribution |
-| 3 | Candy | LeetCode | https://leetcode.com/problems/candy/ | Casework | two passes |
-| 4 | Insert Delete GetRandom O1 | LeetCode | https://leetcode.com/problems/insert-delete-getrandom-o1/ | State design | vector + map |
-| 5 | LRU Cache | LeetCode | https://leetcode.com/problems/lru-cache/ | State process | list + map |
-| 6 | Basic Calculator II | LeetCode | https://leetcode.com/problems/basic-calculator-ii/ | Parser | stack |
-| 7 | The Skyline Problem | LeetCode | https://leetcode.com/problems/the-skyline-problem/ | Sweep observation | events |
-| 8 | Trapping Rain Water | LeetCode | https://leetcode.com/problems/trapping-rain-water/ | Boundary | two pointers |
-| 9 | Creating Strings | CSES | https://cses.fi/problemset/task/1622 | Construction | permutations |
-| 10 | Chessboard and Queens | CSES | https://cses.fi/problemset/task/1624 | Case/grid | constraints |
-
-## 22.5 Codeforces Beginner to CM Observation Practice
-
-| # | Problem | Link | Form |
-|---:|---|---|---|
-| 1 | Way Too Long Words | https://codeforces.com/problemset/problem/71/A | formatting |
-| 2 | Team | https://codeforces.com/problemset/problem/231/A | counting |
-| 3 | Next Round | https://codeforces.com/problemset/problem/158/A | threshold |
-| 4 | Bit++ | https://codeforces.com/problemset/problem/282/A | string operation |
-| 5 | Beautiful Matrix | https://codeforces.com/problemset/problem/263/A | grid position |
-| 6 | Helpful Maths | https://codeforces.com/problemset/problem/339/A | sorting chars |
-| 7 | Stones on the Table | https://codeforces.com/problemset/problem/266/A | adjacent count |
-| 8 | Boy or Girl | https://codeforces.com/problemset/problem/236/A | distinct count |
-| 9 | String Task | https://codeforces.com/problemset/problem/118/A | char filtering |
-| 10 | Domino Piling | https://codeforces.com/problemset/problem/50/A | formula |
-| 11 | Nearly Lucky Number | https://codeforces.com/problemset/problem/110/A | digit count |
-| 12 | Arrival of the General | https://codeforces.com/problemset/problem/144/A | position tracking |
-| 13 | Presents | https://codeforces.com/problemset/problem/136/A | inverse mapping |
-| 14 | HQ9+ | https://codeforces.com/problemset/problem/133/A | char existence |
-| 15 | Petya and Strings | https://codeforces.com/problemset/problem/112/A | compare |
-| 16 | Bear and Big Brother | https://codeforces.com/problemset/problem/791/A | simulation |
-| 17 | Elephant | https://codeforces.com/problemset/problem/617/A | ceil formula |
-| 18 | Anton and Danik | https://codeforces.com/problemset/problem/734/A | frequency |
-| 19 | Translation | https://codeforces.com/problemset/problem/41/A | reverse |
-| 20 | Word | https://codeforces.com/problemset/problem/59/A | case count |
-| 21 | Drinks | https://codeforces.com/problemset/problem/200/B | average |
-| 22 | Tram | https://codeforces.com/problemset/problem/116/A | simulation |
-| 23 | Queue at the School | https://codeforces.com/problemset/problem/266/B | process |
-| 24 | George and Accommodation | https://codeforces.com/problemset/problem/467/A | counting |
-| 25 | Soldier and Bananas | https://codeforces.com/problemset/problem/546/A | formula |
-| 26 | Word Capitalization | https://codeforces.com/problemset/problem/281/A | string |
-| 27 | Wrong Subtraction | https://codeforces.com/problemset/problem/977/A | simulation |
-| 28 | In Search of an Easy Problem | https://codeforces.com/problemset/problem/1030/A | any bad flag |
-| 29 | I Wanna Be the Guy | https://codeforces.com/problemset/problem/469/A | set coverage |
-| 30 | Calculating Function | https://codeforces.com/problemset/problem/486/A | parity formula |
-
----
-
-# 23. Final Revision Sheet
-
-## Fast Recognition Table
-
-| Ask Yourself | If Yes |
+| Signal | Data Structure |
 |---|---|
-| Does it describe steps? | simulate |
-| Are there many special conditions? | casework |
-| Does only count matter? | frequency |
-| Is it about characters? | string scan |
-| Is it about grid neighbours? | direction arrays |
-| Does odd/even matter? | parity |
-| Does min/max/first/last matter? | boundary tracking |
-| Does order not matter? | sort |
-| Does it ask for any valid output? | constructive |
-| Do small examples show sequence? | formula |
-| Is relation reversed? | inverse mapping |
-| Is output formatting tricky? | build string carefully |
+| insert/delete/random O(1) | vector + map |
+| least recently used | list + map |
+| browser/back history | stacks or vector index |
 
-## Debug Checklist
+---
+
+## Problem L1: Insert Delete GetRandom O(1)
+
+**Link:** https://leetcode.com/problems/insert-delete-getrandom-o1/
+
+### Statement
+
+Design data structure supporting insert, remove, and getRandom in average O(1).
+
+### Approach
+
+Use vector for random access and hashmap from value to index. For delete, swap with last element and pop.
+
+### Dry Run
 
 ```text
-1. Test n = 1.
-2. Test n = 2.
-3. Test all equal.
-4. Test sorted.
-5. Test reverse sorted.
-6. Test zero.
-7. Test negative if allowed.
-8. Test duplicate values.
-9. Check output format.
-10. Check integer overflow.
+insert 10 -> arr [10], pos {10:0}
+insert 20 -> arr [10,20], pos {10:0,20:1}
+remove 10:
+swap 10 with last 20
+arr [20]
+pos {20:0}
 ```
 
-## Ad Hoc Mindset
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Remove value x"] --> B["Find index of x"]
+    B --> C["Get last value"]
+    C --> D["Move last value into x position"]
+    D --> E["Update last value index"]
+    E --> F["Pop vector back"]
+    F --> G["Erase x from map"]
+```
+
+### C++
+
+```cpp
+class RandomizedSet {
+    vector<int> values;
+    unordered_map<int, int> pos;
+
+public:
+    bool insert(int val) {
+        if (pos.count(val)) return false;
+
+        pos[val] = values.size();
+        values.push_back(val);
+        return true;
+    }
+
+    bool remove(int val) {
+        if (!pos.count(val)) return false;
+
+        int idx = pos[val];
+        int last = values.back();
+
+        values[idx] = last;
+        pos[last] = idx;
+
+        values.pop_back();
+        pos.erase(val);
+
+        return true;
+    }
+
+    int getRandom() {
+        int idx = rand() % values.size();
+        return values[idx];
+    }
+};
+```
+
+---
+
+## Problem L2: LRU Cache
+
+**Link:** https://leetcode.com/problems/lru-cache/
+
+### Statement
+
+Design LRU cache with O(1) get and put.
+
+### Approach
+
+Use list for recency order and hashmap from key to list iterator. Front is most recent, back is least recent.
+
+### Dry Run
 
 ```text
-Do not force advanced algorithms.
-First understand the process.
-Then dry run.
-Then observe.
-Then code the simplest correct rule.
+capacity = 2
+put(1,1) -> [1]
+put(2,2) -> [2,1]
+get(1) -> move 1 front -> [1,2]
+put(3,3) -> evict 2 -> [3,1]
+```
+
+### C++
+
+```cpp
+class LRUCache {
+    int cap;
+    list<pair<int, int>> order;
+    unordered_map<int, list<pair<int, int>>::iterator> mp;
+
+public:
+    LRUCache(int capacity) {
+        cap = capacity;
+    }
+
+    int get(int key) {
+        if (!mp.count(key)) return -1;
+
+        auto it = mp[key];
+        int value = it->second;
+
+        order.erase(it);
+        order.push_front({key, value});
+        mp[key] = order.begin();
+
+        return value;
+    }
+
+    void put(int key, int value) {
+        if (mp.count(key)) {
+            order.erase(mp[key]);
+        } else if ((int)order.size() == cap) {
+            auto last = order.back();
+            mp.erase(last.first);
+            order.pop_back();
+        }
+
+        order.push_front({key, value});
+        mp[key] = order.begin();
+    }
+};
+```
+
+---
+
+# 17. Codeforces Observation Ladder
+
+## Beginner to Pupil
+
+| # | Problem | Link | Form | Solve Approach |
+|---:|---|---|---|---|
+| 1 | Way Too Long Words | https://codeforces.com/problemset/problem/71/A | String formatting | abbreviate if length greater than 10 |
+| 2 | Team | https://codeforces.com/problemset/problem/231/A | Counting | count if at least two teammates know |
+| 3 | Next Round | https://codeforces.com/problemset/problem/158/A | Threshold case | count positive scores at least kth score |
+| 4 | Bit++ | https://codeforces.com/problemset/problem/282/A | String operation | detect plus or minus |
+| 5 | Beautiful Matrix | https://codeforces.com/problemset/problem/263/A | Grid position | Manhattan distance to center |
+| 6 | Helpful Maths | https://codeforces.com/problemset/problem/339/A | Sorting chars | collect digits and sort |
+| 7 | Stones on the Table | https://codeforces.com/problemset/problem/266/A | Adjacent count | count equal adjacent pairs |
+| 8 | Boy or Girl | https://codeforces.com/problemset/problem/236/A | Distinct count | set size parity |
+| 9 | String Task | https://codeforces.com/problemset/problem/118/A | Char filtering | remove vowels and add dots |
+| 10 | Domino Piling | https://codeforces.com/problemset/problem/50/A | Formula | area divided by two |
+
+## Pupil to Specialist
+
+| # | Problem | Link | Form | Solve Approach |
+|---:|---|---|---|---|
+| 1 | Nearly Lucky Number | https://codeforces.com/problemset/problem/110/A | Digit count | count 4 and 7, check lucky count |
+| 2 | Arrival of the General | https://codeforces.com/problemset/problem/144/A | Position tracking | first max, last min |
+| 3 | Presents | https://codeforces.com/problemset/problem/136/A | Inverse mapping | output inverse permutation |
+| 4 | HQ9+ | https://codeforces.com/problemset/problem/133/A | Char existence | check H, Q, or 9 |
+| 5 | Petya and Strings | https://codeforces.com/problemset/problem/112/A | String compare | lowercase both |
+| 6 | Bear and Big Brother | https://codeforces.com/problemset/problem/791/A | Simulation | multiply until larger |
+| 7 | Elephant | https://codeforces.com/problemset/problem/617/A | Formula | ceil x divided by 5 |
+| 8 | Anton and Danik | https://codeforces.com/problemset/problem/734/A | Frequency | count A and D |
+| 9 | Translation | https://codeforces.com/problemset/problem/41/A | Reverse string | compare with reverse |
+| 10 | Word | https://codeforces.com/problemset/problem/59/A | Case count | convert by majority |
+
+## Specialist to Expert Observation
+
+| # | Problem | Link | Form | Solve Approach |
+|---:|---|---|---|---|
+| 1 | Books | https://codeforces.com/problemset/problem/279/B | Simulation/window | longest positive sum under time |
+| 2 | Dragons | https://codeforces.com/problemset/problem/230/A | Sorting observation | fight weakest possible first |
+| 3 | Puzzles | https://codeforces.com/problemset/problem/337/A | Sorted gap | min range of k sorted values |
+| 4 | I Wanna Be the Guy | https://codeforces.com/problemset/problem/469/A | Set coverage | check all levels collected |
+| 5 | Queue at the School | https://codeforces.com/problemset/problem/266/B | Simulation | swap BG for t seconds |
+| 6 | Cheap Travel | https://codeforces.com/problemset/problem/466/A | Casework formula | compare ticket bundles |
+| 7 | Taxi | https://codeforces.com/problemset/problem/158/B | Counting groups | pack group sizes |
+| 8 | K-th Not Divisible | https://codeforces.com/problemset/problem/1352/C | Formula | blocks of n have n minus one valid numbers |
+| 9 | Even Array | https://codeforces.com/problemset/problem/1367/B | Parity mismatch | count misplaced parity |
+| 10 | Fair Division | https://codeforces.com/problemset/problem/1472/B | Parity/count | count ones and twos |
+
+---
+
+# 18. Final Revision Checklist
+
+## Recognition Cheat Sheet
+
+```text
+Operations? -> simulation
+Previous unresolved items? -> stack
+Many ifs? -> casework
+Counts enough? -> frequency
+Characters? -> string scan
+Grid? -> directions or boundaries
+Odd/even? -> parity
+Modulo? -> remainder pattern
+Min/max/first/last? -> boundary tracking
+Order irrelevant but extremes matter? -> sort
+Any valid answer? -> constructive
+Small cases show sequence? -> formula
+Design O(1)? -> vector/list plus hashmap
+```
+
+## Edge Cases
+
+| Edge Case | Why Important |
+|---|---|
+| n = 1 | breaks loops |
+| empty string | parsing issue |
+| all equal | strict inequalities |
+| duplicates | frequency/sort |
+| negative numbers | product/sum |
+| zero | division/formula |
+| already valid | simulation |
+| impossible case | constructive/casework |
+| max values | overflow |
+
+## Coding Rules
+
+- Use `long long` for sums/products.
+- Guard `i + 1` access.
+- Reset state for each test case.
+- Keep output format exact.
+- Prefer simple variables over complex structures unless needed.
+- After deriving rule, test on tiny examples.
+
+## Mindset
+
+```text
+Ad hoc is not about memorizing solutions.
+Ad hoc is about reducing a weird statement into one clean observation.
 ```
 
 ---
 
 # Appendix: GitHub-Safe Mermaid Rules
 
-- Use quoted labels like `A["text"]`.
-- Avoid raw square brackets inside node labels.
+- Use quoted labels: `A["text"]`.
+- Avoid raw square brackets inside node text.
 - Keep one arrow statement per line.
+- Avoid symbols like `a[i]` inside node labels; write words instead.
