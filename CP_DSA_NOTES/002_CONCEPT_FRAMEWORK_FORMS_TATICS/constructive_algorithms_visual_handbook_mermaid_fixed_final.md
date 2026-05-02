@@ -1,4 +1,16 @@
 # 📘 Constructive Algorithms Visual Handbook
+
+> Mermaid fix version: every diagram uses safe quoted labels for GitHub rendering.
+
+# 📌 What Changed in This Version
+
+- Fixed all Mermaid diagrams with safe labels.
+- Removed risky symbols from diagram node text.
+- Added expanded frameworks, forms, tactics, dry runs, proof cards, and C++ examples.
+
+---
+
+# 📘 Constructive Algorithms Visual Handbook
 ## Beginner → FAANG / OA → Codeforces / Competitive Master Level
 
 > Goal: learn constructive algorithms visually, like a pattern notebook.
@@ -73,15 +85,15 @@ You try to find a direct way to produce **any valid answer**.
 
 ```mermaid
 flowchart TD
-    A[Read problem constraints] --> B[Find required property]
-    B --> C[Find simple pattern]
-    C --> D[Build answer step by step]
-    D --> E{Constraint still valid?}
-    E -->|Yes| F[Continue]
-    E -->|No| G[Change construction idea]
-    F --> H{Answer complete?}
+    A["Read problem constraints"] --> B["Find required property"]
+    B --> C["Find simple pattern"]
+    C --> D["Build answer step by step"]
+    D --> E{"Constraint still valid"}
+    E -->|Yes| F["Continue"]
+    E -->|No| G["Change construction idea"]
+    F --> H{"Answer complete"}
     H -->|No| D
-    H -->|Yes| I[Output valid answer]
+    H -->|Yes| I["Output valid answer"]
 ```
 
 ---
@@ -107,13 +119,13 @@ Constructive problems often contain these phrases:
 
 ```mermaid
 flowchart TD
-    A[Problem asks to build?] -->|No| B["Maybe DP/Search/Math"]
-    A -->|Yes| C{Any valid answer accepted?}
-    C -->|Yes| D[Constructive likely]
-    C -->|No, optimize| E["Greedy/DP/Graph likely"]
-    D --> F{Can I find pattern?}
-    F -->|Yes| G[Build directly]
-    F -->|No| H["Try invariants, parity, sorting, reverse"]
+    A["Problem asks to build"] -->|No| B["Maybe DP divided by Search divided by Math"]
+    A -->|Yes| C{"Any valid answer accepted"}
+    C -->|Yes| D["Constructive likely"]
+    C -->|No| E["Greedy divided by DP divided by Graph likely"]
+    D --> F{"Can I find pattern"}
+    F -->|Yes| G["Build directly"]
+    F -->|No| H["Try invariants parity sorting reverse"]
 ```
 
 ---
@@ -138,16 +150,16 @@ For almost every constructive problem, use this framework:
 
 ```mermaid
 flowchart TD
-    A[Final condition] --> B[Extract constraints]
-    B --> C[Find invariant]
-    C --> D[Choose construction direction]
-    D --> E[Place next element]
-    E --> F{Invariant holds?}
-    F -->|Yes| G[Keep building]
-    F -->|No| H[Change rule]
-    G --> I{All elements placed?}
+    A["Final condition"] --> B["Extract constraints"]
+    B --> C["Find invariant"]
+    C --> D["Choose construction direction"]
+    D --> E["Place next element"]
+    E --> F{"Invariant holds"}
+    F -->|Yes| G["Keep building"]
+    F -->|No| H["Change rule"]
+    G --> I{"All elements placed"}
     I -->|No| E
-    I -->|Yes| J["Proof + output"]
+    I -->|Yes| J["Proof plus output"]
 ```
 
 ---
@@ -167,16 +179,16 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Problem] --> B{Need any valid answer?}
-    B -->|Yes| C[Try constructive]
-    B -->|No| D{"Need best max/min?"}
-    D -->|Yes| E[Try greedy or DP]
-    D -->|No| F["Maybe simulation/math"]
-    C --> G{Can direct pattern satisfy constraints?}
-    G -->|Yes| H[Construct]
-    G -->|No| I{Can state transitions help?}
-    I -->|Yes| J[DP]
-    I -->|No| K["Search/backtracking"]
+    A["Problem"] --> B{"Need any valid answer"}
+    B -->|Yes| C["Try constructive"]
+    B -->|No| D{"Need best max divided by min"}
+    D -->|Yes| E["Try greedy or DP"]
+    D -->|No| F["Maybe simulation divided by math"]
+    C --> G{"Can direct pattern satisfy constraints"}
+    G -->|Yes| H["Construct"]
+    G -->|No| I{"Can state transitions help"}
+    I -->|Yes| J["DP"]
+    I -->|No| K["Search divided by backtracking"]
 ```
 
 ---
@@ -237,13 +249,13 @@ For `n = 5`
 
 ```mermaid
 flowchart TD
-    A[Start] --> B["ans = empty"]
-    B --> C["i = 1"]
-    C --> D{" i <= n? "}
-    D -->|Yes| E[push i]
-    E --> F["i++"]
+    A["Start"] --> B["ans equals empty"]
+    B --> C["i equals 1"]
+    C --> D{"i at most n"}
+    D -->|Yes| E["push i"]
+    E --> F["iplus one"]
     F --> D
-    D -->|No| G[return ans]
+    D -->|No| G["return ans"]
 ```
 
 ---
@@ -289,18 +301,18 @@ valid iff n*L <= S <= n*R
 
 ```mermaid
 flowchart TD
-    A["Input n, L, R, S"] --> B["minSum = n * L"]
-    B --> C["maxSum = n * R"]
-    C --> D{S in range?}
-    D -->|No| E[Impossible]
-    D -->|Yes| F[Initialize all values as L]
-    F --> G["remaining = S - minSum"]
-    G --> H[For each index]
-    H --> I["add = min remaining, R-L"]
-    I --> J[a[i] += add]
-    J --> K["remaining -= add"]
-    K --> L{"remaining == 0?"}
-    L -->|Yes| M[Done]
+    A["Input n L R S"] --> B["minSum equals n times L"]
+    B --> C["maxSum equals n times R"]
+    C --> D{"S in range"}
+    D -->|No| E["Impossible"]
+    D -->|Yes| F["Initialize all values as L"]
+    F --> G["remaining equals S minus minSum"]
+    G --> H["For each index"]
+    H --> I["add equals min remaining R minus L"]
+    I --> J[a["i"] += add]
+    J --> K["remaining minus equals add"]
+    K --> L{"remaining equals 0"}
+    L -->|Yes| M["Done"]
     L -->|No| H
 ```
 
@@ -432,12 +444,12 @@ evens first, odds second
 
 ```mermaid
 flowchart TD
-    A[Need no adjacent diff 1] --> B[Group same parity]
-    B --> C[Evens: 2 4 6]
-    B --> D[Odds: 1 3 5]
-    C --> E["Combine evens + odds"]
+    A["Need no adjacent diff 1"] --> B["Group same parity"]
+    B --> C["Evens 2 4 6"]
+    B --> D["Odds 1 3 5"]
+    C --> E["Combine evens plus odds"]
     D --> E
-    E --> F[Check boundary]
+    E --> F["Check boundary"]
 ```
 
 ---
@@ -528,14 +540,14 @@ low, high, low+1, high-1, low+2, high-2
 
 ```mermaid
 flowchart LR
-    A["low = 1"] --> C[Pick low]
-    B["high = n"] --> D[Pick high]
-    C --> E["low++"]
-    D --> F["high--"]
-    E --> G{"low <= high?"}
+    A["low equals 1"] --> C["Pick low"]
+    B["high equals n"] --> D["Pick high"]
+    C --> E["lowplus one"]
+    D --> F["highminus one"]
+    E --> G{"low at most high"}
     F --> G
     G -->|Yes| C
-    G -->|No| H[Done]
+    G -->|No| H["Done"]
 ```
 
 ---
@@ -614,12 +626,12 @@ For each position:
 
 ```mermaid
 flowchart TD
-    A[Position i] --> B[List candidate values]
-    B --> C[Test candidate]
-    C --> D{Prefix valid?}
-    D -->|Yes| E[Place value]
-    D -->|No| F[Try next candidate]
-    E --> G["i++"]
+    A["Position i"] --> B["List candidate values"]
+    B --> C["Test candidate"]
+    C --> D{"Prefix valid"}
+    D -->|Yes| E["Place value"]
+    D -->|No| F["Try next candidate"]
+    E --> G["iplus one"]
 ```
 
 ---
@@ -690,13 +702,13 @@ Useful for:
 
 ```mermaid
 flowchart TD
-    A[Input items] --> B[Count frequency]
-    B --> C{Need most frequent?}
-    C -->|Yes| D[Use max heap]
-    C -->|No| E["Use map/set"]
-    D --> F[Build result]
+    A["Input items"] --> B["Count frequency"]
+    B --> C{"Need most frequent"}
+    C -->|Yes| D["Use max heap"]
+    C -->|No| E["Use map divided by set"]
+    D --> F["Build result"]
     E --> F
-    F --> G[Validate constraints]
+    F --> G["Validate constraints"]
 ```
 
 ---
@@ -791,17 +803,17 @@ Rearrange string so no two adjacent characters are same.
 
 ```mermaid
 flowchart TD
-    A[Count frequencies] --> B[Push into max heap]
-    B --> C[Pop most frequent char]
-    C --> D{Same as previous?}
-    D -->|No| E[Append it]
-    D -->|Yes| F[Pick second most frequent]
-    E --> G[Decrease count]
+    A["Count frequencies"] --> B["Push into max heap"]
+    B --> C["Pop most frequent char"]
+    C --> D{"Same as previous"}
+    D -->|No| E["Append it"]
+    D -->|Yes| F["Pick second most frequent"]
+    E --> G["Decrease count"]
     F --> G
-    G --> H[Push remaining back]
-    H --> I{Heap empty?}
+    G --> H["Push remaining back"]
+    H --> I{"Heap empty"}
     I -->|No| C
-    I -->|Yes| J[Done]
+    I -->|Yes| J["Done"]
 ```
 
 ---
@@ -1028,12 +1040,12 @@ Common:
 
 ```mermaid
 flowchart TD
-    A[Initial state] --> B[Apply rule]
-    B --> C[Update answer]
-    C --> D[Update state]
-    D --> E{Finished?}
+    A["Initial state"] --> B["Apply rule"]
+    B --> C["Update answer"]
+    C --> D["Update state"]
+    D --> E{"Finished"}
     E -->|No| B
-    E -->|Yes| F[Return answer]
+    E -->|Yes| F["Return answer"]
 ```
 
 ---
@@ -1204,13 +1216,13 @@ If total sum is odd, impossible.
 
 ```mermaid
 flowchart TD
-    A[Compute total sum] --> B{total even?}
-    B -->|No| C[Impossible]
-    B -->|Yes| D["target = total / 2"]
-    D --> E[Pick largest possible numbers]
-    E --> F[Subtract from target]
-    F --> G{"target == 0?"}
-    G -->|Yes| H[Done]
+    A["Compute total sum"] --> B{"total even"}
+    B -->|No| C["Impossible"]
+    B -->|Yes| D["target equals total divided by 2"]
+    D --> E["Pick largest possible numbers"]
+    E --> F["Subtract from target"]
+    F --> G{"target equals 0"}
+    G -->|Yes| H["Done"]
     G -->|No| E
 ```
 
@@ -1473,13 +1485,13 @@ Build a graph satisfying:
 
 ```mermaid
 flowchart TD
-    A["Need connected graph"] --> B{"m >= n - 1?"}
+    A["Need connected graph"] --> B{"Enough edges"}
     B -->|No| C["Impossible"]
-    B -->|Yes| D["Build chain edges"]
-    D --> E["extra = m - (n - 1)"]
-    E --> F["Try all non-chain pairs"]
-    F --> G["Add edge if extra > 0"]
-    G --> H{"extra == 0?"}
+    B -->|Yes| D["Build chain"]
+    D --> E["Compute extra edges"]
+    E --> F["Try unused node pairs"]
+    F --> G["Add edge if needed"]
+    G --> H{"Extra edges finished"}
     H -->|Yes| I["Done"]
     H -->|No| F
 ```
@@ -1584,11 +1596,11 @@ Common examples:
 
 ```mermaid
 flowchart TD
-    A[Target state] --> B[Reverse operation]
-    B --> C["Smaller/easier state"]
-    C --> D{Reached base?}
+    A["Target state"] --> B["Reverse operation"]
+    B --> C["Smaller divided by easier state"]
+    C --> D{"Reached base"}
     D -->|No| B
-    D -->|Yes| E[Reverse collected steps]
+    D -->|Yes| E["Reverse collected steps"]
 ```
 
 ---
@@ -1688,11 +1700,11 @@ Examples:
 
 ```mermaid
 flowchart TD
-    A[Start from easy base answer] --> B[Apply controlled transformation]
-    B --> C{Constraint still valid?}
-    C -->|Yes| D[Keep transformation]
-    C -->|No| E[Undo or choose different transformation]
-    D --> F[Final answer]
+    A["Start from easy base answer"] --> B["Apply controlled transformation"]
+    B --> C{"Constraint still valid"}
+    C -->|Yes| D["Keep transformation"]
+    C -->|No| E["Undo or choose different transformation"]
+    D --> F["Final answer"]
 ```
 
 ---
@@ -1777,15 +1789,15 @@ binary search answer
 
 ```mermaid
 flowchart TD
-    A[Search low..high] --> B[mid]
-    B --> C["Construct/check with mid"]
-    C --> D{possible?}
-    D -->|Yes| E[save mid and reduce high]
-    D -->|No| F[increase low]
-    E --> G{done?}
+    A["Search low dot dot high"] --> B["mid"]
+    B --> C["Construct divided by check with mid"]
+    C --> D{"possible"}
+    D -->|Yes| E["save mid and reduce high"]
+    D -->|No| F["increase low"]
+    E --> G{"done"}
     F --> G
     G -->|No| B
-    G -->|Yes| H[answer]
+    G -->|Yes| H["answer"]
 ```
 
 ---
@@ -1880,10 +1892,10 @@ Constructive proof usually has 3 parts:
 
 ```mermaid
 flowchart TD
-    A[State construction] --> B[Show it uses valid elements]
-    B --> C[Show invariant holds]
-    C --> D[Show final constraints hold]
-    D --> E[Handle impossible cases]
+    A["State construction"] --> B["Show it uses valid elements"]
+    B --> C["Show invariant holds"]
+    C --> D["Show final constraints hold"]
+    D --> E["Handle impossible cases"]
 ```
 
 ---
@@ -1928,10 +1940,10 @@ Examples:
 
 ```mermaid
 flowchart TD
-    A[Before step: invariant true] --> B["Add/modify one part"]
-    B --> C[Check local condition]
-    C --> D[After step: invariant still true]
-    D --> E[Repeat]
+    A["Before step invariant true"] --> B["Add divided by modify one part"]
+    B --> C["Check local condition"]
+    C --> D["After step invariant still true"]
+    D --> E["Repeat"]
 ```
 
 ---
@@ -1978,11 +1990,11 @@ Therefore greedy choice is safe.
 
 ```mermaid
 flowchart TD
-    A[Greedy picks G] --> B[Assume solution picks X instead]
-    B --> C[Swap X with G]
-    C --> D{Still valid?}
-    D -->|Yes| E[Greedy choice safe]
-    D -->|No| F[Greedy not proven]
+    A["Greedy picks G"] --> B["Assume solution picks X instead"]
+    B --> C["Swap X with G"]
+    C --> D{"Still valid"}
+    D -->|Yes| E["Greedy choice safe"]
+    D -->|No| F["Greedy not proven"]
 ```
 
 ---
@@ -2213,12 +2225,12 @@ n = 5, L = 2, R = 7, S = 23
 
 ```mermaid
 flowchart TD
-    A["Input n, L, R, S"] --> B["Compute minSum and maxSum"]
-    B --> C{"S inside valid range?"}
+    A["Input n L R S"] --> B["Compute minSum and maxSum"]
+    B --> C{"S inside valid range"}
     C -->|No| D["Return impossible"]
     C -->|Yes| E["Set every value to L"]
     E --> F["Distribute remaining sum"]
-    F --> G{"Remaining is zero?"}
+    F --> G{"Remaining is zero"}
     G -->|Yes| H["Return answer"]
     G -->|No| F
 ```
@@ -2300,7 +2312,7 @@ Check:
 ```mermaid
 flowchart TD
     A["Start with identity permutation"] --> B["Swap adjacent pairs"]
-    B --> C{"n is odd?"}
+    B --> C{"n is odd"}
     C -->|No| D["Return permutation"]
     C -->|Yes| E["Swap last two values"]
     E --> D
@@ -2409,7 +2421,7 @@ All odd.
 
 ```mermaid
 flowchart TD
-    A["Split numbers into odd and even groups"] --> B{"Counts differ by at most one?"}
+    A["Split numbers into odd and even groups"] --> B{"Counts differ by at most one"}
     B -->|No| C["Impossible"]
     B -->|Yes| D["Start with larger group"]
     D --> E["Alternate odd and even picks"]
@@ -2535,7 +2547,7 @@ ABAB
 
 ```mermaid
 flowchart TD
-    A["For every cell i, j"] --> B{"Is i + j even?"}
+    A["For every cell i j"] --> B{"Is i plus j even"}
     B -->|Yes| C["Place A"]
     B -->|No| D["Place B"]
     C --> E["Next cell"]
@@ -2868,14 +2880,14 @@ Before submitting constructive code:
 
 ```mermaid
 flowchart TD
-    A[Constructive Problem] --> B[Find final property]
-    B --> C[Find impossible cases]
-    C --> D[Pick framework]
-    D --> E[Build answer]
-    E --> F[Maintain invariant]
-    F --> G[Dry run small cases]
-    G --> H[Prove validity]
-    H --> I[Submit]
+    A["Constructive Problem"] --> B["Find final property"]
+    B --> C["Find impossible cases"]
+    C --> D["Pick framework"]
+    D --> E["Build answer"]
+    E --> F["Maintain invariant"]
+    F --> G["Dry run small cases"]
+    G --> H["Prove validity"]
+    H --> I["Submit"]
 ```
 
 ---
