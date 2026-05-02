@@ -32,6 +32,8 @@ This guide merges the uploaded topic notes into one ordered roadmap: **Concepts 
 22. [Technique + Tactic Deep Dive](#22-technique--tactic-deep-dive-how-to-do-it-in-contestoa)
 23. [Ultimate Problem Bank by Topic, Difficulty, Pattern, and Intuition](#23-ultimate-problem-bank-by-topic-difficulty-pattern-and-intuition)
 24. [Contest/OA Pattern Recognition Drill Sheet](#24-contestoa-pattern-recognition-drill-sheet)
+25. [Pattern-by-Pattern Blocks: Form → Tactic → Code → Problems](#28-pattern-by-pattern-blocks-form--tactic--code--problems)
+26. [Final Difficulty-Wise Practice Checklist by Topic](#29-final-difficulty-wise-practice-checklist-by-topic)
 
 ---
 
@@ -3058,6 +3060,1117 @@ Use this as the final practice checklist. For each row, solve the Easy first, th
 | Math + Modular + Number Theory + Combinatorics | Combinatorics nCk / nCk DP | Easy | Pascal Triangle | https://leetcode.com/problems/pascals-triangle/ | Each value is sum of two above. |
 | Math + Modular + Number Theory + Combinatorics | Combinatorics nCk / combinations | Medium | Unique Paths | https://leetcode.com/problems/unique-paths/ | Choose positions of down/right moves. |
 | Math + Modular + Number Theory + Combinatorics | Combinatorics nCk / factorial inverse | Hard | Binomial Coefficients | https://cses.fi/problemset/task/1079 | Answer many nCk queries fast. |
+
+
+---
+
+## 28. Pattern-by-Pattern Blocks: Form → Tactic → Code → Problems
+
+Use this section as the main training loop. For every pattern:
+
+```text
+1. Read the form.
+2. Memorize the recognition clue.
+3. Understand the tactic/invariant.
+4. Type the C++ code from memory.
+5. Solve Easy → Medium → Hard.
+6. After solving, write why this exact pattern was needed.
+```
+
+```mermaid
+flowchart TD
+    A[Pattern Form] --> B[Recognition Clue]
+    B --> C[Tactic / Invariant]
+    C --> D[C++ Template]
+    D --> E[Easy Practice]
+    E --> F[Medium Practice]
+    F --> G[Hard Practice]
+    G --> H[Recognize in seconds]
+```
+
+### 28.1 Prefix Sum — Static Range Sum
+
+**Form:** Many queries ask sum/count over `[l, r]` and the array does not change.
+
+**Recognition clue:** `q` is large, range query is repeated, update is absent.
+
+**Tactic / invariant:** Precompute cumulative information once. A range answer is total up to `r` minus total before `l`.
+
+```cpp
+vector<long long> buildPrefix(const vector<int>& a) {
+    int n = a.size();
+    vector<long long> pref(n + 1, 0);
+    for (int i = 0; i < n; i++) pref[i + 1] = pref[i] + a[i];
+    return pref;
+}
+
+long long rangeSum(const vector<long long>& pref, int l, int r) {
+    // 0-indexed inclusive [l, r]
+    return pref[r + 1] - pref[l];
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Running Sum of 1d Array | https://leetcode.com/problems/running-sum-of-1d-array/ | prefix build | Each index stores sum so far. |
+| Easy | Range Sum Query - Immutable | https://leetcode.com/problems/range-sum-query-immutable/ | static range sum | Query answer = pref[r+1]-pref[l]. |
+| Medium | Subarray Sum Equals K | https://leetcode.com/problems/subarray-sum-equals-k/ | prefix + hash map | Need earlier prefix `cur-k`. |
+| Medium | Product of Array Except Self | https://leetcode.com/problems/product-of-array-except-self/ | prefix/suffix contribution | Combine left product and right product. |
+| Hard | Count of Range Sum | https://leetcode.com/problems/count-of-range-sum/ | prefix + ordered counting | Count prior prefixes in a value interval. |
+
+---
+
+### 28.2 Prefix Sum — Prefix + Hash Map for Exact Sum/XOR
+
+**Form:** Count/find subarrays with sum or XOR equal to `K`.
+
+**Recognition clue:** Subarray can start anywhere; numbers may include negative values; sliding window is unsafe.
+
+**Tactic / invariant:** If `pref[j] - pref[i] = K`, then `pref[i] = pref[j] - K`. Store frequencies of previous prefixes.
+
+```cpp
+long long countSubarraySumK(const vector<int>& a, long long k) {
+    unordered_map<long long, long long> freq;
+    freq[0] = 1;
+    long long pref = 0, ans = 0;
+    for (int x : a) {
+        pref += x;
+        if (freq.count(pref - k)) ans += freq[pref - k];
+        freq[pref]++;
+    }
+    return ans;
+}
+
+long long countSubarrayXorK(const vector<int>& a, int k) {
+    unordered_map<int, long long> freq;
+    freq[0] = 1;
+    int xr = 0;
+    long long ans = 0;
+    for (int x : a) {
+        xr ^= x;
+        ans += freq[xr ^ k];
+        freq[xr]++;
+    }
+    return ans;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Two Sum | https://leetcode.com/problems/two-sum/ | complement map | Store what previous value can complete target. |
+| Medium | Subarray Sum Equals K | https://leetcode.com/problems/subarray-sum-equals-k/ | prefix map | Previous prefix decides valid subarray. |
+| Medium | Continuous Subarray Sum | https://leetcode.com/problems/continuous-subarray-sum/ | prefix modulo | Same remainder means sum divisible by k. |
+| Medium | Count Number of Nice Subarrays | https://leetcode.com/problems/count-number-of-nice-subarrays/ | prefix count | Convert odd numbers to 1 and count sum K. |
+| Hard | Minimum Window Substring | https://leetcode.com/problems/minimum-window-substring/ | frequency invariant | Maintain required chars then shrink. |
+
+---
+
+### 28.3 Difference Array — Offline Range Updates
+
+**Form:** Many range add updates, final array needed after all updates.
+
+**Recognition clue:** Queries say “add x to every element in `[l,r]`”; no need to answer between updates.
+
+**Tactic / invariant:** Mark only where the effect starts and stops. Prefix the diff array once at the end.
+
+```cpp
+vector<long long> applyRangeAdds(int n, vector<tuple<int,int,int>> updates) {
+    vector<long long> diff(n + 1, 0);
+    for (auto [l, r, x] : updates) {
+        diff[l] += x;
+        if (r + 1 < n) diff[r + 1] -= x;
+    }
+    vector<long long> a(n);
+    long long cur = 0;
+    for (int i = 0; i < n; i++) {
+        cur += diff[i];
+        a[i] = cur;
+    }
+    return a;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Range Addition | https://leetcode.com/problems/range-addition/ | diff array | Start adding at l, stop after r. |
+| Medium | Car Pooling | https://leetcode.com/problems/car-pooling/ | difference / sweep | Passenger count changes at pickup/dropoff. |
+| Medium | Corporate Flight Bookings | https://leetcode.com/problems/corporate-flight-bookings/ | diff array | Each booking is a range increment. |
+| Hard | My Calendar III | https://leetcode.com/problems/my-calendar-iii/ | sweep line diff | Max active interval count is max prefix. |
+
+---
+
+### 28.4 Binary Search — First True / Lower Bound
+
+**Form:** Find first position/value satisfying a condition.
+
+**Recognition clue:** Predicate looks like `false false false true true true`.
+
+**Tactic / invariant:** Keep answer candidate when `check(mid)` is true, then move left to find earlier true.
+
+```cpp
+long long firstTrue(long long lo, long long hi) {
+    long long ans = hi + 1;
+    while (lo <= hi) {
+        long long mid = lo + (hi - lo) / 2;
+        if (check(mid)) {
+            ans = mid;
+            hi = mid - 1;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    return ans;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Binary Search | https://leetcode.com/problems/binary-search/ | classic search | Sorted array lets you discard half. |
+| Easy | First Bad Version | https://leetcode.com/problems/first-bad-version/ | first true | Bad versions form false→true boundary. |
+| Medium | Search in Rotated Sorted Array | https://leetcode.com/problems/search-in-rotated-sorted-array/ | binary by sorted half | One half is always sorted. |
+| Medium | Find Minimum in Rotated Sorted Array | https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/ | boundary search | Minimum is rotation boundary. |
+| Hard | Median of Two Sorted Arrays | https://leetcode.com/problems/median-of-two-sorted-arrays/ | binary partition | Partition both arrays so left <= right. |
+
+---
+
+### 28.5 Binary Search on Answer — Minimize Maximum / Maximize Minimum
+
+**Form:** Need minimum possible maximum value or maximum possible minimum value.
+
+**Recognition clue:** Problem asks “minimum largest”, “maximum minimum”, “least capacity”, “minimum days”, “can finish”.
+
+**Tactic / invariant:** Guess answer `x`; write greedy/check to decide if `x` is feasible. Feasibility must be monotonic.
+
+```cpp
+bool canShip(const vector<int>& w, int days, long long cap) {
+    int used = 1;
+    long long cur = 0;
+    for (int x : w) {
+        if (x > cap) return false;
+        if (cur + x > cap) {
+            used++;
+            cur = 0;
+        }
+        cur += x;
+    }
+    return used <= days;
+}
+
+long long minCapacity(vector<int> w, int days) {
+    long long lo = 0, hi = 0;
+    for (int x : w) lo = max(lo, 1LL * x), hi += x;
+    while (lo < hi) {
+        long long mid = lo + (hi - lo) / 2;
+        if (canShip(w, days, mid)) hi = mid;
+        else lo = mid + 1;
+    }
+    return lo;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Arranging Coins | https://leetcode.com/problems/arranging-coins/ | last true | Can build k rows? |
+| Medium | Capacity To Ship Packages Within D Days | https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/ | minimize capacity | Larger capacity is always easier. |
+| Medium | Koko Eating Bananas | https://leetcode.com/problems/koko-eating-bananas/ | minimize speed | Faster speed can finish if slower can. |
+| Medium | Magnetic Force Between Two Balls | https://leetcode.com/problems/magnetic-force-between-two-balls/ | maximize minimum | Greedily place balls with distance d. |
+| Hard | Split Array Largest Sum | https://leetcode.com/problems/split-array-largest-sum/ | minimize max subarray sum | Check how many groups needed for max x. |
+
+---
+
+### 28.6 Two Pointers — Opposite Ends
+
+**Form:** Pair/triplet decisions on sorted array or symmetric string.
+
+**Recognition clue:** Need pair sum, palindrome, container, sorted input, or can sort without losing meaning.
+
+**Tactic / invariant:** Compare current pair. Move the pointer that can no longer help.
+
+```cpp
+bool twoSumSorted(const vector<int>& a, int target) {
+    int l = 0, r = (int)a.size() - 1;
+    while (l < r) {
+        long long s = 1LL * a[l] + a[r];
+        if (s == target) return true;
+        if (s < target) l++;
+        else r--;
+    }
+    return false;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Valid Palindrome | https://leetcode.com/problems/valid-palindrome/ | opposite ends | Compare outside inward. |
+| Easy | Two Sum II | https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/ | sorted pair sum | Too small move left; too big move right. |
+| Medium | Container With Most Water | https://leetcode.com/problems/container-with-most-water/ | discard smaller side | Area limited by shorter wall. |
+| Medium | 3Sum | https://leetcode.com/problems/3sum/ | fix one + two pointers | After sorting, reduce 3-sum to pair sum. |
+| Hard | Trapping Rain Water | https://leetcode.com/problems/trapping-rain-water/ | two-side boundary | Water depends on smaller max boundary. |
+
+---
+
+### 28.7 Sliding Window — Variable Window / At Most K
+
+**Form:** Longest/number of subarrays/substrings satisfying a window condition.
+
+**Recognition clue:** Contiguous segment, condition becomes easier after shrinking, elements usually non-negative or frequency-based.
+
+**Tactic / invariant:** Expand right; while invalid, shrink left; every valid window ending at `r` contributes predictable count.
+
+```cpp
+int longestAtMostKDistinct(const string& s, int k) {
+    unordered_map<char,int> cnt;
+    int l = 0, ans = 0;
+    for (int r = 0; r < (int)s.size(); r++) {
+        cnt[s[r]]++;
+        while ((int)cnt.size() > k) {
+            if (--cnt[s[l]] == 0) cnt.erase(s[l]);
+            l++;
+        }
+        ans = max(ans, r - l + 1);
+    }
+    return ans;
+}
+
+long long atMostKDistinct(const vector<int>& a, int k) {
+    unordered_map<int,int> cnt;
+    int l = 0;
+    long long ans = 0;
+    for (int r = 0; r < (int)a.size(); r++) {
+        cnt[a[r]]++;
+        while ((int)cnt.size() > k) {
+            if (--cnt[a[l]] == 0) cnt.erase(a[l]);
+            l++;
+        }
+        ans += r - l + 1;
+    }
+    return ans;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Best Time to Buy and Sell Stock | https://leetcode.com/problems/best-time-to-buy-and-sell-stock/ | running min window | Sell today after best previous buy. |
+| Medium | Longest Substring Without Repeating Characters | https://leetcode.com/problems/longest-substring-without-repeating-characters/ | unique window | Shrink until duplicate disappears. |
+| Medium | Fruit Into Baskets | https://leetcode.com/problems/fruit-into-baskets/ | at most 2 distinct | Longest subarray with two types. |
+| Medium | Subarrays with K Different Integers | https://leetcode.com/problems/subarrays-with-k-different-integers/ | exact = atMostK - atMostK-1 | Exact count is difference of at-most counts. |
+| Hard | Minimum Window Substring | https://leetcode.com/problems/minimum-window-substring/ | cover + shrink | Once covered, shrink to minimum. |
+
+---
+
+### 28.8 Monotonic Stack — Nearest Greater/Smaller
+
+**Form:** Need nearest previous/next greater/smaller element, span, rectangle, or remove digits.
+
+**Recognition clue:** For each index, brute force scans left/right to find first stronger element.
+
+**Tactic / invariant:** Stack stores useful candidates in monotonic order. Pop elements that current index dominates.
+
+```cpp
+vector<int> nextGreaterIndex(const vector<int>& a) {
+    int n = a.size();
+    vector<int> nxt(n, -1);
+    stack<int> st; // decreasing values' indices
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && a[i] > a[st.top()]) {
+            nxt[st.top()] = i;
+            st.pop();
+        }
+        st.push(i);
+    }
+    return nxt;
+}
+
+int largestRectangleArea(vector<int> h) {
+    h.push_back(0);
+    stack<int> st;
+    int ans = 0;
+    for (int i = 0; i < (int)h.size(); i++) {
+        while (!st.empty() && h[i] < h[st.top()]) {
+            int height = h[st.top()]; st.pop();
+            int left = st.empty() ? -1 : st.top();
+            ans = max(ans, height * (i - left - 1));
+        }
+        st.push(i);
+    }
+    return ans;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Next Greater Element I | https://leetcode.com/problems/next-greater-element-i/ | monotonic stack | Pop smaller elements when greater appears. |
+| Medium | Daily Temperatures | https://leetcode.com/problems/daily-temperatures/ | next greater index | Wait until warmer future day. |
+| Medium | Online Stock Span | https://leetcode.com/problems/online-stock-span/ | previous greater | Merge consecutive smaller/equal prices. |
+| Hard | Largest Rectangle in Histogram | https://leetcode.com/problems/largest-rectangle-in-histogram/ | nearest smaller boundaries | Height extends until smaller bars. |
+| Hard | Maximal Rectangle | https://leetcode.com/problems/maximal-rectangle/ | histogram per row | Each row is a histogram base. |
+
+---
+
+### 28.9 Monotonic Deque — Sliding Window Maximum/Minimum
+
+**Form:** Need max/min in every window of fixed size, or shortest subarray with constraints.
+
+**Recognition clue:** Repeated window extrema; heap works but stale removal is annoying; deque gives O(n).
+
+**Tactic / invariant:** Deque stores indices in useful order. Remove out-of-window from front and dominated values from back.
+
+```cpp
+vector<int> maxSlidingWindow(vector<int>& a, int k) {
+    deque<int> dq;
+    vector<int> ans;
+    for (int i = 0; i < (int)a.size(); i++) {
+        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
+        while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back();
+        dq.push_back(i);
+        if (i >= k - 1) ans.push_back(a[dq.front()]);
+    }
+    return ans;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Moving Average from Data Stream | https://leetcode.com/problems/moving-average-from-data-stream/ | fixed window | Maintain window sum. |
+| Medium | Sliding Window Maximum | https://leetcode.com/problems/sliding-window-maximum/ | monotonic deque | Front is best candidate. |
+| Medium | Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit | https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/ | max/min deques | Window valid if max-min <= limit. |
+| Hard | Shortest Subarray with Sum at Least K | https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/ | prefix + monotonic deque | Remove worse prefixes and check valid length. |
+
+---
+
+### 28.10 Heap / Priority Queue — Top K and Scheduling
+
+**Form:** Need best/worst element repeatedly, top K, merge sorted streams, rooms/scheduling.
+
+**Recognition clue:** Repeatedly choose current smallest/largest; sorting once is not enough because state changes.
+
+**Tactic / invariant:** Keep active candidates in heap. Pop stale/unusable candidates when they no longer apply.
+
+```cpp
+vector<int> topKFrequent(vector<int>& nums, int k) {
+    unordered_map<int,int> freq;
+    for (int x : nums) freq[x]++;
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+    for (auto [x, f] : freq) {
+        pq.push({f, x});
+        if ((int)pq.size() > k) pq.pop();
+    }
+    vector<int> ans;
+    while (!pq.empty()) {
+        ans.push_back(pq.top().second);
+        pq.pop();
+    }
+    return ans;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Last Stone Weight | https://leetcode.com/problems/last-stone-weight/ | max heap | Always smash two largest. |
+| Medium | Kth Largest Element in an Array | https://leetcode.com/problems/kth-largest-element-in-an-array/ | heap / quickselect | Maintain k largest. |
+| Medium | Meeting Rooms II | https://leetcode.com/problems/meeting-rooms-ii/ | min heap end times | Earliest ending room frees first. |
+| Hard | Merge k Sorted Lists | https://leetcode.com/problems/merge-k-sorted-lists/ | k-way heap merge | Heap stores current head from each list. |
+| Hard | Find Median from Data Stream | https://leetcode.com/problems/find-median-from-data-stream/ | two heaps | Balance lower half and upper half. |
+
+---
+
+### 28.11 Bit Manipulation — Basic Masks and Set Operations
+
+**Form:** Need represent subset, toggle/check bits, power of two, parity, or compact state.
+
+**Recognition clue:** `n <= 20`, subset choices, yes/no flags, XOR/AND/OR operations.
+
+**Tactic / invariant:** Bit `i` represents whether item `i` is selected/active.
+
+```cpp
+bool isSet(long long mask, int i) { return (mask >> i) & 1LL; }
+long long setBit(long long mask, int i) { return mask | (1LL << i); }
+long long clearBit(long long mask, int i) { return mask & ~(1LL << i); }
+long long toggleBit(long long mask, int i) { return mask ^ (1LL << i); }
+bool isPowerOfTwo(long long x) { return x > 0 && (x & (x - 1)) == 0; }
+
+for (int mask = 0; mask < (1 << n); mask++) {
+    for (int i = 0; i < n; i++) {
+        if (mask & (1 << i)) {
+            // item i is selected
+        }
+    }
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Power of Two | https://leetcode.com/problems/power-of-two/ | one set bit | x & (x-1) removes last set bit. |
+| Easy | Single Number | https://leetcode.com/problems/single-number/ | XOR cancel | Equal numbers XOR to zero. |
+| Medium | Subsets | https://leetcode.com/problems/subsets/ | bitmask subset | Every mask is one subset. |
+| Medium | Maximum Product of Word Lengths | https://leetcode.com/problems/maximum-product-of-word-lengths/ | char mask | Disjoint words have mask AND zero. |
+| Hard | Minimum Number of Flips to Convert Binary Matrix to Zero Matrix | https://leetcode.com/problems/minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix/ | state mask BFS | Matrix state fits in bitmask. |
+
+---
+
+### 28.12 Bit Contribution / XOR Trie
+
+**Form:** Sum over all pairs involving XOR/AND/OR, or maximize XOR.
+
+**Recognition clue:** Pairwise bit operations; brute force pairs too slow; answer decomposes per bit.
+
+**Tactic / invariant:** Compute contribution independently for each bit. For max XOR, greedily choose opposite bit in trie.
+
+```cpp
+long long pairXorSum(const vector<int>& a) {
+    long long ans = 0;
+    int n = a.size();
+    for (int b = 0; b < 31; b++) {
+        long long ones = 0;
+        for (int x : a) if ((x >> b) & 1) ones++;
+        long long zeros = n - ones;
+        ans += ones * zeros * (1LL << b);
+    }
+    return ans;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Hamming Distance | https://leetcode.com/problems/hamming-distance/ | bit difference | XOR marks different bits. |
+| Medium | Total Hamming Distance | https://leetcode.com/problems/total-hamming-distance/ | bit contribution | For each bit, ones*zeros pairs differ. |
+| Medium | Maximum XOR of Two Numbers in an Array | https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/ | XOR trie/greedy | Prefer opposite bit at each level. |
+| Hard | Maximum XOR With an Element From Array | https://leetcode.com/problems/maximum-xor-with-an-element-from-array/ | offline trie | Add eligible numbers then query max XOR. |
+
+---
+
+### 28.13 Backtracking — LCCM Generate All Answers
+
+**Form:** Generate subsets, combinations, permutations, strings, boards.
+
+**Recognition clue:** Need all valid configurations; `n` small; choices with constraints.
+
+**Tactic / invariant:** Level = current position. Choice = what to place/pick. Check = validity. Move = apply → recurse → undo.
+
+```cpp
+vector<vector<int>> ans;
+vector<int> path;
+
+void subsetsDfs(int idx, vector<int>& a) {
+    if (idx == (int)a.size()) {
+        ans.push_back(path);
+        return;
+    }
+    // not take
+    subsetsDfs(idx + 1, a);
+    // take
+    path.push_back(a[idx]);
+    subsetsDfs(idx + 1, a);
+    path.pop_back();
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Subsets | https://leetcode.com/problems/subsets/ | include/exclude | Each item has two choices. |
+| Medium | Combination Sum | https://leetcode.com/problems/combination-sum/ | choose/reuse | Stay at same index if reuse allowed. |
+| Medium | Permutations | https://leetcode.com/problems/permutations/ | used array | Each level picks unused number. |
+| Hard | N-Queens | https://leetcode.com/problems/n-queens/ | board constraint | One queen per row; block col/diags. |
+| Hard | Sudoku Solver | https://leetcode.com/problems/sudoku-solver/ | constraint backtracking | Try valid digit for most constrained empty cell. |
+
+---
+
+### 28.14 Graph BFS/DFS — Reachability and Components
+
+**Form:** Need visit connected area, shortest path in unweighted graph/grid, count components.
+
+**Recognition clue:** Objects connected by relationships; each move has equal cost.
+
+**Tactic / invariant:** BFS gives shortest number of edges. DFS/BFS marks each component once.
+
+```cpp
+vector<int> bfs(int n, vector<vector<int>>& g, int src) {
+    vector<int> dist(n + 1, -1);
+    queue<int> q;
+    dist[src] = 0;
+    q.push(src);
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        for (int v : g[u]) {
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+    return dist;
+}
+
+void dfs(int u, vector<vector<int>>& g, vector<int>& vis) {
+    vis[u] = 1;
+    for (int v : g[u]) if (!vis[v]) dfs(v, g, vis);
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Flood Fill | https://leetcode.com/problems/flood-fill/ | grid DFS/BFS | Visit all same-color neighbors. |
+| Easy | Find if Path Exists in Graph | https://leetcode.com/problems/find-if-path-exists-in-graph/ | reachability | Source and target connected? |
+| Medium | Number of Islands | https://leetcode.com/problems/number-of-islands/ | components grid | Each unvisited land starts island. |
+| Medium | Rotting Oranges | https://leetcode.com/problems/rotting-oranges/ | multi-source BFS | All rotten sources spread together. |
+| Hard | Word Ladder | https://leetcode.com/problems/word-ladder/ | implicit BFS | One-letter changes are edges. |
+
+---
+
+### 28.15 Graph Shortest Paths — Dijkstra / 0-1 BFS
+
+**Form:** Weighted shortest path.
+
+**Recognition clue:** Edge costs differ. If costs are only 0/1, use 0-1 BFS; if non-negative, use Dijkstra.
+
+**Tactic / invariant:** Always finalize/process the currently smallest known distance.
+
+```cpp
+vector<long long> dijkstra(int n, vector<vector<pair<int,int>>>& g, int src) {
+    const long long INF = 4e18;
+    vector<long long> dist(n + 1, INF);
+    priority_queue<pair<long long,int>, vector<pair<long long,int>>, greater<pair<long long,int>>> pq;
+    dist[src] = 0;
+    pq.push({0, src});
+    while (!pq.empty()) {
+        auto [d, u] = pq.top(); pq.pop();
+        if (d != dist[u]) continue;
+        for (auto [v, w] : g[u]) {
+            if (dist[v] > d + w) {
+                dist[v] = d + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    return dist;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Network Delay Time | https://leetcode.com/problems/network-delay-time/ | Dijkstra | Latest shortest arrival is answer. |
+| Medium | Path With Minimum Effort | https://leetcode.com/problems/path-with-minimum-effort/ | minimax Dijkstra | Distance is max edge on path. |
+| Medium | Cheapest Flights Within K Stops | https://leetcode.com/problems/cheapest-flights-within-k-stops/ | state shortest path | State includes stops used. |
+| Hard | Minimum Cost to Make at Least One Valid Path in a Grid | https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/ | 0-1 BFS | Follow arrow cost 0, change cost 1. |
+
+---
+
+### 28.16 Topological Sort — DAG Dependencies
+
+**Form:** Tasks/courses with prerequisites; need order or cycle detection.
+
+**Recognition clue:** `a before b`, dependencies, prerequisites, build order.
+
+**Tactic / invariant:** Nodes with indegree 0 are currently unlocked. If not all nodes are processed, a cycle exists.
+
+```cpp
+vector<int> topoSort(int n, vector<vector<int>>& g) {
+    vector<int> indeg(n, 0);
+    for (int u = 0; u < n; u++) for (int v : g[u]) indeg[v]++;
+    queue<int> q;
+    for (int i = 0; i < n; i++) if (indeg[i] == 0) q.push(i);
+    vector<int> order;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        order.push_back(u);
+        for (int v : g[u]) if (--indeg[v] == 0) q.push(v);
+    }
+    return order; // valid iff order.size() == n
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Find the Town Judge | https://leetcode.com/problems/find-the-town-judge/ | indegree/outdegree | Judge is trusted by all and trusts none. |
+| Medium | Course Schedule | https://leetcode.com/problems/course-schedule/ | cycle in directed graph | If topo processes all courses, possible. |
+| Medium | Course Schedule II | https://leetcode.com/problems/course-schedule-ii/ | topo order | Return dependency-respecting order. |
+| Hard | Alien Dictionary | https://leetcode.com/problems/alien-dictionary/ | build DAG + topo | First differing char gives order edge. |
+
+---
+
+### 28.17 DSU — Dynamic Connectivity
+
+**Form:** Merge groups, ask whether two items belong to same component, count components.
+
+**Recognition clue:** Undirected connectivity under edge additions; accounts/emails/components.
+
+**Tactic / invariant:** Each set has a representative. Path compression + union by size keeps operations almost O(1).
+
+```cpp
+struct DSU {
+    vector<int> p, sz;
+    DSU(int n) : p(n), sz(n, 1) { iota(p.begin(), p.end(), 0); }
+    int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }
+    bool unite(int a, int b) {
+        a = find(a); b = find(b);
+        if (a == b) return false;
+        if (sz[a] < sz[b]) swap(a, b);
+        p[b] = a;
+        sz[a] += sz[b];
+        return true;
+    }
+};
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Find if Path Exists in Graph | https://leetcode.com/problems/find-if-path-exists-in-graph/ | DSU connectivity | Union edges, compare roots. |
+| Medium | Number of Provinces | https://leetcode.com/problems/number-of-provinces/ | components | Connected cities become one set. |
+| Medium | Redundant Connection | https://leetcode.com/problems/redundant-connection/ | cycle by DSU | Edge connecting same root creates cycle. |
+| Hard | Accounts Merge | https://leetcode.com/problems/accounts-merge/ | DSU by key | Same email merges accounts. |
+
+---
+
+### 28.18 Trees — DFS Values, Subtree, Rerooting
+
+**Form:** Tree asks for depth, parent, subtree size, sum over subtree/path, answer for every root.
+
+**Recognition clue:** Connected acyclic graph; exactly one path; `n-1` edges.
+
+**Tactic / invariant:** Root the tree. Postorder combines children into parent; rerooting transfers answer across one edge.
+
+```cpp
+int n;
+vector<vector<int>> g;
+vector<int> parent, depth, sub;
+
+void dfsTree(int u, int p) {
+    parent[u] = p;
+    sub[u] = 1;
+    for (int v : g[u]) if (v != p) {
+        depth[v] = depth[u] + 1;
+        dfsTree(v, u);
+        sub[u] += sub[v];
+    }
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Maximum Depth of Binary Tree | https://leetcode.com/problems/maximum-depth-of-binary-tree/ | DFS depth | Answer is 1 + max child depth. |
+| Medium | Subordinates | https://cses.fi/problemset/task/1674 | subtree size | Postorder counts descendants. |
+| Medium | Diameter of Binary Tree | https://leetcode.com/problems/diameter-of-binary-tree/ | tree diameter | At each node combine two deepest branches. |
+| Hard | Sum of Distances in Tree | https://leetcode.com/problems/sum-of-distances-in-tree/ | reroot DP | Moving root changes contribution by subtree size. |
+
+---
+
+### 28.19 LCA / Binary Lifting — Tree Path Queries
+
+**Form:** Many queries about path between two tree nodes: distance, ancestor, kth node, path aggregate.
+
+**Recognition clue:** Static tree, many `u, v` queries.
+
+**Tactic / invariant:** Precompute `up[j][v]` = 2^j-th ancestor. Lift deeper node first, then lift both.
+
+```cpp
+const int LOG = 20;
+vector<array<int, LOG>> up;
+vector<int> dep;
+vector<vector<int>> tree;
+
+void dfsLca(int u, int p) {
+    up[u][0] = p;
+    for (int j = 1; j < LOG; j++) up[u][j] = up[up[u][j-1]][j-1];
+    for (int v : tree[u]) if (v != p) {
+        dep[v] = dep[u] + 1;
+        dfsLca(v, u);
+    }
+}
+
+int lift(int u, int k) {
+    for (int j = 0; j < LOG; j++) if (k & (1 << j)) u = up[u][j];
+    return u;
+}
+
+int lca(int a, int b) {
+    if (dep[a] < dep[b]) swap(a, b);
+    a = lift(a, dep[a] - dep[b]);
+    if (a == b) return a;
+    for (int j = LOG - 1; j >= 0; j--) {
+        if (up[a][j] != up[b][j]) {
+            a = up[a][j];
+            b = up[b][j];
+        }
+    }
+    return up[a][0];
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Lowest Common Ancestor of a BST | https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/ | BST split | First node between values is LCA. |
+| Medium | Lowest Common Ancestor of a Binary Tree | https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/ | recursive LCA | If targets found in both sides, current is LCA. |
+| Hard | Distance Queries | https://cses.fi/problemset/task/1135 | binary lifting LCA | dist = depth[u]+depth[v]-2*depth[lca]. |
+| Hard | Company Queries II | https://cses.fi/problemset/task/1688 | LCA queries | Lift ancestors by powers of two. |
+
+---
+
+### 28.20 DP — Take / Not Take, Knapsack, Subset Sum
+
+**Form:** Choose some items under capacity/target constraints.
+
+**Recognition clue:** Each item can be chosen or skipped; objective is count/max/min/possible.
+
+**Tactic / invariant:** `dp[s]` means whether/ways/best value using processed items to reach sum/capacity `s`.
+
+```cpp
+bool subsetSum(vector<int>& a, int target) {
+    vector<char> dp(target + 1, false);
+    dp[0] = true;
+    for (int x : a) {
+        for (int s = target; s >= x; s--) {
+            dp[s] = dp[s] || dp[s - x];
+        }
+    }
+    return dp[target];
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Climbing Stairs | https://leetcode.com/problems/climbing-stairs/ | 1D DP | Ways to i from i-1 and i-2. |
+| Medium | Partition Equal Subset Sum | https://leetcode.com/problems/partition-equal-subset-sum/ | subset sum | Need subset with sum total/2. |
+| Medium | Target Sum | https://leetcode.com/problems/target-sum/ | transform to subset sum | Signs become choosing positive subset. |
+| Hard | Profitable Schemes | https://leetcode.com/problems/profitable-schemes/ | 2D knapsack count | Track people used and capped profit. |
+
+---
+
+### 28.21 DP — Ending at Index / LIS / Kadane
+
+**Form:** Best answer ending at current position or using prefix ending here.
+
+**Recognition clue:** Need longest/increasing/best subarray/subsequence; local extension vs restart.
+
+**Tactic / invariant:** `dp[i]` means best answer ending exactly at `i`. For LIS optimized, `tail[len]` stores smallest ending value.
+
+```cpp
+int maxSubArray(vector<int>& a) {
+    int best = a[0], cur = a[0];
+    for (int i = 1; i < (int)a.size(); i++) {
+        cur = max(a[i], cur + a[i]);
+        best = max(best, cur);
+    }
+    return best;
+}
+
+int lis(vector<int>& a) {
+    vector<int> tail;
+    for (int x : a) {
+        auto it = lower_bound(tail.begin(), tail.end(), x);
+        if (it == tail.end()) tail.push_back(x);
+        else *it = x;
+    }
+    return tail.size();
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Maximum Subarray | https://leetcode.com/problems/maximum-subarray/ | Kadane | Either extend previous or start new. |
+| Medium | Longest Increasing Subsequence | https://leetcode.com/problems/longest-increasing-subsequence/ | LIS tails | Smaller tail is always better. |
+| Medium | Maximum Product Subarray | https://leetcode.com/problems/maximum-product-subarray/ | max/min ending | Negative can flip min to max. |
+| Hard | Russian Doll Envelopes | https://leetcode.com/problems/russian-doll-envelopes/ | sort + LIS | Sort one dimension, LIS the other. |
+
+---
+
+### 28.22 DP — Matching / Grid / Interval
+
+**Form:** Two strings/sequences, grid paths, or interval `[l,r]` decisions.
+
+**Recognition clue:** Compare two indices; move right/down; choose left/right boundary or last operation inside interval.
+
+**Tactic / invariant:** State stores answer for prefix pair or interval. Transition uses smaller prefixes/intervals.
+
+```cpp
+int lcs(string a, string b) {
+    int n = a.size(), m = b.size();
+    vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (a[i - 1] == b[j - 1]) dp[i][j] = 1 + dp[i - 1][j - 1];
+            else dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+        }
+    }
+    return dp[n][m];
+}
+
+int longestPalSubseq(string s) {
+    int n = s.size();
+    vector<vector<int>> dp(n, vector<int>(n, 0));
+    for (int len = 1; len <= n; len++) {
+        for (int l = 0; l + len - 1 < n; l++) {
+            int r = l + len - 1;
+            if (l == r) dp[l][r] = 1;
+            else if (s[l] == s[r]) dp[l][r] = 2 + (l + 1 <= r - 1 ? dp[l + 1][r - 1] : 0);
+            else dp[l][r] = max(dp[l + 1][r], dp[l][r - 1]);
+        }
+    }
+    return dp[0][n - 1];
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Min Cost Climbing Stairs | https://leetcode.com/problems/min-cost-climbing-stairs/ | grid/1D DP | State uses previous two. |
+| Medium | Longest Common Subsequence | https://leetcode.com/problems/longest-common-subsequence/ | matching DP | Match chars or skip one side. |
+| Medium | Unique Paths | https://leetcode.com/problems/unique-paths/ | grid DP/combinatorics | Reach cell from top or left. |
+| Medium | Longest Palindromic Subsequence | https://leetcode.com/problems/longest-palindromic-subsequence/ | interval DP | Match ends or skip one end. |
+| Hard | Edit Distance | https://leetcode.com/problems/edit-distance/ | matching operations | Insert/delete/replace. |
+| Hard | Burst Balloons | https://leetcode.com/problems/burst-balloons/ | interval last choice | Choose last balloon in interval. |
+
+---
+
+### 28.23 Greedy — Sorting, Intervals, Deadlines
+
+**Form:** Choose maximum non-overlapping intervals, minimum removals, scheduling with deadlines.
+
+**Recognition clue:** Local choice by earliest end, smallest/largest, deadline, or resource freeing.
+
+**Tactic / invariant:** Sort to expose safe choice. Prove exchange: replacing current choice with greedy choice never hurts.
+
+```cpp
+int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+    sort(intervals.begin(), intervals.end(), [](auto& a, auto& b) {
+        return a[1] < b[1];
+    });
+    int kept = 0;
+    int lastEnd = INT_MIN;
+    for (auto& in : intervals) {
+        if (in[0] >= lastEnd) {
+            kept++;
+            lastEnd = in[1];
+        }
+    }
+    return (int)intervals.size() - kept;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Assign Cookies | https://leetcode.com/problems/assign-cookies/ | sort greedy | Smallest cookie satisfying smallest child. |
+| Easy | Meeting Rooms | https://leetcode.com/problems/meeting-rooms/ | interval overlap | Sorted adjacent intervals reveal conflict. |
+| Medium | Non-overlapping Intervals | https://leetcode.com/problems/non-overlapping-intervals/ | sort by end | Earliest finish leaves most room. |
+| Medium | Partition Labels | https://leetcode.com/problems/partition-labels/ | greedy boundary | Segment ends at farthest last occurrence. |
+| Hard | Course Schedule III | https://leetcode.com/problems/course-schedule-iii/ | deadline + max heap | Drop longest course when deadline exceeded. |
+
+---
+
+### 28.24 Fenwick Tree — Point Update + Prefix/Range Query
+
+**Form:** Dynamic array with point updates and prefix/range sum queries; counting smaller/larger with compression.
+
+**Recognition clue:** Need many updates and range sum/count; operation is invertible prefix aggregate.
+
+**Tactic / invariant:** `bit[i]` stores sum of a suffix block ending at `i`. Move by lowbit.
+
+```cpp
+struct Fenwick {
+    int n;
+    vector<long long> bit;
+    Fenwick(int n) : n(n), bit(n + 1, 0) {}
+    void add(int idx, long long val) {
+        for (++idx; idx <= n; idx += idx & -idx) bit[idx] += val;
+    }
+    long long sumPrefix(int idx) {
+        long long res = 0;
+        for (++idx; idx > 0; idx -= idx & -idx) res += bit[idx];
+        return res;
+    }
+    long long rangeSum(int l, int r) {
+        if (r < l) return 0;
+        return sumPrefix(r) - (l ? sumPrefix(l - 1) : 0);
+    }
+};
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Range Sum Query - Mutable | https://leetcode.com/problems/range-sum-query-mutable/ | BIT/segment tree | Updates and range sums. |
+| Medium | Count Number of Teams | https://leetcode.com/problems/count-number-of-teams/ | BIT counts | Count smaller/larger on both sides. |
+| Medium | Reverse Pairs | https://leetcode.com/problems/reverse-pairs/ | BIT/merge sort | Count previous values greater than 2*x. |
+| Hard | Count of Smaller Numbers After Self | https://leetcode.com/problems/count-of-smaller-numbers-after-self/ | compression + BIT | Insert from right and query smaller count. |
+
+---
+
+### 28.25 Segment Tree — Flexible Range Query + Update
+
+**Form:** Need range min/max/sum/gcd, point/range updates, custom combine.
+
+**Recognition clue:** Fenwick is not enough because operation is non-invertible or needs custom range combine.
+
+**Tactic / invariant:** Each node stores answer for a segment. Query/update recursively touches O(log n) segment levels.
+
+```cpp
+struct SegTree {
+    int n;
+    vector<long long> st;
+    SegTree(vector<int>& a) {
+        n = a.size();
+        st.assign(4 * n, 0);
+        build(1, 0, n - 1, a);
+    }
+    void build(int p, int l, int r, vector<int>& a) {
+        if (l == r) { st[p] = a[l]; return; }
+        int m = (l + r) / 2;
+        build(p*2, l, m, a);
+        build(p*2+1, m+1, r, a);
+        st[p] = st[p*2] + st[p*2+1];
+    }
+    void update(int p, int l, int r, int idx, int val) {
+        if (l == r) { st[p] = val; return; }
+        int m = (l + r) / 2;
+        if (idx <= m) update(p*2, l, m, idx, val);
+        else update(p*2+1, m+1, r, idx, val);
+        st[p] = st[p*2] + st[p*2+1];
+    }
+    long long query(int p, int l, int r, int ql, int qr) {
+        if (qr < l || r < ql) return 0;
+        if (ql <= l && r <= qr) return st[p];
+        int m = (l + r) / 2;
+        return query(p*2, l, m, ql, qr) + query(p*2+1, m+1, r, ql, qr);
+    }
+};
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Range Sum Query - Mutable | https://leetcode.com/problems/range-sum-query-mutable/ | segment tree | Update one leaf, recompute ancestors. |
+| Medium | My Calendar I | https://leetcode.com/problems/my-calendar-i/ | interval tree/ordered map | Need detect overlap. |
+| Medium | Range Sum Query 2D - Mutable | https://leetcode.com/problems/range-sum-query-2d-mutable/ | 2D BIT/seg idea | Dynamic matrix range sums. |
+| Hard | Range Module | https://leetcode.com/problems/range-module/ | lazy segment / intervals | Add/remove/query covered ranges. |
+
+---
+
+### 28.26 Math — Modular Arithmetic + Fast Power
+
+**Form:** Large powers, modulo answers, division under mod, repeated nCk.
+
+**Recognition clue:** Answer asks modulo `1e9+7` or exponent is huge.
+
+**Tactic / invariant:** Use binary exponentiation. Under prime mod, inverse of `a` is `a^(MOD-2)`.
+
+```cpp
+const long long MOD = 1000000007;
+
+long long modPow(long long a, long long e, long long mod = MOD) {
+    long long res = 1 % mod;
+    a %= mod;
+    while (e > 0) {
+        if (e & 1) res = res * a % mod;
+        a = a * a % mod;
+        e >>= 1;
+    }
+    return res;
+}
+
+long long modInv(long long a) {
+    return modPow(a, MOD - 2);
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Power of Two | https://leetcode.com/problems/power-of-two/ | bit/math | One set bit. |
+| Medium | Pow(x, n) | https://leetcode.com/problems/powx-n/ | binary exponentiation | Square while halving exponent. |
+| Medium | Count Good Numbers | https://leetcode.com/problems/count-good-numbers/ | modular exponent | Independent positions multiply. |
+| Hard | Super Pow | https://leetcode.com/problems/super-pow/ | modular exponent digits | Process exponent digit by digit. |
+
+---
+
+### 28.27 Number Theory — Sieve, GCD, Prime Factors
+
+**Form:** Primes, divisibility, gcd/lcm, factorization, coprime counting.
+
+**Recognition clue:** Constraints include values up to 1e6/1e7; many prime/divisor queries.
+
+**Tactic / invariant:** Precompute smallest prime factor for fast factorization, or sieve primes once.
+
+```cpp
+vector<int> smallestPrimeFactor(int n) {
+    vector<int> spf(n + 1);
+    iota(spf.begin(), spf.end(), 0);
+    for (long long i = 2; i * i <= n; i++) {
+        if (spf[i] == i) {
+            for (long long j = i * i; j <= n; j += i) {
+                if (spf[j] == j) spf[j] = i;
+            }
+        }
+    }
+    return spf;
+}
+
+vector<pair<int,int>> factorize(int x, const vector<int>& spf) {
+    vector<pair<int,int>> res;
+    while (x > 1) {
+        int p = spf[x], c = 0;
+        while (x % p == 0) x /= p, c++;
+        res.push_back({p, c});
+    }
+    return res;
+}
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Count Primes | https://leetcode.com/problems/count-primes/ | sieve | Mark multiples composite. |
+| Medium | Four Divisors | https://leetcode.com/problems/four-divisors/ | factor/divisors | Count divisors through factorization. |
+| Medium | Ugly Number II | https://leetcode.com/problems/ugly-number-ii/ | prime multiples DP | Generate next multiple of 2/3/5. |
+| Hard | GCD Extreme | https://www.spoj.com/problems/GCDEX/ | number theory preprocessing | Count gcd contributions efficiently. |
+
+---
+
+### 28.28 Combinatorics — nCk, Counting Choices, Stars and Bars
+
+**Form:** Count ways to choose/order/distribute objects, often modulo prime.
+
+**Recognition clue:** “How many ways”, choosing positions, paths with right/down moves, arrangements.
+
+**Tactic / invariant:** Precompute factorials and inverse factorials for O(1) combinations.
+
+```cpp
+struct Comb {
+    long long mod;
+    vector<long long> fact, invFact;
+    Comb(int n, long long mod) : mod(mod), fact(n+1), invFact(n+1) {
+        fact[0] = 1;
+        for (int i = 1; i <= n; i++) fact[i] = fact[i-1] * i % mod;
+        invFact[n] = modPow(fact[n], mod - 2, mod);
+        for (int i = n; i >= 1; i--) invFact[i-1] = invFact[i] * i % mod;
+    }
+    long long C(int n, int k) {
+        if (k < 0 || k > n) return 0;
+        return fact[n] * invFact[k] % mod * invFact[n-k] % mod;
+    }
+};
+```
+
+| Difficulty | Problem | Link | Pattern | Intuition |
+|---|---|---|---|---|
+| Easy | Pascal's Triangle | https://leetcode.com/problems/pascals-triangle/ | nCk DP | Each cell is sum of two above. |
+| Medium | Unique Paths | https://leetcode.com/problems/unique-paths/ | choose positions | Pick where down moves go. |
+| Medium | Count Sorted Vowel Strings | https://leetcode.com/problems/count-sorted-vowel-strings/ | combinations with repetition | Nondecreasing sequence = stars and bars. |
+| Hard | Binomial Coefficients | https://cses.fi/problemset/task/1079 | factorial inverse | Many nCk queries under mod. |
+
+---
+
+## 29. Final Difficulty-Wise Practice Checklist by Topic
+
+Use this table to pick the next problem after finishing one pattern block.
+
+| Topic | Easy focus | Medium focus | Hard focus |
+|---|---|---|---|
+| Prefix | running/range sum | prefix + map, diff array | ordered prefix counting |
+| Binary Search | classic boundary | answer search checks | partition/kth/search space proof |
+| Two Pointers | sorted pair/palindrome | windows, 3Sum | min window / trapping water |
+| Stack/Deque/Heap | next greater/basic heap | monotonic stack/window heap | histogram, median, k-way merge |
+| Bits | masks, XOR cancel | contribution, subset masks | trie/offline/state BFS |
+| Backtracking | subsets | combinations/permutations | queens/sudoku/search pruning |
+| Graph | BFS/DFS basics | components, topo, Dijkstra | bridges, 0-1 BFS, state graph |
+| Tree/DSU | DFS/depth | subtree, DSU, diameter | LCA, rerooting, path queries |
+| DP | 1D DP | knapsack/LIS/LCS/grid | interval/digit/tree/bitmask DP |
+| Greedy | sort basics | interval/heap scheduling | exchange proof + advanced deadlines |
+| Range Query | prefix/BIT basics | Fenwick/segment | lazy segment/sparse/LCA RMQ |
+| Math | gcd/power/sieve | factorization/combinations | modular inverses/inclusion-exclusion |
 
 ## 27. How to Train With This Ultimate Guide
 
