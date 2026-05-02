@@ -1,23 +1,6 @@
 # 📘 Constructive Algorithms Visual Handbook
 
-> Mermaid fix version: every diagram uses safe quoted labels for GitHub rendering.
 
-# 📌 What Changed in This Version
-
-- Fixed all Mermaid diagrams with safe labels.
-- Removed risky symbols from diagram node text.
-- Added expanded frameworks, forms, tactics, dry runs, proof cards, and C++ examples.
-
----
-
-# 📘 Constructive Algorithms Visual Handbook
-## Beginner → FAANG / OA → Codeforces / Competitive Master Level
-
-> Goal: learn constructive algorithms visually, like a pattern notebook.
->
-> Constructive problems usually ask you to **build one valid answer**, not necessarily the best one.
-
----
 
 # 📑 Clickable Index
 
