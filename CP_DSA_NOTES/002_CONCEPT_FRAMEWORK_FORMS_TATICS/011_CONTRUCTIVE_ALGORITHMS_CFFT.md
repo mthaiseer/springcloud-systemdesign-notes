@@ -1,11 +1,6 @@
 # 📘 Constructive Algorithms Visual Handbook
-## Beginner → FAANG / OA → Codeforces / Competitive Master Level
 
-> Goal: learn constructive algorithms visually, like a pattern notebook.
->
-> Constructive problems usually ask you to **build one valid answer**, not necessarily the best one.
 
----
 
 # 📑 Clickable Index
 
@@ -73,15 +68,15 @@ You try to find a direct way to produce **any valid answer**.
 
 ```mermaid
 flowchart TD
-    A[Read problem constraints] --> B[Find required property]
-    B --> C[Find simple pattern]
-    C --> D[Build answer step by step]
-    D --> E{Constraint still valid?}
-    E -->|Yes| F[Continue]
-    E -->|No| G[Change construction idea]
-    F --> H{Answer complete?}
+    A["Read problem constraints"] --> B["Find required property"]
+    B --> C["Find simple pattern"]
+    C --> D["Build answer step by step"]
+    D --> E{"Constraint still valid"}
+    E -->|Yes| F["Continue"]
+    E -->|No| G["Change construction idea"]
+    F --> H{"Answer complete"}
     H -->|No| D
-    H -->|Yes| I[Output valid answer]
+    H -->|Yes| I["Output valid answer"]
 ```
 
 ---
@@ -107,13 +102,13 @@ Constructive problems often contain these phrases:
 
 ```mermaid
 flowchart TD
-    A[Problem asks to build?] -->|No| B[Maybe DP/Search/Math]
-    A -->|Yes| C{Any valid answer accepted?}
-    C -->|Yes| D[Constructive likely]
-    C -->|No, optimize| E[Greedy/DP/Graph likely]
-    D --> F{Can I find pattern?}
-    F -->|Yes| G[Build directly]
-    F -->|No| H[Try invariants, parity, sorting, reverse]
+    A["Problem asks to build"] -->|No| B["Maybe DP divided by Search divided by Math"]
+    A -->|Yes| C{"Any valid answer accepted"}
+    C -->|Yes| D["Constructive likely"]
+    C -->|No| E["Greedy divided by DP divided by Graph likely"]
+    D --> F{"Can I find pattern"}
+    F -->|Yes| G["Build directly"]
+    F -->|No| H["Try invariants parity sorting reverse"]
 ```
 
 ---
@@ -138,16 +133,16 @@ For almost every constructive problem, use this framework:
 
 ```mermaid
 flowchart TD
-    A[Final condition] --> B[Extract constraints]
-    B --> C[Find invariant]
-    C --> D[Choose construction direction]
-    D --> E[Place next element]
-    E --> F{Invariant holds?}
-    F -->|Yes| G[Keep building]
-    F -->|No| H[Change rule]
-    G --> I{All elements placed?}
+    A["Final condition"] --> B["Extract constraints"]
+    B --> C["Find invariant"]
+    C --> D["Choose construction direction"]
+    D --> E["Place next element"]
+    E --> F{"Invariant holds"}
+    F -->|Yes| G["Keep building"]
+    F -->|No| H["Change rule"]
+    G --> I{"All elements placed"}
     I -->|No| E
-    I -->|Yes| J[Proof + output]
+    I -->|Yes| J["Proof plus output"]
 ```
 
 ---
@@ -167,16 +162,16 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Problem] --> B{Need any valid answer?}
-    B -->|Yes| C[Try constructive]
-    B -->|No| D{Need best max/min?}
-    D -->|Yes| E[Try greedy or DP]
-    D -->|No| F[Maybe simulation/math]
-    C --> G{Can direct pattern satisfy constraints?}
-    G -->|Yes| H[Construct]
-    G -->|No| I{Can state transitions help?}
-    I -->|Yes| J[DP]
-    I -->|No| K[Search/backtracking]
+    A["Problem"] --> B{"Need any valid answer"}
+    B -->|Yes| C["Try constructive"]
+    B -->|No| D{"Need best max divided by min"}
+    D -->|Yes| E["Try greedy or DP"]
+    D -->|No| F["Maybe simulation divided by math"]
+    C --> G{"Can direct pattern satisfy constraints"}
+    G -->|Yes| H["Construct"]
+    G -->|No| I{"Can state transitions help"}
+    I -->|Yes| J["DP"]
+    I -->|No| K["Search divided by backtracking"]
 ```
 
 ---
@@ -237,13 +232,13 @@ For `n = 5`
 
 ```mermaid
 flowchart TD
-    A[Start] --> B[ans = empty]
-    B --> C[i = 1]
-    C --> D{ i <= n? }
-    D -->|Yes| E[push i]
-    E --> F[i++]
+    A["Start"] --> B["ans equals empty"]
+    B --> C["i equals 1"]
+    C --> D{"i at most n"}
+    D -->|Yes| E["push i"]
+    E --> F["iplus one"]
     F --> D
-    D -->|No| G[return ans]
+    D -->|No| G["return ans"]
 ```
 
 ---
@@ -289,18 +284,18 @@ valid iff n*L <= S <= n*R
 
 ```mermaid
 flowchart TD
-    A[Input n, L, R, S] --> B[minSum = n * L]
-    B --> C[maxSum = n * R]
-    C --> D{S in range?}
-    D -->|No| E[Impossible]
-    D -->|Yes| F[Initialize all values as L]
-    F --> G[remaining = S - minSum]
-    G --> H[For each index]
-    H --> I[add = min remaining, R-L]
-    I --> J[a[i] += add]
-    J --> K[remaining -= add]
-    K --> L{remaining == 0?}
-    L -->|Yes| M[Done]
+    A["Input values"] --> B["Compute minimum possible sum"]
+    B --> C["Compute maximum possible sum"]
+    C --> D{"Is target sum possible?"}
+    D -->|No| E["Return impossible"]
+    D -->|Yes| F["Start with all minimum values"]
+    F --> G["Compute remaining sum"]
+    G --> H["Visit each index"]
+    H --> I["Choose safe amount to add"]
+    I --> J["Update current array value"]
+    J --> K["Decrease remaining sum"]
+    K --> L{"Is remaining sum zero?"}
+    L -->|Yes| M["Return answer"]
     L -->|No| H
 ```
 
@@ -432,12 +427,12 @@ evens first, odds second
 
 ```mermaid
 flowchart TD
-    A[Need no adjacent diff 1] --> B[Group same parity]
-    B --> C[Evens: 2 4 6]
-    B --> D[Odds: 1 3 5]
-    C --> E[Combine evens + odds]
+    A["Need no adjacent diff 1"] --> B["Group same parity"]
+    B --> C["Evens 2 4 6"]
+    B --> D["Odds 1 3 5"]
+    C --> E["Combine evens plus odds"]
     D --> E
-    E --> F[Check boundary]
+    E --> F["Check boundary"]
 ```
 
 ---
@@ -528,14 +523,14 @@ low, high, low+1, high-1, low+2, high-2
 
 ```mermaid
 flowchart LR
-    A[low = 1] --> C[Pick low]
-    B[high = n] --> D[Pick high]
-    C --> E[low++]
-    D --> F[high--]
-    E --> G{low <= high?}
+    A["low equals 1"] --> C["Pick low"]
+    B["high equals n"] --> D["Pick high"]
+    C --> E["lowplus one"]
+    D --> F["highminus one"]
+    E --> G{"low at most high"}
     F --> G
     G -->|Yes| C
-    G -->|No| H[Done]
+    G -->|No| H["Done"]
 ```
 
 ---
@@ -614,12 +609,12 @@ For each position:
 
 ```mermaid
 flowchart TD
-    A[Position i] --> B[List candidate values]
-    B --> C[Test candidate]
-    C --> D{Prefix valid?}
-    D -->|Yes| E[Place value]
-    D -->|No| F[Try next candidate]
-    E --> G[i++]
+    A["Position i"] --> B["List candidate values"]
+    B --> C["Test candidate"]
+    C --> D{"Prefix valid"}
+    D -->|Yes| E["Place value"]
+    D -->|No| F["Try next candidate"]
+    E --> G["iplus one"]
 ```
 
 ---
@@ -690,13 +685,13 @@ Useful for:
 
 ```mermaid
 flowchart TD
-    A[Input items] --> B[Count frequency]
-    B --> C{Need most frequent?}
-    C -->|Yes| D[Use max heap]
-    C -->|No| E[Use map/set]
-    D --> F[Build result]
+    A["Input items"] --> B["Count frequency"]
+    B --> C{"Need most frequent"}
+    C -->|Yes| D["Use max heap"]
+    C -->|No| E["Use map divided by set"]
+    D --> F["Build result"]
     E --> F
-    F --> G[Validate constraints]
+    F --> G["Validate constraints"]
 ```
 
 ---
@@ -791,17 +786,17 @@ Rearrange string so no two adjacent characters are same.
 
 ```mermaid
 flowchart TD
-    A[Count frequencies] --> B[Push into max heap]
-    B --> C[Pop most frequent char]
-    C --> D{Same as previous?}
-    D -->|No| E[Append it]
-    D -->|Yes| F[Pick second most frequent]
-    E --> G[Decrease count]
+    A["Count frequencies"] --> B["Push into max heap"]
+    B --> C["Pop most frequent char"]
+    C --> D{"Same as previous"}
+    D -->|No| E["Append it"]
+    D -->|Yes| F["Pick second most frequent"]
+    E --> G["Decrease count"]
     F --> G
-    G --> H[Push remaining back]
-    H --> I{Heap empty?}
+    G --> H["Push remaining back"]
+    H --> I{"Heap empty"}
     I -->|No| C
-    I -->|Yes| J[Done]
+    I -->|Yes| J["Done"]
 ```
 
 ---
@@ -1028,12 +1023,12 @@ Common:
 
 ```mermaid
 flowchart TD
-    A[Initial state] --> B[Apply rule]
-    B --> C[Update answer]
-    C --> D[Update state]
-    D --> E{Finished?}
+    A["Initial state"] --> B["Apply rule"]
+    B --> C["Update answer"]
+    C --> D["Update state"]
+    D --> E{"Finished"}
     E -->|No| B
-    E -->|Yes| F[Return answer]
+    E -->|Yes| F["Return answer"]
 ```
 
 ---
@@ -1204,13 +1199,13 @@ If total sum is odd, impossible.
 
 ```mermaid
 flowchart TD
-    A[Compute total sum] --> B{total even?}
-    B -->|No| C[Impossible]
-    B -->|Yes| D[target = total / 2]
-    D --> E[Pick largest possible numbers]
-    E --> F[Subtract from target]
-    F --> G{target == 0?}
-    G -->|Yes| H[Done]
+    A["Compute total sum"] --> B{"total even"}
+    B -->|No| C["Impossible"]
+    B -->|Yes| D["target equals total divided by 2"]
+    D --> E["Pick largest possible numbers"]
+    E --> F["Subtract from target"]
+    F --> G{"target equals 0"}
+    G -->|Yes| H["Done"]
     G -->|No| E
 ```
 
@@ -1473,14 +1468,14 @@ Build a graph satisfying:
 
 ```mermaid
 flowchart TD
-    A[Need connected graph] --> B{m >= n-1?}
-    B -->|No| C[Impossible]
-    B -->|Yes| D[Build chain edges]
-    D --> E[extra = m - (n-1)]
-    E --> F[Try all non-chain pairs]
-    F --> G[Add edge if extra > 0]
-    G --> H{extra == 0?}
-    H -->|Yes| I[Done]
+    A["Need connected graph"] --> B{"Enough edges"}
+    B -->|No| C["Impossible"]
+    B -->|Yes| D["Build chain"]
+    D --> E["Compute extra edges"]
+    E --> F["Try unused node pairs"]
+    F --> G["Add edge if needed"]
+    G --> H{"Extra edges finished"}
+    H -->|Yes| I["Done"]
     H -->|No| F
 ```
 
@@ -1584,11 +1579,11 @@ Common examples:
 
 ```mermaid
 flowchart TD
-    A[Target state] --> B[Reverse operation]
-    B --> C[Smaller/easier state]
-    C --> D{Reached base?}
+    A["Target state"] --> B["Reverse operation"]
+    B --> C["Smaller divided by easier state"]
+    C --> D{"Reached base"}
     D -->|No| B
-    D -->|Yes| E[Reverse collected steps]
+    D -->|Yes| E["Reverse collected steps"]
 ```
 
 ---
@@ -1688,11 +1683,11 @@ Examples:
 
 ```mermaid
 flowchart TD
-    A[Start from easy base answer] --> B[Apply controlled transformation]
-    B --> C{Constraint still valid?}
-    C -->|Yes| D[Keep transformation]
-    C -->|No| E[Undo or choose different transformation]
-    D --> F[Final answer]
+    A["Start from easy base answer"] --> B["Apply controlled transformation"]
+    B --> C{"Constraint still valid"}
+    C -->|Yes| D["Keep transformation"]
+    C -->|No| E["Undo or choose different transformation"]
+    D --> F["Final answer"]
 ```
 
 ---
@@ -1777,15 +1772,15 @@ binary search answer
 
 ```mermaid
 flowchart TD
-    A[Search low..high] --> B[mid]
-    B --> C[Construct/check with mid]
-    C --> D{possible?}
-    D -->|Yes| E[save mid and reduce high]
-    D -->|No| F[increase low]
-    E --> G{done?}
+    A["Search low dot dot high"] --> B["mid"]
+    B --> C["Construct divided by check with mid"]
+    C --> D{"possible"}
+    D -->|Yes| E["save mid and reduce high"]
+    D -->|No| F["increase low"]
+    E --> G{"done"}
     F --> G
     G -->|No| B
-    G -->|Yes| H[answer]
+    G -->|Yes| H["answer"]
 ```
 
 ---
@@ -1880,10 +1875,10 @@ Constructive proof usually has 3 parts:
 
 ```mermaid
 flowchart TD
-    A[State construction] --> B[Show it uses valid elements]
-    B --> C[Show invariant holds]
-    C --> D[Show final constraints hold]
-    D --> E[Handle impossible cases]
+    A["State construction"] --> B["Show it uses valid elements"]
+    B --> C["Show invariant holds"]
+    C --> D["Show final constraints hold"]
+    D --> E["Handle impossible cases"]
 ```
 
 ---
@@ -1928,10 +1923,10 @@ Examples:
 
 ```mermaid
 flowchart TD
-    A[Before step: invariant true] --> B[Add/modify one part]
-    B --> C[Check local condition]
-    C --> D[After step: invariant still true]
-    D --> E[Repeat]
+    A["Before step invariant true"] --> B["Add divided by modify one part"]
+    B --> C["Check local condition"]
+    C --> D["After step invariant still true"]
+    D --> E["Repeat"]
 ```
 
 ---
@@ -1978,11 +1973,11 @@ Therefore greedy choice is safe.
 
 ```mermaid
 flowchart TD
-    A[Greedy picks G] --> B[Assume solution picks X instead]
-    B --> C[Swap X with G]
-    C --> D{Still valid?}
-    D -->|Yes| E[Greedy choice safe]
-    D -->|No| F[Greedy not proven]
+    A["Greedy picks G"] --> B["Assume solution picks X instead"]
+    B --> C["Swap X with G"]
+    C --> D{"Still valid"}
+    D -->|Yes| E["Greedy choice safe"]
+    D -->|No| F["Greedy not proven"]
 ```
 
 ---
@@ -2134,18 +2129,748 @@ bool noAdjacentDiffOne(vector<int>& a) {
 
 ---
 
+
+---
+
+# 29. Expanded Framework Map: Concepts, Forms, Tactics, Examples
+
+This section groups constructive algorithms by **concept framework**.
+Use it like a contest/OA checklist.
+
+---
+
+## 29.1 Framework: Feasibility First, Then Build
+
+### Concept
+
+Before constructing, prove whether an answer is possible.
+
+### Forms
+
+| Form | Typical Condition |
+|---|---|
+| Sum range | `minSum <= S <= maxSum` |
+| Permutation | all values must be unique |
+| Graph | `n - 1 <= m <= n(n-1)/2` |
+| String rearrangement | max frequency limit |
+| Parentheses | open count = close count |
+
+### Tactics
+
+| Tactic | Why It Helps |
+|---|---|
+| Check impossible case first | avoids invalid construction |
+| Compute minimum/maximum possible | fast feasibility |
+| Build from easiest valid base | simpler proof |
+| Validate output with helper | catches hidden mistakes |
+
+### Example: Construct `n` Numbers in `[L,R]` With Sum `S`
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> constructBoundedSum(int n, int L, int R, int S) {
+    long long minSum = 1LL * n * L;
+    long long maxSum = 1LL * n * R;
+
+    if (S < minSum || S > maxSum) return {};
+
+    vector<int> ans(n, L);
+    int rem = S - minSum;
+
+    for (int i = 0; i < n; i++) {
+        int add = min(rem, R - L);
+        ans[i] += add;
+        rem -= add;
+    }
+
+    return ans;
+}
+```
+
+### Dry Run
+
+Input:
+
+```text
+n = 5, L = 2, R = 7, S = 23
+```
+
+| Step | Action | Array | Remaining |
+|---:|---|---|---:|
+| 0 | start with L | `[2,2,2,2,2]` | 13 |
+| 1 | add 5 to index 0 | `[7,2,2,2,2]` | 8 |
+| 2 | add 5 to index 1 | `[7,7,2,2,2]` | 3 |
+| 3 | add 3 to index 2 | `[7,7,5,2,2]` | 0 |
+
+### Mermaid
+
+```mermaid
+flowchart TD
+    A["Input n L R S"] --> B["Compute minSum and maxSum"]
+    B --> C{"S inside valid range"}
+    C -->|No| D["Return impossible"]
+    C -->|Yes| E["Set every value to L"]
+    E --> F["Distribute remaining sum"]
+    F --> G{"Remaining is zero"}
+    G -->|Yes| H["Return answer"]
+    G -->|No| F
+```
+
+---
+
+## 29.2 Framework: Choose Smallest Safe Value
+
+### Concept
+
+Build lexicographically smallest valid answer by choosing the smallest value that does not break future feasibility.
+
+### Forms
+
+| Form | Example |
+|---|---|
+| Smallest unused safe number | permutation problems |
+| Smallest character allowed | string construction |
+| Smallest value preserving sum | bounded array |
+| Smallest edge preserving graph property | graph construction |
+
+### Tactics
+
+| Tactic | Reason |
+|---|---|
+| Try candidates in increasing order | gives lexicographically smallest |
+| Check future feasibility | prevents dead end |
+| Maintain used set | avoids duplicates |
+
+### Example: Lexicographically Smallest Derangement
+
+Problem: build permutation `p` of `1..n` such that `p[i] != i`.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> smallestDerangement(int n) {
+    if (n == 1) return {};
+
+    vector<int> p(n);
+    iota(p.begin(), p.end(), 1);
+
+    for (int i = 0; i + 1 < n; i += 2) {
+        swap(p[i], p[i + 1]);
+    }
+
+    if (n % 2 == 1) {
+        swap(p[n - 1], p[n - 2]);
+    }
+
+    return p;
+}
+```
+
+### Dry Run
+
+`n = 5`
+
+| Step | Operation | Permutation |
+|---:|---|---|
+| 0 | identity | `[1,2,3,4,5]` |
+| 1 | swap 1 and 2 | `[2,1,3,4,5]` |
+| 2 | swap 3 and 4 | `[2,1,4,3,5]` |
+| 3 | odd fix swap last two | `[2,1,4,5,3]` |
+
+Check:
+
+| i | p[i] | valid? |
+|---:|---:|---|
+| 1 | 2 | yes |
+| 2 | 1 | yes |
+| 3 | 4 | yes |
+| 4 | 5 | yes |
+| 5 | 3 | yes |
+
+### Mermaid
+
+```mermaid
+flowchart TD
+    A["Start with identity permutation"] --> B["Swap adjacent pairs"]
+    B --> C{"n is odd"}
+    C -->|No| D["Return permutation"]
+    C -->|Yes| E["Swap last two values"]
+    E --> D
+```
+
+---
+
+## 29.3 Framework: Use Parity Classes
+
+### Concept
+
+Separate values into odds and evens.
+
+This is powerful because parity controls:
+- adjacent difference
+- sum parity
+- divisibility by 2
+- alternating constraints
+
+### Forms
+
+| Form | Construction |
+|---|---|
+| evens then odds | avoid adjacent difference 1 |
+| odds then evens | parity grouping |
+| alternate odd/even | parity alternating |
+| choose all even | gcd at least 2 |
+
+### Tactics
+
+| Tactic | Use |
+|---|---|
+| group same parity | avoid close values |
+| alternate parity | force odd sums/differences |
+| count parity | prove impossible |
+
+### Example: Permutation With Adjacent Sum Odd
+
+If adjacent sum must be odd, every adjacent pair must be one odd and one even.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> alternateParityPermutation(int n) {
+    vector<int> odd, even;
+
+    for (int x = 1; x <= n; x++) {
+        if (x % 2) odd.push_back(x);
+        else even.push_back(x);
+    }
+
+    if (abs((int)odd.size() - (int)even.size()) > 1) return {};
+
+    vector<int> ans;
+    bool useOdd = odd.size() >= even.size();
+
+    int i = 0, j = 0;
+
+    while (i < (int)odd.size() || j < (int)even.size()) {
+        if (useOdd) {
+            if (i < (int)odd.size()) ans.push_back(odd[i++]);
+        } else {
+            if (j < (int)even.size()) ans.push_back(even[j++]);
+        }
+        useOdd = !useOdd;
+    }
+
+    return ans;
+}
+```
+
+### Dry Run
+
+`n = 5`
+
+Odd:
+
+```text
+1 3 5
+```
+
+Even:
+
+```text
+2 4
+```
+
+| Step | Pick | Result |
+|---:|---:|---|
+| 1 | 1 | `[1]` |
+| 2 | 2 | `[1,2]` |
+| 3 | 3 | `[1,2,3]` |
+| 4 | 4 | `[1,2,3,4]` |
+| 5 | 5 | `[1,2,3,4,5]` |
+
+Adjacent sums:
+
+```text
+1+2=3, 2+3=5, 3+4=7, 4+5=9
+```
+
+All odd.
+
+### Mermaid
+
+```mermaid
+flowchart TD
+    A["Split numbers into odd and even groups"] --> B{"Counts differ by at most one"}
+    B -->|No| C["Impossible"]
+    B -->|Yes| D["Start with larger group"]
+    D --> E["Alternate odd and even picks"]
+    E --> F["Return permutation"]
+```
+
+---
+
+## 29.4 Framework: Build From Extremes
+
+### Concept
+
+Use two pointers: smallest and largest.
+
+Good for:
+- wave arrays
+- maximizing adjacent differences
+- avoiding local traps
+- balancing values
+
+### Forms
+
+| Form | Example Output |
+|---|---|
+| low, high, low+1, high-1 | `1 7 2 6 3 5 4` |
+| high, low, high-1, low+1 | `7 1 6 2 5 3 4` |
+| pairs from ends | `(1,n), (2,n-1)` |
+
+### Example: Maximize Adjacent Differences Heuristically
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> extremePermutation(int n) {
+    int l = 1, r = n;
+    vector<int> ans;
+
+    while (l <= r) {
+        ans.push_back(l++);
+        if (l <= r) ans.push_back(r--);
+    }
+
+    return ans;
+}
+```
+
+### Dry Run
+
+`n = 6`
+
+| Step | l | r | Add | Result |
+|---:|---:|---:|---:|---|
+| 1 | 1 | 6 | 1 | `[1]` |
+| 2 | 2 | 6 | 6 | `[1,6]` |
+| 3 | 2 | 5 | 2 | `[1,6,2]` |
+| 4 | 3 | 5 | 5 | `[1,6,2,5]` |
+| 5 | 3 | 4 | 3 | `[1,6,2,5,3]` |
+| 6 | 4 | 4 | 4 | `[1,6,2,5,3,4]` |
+
+---
+
+## 29.5 Framework: Matrix/Grid Construction
+
+### Concept
+
+Grid constructive problems often depend on:
+- checkerboard pattern
+- row/column parity
+- borders first
+- spiral/layers
+- diagonal filling
+
+### Pattern Table
+
+| Grid Need | Construction |
+|---|---|
+| no adjacent equal | checkerboard |
+| fill numbers 1..n*m | row-major |
+| spiral order | boundary simulation |
+| diagonal property | fill by `i+j` |
+| chess-like | parity of `i+j` |
+
+### Example: Checkerboard Grid
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<string> checkerboard(int n, int m) {
+    vector<string> grid(n, string(m, '.'));
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if ((i + j) % 2 == 0) grid[i][j] = 'A';
+            else grid[i][j] = 'B';
+        }
+    }
+
+    return grid;
+}
+```
+
+### Dry Run
+
+`n = 3, m = 4`
+
+| Cell rule | Output |
+|---|---|
+| `(i+j)%2==0 -> A` | `ABAB` |
+| alternating | `BABA` |
+| alternating | `ABAB` |
+
+Final:
+
+```text
+ABAB
+BABA
+ABAB
+```
+
+### Mermaid
+
+```mermaid
+flowchart TD
+    A["For every cell i j"] --> B{"Is i plus j even"}
+    B -->|Yes| C["Place A"]
+    B -->|No| D["Place B"]
+    C --> E["Next cell"]
+    D --> E
+```
+
+---
+
+## 29.6 Framework: Local Repair
+
+### Concept
+
+Build something simple first, then repair bad positions locally.
+
+Useful when:
+- only few conflicts appear
+- bad adjacent pairs can be swapped
+- fixed points can be repaired
+- final answer almost valid
+
+### Forms
+
+| Form | Repair |
+|---|---|
+| fixed point in permutation | swap with neighbor |
+| adjacent equal chars | swap with later different char |
+| bad parity position | swap odd/even |
+| graph degree violation | move edge |
+
+### Example: Repair Fixed Points
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> repairFixedPoints(vector<int> p) {
+    int n = p.size();
+
+    for (int i = 0; i < n; i++) {
+        if (p[i] == i + 1) {
+            if (i + 1 < n) swap(p[i], p[i + 1]);
+            else swap(p[i], p[i - 1]);
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (p[i] == i + 1) return {};
+    }
+
+    return p;
+}
+```
+
+### Dry Run
+
+Input:
+
+```text
+[1,3,2,4]
+```
+
+| i | Problem? | Repair | Array |
+|---:|---|---|---|
+| 1 | p[1]=1 fixed | swap with next | `[3,1,2,4]` |
+| 2 | ok | none | `[3,1,2,4]` |
+| 3 | ok | none | `[3,1,2,4]` |
+| 4 | p[4]=4 fixed | swap with previous | `[3,1,4,2]` |
+
+---
+
+## 29.7 Framework: Construct by Sorting
+
+### Concept
+
+Sorting often exposes a construction order.
+
+### Forms
+
+| Sort By | Use |
+|---|---|
+| increasing value | smallest safe first |
+| decreasing value | largest safe first |
+| frequency | handle repeated items |
+| end time | interval construction |
+| custom comparator | match required property |
+
+### Example: Arrange Pairs by First Value
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<pair<int,int>> constructSortedPairs(vector<pair<int,int>> v) {
+    sort(v.begin(), v.end());
+    return v;
+}
+```
+
+### Dry Run
+
+Input:
+
+```text
+(3,5), (1,9), (2,4)
+```
+
+Sorted:
+
+```text
+(1,9), (2,4), (3,5)
+```
+
+---
+
+## 29.8 Framework: Construct Lexicographically Smallest Answer
+
+### Concept
+
+At each position, try smallest candidate that still allows completion.
+
+### Generic Template
+
+```cpp
+for each position:
+    for candidate from smallest to largest:
+        if candidate is safe and future possible:
+            place candidate
+            break
+```
+
+### Example: Smallest Binary String With K Ones
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+string smallestBinaryWithKOnes(int n, int k) {
+    string ans;
+
+    for (int i = 0; i < n; i++) {
+        int remainingPositions = n - i - 1;
+
+        if (k <= remainingPositions) {
+            ans += '0';
+        } else {
+            ans += '1';
+            k--;
+        }
+    }
+
+    return ans;
+}
+```
+
+### Dry Run
+
+`n = 5, k = 2`
+
+| i | remaining positions | k | choose | result |
+|---:|---:|---:|---|---|
+| 0 | 4 | 2 | 0 | `0` |
+| 1 | 3 | 2 | 0 | `00` |
+| 2 | 2 | 2 | 0 | `000` |
+| 3 | 1 | 2 | 1 | `0001` |
+| 4 | 0 | 1 | 1 | `00011` |
+
+---
+
+## 29.9 Framework: Construct by Blocks
+
+### Concept
+
+Repeat a valid block.
+
+If a block satisfies local constraints, repeating it may satisfy global constraints.
+
+### Forms
+
+| Block | Use |
+|---|---|
+| `01` | alternating binary |
+| `abc` | avoid same char nearby |
+| `123` | periodic array |
+| `LRUD` | movement cycles |
+| rows/columns | grid construction |
+
+### Example: Repeat Pattern Without Adjacent Equal
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+string repeatABC(int n) {
+    string block = "abc";
+    string ans;
+
+    for (int i = 0; i < n; i++) {
+        ans += block[i % 3];
+    }
+
+    return ans;
+}
+```
+
+### Dry Run
+
+`n = 8`
+
+| i | i % 3 | char | result |
+|---:|---:|---|---|
+| 0 | 0 | a | `a` |
+| 1 | 1 | b | `ab` |
+| 2 | 2 | c | `abc` |
+| 3 | 0 | a | `abca` |
+| 4 | 1 | b | `abcab` |
+| 5 | 2 | c | `abcabc` |
+| 6 | 0 | a | `abcabca` |
+| 7 | 1 | b | `abcabcab` |
+
+---
+
+## 29.10 Framework: Construct With Operations
+
+### Concept
+
+Instead of outputting final object, output operations that create it.
+
+### Common Forms
+
+| Operation Type | Strategy |
+|---|---|
+| add/subtract | reverse from target |
+| swap | transform identity |
+| rotate | shift bad positions |
+| merge/split | build components |
+| flip bits | use xor difference |
+
+### Example: Convert String A to B With Bit Flips
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> flipPositions(string a, string b) {
+    vector<int> ops;
+
+    for (int i = 0; i < (int)a.size(); i++) {
+        if (a[i] != b[i]) {
+            ops.push_back(i);
+            a[i] = b[i];
+        }
+    }
+
+    return ops;
+}
+```
+
+### Dry Run
+
+`a = 0101`, `b = 1100`
+
+| i | a[i] | b[i] | flip? | operations |
+|---:|---|---|---|---|
+| 0 | 0 | 1 | yes | `[0]` |
+| 1 | 1 | 1 | no | `[0]` |
+| 2 | 0 | 0 | no | `[0]` |
+| 3 | 1 | 0 | yes | `[0,3]` |
+
+---
+
+## 29.11 Contest Proof Mini-Cards
+
+### Card 1: Range Fill Proof
+
+```text
+We start with minimum valid values.
+Each operation adds only within remaining capacity.
+Therefore every element remains valid.
+Since total remaining sum becomes zero, final sum is correct.
+```
+
+### Card 2: Parity Proof
+
+```text
+The construction separates values by parity.
+Inside one parity group, adjacent differences are at least 2.
+The only risky point is the boundary, which is checked separately.
+Therefore the adjacency condition holds.
+```
+
+### Card 3: Heap String Proof
+
+```text
+At each step, we append two most frequent different characters.
+Thus no equal adjacent characters are created inside the pair.
+The next step starts after a different character.
+If one character frequency exceeds half the length rounded up, impossible.
+Otherwise the heap process finishes.
+```
+
+### Card 4: Graph Connectivity Proof
+
+```text
+The first n-1 edges form a chain, so all nodes are connected.
+Adding extra edges cannot disconnect a graph.
+Therefore the final graph is connected and has exactly m edges.
+```
+
+---
+
+## 29.12 Better OA/Contest Checklist
+
+Before submitting constructive code:
+
+| Test Type | Example |
+|---|---|
+| smallest valid | `n=1` |
+| smallest impossible | `n=2 or n=3` |
+| max boundary | largest `n` |
+| odd/even | both parity cases |
+| duplicate risk | permutation check |
+| range risk | min/max values |
+| leftover risk | remaining sum zero |
+| graph risk | edge count exactly `m` |
+
+---
+
+
 # Final Mental Model
 
 ```mermaid
 flowchart TD
-    A[Constructive Problem] --> B[Find final property]
-    B --> C[Find impossible cases]
-    C --> D[Pick framework]
-    D --> E[Build answer]
-    E --> F[Maintain invariant]
-    F --> G[Dry run small cases]
-    G --> H[Prove validity]
-    H --> I[Submit]
+    A["Constructive Problem"] --> B["Find final property"]
+    B --> C["Find impossible cases"]
+    C --> D["Pick framework"]
+    D --> E["Build answer"]
+    E --> F["Maintain invariant"]
+    F --> G["Dry run small cases"]
+    G --> H["Prove validity"]
+    H --> I["Submit"]
 ```
 
 ---
