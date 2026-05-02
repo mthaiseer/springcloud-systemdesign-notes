@@ -301,18 +301,18 @@ valid iff n*L <= S <= n*R
 
 ```mermaid
 flowchart TD
-    A["Input n L R S"] --> B["minSum equals n times L"]
-    B --> C["maxSum equals n times R"]
-    C --> D{"S in range"}
-    D -->|No| E["Impossible"]
-    D -->|Yes| F["Initialize all values as L"]
-    F --> G["remaining equals S minus minSum"]
-    G --> H["For each index"]
-    H --> I["add equals min remaining R minus L"]
-    I --> J[a["i"] += add]
-    J --> K["remaining minus equals add"]
-    K --> L{"remaining equals 0"}
-    L -->|Yes| M["Done"]
+    A["Input values"] --> B["Compute minimum possible sum"]
+    B --> C["Compute maximum possible sum"]
+    C --> D{"Is target sum possible?"}
+    D -->|No| E["Return impossible"]
+    D -->|Yes| F["Start with all minimum values"]
+    F --> G["Compute remaining sum"]
+    G --> H["Visit each index"]
+    H --> I["Choose safe amount to add"]
+    I --> J["Update current array value"]
+    J --> K["Decrease remaining sum"]
+    K --> L{"Is remaining sum zero?"}
+    L -->|Yes| M["Return answer"]
     L -->|No| H
 ```
 
