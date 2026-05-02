@@ -349,7 +349,7 @@ flowchart TD
     B --> C[Scan index i]
     C --> D{i > reach?}
     D -->|Yes| E[Cannot reach this index: return false]
-    D -->|No| F[reach = max reach, i + nums[i]]
+    D -->|No| F["reach = max(reach, i + nums[i])"]
     F --> G{reach >= last index?}
     G -->|Yes| H[Return true]
     G -->|No| C
@@ -391,7 +391,7 @@ flowchart TD
     A[totalGas - totalCost] --> B{total < 0?}
     B -->|Yes| C[No solution]
     B -->|No| D[Scan stations]
-    D --> E[tank += gas[i] - cost[i]]
+    D --> E["tank += gas[i] - cost[i]"]
     E --> F{tank < 0?}
     F -->|Yes| G[start = i + 1, tank = 0]
     F -->|No| H[Continue]
@@ -510,7 +510,7 @@ Each character must stay inside one partition. Track the farthest last occurrenc
 flowchart TD
     A[Store last index of each character] --> B[start = 0, end = 0]
     B --> C[Scan character at i]
-    C --> D[end = max(end, last[char])]
+    C --> D["end = max(end, last[char])"]
     D --> E{i == end?}
     E -->|Yes| F[Close partition]
     E -->|No| G[Continue]
