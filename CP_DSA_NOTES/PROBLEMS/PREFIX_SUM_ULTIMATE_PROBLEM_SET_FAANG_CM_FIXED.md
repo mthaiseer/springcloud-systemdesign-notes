@@ -448,10 +448,10 @@ Many queries ask sum(l, r).
 ```mermaid
 flowchart TD
     A[Need many range sums] --> B[Build pref array]
-    B --> C[pref[0] = 0]
-    C --> D[pref[i+1] = pref[i] + a[i]]
+    B --> C["pref[0] = 0"]
+    C --> D["pref[i+1] = pref[i] + a[i]"]
     D --> E[For query l r]
-    E --> F[answer = pref[r+1] - pref[l]]
+    E --> F["answer = pref[r+1] - pref[l]"]
 ```
 
 ### Tactics
@@ -568,8 +568,8 @@ Range XOR queries or subarray XOR equals K.
 ```mermaid
 flowchart TD
     A[Need XOR on l..r] --> B[Build px]
-    B --> C[px[i+1] = px[i] XOR a[i]]
-    C --> D[range xor = px[r+1] XOR px[l]]
+    B --> C["px[i+1] = px[i] XOR a[i]"]
+    C --> D["range xor = px[r+1] XOR px[l]"]
     D --> E[Repeated prefix cancels]
 ```
 
@@ -597,8 +597,8 @@ Need final array, not online query after every update.
 
 ```mermaid
 flowchart TD
-    A[Range add x on l..r] --> B[diff[l] += x]
-    B --> C[diff[r+1] -= x]
+    A[Range add x on l..r] --> B["diff[l] += x"]
+    B --> C["diff[r+1] -= x"]
     C --> D[After all updates]
     D --> E[Prefix sum diff]
     E --> F[Final array]
@@ -992,9 +992,9 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[Wrong Answer] --> B{Prefix initialized?}
-    B -->|No| C[Add pref[0]=0 or freq[0]=1]
+    B -->|No| C["Add pref[0]=0 or freq[0]=1"]
     B -->|Yes| D{Indexing consistent?}
-    D -->|No| E[Use pref[r+1]-pref[l]]
+    D -->|No| E["Use pref[r+1]-pref[l]"]
     D -->|Yes| F{Overflow?}
     F -->|Yes| G[Use long long]
     F -->|No| H{Modulo negative?}
