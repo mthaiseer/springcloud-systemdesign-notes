@@ -1,5 +1,10 @@
 
-# CP DSA Math Visual Reference — Candidate Master Improved Edition
+# CP DSA Math Visual Reference — Candidate Master Improved Edition with Flow Charts
+
+> Optimized render-safe edition: duplicate table diagrams and generic problem diagrams were removed; each problem keeps the useful detailed solution flowchart and dry-run flowchart.
+
+
+> This version keeps the original guide content and adds detailed Mermaid solution-step flowcharts plus dry-run flowcharts for each practice problem.
 
 A visual, step-by-step mathematical foundation guide for Competitive Programming and DSA, aimed at building strong fundamentals toward Candidate Master level.
 
@@ -38,18 +43,18 @@ A visual, step-by-step mathematical foundation guide for Competitive Programming
 
 ```mermaid
 flowchart TD
-A[CP Math Problem] --> B{Identify pattern}
-B --> C[Modulo cycle]
-B --> D[Fast power]
-B --> E[GCD LCM]
-B --> F[Prime factorization]
-B --> G[Prefix sum]
-B --> H[Counting]
-B --> I[Sequence formula]
-B --> J[Geometry]
-B --> K[Complexity]
-B --> L[Invariant]
-B --> M[Binary search on answer]
+A["CP Math Problem"] --> B{Identify pattern}
+B --> C["Modulo cycle"]
+B --> D["Fast power"]
+B --> E["GCD LCM"]
+B --> F["Prime factorization"]
+B --> G["Prefix sum"]
+B --> H["Counting"]
+B --> I["Sequence formula"]
+B --> J["Geometry"]
+B --> K["Complexity"]
+B --> L["Invariant"]
+B --> M["Binary search on answer"]
 ```
 
 Core idea:
@@ -60,13 +65,13 @@ General framework:
 
 ```mermaid
 flowchart TD
-A[Read problem] --> B[Try small examples]
-B --> C[Find repeated structure]
-C --> D[Choose formula or helper]
-D --> E[Check constraints]
-E --> F[Check overflow]
-F --> G[Implement]
-G --> H[Test edge cases]
+A["Read problem"] --> B["Try small examples"]
+B --> C["Find repeated structure"]
+C --> D["Choose formula or helper"]
+D --> E["Check constraints"]
+E --> F["Check overflow"]
+F --> G["Implement"]
+G --> H["Test edge cases"]
 ```
 
 ### Master Pattern Table
@@ -92,13 +97,13 @@ G --> H[Test edge cases]
 
 ```mermaid
 flowchart TD
-A[Stuck] --> B[Make smallest cases]
-B --> C[Write brute force idea]
-C --> D[Record answers]
-D --> E[Find sequence or invariant]
-E --> F[Prove pattern]
-F --> G[Code optimized version]
-G --> H[Stress test mentally]
+A["Stuck"] --> B["Make smallest cases"]
+B --> C["Write brute force idea"]
+C --> D["Record answers"]
+D --> E["Find sequence or invariant"]
+E --> F["Prove pattern"]
+F --> G["Code optimized version"]
+G --> H["Stress test mentally"]
 ```
 
 
@@ -136,10 +141,10 @@ ceil(10 / 3) = 4 groups
 
 ```mermaid
 flowchart LR
-A[10 items] --> B[Group size 3]
-B --> C[3 full groups]
-C --> D[1 leftover item]
-D --> E[Need 4 groups]
+A["10 items"] --> B["Group size 3"]
+B --> C["3 full groups"]
+C --> D["1 leftover item"]
+D --> E["Need 4 groups"]
 ```
 
 ### C++ Helper
@@ -204,25 +209,12 @@ ceil(n / k)
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[Codeforces 151A Soft Drinking]
-    C[Topic] --- D[Ceiling Division]
-    E[Concepts] --- F[minimum among limiting resources integer division]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Compute each resource capacity and take minimum]
-    K[Complexity] --- L[O 1]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[Codeforces 151A Soft Drinking] --> B[Topic Ceiling Division]
-A --> C[Concepts minimum among limiting resources, integer division]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Compute each resource capacity and take minimum.]
-A --> F[Complexity O1]
+A["Codeforces 151A Soft Drinking"] --> B["Topic Ceiling Division"]
+A --> C["Concepts minimum among limiting resources, integer d..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Compute each resource capacity and take minimum."]
+A --> F["Complexity O1"]
 ```
 
 
@@ -236,15 +228,20 @@ A --> F[Complexity O1]
 5. This is not pure ceiling division, but it trains integer groups and bottleneck thinking.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S1_0["'Compute how many toasts can be made from drink.'"]
+    S1_1["'Compute how many toasts can be made from limes.'"]
+    S1_2["'Compute how many toasts can be made from salt.'"]
+    S1_3["'The answer is the minimum of these values divided b..."]
+    S1_4["'This is not pure ceiling division, but it trains in..."]
+    S1_0 --> S1_1
+    S1_1 --> S1_2
+    S1_2 --> S1_3
+    S1_3 --> S1_4
 ```
 
 #### Dry Run
@@ -256,6 +253,23 @@ limes give 6 toasts
 salt gives 9 toasts
 bottleneck = 6
 answer = 6 / 3 = 2
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D1_0["'n = 3 friends'"]
+    D1_1["'drink gives 10 total toasts'"]
+    D1_2["'limes give 6 toasts'"]
+    D1_3["'salt gives 9 toasts'"]
+    D1_4["'bottleneck = 6'"]
+    D1_5["'answer = 6 / 3 = 2'"]
+    D1_0 --> D1_1
+    D1_1 --> D1_2
+    D1_2 --> D1_3
+    D1_3 --> D1_4
+    D1_4 --> D1_5
 ```
 
 ### Practice Problem: [Codeforces 919A Supermarket](https://codeforces.com/problemset/problem/919/A)
@@ -272,25 +286,12 @@ answer = 6 / 3 = 2
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[Codeforces 919A Supermarket]
-    C[Topic] --- D[Ceiling Division]
-    E[Concepts] --- F[ratio comparison price per unit minimum value]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Track minimum double ratio]
-    K[Complexity] --- L[O n]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[Codeforces 919A Supermarket] --> B[Topic Ceiling Division]
-A --> C[Concepts ratio comparison, price per unit, minimum value]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Track minimum double ratio.]
-A --> F[Complexity On]
+A["Codeforces 919A Supermarket"] --> B["Topic Ceiling Division"]
+A --> C["Concepts ratio comparison, price per unit, minimum v..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Track minimum double ratio."]
+A --> F["Complexity On"]
 ```
 
 
@@ -303,15 +304,18 @@ A --> F[Complexity On]
 4. Use double because the answer can be fractional.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S2_0["'For each shop, compute price per unit as a / b.'"]
+    S2_1["'Find the minimum price per unit.'"]
+    S2_2["'Multiply by required amount.'"]
+    S2_3["'Use double because the answer can be fractional.'"]
+    S2_0 --> S2_1
+    S2_1 --> S2_2
+    S2_2 --> S2_3
 ```
 
 #### Dry Run
@@ -321,6 +325,19 @@ Shop 1 price 10 for 2 kg gives 5 per kg
 Shop 2 price 15 for 5 kg gives 3 per kg
 Need 4 kg
 answer = 3 * 4 = 12
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D2_0["'Shop 1 price 10 for 2 kg gives 5 per kg'"]
+    D2_1["'Shop 2 price 15 for 5 kg gives 3 per kg'"]
+    D2_2["'Need 4 kg'"]
+    D2_3["'answer = 3 4 = 12'"]
+    D2_0 --> D2_1
+    D2_1 --> D2_2
+    D2_2 --> D2_3
 ```
 
 
@@ -366,9 +383,9 @@ After 100 days in a 7 day cycle:
 
 ```mermaid
 flowchart LR
-A[Start position] --> B[Add steps]
-B --> C[Take modulo]
-C --> D[Final cycle position]
+A["Start position"] --> B["Add steps"]
+B --> C["Take modulo"]
+C --> D["Final cycle position"]
 ```
 
 ### C++ Helper
@@ -418,25 +435,12 @@ Think modulo.
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[Codeforces 913A Modular Exponentiation]
-    C[Topic] --- D[Modulo and Cycles]
-    E[Concepts] --- F[modulo powers of two overflow avoidance]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[If n is large enough directly print m]
-    K[Complexity] --- L[O 1]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[Codeforces 913A Modular Exponentiation] --> B[Topic Modulo and Cycles]
-A --> C[Concepts modulo, powers of two, overflow avoidance]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint If n is large enough, directly print m.]
-A --> F[Complexity O1]
+A["Codeforces 913A Modular Exponentiation"] --> B["Topic Modulo and Cycles"]
+A --> C["Concepts modulo, powers of two, overflow avoidance"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint If n is large enough, directly print m."]
+A --> F["Complexity O1"]
 ```
 
 
@@ -449,15 +453,18 @@ A --> F[Complexity O1]
 4. Key trick: avoid computing impossible huge powers.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S3_0["'The problem asks for m mod 2^n.'"]
+    S3_1["'If n is very large, then 2^n is bigger than m, so a..."]
+    S3_2["'Otherwise compute 2^n safely and output m % value.'"]
+    S3_3["'Key trick: avoid computing impossible huge powers.'"]
+    S3_0 --> S3_1
+    S3_1 --> S3_2
+    S3_2 --> S3_3
 ```
 
 #### Dry Run
@@ -474,6 +481,27 @@ n = 40, m = 100
 answer = 100
 ```
 
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D3_0["'n = 3, m = 10'"]
+    D3_1["'2^3 = 8'"]
+    D3_2["'10 mod 8 = 2'"]
+    D3_3["'answer = 2'"]
+    D3_4["'n = 40, m = 100'"]
+    D3_5["'2^40 is larger than 100'"]
+    D3_6["'100 mod huge number = 100'"]
+    D3_7["'answer = 100'"]
+    D3_0 --> D3_1
+    D3_1 --> D3_2
+    D3_2 --> D3_3
+    D3_3 --> D3_4
+    D3_4 --> D3_5
+    D3_5 --> D3_6
+    D3_6 --> D3_7
+```
+
 ### Practice Problem: [CSES Increasing Array](https://cses.fi/problemset/task/1094)
 
 | Field | Details |
@@ -488,25 +516,12 @@ answer = 100
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Increasing Array]
-    C[Topic] --- D[Modulo and Cycles]
-    E[Concepts] --- F[monotonic invariant operation count]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Track previous maximum]
-    K[Complexity] --- L[O n]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Increasing Array] --> B[Topic Modulo and Cycles]
-A --> C[Concepts monotonic invariant, operation count]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Track previous maximum.]
-A --> F[Complexity On]
+A["CSES Increasing Array"] --> B["Topic Modulo and Cycles"]
+A --> C["Concepts monotonic invariant, operation count"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Track previous maximum."]
+A --> F["Complexity On"]
 ```
 
 
@@ -519,15 +534,18 @@ A --> F[Complexity On]
 4. This is a math invariant problem more than a simulation problem.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S4_0["'Maintain the invariant that the processed prefix is..."]
+    S4_1["'If current value is smaller than previous value, in..."]
+    S4_2["'Add the difference to answer.'"]
+    S4_3["'This is a math invariant problem more than a simula..."]
+    S4_0 --> S4_1
+    S4_1 --> S4_2
+    S4_2 --> S4_3
 ```
 
 #### Dry Run
@@ -540,6 +558,25 @@ prev = 3
 1 is smaller than 5, add 4, make it 5
 7 is okay
 answer = 1 + 4 = 5
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D4_0["'array = 3 2 5 1 7'"]
+    D4_1["'prev = 3'"]
+    D4_2["'2 is smaller than 3, add 1, make it 3'"]
+    D4_3["'5 is okay, prev = 5'"]
+    D4_4["'1 is smaller than 5, add 4, make it 5'"]
+    D4_5["'7 is okay'"]
+    D4_6["'answer = 1 + 4 = 5'"]
+    D4_0 --> D4_1
+    D4_1 --> D4_2
+    D4_2 --> D4_3
+    D4_3 --> D4_4
+    D4_4 --> D4_5
+    D4_5 --> D4_6
 ```
 
 
@@ -565,15 +602,15 @@ x^13 = x^8 * x^4 * x^1
 
 ```mermaid
 flowchart TD
-A[Set result to 1] --> B{Exponent greater than zero}
+A["Set result to 1"] --> B{Exponent greater than zero}
 B -->|Yes| C{Exponent is odd}
-C -->|Yes| D[Multiply result by base]
-C -->|No| E[Skip multiply]
-D --> F[Square base]
+C -->|Yes| D["Multiply result by base"]
+C -->|No| E["Skip multiply"]
+D --> F["Square base"]
 E --> F
-F --> G[Divide exponent by 2]
+F --> G["Divide exponent by 2"]
 G --> B
-B -->|No| H[Return result]
+B -->|No| H["Return result"]
 ```
 
 ### C++ Helper
@@ -661,25 +698,12 @@ need matrix power later
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Exponentiation]
-    C[Topic] --- D[Binary Exponentiation]
-    E[Concepts] --- F[binary exponentiation modulo many queries]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use modPow a b MOD]
-    K[Complexity] --- L[O log b per query]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Exponentiation] --> B[Topic Binary Exponentiation]
-A --> C[Concepts binary exponentiation, modulo, many queries]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use modPowa, b, MOD.]
-A --> F[Complexity Olog b per query]
+A["CSES Exponentiation"] --> B["Topic Binary Exponentiation"]
+A --> C["Concepts binary exponentiation, modulo, many queries"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use modPowa, b, MOD."]
+A --> F["Complexity Olog b per query"]
 ```
 
 
@@ -693,15 +717,20 @@ A --> F[Complexity Olog b per query]
 5. Square base every step and halve exponent.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S5_0["'Each query gives a and b.'"]
+    S5_1["'Direct multiplication is impossible when b is large.'"]
+    S5_2["'Use modular binary exponentiation.'"]
+    S5_3["'For every odd exponent bit, multiply answer by curr..."]
+    S5_4["'Square base every step and halve exponent.'"]
+    S5_0 --> S5_1
+    S5_1 --> S5_2
+    S5_2 --> S5_3
+    S5_3 --> S5_4
 ```
 
 #### Dry Run
@@ -711,6 +740,19 @@ a = 3, b = 13, mod = 1000000007
 13 binary is 1101
 Use powers 3^1, 3^4, 3^8
 answer = 1594323
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D5_0["'a = 3, b = 13, mod = 1000000007'"]
+    D5_1["'13 binary is 1101'"]
+    D5_2["'Use powers 3^1, 3^4, 3^8'"]
+    D5_3["'answer = 1594323'"]
+    D5_0 --> D5_1
+    D5_1 --> D5_2
+    D5_2 --> D5_3
 ```
 
 ### Practice Problem: [CSES Exponentiation II](https://cses.fi/problemset/task/1712)
@@ -727,25 +769,12 @@ answer = 1594323
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Exponentiation II]
-    C[Topic] --- D[Binary Exponentiation]
-    E[Concepts] --- F[Fermat reduction nested exponent modular power]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use modPow twice]
-    K[Complexity] --- L[O log c plus log MOD]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Exponentiation II] --> B[Topic Binary Exponentiation]
-A --> C[Concepts Fermat reduction, nested exponent, modular power]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use modPow twice.]
-A --> F[Complexity Olog c plus log MOD]
+A["CSES Exponentiation II"] --> B["Topic Binary Exponentiation"]
+A --> C["Concepts Fermat reduction, nested exponent, modular..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use modPow twice."]
+A --> F["Complexity Olog c plus log MOD"]
 ```
 
 
@@ -759,15 +788,20 @@ A --> F[Complexity Olog c plus log MOD]
 5. This combines Fermat theorem and binary exponentiation.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S6_0["'Need compute a^(b^c) mod MOD.'"]
+    S6_1["'Since MOD is prime, reduce exponent modulo MOD minu..."]
+    S6_2["'Compute e = b^c mod MOD minus 1.'"]
+    S6_3["'Answer is a^e mod MOD.'"]
+    S6_4["'This combines Fermat theorem and binary exponentiat..."]
+    S6_0 --> S6_1
+    S6_1 --> S6_2
+    S6_2 --> S6_3
+    S6_3 --> S6_4
 ```
 
 #### Dry Run
@@ -777,6 +811,19 @@ a = 2, b = 3, c = 2
 exponent = 3^2 = 9
 answer = 2^9 = 512
 For huge values compute exponent modulo MOD minus 1
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D6_0["'a = 2, b = 3, c = 2'"]
+    D6_1["'exponent = 3^2 = 9'"]
+    D6_2["'answer = 2^9 = 512'"]
+    D6_3["'For huge values compute exponent modulo MOD minus 1'"]
+    D6_0 --> D6_1
+    D6_1 --> D6_2
+    D6_2 --> D6_3
 ```
 
 
@@ -808,10 +855,10 @@ a^(M - 1) = 1 mod M
 
 ```mermaid
 flowchart TD
-A[Need division under modulo] --> B{Modulo is prime}
-B -->|Yes| C[Use Fermat inverse]
-C --> D[Compute power M minus 2]
-B -->|No| E[Use extended gcd if inverse exists]
+A["Need division under modulo"] --> B{Modulo is prime}
+B -->|Yes| C["Use Fermat inverse"]
+C --> D["Compute power M minus 2"]
+B -->|No| E["Use extended gcd if inverse exists"]
 ```
 
 ### C++ Helper
@@ -860,25 +907,12 @@ Division means multiply by inverse.
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Binomial Coefficients]
-    C[Topic] --- D[Modular Arithmetic]
-    E[Concepts] --- F[factorials inverse factorials nCr modulo prime]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Precompute factorial and inverse factorial]
-    K[Complexity] --- L[O maxN log MOD plus q]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Binomial Coefficients] --> B[Topic Modular Arithmetic]
-A --> C[Concepts factorials, inverse factorials, nCr modulo prime]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Precompute factorial and inverse factorial.]
-A --> F[Complexity OmaxN log MOD plus q]
+A["CSES Binomial Coefficients"] --> B["Topic Modular Arithmetic"]
+A --> C["Concepts factorials, inverse factorials, nCr modulo..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Precompute factorial and inverse factorial."]
+A --> F["Complexity OmaxN log MOD plus q"]
 ```
 
 
@@ -892,15 +926,20 @@ A --> F[Complexity OmaxN log MOD plus q]
 5. This changes each query from O(n) to O(1).
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S7_0["'Need answer many nCr queries under prime modulo.'"]
+    S7_1["'Precompute factorials up to maximum n.'"]
+    S7_2["'Precompute inverse factorials using Fermat inverse.'"]
+    S7_3["'Answer each query as fact(n) invFact(r) invFact(n-r).'"]
+    S7_4["'This changes each query from O(n) to O(1).'"]
+    S7_0 --> S7_1
+    S7_1 --> S7_2
+    S7_2 --> S7_3
+    S7_3 --> S7_4
 ```
 
 #### Dry Run
@@ -912,6 +951,23 @@ fact[2] = 2
 fact[3] = 6
 C(5,2) = 120 / 12 = 10
 Under modulo division becomes multiply by inverse
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D7_0["'n = 5, r = 2'"]
+    D7_1["'fact(5) = 120'"]
+    D7_2["'fact(2) = 2'"]
+    D7_3["'fact(3) = 6'"]
+    D7_4["'C(5,2) = 120 / 12 = 10'"]
+    D7_5["'Under modulo division becomes multiply by inverse'"]
+    D7_0 --> D7_1
+    D7_1 --> D7_2
+    D7_2 --> D7_3
+    D7_3 --> D7_4
+    D7_4 --> D7_5
 ```
 
 ### Practice Problem: [CSES Distributing Apples](https://cses.fi/problemset/task/1716)
@@ -928,25 +984,12 @@ Under modulo division becomes multiply by inverse
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Distributing Apples]
-    C[Topic] --- D[Modular Arithmetic]
-    E[Concepts] --- F[stars and bars nCr modulo prime]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Answer nCr n m 1 n 1]
-    K[Complexity] --- L[O maxN log MOD plus 1]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Distributing Apples] --> B[Topic Modular Arithmetic]
-A --> C[Concepts stars and bars, nCr modulo prime]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Answer nCrn plus m minus 1, n minus 1.]
-A --> F[Complexity OmaxN log MOD plus 1]
+A["CSES Distributing Apples"] --> B["Topic Modular Arithmetic"]
+A --> C["Concepts stars and bars, nCr modulo prime"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Answer nCrn plus m minus 1, n minus 1."]
+A --> F["Complexity OmaxN log MOD plus 1"]
 ```
 
 
@@ -959,15 +1002,18 @@ A --> F[Complexity OmaxN log MOD plus 1]
 4. Use modular nCr precomputation.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S8_0["'Distribute m identical apples among n children.'"]
+    S8_1["'This is stars and bars.'"]
+    S8_2["'Number of ways is C(n + m - 1, n - 1).'"]
+    S8_3["'Use modular nCr precomputation.'"]
+    S8_0 --> S8_1
+    S8_1 --> S8_2
+    S8_2 --> S8_3
 ```
 
 #### Dry Run
@@ -978,6 +1024,21 @@ Represent as stars and bars
 **** with 2 separators
 Total positions = 4 + 3 - 1 = 6
 Choose separator positions = C(6,2) = 15
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D8_0["'n = 3 children, m = 4 apples'"]
+    D8_1["'Represent as stars and bars'"]
+    D8_2["'with 2 separators'"]
+    D8_3["'Total positions = 4 + 3 - 1 = 6'"]
+    D8_4["'Choose separator positions = C(6,2) = 15'"]
+    D8_0 --> D8_1
+    D8_1 --> D8_2
+    D8_2 --> D8_3
+    D8_3 --> D8_4
 ```
 
 
@@ -1002,12 +1063,12 @@ gcd(a, b) * lcm(a, b) = a * b
 
 ```mermaid
 flowchart TD
-A[Start with a and b] --> B{b equals zero}
-B -->|No| C[r equals a modulo b]
-C --> D[a becomes b]
-D --> E[b becomes r]
+A["Start with a and b"] --> B{b equals zero}
+B -->|No| C["r equals a modulo b"]
+C --> D["a becomes b"]
+D --> E["b becomes r"]
 E --> B
-B -->|Yes| F[a is gcd]
+B -->|Yes| F["a is gcd"]
 ```
 
 ### C++ Helper
@@ -1071,25 +1132,12 @@ synchronization
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Common Divisors]
-    C[Topic] --- D[GCD and LCM]
-    E[Concepts] --- F[divisors frequency counting largest common divisor]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use frequency array and multiples loop]
-    K[Complexity] --- L[O maxA log maxA]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Common Divisors] --> B[Topic GCD and LCM]
-A --> C[Concepts divisors, frequency counting, largest common divisor]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use frequency array and multiples loop.]
-A --> F[Complexity OmaxA log maxA]
+A["CSES Common Divisors"] --> B["Topic GCD and LCM"]
+A --> C["Concepts divisors, frequency counting, largest commo..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use frequency array and multiples loop."]
+A --> F["Complexity OmaxA log maxA"]
 ```
 
 
@@ -1103,15 +1151,20 @@ A --> F[Complexity OmaxA log maxA]
 5. This avoids checking every pair.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S9_0["'Count frequency of every value.'"]
+    S9_1["'Iterate possible divisor from maximum value downward.'"]
+    S9_2["'Count how many array values are multiples of this d..."]
+    S9_3["'First divisor that appears in at least two numbers..."]
+    S9_4["'This avoids checking every pair.'"]
+    S9_0 --> S9_1
+    S9_1 --> S9_2
+    S9_2 --> S9_3
+    S9_3 --> S9_4
 ```
 
 #### Dry Run
@@ -1122,6 +1175,21 @@ Check divisor 15 gives one multiple
 Check divisor 10 gives one multiple
 Check divisor 5 gives two multiples 10 and 15
 answer = 5
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D9_0["'array = 6 10 15'"]
+    D9_1["'Check divisor 15 gives one multiple'"]
+    D9_2["'Check divisor 10 gives one multiple'"]
+    D9_3["'Check divisor 5 gives two multiples 10 and 15'"]
+    D9_4["'answer = 5'"]
+    D9_0 --> D9_1
+    D9_1 --> D9_2
+    D9_2 --> D9_3
+    D9_3 --> D9_4
 ```
 
 ### Practice Problem: [Codeforces 1458A Row GCD](https://codeforces.com/problemset/problem/1458/A)
@@ -1138,25 +1206,12 @@ answer = 5
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[Codeforces 1458A Row GCD]
-    C[Topic] --- D[GCD and LCM]
-    E[Concepts] --- F[gcd transformation difference invariant]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Compute gcd of differences once]
-    K[Complexity] --- L[O n log A plus q log A]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[Codeforces 1458A Row GCD] --> B[Topic GCD and LCM]
-A --> C[Concepts gcd transformation, difference invariant]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Compute gcd of differences once.]
-A --> F[Complexity On log A plus q log A]
+A["Codeforces 1458A Row GCD"] --> B["Topic GCD and LCM"]
+A --> C["Concepts gcd transformation, difference invariant"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Compute gcd of differences once."]
+A --> F["Complexity On log A plus q log A"]
 ```
 
 
@@ -1169,15 +1224,18 @@ A --> F[Complexity On log A plus q log A]
 4. This is a classic CM level gcd transformation pattern.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S10_0["'For array a, compute gcd of all differences a(i) -..."]
+    S10_1["'For each query b, answer is gcd(a(0) + b, differenc..."]
+    S10_2["'Key identity: gcd of shifted numbers depends on fir..."]
+    S10_3["'This is a classic CM level gcd transformation patte..."]
+    S10_0 --> S10_1
+    S10_1 --> S10_2
+    S10_2 --> S10_3
 ```
 
 #### Dry Run
@@ -1188,6 +1246,21 @@ differences from first = 4, 8
 g = gcd(4,8) = 4
 query b = 2
 answer = gcd(6 + 2, 4) = gcd(8,4) = 4
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D10_0["'a = (6, 10, 14)'"]
+    D10_1["'differences from first = 4, 8'"]
+    D10_2["'g = gcd(4,8) = 4'"]
+    D10_3["'query b = 2'"]
+    D10_4["'answer = gcd(6 + 2, 4) = gcd(8,4) = 4'"]
+    D10_0 --> D10_1
+    D10_1 --> D10_2
+    D10_2 --> D10_3
+    D10_3 --> D10_4
 ```
 
 
@@ -1251,16 +1324,16 @@ Divisors: 1, 2, 3, 6, 9, 18
 
 ```mermaid
 flowchart TD
-A[Number n] --> B[Try divisor d]
+A["Number n"] --> B["Try divisor d"]
 B --> C{d times d less or equal n}
 C -->|Yes| D{d divides n}
-D -->|Yes| E[Count exponent]
-D -->|No| F[Increase d]
+D -->|Yes| E["Count exponent"]
+D -->|No| F["Increase d"]
 E --> F
 F --> C
 C -->|No| G{n greater than one}
-G -->|Yes| H[Remaining n is prime]
-G -->|No| I[Done]
+G -->|Yes| H["Remaining n is prime"]
+G -->|No| I["Done"]
 H --> I
 ```
 
@@ -1351,25 +1424,12 @@ return res;
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Counting Divisors]
-    C[Topic] --- D[Primes and Divisors]
-    E[Concepts] --- F[prime factorization divisor count formula precomputation]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Build SPF then apply divisor formula]
-    K[Complexity] --- L[O maxA log log maxA plus q log A]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Counting Divisors] --> B[Topic Primes and Divisors]
-A --> C[Concepts prime factorization, divisor count formula, precomputation]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Build SPF then apply divisor formula.]
-A --> F[Complexity OmaxA log log maxA plus q log A]
+A["CSES Counting Divisors"] --> B["Topic Primes and Divisors"]
+A --> C["Concepts prime factorization, divisor count formula,..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Build SPF then apply divisor formula."]
+A --> F["Complexity OmaxA log log maxA plus q log A"]
 ```
 
 
@@ -1382,15 +1442,18 @@ A --> F[Complexity OmaxA log log maxA plus q log A]
 4. Factor each number in logarithmic like time.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S11_0["'For each query number x, factorize it.'"]
+    S11_1["'If x = p1^a1 p2^a2, divisor count is product of (ai..."]
+    S11_2["'Since many queries exist, use SPF precomputation.'"]
+    S11_3["'Factor each number in logarithmic like time.'"]
+    S11_0 --> S11_1
+    S11_1 --> S11_2
+    S11_2 --> S11_3
 ```
 
 #### Dry Run
@@ -1400,6 +1463,19 @@ x = 18
 18 = 2^1 * 3^2
 divisors = (1 + 1) * (2 + 1) = 6
 answer = 6
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D11_0["'x = 18'"]
+    D11_1["'18 = 2^1 3^2'"]
+    D11_2["'divisors = (1 + 1) (2 + 1) = 6'"]
+    D11_3["'answer = 6'"]
+    D11_0 --> D11_1
+    D11_1 --> D11_2
+    D11_2 --> D11_3
 ```
 
 ### Practice Problem: [Codeforces 546D Soldier and Number Game](https://codeforces.com/problemset/problem/546/D)
@@ -1416,25 +1492,12 @@ answer = 6
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[Codeforces 546D Soldier and Number Game]
-    C[Topic] --- D[Primes and Divisors]
-    E[Concepts] --- F[prime factor count prefix SPF range query]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Precompute factor counts and prefix]
-    K[Complexity] --- L[O maxN log log maxN plus q]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[Codeforces 546D Soldier and Number Game] --> B[Topic Primes and Divisors]
-A --> C[Concepts prime factor count prefix, SPF, range query]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Precompute factor counts and prefix.]
-A --> F[Complexity OmaxN log log maxN plus q]
+A["Codeforces 546D Soldier and Number Game"] --> B["Topic Primes and Divisors"]
+A --> C["Concepts prime factor count prefix, SPF, range query"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Precompute factor counts and prefix."]
+A --> F["Complexity OmaxN log log maxN plus q"]
 ```
 
 
@@ -1447,15 +1510,18 @@ A --> F[Complexity OmaxN log log maxN plus q]
 4. This combines SPF and prefix sums.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S12_0["'Precompute number of prime factors with multiplicit..."]
+    S12_1["'Build prefix sum over those counts.'"]
+    S12_2["'For query a b, answer is prefix(a) minus prefix(b).'"]
+    S12_3["'This combines SPF and prefix sums.'"]
+    S12_0 --> S12_1
+    S12_1 --> S12_2
+    S12_2 --> S12_3
 ```
 
 #### Dry Run
@@ -1465,6 +1531,19 @@ primeFactorCount[10] = 2 because 10 = 2 * 5
 primeFactorCount[12] = 3 because 12 = 2 * 2 * 3
 For query a = 5, b = 3
 answer = count factors in 4 and 5
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D12_0["'primeFactorCount(10) = 2 because 10 = 2 5'"]
+    D12_1["'primeFactorCount(12) = 3 because 12 = 2 2 3'"]
+    D12_2["'For query a = 5, b = 3'"]
+    D12_3["'answer = count factors in 4 and 5'"]
+    D12_0 --> D12_1
+    D12_1 --> D12_2
+    D12_2 --> D12_3
 ```
 
 
@@ -1494,9 +1573,9 @@ range_sum(1, 3) = pref[4] - pref[1] = 10 - 1 = 9
 
 ```mermaid
 flowchart TD
-A[Input array] --> B[Build prefix array]
-B --> C[Read query l r]
-C --> D[Answer equals prefix right plus one minus prefix left]
+A["Input array"] --> B["Build prefix array"]
+B --> C["Read query l r"]
+C --> D["Answer equals prefix right plus one minus prefix left"]
 ```
 
 ### C++ Helper
@@ -1554,25 +1633,12 @@ Use prefix sum when there are many range sum queries and array does not change.
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Static Range Sum Queries]
-    C[Topic] --- D[Prefix Sum]
-    E[Concepts] --- F[prefix sum range query O one answer]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Build prefix once]
-    K[Complexity] --- L[O n plus q]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Static Range Sum Queries] --> B[Topic Prefix Sum]
-A --> C[Concepts prefix sum, range query, O one answer]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Build prefix once.]
-A --> F[Complexity On plus q]
+A["CSES Static Range Sum Queries"] --> B["Topic Prefix Sum"]
+A --> C["Concepts prefix sum, range query, O one answer"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Build prefix once."]
+A --> F["Complexity On plus q"]
 ```
 
 
@@ -1585,15 +1651,18 @@ A --> F[Complexity On plus q]
 4. Avoid summing inside each query.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S13_0["'Build prefix array where pref(i) is sum of first i..."]
+    S13_1["'For every query (l, r), convert to zero based or on..."]
+    S13_2["'Answer using subtraction of two prefix values.'"]
+    S13_3["'Avoid summing inside each query.'"]
+    S13_0 --> S13_1
+    S13_1 --> S13_2
+    S13_2 --> S13_3
 ```
 
 #### Dry Run
@@ -1603,6 +1672,19 @@ a = [2, 4, 1, 7]
 query l = 2, r = 4 one based
 zero based range is 1 to 3
 answer = pref[4] - pref[1] = 14 - 2 = 12
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D13_0["'a = (2, 4, 1, 7)'"]
+    D13_1["'query l = 2, r = 4 one based'"]
+    D13_2["'zero based range is 1 to 3'"]
+    D13_3["'answer = pref(4) - pref(1) = 14 - 2 = 12'"]
+    D13_0 --> D13_1
+    D13_1 --> D13_2
+    D13_2 --> D13_3
 ```
 
 ### Practice Problem: [CSES Forest Queries](https://cses.fi/problemset/task/1652)
@@ -1619,25 +1701,12 @@ answer = pref[4] - pref[1] = 14 - 2 = 12
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Forest Queries]
-    C[Topic] --- D[Prefix Sum]
-    E[Concepts] --- F[2D prefix sum rectangle query]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use one based 2D prefix]
-    K[Complexity] --- L[O n squared plus q]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Forest Queries] --> B[Topic Prefix Sum]
-A --> C[Concepts 2D prefix sum, rectangle query]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use one based 2D prefix.]
-A --> F[Complexity On squared plus q]
+A["CSES Forest Queries"] --> B["Topic Prefix Sum"]
+A --> C["Concepts 2D prefix sum, rectangle query"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use one based 2D prefix."]
+A --> F["Complexity On squared plus q"]
 ```
 
 
@@ -1650,15 +1719,18 @@ A --> F[Complexity On squared plus q]
 4. Be careful with one based indexing to simplify boundaries.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S14_0["'Convert each tree cell to 1 and empty cell to 0.'"]
+    S14_1["'Build 2D prefix sum.'"]
+    S14_2["'For a rectangle query, use inclusion exclusion on f..."]
+    S14_3["'Be careful with one based indexing to simplify boun..."]
+    S14_0 --> S14_1
+    S14_1 --> S14_2
+    S14_2 --> S14_3
 ```
 
 #### Dry Run
@@ -1669,6 +1741,21 @@ Grid values:
 0 1
 pref rectangle full grid = 2
 Query whole grid answer = 2
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D14_0["'Grid values:'"]
+    D14_1["'1 0'"]
+    D14_2["'0 1'"]
+    D14_3["'pref rectangle full grid = 2'"]
+    D14_4["'Query whole grid answer = 2'"]
+    D14_0 --> D14_1
+    D14_1 --> D14_2
+    D14_2 --> D14_3
+    D14_3 --> D14_4
 ```
 
 
@@ -1710,11 +1797,11 @@ Special power of two sum:
 
 ```mermaid
 flowchart TD
-A[Sequence] --> B{Difference same}
-B -->|Yes| C[Arithmetic]
+A["Sequence"] --> B{Difference same}
+B -->|Yes| C["Arithmetic"]
 B -->|No| D{Ratio same}
-D -->|Yes| E[Geometric]
-D -->|No| F[Look for another pattern]
+D -->|Yes| E["Geometric"]
+D -->|No| F["Look for another pattern"]
 ```
 
 ### C++ Helpers
@@ -1757,25 +1844,12 @@ a1 = 3, r = 2
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Number Spiral]
-    C[Topic] --- D[Sequences]
-    E[Concepts] --- F[pattern by layer parity formula]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use max coordinate and parity]
-    K[Complexity] --- L[O 1 per query]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Number Spiral] --> B[Topic Sequences]
-A --> C[Concepts pattern by layer, parity, formula]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use max coordinate and parity.]
-A --> F[Complexity O1 per query]
+A["CSES Number Spiral"] --> B["Topic Sequences"]
+A --> C["Concepts pattern by layer, parity, formula"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use max coordinate and parity."]
+A --> F["Complexity O1 per query"]
 ```
 
 
@@ -1788,15 +1862,18 @@ A --> F[Complexity O1 per query]
 4. Derive formula separately for even and odd layers.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S15_0["'The value depends on the layer max(row, col).'"]
+    S15_1["'The square at the end of each layer is layer squared.'"]
+    S15_2["'Direction changes based on parity of the layer.'"]
+    S15_3["'Derive formula separately for even and odd layers.'"]
+    S15_0 --> S15_1
+    S15_1 --> S15_2
+    S15_2 --> S15_3
 ```
 
 #### Dry Run
@@ -1807,6 +1884,21 @@ layer = 3
 layer square = 9
 For odd layer, values decrease along row direction
 answer = 8
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D15_0["'row = 2, col = 3'"]
+    D15_1["'layer = 3'"]
+    D15_2["'layer square = 9'"]
+    D15_3["'For odd layer, values decrease along row direction'"]
+    D15_4["'answer = 8'"]
+    D15_0 --> D15_1
+    D15_1 --> D15_2
+    D15_2 --> D15_3
+    D15_3 --> D15_4
 ```
 
 ### Practice Problem: [CSES Weird Algorithm](https://cses.fi/problemset/task/1068)
@@ -1823,25 +1915,12 @@ answer = 8
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Weird Algorithm]
-    C[Topic] --- D[Sequences]
-    E[Concepts] --- F[sequence simulation parity transition]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use long long]
-    K[Complexity] --- L[Depends on sequence length]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Weird Algorithm] --> B[Topic Sequences]
-A --> C[Concepts sequence simulation, parity transition]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use long long.]
-A --> F[Complexity Depends on sequence length]
+A["CSES Weird Algorithm"] --> B["Topic Sequences"]
+A --> C["Concepts sequence simulation, parity transition"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use long long."]
+A --> F["Complexity Depends on sequence length"]
 ```
 
 
@@ -1855,15 +1934,20 @@ A --> F[Complexity Depends on sequence length]
 5. This is not formula based, but it trains sequence transitions and overflow awareness.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S16_0["'Start from n.'"]
+    S16_1["'If n is even, divide by two.'"]
+    S16_2["'If n is odd, replace by 3n plus 1.'"]
+    S16_3["'Continue until n becomes one.'"]
+    S16_4["'This is not formula based, but it trains sequence t..."]
+    S16_0 --> S16_1
+    S16_1 --> S16_2
+    S16_2 --> S16_3
+    S16_3 --> S16_4
 ```
 
 #### Dry Run
@@ -1875,6 +1959,23 @@ n = 3
 5 is odd so 16
 16 8 4 2 1
 sequence ends
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D16_0["'n = 3'"]
+    D16_1["'3 is odd so 10'"]
+    D16_2["'10 is even so 5'"]
+    D16_3["'5 is odd so 16'"]
+    D16_4["'16 8 4 2 1'"]
+    D16_5["'sequence ends'"]
+    D16_0 --> D16_1
+    D16_1 --> D16_2
+    D16_2 --> D16_3
+    D16_3 --> D16_4
+    D16_4 --> D16_5
 ```
 
 
@@ -1915,10 +2016,10 @@ For `n = 5`:
 
 ```mermaid
 flowchart TD
-A[Loop summing formula] --> B[Identify expression]
-B --> C[Split constants and variables]
-C --> D[Apply known sum formula]
-D --> E[Get constant time answer]
+A["Loop summing formula"] --> B["Identify expression"]
+B --> C["Split constants and variables"]
+C --> D["Apply known sum formula"]
+D --> E["Get constant time answer"]
 ```
 
 ### C++ Helpers
@@ -1952,25 +2053,12 @@ return s * s;
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Missing Number]
-    C[Topic] --- D[Summation Formulas]
-    E[Concepts] --- F[sum formula missing value]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use sum formula]
-    K[Complexity] --- L[O n]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Missing Number] --> B[Topic Summation Formulas]
-A --> C[Concepts sum formula, missing value]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use sum formula.]
-A --> F[Complexity On]
+A["CSES Missing Number"] --> B["Topic Summation Formulas"]
+A --> C["Concepts sum formula, missing value"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use sum formula."]
+A --> F["Complexity On"]
 ```
 
 
@@ -1983,15 +2071,18 @@ A --> F[Complexity On]
 4. Use long long because sum can be large.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S17_0["'Sum of numbers from 1 to n is n(n+1)/2.'"]
+    S17_1["'Read n-1 numbers and compute their sum.'"]
+    S17_2["'Missing number is expected sum minus actual sum.'"]
+    S17_3["'Use long long because sum can be large.'"]
+    S17_0 --> S17_1
+    S17_1 --> S17_2
+    S17_2 --> S17_3
 ```
 
 #### Dry Run
@@ -2002,6 +2093,21 @@ numbers = 2 3 1 5
 expected sum = 5 * 6 / 2 = 15
 actual sum = 11
 missing = 4
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D17_0["'n = 5'"]
+    D17_1["'numbers = 2 3 1 5'"]
+    D17_2["'expected sum = 5 6 / 2 = 15'"]
+    D17_3["'actual sum = 11'"]
+    D17_4["'missing = 4'"]
+    D17_0 --> D17_1
+    D17_1 --> D17_2
+    D17_2 --> D17_3
+    D17_3 --> D17_4
 ```
 
 ### Practice Problem: [CSES Two Sets](https://cses.fi/problemset/task/1092)
@@ -2018,25 +2124,12 @@ missing = 4
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Two Sets]
-    C[Topic] --- D[Summation Formulas]
-    E[Concepts] --- F[sum parity constructive partition]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Check parity then construct greedily]
-    K[Complexity] --- L[O n]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Two Sets] --> B[Topic Summation Formulas]
-A --> C[Concepts sum parity, constructive partition]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Check parity then construct greedily.]
-A --> F[Complexity On]
+A["CSES Two Sets"] --> B["Topic Summation Formulas"]
+A --> C["Concepts sum parity, constructive partition"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Check parity then construct greedily."]
+A --> F["Complexity On"]
 ```
 
 
@@ -2050,15 +2143,20 @@ A --> F[Complexity On]
 5. This uses summation plus constructive thinking.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S18_0["'Total sum is n(n+1)/2.'"]
+    S18_1["'If total sum is odd, equal partition is impossible.'"]
+    S18_2["'Otherwise target each set sum is total divided by t..."]
+    S18_3["'Greedily take large numbers while target remains.'"]
+    S18_4["'This uses summation plus constructive thinking.'"]
+    S18_0 --> S18_1
+    S18_1 --> S18_2
+    S18_2 --> S18_3
+    S18_3 --> S18_4
 ```
 
 #### Dry Run
@@ -2072,6 +2170,27 @@ take 6 target becomes 1
 take 1 target becomes 0
 one set = 7 6 1
 other set = 2 3 4 5
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D18_0["'n = 7'"]
+    D18_1["'total = 28'"]
+    D18_2["'target = 14'"]
+    D18_3["'take 7 target becomes 7'"]
+    D18_4["'take 6 target becomes 1'"]
+    D18_5["'take 1 target becomes 0'"]
+    D18_6["'one set = 7 6 1'"]
+    D18_7["'other set = 2 3 4 5'"]
+    D18_0 --> D18_1
+    D18_1 --> D18_2
+    D18_2 --> D18_3
+    D18_3 --> D18_4
+    D18_4 --> D18_5
+    D18_5 --> D18_6
+    D18_6 --> D18_7
 ```
 
 
@@ -2145,13 +2264,13 @@ C(n + k - 1, k - 1)
 
 ```mermaid
 flowchart TD
-A[Counting problem] --> B{Order matters}
-B -->|Yes| C[Permutation]
-B -->|No| D[Combination]
+A["Counting problem"] --> B{Order matters}
+B -->|Yes| C["Permutation"]
+B -->|No| D["Combination"]
 A --> E{Easier to count bad}
-E -->|Yes| F[Use complement]
+E -->|Yes| F["Use complement"]
 A --> G{Identical items into boxes}
-G -->|Yes| H[Stars and bars]
+G -->|Yes| H["Stars and bars"]
 ```
 
 ### C++ Small nCr Helper
@@ -2202,25 +2321,12 @@ return fact[n] * invFact[r] % MOD * invFact[n - r] % MOD;
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Creating Strings]
-    C[Topic] --- D[Counting]
-    E[Concepts] --- F[permutations with duplicate characters]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Sort then use next permutation]
-    K[Complexity] --- L[O k times n]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Creating Strings] --> B[Topic Counting]
-A --> C[Concepts permutations with duplicate characters]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Sort then use next_permutation.]
-A --> F[Complexity Ok times n]
+A["CSES Creating Strings"] --> B["Topic Counting"]
+A --> C["Concepts permutations with duplicate characters"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Sort then use next_permutation."]
+A --> F["Complexity Ok times n"]
 ```
 
 
@@ -2233,15 +2339,18 @@ A --> F[Complexity Ok times n]
 4. Since duplicates exist, sorting plus next permutation naturally avoids duplicate arrangements.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S19_0["'Need print all distinct permutations of a string.'"]
+    S19_1["'Sort the string first.'"]
+    S19_2["'Use nextpermutation to generate permutations in sor..."]
+    S19_3["'Since duplicates exist, sorting plus next permutati..."]
+    S19_0 --> S19_1
+    S19_1 --> S19_2
+    S19_2 --> S19_3
 ```
 
 #### Dry Run
@@ -2254,6 +2363,25 @@ aab
 aba
 baa
 count = 3
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D19_0["'s = aab'"]
+    D19_1["'sorted = aab'"]
+    D19_2["'permutations:'"]
+    D19_3["'aab'"]
+    D19_4["'aba'"]
+    D19_5["'baa'"]
+    D19_6["'count = 3'"]
+    D19_0 --> D19_1
+    D19_1 --> D19_2
+    D19_2 --> D19_3
+    D19_3 --> D19_4
+    D19_4 --> D19_5
+    D19_5 --> D19_6
 ```
 
 ### Practice Problem: [CSES Distributing Apples](https://cses.fi/problemset/task/1716)
@@ -2270,25 +2398,12 @@ count = 3
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Distributing Apples]
-    C[Topic] --- D[Counting]
-    E[Concepts] --- F[stars and bars modular combination]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use modular nCr]
-    K[Complexity] --- L[O maxN log MOD]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Distributing Apples] --> B[Topic Counting]
-A --> C[Concepts stars and bars, modular combination]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use modular nCr.]
-A --> F[Complexity OmaxN log MOD]
+A["CSES Distributing Apples"] --> B["Topic Counting"]
+A --> C["Concepts stars and bars, modular combination"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use modular nCr."]
+A --> F["Complexity OmaxN log MOD"]
 ```
 
 
@@ -2301,15 +2416,18 @@ A --> F[Complexity OmaxN log MOD]
 4. Answer is `C(n + m - 1, m)` or `C(n + m - 1, n - 1)`.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S20_0["'Apples are identical and children are distinct.'"]
+    S20_1["'Need non negative solutions to x1 + x2 + ... + xn =..."]
+    S20_2["'Apply stars and bars.'"]
+    S20_3["'Answer is C(n + m - 1, m) or C(n + m - 1, n - 1).'"]
+    S20_0 --> S20_1
+    S20_1 --> S20_2
+    S20_2 --> S20_3
 ```
 
 #### Dry Run
@@ -2319,6 +2437,19 @@ n = 3, m = 4
 Need x1 + x2 + x3 = 4
 Formula C(4 + 3 - 1, 3 - 1)
 C(6,2) = 15
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D20_0["'n = 3, m = 4'"]
+    D20_1["'Need x1 + x2 + x3 = 4'"]
+    D20_2["'Formula C(4 + 3 - 1, 3 - 1)'"]
+    D20_3["'C(6,2) = 15'"]
+    D20_0 --> D20_1
+    D20_1 --> D20_2
+    D20_2 --> D20_3
 ```
 
 
@@ -2373,10 +2504,10 @@ n > 0 and (n & (n - 1)) == 0
 
 ```mermaid
 flowchart LR
-A[n] --> B[n divided by two]
-B --> C[divided by two again]
-C --> D[Continue]
-D --> E[Number of steps is log n]
+A["n"] --> B["n divided by two"]
+B --> C["divided by two again"]
+C --> D["Continue"]
+D --> E["Number of steps is log n"]
 ```
 
 ### C++ Helpers
@@ -2424,25 +2555,12 @@ So 8 is power of two.
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Gray Code]
-    C[Topic] --- D[Logs Bits and Halving]
-    E[Concepts] --- F[bits xor binary representation]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use gray i i 1]
-    K[Complexity] --- L[O n times 2 n]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Gray Code] --> B[Topic Logs Bits and Halving]
-A --> C[Concepts bits, xor, binary representation]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use gray i i greater thangreater than 1.]
-A --> F[Complexity On times 2 n]
+A["CSES Gray Code"] --> B["Topic Logs Bits and Halving"]
+A --> C["Concepts bits, xor, binary representation"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use gray i i greater thangreater than 1."]
+A --> F["Complexity On times 2 n"]
 ```
 
 
@@ -2455,15 +2573,18 @@ A --> F[Complexity On times 2 n]
 4. Adjacent Gray codes differ by one bit.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S21_0["'Gray code of number i is i xor (i shifted right by..."]
+    S21_1["'Generate values from 0 to 2^n - 1.'"]
+    S21_2["'Print each value as binary with exactly n bits.'"]
+    S21_3["'Adjacent Gray codes differ by one bit.'"]
+    S21_0 --> S21_1
+    S21_1 --> S21_2
+    S21_2 --> S21_3
 ```
 
 #### Dry Run
@@ -2475,6 +2596,23 @@ i = 1 gives 01
 i = 2 gives 11
 i = 3 gives 10
 Each adjacent pair differs by one bit
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D21_0["'n = 2'"]
+    D21_1["'i = 0 gives 00'"]
+    D21_2["'i = 1 gives 01'"]
+    D21_3["'i = 2 gives 11'"]
+    D21_4["'i = 3 gives 10'"]
+    D21_5["'Each adjacent pair differs by one bit'"]
+    D21_0 --> D21_1
+    D21_1 --> D21_2
+    D21_2 --> D21_3
+    D21_3 --> D21_4
+    D21_4 --> D21_5
 ```
 
 ### Practice Problem: [CSES Subset Sums](https://cses.fi/problemset/task/1655)
@@ -2491,25 +2629,12 @@ Each adjacent pair differs by one bit
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Subset Sums]
-    C[Topic] --- D[Logs Bits and Halving]
-    E[Concepts] --- F[xor basis bit linear algebra]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use xor basis]
-    K[Complexity] --- L[O n log A]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Subset Sums] --> B[Topic Logs Bits and Halving]
-A --> C[Concepts xor basis, bit linear algebra]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use xor basis.]
-A --> F[Complexity On log A]
+A["CSES Subset Sums"] --> B["Topic Logs Bits and Halving"]
+A --> C["Concepts xor basis, bit linear algebra"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use xor basis."]
+A --> F["Complexity On log A"]
 ```
 
 
@@ -2522,15 +2647,18 @@ A --> F[Complexity On log A]
 4. Maximum xor is built greedily from high bit to low bit.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S22_0["'This is an advanced bit math problem.'"]
+    S22_1["'Maintain a xor basis where each basis element has a..."]
+    S22_2["'Insert each number by reducing it with existing bas..."]
+    S22_3["'Maximum xor is built greedily from high bit to low..."]
+    S22_0 --> S22_1
+    S22_1 --> S22_2
+    S22_2 --> S22_3
 ```
 
 #### Dry Run
@@ -2541,6 +2669,21 @@ numbers = 3, 5
 5 binary 101
 possible xor 3 xor 5 = 6
 maximum subset xor = 6
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D22_0["'numbers = 3, 5'"]
+    D22_1["'3 binary 011'"]
+    D22_2["'5 binary 101'"]
+    D22_3["'possible xor 3 xor 5 = 6'"]
+    D22_4["'maximum subset xor = 6'"]
+    D22_0 --> D22_1
+    D22_1 --> D22_2
+    D22_2 --> D22_3
+    D22_3 --> D22_4
 ```
 
 
@@ -2601,10 +2744,10 @@ y = 3
 
 ```mermaid
 flowchart TD
-A[Equation] --> B[Move constants]
-B --> C[Isolate variable]
-C --> D[Divide coefficient]
-D --> E[Check answer]
+A["Equation"] --> B["Move constants"]
+B --> C["Isolate variable"]
+C --> D["Divide coefficient"]
+D --> E["Check answer"]
 ```
 
 ### CP Pattern
@@ -2636,25 +2779,12 @@ answer = ceil((n - b) / a)
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Apple Division]
-    C[Topic] --- D[Algebra]
-    E[Concepts] --- F[minimize difference total sum relation subset search]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use bitmask subset enumeration]
-    K[Complexity] --- L[O 2 n times n or O 2 n]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Apple Division] --> B[Topic Algebra]
-A --> C[Concepts minimize difference, total sum relation, subset search]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use bitmask subset enumeration.]
-A --> F[Complexity O2 n times n or O2 n]
+A["CSES Apple Division"] --> B["Topic Algebra"]
+A --> C["Concepts minimize difference, total sum relation, su..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use bitmask subset enumeration."]
+A --> F["Complexity O2 n times n or O2 n"]
 ```
 
 
@@ -2668,15 +2798,20 @@ A --> F[Complexity O2 n times n or O2 n]
 5. This is algebra plus brute force based on constraints.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S23_0["'Let total sum be S.'"]
+    S23_1["'If one group sum is x, other group sum is S - x.'"]
+    S23_2["'Difference is abs(S - 2x).'"]
+    S23_3["'Try all subsets because n is small.'"]
+    S23_4["'This is algebra plus brute force based on constrain..."]
+    S23_0 --> S23_1
+    S23_1 --> S23_2
+    S23_2 --> S23_3
+    S23_3 --> S23_4
 ```
 
 #### Dry Run
@@ -2687,6 +2822,21 @@ total = 12
 choose subset 3 plus 2 = 5
 other = 7
 difference = abs(12 - 2*5) = 2
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D23_0["'weights = 3 2 7'"]
+    D23_1["'total = 12'"]
+    D23_2["'choose subset 3 plus 2 = 5'"]
+    D23_3["'other = 7'"]
+    D23_4["'difference = abs(12 - 25) = 2'"]
+    D23_0 --> D23_1
+    D23_1 --> D23_2
+    D23_2 --> D23_3
+    D23_3 --> D23_4
 ```
 
 ### Practice Problem: [Codeforces 1360D Buying Shovels](https://codeforces.com/problemset/problem/1360/D)
@@ -2703,25 +2853,12 @@ difference = abs(12 - 2*5) = 2
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[Codeforces 1360D Buying Shovels]
-    C[Topic] --- D[Algebra]
-    E[Concepts] --- F[factor choice minimize packages divisor constraint]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Scan divisors up to sqrt n]
-    K[Complexity] --- L[O sqrt n per test]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[Codeforces 1360D Buying Shovels] --> B[Topic Algebra]
-A --> C[Concepts factor choice, minimize packages, divisor constraint]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Scan divisors up to sqrt n.]
-A --> F[Complexity Osqrt n per test]
+A["Codeforces 1360D Buying Shovels"] --> B["Topic Algebra"]
+A --> C["Concepts factor choice, minimize packages, divisor c..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Scan divisors up to sqrt n."]
+A --> F["Complexity Osqrt n per test"]
 ```
 
 
@@ -2735,15 +2872,20 @@ A --> F[Complexity Osqrt n per test]
 5. This uses algebraic rearrangement and divisors.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S24_0["'Need split n shovels into packages of equal size.'"]
+    S24_1["'Package size must divide n.'"]
+    S24_2["'Choose largest divisor not exceeding k.'"]
+    S24_3["'Answer is n / chosenDivisor.'"]
+    S24_4["'This uses algebraic rearrangement and divisors.'"]
+    S24_0 --> S24_1
+    S24_1 --> S24_2
+    S24_2 --> S24_3
+    S24_3 --> S24_4
 ```
 
 #### Dry Run
@@ -2753,6 +2895,19 @@ n = 12, k = 5
 divisors not above 5 are 1 2 3 4
 largest is 4
 answer = 12 / 4 = 3 packages
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D24_0["'n = 12, k = 5'"]
+    D24_1["'divisors not above 5 are 1 2 3 4'"]
+    D24_2["'largest is 4'"]
+    D24_3["'answer = 12 / 4 = 3 packages'"]
+    D24_0 --> D24_1
+    D24_1 --> D24_2
+    D24_2 --> D24_3
 ```
 
 
@@ -2792,10 +2947,10 @@ D < 0: no real roots
 
 ```mermaid
 flowchart TD
-A[Compute D] --> B{D value}
-B -->|Positive| C[Two real roots]
-B -->|Zero| D[One real root]
-B -->|Negative| E[No real roots]
+A["Compute D"] --> B{D value}
+B -->|Positive| C["Two real roots"]
+B -->|Zero| D["One real root"]
+B -->|Negative| E["No real roots"]
 ```
 
 ### Example
@@ -2850,25 +3005,12 @@ x around sqrt(2n)
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Number Spiral]
-    C[Topic] --- D[Quadratic Formula]
-    E[Concepts] --- F[square layers parity coordinate formula]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use layer equals max row col]
-    K[Complexity] --- L[O 1]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Number Spiral] --> B[Topic Quadratic Formula]
-A --> C[Concepts square layers, parity, coordinate formula]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use layer equals maxrow, col.]
-A --> F[Complexity O1]
+A["CSES Number Spiral"] --> B["Topic Quadratic Formula"]
+A --> C["Concepts square layers, parity, coordinate formula"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use layer equals maxrow, col."]
+A --> F["Complexity O1"]
 ```
 
 
@@ -2881,15 +3023,18 @@ A --> F[Complexity O1]
 4. Though not solving roots, it trains square layer formulas.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S25_0["'Each layer is based on maximum of row and column.'"]
+    S25_1["'Layer end value is square of layer number.'"]
+    S25_2["'The direction depends on odd or even layer.'"]
+    S25_3["'Though not solving roots, it trains square layer fo..."]
+    S25_0 --> S25_1
+    S25_1 --> S25_2
+    S25_2 --> S25_3
 ```
 
 #### Dry Run
@@ -2900,6 +3045,21 @@ layer = 4
 layer square = 16
 even layer direction uses row as increasing side
 answer derived from 16 and offset
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D25_0["'row = 4, col = 2'"]
+    D25_1["'layer = 4'"]
+    D25_2["'layer square = 16'"]
+    D25_3["'even layer direction uses row as increasing side'"]
+    D25_4["'answer derived from 16 and offset'"]
+    D25_0 --> D25_1
+    D25_1 --> D25_2
+    D25_2 --> D25_3
+    D25_3 --> D25_4
 ```
 
 ### Practice Problem: [Codeforces 1352C K-th Not Divisible by n](https://codeforces.com/problemset/problem/1352/C)
@@ -2916,25 +3076,12 @@ answer derived from 16 and offset
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[Codeforces 1352C K th Not Divisible by n]
-    C[Topic] --- D[Quadratic Formula]
-    E[Concepts] --- F[counting formula inverse reasoning]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use derived formula]
-    K[Complexity] --- L[O 1]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[Codeforces 1352C Kminusth Not Divisible by n] --> B[Topic Quadratic Formula]
-A --> C[Concepts counting formula, inverse reasoning]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use derived formula.]
-A --> F[Complexity O1]
+A["Codeforces 1352C Kminusth Not Divisible by n"] --> B["Topic Quadratic Formula"]
+A --> C["Concepts counting formula, inverse reasoning"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use derived formula."]
+A --> F["Complexity O1"]
 ```
 
 
@@ -2947,15 +3094,18 @@ A --> F[Complexity O1]
 4. Formula solution exists: answer is `k + floor((k - 1)/(n - 1))`.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S26_0["'Need kth positive integer not divisible by n.'"]
+    S26_1["'Among numbers up to x, count not divisible by n is..."]
+    S26_2["'Find smallest x such that this count is at least k.'"]
+    S26_3["'Formula solution exists: answer is k + floor((k - 1..."]
+    S26_0 --> S26_1
+    S26_1 --> S26_2
+    S26_2 --> S26_3
 ```
 
 #### Dry Run
@@ -2966,6 +3116,21 @@ numbers not divisible by 3:
 1 2 4 5 7 8 10
 answer = 10
 formula = 7 + floor(6 / 2) = 10
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D26_0["'n = 3, k = 7'"]
+    D26_1["'numbers not divisible by 3:'"]
+    D26_2["'1 2 4 5 7 8 10'"]
+    D26_3["'answer = 10'"]
+    D26_4["'formula = 7 + floor(6 / 2) = 10'"]
+    D26_0 --> D26_1
+    D26_1 --> D26_2
+    D26_2 --> D26_3
+    D26_3 --> D26_4
 ```
 
 
@@ -3023,10 +3188,10 @@ abs(cross(b - a, c - a))
 
 ```mermaid
 flowchart TD
-A[Geometry problem] --> B[Identify shape]
-B --> C[Choose formula]
-C --> D[Plug values]
-D --> E[Check precision]
+A["Geometry problem"] --> B["Identify shape"]
+B --> C["Choose formula"]
+C --> D["Plug values"]
+D --> E["Check precision"]
 ```
 
 ### C++ Helpers
@@ -3073,25 +3238,12 @@ compare squared distances instead
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Point Location Test]
-    C[Topic] --- D[Geometry]
-    E[Concepts] --- F[cross product orientation]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use integer cross product]
-    K[Complexity] --- L[O 1 per query]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Point Location Test] --> B[Topic Geometry]
-A --> C[Concepts cross product, orientation]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use integer cross product.]
-A --> F[Complexity O1 per query]
+A["CSES Point Location Test"] --> B["Topic Geometry"]
+A --> C["Concepts cross product, orientation"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use integer cross product."]
+A --> F["Complexity O1 per query"]
 ```
 
 
@@ -3105,15 +3257,20 @@ A --> F[Complexity O1 per query]
 5. If cross is zero, points are collinear.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S27_0["'Given directed line from point A to point B and que..."]
+    S27_1["'Compute cross product of vectors AB and AC.'"]
+    S27_2["'If cross is positive, C is on left side.'"]
+    S27_3["'If cross is negative, C is on right side.'"]
+    S27_4["'If cross is zero, points are collinear.'"]
+    S27_0 --> S27_1
+    S27_1 --> S27_2
+    S27_2 --> S27_3
+    S27_3 --> S27_4
 ```
 
 #### Dry Run
@@ -3123,6 +3280,19 @@ A = (0,0), B = (4,0), C = (2,2)
 AB = (4,0), AC = (2,2)
 cross = 4*2 - 0*2 = 8
 positive so C is left
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D27_0["'A = (0,0), B = (4,0), C = (2,2)'"]
+    D27_1["'AB = (4,0), AC = (2,2)'"]
+    D27_2["'cross = 42 - 02 = 8'"]
+    D27_3["'positive so C is left'"]
+    D27_0 --> D27_1
+    D27_1 --> D27_2
+    D27_2 --> D27_3
 ```
 
 ### Practice Problem: [CSES Polygon Area](https://cses.fi/problemset/task/2191)
@@ -3139,25 +3309,12 @@ positive so C is left
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Polygon Area]
-    C[Topic] --- D[Geometry]
-    E[Concepts] --- F[shoelace formula cross product sum]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use long long cross sum]
-    K[Complexity] --- L[O n]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Polygon Area] --> B[Topic Geometry]
-A --> C[Concepts shoelace formula, cross product sum]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use long long cross sum.]
-A --> F[Complexity On]
+A["CSES Polygon Area"] --> B["Topic Geometry"]
+A --> C["Concepts shoelace formula, cross product sum"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use long long cross sum."]
+A --> F["Complexity On"]
 ```
 
 
@@ -3170,15 +3327,18 @@ A --> F[Complexity On]
 4. Print doubled area if problem asks doubled area, otherwise divide by two carefully.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S28_0["'Traverse polygon vertices in order.'"]
+    S28_1["'Add xi ynext - yi xnext for every edge.'"]
+    S28_2["'Absolute value of this sum is twice the area.'"]
+    S28_3["'Print doubled area if problem asks doubled area, ot..."]
+    S28_0 --> S28_1
+    S28_1 --> S28_2
+    S28_2 --> S28_3
 ```
 
 #### Dry Run
@@ -3187,6 +3347,17 @@ E --> F[Print answer]
 Triangle (0,0), (4,0), (0,3)
 sum = 0 + 12 + 0 = 12
 area = 12 / 2 = 6
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D28_0["'Triangle (0,0), (4,0), (0,3)'"]
+    D28_1["'sum = 0 + 12 + 0 = 12'"]
+    D28_2["'area = 12 / 2 = 6'"]
+    D28_0 --> D28_1
+    D28_1 --> D28_2
 ```
 
 
@@ -3230,13 +3401,13 @@ n, n/2, n/4, ..., 1 = O(log n)
 
 ```mermaid
 flowchart TD
-A[Analyze code] --> B{Single loop}
-B -->|Yes| C[O n]
+A["Analyze code"] --> B{Single loop}
+B -->|Yes| C["O n"]
 B -->|No| D{Nested loops}
-D -->|Yes| E[O n squared usually]
+D -->|Yes| E["O n squared usually"]
 D -->|No| F{Divide by two}
-F -->|Yes| G[O log n]
-F -->|No| H[Check recursion or data structure]
+F -->|Yes| G["O log n"]
+F -->|No| H["Check recursion or data structure"]
 ```
 
 ### Mental constraint guide
@@ -3265,25 +3436,12 @@ n >= 1000000000 O(log n) or O(1)
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Apartments]
-    C[Topic] --- D[Big O]
-    E[Concepts] --- F[sorting two pointers complexity reduction]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Sort then two pointers]
-    K[Complexity] --- L[O n log n plus m log m]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Apartments] --> B[Topic Big O]
-A --> C[Concepts sorting, two pointers, complexity reduction]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Sort then two pointers.]
-A --> F[Complexity On log n plus m log m]
+A["CSES Apartments"] --> B["Topic Big O"]
+A --> C["Concepts sorting, two pointers, complexity reduction"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Sort then two pointers."]
+A --> F["Complexity On log n plus m log m"]
 ```
 
 
@@ -3298,15 +3456,22 @@ A --> F[Complexity On log n plus m log m]
 6. Complexity is sorting plus linear scan.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S29_0["'Sort applicants and apartments.'"]
+    S29_1["'Use two pointers.'"]
+    S29_2["'If apartment fits applicant, match both.'"]
+    S29_3["'If apartment too small, move apartment pointer.'"]
+    S29_4["'If apartment too large, move applicant pointer.'"]
+    S29_5["'Complexity is sorting plus linear scan.'"]
+    S29_0 --> S29_1
+    S29_1 --> S29_2
+    S29_2 --> S29_3
+    S29_3 --> S29_4
+    S29_4 --> S29_5
 ```
 
 #### Dry Run
@@ -3319,6 +3484,25 @@ k = 5
 45 cannot use 60 if range is 40 to 50, move applicant
 60 matches 60
 answer includes this match
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D29_0["'applicants = 60 45 80'"]
+    D29_1["'apartments = 30 60 75'"]
+    D29_2["'k = 5'"]
+    D29_3["'45 cannot use 30, move apartment'"]
+    D29_4["'45 cannot use 60 if range is 40 to 50, move applicant'"]
+    D29_5["'60 matches 60'"]
+    D29_6["'answer includes this match'"]
+    D29_0 --> D29_1
+    D29_1 --> D29_2
+    D29_2 --> D29_3
+    D29_3 --> D29_4
+    D29_4 --> D29_5
+    D29_5 --> D29_6
 ```
 
 ### Practice Problem: [CSES Ferris Wheel](https://cses.fi/problemset/task/1090)
@@ -3335,25 +3519,12 @@ answer includes this match
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Ferris Wheel]
-    C[Topic] --- D[Big O]
-    E[Concepts] --- F[greedy sorting two pointers]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Sort and use two pointers]
-    K[Complexity] --- L[O n log n]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Ferris Wheel] --> B[Topic Big O]
-A --> C[Concepts greedy, sorting, two pointers]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Sort and use two pointers.]
-A --> F[Complexity On log n]
+A["CSES Ferris Wheel"] --> B["Topic Big O"]
+A --> C["Concepts greedy, sorting, two pointers"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Sort and use two pointers."]
+A --> F["Complexity On log n"]
 ```
 
 
@@ -3367,15 +3538,20 @@ A --> F[Complexity On log n]
 5. Move pointers and count gondolas.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S30_0["'Sort weights.'"]
+    S30_1["'Pair lightest with heaviest when possible.'"]
+    S30_2["'If they fit, use one gondola for both.'"]
+    S30_3["'Otherwise heaviest goes alone.'"]
+    S30_4["'Move pointers and count gondolas.'"]
+    S30_0 --> S30_1
+    S30_1 --> S30_2
+    S30_2 --> S30_3
+    S30_3 --> S30_4
 ```
 
 #### Dry Run
@@ -3389,6 +3565,23 @@ limit = 10
 answer = 3
 ```
 
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D30_0["'weights = 2 3 7 9'"]
+    D30_1["'limit = 10'"]
+    D30_2["'2 plus 9 too big so 9 alone'"]
+    D30_3["'2 plus 7 fits so pair'"]
+    D30_4["'3 alone'"]
+    D30_5["'answer = 3'"]
+    D30_0 --> D30_1
+    D30_1 --> D30_2
+    D30_2 --> D30_3
+    D30_3 --> D30_4
+    D30_4 --> D30_5
+```
+
 
 ---
 
@@ -3398,13 +3591,13 @@ answer = 3
 
 ```mermaid
 flowchart TD
-A[Stuck] --> B[Try n equals one two three]
-B --> C[Write brute force]
-C --> D[Observe pattern]
-D --> E[Convert pattern to formula]
-E --> F[Check constraints]
-F --> G[Use helper]
-G --> H[Test edge cases]
+A["Stuck"] --> B["Try n equals one two three"]
+B --> C["Write brute force"]
+C --> D["Observe pattern"]
+D --> E["Convert pattern to formula"]
+E --> F["Check constraints"]
+F --> G["Use helper"]
+G --> H["Test edge cases"]
 ```
 
 ### Pattern recognition table
@@ -3464,9 +3657,9 @@ An invariant is something that remains true after every operation.
 
 ```mermaid
 flowchart TD
-A[Operation problem] --> B[Find value that does not change]
-B --> C[Use invariant to prove possible]
-C --> D[Construct or reject]
+A["Operation problem"] --> B["Find value that does not change"]
+B --> C["Use invariant to prove possible"]
+C --> D["Construct or reject"]
 ```
 
 | Signal | Example thought |
@@ -3481,11 +3674,11 @@ Count everything, subtract bad cases.
 
 ```mermaid
 flowchart TD
-A[Count good cases] --> B{Bad cases easier}
-B -->|Yes| C[Count total]
-C --> D[Count bad]
-D --> E[Good equals total minus bad]
-B -->|No| F[Count good directly]
+A["Count good cases"] --> B{Bad cases easier}
+B -->|Yes| C["Count total"]
+C --> D["Count bad"]
+D --> E["Good equals total minus bad"]
+B -->|No| F["Count good directly"]
 ```
 
 ### Pattern 3: Binary Search on Answer
@@ -3494,10 +3687,10 @@ If answer has monotonic property, binary search it.
 
 ```mermaid
 flowchart TD
-A[Candidate answer mid] --> B[Check if mid works]
+A["Candidate answer mid"] --> B["Check if mid works"]
 B --> C{Works}
-C -->|Yes| D[Try smaller or larger better side]
-C -->|No| E[Move opposite side]
+C -->|Yes| D["Try smaller or larger better side"]
+C -->|No| E["Move opposite side"]
 ```
 
 | Requirement | Meaning |
@@ -3518,9 +3711,9 @@ final array = prefix of diff
 
 ```mermaid
 flowchart TD
-A[Range update] --> B[Mark start plus value]
-B --> C[Mark after end minus value]
-C --> D[Prefix diff to recover array]
+A["Range update"] --> B["Mark start plus value"]
+B --> C["Mark after end minus value"]
+C --> D["Prefix diff to recover array"]
 ```
 
 ### Pattern 5: Prefix with Frequency
@@ -3577,10 +3770,10 @@ Instead of counting each object directly, count how much each object contributes
 
 ```mermaid
 flowchart TD
-A[Total answer] --> B[Pick one element]
-B --> C[Count times it appears]
-C --> D[Multiply value by count]
-D --> E[Sum all contributions]
+A["Total answer"] --> B["Pick one element"]
+B --> C["Count times it appears"]
+C --> D["Multiply value by count"]
+D --> E["Sum all contributions"]
 ```
 
 This is common in subarray contribution problems.
@@ -3614,25 +3807,12 @@ Even if events are dependent, linearity still works.
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Factory Machines]
-    C[Topic] --- D[Binary Search on Answer]
-    E[Concepts] --- F[binary search monotonic predicate production count]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Binary search minimum time]
-    K[Complexity] --- L[O n log answer]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Factory Machines] --> B[Topic Binary Search on Answer]
-A --> C[Concepts binary search, monotonic predicate, production count]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Binary search minimum time.]
-A --> F[Complexity On log answer]
+A["CSES Factory Machines"] --> B["Topic Binary Search on Answer"]
+A --> C["Concepts binary search, monotonic predicate, product..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Binary search minimum time."]
+A --> F["Complexity On log answer"]
 ```
 
 
@@ -3645,15 +3825,18 @@ A --> F[Complexity On log answer]
      4. Stop early if count reaches target to avoid overflow.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S31_0["'If time t is enough to produce required products, a..."]
+    S31_1["'This monotonic property allows binary search.'"]
+    S31_2["'Check function sums t / machineTime(i).'"]
+    S31_3["'Stop early if count reaches target to avoid overflow.'"]
+    S31_0 --> S31_1
+    S31_1 --> S31_2
+    S31_2 --> S31_3
 ```
 
 #### Dry Run
@@ -3665,6 +3848,23 @@ time = 6
 produced = 6/2 + 6/3 + 6/7 = 3 + 2 + 0 = 5
 time 6 works
 try smaller time
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D31_0["'machines = 2 3 7'"]
+    D31_1["'target = 5'"]
+    D31_2["'time = 6'"]
+    D31_3["'produced = 6/2 + 6/3 + 6/7 = 3 + 2 + 0 = 5'"]
+    D31_4["'time 6 works'"]
+    D31_5["'try smaller time'"]
+    D31_0 --> D31_1
+    D31_1 --> D31_2
+    D31_2 --> D31_3
+    D31_3 --> D31_4
+    D31_4 --> D31_5
 ```
 
 ### Practice Problem: [CSES Increasing Array Queries](https://cses.fi/problemset/task/2416)
@@ -3681,25 +3881,12 @@ try smaller time
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Increasing Array Queries]
-    C[Topic] --- D[Difference Array]
-    E[Concepts] --- F[prefix style thinking monotonic stack contribution]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Study after basic prefix sums]
-    K[Complexity] --- L[Advanced]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Increasing Array Queries] --> B[Topic Difference Array]
-A --> C[Concepts prefix style thinking, monotonic stack, contribution]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Study after basic prefix sums.]
-A --> F[Complexity Advanced]
+A["CSES Increasing Array Queries"] --> B["Topic Difference Array"]
+A --> C["Concepts prefix style thinking, monotonic stack, con..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Study after basic prefix sums."]
+A --> F["Complexity Advanced"]
 ```
 
 
@@ -3712,15 +3899,18 @@ A --> F[Complexity Advanced]
      4. Learn it after mastering prefix and monotonic stack.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S32_0["'This is more advanced than basic prefix sum.'"]
+    S32_1["'It asks how much must be added to make subarray non..."]
+    S32_2["'Use structure over next greater elements and prefix..."]
+    S32_3["'Learn it after mastering prefix and monotonic stack.'"]
+    S32_0 --> S32_1
+    S32_1 --> S32_2
+    S32_2 --> S32_3
 ```
 
 #### Dry Run
@@ -3731,6 +3921,21 @@ to make full range non decreasing:
 1 becomes 3 add 2
 2 becomes 3 add 1
 total = 3
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D32_0["'array = 3 1 2'"]
+    D32_1["'to make full range non decreasing:'"]
+    D32_2["'1 becomes 3 add 2'"]
+    D32_3["'2 becomes 3 add 1'"]
+    D32_4["'total = 3'"]
+    D32_0 --> D32_1
+    D32_1 --> D32_2
+    D32_2 --> D32_3
+    D32_3 --> D32_4
 ```
 
 ### Practice Problem: [CSES Counting Coprime Pairs](https://cses.fi/problemset/task/2417)
@@ -3747,25 +3952,12 @@ total = 3
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Counting Coprime Pairs]
-    C[Topic] --- D[Inclusion Exclusion]
-    E[Concepts] --- F[mobius inclusion exclusion coprime counting]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use divisor counts and Mobius]
-    K[Complexity] --- L[O maxA log maxA]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Counting Coprime Pairs] --> B[Topic Inclusion Exclusion]
-A --> C[Concepts mobius, inclusion exclusion, coprime counting]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use divisor counts and Mobius.]
-A --> F[Complexity OmaxA log maxA]
+A["CSES Counting Coprime Pairs"] --> B["Topic Inclusion Exclusion"]
+A --> C["Concepts mobius, inclusion exclusion, coprime counting"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use divisor counts and Mobius."]
+A --> F["Complexity OmaxA log maxA"]
 ```
 
 
@@ -3778,15 +3970,18 @@ A --> F[Complexity OmaxA log maxA]
      4. Start by understanding divisor multiples and inclusion exclusion.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S33_0["'Count how many numbers are divisible by each d.'"]
+    S33_1["'Number of pairs with gcd exactly one can be counted..."]
+    S33_2["'This is advanced number theory.'"]
+    S33_3["'Start by understanding divisor multiples and inclus..."]
+    S33_0 --> S33_1
+    S33_1 --> S33_2
+    S33_2 --> S33_3
 ```
 
 #### Dry Run
@@ -3798,6 +3993,23 @@ coprime pairs:
 2 and 4 no
 3 and 4 yes
 answer = 2
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D33_0["'numbers = 2 3 4'"]
+    D33_1["'coprime pairs:'"]
+    D33_2["'2 and 3 yes'"]
+    D33_3["'2 and 4 no'"]
+    D33_4["'3 and 4 yes'"]
+    D33_5["'answer = 2'"]
+    D33_0 --> D33_1
+    D33_1 --> D33_2
+    D33_2 --> D33_3
+    D33_3 --> D33_4
+    D33_4 --> D33_5
 ```
 
 ### Practice Problem: [CSES Nim Game I](https://cses.fi/problemset/task/1730)
@@ -3814,25 +4026,12 @@ answer = 2
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[CSES Nim Game I]
-    C[Topic] --- D[Game Theory]
-    E[Concepts] --- F[xor invariant impartial games]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Xor all piles]
-    K[Complexity] --- L[O n]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[CSES Nim Game I] --> B[Topic Game Theory]
-A --> C[Concepts xor invariant, impartial games]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Xor all piles.]
-A --> F[Complexity On]
+A["CSES Nim Game I"] --> B["Topic Game Theory"]
+A --> C["Concepts xor invariant, impartial games"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Xor all piles."]
+A --> F["Complexity On"]
 ```
 
 
@@ -3845,15 +4044,18 @@ A --> F[Complexity On]
      4. This is a core game theory pattern.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S34_0["'Compute xor of all pile sizes.'"]
+    S34_1["'If xor is zero, current player loses with perfect p..."]
+    S34_2["'Otherwise current player wins.'"]
+    S34_3["'This is a core game theory pattern.'"]
+    S34_0 --> S34_1
+    S34_1 --> S34_2
+    S34_2 --> S34_3
 ```
 
 #### Dry Run
@@ -3863,6 +4065,19 @@ piles = 3 4 5
 xor = 3 xor 4 xor 5 = 2
 xor is non zero
 first player wins
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D34_0["'piles = 3 4 5'"]
+    D34_1["'xor = 3 xor 4 xor 5 = 2'"]
+    D34_2["'xor is non zero'"]
+    D34_3["'first player wins'"]
+    D34_0 --> D34_1
+    D34_1 --> D34_2
+    D34_2 --> D34_3
 ```
 
 ### Practice Problem: [Codeforces 1096F Inversion Expectation](https://codeforces.com/problemset/problem/1096/F)
@@ -3879,25 +4094,12 @@ first player wins
 #### Mermaid Table Diagram
 
 ```mermaid
-flowchart LR
-    A[Problem] --- B[Codeforces 1096F Inversion Expectation]
-    C[Topic] --- D[Expected Value]
-    E[Concepts] --- F[linearity of expectation inversions modular probability]
-    G[Goal] --- H[Convert the statement into a known math pattern]
-    I[Hint] --- J[Use linearity of expectation]
-    K[Complexity] --- L[Advanced]
-```
-
-
-#### Mermaid Table Diagram
-
-```mermaid
 flowchart TD
-A[Codeforces 1096F Inversion Expectation] --> B[Topic Expected Value]
-A --> C[Concepts linearity of expectation, inversions, modular probability]
-A --> D[Goal Convert the statement into a known math pattern]
-A --> E[Hint Use linearity of expectation.]
-A --> F[Complexity Advanced]
+A["Codeforces 1096F Inversion Expectation"] --> B["Topic Expected Value"]
+A --> C["Concepts linearity of expectation, inversions, modul..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use linearity of expectation."]
+A --> F["Complexity Advanced"]
 ```
 
 
@@ -3911,15 +4113,20 @@ A --> F[Complexity Advanced]
      5. This is advanced but very important for 1800 plus.
 
 
-#### Problem Flowchart
+
+#### Detailed Solution Flowchart
 
 ```mermaid
 flowchart TD
-A[Read input] --> B[Identify math pattern]
-B --> C[Apply formula or helper]
-C --> D[Handle edge cases]
-D --> E[Compute answer]
-E --> F[Print answer]
+    S35_0["'Expected inversions can be calculated pair by pair.'"]
+    S35_1["'For each pair, add probability that pair is inverted.'"]
+    S35_2["'Known values contribute 0 or 1.'"]
+    S35_3["'Unknown values contribute probability under remaini..."]
+    S35_4["'This is advanced but very important for 1800 plus.'"]
+    S35_0 --> S35_1
+    S35_1 --> S35_2
+    S35_2 --> S35_3
+    S35_3 --> S35_4
 ```
 
 #### Dry Run
@@ -3929,6 +4136,19 @@ array = [2, unknown, 1]
 pair 2 and 1 is always inversion
 pairs with unknown depend on probability
 total expectation is sum of pair probabilities
+```
+
+#### Dry Run Flowchart
+
+```mermaid
+flowchart LR
+    D35_0["'array = (2, unknown, 1)'"]
+    D35_1["'pair 2 and 1 is always inversion'"]
+    D35_2["'pairs with unknown depend on probability'"]
+    D35_3["'total expectation is sum of pair probabilities'"]
+    D35_0 --> D35_1
+    D35_1 --> D35_2
+    D35_2 --> D35_3
 ```
 
 
