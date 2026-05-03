@@ -3,22 +3,7 @@
 
 A visual, step-by-step mathematical foundation guide for Competitive Programming and DSA, aimed at building strong fundamentals toward Candidate Master level.
 
-This version improves the base reference by adding:
 
-- clickable topic index
-- formulas
-- mental models
-- safe Mermaid flowcharts
-- C++ helpers
-- Java helpers where useful
-- dry runs
-- problem-solving patterns
-- related practice problems with links
-- approach tables for practice problems
-- Mermaid flowchart for each practice problem
-- CM direction notes and pattern recognition
-
-> Mermaid safety rule used in this file: diagram labels avoid special syntax, pipes, HTML, and complex math symbols inside node text.
 
 ---
 
