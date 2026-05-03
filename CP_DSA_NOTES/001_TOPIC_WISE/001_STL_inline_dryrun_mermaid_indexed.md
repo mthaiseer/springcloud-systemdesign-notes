@@ -1,5 +1,31 @@
 # Competitive Programming STL & Problem Solving Notes
 
+## Clickable Index
+
+- [0. Problem Solving Strategy](#0-problem-solving-strategy)
+- [1. Balanced Brackets / Parentheses](#1-balanced-brackets-/-parentheses)
+- [2. Sliding Window: Subarray Maintenance](#2-sliding-window:-subarray-maintenance)
+- [3. Sliding Window Minimum](#3-sliding-window-minimum)
+- [4. Sliding Window Cost / Make All Elements Equal](#4-sliding-window-cost-/-make-all-elements-equal)
+- [5. Mean, Variance, Median, Mode Dashboard](#5-mean,-variance,-median,-mode-dashboard)
+- [6. Prefix Sum and Subarray Sum Equals X](#6-prefix-sum-and-subarray-sum-equals-x)
+- [7. Stack Mastery: Next Greater Element](#7-stack-mastery:-next-greater-element)
+- [8. Trapping Rain Water](#8-trapping-rain-water)
+- [9. Range Mapping / Interval Coverage](#9-range-mapping-/-interval-coverage)
+- [10. Top K Sum](#10-top-k-sum)
+- [11. Priority Queue Notes](#11-priority-queue-notes)
+- [12. Stack and Queue Basics](#12-stack-and-queue-basics)
+- [13. Contribution Technique](#13-contribution-technique)
+- [14. Pattern Matching / Coordinate Geometry Printing](#14-pattern-matching-/-coordinate-geometry-printing)
+- [15. Molecular Formula Parser](#15-molecular-formula-parser)
+- [16. Choosing the Right STL](#16-choosing-the-right-stl)
+- [17. Common Mistakes](#17-common-mistakes)
+- [18. Final Revision Flow](#18-final-revision-flow)
+- [19. Minimal C++ Setup](#19-minimal-c++-setup)
+- [20. One-Minute CP Mental Checklist](#20-one-minute-cp-mental-checklist)
+- [21. Final Golden Rules](#21-final-golden-rules)
+
+
 > Clean markdown notes with Mermaid diagrams, intuition, examples, C++ templates, one-minute mental tricks, and dry-run blocks placed directly after relevant code.
 
 ---
