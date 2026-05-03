@@ -1330,6 +1330,354 @@ curl http://localhost/actuator/prometheus
 
 # 16. Kubernetes Deployment
 
+This section explains **why each Kubernetes file exists**, **how the files are related**, and **how traffic/configuration flows through the cluster**.
+
+Kubernetes deployment is not one file because each file has a different responsibility.
+
+```mermaid
+flowchart TD
+    NS[namespace.yaml<br/>Creates isolated area] --> CM[configmap.yaml<br/>Normal app configuration]
+    NS --> SEC[secret.example.yaml<br/>Sensitive values]
+    NS --> PG[postgres.yaml<br/>Database]
+    NS --> REDIS[redis.yaml<br/>Cache]
+    NS --> KAFKA[kafka.yaml<br/>Async broker]
+    CM --> APP[app-deployment.yaml<br/>Spring Boot pods]
+    SEC --> APP
+    PG --> APP
+    REDIS --> APP
+    KAFKA --> APP
+    APP --> APPSVC[app-service.yaml<br/>Stable internal API address]
+    APP --> HPA[hpa.yaml<br/>Autoscale API pods]
+    APPSVC --> NGINXCM[nginx-configmap.yaml<br/>Nginx reverse proxy config]
+    NGINXCM --> NGINXDEP[nginx-deployment.yaml<br/>Nginx pods]
+    NGINXDEP --> NGINXSVC[nginx-service.yaml<br/>External LoadBalancer]
+    USER[External User] --> NGINXSVC
+```
+
+---
+
+## 16.1 Why These Kubernetes Files Are Created
+
+| File | Kubernetes Object | Purpose | Why It Exists |
+|---|---|---|---|
+| `namespace.yaml` | Namespace | Creates isolated app environment | Keeps all resources grouped and easier to manage |
+| `configmap.yaml` | ConfigMap | Stores non-secret app config | Lets you change config without rebuilding Docker image |
+| `secret.example.yaml` | Secret | Stores sensitive values | Keeps passwords outside source code and Docker image |
+| `postgres.yaml` | StatefulSet + Service | Runs demo PostgreSQL | Provides database for local/dev Kubernetes testing |
+| `redis.yaml` | Deployment + Service | Runs demo Redis | Provides cache service for fast lookups |
+| `kafka.yaml` | Deployment + Service | Runs demo Kafka | Provides async event processing |
+| `app-deployment.yaml` | Deployment | Runs Spring Boot pods | Creates scalable stateless application instances |
+| `app-service.yaml` | Service | Stable internal address for app pods | Other pods can call `spring-api:8080` |
+| `hpa.yaml` | HorizontalPodAutoscaler | Autoscaling | Adds/removes API pods based on CPU load |
+| `nginx-configmap.yaml` | ConfigMap | Stores Nginx config | Allows Nginx routing/load balancing rules to be externalized |
+| `nginx-deployment.yaml` | Deployment | Runs Nginx pods | Reverse proxy in front of Spring Boot API |
+| `nginx-service.yaml` | LoadBalancer Service | Public entrypoint | Lets external users reach the app |
+
+---
+
+## 16.2 File Relationship Flow
+
+```mermaid
+flowchart LR
+    subgraph Config["Configuration Layer"]
+        CM[ConfigMap<br/>POSTGRES_HOST<br/>REDIS_HOST<br/>KAFKA_BOOTSTRAP_SERVERS]
+        SEC[Secret<br/>POSTGRES_USER<br/>POSTGRES_PASSWORD]
+    end
+
+    subgraph Data["Data and Infrastructure Layer"]
+        PG[PostgreSQL]
+        REDIS[Redis]
+        KAFKA[Kafka]
+    end
+
+    subgraph App["Application Layer"]
+        APPDEP[Spring API Deployment]
+        POD1[API Pod 1]
+        POD2[API Pod 2]
+        POD3[API Pod 3]
+        APPSVC[Spring API Service]
+    end
+
+    subgraph Edge["Traffic Entry Layer"]
+        NGINXCM[Nginx ConfigMap]
+        NGINXDEP[Nginx Deployment]
+        NGINXSVC[Nginx LoadBalancer Service]
+    end
+
+    CM --> APPDEP
+    SEC --> APPDEP
+
+    APPDEP --> POD1
+    APPDEP --> POD2
+    APPDEP --> POD3
+
+    POD1 --> PG
+    POD1 --> REDIS
+    POD1 --> KAFKA
+
+    POD2 --> PG
+    POD2 --> REDIS
+    POD2 --> KAFKA
+
+    POD3 --> PG
+    POD3 --> REDIS
+    POD3 --> KAFKA
+
+    APPSVC --> POD1
+    APPSVC --> POD2
+    APPSVC --> POD3
+
+    NGINXCM --> NGINXDEP
+    NGINXDEP --> APPSVC
+    NGINXSVC --> NGINXDEP
+```
+
+---
+
+## 16.3 Deployment Order
+
+Recommended order:
+
+```mermaid
+flowchart TD
+    A[1. namespace.yaml] --> B[2. configmap.yaml]
+    B --> C[3. secret.example.yaml]
+    C --> D[4. postgres.yaml]
+    C --> E[5. redis.yaml]
+    C --> F[6. kafka.yaml]
+    D --> G[7. app-deployment.yaml]
+    E --> G
+    F --> G
+    G --> H[8. app-service.yaml]
+    H --> I[9. hpa.yaml]
+    H --> J[10. nginx-configmap.yaml]
+    J --> K[11. nginx-deployment.yaml]
+    K --> L[12. nginx-service.yaml]
+```
+
+### Why this order matters
+
+| Step | Reason |
+|---|---|
+| Namespace first | Other objects are created inside it |
+| ConfigMap and Secret before app | App needs environment variables |
+| Postgres/Redis/Kafka before app | App depends on them |
+| Deployment before Service | Service needs pods to route to |
+| App Service before Nginx | Nginx proxies to `spring-api:8080` |
+| Nginx Service last | External traffic should enter after app path is ready |
+
+Important: Kubernetes does not guarantee that dependencies are fully ready just because files are applied first. The app must still handle retrying connections.
+
+---
+
+## 16.4 Runtime Traffic Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant NginxLB as nginx-service.yaml<br/>LoadBalancer
+    participant NginxPod as nginx-deployment.yaml<br/>Nginx Pod
+    participant AppSvc as app-service.yaml<br/>spring-api Service
+    participant AppPod as app-deployment.yaml<br/>Spring Boot Pod
+    participant Redis as redis.yaml<br/>Redis
+    participant Postgres as postgres.yaml<br/>PostgreSQL
+    participant Kafka as kafka.yaml<br/>Kafka
+
+    User->>NginxLB: HTTP request
+    NginxLB->>NginxPod: Route to healthy Nginx pod
+    NginxPod->>AppSvc: proxy_pass http://spring-api:8080
+    AppSvc->>AppPod: Route to ready Spring Boot pod
+    AppPod->>Redis: Check cache
+    alt Cache miss
+        AppPod->>Postgres: Query / save data
+        AppPod->>Redis: Store cache
+    end
+    AppPod->>Kafka: Publish async event
+    AppPod-->>User: HTTP response
+```
+
+---
+
+## 16.5 Configuration Flow
+
+```mermaid
+flowchart TD
+    CM[configmap.yaml] -->|envFrom configMapRef| APPDEP[app-deployment.yaml]
+    SEC[secret.example.yaml] -->|envFrom secretRef| APPDEP
+    APPDEP --> POD[Spring Boot Pod]
+    POD --> ENV[Environment Variables]
+    ENV --> APPYML[application.yml placeholders]
+    APPYML --> RUNNING[Running Spring Boot Application]
+```
+
+Example:
+
+In `configmap.yaml`:
+
+```yaml
+POSTGRES_HOST: postgres
+POSTGRES_DB: appdb
+```
+
+In `secret.example.yaml`:
+
+```yaml
+POSTGRES_USER: appuser
+POSTGRES_PASSWORD: change-me
+```
+
+In `application.yml`:
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/${POSTGRES_DB:appdb}
+    username: ${POSTGRES_USER:appuser}
+    password: ${POSTGRES_PASSWORD:apppassword}
+```
+
+At runtime, Spring Boot sees:
+
+```text
+jdbc:postgresql://postgres:5432/appdb
+```
+
+---
+
+## 16.6 Label and Selector Relationship
+
+Labels are how Kubernetes connects Services to Pods.
+
+```mermaid
+flowchart LR
+    APPDEP[app-deployment.yaml] --> PODLABEL[Pod label<br/>app: spring-api]
+    APPSVC[app-service.yaml] --> SELECTOR[Selector<br/>app: spring-api]
+    SELECTOR --> PODLABEL
+    NGINX[nginx-deployment.yaml] --> NGINXLABEL[Pod label<br/>app: nginx-lb]
+    NGINXSVC[nginx-service.yaml] --> NGINXSELECTOR[Selector<br/>app: nginx-lb]
+    NGINXSELECTOR --> NGINXLABEL
+```
+
+If selector and label do not match, the Service will not send traffic to the pods.
+
+Correct example:
+
+```yaml
+# Pod label
+labels:
+  app: spring-api
+
+# Service selector
+selector:
+  app: spring-api
+```
+
+Wrong example:
+
+```yaml
+# Pod label
+labels:
+  app: spring-api
+
+# Service selector
+selector:
+  app: api
+```
+
+Result:
+
+```text
+Service has no endpoints.
+Traffic fails.
+```
+
+---
+
+## 16.7 Health Check Flow
+
+```mermaid
+flowchart TD
+    PodStarts[Spring Boot pod starts] --> Startup[startupProbe checks /actuator/health]
+    Startup -->|Pass| Readiness[readinessProbe checks /actuator/health/readiness]
+    Readiness -->|Pass| ServiceAddsPod[Service sends traffic to pod]
+    Readiness -->|Fail| NoTraffic[Pod receives no traffic]
+    Startup --> Liveness[livenessProbe checks /actuator/health/liveness]
+    Liveness -->|Fail repeatedly| Restart[Restart pod]
+```
+
+### Why probes are added
+
+| Probe | Purpose |
+|---|---|
+| Startup probe | Protects slow-starting apps from being killed too early |
+| Readiness probe | Prevents traffic going to app before it is ready |
+| Liveness probe | Restarts app if it becomes unhealthy |
+
+---
+
+## 16.8 Autoscaling Flow
+
+```mermaid
+flowchart TD
+    API[Spring API Pods] --> Metrics[CPU metrics]
+    Metrics --> HPA[hpa.yaml]
+    HPA -->|CPU above 70%| MorePods[Increase replicas]
+    HPA -->|CPU below target| FewerPods[Decrease replicas]
+    MorePods --> Deployment[app-deployment.yaml]
+    FewerPods --> Deployment
+```
+
+### Why `hpa.yaml` is created
+
+The app should handle high traffic by adding more pods automatically.
+
+```yaml
+minReplicas: 3
+maxReplicas: 20
+averageUtilization: 70
+```
+
+Meaning:
+
+| Config | Meaning |
+|---|---|
+| `minReplicas: 3` | Always keep at least 3 pods |
+| `maxReplicas: 20` | Never go above 20 pods |
+| `averageUtilization: 70` | Try to keep average CPU around 70% |
+
+---
+
+## 16.9 External vs Internal Access
+
+```mermaid
+flowchart TD
+    User[External User] --> NginxLB[nginx-lb Service<br/>type LoadBalancer]
+    NginxLB --> NginxPods[Nginx Pods]
+    NginxPods --> SpringService[spring-api Service<br/>type ClusterIP]
+    SpringService --> SpringPods[Spring Boot Pods]
+    SpringPods --> DBService[postgres Service<br/>type ClusterIP]
+    SpringPods --> RedisService[redis Service<br/>type ClusterIP]
+    SpringPods --> KafkaService[kafka Service<br/>type ClusterIP]
+```
+
+### Why only Nginx is public
+
+| Component | Public? | Reason |
+|---|---|---|
+| Nginx | Yes | Main HTTP entrypoint |
+| Spring API Service | No | Internal behind Nginx |
+| PostgreSQL | No | Database must not be public |
+| Redis | No | Cache must not be public |
+| Kafka | No | Event broker must not be public |
+
+---
+
+## 16.10 Complete Kubernetes Deployment Files
+
+Below are the deployment files used in this template.
+
+---
+
 ## Kubernetes Runtime Flow
 
 ```mermaid
@@ -1343,190 +1691,6 @@ flowchart TD
     AppPods --> KafkaService
 ```
 
----
-
-## `k8s/namespace.yaml`
-
-```yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: production-template
-```
-
----
-
-## `k8s/configmap.yaml`
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: app-config
-  namespace: production-template
-data:
-  APP_NAME: production-spring-template
-  SPRING_PROFILES_ACTIVE: prod
-  SERVER_PORT: "8080"
-
-  POSTGRES_HOST: postgres
-  POSTGRES_PORT: "5432"
-  POSTGRES_DB: appdb
-
-  REDIS_HOST: redis
-  REDIS_PORT: "6379"
-
-  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-  KAFKA_CONSUMER_GROUP: product-workers
-  KAFKA_CONCURRENCY: "3"
-
-  TOMCAT_MAX_THREADS: "300"
-  TOMCAT_MIN_THREADS: "50"
-  TOMCAT_ACCEPT_COUNT: "1000"
-  TOMCAT_MAX_CONNECTIONS: "10000"
-
-  DB_POOL_MAX: "30"
-  DB_POOL_MIN: "5"
-```
-
----
-
-## `k8s/secret.example.yaml`
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: app-secret
-  namespace: production-template
-type: Opaque
-stringData:
-  POSTGRES_USER: appuser
-  POSTGRES_PASSWORD: change-me
-```
-
-> Never commit real production secrets. Use Sealed Secrets, External Secrets Operator, Vault, AWS Secrets Manager, GCP Secret Manager, or Azure Key Vault.
-
----
-
-## `k8s/app-deployment.yaml`
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: spring-api
-  namespace: production-template
-spec:
-  replicas: 3
-  revisionHistoryLimit: 5
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
-  selector:
-    matchLabels:
-      app: spring-api
-  template:
-    metadata:
-      labels:
-        app: spring-api
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/actuator/prometheus"
-        prometheus.io/port: "8080"
-    spec:
-      terminationGracePeriodSeconds: 45
-      containers:
-        - name: spring-api
-          image: your-docker-registry/production-spring-template:1.0.0
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8080
-          envFrom:
-            - configMapRef:
-                name: app-config
-            - secretRef:
-                name: app-secret
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: 8080
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 3
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: 8080
-            initialDelaySeconds: 40
-            periodSeconds: 20
-            timeoutSeconds: 3
-            failureThreshold: 3
-          startupProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8080
-            failureThreshold: 30
-            periodSeconds: 5
-          resources:
-            requests:
-              cpu: "500m"
-              memory: "512Mi"
-            limits:
-              cpu: "2"
-              memory: "1Gi"
-```
-
----
-
-## `k8s/app-service.yaml`
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: spring-api
-  namespace: production-template
-spec:
-  type: ClusterIP
-  selector:
-    app: spring-api
-  ports:
-    - name: http
-      port: 8080
-      targetPort: 8080
-```
-
----
-
-## `k8s/hpa.yaml`
-
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: spring-api-hpa
-  namespace: production-template
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: spring-api
-  minReplicas: 3
-  maxReplicas: 20
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 70
-```
-
----
 
 # 17. Kubernetes Nginx
 
