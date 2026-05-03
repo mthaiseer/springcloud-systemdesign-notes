@@ -215,6 +215,18 @@ ceil(n / k)
     | Code hint | Compute each resource capacity and take minimum. |
     | Complexity | O(1) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[Codeforces 151A Soft Drinking] --> B[Topic Ceiling Division]
+        A --> C[Concepts minimum among limiting resources, integer division]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Compute each resource capacity and take minimum.]
+        A --> F[Complexity O1]
+    ```
+
+
     #### Approach Logic
 
 
@@ -256,6 +268,18 @@ answer = 6 / 3 = 2
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Track minimum double ratio. |
     | Complexity | O(n) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[Codeforces 919A Supermarket] --> B[Topic Ceiling Division]
+        A --> C[Concepts ratio comparison, price per unit, minimum value]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Track minimum double ratio.]
+        A --> F[Complexity On]
+    ```
+
 
     #### Approach Logic
 
@@ -377,6 +401,18 @@ Think modulo.
     | Code hint | If n is large enough, directly print m. |
     | Complexity | O(1) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[Codeforces 913A Modular Exponentiation] --> B[Topic Modulo and Cycles]
+        A --> C[Concepts modulo, powers of two, overflow avoidance]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint If n is large enough, directly print m.]
+        A --> F[Complexity O1]
+    ```
+
+
     #### Approach Logic
 
 
@@ -420,6 +456,18 @@ answer = 100
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Track previous maximum. |
     | Complexity | O(n) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Increasing Array] --> B[Topic Modulo and Cycles]
+        A --> C[Concepts monotonic invariant, operation count]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Track previous maximum.]
+        A --> F[Complexity On]
+    ```
+
 
     #### Approach Logic
 
@@ -568,6 +616,18 @@ need matrix power later
     | Code hint | Use modPow(a, b, MOD). |
     | Complexity | O(log b) per query |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Exponentiation] --> B[Topic Binary Exponentiation]
+        A --> C[Concepts binary exponentiation, modulo, many queries]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use modPowa, b, MOD.]
+        A --> F[Complexity Olog b per query]
+    ```
+
+
     #### Approach Logic
 
 
@@ -607,6 +667,18 @@ answer = 1594323
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Use modPow twice. |
     | Complexity | O(log c plus log MOD) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Exponentiation II] --> B[Topic Binary Exponentiation]
+        A --> C[Concepts Fermat reduction, nested exponent, modular power]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use modPow twice.]
+        A --> F[Complexity Olog c plus log MOD]
+    ```
+
 
     #### Approach Logic
 
@@ -715,6 +787,18 @@ Division means multiply by inverse.
     | Code hint | Precompute factorial and inverse factorial. |
     | Complexity | O(maxN log MOD plus q) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Binomial Coefficients] --> B[Topic Modular Arithmetic]
+        A --> C[Concepts factorials, inverse factorials, nCr modulo prime]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Precompute factorial and inverse factorial.]
+        A --> F[Complexity OmaxN log MOD plus q]
+    ```
+
+
     #### Approach Logic
 
 
@@ -756,6 +840,18 @@ Under modulo division becomes multiply by inverse
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Answer nCr(n + m - 1, n - 1). |
     | Complexity | O(maxN log MOD plus 1) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Distributing Apples] --> B[Topic Modular Arithmetic]
+        A --> C[Concepts stars and bars, nCr modulo prime]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Answer nCrn plus m minus 1, n minus 1.]
+        A --> F[Complexity OmaxN log MOD plus 1]
+    ```
+
 
     #### Approach Logic
 
@@ -874,6 +970,18 @@ synchronization
     | Code hint | Use frequency array and multiples loop. |
     | Complexity | O(maxA log maxA) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Common Divisors] --> B[Topic GCD and LCM]
+        A --> C[Concepts divisors, frequency counting, largest common divisor]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use frequency array and multiples loop.]
+        A --> F[Complexity OmaxA log maxA]
+    ```
+
+
     #### Approach Logic
 
 
@@ -914,6 +1022,18 @@ answer = 5
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Compute gcd of differences once. |
     | Complexity | O(n log A plus q log A) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[Codeforces 1458A Row GCD] --> B[Topic GCD and LCM]
+        A --> C[Concepts gcd transformation, difference invariant]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Compute gcd of differences once.]
+        A --> F[Complexity On log A plus q log A]
+    ```
+
 
     #### Approach Logic
 
@@ -1102,6 +1222,18 @@ vector<pair<int,int>> factorizeSPF(int x) {
     | Code hint | Build SPF then apply divisor formula. |
     | Complexity | O(maxA log log maxA plus q log A) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Counting Divisors] --> B[Topic Primes and Divisors]
+        A --> C[Concepts prime factorization, divisor count formula, precomputation]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Build SPF then apply divisor formula.]
+        A --> F[Complexity OmaxA log log maxA plus q log A]
+    ```
+
+
     #### Approach Logic
 
 
@@ -1140,6 +1272,18 @@ answer = 6
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Precompute factor counts and prefix. |
     | Complexity | O(maxN log log maxN plus q) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[Codeforces 546D Soldier and Number Game] --> B[Topic Primes and Divisors]
+        A --> C[Concepts prime factor count prefix, SPF, range query]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Precompute factor counts and prefix.]
+        A --> F[Complexity OmaxN log log maxN plus q]
+    ```
+
 
     #### Approach Logic
 
@@ -1253,6 +1397,18 @@ Use prefix sum when there are many range sum queries and array does not change.
     | Code hint | Build prefix once. |
     | Complexity | O(n plus q) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Static Range Sum Queries] --> B[Topic Prefix Sum]
+        A --> C[Concepts prefix sum, range query, O one answer]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Build prefix once.]
+        A --> F[Complexity On plus q]
+    ```
+
+
     #### Approach Logic
 
 
@@ -1291,6 +1447,18 @@ answer = pref[4] - pref[1] = 14 - 2 = 12
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Use one based 2D prefix. |
     | Complexity | O(n squared plus q) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Forest Queries] --> B[Topic Prefix Sum]
+        A --> C[Concepts 2D prefix sum, rectangle query]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use one based 2D prefix.]
+        A --> F[Complexity On squared plus q]
+    ```
+
 
     #### Approach Logic
 
@@ -1404,6 +1572,18 @@ a1 = 3, r = 2
     | Code hint | Use max coordinate and parity. |
     | Complexity | O(1) per query |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Number Spiral] --> B[Topic Sequences]
+        A --> C[Concepts pattern by layer, parity, formula]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use max coordinate and parity.]
+        A --> F[Complexity O1 per query]
+    ```
+
+
     #### Approach Logic
 
 
@@ -1443,6 +1623,18 @@ answer = 8
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Use long long. |
     | Complexity | Depends on sequence length |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Weird Algorithm] --> B[Topic Sequences]
+        A --> C[Concepts sequence simulation, parity transition]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use long long.]
+        A --> F[Complexity Depends on sequence length]
+    ```
+
 
     #### Approach Logic
 
@@ -1547,6 +1739,18 @@ long long sumCubes(long long n) {
     | Code hint | Use sum formula. |
     | Complexity | O(n) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Missing Number] --> B[Topic Summation Formulas]
+        A --> C[Concepts sum formula, missing value]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use sum formula.]
+        A --> F[Complexity On]
+    ```
+
+
     #### Approach Logic
 
 
@@ -1586,6 +1790,18 @@ missing = 4
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Check parity then construct greedily. |
     | Complexity | O(n) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Two Sets] --> B[Topic Summation Formulas]
+        A --> C[Concepts sum parity, constructive partition]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Check parity then construct greedily.]
+        A --> F[Complexity On]
+    ```
+
 
     #### Approach Logic
 
@@ -1745,6 +1961,18 @@ long long nCrMod(int n, int r) {
     | Code hint | Sort then use next_permutation. |
     | Complexity | O(k times n) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Creating Strings] --> B[Topic Counting]
+        A --> C[Concepts permutations with duplicate characters]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Sort then use next_permutation.]
+        A --> F[Complexity Ok times n]
+    ```
+
+
     #### Approach Logic
 
 
@@ -1786,6 +2014,18 @@ count = 3
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Use modular nCr. |
     | Complexity | O(maxN log MOD) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Distributing Apples] --> B[Topic Counting]
+        A --> C[Concepts stars and bars, modular combination]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use modular nCr.]
+        A --> F[Complexity OmaxN log MOD]
+    ```
+
 
     #### Approach Logic
 
@@ -1915,6 +2155,18 @@ So 8 is power of two.
     | Code hint | Use gray = i ^ (i >> 1). |
     | Complexity | O(n times 2^n) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Gray Code] --> B[Topic Logs Bits and Halving]
+        A --> C[Concepts bits, xor, binary representation]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use gray i i greater thangreater than 1.]
+        A --> F[Complexity On times 2 n]
+    ```
+
+
     #### Approach Logic
 
 
@@ -1955,6 +2207,18 @@ Each adjacent pair differs by one bit
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Use xor basis. |
     | Complexity | O(n log A) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Subset Sums] --> B[Topic Logs Bits and Halving]
+        A --> C[Concepts xor basis, bit linear algebra]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use xor basis.]
+        A --> F[Complexity On log A]
+    ```
+
 
     #### Approach Logic
 
@@ -2075,6 +2339,18 @@ answer = ceil((n - b) / a)
     | Code hint | Use bitmask subset enumeration. |
     | Complexity | O(2^n times n) or O(2^n) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Apple Division] --> B[Topic Algebra]
+        A --> C[Concepts minimize difference, total sum relation, subset search]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use bitmask subset enumeration.]
+        A --> F[Complexity O2 n times n or O2 n]
+    ```
+
+
     #### Approach Logic
 
 
@@ -2115,6 +2391,18 @@ difference = abs(12 - 2*5) = 2
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Scan divisors up to sqrt n. |
     | Complexity | O(sqrt n) per test |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[Codeforces 1360D Buying Shovels] --> B[Topic Algebra]
+        A --> C[Concepts factor choice, minimize packages, divisor constraint]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Scan divisors up to sqrt n.]
+        A --> F[Complexity Osqrt n per test]
+    ```
+
 
     #### Approach Logic
 
@@ -2237,6 +2525,18 @@ x around sqrt(2n)
     | Code hint | Use layer equals max(row, col). |
     | Complexity | O(1) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Number Spiral] --> B[Topic Quadratic Formula]
+        A --> C[Concepts square layers, parity, coordinate formula]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use layer equals maxrow, col.]
+        A --> F[Complexity O1]
+    ```
+
+
     #### Approach Logic
 
 
@@ -2276,6 +2576,18 @@ answer derived from 16 and offset
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Use derived formula. |
     | Complexity | O(1) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[Codeforces 1352C Kminusth Not Divisible by n] --> B[Topic Quadratic Formula]
+        A --> C[Concepts counting formula, inverse reasoning]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use derived formula.]
+        A --> F[Complexity O1]
+    ```
+
 
     #### Approach Logic
 
@@ -2408,6 +2720,18 @@ compare squared distances instead
     | Code hint | Use integer cross product. |
     | Complexity | O(1) per query |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Point Location Test] --> B[Topic Geometry]
+        A --> C[Concepts cross product, orientation]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use integer cross product.]
+        A --> F[Complexity O1 per query]
+    ```
+
+
     #### Approach Logic
 
 
@@ -2447,6 +2771,18 @@ positive so C is left
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Use long long cross sum. |
     | Complexity | O(n) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Polygon Area] --> B[Topic Geometry]
+        A --> C[Concepts shoelace formula, cross product sum]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use long long cross sum.]
+        A --> F[Complexity On]
+    ```
+
 
     #### Approach Logic
 
@@ -2548,6 +2884,18 @@ n >= 1000000000 O(log n) or O(1)
     | Code hint | Sort then two pointers. |
     | Complexity | O(n log n plus m log m) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Apartments] --> B[Topic Big O]
+        A --> C[Concepts sorting, two pointers, complexity reduction]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Sort then two pointers.]
+        A --> F[Complexity On log n plus m log m]
+    ```
+
+
     #### Approach Logic
 
 
@@ -2591,6 +2939,18 @@ answer includes this match
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Sort and use two pointers. |
     | Complexity | O(n log n) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Ferris Wheel] --> B[Topic Big O]
+        A --> C[Concepts greedy, sorting, two pointers]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Sort and use two pointers.]
+        A --> F[Complexity On log n]
+    ```
+
 
     #### Approach Logic
 
@@ -2845,6 +3205,18 @@ Even if events are dependent, linearity still works.
     | Code hint | Binary search minimum time. |
     | Complexity | O(n log answer) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Factory Machines] --> B[Topic Binary Search on Answer]
+        A --> C[Concepts binary search, monotonic predicate, production count]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Binary search minimum time.]
+        A --> F[Complexity On log answer]
+    ```
+
+
     #### Approach Logic
 
 
@@ -2886,6 +3258,18 @@ try smaller time
     | Code hint | Study after basic prefix sums. |
     | Complexity | Advanced |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Increasing Array Queries] --> B[Topic Difference Array]
+        A --> C[Concepts prefix style thinking, monotonic stack, contribution]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Study after basic prefix sums.]
+        A --> F[Complexity Advanced]
+    ```
+
+
     #### Approach Logic
 
 
@@ -2925,6 +3309,18 @@ total = 3
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Use divisor counts and Mobius. |
     | Complexity | O(maxA log maxA) |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Counting Coprime Pairs] --> B[Topic Inclusion Exclusion]
+        A --> C[Concepts mobius, inclusion exclusion, coprime counting]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use divisor counts and Mobius.]
+        A --> F[Complexity OmaxA log maxA]
+    ```
+
 
     #### Approach Logic
 
@@ -2967,6 +3363,18 @@ answer = 2
     | Code hint | Xor all piles. |
     | Complexity | O(n) |
 
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[CSES Nim Game I] --> B[Topic Game Theory]
+        A --> C[Concepts xor invariant, impartial games]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Xor all piles.]
+        A --> F[Complexity On]
+    ```
+
+
     #### Approach Logic
 
 
@@ -3005,6 +3413,18 @@ first player wins
     | Goal | Convert the statement into a known math pattern |
     | Code hint | Use linearity of expectation. |
     | Complexity | Advanced |
+
+    #### Mermaid Table Diagram
+
+    ```mermaid
+    flowchart TD
+        A[Codeforces 1096F Inversion Expectation] --> B[Topic Expected Value]
+        A --> C[Concepts linearity of expectation, inversions, modular probability]
+        A --> D[Goal Convert the statement into a known math pattern]
+        A --> E[Hint Use linearity of expectation.]
+        A --> F[Complexity Advanced]
+    ```
+
 
     #### Approach Logic
 
