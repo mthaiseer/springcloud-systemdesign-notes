@@ -1,6 +1,6 @@
 # Competitive Programming STL & Problem Solving Notes
 
-> Clean markdown notes with Mermaid diagrams, intuition, examples, C++ templates, one-minute mental tricks, and added dry-run flow guides.
+> Clean markdown notes with Mermaid diagrams, intuition, examples, C++ templates, one-minute mental tricks, and dry-run blocks placed directly after relevant code.
 
 ---
 
@@ -190,6 +190,46 @@ bool isBalancedParentheses(const string& s) {
 }
 ```
 
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Single bracket counter
+
+Input:
+
+```text
+s = (()())
+```
+
+| Character | Action | Depth |
+|---|---|---:|
+| `(` | open, add one | 1 |
+| `(` | open, add one | 2 |
+| `)` | close, subtract one | 1 |
+| `(` | open, add one | 2 |
+| `)` | close, subtract one | 1 |
+| `)` | close, subtract one | 0 |
+
+Result: depth never becomes negative and final depth is zero, so valid.
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Start depth zero] --> B[Read character]
+    B --> C{Open bracket}
+    C -->|Yes| D[Increase depth]
+    C -->|No| E[Decrease depth]
+    D --> F{More characters}
+    E --> G{Depth negative}
+    G -->|Yes| X[Invalid]
+    G -->|No| F
+    F -->|Yes| B
+    F -->|No| H{Depth zero}
+    H -->|Yes| V[Valid]
+    H -->|No| X
+```
+
+
 ### Multiple bracket types
 
 For `()`, `{}`, `[]`, use stack. The last opened bracket must match the first incoming closing bracket.
@@ -264,6 +304,48 @@ bool isBalanced(const string& s) {
 }
 ```
 
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Multiple bracket stack
+
+Input:
+
+```text
+s = [{()}]
+```
+
+| Character | Stack before | Action | Stack after |
+|---|---|---|---|
+| `[` | empty | push | `[` |
+| `{` | `[` | push | `[ {` |
+| `(` | `[ {` | push | `[ { (` |
+| `)` | `[ { (` | match and pop | `[ {` |
+| `}` | `[ {` | match and pop | `[` |
+| `]` | `[` | match and pop | empty |
+
+Result: stack is empty, so valid.
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Start empty stack] --> B[Read character]
+    B --> C{Opening bracket}
+    C -->|Yes| D[Push to stack]
+    C -->|No| E{Stack empty}
+    E -->|Yes| X[Invalid]
+    E -->|No| F{Top matches closing}
+    F -->|Yes| G[Pop stack]
+    F -->|No| X
+    D --> H{More characters}
+    G --> H
+    H -->|Yes| B
+    H -->|No| I{Stack empty}
+    I -->|Yes| V[Valid]
+    I -->|No| X
+```
+
+
 ### Range query on balanced parentheses
 
 For a range `[l, r]` in a parentheses string, using prefix depth:
@@ -335,6 +417,41 @@ for (int i = 0; i < n; i++) {
     }
 }
 ```
+
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Fixed size window movement
+
+Input:
+
+```text
+a = [4, 2, 1, 5, 3], k = 3
+```
+
+| i | Insert | Remove | Current window | Answer ready |
+|---:|---:|---|---|---|
+| 0 | 4 | none | `[4]` | no |
+| 1 | 2 | none | `[4, 2]` | no |
+| 2 | 1 | none | `[4, 2, 1]` | yes |
+| 3 | 5 | 4 | `[2, 1, 5]` | yes |
+| 4 | 3 | 2 | `[1, 5, 3]` | yes |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Loop index i] --> B[Insert current element]
+    B --> C{Window too large}
+    C -->|Yes| D[Remove outgoing element]
+    C -->|No| E[Skip removal]
+    D --> F{Window size is k}
+    E --> F
+    F -->|Yes| G[Compute answer]
+    F -->|No| H[Continue]
+    G --> H
+    H --> A
+```
+
 
 ### Intuition
 
@@ -430,6 +547,38 @@ vector<int> slidingWindowMinMultiset(vector<int>& a, int k) {
 }
 ```
 
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Multiset window minimum
+
+Input:
+
+```text
+a = [4, 2, 1, 5, 3], k = 3
+```
+
+| i | Insert | Remove | Multiset | Minimum |
+|---:|---:|---|---|---|
+| 0 | 4 | none | `{4}` | not ready |
+| 1 | 2 | none | `{2,4}` | not ready |
+| 2 | 1 | none | `{1,2,4}` | 1 |
+| 3 | 5 | 4 | `{1,2,5}` | 1 |
+| 4 | 3 | 2 | `{1,3,5}` | 1 |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Insert current value] --> B{Need remove old value}
+    B -->|Yes| C[Erase one occurrence]
+    B -->|No| D[Skip erase]
+    C --> E{Window ready}
+    D --> E
+    E -->|Yes| F[Minimum is begin of multiset]
+    E -->|No| G[Continue]
+```
+
+
 Complexity: `O(n log k)`.
 
 ### Using monotonic deque
@@ -506,6 +655,40 @@ vector<int> slidingWindowMin(vector<int>& a, int k) {
     return ans;
 }
 ```
+
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Monotonic deque minimum
+
+Input:
+
+```text
+a = [4, 2, 1, 5, 3], k = 3
+```
+
+| i | x | Deque action | Deque after insert | Window min |
+|---:|---:|---|---|---|
+| 0 | 4 | push 4 | `[4]` | not ready |
+| 1 | 2 | pop 4, push 2 | `[2]` | not ready |
+| 2 | 1 | pop 2, push 1 | `[1]` | 1 |
+| 3 | 5 | push 5 | `[1,5]` | 1 |
+| 4 | 3 | pop 5, push 3 | `[1,3]` | 1 |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Insert x] --> B{Back greater than x}
+    B -->|Yes| C[Pop back]
+    C --> B
+    B -->|No| D[Push x]
+    D --> E{Outgoing equals front}
+    E -->|Yes| F[Pop front]
+    E -->|No| G[Keep front]
+    F --> H[Front is minimum]
+    G --> H
+```
+
 
 Complexity: `O(n)`.
 
@@ -687,6 +870,41 @@ struct SlidingCost {
 };
 ```
 
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Median cost using two multisets
+
+Input:
+
+```text
+window = [1, 2, 10, 20, 30]
+```
+
+| Set | Values | Sum |
+|---|---|---:|
+| lo | `1, 2, 10` | 13 |
+| hi | `20, 30` | 50 |
+
+| Step | Formula | Value |
+|---|---|---:|
+| median | max of lo | 10 |
+| left cost | `10 * 3 - 13` | 17 |
+| right cost | `50 - 10 * 2` | 30 |
+| total | `17 + 30` | 47 |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Insert or erase value] --> B[Put in lo or hi]
+    B --> C[Rebalance sizes]
+    C --> D[Median is max of lo]
+    D --> E[Compute left cost]
+    E --> F[Compute right cost]
+    F --> G[Return total cost]
+```
+
+
 ### One-minute mental trick
 
 ```text
@@ -864,6 +1082,40 @@ struct DataDashboard {
 };
 ```
 
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Statistics dashboard updates
+
+Input:
+
+```text
+insert 1, insert 2, insert 2, insert 5
+```
+
+| Operation | Count | Sum | Square sum | Mode |
+|---|---:|---:|---:|---|
+| insert 1 | 1 | 1 | 1 | 1 |
+| insert 2 | 2 | 3 | 5 | 1 or 2 |
+| insert 2 | 3 | 5 | 9 | 2 |
+| insert 5 | 4 | 10 | 34 | 2 |
+
+Final mean is `10 / 4 = 2.5`.
+Final variance is `34 / 4 - 2.5 * 2.5 = 2.25`.
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Insert or remove x] --> B[Update count]
+    B --> C[Update sum]
+    C --> D[Update square sum]
+    D --> E[Update frequency map]
+    E --> F[Update ordered frequency set]
+    F --> G[Update median halves]
+    G --> H[Queries are ready]
+```
+
+
 ### One-minute mental trick
 
 ```text
@@ -964,6 +1216,38 @@ long long countSubarraysWithSumX(vector<int>& a, long long x) {
 }
 ```
 
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Count subarrays with target sum
+
+Input:
+
+```text
+a = [1, 2, 3, -2, 5], x = 3
+```
+
+| i | value | prefix | need | previous need count | answer |
+|---:|---:|---:|---:|---:|---:|
+| 0 | 1 | 1 | -2 | 0 | 0 |
+| 1 | 2 | 3 | 0 | 1 | 1 |
+| 2 | 3 | 6 | 3 | 1 | 2 |
+| 3 | -2 | 4 | 1 | 1 | 3 |
+| 4 | 5 | 9 | 6 | 1 | 4 |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Initialize frequency of zero prefix] --> B[Add value to prefix]
+    B --> C[Need equals prefix minus target]
+    C --> D[Add frequency of need]
+    D --> E[Store current prefix]
+    E --> F{More elements}
+    F -->|Yes| B
+    F -->|No| G[Return answer]
+```
+
+
 ### C++ print all ranges
 
 ```cpp
@@ -988,6 +1272,36 @@ void printSubarraysWithSumX(vector<int>& a, long long x) {
     }
 }
 ```
+
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Print all target-sum ranges
+
+Input:
+
+```text
+a = [1, 2, 3], x = 3
+```
+
+| i | value | prefix | need | positions for need | printed range |
+|---:|---:|---:|---:|---|---|
+| 0 | 1 | 1 | -2 | none | none |
+| 1 | 2 | 3 | 0 | `-1` | `[0,1]` |
+| 2 | 3 | 6 | 3 | `1` | `[2,2]` |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Keep map from prefix to positions] --> B[Update prefix]
+    B --> C[Find need prefix]
+    C --> D{Need exists}
+    D -->|Yes| E[Print all ranges]
+    D -->|No| F[Print none]
+    E --> G[Store current index]
+    F --> G
+```
+
 
 ### One-minute mental trick
 
@@ -1069,6 +1383,39 @@ vector<int> nextGreaterIndex(vector<int>& a) {
     return nge;
 }
 ```
+
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Next greater element
+
+Input:
+
+```text
+a = [2, 1, 3, 2]
+```
+
+| i | value | Stack before | Action | Next greater |
+|---:|---:|---|---|---|
+| 3 | 2 | empty | push 2 | none |
+| 2 | 3 | 2 | pop 2, push 3 | none |
+| 1 | 1 | 3 | top is greater, push 1 | 3 |
+| 0 | 2 | 3, 1 | pop 1, top is greater, push 2 | 3 |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Scan from right] --> B[Current value]
+    B --> C{Top less or equal current}
+    C -->|Yes| D[Pop stack]
+    D --> C
+    C -->|No| E{Stack empty}
+    E -->|Yes| F[No next greater]
+    E -->|No| G[Top is answer]
+    F --> H[Push current]
+    G --> H
+```
+
 
 ### One-minute mental trick
 
@@ -1168,6 +1515,43 @@ int trapRainWater(vector<int>& h) {
 }
 ```
 
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Water trapped by stack
+
+Input:
+
+```text
+height = [3, 0, 2, 0, 4]
+```
+
+| i | height | Important action | Water added |
+|---:|---:|---|---:|
+| 0 | 3 | push index 0 | 0 |
+| 1 | 0 | push index 1 | 0 |
+| 2 | 2 | pop bottom index 1 | 2 |
+| 3 | 0 | push index 3 | 0 |
+| 4 | 4 | pop bottoms and use left wall | 5 |
+
+Total water is `7`.
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Read current bar] --> B{Current higher than stack top}
+    B -->|Yes| C[Pop bottom]
+    C --> D{Stack empty}
+    D -->|Yes| E[Stop inner loop]
+    D -->|No| F[New top is left wall]
+    F --> G[Compute width]
+    G --> H[Compute bounded height]
+    H --> I[Add water]
+    I --> B
+    B -->|No| J[Push current index]
+```
+
+
 ### One-minute mental trick
 
 ```text
@@ -1250,6 +1634,40 @@ bool isCoveredOffline(vector<pair<int,int>>& ranges, int x) {
 }
 ```
 
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Offline interval coverage
+
+Input:
+
+```text
+ranges = [1,3], [6,8], x = 2
+```
+
+| Data | Values |
+|---|---|
+| sorted starts | `1, 6` |
+| sorted ends | `3, 8` |
+| intervals starting after 2 | 1 |
+| intervals ending before 2 | 0 |
+| covered count | `2 - 1 - 0 = 1` |
+
+Result: covered.
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Sort starts and ends] --> B[Query point x]
+    B --> C[Count starts greater than x]
+    C --> D[Count ends less than x]
+    D --> E[Covered count equals total minus both]
+    E --> F{Covered count positive}
+    F -->|Yes| G[Covered]
+    F -->|No| H[Not covered]
+```
+
+
 ### Online version: maintain merged intervals
 
 Use `set<pair<int,int>>` containing non-overlapping intervals.
@@ -1325,6 +1743,40 @@ struct RangeCover {
     }
 };
 ```
+
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Merged interval insert and query
+
+Input:
+
+```text
+insert [1,3], insert [6,8], insert [2,7], query 5
+```
+
+| Operation | Intervals after operation |
+|---|---|
+| insert `[1,3]` | `[1,3]` |
+| insert `[6,8]` | `[1,3] [6,8]` |
+| insert `[2,7]` | `[1,8]` |
+| query `5` | covered |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Insert range] --> B[Find overlap candidate]
+    B --> C{Overlaps}
+    C -->|Yes| D[Merge boundaries]
+    D --> E[Erase old interval]
+    E --> C
+    C -->|No| F[Insert merged interval]
+    G[Query point] --> H[Find previous interval]
+    H --> I{End covers point}
+    I -->|Yes| J[Covered]
+    I -->|No| K[Not covered]
+```
+
 
 ### One-minute mental trick
 
@@ -1461,6 +1913,40 @@ struct TopKSum {
     }
 };
 ```
+
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Maintain top k sum
+
+Input:
+
+```text
+k = 3, insert values [5, 1, 10, 3, 8]
+```
+
+| Insert | top | rest | sumTop |
+|---:|---|---|---:|
+| 5 | `5` | empty | 5 |
+| 1 | `1,5` | empty | 6 |
+| 10 | `1,5,10` | empty | 16 |
+| 3 | `3,5,10` | `1` | 18 |
+| 8 | `5,8,10` | `1,3` | 23 |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Insert value] --> B[Put into top]
+    B --> C[Balance size]
+    C --> D{Top larger than k}
+    D -->|Yes| E[Move smallest top to rest]
+    D -->|No| F{Rest has larger value}
+    E --> F
+    F -->|Yes| G[Swap smallest top and largest rest]
+    F -->|No| H[sumTop is answer]
+    G --> H
+```
+
 
 ### One-minute mental trick
 
@@ -1629,6 +2115,39 @@ struct StackUsingQueues {
 };
 ```
 
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Stack using two queues
+
+Input:
+
+```text
+push 1, push 2, push 3, pop
+```
+
+| Step | q1 | q2 | Action |
+|---|---|---|---|
+| start | `1,2,3` | empty | need pop |
+| move | `3` | `1,2` | move until one left |
+| pop | empty | `1,2` | pop 3 |
+| swap | `1,2` | empty | restore q1 |
+
+Returned value is `3`.
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Pop stack using queues] --> B{q1 size greater than one}
+    B -->|Yes| C[Move front from q1 to q2]
+    C --> B
+    B -->|No| D[Remaining front is stack top]
+    D --> E[Pop it]
+    E --> F[Swap q1 and q2]
+    F --> G[Return value]
+```
+
+
 ### One-minute mental trick
 
 ```text
@@ -1735,6 +2254,38 @@ long long sumOfAllSubarrays(vector<int>& a) {
 }
 ```
 
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Sum of all subarrays by contribution
+
+Input:
+
+```text
+a = [1, 2, 3]
+```
+
+| i | value | left choices | right choices | contribution |
+|---:|---:|---:|---:|---:|
+| 0 | 1 | 1 | 3 | 3 |
+| 1 | 2 | 2 | 2 | 8 |
+| 2 | 3 | 3 | 1 | 9 |
+
+Total is `20`.
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Pick index i] --> B[Count left choices]
+    B --> C[Count right choices]
+    C --> D[Multiply by value]
+    D --> E[Add to answer]
+    E --> F{More elements}
+    F -->|Yes| A
+    F -->|No| G[Return total]
+```
+
+
 ### Sum of all subsequences
 
 Each element appears in `2^(n-1)` subsequences.
@@ -1754,6 +2305,35 @@ long long sumOfAllSubsequences(vector<int>& a) {
     return ans;
 }
 ```
+
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Sum of all subsequences
+
+Input:
+
+```text
+a = [1, 2, 3]
+```
+
+| Element | Appears in how many subsequences | Contribution |
+|---:|---:|---:|
+| 1 | 4 | 4 |
+| 2 | 4 | 8 |
+| 3 | 4 | 12 |
+
+Total is `24`.
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[For each element] --> B[Each appears in power of two choices]
+    B --> C[Multiply element by ways]
+    C --> D[Add contribution]
+    D --> E[Return total]
+```
+
 
 ### Product of all subarrays sum
 
@@ -1814,6 +2394,38 @@ long long sumProductOfAllSubarrays(vector<int>& a) {
     return ans;
 }
 ```
+
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Sum product of all subarrays
+
+Input:
+
+```text
+a = [2, 3, 4]
+```
+
+| x | Previous sop | New sop | Answer |
+|---:|---:|---:|---:|
+| 2 | 0 | 2 | 2 |
+| 3 | 2 | 9 | 11 |
+| 4 | 9 | 40 | 51 |
+
+Formula: `sop = sop * x + x`.
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Read x] --> B[Extend previous products]
+    B --> C[Add new single element subarray]
+    C --> D[Update sop]
+    D --> E[Add sop to answer]
+    E --> F{More elements}
+    F -->|Yes| A
+    F -->|No| G[Return answer]
+```
+
 
 ### One-minute mental trick
 
@@ -1879,6 +2491,38 @@ int main() {
     }
 }
 ```
+
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Coordinate based star printing
+
+Input:
+
+```text
+rows = 5, cols = 5, condition i equals j
+```
+
+| Cell | Condition | Printed |
+|---|---|---|
+| `(0,0)` | true | star |
+| `(0,1)` | false | space |
+| `(1,1)` | true | star |
+| `(2,2)` | true | star |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Loop row i] --> B[Loop column j]
+    B --> C{Condition true}
+    C -->|Yes| D[Print star]
+    C -->|No| E[Print space]
+    D --> F{More columns}
+    E --> F
+    F -->|Yes| B
+    F -->|No| G[Next row]
+```
+
 
 Output:
 
@@ -2061,6 +2705,44 @@ public:
     }
 };
 ```
+
+### Dry Run And Mermaid Flow
+
+#### Dry Run: Parse chemical formula
+
+Input:
+
+```text
+formula = Mg(OH)2
+```
+
+| Step | Token | Action | Count map |
+|---:|---|---|---|
+| 1 | `Mg` | add element | `Mg:1` |
+| 2 | `(` | parse inside | inside map starts |
+| 3 | `O` | add inside | `O:1` |
+| 4 | `H` | add inside | `O:1 H:1` |
+| 5 | `)2` | multiply inside | `O:2 H:2` |
+| 6 | merge | merge maps | `H:2 Mg:1 O:2` |
+
+#### Mermaid Dry Run Diagram
+
+```mermaid
+flowchart TD
+    A[Start parse] --> B{Current character}
+    B -->|Capital| C[Read element]
+    C --> D[Read number]
+    D --> E[Add count]
+    B -->|Open parenthesis| F[Parse inside recursively]
+    F --> G[Read multiplier]
+    G --> H[Multiply inside map]
+    H --> I[Merge map]
+    E --> J{More characters}
+    I --> J
+    J -->|Yes| B
+    J -->|No| K[Return map]
+```
+
 
 ### One-minute mental trick
 
@@ -2304,770 +2986,3 @@ Keep templates short.
 Test edge cases.
 Never trust first AC-looking code without dry run.
 ```
-
-
----
-
-## Added Dry Run And Flow Guide
-
-This add-on section gives quick dry runs and Mermaid diagrams for the main STL patterns in this file. Use it as a revision layer after reading each topic.
-
-
-### 1. Balanced Brackets
-
-Input or scenario:
-
-```text
-s = [{()}]
-```
-
-#### Dry Run Table
-
-| Step | Character | Stack before | Action | Stack after |
-|---:|---|---|---|---|
-| 1 | [ | empty | push | [ |
-| 2 | { | [ | push | [ { |
-| 3 | ( | [ { | push | [ { ( |
-| 4 | ) | [ { ( | match and pop | [ { |
-| 5 | } | [ { | match and pop | [ |
-| 6 | ] | [ | match and pop | empty |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Start empty stack] --> B[Read character]
-    B --> C{Opening bracket}
-    C -->|Yes| D[Push to stack]
-    C -->|No| E{Stack empty}
-    E -->|Yes| X[Invalid]
-    E -->|No| F{Top matches}
-    F -->|Yes| G[Pop stack]
-    F -->|No| X
-    D --> H{More characters}
-    G --> H
-    H -->|Yes| B
-    H -->|No| I{Stack empty}
-    I -->|Yes| V[Valid]
-    I -->|No| X
-```
-
-#### Logic Summary
-
-| Case | Use |
-|---|---|
-| One bracket type | counter |
-| Multiple bracket types | stack |
-| Range query | prefix depth plus range minimum |
-
-
-### 2. Sliding Window Maintenance
-
-Input or scenario:
-
-```text
-a = [4, 2, 1, 5, 3], k = 3
-```
-
-#### Dry Run Table
-
-| i | Incoming | Remove | Window | Ready |
-|---:|---:|---|---|---|
-| 0 | 4 | none | [4] | no |
-| 1 | 2 | none | [4,2] | no |
-| 2 | 1 | none | [4,2,1] | yes |
-| 3 | 5 | 4 | [2,1,5] | yes |
-| 4 | 3 | 2 | [1,5,3] | yes |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Loop over index] --> B[Insert current value]
-    B --> C{Window too large}
-    C -->|Yes| D[Remove outgoing value]
-    C -->|No| E[Skip remove]
-    D --> F{Window size equals k}
-    E --> F
-    F -->|Yes| G[Compute answer]
-    F -->|No| H[Continue]
-    G --> H
-    H --> A
-```
-
-#### Logic Summary
-
-| Need | Structure |
-|---|---|
-| Sum | running sum |
-| Frequency | map |
-| Minimum maximum | deque |
-| Median | two multisets |
-
-
-### 3. Sliding Window Minimum
-
-Input or scenario:
-
-```text
-a = [4, 2, 1, 5, 3], k = 3
-```
-
-#### Dry Run Table
-
-| i | x | Action | Deque | Minimum |
-|---:|---:|---|---|---|
-| 0 | 4 | push | [4] | not ready |
-| 1 | 2 | pop 4 push 2 | [2] | not ready |
-| 2 | 1 | pop 2 push 1 | [1] | 1 |
-| 3 | 5 | push 5 | [1,5] | 1 |
-| 4 | 3 | pop 5 push 3 | [1,3] | 1 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Insert x] --> B{Back greater than x}
-    B -->|Yes| C[Pop back]
-    C --> B
-    B -->|No| D[Push x]
-    D --> E{Outgoing equals front}
-    E -->|Yes| F[Pop front]
-    E -->|No| G[Keep front]
-    F --> H[Front is minimum]
-    G --> H
-```
-
-#### Logic Summary
-
-| Fact | Meaning |
-|---|---|
-| Deque increasing | front is minimum |
-| Bigger before smaller | useless |
-| Each value enters once | linear time |
-
-
-### 4. Sliding Window Cost
-
-Input or scenario:
-
-```text
-window = [1, 2, 10, 20, 30]
-```
-
-#### Dry Run Table
-
-| Set | Values | Sum |
-|---|---|---:|
-| lo | 1, 2, 10 | 13 |
-| hi | 20, 30 | 50 |
-
-| Part | Formula | Value |
-|---|---|---:|
-| median | max of lo | 10 |
-| left cost | 10 times 3 minus 13 | 17 |
-| right cost | 50 minus 10 times 2 | 30 |
-| total | left plus right | 47 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Insert or erase value] --> B[Place in lo or hi]
-    B --> C[Rebalance sizes]
-    C --> D[Median is max of lo]
-    D --> E[Compute left cost]
-    E --> F[Compute right cost]
-    F --> G[Return total cost]
-```
-
-#### Logic Summary
-
-| Concept | Meaning |
-|---|---|
-| Absolute difference | minimized by median |
-| lo | smaller half |
-| hi | larger half |
-| sums | allow fast cost |
-
-
-### 5. Mean Variance Median Mode Dashboard
-
-Input or scenario:
-
-```text
-insert 1, insert 2, insert 2, insert 5
-```
-
-#### Dry Run Table
-
-| Operation | Count | Sum | Square sum | Mode |
-|---|---:|---:|---:|---:|
-| insert 1 | 1 | 1 | 1 | 1 |
-| insert 2 | 2 | 3 | 5 | 1 or 2 |
-| insert 2 | 3 | 5 | 9 | 2 |
-| insert 5 | 4 | 10 | 34 | 2 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Update value x] --> B[Update count]
-    B --> C[Update sum]
-    C --> D[Update square sum]
-    D --> E[Update frequency]
-    E --> F[Update median sets]
-    F --> G[Answer statistics]
-```
-
-#### Logic Summary
-
-| Query | Maintained data |
-|---|---|
-| mean | sum and count |
-| variance | square sum |
-| median | two multisets |
-| mode | frequency set |
-
-
-### 6. Prefix Sum Subarray Sum Equals X
-
-Input or scenario:
-
-```text
-a = [1, 2, 3, -2, 5], x = 3
-```
-
-#### Dry Run Table
-
-| i | value | prefix | need | added | answer |
-|---:|---:|---:|---:|---:|---:|
-| 0 | 1 | 1 | -2 | 0 | 0 |
-| 1 | 2 | 3 | 0 | 1 | 1 |
-| 2 | 3 | 6 | 3 | 1 | 2 |
-| 3 | -2 | 4 | 1 | 1 | 3 |
-| 4 | 5 | 9 | 6 | 1 | 4 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Set freq of zero prefix to one] --> B[Add value to prefix]
-    B --> C[Need equals prefix minus x]
-    C --> D[Add freq need to answer]
-    D --> E[Store current prefix]
-    E --> F{More elements}
-    F -->|Yes| B
-    F -->|No| G[Return answer]
-```
-
-#### Logic Summary
-
-| Values | Best method |
-|---|---|
-| positive only | sliding window possible |
-| negative allowed | prefix plus map |
-| count ranges | map frequency |
-| print ranges | map to positions |
-
-
-### 7. Next Greater Element
-
-Input or scenario:
-
-```text
-a = [2, 1, 3, 2]
-```
-
-#### Dry Run Table
-
-| i | value | Stack before | Action | Answer |
-|---:|---:|---|---|---|
-| 3 | 2 | empty | push 2 | none |
-| 2 | 3 | 2 | pop 2 push 3 | none |
-| 1 | 1 | 3 | push 1 | 3 |
-| 0 | 2 | 3,1 | pop 1 push 2 | 3 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Scan right to left] --> B[Current value]
-    B --> C{Top less or equal current}
-    C -->|Yes| D[Pop]
-    D --> C
-    C -->|No| E{Stack empty}
-    E -->|Yes| F[No next greater]
-    E -->|No| G[Top is answer]
-    F --> H[Push current]
-    G --> H
-    H --> A
-```
-
-#### Logic Summary
-
-| Query | Scan | Pop rule |
-|---|---|---|
-| next greater right | right to left | pop smaller or equal |
-| next smaller right | right to left | pop greater or equal |
-| previous greater | left to right | pop smaller or equal |
-
-
-### 8. Trapping Rain Water
-
-Input or scenario:
-
-```text
-height = [3, 0, 2, 0, 4]
-```
-
-#### Dry Run Table
-
-| i | height | Stack action | Water added |
-|---:|---:|---|---:|
-| 0 | 3 | push | 0 |
-| 1 | 0 | push | 0 |
-| 2 | 2 | pop bottom 0 | 2 |
-| 3 | 0 | push | 0 |
-| 4 | 4 | pop bottoms 0 and 2 | 5 |
-| total | | | 7 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Read bar] --> B{Current higher than top}
-    B -->|Yes| C[Pop bottom]
-    C --> D{Stack empty}
-    D -->|Yes| E[Stop]
-    D -->|No| F[New top is left wall]
-    F --> G[Compute width]
-    G --> H[Compute bounded height]
-    H --> I[Add water]
-    I --> B
-    B -->|No| J[Push current index]
-```
-
-#### Logic Summary
-
-| Role | Meaning |
-|---|---|
-| current | right wall |
-| popped | bottom |
-| stack top after pop | left wall |
-
-
-### 9. Range Mapping Interval Coverage
-
-Input or scenario:
-
-```text
-insert [1,3], insert [6,8], insert [2,7], query 5, query 9
-```
-
-#### Dry Run Table
-
-| Operation | Set before | Action | Set after |
-|---|---|---|---|
-| insert 1 3 | empty | insert | [1,3] |
-| insert 6 8 | [1,3] | no overlap | [1,3] [6,8] |
-| insert 2 7 | [1,3] [6,8] | merge | [1,8] |
-| query 5 | [1,8] | inside | covered |
-| query 9 | [1,8] | outside | not covered |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Insert interval] --> B[Find first overlap]
-    B --> C{Overlaps}
-    C -->|Yes| D[Merge interval]
-    D --> E[Erase old interval]
-    E --> C
-    C -->|No| F[Insert merged interval]
-    G[Query point] --> H[Find interval before point]
-    H --> I{End covers point}
-    I -->|Yes| J[Covered]
-    I -->|No| K[Not covered]
-```
-
-#### Logic Summary
-
-| Need | Tool |
-|---|---|
-| static point queries | sorted starts and ends |
-| dynamic inserts | set of merged intervals |
-| range add | difference array |
-
-
-### 10. Top K Sum
-
-Input or scenario:
-
-```text
-k = 3, values = [5, 1, 10, 3, 8]
-```
-
-#### Dry Run Table
-
-| Insert | top | rest | sumTop |
-|---:|---|---|---:|
-| 5 | 5 | empty | 5 |
-| 1 | 1,5 | empty | 6 |
-| 10 | 1,5,10 | empty | 16 |
-| 3 | 3,5,10 | 1 | 18 |
-| 8 | 5,8,10 | 1,3 | 23 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Insert value] --> B[Put in top]
-    B --> C[Balance size]
-    C --> D{Top size greater than k}
-    D -->|Yes| E[Move smallest top to rest]
-    D -->|No| F{Rest has bigger value}
-    E --> F
-    F -->|Yes| G[Swap across sets]
-    F -->|No| H[sumTop is answer]
-    G --> H
-```
-
-#### Logic Summary
-
-| Need | Tool |
-|---|---|
-| arbitrary erase | two multisets |
-| only best repeatedly | priority queue |
-| sum of top k | maintain sumTop |
-
-
-### 11. Priority Queue
-
-Input or scenario:
-
-```text
-push 5, push 1, push 3, pop
-```
-
-#### Dry Run Table
-
-| Operation | Min heap content | Top |
-|---|---|---:|
-| push 5 | 5 | 5 |
-| push 1 | 1,5 | 1 |
-| push 3 | 1,3,5 | 1 |
-| pop | 3,5 | 3 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Need best item] --> B{Need smallest}
-    B -->|Yes| C[Use min heap]
-    B -->|No| D[Use max heap]
-    C --> E[Push values]
-    D --> E
-    E --> F[Top gives best]
-    F --> G[Pop when processed]
-```
-
-#### Logic Summary
-
-| Need | Choice |
-|---|---|
-| largest | default priority queue |
-| smallest | greater comparator |
-| arbitrary erase | multiset instead |
-
-
-### 12. Stack And Queue Basics
-
-Input or scenario:
-
-```text
-push 1, push 2, push 3, then pop
-```
-
-#### Dry Run Table
-
-| Structure | Before pop | Removed | After pop |
-|---|---|---:|---|
-| stack | 1,2,3 | 3 | 1,2 |
-| queue | 1,2,3 | 1 | 2,3 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Choose structure] --> B{Need last inserted first}
-    B -->|Yes| C[Use stack]
-    B -->|No| D{Need first inserted first}
-    D -->|Yes| E[Use queue]
-    D -->|No| F[Use deque or other STL]
-```
-
-#### Logic Summary
-
-| Structure | Order | Use |
-|---|---|---|
-| stack | last in first out | brackets DFS monotonic |
-| queue | first in first out | BFS level order |
-| deque | both ends | window min max |
-
-
-### 13. Contribution Technique
-
-Input or scenario:
-
-```text
-a = [1, 2, 3]
-```
-
-#### Dry Run Table
-
-| i | value | left choices | right choices | contribution |
-|---:|---:|---:|---:|---:|
-| 0 | 1 | 1 | 3 | 3 |
-| 1 | 2 | 2 | 2 | 8 |
-| 2 | 3 | 3 | 1 | 9 |
-| total | | | | 20 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Pick element i] --> B[Count left boundaries]
-    B --> C[Count right boundaries]
-    C --> D[Multiply choices]
-    D --> E[Multiply by value]
-    E --> F[Add contribution]
-```
-
-#### Logic Summary
-
-| Too many objects | Count contribution of |
-|---|---|
-| subarrays | each element |
-| subsequences | each element frequency |
-| pairs | each pair type |
-| inversions | each ordered pair |
-
-
-### 14. Pattern Printing
-
-Input or scenario:
-
-```text
-print main diagonal in 5 by 5 grid
-```
-
-#### Dry Run Table
-
-| Cell | Condition | Print |
-|---|---|---|
-| 0 0 | true | star |
-| 0 1 | false | space |
-| 1 1 | true | star |
-| 2 2 | true | star |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Define grid] --> B[Loop row]
-    B --> C[Loop column]
-    C --> D{Condition true}
-    D -->|Yes| E[Print star]
-    D -->|No| F[Print space]
-    E --> G{More cells}
-    F --> G
-    G -->|Yes| C
-    G -->|No| H[Next row]
-```
-
-#### Logic Summary
-
-| Pattern | Condition |
-|---|---|
-| main diagonal | i equals j |
-| anti diagonal | i plus j equals n minus one |
-| border | row or column at edge |
-
-
-### 15. Molecular Formula Parser
-
-Input or scenario:
-
-```text
-formula = Mg(OH)2
-```
-
-#### Dry Run Table
-
-| Step | Token | Action | Map |
-|---:|---|---|---|
-| 1 | Mg | add count 1 | Mg 1 |
-| 2 | open bracket | parse inside | inside starts |
-| 3 | O | add count 1 | O 1 |
-| 4 | H | add count 1 | O 1 H 1 |
-| 5 | close bracket 2 | multiply inside | O 2 H 2 |
-| 6 | merge | add outside | H 2 Mg 1 O 2 |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Start parser] --> B{Character type}
-    B -->|Capital| C[Read element]
-    C --> D[Read count]
-    D --> E[Add to map]
-    B -->|Open bracket| F[Parse inside]
-    F --> G[Read multiplier]
-    G --> H[Multiply counts]
-    H --> I[Merge map]
-    E --> J{More characters}
-    I --> J
-    J -->|Yes| B
-    J -->|No| K[Return counts]
-```
-
-#### Logic Summary
-
-| Token | Action |
-|---|---|
-| capital | start element |
-| lowercase | continue name |
-| digit | multiplier |
-| open bracket | recursion |
-| close bracket | return |
-
-
-### 16. Choosing The Right STL
-
-Input or scenario:
-
-```text
-Need minimum in every window of size k
-```
-
-#### Dry Run Table
-
-| Question | Answer |
-|---|---|
-| Is it a window | yes |
-| Fixed size | yes |
-| Need min or max | yes |
-| Best STL | monotonic deque |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Read required operations] --> B{Need LIFO}
-    B -->|Yes| C[stack]
-    B -->|No| D{Need FIFO}
-    D -->|Yes| E[queue]
-    D -->|No| F{Need sorted erase}
-    F -->|Yes| G[set or multiset]
-    F -->|No| H{Need best top}
-    H -->|Yes| I[priority queue]
-    H -->|No| J{Need window min max}
-    J -->|Yes| K[deque]
-    J -->|No| L[map or other structure]
-```
-
-#### Logic Summary
-
-| Requirement | STL |
-|---|---|
-| LIFO | stack |
-| FIFO | queue |
-| sorted with erase | multiset |
-| best top | priority queue |
-| frequency | map |
-
-
-### 17. Common Mistakes
-
-Input or scenario:
-
-```text
-multiset ms = {5, 5, 5}
-```
-
-#### Dry Run Table
-
-| Code | Result |
-|---|---|
-| ms.erase(5) | removes all copies |
-| ms.erase(ms.find(5)) | removes one copy |
-| st.top on empty stack | undefined behavior |
-| check st.empty first | safe |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[Need erase from multiset] --> B{Erase one copy}
-    B -->|Yes| C[Find iterator]
-    C --> D[Erase iterator]
-    B -->|No| E[Erase by value]
-    E --> F[All equal values removed]
-```
-
-#### Logic Summary
-
-| Mistake | Fix |
-|---|---|
-| erase value in multiset | erase iterator |
-| top on empty | check empty |
-| missing prefix zero | set freq zero first |
-| overflow | use long long |
-
-
-### 18. Final Revision Flow
-
-Input or scenario:
-
-```text
-Given array and q range sum queries
-```
-
-#### Dry Run Table
-
-| Step | Thought |
-|---:|---|
-| 1 | many range sums |
-| 2 | array is static |
-| 3 | brute force per query too slow |
-| 4 | build prefix sum |
-| 5 | answer by subtraction |
-
-#### Mermaid Logic Flow
-
-```mermaid
-flowchart TD
-    A[New problem] --> B[Find repeated operation]
-    B --> C{Static data}
-    C -->|Yes| D[Precompute]
-    C -->|No| E[Use dynamic data structure]
-    D --> F[Prefix sum or sorting]
-    E --> G[Fenwick segment tree set]
-    F --> H[Answer queries fast]
-    G --> H
-```
-
-#### Logic Summary
-
-| Clue | Pattern |
-|---|---|
-| fixed window | sliding window |
-| range sum | prefix sum |
-| dynamic update | Fenwick or segment tree |
-| nearest greater | monotonic stack |
-| nested formula | stack or recursion |
-
-
----
-
