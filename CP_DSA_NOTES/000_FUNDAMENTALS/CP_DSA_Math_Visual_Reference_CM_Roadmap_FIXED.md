@@ -97,26 +97,26 @@ A visual, step-by-step competitive programming math reference with Mermaid diagr
 
 ```mermaid
 flowchart TD
-    A[CP / DSA Math Problem] --> B{What is hidden?}
-    B --> C[Cycle / modulo]
-    B --> D[Sum / formula]
-    B --> E[Counting / cases]
-    B --> F[Prime / gcd / divisors]
-    B --> G[Binary / bits / xor]
-    B --> H[Geometry / coordinates]
-    B --> I[Monotonic answer]
-    B --> J[Graph / DP recurrence]
-    B --> K[Complexity bottleneck]
+    A["CP / DSA Math Problem"] --> B{"What is hidden?"}
+    B --> C["Cycle / modulo"]
+    B --> D["Sum / formula"]
+    B --> E["Counting / cases"]
+    B --> F["Prime / gcd / divisors"]
+    B --> G["Binary / bits / xor"]
+    B --> H["Geometry / coordinates"]
+    B --> I["Monotonic answer"]
+    B --> J["Graph / DP recurrence"]
+    B --> K["Complexity bottleneck"]
 
-    C --> C1[Use mod]
-    D --> D1[Replace loops]
-    E --> E1[Product rule / complement / nCr]
-    F --> F1[Sieve / factorization / Euclid]
-    G --> G1[Bitmask / powers of two]
-    H --> H1[Cross product / distance]
-    I --> I1[Binary search]
-    J --> J1[State and transition]
-    K --> K1[Optimize from O(n^2) to O(n log n)]
+    C --> C1["Use mod"]
+    D --> D1["Replace loops"]
+    E --> E1["Product rule / complement / nCr"]
+    F --> F1["Sieve / factorization / Euclid"]
+    G --> G1["Bitmask / powers of two"]
+    H --> H1["Cross product / distance"]
+    I --> I1["Binary search"]
+    J --> J1["State and transition"]
+    K --> K1["Optimize from O(n^2) to O(n log n)"]
 ```
 
 **Core idea:** CP math often means converting a slow simulation into a formula, invariant, monotonic condition, or precomputed helper.
@@ -129,23 +129,23 @@ Use this framework for almost every math-heavy problem.
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Extract variables and constraints]
-    B --> C[Try n small: 1,2,3,4,5]
-    C --> D[Look for pattern]
-    D --> E{Pattern type?}
-    E --> F[Formula]
-    E --> G[Modulo cycle]
-    E --> H[Counting cases]
-    E --> I[Binary search]
-    E --> J[Number theory]
-    F --> K[Prove with simple logic]
+    A["Read problem"] --> B["Extract variables and constraints"]
+    B --> C["Try n small: 1,2,3,4,5"]
+    C --> D["Look for pattern"]
+    D --> E{"Pattern type?"}
+    E --> F["Formula"]
+    E --> G["Modulo cycle"]
+    E --> H["Counting cases"]
+    E --> I["Binary search"]
+    E --> J["Number theory"]
+    F --> K["Prove with simple logic"]
     G --> K
     H --> K
     I --> K
     J --> K
-    K --> L[Check overflow and edge cases]
-    L --> M[Implement helper]
-    M --> N[Dry run sample]
+    K --> L["Check overflow and edge cases"]
+    L --> M["Implement helper"]
+    M --> N["Dry run sample"]
 ```
 
 ### Mental framework
@@ -164,13 +164,13 @@ Helper must handle edge cases.
 
 ```mermaid
 flowchart LR
-    A[Small examples] --> B[Observation]
-    B --> C[Invariant]
-    C --> D[Formula or algorithm]
-    D --> E[Proof idea]
-    E --> F[Code]
-    F --> G[Dry run]
-    G --> H[Submit]
+    A["Small examples"] --> B["Observation"]
+    B --> C["Invariant"]
+    C --> D["Formula or algorithm"]
+    D --> E["Proof idea"]
+    E --> F["Code"]
+    F --> G["Dry run"]
+    G --> H["Submit"]
 ```
 
 ### Example: sum 1 to n
@@ -288,9 +288,9 @@ ceil(10 / 3) = (10 + 3 - 1) / 3 = 4
 
 ```mermaid
 flowchart LR
-    A[10 items] --> B[Group size 3]
-    B --> C[3 + 3 + 3 + 1]
-    C --> D[4 groups needed]
+    A["10 items"] --> B["Group size 3"]
+    B --> C["3 + 3 + 3 + 1"]
+    C --> D["4 groups needed"]
 ```
 
 ### C++ helper for positive numbers
@@ -340,9 +340,9 @@ After 100 days:
 
 ```mermaid
 flowchart LR
-    A[Start position] --> B[Add steps]
-    B --> C[Take modulo cycle length]
-    C --> D[Final position]
+    A["Start position"] --> B["Add steps"]
+    B --> C["Take modulo cycle length"]
+    C --> D["Final position"]
 ```
 
 ```cpp
@@ -404,8 +404,8 @@ long long norm(long long x, long long mod) {
 
 ```mermaid
 flowchart LR
-    A[-1] --> B[Add cycle length 5]
-    B --> C[4]
+    A["-1"] --> B["Add cycle length 5"]
+    B --> C["4"]
 ```
 
 ---
@@ -498,8 +498,8 @@ Example:
 
 ```mermaid
 flowchart LR
-    A[Same base] --> B[Multiplication]
-    B --> C[Add exponents]
+    A["Same base"] --> B["Multiplication"]
+    B --> C["Add exponents"]
 ```
 
 ---
@@ -515,15 +515,15 @@ x^n = x^(n/2) * x^(n/2) * x   if n odd
 
 ```mermaid
 flowchart TD
-    A[res = 1] --> B{exp > 0?}
-    B -->|yes| C{exp odd?}
-    C -->|yes| D[res = res * base]
-    C -->|no| E[skip multiply]
-    D --> F[base = base * base]
+    A["res = 1"] --> B{"exp > 0?"}
+    B -->|yes| C{"exp odd?"}
+    C -->|yes| D["res = res * base"]
+    C -->|no| E["skip multiply"]
+    D --> F["base = base * base"]
     E --> F
-    F --> G[exp = exp / 2]
+    F --> G["exp = exp / 2"]
     G --> B
-    B -->|no| H[return res]
+    B -->|no| H["return res"]
 ```
 
 ### C++ normal binary power
@@ -606,9 +606,9 @@ log(x^k) = k log(x)
 
 ```mermaid
 flowchart LR
-    A[8] --> B[4]
-    B --> C[2]
-    C --> D[1]
+    A["8"] --> B["4"]
+    B --> C["2"]
+    C --> D["1"]
 ```
 
 Steps:
@@ -749,10 +749,10 @@ D = b^2 - 4ac
 
 ```mermaid
 flowchart TD
-    A[Compute D] --> B{D value}
-    B -->|D > 0| C[Two real roots]
-    B -->|D = 0| D[One real root]
-    B -->|D < 0| E[No real roots]
+    A["Compute D"] --> B{"D value"}
+    B -->|D greater than 0| C["Two real roots"]
+    B -->|D equal 0| D["One real root"]
+    B -->|D less than 0| E["No real roots"]
 ```
 
 Example:
@@ -796,10 +796,10 @@ y = 3
 
 ```mermaid
 flowchart TD
-    A[Two equations] --> B[Add or subtract]
-    B --> C[Cancel one variable]
-    C --> D[Solve]
-    D --> E[Substitute back]
+    A["Two equations"] --> B["Add or subtract"]
+    B --> C["Cancel one variable"]
+    C --> D["Solve"]
+    D --> E["Substitute back"]
 ```
 
 ### CP usage
@@ -903,7 +903,7 @@ Example:
 
 ```mermaid
 flowchart LR
-    A[Middle terms cancel] --> B[Only boundary terms remain]
+    A["Middle terms cancel"] --> B["Only boundary terms remain"]
 ```
 
 ### Pattern
@@ -931,8 +931,8 @@ pref[r + 1] - pref[l]
 
 ```mermaid
 flowchart LR
-    A[Original array] --> B[Build prefix]
-    B --> C[Range sum in O(1)]
+    A["Original array"] --> B["Build prefix"]
+    B --> C["Range sum in O(1)"]
 ```
 
 ```cpp
@@ -974,10 +974,10 @@ Then prefix the diff array.
 
 ```mermaid
 flowchart TD
-    A[Range update query] --> B[Mark start +x]
-    B --> C[Mark after end -x]
-    C --> D[Prefix sum diff]
-    D --> E[Final array]
+    A["Range update query"] --> B["Mark start +x"]
+    B --> C["Mark after end -x"]
+    C --> D["Prefix sum diff"]
+    D --> E["Final array"]
 ```
 
 ```cpp
@@ -1023,9 +1023,9 @@ good = total - bad
 
 ```mermaid
 flowchart TD
-    A[All cases] --> B[Good cases]
-    A --> C[Bad cases]
-    C --> D[Subtract bad from total]
+    A["All cases"] --> B["Good cases"]
+    A --> C["Bad cases"]
+    C --> D["Subtract bad from total"]
     D --> B
 ```
 
@@ -1135,8 +1135,8 @@ answer = C(4 + 3 - 1, 3 - 1) = C(6,2) = 15
 
 ```mermaid
 flowchart LR
-    A[4 stars] --> B[2 bars split into 3 groups]
-    B --> C[C(6,2) ways]
+    A["4 stars"] --> B["2 bars split into 3 groups"]
+    B --> C["C(6,2) ways"]
 ```
 
 ### Pattern
@@ -1210,10 +1210,10 @@ Only check up to `sqrt(n)`.
 
 ```mermaid
 flowchart TD
-    A[n] --> B[Test divisors d where d*d <= n]
-    B --> C{Found divisor?}
-    C -->|yes| D[Not prime]
-    C -->|no| E[Prime]
+    A["n"] --> B["Test divisors d where d*d <= n"]
+    B --> C{"Found divisor?"}
+    C -->|yes| D["Not prime"]
+    C -->|no| E["Prime"]
 ```
 
 ```cpp
@@ -1238,14 +1238,14 @@ Find all primes up to `n` in `O(n log log n)`.
 
 ```mermaid
 flowchart TD
-    A[Assume all numbers prime] --> B[Start p = 2]
-    B --> C{p*p <= n?}
-    C -->|yes| D{p is prime?}
-    D -->|yes| E[Mark multiples of p]
-    D -->|no| F[Next p]
+    A["Assume all numbers prime"] --> B["Start p = 2"]
+    B --> C{"p*p <= n?"}
+    C -->|yes| D{"p is prime?"}
+    D -->|yes| E["Mark multiples of p"]
+    D -->|no| F["Next p"]
     E --> F
     F --> C
-    C -->|no| G[Remaining true values are primes]
+    C -->|no| G["Remaining true values are primes"]
 ```
 
 ```cpp
@@ -1556,10 +1556,10 @@ circumference = 2 * pi * r
 
 ```mermaid
 flowchart TD
-    A[Geometry problem] --> B[Identify shape]
-    B --> C[Choose formula]
-    C --> D[Plug values]
-    D --> E[Check precision]
+    A["Geometry problem"] --> B["Identify shape"]
+    B --> C["Choose formula"]
+    C --> D["Plug values"]
+    D --> E["Check precision"]
 ```
 
 ---
@@ -1650,11 +1650,11 @@ long long orient(Point a, Point b, Point c) {
 
 ```mermaid
 flowchart TD
-    A[Three points a,b,c] --> B[Compute cross(b-a, c-a)]
-    B --> C{Sign}
-    C -->|positive| D[Left turn]
-    C -->|zero| E[Collinear]
-    C -->|negative| F[Right turn]
+    A["Three points a,b,c"] --> B["Compute cross(b-a, c-a)"]
+    B --> C{"Sign"}
+    C -->|positive| D["Left turn"]
+    C -->|zero| E["Collinear"]
+    C -->|negative| F["Right turn"]
 ```
 
 ---
@@ -1734,11 +1734,11 @@ n + (n-1) + ... + 1 = n(n+1)/2 = O(n^2)
 
 ```mermaid
 flowchart TD
-    A[Outer loop] --> B[Inner work]
-    B --> C{Inner behavior}
-    C -->|runs n times| D[O(n^2)]
-    C -->|halves each time| E[O(n log n) or O(log n)]
-    C -->|total movement <= n| F[O(n), two pointers]
+    A["Outer loop"] --> B["Inner work"]
+    B --> C{"Inner behavior"}
+    C -->|runs n times| D["O(n^2)"]
+    C -->|halves each time| E["O(n log n) or O(log n)"]
+    C -->|total movement at most n| F["O(n), two pointers"]
 ```
 
 ---
@@ -1755,13 +1755,13 @@ Find first true.
 
 ```mermaid
 flowchart TD
-    A[Choose search range] --> B[Compute mid]
-    B --> C{Can(mid)?}
-    C -->|true| D[Answer <= mid]
-    C -->|false| E[Answer > mid]
-    D --> F[Shrink right]
-    E --> G[Shrink left]
-    F --> H[Repeat]
+    A["Choose search range"] --> B["Compute mid"]
+    B --> C{"Can(mid)?"}
+    C -->|true| D["Answer <= mid"]
+    C -->|false| E["Answer > mid"]
+    D --> F["Shrink right"]
+    E --> G["Shrink left"]
+    F --> H["Repeat"]
     G --> H
 ```
 
@@ -1791,10 +1791,10 @@ When both pointers move only forward, total moves are `O(n)`.
 
 ```mermaid
 flowchart LR
-    A[l = 0, r = 0] --> B[Expand r]
-    B --> C{Condition valid?}
-    C -->|yes| D[Update answer]
-    C -->|no| E[Move l]
+    A["l = 0, r = 0"] --> B["Expand r"]
+    B --> C{"Condition valid?"}
+    C -->|yes| D["Update answer"]
+    C -->|no| E["Move l"]
     D --> B
     E --> C
 ```
@@ -1896,9 +1896,9 @@ Winning state: at least one move to losing state.
 
 ```mermaid
 flowchart TD
-    A[Current state] --> B{Can move to losing state?}
-    B -->|yes| C[Winning]
-    B -->|no| D[Losing]
+    A["Current state"] --> B{"Can move to losing state?"}
+    B -->|yes| C["Winning"]
+    B -->|no| D["Losing"]
 ```
 
 ### Nim XOR rule
@@ -1922,10 +1922,10 @@ DP is math with states and recurrence.
 
 ```mermaid
 flowchart TD
-    A[Define state] --> B[Define transition]
-    B --> C[Base cases]
-    C --> D[Order of computation]
-    D --> E[Answer extraction]
+    A["Define state"] --> B["Define transition"]
+    B --> C["Base cases"]
+    C --> D["Order of computation"]
+    D --> E["Answer extraction"]
 ```
 
 ### Fibonacci example
@@ -2196,24 +2196,24 @@ Day 7: Upsolve and notes
 
 ```mermaid
 flowchart TD
-    A[Stuck] --> B[Try small examples]
-    B --> C[Find pattern]
-    C --> D{Pattern type?}
-    D --> E[Modulo]
-    D --> F[Sum formula]
-    D --> G[Counting]
-    D --> H[GCD / prime]
-    D --> I[Binary search]
-    D --> J[Prefix / contribution]
-    E --> K[Check edge cases]
+    A["Stuck"] --> B["Try small examples"]
+    B --> C["Find pattern"]
+    C --> D{"Pattern type?"}
+    D --> E["Modulo"]
+    D --> F["Sum formula"]
+    D --> G["Counting"]
+    D --> H["GCD / prime"]
+    D --> I["Binary search"]
+    D --> J["Prefix / contribution"]
+    E --> K["Check edge cases"]
     F --> K
     G --> K
     H --> K
     I --> K
     J --> K
-    K --> L[Check overflow]
-    L --> M[Code helper]
-    M --> N[Dry run sample]
+    K --> L["Check overflow"]
+    L --> M["Code helper"]
+    M --> N["Dry run sample"]
 ```
 
 Ask yourself:
