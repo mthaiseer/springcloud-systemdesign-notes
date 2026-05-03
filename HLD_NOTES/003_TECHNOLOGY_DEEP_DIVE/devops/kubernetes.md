@@ -4,7 +4,7 @@
 
 **Goal:** By the end of this book, you should be able to design, build, containerize, deploy, scale, secure, observe, and operate large-scale Spring Boot applications on Kubernetes.
 
-> This book uses Markdown and Mermaid diagrams so you can read it in GitHub, GitLab, VS Code, Obsidian, or any Markdown viewer that supports Mermaid.
+
 
 ---
 
