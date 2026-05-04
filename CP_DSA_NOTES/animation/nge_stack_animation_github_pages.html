@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Next Greater Element — Stack Animation</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #f8fafc;
+      color: #020617;
+      padding: 32px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin: 0 0 12px;
+    }
+
+    .subtitle {
+      color: #334155;
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    }
+
+    .card h2 {
+      margin: 0 0 18px;
+      font-size: 22px;
+    }
+
+    .step-card {
+      padding: 34px 18px 18px;
+    }
+
+    .step-text {
+      font-size: 14px;
+      margin: 0 0 14px;
+    }
+
+    .step-count {
+      font-size: 14px;
+      margin: 0 0 14px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      padding: 9px 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .array-view,
+    .result-view {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-height: 286px;
+      align-items: flex-start;
+    }
+
+    .result-view {
+      min-height: auto;
+    }
+
+    .box {
+      width: 68px;
+      height: 70px;
+      border: 1px solid #cbd5e1;
+      border-radius: 13px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.25s ease;
+    }
+
+    .box.active {
+      background: #dbeafe;
+      border: 1.8px solid #3b82f6;
+    }
+
+    .box.compare {
+      background: #fef3c7;
+      border: 1.8px solid #f59e0b;
+    }
+
+    .value {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .label {
+      font-size: 11px;
+      color: #475569;
+    }
+
+    .stack-area {
+      height: 284px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 16px;
+      gap: 10px;
+    }
+
+    .stack-item {
+      width: 148px;
+      min-height: 57px;
+      background: #e2e8f0;
+      border-radius: 9px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: popIn 0.22s ease;
+    }
+
+    .stack-item.highlight {
+      background: #fef3c7;
+      outline: 2px solid #f59e0b;
+    }
+
+    .empty {
+      color: #94a3b8;
+      font-size: 14px;
+      margin: auto;
+    }
+
+    .legend {
+      margin-top: 12px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .array-view {
+        min-height: auto;
+      }
+
+      .box {
+        width: 58px;
+        height: 62px;
+      }
+
+      .value {
+        font-size: 21px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Next Greater Element — Stack Animation</h1>
+    <p class="subtitle">
+      Example: <strong>[2, 1, 2, 4, 3]</strong>. We scan from right to left using a monotonic stack.
+    </p>
+
+    <section class="card step-card">
+      <h2>Current Step</h2>
+      <p id="stepText" class="step-text"></p>
+      <p id="stepCount" class="step-count"></p>
+
+      <div class="controls">
+        <button id="prevBtn" onclick="prevStep()">Previous</button>
+        <button onclick="resetStep()">Reset</button>
+        <button id="nextBtn" onclick="nextStep()">Next</button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Array</h2>
+        <div id="arrayView" class="array-view"></div>
+      </div>
+
+      <div class="card">
+        <h2>Stack</h2>
+        <div id="stackView" class="stack-area"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>NGE Result</h2>
+      <div id="resultView" class="result-view"></div>
+    </section>
+  </main>
+
+  <script>
+    const arr = [2, 1, 2, 4, 3];
+
+    function buildSteps(nums) {
+      const stack = [];
+      const nge = Array(nums.length).fill("?");
+      const steps = [];
+
+      steps.push({
+        i: null,
+        stack: [],
+        nge: [...nge],
+        action: "Start with an empty stack. We scan from right to left.",
+        compare: null
+      });
+
+      for (let i = nums.length - 1; i >= 0; i--) {
+        steps.push({
+          i,
+          stack: [...stack],
+          nge: [...nge],
+          action: `Look at arr[${i}] = ${nums[i]}. Remove all smaller or equal elements from the stack.`,
+          compare: null
+        });
+
+        while (stack.length && nums[stack[stack.length - 1]] <= nums[i]) {
+          const popped = stack.pop();
+
+          steps.push({
+            i,
+            stack: [...stack],
+            nge: [...nge],
+            action: `${nums[popped]} is <= ${nums[i]}, so pop ${nums[popped]} from the stack.`,
+            compare: popped
+          });
+        }
+
+        nge[i] = stack.length ? nums[stack[stack.length - 1]] : -1;
+
+        steps.push({
+          i,
+          stack: [...stack],
+          nge: [...nge],
+          action: stack.length
+            ? `Top of stack is ${nums[stack[stack.length - 1]]}, so NGE of ${nums[i]} is ${nums[stack[stack.length - 1]]}.`
+            : `Stack is empty, so NGE of ${nums[i]} is -1.`,
+          compare: stack.length ? stack[stack.length - 1] : null
+        });
+
+        stack.push(i);
+
+        steps.push({
+          i,
+          stack: [...stack],
+          nge: [...nge],
+          action: `Push ${nums[i]} into the stack for elements on its left.`,
+          compare: i
+        });
+      }
+
+      steps.push({
+        i: null,
+        stack: [...stack],
+        nge: [...nge],
+        action: "Done. Final Next Greater Element array is ready.",
+        compare: null
+      });
+
+      return steps;
+    }
+
+    const steps = buildSteps(arr);
+    let currentStep = 0;
+
+    function makeBox(value, label, className = "") {
+      const box = document.createElement("div");
+      box.className = `box ${className}`;
+      box.innerHTML = `
+        <div class="value">${value}</div>
+        <div class="label">${label}</div>
+      `;
+      return box;
+    }
+
+    function render() {
+      const step = steps[currentStep];
+
+      document.getElementById("stepText").textContent = step.action;
+      document.getElementById("stepCount").textContent = `Step ${currentStep + 1} / ${steps.length}`;
+
+      document.getElementById("prevBtn").disabled = currentStep === 0;
+      document.getElementById("nextBtn").disabled = currentStep === steps.length - 1;
+
+      const arrayView = document.getElementById("arrayView");
+      arrayView.innerHTML = "";
+
+      arr.forEach((value, index) => {
+        let cls = "";
+        if (step.i === index) cls = "active";
+        else if (step.compare === index) cls = "compare";
+
+        arrayView.appendChild(makeBox(value, `idx ${index}`, cls));
+      });
+
+      const stackView = document.getElementById("stackView");
+      stackView.innerHTML = "";
+
+      if (step.stack.length === 0) {
+        stackView.innerHTML = `<div class="empty">empty stack</div>`;
+      } else {
+        step.stack.forEach((idx) => {
+          const item = document.createElement("div");
+          item.className = `stack-item ${step.compare === idx ? "highlight" : ""}`;
+          item.innerHTML = `
+            <div class="value">${arr[idx]}</div>
+            <div class="label">idx ${idx}</div>
+          `;
+          stackView.appendChild(item);
+        });
+      }
+
+      const resultView = document.getElementById("resultView");
+      resultView.innerHTML = "";
+
+      step.nge.forEach((value, index) => {
+        let cls = step.i === index ? "active" : "";
+        resultView.appendChild(makeBox(value, `NGE[${index}]`, cls));
+      });
+    }
+
+    function nextStep() {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        render();
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 0) {
+        currentStep--;
+        render();
+      }
+    }
+
+    function resetStep() {
+      currentStep = 0;
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
