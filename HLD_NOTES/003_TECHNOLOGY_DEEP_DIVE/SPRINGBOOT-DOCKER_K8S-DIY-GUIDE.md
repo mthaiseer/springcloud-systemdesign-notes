@@ -1250,8 +1250,8 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    App[Spring Boot App] --> Actuator[/actuator/prometheus]
-    Actuator --> Prometheus[Prometheus]
+    App["Spring Boot App"] --> Actuator["/actuator/prometheus"]
+    Actuator --> Prometheus["Prometheus"]
     Prometheus --> Grafana[Grafana Dashboards]
     Prometheus --> Alertmanager[Alertmanager]
 ```
