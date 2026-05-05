@@ -13,7 +13,86 @@ For each major topic, you get:
 - MongoDB query examples
 - Spring Boot examples
 - scaling notes
-- Mermaid diagrams and charts that explain architecture, modeling, indexing, idempotency, and scaling
+
+---
+
+## Clickable index
+
+- [1. Why MongoDB shows up in system design](#1-why-mongodb-shows-up-in-system-design)
+- [2. MongoDB architecture overview](#2-mongodb-architecture-overview)
+- [3. When to choose MongoDB](#3-when-to-choose-mongodb)
+- [4. Data modeling: embedding vs referencing](#4-data-modeling-embedding-vs-referencing)
+  - [4.1 Embedding](#41-embedding)
+  - [4.2 Referencing](#42-referencing)
+  - [4.3 Hybrid approach](#43-hybrid-approach)
+- [5. Schema design patterns](#5-schema-design-patterns)
+  - [5.1 Attribute pattern](#51-attribute-pattern)
+  - [5.2 Bucket pattern](#52-bucket-pattern)
+  - [5.3 Outlier pattern](#53-outlier-pattern)
+  - [5.4 Computed pattern](#54-computed-pattern)
+  - [5.5 Extended reference pattern](#55-extended-reference-pattern)
+- [6. Shard key selection](#6-shard-key-selection)
+  - [6.1 Hashed shard key](#61-hashed-shard-key)
+  - [6.2 Ranged shard key](#62-ranged-shard-key)
+  - [6.3 Compound shard key](#63-compound-shard-key)
+- [7. Indexing for performance](#7-indexing-for-performance)
+  - [7.1 Single-field index](#71-single-field-index)
+  - [7.2 Compound index](#72-compound-index)
+  - [7.3 ESR rule](#73-esr-rule)
+  - [7.4 Multikey index](#74-multikey-index)
+  - [7.5 Text index](#75-text-index)
+  - [7.6 TTL index](#76-ttl-index)
+  - [7.7 Covered queries](#77-covered-queries)
+  - [7.8 Explain plan](#78-explain-plan)
+- [8. Read concern, write concern, read preference](#8-read-concern-write-concern-read-preference)
+- [9. Transactions and consistency](#9-transactions-and-consistency)
+- [10. Change streams](#10-change-streams)
+- [11. Idempotency](#11-idempotency)
+- [12. Pagination](#12-pagination)
+- [13. A build path: from 100 RPS to 50K RPS](#13-a-build-path-from-100-rps-to-50k-rps)
+- [14. Spring Boot starter setup](#14-spring-boot-starter-setup)
+- [15. MongoDB vs other databases](#15-mongodb-vs-other-databases)
+- [16. Final mental model](#16-final-mental-model)
+- [17. Quick interview recap](#17-quick-interview-recap)
+- [18. Complete Spring Boot example you can build from scratch](#18-complete-spring-boot-example-you-can-build-from-scratch)
+
+---
+
+## Visual map
+
+```mermaid
+flowchart TD
+    A[Application or API service] --> B[mongos query router]
+    B --> C[Config server replica set]
+    B --> D[Shard 1 replica set]
+    B --> E[Shard 2 replica set]
+    B --> F[Shard N replica set]
+
+    D --> D1[Primary]
+    D --> D2[Secondary]
+    D --> D3[Secondary]
+
+    E --> E1[Primary]
+    E --> E2[Secondary]
+    E --> E3[Secondary]
+
+    F --> F1[Primary]
+    F --> F2[Secondary]
+    F --> F3[Secondary]
+```
+
+**Explanation:** the application talks to `mongos`, not directly to every shard. `mongos` uses config-server metadata to route targeted reads and writes. Each shard is commonly a replica set, so sharding handles horizontal scale while replica sets handle high availability.
+
+```mermaid
+pie title MongoDB design effort by impact
+    "Data modeling" : 35
+    "Indexes" : 25
+    "Shard key" : 20
+    "Consistency settings" : 10
+    "Operational tuning" : 10
+```
+
+**Explanation:** most MongoDB success comes from modeling around access patterns, then indexing real queries. Sharding and consistency tuning matter, but they work best after the document model and query patterns are already clear.
 
 ---
 
@@ -64,48 +143,30 @@ In a sharded cluster:
 - read with shard key → targeted query
 - read without shard key → scatter-gather across shards
 
-### Interview answer
-Sharding gives horizontal scale. Replica sets give availability. `mongos` hides routing complexity from the application.
-
-### Mermaid diagram: sharded MongoDB architecture
+### Architecture diagram
 
 ```mermaid
-flowchart LR
-    A[Application / Spring Boot Service] --> M1[mongos Router]
-    A --> M2[mongos Router]
+sequenceDiagram
+    autonumber
+    participant App as Application
+    participant Router as mongos
+    participant Config as Config servers
+    participant Shard as Target shard primary
+    participant Secondary as Replica secondaries
 
-    M1 --> C[(Config Server Replica Set)]
-    M2 --> C
-
-    M1 --> S1P[(Shard 1 Primary)]
-    M1 --> S2P[(Shard 2 Primary)]
-    M1 --> S3P[(Shard 3 Primary)]
-
-    M2 --> S1P
-    M2 --> S2P
-    M2 --> S3P
-
-    S1P --> S1S1[(Shard 1 Secondary)]
-    S1P --> S1S2[(Shard 1 Secondary)]
-
-    S2P --> S2S1[(Shard 2 Secondary)]
-    S2P --> S2S2[(Shard 2 Secondary)]
-
-    S3P --> S3S1[(Shard 3 Secondary)]
-    S3P --> S3S2[(Shard 3 Secondary)]
-
-    classDef app fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px;
-    classDef router fill:#e3f2fd,stroke:#1565c0,stroke-width:1px;
-    classDef config fill:#fff8e1,stroke:#f9a825,stroke-width:1px;
-    classDef shard fill:#f3e5f5,stroke:#6a1b9a,stroke-width:1px;
-
-    class A app;
-    class M1,M2 router;
-    class C config;
-    class S1P,S1S1,S1S2,S2P,S2S1,S2S2,S3P,S3S1,S3S2 shard;
+    App->>Router: Query or write request
+    Router->>Config: Read shard metadata
+    Config-->>Router: Chunk and shard location
+    Router->>Shard: Route targeted operation
+    Shard-->>Router: Result or write acknowledgement
+    Shard-->>Secondary: Replicate oplog entries
+    Router-->>App: Return response
 ```
 
-**Explanation:** The application talks only to `mongos`. The router checks config-server metadata to decide which shard owns the requested chunk. Each shard is normally a replica set, so writes go to the primary while stale-tolerant reads can be sent to secondaries depending on read preference.
+**Explanation:** a query that includes the shard key can be routed directly to the right shard. Without the shard key, `mongos` may fan out to multiple shards and merge results, which is why common high-traffic queries should include the shard key when possible.
+
+### Interview answer
+Sharding gives horizontal scale. Replica sets give availability. `mongos` hides routing complexity from the application.
 
 ---
 
@@ -147,24 +208,22 @@ This is the most important MongoDB modeling decision.
 - **Reference** when data is shared, queried independently, or grows unbounded
 - **Hybrid** is often best in production
 
-### Mermaid decision chart: embed, reference, or hybrid
+### Modeling decision diagram
 
 ```mermaid
 flowchart TD
-    A[New relationship to model] --> B{Is child data usually read with parent?}
-    B -- No --> R[Reference]
-    B -- Yes --> C{Is child data bounded in size?}
-    C -- No --> R
-    C -- Yes --> D{Does child have independent lifecycle?}
-    D -- Yes --> H[Hybrid: reference canonical data + embed snapshot]
-    D -- No --> E[Embed]
-
-    R --> R1[Separate collection + foreign id]
-    H --> H1[Fast reads + source of truth]
-    E --> E1[Single document read/write + atomic update]
+    A[Start with the main access pattern] --> B{Is the child data usually read with the parent?}
+    B -- Yes --> C{Is the child list bounded?}
+    C -- Yes --> D[Embed the child data]
+    C -- No --> E[Use references or outlier pattern]
+    B -- No --> F{Is the child shared or queried independently?}
+    F -- Yes --> G[Reference the child document]
+    F -- No --> H[Consider hybrid snapshot]
+    G --> I[Optionally copy display fields with extended reference]
+    H --> I
 ```
 
-**Explanation:** Start from access patterns, not entity diagrams. Embed for bounded data that is read and updated with the parent. Reference data that grows without limit or is queried independently. Use hybrid when fast display matters but another collection remains the source of truth.
+**Explanation:** MongoDB modeling starts from reads, not from normalization. Embed when it gives one natural atomic document. Reference when the related data has its own lifecycle, grows without bounds, or is reused across many parents.
 
 ---
 
@@ -737,23 +796,6 @@ For compound indexes:
 - **S**ort second
 - **R**ange last
 
-### Mermaid chart: ESR index ordering
-
-```mermaid
-flowchart LR
-    Q[Query shape] --> E[Equality fields]
-    E --> S[Sort fields]
-    S --> R[Range fields]
-    R --> I[Compound index]
-
-    E -. example .-> E1[status = SHIPPED]
-    S -. example .-> S1[sort orderDate desc]
-    R -. example .-> R1[total > 100]
-    I -. result .-> IDX[{ status: 1, orderDate: -1, total: 1 }]
-```
-
-**Explanation:** Equality filters narrow the index scan first, sort fields preserve result order, and range fields come last because they usually stop MongoDB from using later index fields efficiently.
-
 ### Query
 ```javascript
 db.orders.find({
@@ -1154,6 +1196,7 @@ const changeStream = db.orders.watch(pipeline)
 
 ### Spring Boot example
 ```java
+import com.mongodb.client.model.changestream.ChangeStreamDocument;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.ChangeStreamEvent;
 import org.springframework.data.mongodb.core.messaging.ChangeStreamRequest;
@@ -1229,29 +1272,6 @@ public class IdempotentOrder {
 ### Why it matters
 If the client retries, the unique index prevents duplicate order creation.
 
-### Mermaid sequence diagram: safe order creation
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant API as Spring Boot API
-    participant Mongo as MongoDB
-
-    Client->>API: POST /orders with requestId
-    API->>Mongo: insert order with unique requestId
-    alt first request
-        Mongo-->>API: insert succeeds
-        API-->>Client: 201 / order response
-    else retry with same requestId
-        Mongo-->>API: duplicate key error
-        API->>Mongo: find existing order by requestId
-        Mongo-->>API: existing order
-        API-->>Client: same order response
-    end
-```
-
-**Explanation:** The unique `requestId` converts unsafe client retries into safe idempotent writes. This is especially important when clients retry after timeouts and cannot know whether the original write succeeded.
-
 ---
 
 ## 12. Pagination
@@ -1290,36 +1310,6 @@ Cursor-based pagination avoids scanning and discarding huge offsets.
 
 This is the practical progression you can discuss in interviews.
 
-
-### Mermaid chart: scaling progression
-
-```mermaid
-xychart-beta
-    title "MongoDB scaling maturity by traffic stage"
-    x-axis ["100-1K", "1K-5K", "5K-15K", "15K-50K"]
-    y-axis "Operational complexity" 0 --> 10
-    bar [2, 4, 6, 9]
-    line [2, 4, 6, 9]
-```
-
-**Explanation:** Complexity should rise only when traffic and evidence justify it. Start with modeling and indexes, then add caching and async workflows, and only shard hot collections once access patterns are proven.
-
-### Mermaid flowchart: 100 RPS to 50K RPS build path
-
-```mermaid
-flowchart LR
-    S1[100-1K RPS<br/>Replica set + core indexes] --> S2[1K-5K RPS<br/>Cache hot reads + projections]
-    S2 --> S3[5K-15K RPS<br/>Computed fields + buckets + change streams]
-    S3 --> S4[15K-50K RPS<br/>Shard hot collections + async workflows]
-
-    S1 --> D1[Single-document atomicity]
-    S2 --> D2[Secondary reads for stale-tolerant paths]
-    S3 --> D3[Slow query review with explain]
-    S4 --> D4[Targeted queries using shard key]
-```
-
-**Explanation:** This is the interview-friendly growth story: scale vertically in design quality first, then horizontally in infrastructure. Sharding is powerful, but it should be the result of measured bottlenecks, not the first design step.
-
 ### Stage 1: 100 to 1K RPS
 Keep it simple:
 - one replica set
@@ -1352,6 +1342,18 @@ Scale horizontally:
 - avoid scatter-gather on common paths
 - use async workflows for non-critical side effects
 - keep transactions rare and short
+
+### Scaling path chart
+
+```mermaid
+xychart-beta
+    title "MongoDB scaling path by RPS"
+    x-axis ["100", "1K", "5K", "15K", "50K"]
+    y-axis "Architecture complexity" 0 --> 10
+    line [1, 2, 4, 7, 9]
+```
+
+**Explanation:** complexity should increase only as the workload proves it needs more infrastructure. Start with a replica set and good indexes, then add caching and computed fields, then shard the hottest collections once query patterns are stable.
 
 ### Supporting components
 At higher RPS, MongoDB is usually part of a bigger stack:
