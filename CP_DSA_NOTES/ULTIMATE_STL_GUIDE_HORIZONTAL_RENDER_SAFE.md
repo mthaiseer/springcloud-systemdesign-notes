@@ -1,7 +1,13 @@
+# Ultimate STL Guide — Render Safe Edition
+
+> Optimized for Markdown rich preview rendering.
+> All Mermaid flowcharts converted to horizontal layouts.
+> Duplicate anchors and unsafe heading symbols cleaned.
+
+---
+
 # Ultimate Competitive Programming STL Guide — Combined Master File
 
-> Render-safe edition: Mermaid diagrams were normalized for broad Markdown preview support.
->
 > A single combined Markdown guide created from the three uploaded STL guides. It preserves the original material, adds a master clickable index, and includes extra decision diagrams, quick-reference tables, and study-flow enhancements.
 
 ## How to Use This Master Guide
@@ -334,26 +340,26 @@
 ## Master Decision Map
 
 ```mermaid
-flowchart TD
-    A["New CP Problem"] --> B["Read constraints and operations"]
-    B --> C{"Static or dynamic?"}
-    C -->|Static range queries| D["Prefix Sum / Sparse Table"]
-    C -->|Updates exist| E["Fenwick / Segment Tree / Set"]
-    B --> F{"Contiguous subarray/window?"}
-    F -->|Fixed size| G["Sliding Window"]
-    F -->|Variable valid condition| H["Two Pointers + Frequency Map"]
-    F -->|Min/Max per window| I["Monotonic Deque"]
-    B --> J{"Need nearest greater/smaller?"}
-    J -->|Yes| K["Monotonic Stack"]
-    B --> L{"Need top K / best repeatedly?"}
-    L -->|Only top| M["Priority Queue"]
-    L -->|Need erase too| N["Multiset / Two Multisets"]
-    B --> O{"Need median/cost?"}
-    O -->|Median| P["Two Multisets / Two Heaps"]
-    B --> Q{"Intervals or events?"}
-    Q -->|Merge/Coverage| R["Sort + Sweep Line / Set of Intervals"]
-    B --> S{"Nested syntax?"}
-    S -->|Brackets / formula| T["Stack / Recursion"]
+flowchart LR
+    A[New CP Problem] --> B[Read constraints and operations]
+    B --> C{Static or dynamic?}
+    C -->|Static range queries| D[Prefix Sum / Sparse Table]
+    C -->|Updates exist| E[Fenwick / Segment Tree / Set]
+    B --> F{Contiguous subarray/window?}
+    F -->|Fixed size| G[Sliding Window]
+    F -->|Variable valid condition| H[Two Pointers + Frequency Map]
+    F -->|Min/Max per window| I[Monotonic Deque]
+    B --> J{Need nearest greater/smaller?}
+    J -->|Yes| K[Monotonic Stack]
+    B --> L{Need top K / best repeatedly?}
+    L -->|Only top| M[Priority Queue]
+    L -->|Need erase too| N[Multiset / Two Multisets]
+    B --> O{Need median/cost?}
+    O -->|Median| P[Two Multisets / Two Heaps]
+    B --> Q{Intervals or events?}
+    Q -->|Merge/Coverage| R[Sort + Sweep Line / Set of Intervals]
+    B --> S{Nested syntax?}
+    S -->|Brackets / formula| T[Stack / Recursion]
 ```
 
 <a id="ultimate-solving-loop"></a>
@@ -362,14 +368,14 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A["Brute force"] --> B["Find repeated work"]
-    B --> C["Match operation"]
-    C --> D["Pick STL"]
-    D --> E["State invariant"]
-    E --> F["Implement template"]
-    F --> G["Dry run"]
-    G --> H["Edge cases"]
-    H --> I["Submit"]
+    A[Brute force] --> B[Find repeated work]
+    B --> C[Match operation]
+    C --> D[Pick STL]
+    D --> E[State invariant]
+    E --> F[Implement template]
+    F --> G[Dry run]
+    G --> H[Edge cases]
+    H --> I[Submit]
 ```
 
 ## Added Quick Enhancements
@@ -455,14 +461,14 @@ Before submit:
 #### Time split in contest
 
 ```mermaid
-flowchart TD
-    A["Read Problem"] --> B["Understand statement"]
-    B --> C["Input format"]
-    C --> D["Sample cases"]
-    D --> E["Ideate"]
-    E --> F["Formulate code structure"]
-    F --> G["Implement"]
-    G --> H["Debug"]
+flowchart LR
+    A[Read Problem] --> B[Understand statement]
+    B --> C[Input format]
+    C --> D[Sample cases]
+    D --> E[Ideate]
+    E --> F[Formulate code structure]
+    F --> G[Implement]
+    G --> H[Debug]
 ```
 
 | Step | Goal | Time |
@@ -496,54 +502,31 @@ Replace bottleneck using known pattern
 #### Ideation checklist
 
 ```mermaid
-flowchart TD
-    M0(("Problem"))
-    M1["Read"]
-    M2["Statement"]
-    M3["Input"]
-    M4["Samples"]
-    M5["Ideate"]
-    M6["Past similar problem"]
-    M7["Pattern"]
-    M8["Constraints"]
-    M9["Eliminate bad approaches"]
-    M10["Paradigm"]
-    M11["Brute force"]
-    M12["Divide and conquer"]
-    M13["Greedy"]
-    M14["DP"]
-    M15["Graph"]
-    M16["Math"]
-    M17["Code"]
-    M18["Global variables"]
-    M19["Function parameters"]
-    M20["STL choice"]
-    M21["Debug"]
-    M22["Sample tests"]
-    M23["Edge cases"]
-    M0 --> M1
-    M1 --> M2
-    M1 --> M3
-    M1 --> M4
-    M0 --> M5
-    M5 --> M6
-    M5 --> M7
-    M5 --> M8
-    M5 --> M9
-    M0 --> M10
-    M10 --> M11
-    M10 --> M12
-    M10 --> M13
-    M10 --> M14
-    M10 --> M15
-    M10 --> M16
-    M0 --> M17
-    M17 --> M18
-    M17 --> M19
-    M17 --> M20
-    M0 --> M21
-    M21 --> M22
-    M21 --> M23
+mindmap
+  root((Problem))
+    Read
+      Statement
+      Input
+      Samples
+    Ideate
+      Past similar problem
+      Pattern
+      Constraints
+      Eliminate bad approaches
+    Paradigm
+      Brute force
+      Divide and conquer
+      Greedy
+      DP
+      Graph
+      Math
+    Code
+      Global variables
+      Function parameters
+      STL choice
+    Debug
+      Sample tests
+      Edge cases
 ```
 
 <a id="p1-example"></a>
@@ -595,7 +578,7 @@ dynamic update  Fenwick / segment tree / balanced set
 
 <a id="p1-1-balanced-brackets-parentheses"></a>
 
-### 1. Balanced Brackets / Parentheses
+### 1. Balanced Brackets  or  Parentheses
 
 <a id="p1-core-idea"></a>
 
@@ -610,21 +593,21 @@ For only `(` and `)`, maintain `depth`:
 
 ```mermaid
 flowchart LR
-    A["Start depth = 0"] --> B{"Read char"}
-    B -->|open bracket| C["depth plus 1"]
-    B -->|close bracket| D["depth minus 1"]
-    D --> E{"depth negative?"}
-    E -->|yes| F["Invalid"]
+    A[Start depth = 0] --> B{Read char}
+    B -->|open bracket| C[depth plus 1]
+    B -->|close bracket| D[depth minus 1]
+    D --> E{depth negative?}
+    E -->|yes| F[Invalid]
     E -->|no| B
     C --> B
-    B -->|end| G{"depth equals 0?"}
-    G -->|yes| H["Valid"]
-    G -->|no| I["Invalid"]
+    B -->|end| G{depth equals 0?}
+    G -->|yes| H[Valid]
+    G -->|no| I[Invalid]
 ```
 
 <a id="p1-intuition-2"></a>
 
-#### Intuition
+#### Intuition (2)
 
 `depth` means how many open brackets are waiting to be closed.
 
@@ -655,10 +638,10 @@ At the third character, `depth` becomes `-1`, meaning we closed more brackets th
 
 <a id="p1-c-single-bracket-type"></a>
 
-#### C++: single bracket type
+#### C++ single bracket type
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h
 using namespace std;
 
 bool isBalancedParentheses(const string& s) {
@@ -681,7 +664,7 @@ bool isBalancedParentheses(const string& s) {
 
 <a id="p1-dry-run-single-bracket-counter"></a>
 
-##### Dry Run: Single bracket counter
+##### Dry Run Single bracket counter
 
 Input:
 
@@ -705,18 +688,18 @@ Result: depth never becomes negative and final depth is zero, so valid.
 ##### Mermaid Dry Run Diagram
 
 ```mermaid
-flowchart TD
-    A["Start depth zero"] --> B["Read character"]
-    B --> C{"Open bracket"}
-    C -->|Yes| D["Increase depth"]
-    C -->|No| E["Decrease depth"]
-    D --> F{"More characters"}
-    E --> G{"Depth negative"}
-    G -->|Yes| X["Invalid"]
+flowchart LR
+    A[Start depth zero] --> B[Read character]
+    B --> C{Open bracket}
+    C -->|Yes| D[Increase depth]
+    C -->|No| E[Decrease depth]
+    D --> F{More characters}
+    E --> G{Depth negative}
+    G -->|Yes| X[Invalid]
     G -->|No| F
     F -->|Yes| B
-    F -->|No| H{"Depth zero"}
-    H -->|Yes| V["Valid"]
+    F -->|No| H{Depth zero}
+    H -->|Yes| V[Valid]
     H -->|No| X
 ```
 
@@ -728,24 +711,24 @@ flowchart TD
 For `()`, `{}`, `[]`, use stack. The last opened bracket must match the first incoming closing bracket.
 
 ```mermaid
-flowchart TD
-    A["Scan string"] --> B{"Opening bracket?"}
-    B -->|yes| C["Push to stack"]
-    B -->|closing bracket| D{"Stack empty?"}
-    D -->|yes| X["Invalid"]
-    D -->|no| E{"Top matches closing?"}
-    E -->|yes| F["Pop stack"]
+flowchart LR
+    A[Scan string] --> B{Opening bracket?}
+    B -->|yes| C[Push to stack]
+    B -->|closing bracket| D{Stack empty?}
+    D -->|yes| X[Invalid]
+    D -->|no| E{Top matches closing?}
+    E -->|yes| F[Pop stack]
     E -->|no| X
     C --> A
     F --> A
-    A -->|end| G{"Stack empty?"}
-    G -->|yes| V["Valid"]
+    A -->|end| G{Stack empty?}
+    G -->|yes| V[Valid]
     G -->|no| X
 ```
 
 <a id="p1-example-2"></a>
 
-#### Example
+#### Example (2)
 
 ```text
 [{()}]
@@ -773,10 +756,10 @@ At `]`, stack top is `(`, so mismatch.
 
 <a id="p1-c-stack-map"></a>
 
-#### C++: stack + map
+#### C++ stack + map
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (2)
 using namespace std;
 
 bool isBalanced(const string& s) {
@@ -803,11 +786,11 @@ bool isBalanced(const string& s) {
 
 <a id="p1-dry-run-and-mermaid-flow-2"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (2)
 
 <a id="p1-dry-run-multiple-bracket-stack"></a>
 
-##### Dry Run: Multiple bracket stack
+##### Dry Run Multiple bracket stack
 
 Input:
 
@@ -828,23 +811,23 @@ Result: stack is empty, so valid.
 
 <a id="p1-mermaid-dry-run-diagram-2"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (2)
 
 ```mermaid
-flowchart TD
-    A["Start empty stack"] --> B["Read character"]
-    B --> C{"Opening bracket"}
-    C -->|Yes| D["Push to stack"]
-    C -->|No| E{"Stack empty"}
-    E -->|Yes| X["Invalid"]
-    E -->|No| F{"Top matches closing"}
-    F -->|Yes| G["Pop stack"]
+flowchart LR
+    A[Start empty stack] --> B[Read character]
+    B --> C{Opening bracket}
+    C -->|Yes| D[Push to stack]
+    C -->|No| E{Stack empty}
+    E -->|Yes| X[Invalid]
+    E -->|No| F{Top matches closing}
+    F -->|Yes| G[Pop stack]
     F -->|No| X
-    D --> H{"More characters"}
+    D --> H{More characters}
     G --> H
     H -->|Yes| B
-    H -->|No| I{"Stack empty"}
-    I -->|Yes| V["Valid"]
+    H -->|No| I{Stack empty}
+    I -->|Yes| V[Valid]
     I -->|No| X
 ```
 
@@ -862,17 +845,17 @@ For a range `[l, r]` in a parentheses string, using prefix depth:
 
 ```mermaid
 flowchart LR
-    A["Query l,r"] --> B["base = depth before l"]
-    B --> C{"depth at r equals base?"}
-    C -->|no| D["Not balanced"]
-    C -->|yes| E{"minimum depth in l..r >= base?"}
-    E -->|yes| F["Balanced"]
+    A[Query l,r] --> B[base = depth before l]
+    B --> C{depth at r equals base?}
+    C -->|no| D[Not balanced]
+    C -->|yes| E{minimum depth in l..r >= base?}
+    E -->|yes| F[Balanced]
     E -->|no| D
 ```
 
 <a id="p1-one-minute-mental-trick-2"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (2)
 
 ```text
 One bracket type:
@@ -889,7 +872,7 @@ Range balanced query:
 
 <a id="p1-2-sliding-window-subarray-maintenance"></a>
 
-### 2. Sliding Window: Subarray Maintenance
+### 2. Sliding Window Subarray Maintenance
 
 Sliding window is used when we need answers for every window/subarray of length `k`, such as:
 
@@ -903,14 +886,14 @@ Sliding window is used when we need answers for every window/subarray of length 
 #### General template
 
 ```mermaid
-flowchart TD
-    A["Loop i from 0 to n-1"] --> B["Insert current value"]
-    B --> C{"i-k >= 0?"}
-    C -->|yes| D["Remove outgoing value"]
-    C -->|no| E["Skip remove"]
-    D --> F{"i >= k-1?"}
+flowchart LR
+    A[Loop i from 0 to n-1] --> B[Insert current value]
+    B --> C{i-k >= 0?}
+    C -->|yes| D[Remove outgoing value]
+    C -->|no| E[Skip remove]
+    D --> F{i >= k-1?}
     E --> F
-    F -->|yes| G["Answer current window"]
+    F -->|yes| G[Answer current window]
     F -->|no| A
     G --> A
 ```
@@ -931,11 +914,11 @@ for (int i = 0; i < n; i++) {
 
 <a id="p1-dry-run-and-mermaid-flow-3"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (3)
 
 <a id="p1-dry-run-fixed-size-window-movement"></a>
 
-##### Dry Run: Fixed size window movement
+##### Dry Run Fixed size window movement
 
 Input:
 
@@ -953,18 +936,18 @@ a = [4, 2, 1, 5, 3], k = 3
 
 <a id="p1-mermaid-dry-run-diagram-3"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (3)
 
 ```mermaid
-flowchart TD
-    A["Loop index i"] --> B["Insert current element"]
-    B --> C{"Window too large"}
-    C -->|Yes| D["Remove outgoing element"]
-    C -->|No| E["Skip removal"]
-    D --> F{"Window size is k"}
+flowchart LR
+    A[Loop index i] --> B[Insert current element]
+    B --> C{Window too large}
+    C -->|Yes| D[Remove outgoing element]
+    C -->|No| E[Skip removal]
+    D --> F{Window size is k}
     E --> F
-    F -->|Yes| G["Compute answer"]
-    F -->|No| H["Continue"]
+    F -->|Yes| G[Compute answer]
+    F -->|No| H[Continue]
     G --> H
     H --> A
 ```
@@ -972,7 +955,7 @@ flowchart TD
 
 <a id="p1-intuition-3"></a>
 
-#### Intuition
+#### Intuition (3)
 
 A fixed-size window moves like this:
 
@@ -992,7 +975,7 @@ calculate answer
 
 <a id="p1-example-3"></a>
 
-#### Example
+#### Example (3)
 
 ```text
 a = [4, 2, 1, 5, 3]
@@ -1015,7 +998,7 @@ If asking minimum:
 
 <a id="p1-one-minute-mental-trick-3"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (3)
 
 ```text
 Fixed length subarray?
@@ -1051,7 +1034,7 @@ Operations needed:
 - get minimum
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (3)
 using namespace std;
 
 vector<int> slidingWindowMinMultiset(vector<int>& a, int k) {
@@ -1076,11 +1059,11 @@ vector<int> slidingWindowMinMultiset(vector<int>& a, int k) {
 
 <a id="p1-dry-run-and-mermaid-flow-4"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (4)
 
 <a id="p1-dry-run-multiset-window-minimum"></a>
 
-##### Dry Run: Multiset window minimum
+##### Dry Run Multiset window minimum
 
 Input:
 
@@ -1098,17 +1081,17 @@ a = [4, 2, 1, 5, 3], k = 3
 
 <a id="p1-mermaid-dry-run-diagram-4"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (4)
 
 ```mermaid
-flowchart TD
-    A["Insert current value"] --> B{"Need remove old value"}
-    B -->|Yes| C["Erase one occurrence"]
-    B -->|No| D["Skip erase"]
-    C --> E{"Window ready"}
+flowchart LR
+    A[Insert current value] --> B{Need remove old value}
+    B -->|Yes| C[Erase one occurrence]
+    B -->|No| D[Skip erase]
+    C --> E{Window ready}
     D --> E
-    E -->|Yes| F["Minimum is begin of multiset"]
-    E -->|No| G["Continue"]
+    E -->|Yes| F[Minimum is begin of multiset]
+    E -->|No| G[Continue]
 ```
 
 
@@ -1121,20 +1104,20 @@ Complexity: `O(n log k)`.
 Maintain elements in increasing order. The minimum is always at the front.
 
 ```mermaid
-flowchart TD
-    A["Insert x"] --> B{"back > x?"}
-    B -->|yes| C["pop back"]
+flowchart LR
+    A[Insert x] --> B{back > x?}
+    B -->|yes| C[pop back]
     C --> B
-    B -->|no| D["push back x"]
-    D --> E["Front is current minimum"]
-    F["Remove outgoing x"] --> G{"front == x?"}
-    G -->|yes| H["pop front"]
-    G -->|no| I["Do nothing"]
+    B -->|no| D[push back x]
+    D --> E[Front is current minimum]
+    F[Remove outgoing x] --> G{front == x?}
+    G -->|yes| H[pop front]
+    G -->|no| I[Do nothing]
 ```
 
 <a id="p1-intuition-4"></a>
 
-#### Intuition
+#### Intuition (4)
 
 If a new element is smaller than previous elements, those previous elements can never become minimum while the new smaller element is still inside the window.
 
@@ -1159,7 +1142,7 @@ The old bigger values are useless for minimum.
 #### C++ monotonic deque
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (4)
 using namespace std;
 
 struct MonotoneMinDeque {
@@ -1197,11 +1180,11 @@ vector<int> slidingWindowMin(vector<int>& a, int k) {
 
 <a id="p1-dry-run-and-mermaid-flow-5"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (5)
 
 <a id="p1-dry-run-monotonic-deque-minimum"></a>
 
-##### Dry Run: Monotonic deque minimum
+##### Dry Run Monotonic deque minimum
 
 Input:
 
@@ -1219,18 +1202,18 @@ a = [4, 2, 1, 5, 3], k = 3
 
 <a id="p1-mermaid-dry-run-diagram-5"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (5)
 
 ```mermaid
-flowchart TD
-    A["Insert x"] --> B{"Back greater than x"}
-    B -->|Yes| C["Pop back"]
+flowchart LR
+    A[Insert x] --> B{Back greater than x}
+    B -->|Yes| C[Pop back]
     C --> B
-    B -->|No| D["Push x"]
-    D --> E{"Outgoing equals front"}
-    E -->|Yes| F["Pop front"]
-    E -->|No| G["Keep front"]
-    F --> H["Front is minimum"]
+    B -->|No| D[Push x]
+    D --> E{Outgoing equals front}
+    E -->|Yes| F[Pop front]
+    E -->|No| G[Keep front]
+    F --> H[Front is minimum]
     G --> H
 ```
 
@@ -1239,7 +1222,7 @@ Complexity: `O(n)`.
 
 <a id="p1-one-minute-mental-trick-4"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (4)
 
 ```text
 Sliding window min/max:
@@ -1257,7 +1240,7 @@ For maximum:
 
 <a id="p1-4-sliding-window-cost-make-all-elements-equal"></a>
 
-### 4. Sliding Window Cost / Make All Elements Equal
+### 4. Sliding Window Cost  or  Make All Elements Equal
 
 Problem: for every window of size `k`, find minimum cost to make all elements equal, where cost is sum of absolute differences.
 
@@ -1276,15 +1259,15 @@ Minimize:
 The minimum occurs at the median.
 
 ```mermaid
-flowchart TD
-    A["Window values"] --> B["Find median"]
-    B --> C["Cost = sum abs ai - median"]
-    C --> D["Maintain two multisets"]
+flowchart LR
+    A[Window values] --> B[Find median]
+    B --> C[Cost = sum abs ai - median]
+    C --> D[Maintain two multisets]
 ```
 
 <a id="p1-intuition-5"></a>
 
-#### Intuition
+#### Intuition (5)
 
 For absolute difference, the median is best because it balances how many values are on the left and right.
 
@@ -1331,7 +1314,7 @@ totalCost = leftCost + rightCost
 
 <a id="p1-example-4"></a>
 
-#### Example
+#### Example (4)
 
 ```text
 window = [1, 2, 10, 20, 30]
@@ -1363,7 +1346,7 @@ total = 47
 #### C++
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (5)
 using namespace std;
 
 struct SlidingCost {
@@ -1429,11 +1412,11 @@ struct SlidingCost {
 
 <a id="p1-dry-run-and-mermaid-flow-6"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (6)
 
 <a id="p1-dry-run-median-cost-using-two-multisets"></a>
 
-##### Dry Run: Median cost using two multisets
+##### Dry Run Median cost using two multisets
 
 Input:
 
@@ -1455,22 +1438,22 @@ window = [1, 2, 10, 20, 30]
 
 <a id="p1-mermaid-dry-run-diagram-6"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (6)
 
 ```mermaid
-flowchart TD
-    A["Insert or erase value"] --> B["Put in lo or hi"]
-    B --> C["Rebalance sizes"]
-    C --> D["Median is max of lo"]
-    D --> E["Compute left cost"]
-    E --> F["Compute right cost"]
-    F --> G["Return total cost"]
+flowchart LR
+    A[Insert or erase value] --> B[Put in lo or hi]
+    B --> C[Rebalance sizes]
+    C --> D[Median is max of lo]
+    D --> E[Compute left cost]
+    E --> F[Compute right cost]
+    F --> G[Return total cost]
 ```
 
 
 <a id="p1-one-minute-mental-trick-5"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (5)
 
 ```text
 Minimize sum of absolute differences:
@@ -1499,20 +1482,20 @@ Design a dynamic structure supporting:
 - `mode()`
 
 ```mermaid
-flowchart TD
-    A["Data Dashboard"] --> B["insert x"]
-    A --> C["remove x"]
-    A --> D["mean"]
-    A --> E["variance"]
-    A --> F["median"]
-    A --> G["mode"]
-    B --> H["Update sum squareSum frequency halves"]
+flowchart LR
+    A[Data Dashboard] --> B[insert x]
+    A --> C[remove x]
+    A --> D[mean]
+    A --> E[variance]
+    A --> F[median]
+    A --> G[mode]
+    B --> H[Update sum squareSum frequency halves]
     C --> H
 ```
 
 <a id="p1-intuition-6"></a>
 
-#### Intuition
+#### Intuition (6)
 
 Different statistics need different maintained information.
 
@@ -1536,7 +1519,7 @@ median = middle value after sorting
 
 <a id="p1-example-5"></a>
 
-#### Example
+#### Example (5)
 
 Values:
 
@@ -1574,7 +1557,7 @@ Mode:
 #### C++ structure
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (6)
 using namespace std;
 
 struct DataDashboard {
@@ -1659,11 +1642,11 @@ struct DataDashboard {
 
 <a id="p1-dry-run-and-mermaid-flow-7"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (7)
 
 <a id="p1-dry-run-statistics-dashboard-updates"></a>
 
-##### Dry Run: Statistics dashboard updates
+##### Dry Run Statistics dashboard updates
 
 Input:
 
@@ -1683,23 +1666,23 @@ Final variance is `34 / 4 - 2.5 * 2.5 = 2.25`.
 
 <a id="p1-mermaid-dry-run-diagram-7"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (7)
 
 ```mermaid
-flowchart TD
-    A["Insert or remove x"] --> B["Update count"]
-    B --> C["Update sum"]
-    C --> D["Update square sum"]
-    D --> E["Update frequency map"]
-    E --> F["Update ordered frequency set"]
-    F --> G["Update median halves"]
-    G --> H["Queries are ready"]
+flowchart LR
+    A[Insert or remove x] --> B[Update count]
+    B --> C[Update sum]
+    C --> D[Update square sum]
+    D --> E[Update frequency map]
+    E --> F[Update ordered frequency set]
+    F --> G[Update median halves]
+    G --> H[Queries are ready]
 ```
 
 
 <a id="p1-one-minute-mental-trick-6"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (6)
 
 ```text
 mean      -> sum
@@ -1735,15 +1718,15 @@ pref[l-1] = pref[r] - x
 ```
 
 ```mermaid
-flowchart TD
-    A["Compute running prefix sum"] --> B["Need previous prefix = current - x"]
-    B --> C["Add frequency of current-x to answer"]
-    C --> D["Store current prefix in map"]
+flowchart LR
+    A[Compute running prefix sum] --> B[Need previous prefix = current - x]
+    B --> C[Add frequency of current-x to answer]
+    C --> D[Store current prefix in map]
 ```
 
 <a id="p1-intuition-7"></a>
 
-#### Intuition
+#### Intuition (7)
 
 If:
 
@@ -1761,7 +1744,7 @@ So we count how many times that previous prefix appeared.
 
 <a id="p1-example-6"></a>
 
-#### Example
+#### Example (6)
 
 ```text
 a = [1, 2, 3, -2, 5]
@@ -1788,7 +1771,7 @@ Answer:
 #### C++ count only
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (7)
 using namespace std;
 
 long long countSubarraysWithSumX(vector<int>& a, long long x) {
@@ -1809,11 +1792,11 @@ long long countSubarraysWithSumX(vector<int>& a, long long x) {
 
 <a id="p1-dry-run-and-mermaid-flow-8"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (8)
 
 <a id="p1-dry-run-count-subarrays-with-target-sum"></a>
 
-##### Dry Run: Count subarrays with target sum
+##### Dry Run Count subarrays with target sum
 
 Input:
 
@@ -1831,17 +1814,17 @@ a = [1, 2, 3, -2, 5], x = 3
 
 <a id="p1-mermaid-dry-run-diagram-8"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (8)
 
 ```mermaid
-flowchart TD
-    A["Initialize frequency of zero prefix"] --> B["Add value to prefix"]
-    B --> C["Need equals prefix minus target"]
-    C --> D["Add frequency of need"]
-    D --> E["Store current prefix"]
-    E --> F{"More elements"}
+flowchart LR
+    A[Initialize frequency of zero prefix] --> B[Add value to prefix]
+    B --> C[Need equals prefix minus target]
+    C --> D[Add frequency of need]
+    D --> E[Store current prefix]
+    E --> F{More elements}
     F -->|Yes| B
-    F -->|No| G["Return answer"]
+    F -->|No| G[Return answer]
 ```
 
 
@@ -1850,7 +1833,7 @@ flowchart TD
 #### C++ print all ranges
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (8)
 using namespace std;
 
 void printSubarraysWithSumX(vector<int>& a, long long x) {
@@ -1874,11 +1857,11 @@ void printSubarraysWithSumX(vector<int>& a, long long x) {
 
 <a id="p1-dry-run-and-mermaid-flow-9"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (9)
 
 <a id="p1-dry-run-print-all-target-sum-ranges"></a>
 
-##### Dry Run: Print all target-sum ranges
+##### Dry Run Print all target-sum ranges
 
 Input:
 
@@ -1894,23 +1877,23 @@ a = [1, 2, 3], x = 3
 
 <a id="p1-mermaid-dry-run-diagram-9"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (9)
 
 ```mermaid
-flowchart TD
-    A["Keep map from prefix to positions"] --> B["Update prefix"]
-    B --> C["Find need prefix"]
-    C --> D{"Need exists"}
-    D -->|Yes| E["Print all ranges"]
-    D -->|No| F["Print none"]
-    E --> G["Store current index"]
+flowchart LR
+    A[Keep map from prefix to positions] --> B[Update prefix]
+    B --> C[Find need prefix]
+    C --> D{Need exists}
+    D -->|Yes| E[Print all ranges]
+    D -->|No| F[Print none]
+    E --> G[Store current index]
     F --> G
 ```
 
 
 <a id="p1-one-minute-mental-trick-7"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (7)
 
 ```text
 Subarray sum:
@@ -1930,28 +1913,28 @@ Negative numbers allowed:
 
 <a id="p1-7-stack-mastery-next-greater-element"></a>
 
-### 7. Stack Mastery: Next Greater Element
+### 7. Stack Mastery Next Greater Element
 
 For each index, find the next greater element to the right.
 
 Use a monotonic stack of indices. Traverse from right to left.
 
 ```mermaid
-flowchart TD
-    A["Start from right"] --> B{"top value <= current?"}
-    B -->|yes| C["pop"]
+flowchart LR
+    A[Start from right] --> B{top value <= current?}
+    B -->|yes| C[pop]
     C --> B
-    B -->|no| D{"stack empty?"}
-    D -->|yes| E["nge of i = n"]
-    D -->|no| F["nge of i = top"]
-    E --> G["push i"]
+    B -->|no| D{stack empty?}
+    D -->|yes| E[nge of i = n]
+    D -->|no| F[nge of i = top]
+    E --> G[push i]
     F --> G
     G --> A
 ```
 
 <a id="p1-intuition-8"></a>
 
-#### Intuition
+#### Intuition (8)
 
 When scanning from right to left, the stack stores useful candidates for the next greater element.
 
@@ -1959,7 +1942,7 @@ If a candidate is less than or equal to the current value, it can never be the n
 
 <a id="p1-example-7"></a>
 
-#### Example
+#### Example (7)
 
 ```text
 a = [2, 1, 3, 2]
@@ -1974,10 +1957,10 @@ a = [2, 1, 3, 2]
 
 <a id="p1-c-2"></a>
 
-#### C++
+#### C++ (2)
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (9)
 using namespace std;
 
 vector<int> nextGreaterIndex(vector<int>& a) {
@@ -2001,11 +1984,11 @@ vector<int> nextGreaterIndex(vector<int>& a) {
 
 <a id="p1-dry-run-and-mermaid-flow-10"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (10)
 
 <a id="p1-dry-run-next-greater-element"></a>
 
-##### Dry Run: Next greater element
+##### Dry Run Next greater element
 
 Input:
 
@@ -2022,25 +2005,25 @@ a = [2, 1, 3, 2]
 
 <a id="p1-mermaid-dry-run-diagram-10"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (10)
 
 ```mermaid
-flowchart TD
-    A["Scan from right"] --> B["Current value"]
-    B --> C{"Top less or equal current"}
-    C -->|Yes| D["Pop stack"]
+flowchart LR
+    A[Scan from right] --> B[Current value]
+    B --> C{Top less or equal current}
+    C -->|Yes| D[Pop stack]
     D --> C
-    C -->|No| E{"Stack empty"}
-    E -->|Yes| F["No next greater"]
-    E -->|No| G["Top is answer"]
-    F --> H["Push current"]
+    C -->|No| E{Stack empty}
+    E -->|Yes| F[No next greater]
+    E -->|No| G[Top is answer]
+    F --> H[Push current]
     G --> H
 ```
 
 
 <a id="p1-one-minute-mental-trick-8"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (8)
 
 ```text
 Next greater/smaller:
@@ -2074,22 +2057,22 @@ For each bar, trapped water depends on boundary bars.
 When current bar is greater than the stack top, the popped bar can become the bottom of trapped water.
 
 ```mermaid
-flowchart TD
-    A["Loop i from 0 to n-1"] --> B{"top height < current height?"}
-    B -->|yes| C["bottom = pop"]
-    C --> D{"stack empty?"}
-    D -->|yes| E["break"]
-    D -->|no| F["left = stack.top"]
-    F --> G["width = i-left-1"]
-    G --> H["bounded height = min left current - bottom"]
-    H --> I["ans += width*height"]
+flowchart LR
+    A[Loop i from 0 to n-1] --> B{top height < current height?}
+    B -->|yes| C[bottom = pop]
+    C --> D{stack empty?}
+    D -->|yes| E[break]
+    D -->|no| F[left = stack.top]
+    F --> G[width = i-left-1]
+    G --> H[bounded height = min left current - bottom]
+    H --> I[ans += width*height]
     I --> B
-    B -->|no| J["push i"]
+    B -->|no| J[push i]
 ```
 
 <a id="p1-intuition-9"></a>
 
-#### Intuition
+#### Intuition (9)
 
 Water is trapped when we find:
 
@@ -2101,7 +2084,7 @@ The current bar acts as the right wall. The stack top after popping acts as the 
 
 <a id="p1-example-8"></a>
 
-#### Example
+#### Example (8)
 
 ```text
 height = [3, 0, 2, 0, 4]
@@ -2118,10 +2101,10 @@ total = 7
 
 <a id="p1-c-3"></a>
 
-#### C++
+#### C++ (3)
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (10)
 using namespace std;
 
 int trapRainWater(vector<int>& h) {
@@ -2150,11 +2133,11 @@ int trapRainWater(vector<int>& h) {
 
 <a id="p1-dry-run-and-mermaid-flow-11"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (11)
 
 <a id="p1-dry-run-water-trapped-by-stack"></a>
 
-##### Dry Run: Water trapped by stack
+##### Dry Run Water trapped by stack
 
 Input:
 
@@ -2174,26 +2157,26 @@ Total water is `7`.
 
 <a id="p1-mermaid-dry-run-diagram-11"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (11)
 
 ```mermaid
-flowchart TD
-    A["Read current bar"] --> B{"Current higher than stack top"}
-    B -->|Yes| C["Pop bottom"]
-    C --> D{"Stack empty"}
-    D -->|Yes| E["Stop inner loop"]
-    D -->|No| F["New top is left wall"]
-    F --> G["Compute width"]
-    G --> H["Compute bounded height"]
-    H --> I["Add water"]
+flowchart LR
+    A[Read current bar] --> B{Current higher than stack top}
+    B -->|Yes| C[Pop bottom]
+    C --> D{Stack empty}
+    D -->|Yes| E[Stop inner loop]
+    D -->|No| F[New top is left wall]
+    F --> G[Compute width]
+    G --> H[Compute bounded height]
+    H --> I[Add water]
     I --> B
-    B -->|No| J["Push current index"]
+    B -->|No| J[Push current index]
 ```
 
 
 <a id="p1-one-minute-mental-trick-9"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (9)
 
 ```text
 Water needs two walls.
@@ -2208,7 +2191,7 @@ When current height is bigger than stack top:
 
 <a id="p1-9-range-mapping-interval-coverage"></a>
 
-### 9. Range Mapping / Interval Coverage
+### 9. Range Mapping  or  Interval Coverage
 
 Queries:
 
@@ -2236,7 +2219,7 @@ Use `lower_bound` and `upper_bound`.
 
 <a id="p1-intuition-10"></a>
 
-#### Intuition
+#### Intuition (10)
 
 An interval covers `x` if:
 
@@ -2258,10 +2241,10 @@ l > x
 
 <a id="p1-c-4"></a>
 
-#### C++
+#### C++ (4)
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (11)
 using namespace std;
 
 bool isCoveredOffline(vector<pair<int,int>>& ranges, int x) {
@@ -2285,11 +2268,11 @@ bool isCoveredOffline(vector<pair<int,int>>& ranges, int x) {
 
 <a id="p1-dry-run-and-mermaid-flow-12"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (12)
 
 <a id="p1-dry-run-offline-interval-coverage"></a>
 
-##### Dry Run: Offline interval coverage
+##### Dry Run Offline interval coverage
 
 Input:
 
@@ -2309,43 +2292,43 @@ Result: covered.
 
 <a id="p1-mermaid-dry-run-diagram-12"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (12)
 
 ```mermaid
-flowchart TD
-    A["Sort starts and ends"] --> B["Query point x"]
-    B --> C["Count starts greater than x"]
-    C --> D["Count ends less than x"]
-    D --> E["Covered count equals total minus both"]
-    E --> F{"Covered count positive"}
-    F -->|Yes| G["Covered"]
-    F -->|No| H["Not covered"]
+flowchart LR
+    A[Sort starts and ends] --> B[Query point x]
+    B --> C[Count starts greater than x]
+    C --> D[Count ends less than x]
+    D --> E[Covered count equals total minus both]
+    E --> F{Covered count positive}
+    F -->|Yes| G[Covered]
+    F -->|No| H[Not covered]
 ```
 
 
 <a id="p1-online-version-maintain-merged-intervals"></a>
 
-#### Online version: maintain merged intervals
+#### Online version maintain merged intervals
 
 Use `set<pair<int,int>>` containing non-overlapping intervals.
 
 ```mermaid
-flowchart TD
-    A["Insert l,r"] --> B{"Already covered?"}
-    B -->|yes| C["Do nothing"]
-    B -->|no| D["Find intervals that overlap"]
-    D --> E["Merge them into l,r"]
-    E --> F["Erase old intervals"]
-    F --> G["Insert merged interval"]
-    H["Query x"] --> I["Find interval with start <= x"]
-    I --> J{"end >= x?"}
-    J -->|yes| K["Covered"]
-    J -->|no| L["Not covered"]
+flowchart LR
+    A[Insert l,r] --> B{Already covered?}
+    B -->|yes| C[Do nothing]
+    B -->|no| D[Find intervals that overlap]
+    D --> E[Merge them into l,r]
+    E --> F[Erase old intervals]
+    F --> G[Insert merged interval]
+    H[Query x] --> I[Find interval with start <= x]
+    I --> J{end >= x?}
+    J -->|yes| K[Covered]
+    J -->|no| L[Not covered]
 ```
 
 <a id="p1-example-9"></a>
 
-#### Example
+#### Example (9)
 
 Insert:
 
@@ -2370,10 +2353,10 @@ x = 9 -> not covered
 
 <a id="p1-c-5"></a>
 
-#### C++
+#### C++ (5)
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (12)
 using namespace std;
 
 struct RangeCover {
@@ -2407,11 +2390,11 @@ struct RangeCover {
 
 <a id="p1-dry-run-and-mermaid-flow-13"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (13)
 
 <a id="p1-dry-run-merged-interval-insert-and-query"></a>
 
-##### Dry Run: Merged interval insert and query
+##### Dry Run Merged interval insert and query
 
 Input:
 
@@ -2428,26 +2411,26 @@ insert [1,3], insert [6,8], insert [2,7], query 5
 
 <a id="p1-mermaid-dry-run-diagram-13"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (13)
 
 ```mermaid
-flowchart TD
-    A["Insert range"] --> B["Find overlap candidate"]
-    B --> C{"Overlaps"}
-    C -->|Yes| D["Merge boundaries"]
-    D --> E["Erase old interval"]
+flowchart LR
+    A[Insert range] --> B[Find overlap candidate]
+    B --> C{Overlaps}
+    C -->|Yes| D[Merge boundaries]
+    D --> E[Erase old interval]
     E --> C
-    C -->|No| F["Insert merged interval"]
-    G["Query point"] --> H["Find previous interval"]
-    H --> I{"End covers point"}
-    I -->|Yes| J["Covered"]
-    I -->|No| K["Not covered"]
+    C -->|No| F[Insert merged interval]
+    G[Query point] --> H[Find previous interval]
+    H --> I{End covers point}
+    I -->|Yes| J[Covered]
+    I -->|No| K[Not covered]
 ```
 
 
 <a id="p1-one-minute-mental-trick-10"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (10)
 
 ```text
 Static intervals + many point queries:
@@ -2482,21 +2465,21 @@ Two common implementations:
 - `sumTop`: sum of elements in `top`.
 
 ```mermaid
-flowchart TD
-    A["Insert x"] --> B["Put into top"]
-    B --> C["Balance"]
-    C --> D{"top size > k?"}
-    D -->|yes| E["Move smallest top to rest"]
-    D -->|no| F{"top size < k and rest nonempty?"}
-    F -->|yes| G["Move largest rest to top"]
-    F -->|no| H["Done"]
+flowchart LR
+    A[Insert x] --> B[Put into top]
+    B --> C[Balance]
+    C --> D{top size > k?}
+    D -->|yes| E[Move smallest top to rest]
+    D -->|no| F{top size < k and rest nonempty?}
+    F -->|yes| G[Move largest rest to top]
+    F -->|no| H[Done]
     E --> C
     G --> C
 ```
 
 <a id="p1-intuition-11"></a>
 
-#### Intuition
+#### Intuition (11)
 
 Always keep the largest `k` values in one bucket.
 
@@ -2504,7 +2487,7 @@ If a new big value enters, a smaller value may be pushed out.
 
 <a id="p1-example-10"></a>
 
-#### Example
+#### Example (10)
 
 ```text
 k = 3
@@ -2525,10 +2508,10 @@ Sum:
 
 <a id="p1-c-6"></a>
 
-#### C++
+#### C++ (6)
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (13)
 using namespace std;
 
 struct TopKSum {
@@ -2595,11 +2578,11 @@ struct TopKSum {
 
 <a id="p1-dry-run-and-mermaid-flow-14"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (14)
 
 <a id="p1-dry-run-maintain-top-k-sum"></a>
 
-##### Dry Run: Maintain top k sum
+##### Dry Run Maintain top k sum
 
 Input:
 
@@ -2617,25 +2600,25 @@ k = 3, insert values [5, 1, 10, 3, 8]
 
 <a id="p1-mermaid-dry-run-diagram-14"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (14)
 
 ```mermaid
-flowchart TD
-    A["Insert value"] --> B["Put into top"]
-    B --> C["Balance size"]
-    C --> D{"Top larger than k"}
-    D -->|Yes| E["Move smallest top to rest"]
-    D -->|No| F{"Rest has larger value"}
+flowchart LR
+    A[Insert value] --> B[Put into top]
+    B --> C[Balance size]
+    C --> D{Top larger than k}
+    D -->|Yes| E[Move smallest top to rest]
+    D -->|No| F{Rest has larger value}
     E --> F
-    F -->|Yes| G["Swap smallest top and largest rest"]
-    F -->|No| H["sumTop is answer"]
+    F -->|Yes| G[Swap smallest top and largest rest]
+    F -->|No| H[sumTop is answer]
     G --> H
 ```
 
 
 <a id="p1-one-minute-mental-trick-11"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (11)
 
 ```text
 Need top k dynamically?
@@ -2684,7 +2667,7 @@ if (!pq.empty()) {
 
 <a id="p1-intuition-12"></a>
 
-#### Intuition
+#### Intuition (12)
 
 A priority queue is useful when you only care about the current best item:
 
@@ -2710,7 +2693,7 @@ It is not good when you need to erase arbitrary values unless you use lazy delet
 
 <a id="p1-one-minute-mental-trick-12"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (12)
 
 ```text
 Need repeatedly best element?
@@ -2763,14 +2746,14 @@ bool empty = q.empty();
 
 ```mermaid
 flowchart LR
-    subgraph Stack["LIFO Stack"]
-        S3["3 top"]
-        S2["2"]
-        S1["1 bottom"]
+    subgraph Stack[LIFO Stack]
+        S3[3 top]
+        S2[2]
+        S1[1 bottom]
     end
 
-    subgraph Queue["FIFO Queue"]
-        Q1["1 front"] --> Q2["2"] --> Q3["3 back"]
+    subgraph Queue[FIFO Queue]
+        Q1[1 front] --> Q2[2] --> Q3[3 back]
     end
 ```
 
@@ -2781,7 +2764,7 @@ flowchart LR
 Costly pop version:
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (14)
 using namespace std;
 
 struct StackUsingQueues {
@@ -2822,11 +2805,11 @@ struct StackUsingQueues {
 
 <a id="p1-dry-run-and-mermaid-flow-15"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (15)
 
 <a id="p1-dry-run-stack-using-two-queues"></a>
 
-##### Dry Run: Stack using two queues
+##### Dry Run Stack using two queues
 
 Input:
 
@@ -2845,23 +2828,23 @@ Returned value is `3`.
 
 <a id="p1-mermaid-dry-run-diagram-15"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (15)
 
 ```mermaid
-flowchart TD
-    A["Pop stack using queues"] --> B{"q1 size greater than one"}
-    B -->|Yes| C["Move front from q1 to q2"]
+flowchart LR
+    A[Pop stack using queues] --> B{q1 size greater than one}
+    B -->|Yes| C[Move front from q1 to q2]
     C --> B
-    B -->|No| D["Remaining front is stack top"]
-    D --> E["Pop it"]
-    E --> F["Swap q1 and q2"]
-    F --> G["Return value"]
+    B -->|No| D[Remaining front is stack top]
+    D --> E[Pop it]
+    E --> F[Swap q1 and q2]
+    F --> G[Return value]
 ```
 
 
 <a id="p1-one-minute-mental-trick-13"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (13)
 
 ```text
 Stack:
@@ -2884,27 +2867,20 @@ Queue:
 Instead of enumerating every subarray/subsequence, calculate how much each element contributes to the final answer.
 
 ```mermaid
-flowchart TD
-    M0(("Contribution Technique"))
-    M1["Sum of all subarrays"]
-    M2["Sum of all subsequences"]
-    M3["Pair contribution"]
-    M4["Inversions"]
-    M5["Pairwise counts"]
-    M6["Extended contribution"]
-    M7["Product of subarrays"]
-    M0 --> M1
-    M0 --> M2
-    M0 --> M3
-    M3 --> M4
-    M3 --> M5
-    M0 --> M6
-    M6 --> M7
+mindmap
+  root((Contribution Technique))
+    Sum of all subarrays
+    Sum of all subsequences
+    Pair contribution
+      Inversions
+      Pairwise counts
+    Extended contribution
+      Product of subarrays
 ```
 
 <a id="p1-intuition-13"></a>
 
-#### Intuition
+#### Intuition (13)
 
 When too many objects exist, count contribution from each element instead.
 
@@ -2940,7 +2916,7 @@ answer = Σ a[i] * (i + 1) * (n - i)
 
 <a id="p1-example-11"></a>
 
-#### Example
+#### Example (11)
 
 ```text
 a = [1, 2, 3]
@@ -2969,7 +2945,7 @@ total = 20
 
 <a id="p1-c-7"></a>
 
-#### C++
+#### C++ (7)
 
 ```cpp
 long long sumOfAllSubarrays(vector<int>& a) {
@@ -2986,11 +2962,11 @@ long long sumOfAllSubarrays(vector<int>& a) {
 
 <a id="p1-dry-run-and-mermaid-flow-16"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (16)
 
 <a id="p1-dry-run-sum-of-all-subarrays-by-contribution"></a>
 
-##### Dry Run: Sum of all subarrays by contribution
+##### Dry Run Sum of all subarrays by contribution
 
 Input:
 
@@ -3008,17 +2984,17 @@ Total is `20`.
 
 <a id="p1-mermaid-dry-run-diagram-16"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (16)
 
 ```mermaid
-flowchart TD
-    A["Pick index i"] --> B["Count left choices"]
-    B --> C["Count right choices"]
-    C --> D["Multiply by value"]
-    D --> E["Add to answer"]
-    E --> F{"More elements"}
+flowchart LR
+    A[Pick index i] --> B[Count left choices]
+    B --> C[Count right choices]
+    C --> D[Multiply by value]
+    D --> E[Add to answer]
+    E --> F{More elements}
     F -->|Yes| A
-    F -->|No| G["Return total"]
+    F -->|No| G[Return total]
 ```
 
 
@@ -3046,11 +3022,11 @@ long long sumOfAllSubsequences(vector<int>& a) {
 
 <a id="p1-dry-run-and-mermaid-flow-17"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (17)
 
 <a id="p1-dry-run-sum-of-all-subsequences"></a>
 
-##### Dry Run: Sum of all subsequences
+##### Dry Run Sum of all subsequences
 
 Input:
 
@@ -3068,14 +3044,14 @@ Total is `24`.
 
 <a id="p1-mermaid-dry-run-diagram-17"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (17)
 
 ```mermaid
-flowchart TD
-    A["For each element"] --> B["Each appears in power of two choices"]
-    B --> C["Multiply element by ways"]
-    C --> D["Add contribution"]
-    D --> E["Return total"]
+flowchart LR
+    A[For each element] --> B[Each appears in power of two choices]
+    B --> C[Multiply element by ways]
+    C --> D[Add contribution]
+    D --> E[Return total]
 ```
 
 
@@ -3092,7 +3068,7 @@ ans += sop
 
 <a id="p1-example-12"></a>
 
-#### Example
+#### Example (12)
 
 ```text
 a = [2, 3, 4]
@@ -3129,7 +3105,7 @@ Total:
 
 <a id="p1-c-8"></a>
 
-#### C++
+#### C++ (8)
 
 ```cpp
 long long sumProductOfAllSubarrays(vector<int>& a) {
@@ -3147,11 +3123,11 @@ long long sumProductOfAllSubarrays(vector<int>& a) {
 
 <a id="p1-dry-run-and-mermaid-flow-18"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (18)
 
 <a id="p1-dry-run-sum-product-of-all-subarrays"></a>
 
-##### Dry Run: Sum product of all subarrays
+##### Dry Run Sum product of all subarrays
 
 Input:
 
@@ -3169,23 +3145,23 @@ Formula: `sop = sop * x + x`.
 
 <a id="p1-mermaid-dry-run-diagram-18"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (18)
 
 ```mermaid
-flowchart TD
-    A["Read x"] --> B["Extend previous products"]
-    B --> C["Add new single element subarray"]
-    C --> D["Update sop"]
-    D --> E["Add sop to answer"]
-    E --> F{"More elements"}
+flowchart LR
+    A[Read x] --> B[Extend previous products]
+    B --> C[Add new single element subarray]
+    C --> D[Update sop]
+    D --> E[Add sop to answer]
+    E --> F{More elements}
     F -->|Yes| A
-    F -->|No| G["Return answer"]
+    F -->|No| G[Return answer]
 ```
 
 
 <a id="p1-one-minute-mental-trick-14"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (14)
 
 ```text
 Too many subarrays/subsequences?
@@ -3199,7 +3175,7 @@ Ask:
 
 <a id="p1-14-pattern-matching-coordinate-geometry-printing"></a>
 
-### 14. Pattern Matching / Coordinate Geometry Printing
+### 14. Pattern Matching  or  Coordinate Geometry Printing
 
 For star-pattern questions, first define the canvas:
 
@@ -3210,18 +3186,18 @@ For star-pattern questions, first define the canvas:
 Then write a function deciding whether a coordinate prints `*` or space.
 
 ```mermaid
-flowchart TD
-    A["Pattern Question"] --> B["Define canvas rows x cols"]
-    B --> C["Loop over i rows"]
-    C --> D["Loop over j cols"]
-    D --> E{"func i,j true?"}
-    E -->|yes| F["print star"]
-    E -->|no| G["print space"]
+flowchart LR
+    A[Pattern Question] --> B[Define canvas rows x cols]
+    B --> C[Loop over i rows]
+    C --> D[Loop over j cols]
+    D --> E{func i,j true?}
+    E -->|yes| F[print star]
+    E -->|no| G[print space]
 ```
 
 <a id="p1-intuition-14"></a>
 
-#### Intuition
+#### Intuition (14)
 
 Pattern problems are coordinate geometry problems.
 
@@ -3236,7 +3212,7 @@ At coordinate (i, j), should I print star?
 #### Template
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (15)
 using namespace std;
 
 bool printStar(int i, int j, int rows, int cols) {
@@ -3258,11 +3234,11 @@ int main() {
 
 <a id="p1-dry-run-and-mermaid-flow-19"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (19)
 
 <a id="p1-dry-run-coordinate-based-star-printing"></a>
 
-##### Dry Run: Coordinate based star printing
+##### Dry Run Coordinate based star printing
 
 Input:
 
@@ -3279,18 +3255,18 @@ rows = 5, cols = 5, condition i equals j
 
 <a id="p1-mermaid-dry-run-diagram-19"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (19)
 
 ```mermaid
-flowchart TD
-    A["Loop row i"] --> B["Loop column j"]
-    B --> C{"Condition true"}
-    C -->|Yes| D["Print star"]
-    C -->|No| E["Print space"]
-    D --> F{"More columns"}
+flowchart LR
+    A[Loop row i] --> B[Loop column j]
+    B --> C{Condition true}
+    C -->|Yes| D[Print star]
+    C -->|No| E[Print space]
+    D --> F{More columns}
     E --> F
     F -->|Yes| B
-    F -->|No| G["Next row"]
+    F -->|No| G[Next row]
 ```
 
 
@@ -3328,7 +3304,7 @@ func(i, j % k, rows, k);
 
 <a id="p1-one-minute-mental-trick-15"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (15)
 
 ```text
 Pattern printing:
@@ -3364,23 +3340,23 @@ Expected output is sorted by element names with counts.
 - Merge maps by adding counts.
 
 ```mermaid
-flowchart TD
-    A["parse range l..r"] --> B{"Current char"}
-    B -->|Capital letter| C["Parse element"]
-    C --> D["Parse number if any"]
-    D --> E["Add to map"]
-    B -->|open parenthesis| F["Find matching bracket"]
-    F --> G["Parse inside recursively"]
-    G --> H["Parse multiplier"]
-    H --> I["Multiply inside map"]
-    I --> J["Merge"]
+flowchart LR
+    A[parse range l..r] --> B{Current char}
+    B -->|Capital letter| C[Parse element]
+    C --> D[Parse number if any]
+    D --> E[Add to map]
+    B -->|open parenthesis| F[Find matching bracket]
+    F --> G[Parse inside recursively]
+    G --> H[Parse multiplier]
+    H --> I[Multiply inside map]
+    I --> J[Merge]
     E --> A
     J --> A
 ```
 
 <a id="p1-intuition-15"></a>
 
-#### Intuition
+#### Intuition (15)
 
 Parentheses create a smaller independent formula. Solve inside first, then multiply.
 
@@ -3425,7 +3401,7 @@ H2MgO2
 #### C++ parser
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (16)
 using namespace std;
 
 class FormulaParser {
@@ -3492,11 +3468,11 @@ public:
 
 <a id="p1-dry-run-and-mermaid-flow-20"></a>
 
-#### Dry Run And Mermaid Flow
+#### Dry Run And Mermaid Flow (20)
 
 <a id="p1-dry-run-parse-chemical-formula"></a>
 
-##### Dry Run: Parse chemical formula
+##### Dry Run Parse chemical formula
 
 Input:
 
@@ -3515,28 +3491,28 @@ formula = Mg(OH)2
 
 <a id="p1-mermaid-dry-run-diagram-20"></a>
 
-##### Mermaid Dry Run Diagram
+##### Mermaid Dry Run Diagram (20)
 
 ```mermaid
-flowchart TD
-    A["Start parse"] --> B{"Current character"}
-    B -->|Capital| C["Read element"]
-    C --> D["Read number"]
-    D --> E["Add count"]
-    B -->|Open parenthesis| F["Parse inside recursively"]
-    F --> G["Read multiplier"]
-    G --> H["Multiply inside map"]
-    H --> I["Merge map"]
-    E --> J{"More characters"}
+flowchart LR
+    A[Start parse] --> B{Current character}
+    B -->|Capital| C[Read element]
+    C --> D[Read number]
+    D --> E[Add count]
+    B -->|Open parenthesis| F[Parse inside recursively]
+    F --> G[Read multiplier]
+    G --> H[Multiply inside map]
+    H --> I[Merge map]
+    E --> J{More characters}
     I --> J
     J -->|Yes| B
-    J -->|No| K["Return map"]
+    J -->|No| K[Return map]
 ```
 
 
 <a id="p1-one-minute-mental-trick-16"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (16)
 
 ```text
 Nested parentheses/brackets:
@@ -3575,19 +3551,19 @@ Default count:
 
 ```mermaid
 flowchart TB
-    A["What do you need?"] --> B{"Order matters?"}
-    B -->|LIFO| ST["stack"]
-    B -->|FIFO| QU["queue"]
-    B -->|sorted order| SE["set / multiset"]
-    B -->|top priority only| PQ["priority_queue"]
-    B -->|key-value count| MP["map / unordered_map"]
-    B -->|range query/update| FW["Fenwick / Segment Tree"]
-    B -->|window min/max| DQ["monotonic deque"]
+    A[What do you need?] --> B{Order matters?}
+    B -->|LIFO| ST[stack]
+    B -->|FIFO| QU[queue]
+    B -->|sorted order| SE[set / multiset]
+    B -->|top priority only| PQ[priority_queue]
+    B -->|key-value count| MP[map / unordered_map]
+    B -->|range query/update| FW[Fenwick / Segment Tree]
+    B -->|window min/max| DQ[monotonic deque]
 ```
 
 <a id="p1-one-minute-mental-trick-17"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (17)
 
 ```text
 Can I delete arbitrary element?
@@ -3655,7 +3631,7 @@ if (!st.empty()) {
 
 <a id="p1-one-minute-mental-trick-18"></a>
 
-#### One-minute mental trick
+#### One-minute mental trick (18)
 
 ```text
 Before using STL top/front/back:
@@ -3675,21 +3651,21 @@ Before prefix-map subarray count:
 ### 18. Final Revision Flow
 
 ```mermaid
-flowchart TD
-    A["New Problem"] --> B{"Is it about subarray/window?"}
-    B -->|fixed size k| C["Sliding Window"]
-    B -->|sum x| D["Prefix Sum + Map"]
-    A --> E{"Nearest greater/smaller?"}
-    E -->|yes| F["Monotonic Stack"]
-    A --> G{"Dynamic median/top k?"}
-    G -->|median| H["Two Multisets"]
-    G -->|top k| I["Two Multisets / PQ"]
-    A --> J{"Intervals?"}
-    J -->|coverage| K["Sorted endpoints or set of merged ranges"]
-    A --> L{"Nested formula/brackets?"}
-    L -->|yes| M["Stack or Recursion"]
-    A --> N{"Too many subarrays/subsequences?"}
-    N -->|yes| O["Contribution Technique"]
+flowchart LR
+    A[New Problem] --> B{Is it about subarray/window?}
+    B -->|fixed size k| C[Sliding Window]
+    B -->|sum x| D[Prefix Sum + Map]
+    A --> E{Nearest greater/smaller?}
+    E -->|yes| F[Monotonic Stack]
+    A --> G{Dynamic median/top k?}
+    G -->|median| H[Two Multisets]
+    G -->|top k| I[Two Multisets / PQ]
+    A --> J{Intervals?}
+    J -->|coverage| K[Sorted endpoints or set of merged ranges]
+    A --> L{Nested formula/brackets?}
+    L -->|yes| M[Stack or Recursion]
+    A --> N{Too many subarrays/subsequences?}
+    N -->|yes| O[Contribution Technique]
 ```
 
 <a id="p1-quick-pattern-recognition-table"></a>
@@ -3716,7 +3692,7 @@ flowchart TD
 ### 19. Minimal C++ Setup
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (17)
 using namespace std;
 
 using ll = long long;
@@ -3757,60 +3733,34 @@ Before coding, ask:
 #### Final memory hook
 
 ```mermaid
-flowchart TD
-    M0(("CP Mental Tricks"))
-    M1["Range sum"]
-    M2["Prefix sum"]
-    M3["Range update"]
-    M4["Difference array"]
-    M5["Dynamic range query"]
-    M6["Fenwick"]
-    M7["Segment tree"]
-    M8["Window"]
-    M9["Sliding window"]
-    M10["Deque"]
-    M11["Multiset"]
-    M12["Nearest greater"]
-    M13["Monotonic stack"]
-    M14["Median"]
-    M15["Two multisets"]
-    M16["Top K"]
-    M17["Heap"]
-    M18["Two multisets"]
-    M19["Intervals"]
-    M20["Sort endpoints"]
-    M21["Set merged ranges"]
-    M22["Nested parsing"]
-    M23["Stack"]
-    M24["Recursion"]
-    M25["Too many objects"]
-    M26["Contribution"]
-    M0 --> M1
-    M1 --> M2
-    M0 --> M3
-    M3 --> M4
-    M0 --> M5
-    M5 --> M6
-    M5 --> M7
-    M0 --> M8
-    M8 --> M9
-    M8 --> M10
-    M8 --> M11
-    M0 --> M12
-    M12 --> M13
-    M0 --> M14
-    M14 --> M15
-    M0 --> M16
-    M16 --> M17
-    M16 --> M18
-    M0 --> M19
-    M19 --> M20
-    M19 --> M21
-    M0 --> M22
-    M22 --> M23
-    M22 --> M24
-    M0 --> M25
-    M25 --> M26
+mindmap
+  root((CP Mental Tricks))
+    Range sum
+      Prefix sum
+    Range update
+      Difference array
+    Dynamic range query
+      Fenwick
+      Segment tree
+    Window
+      Sliding window
+      Deque
+      Multiset
+    Nearest greater
+      Monotonic stack
+    Median
+      Two multisets
+    Top K
+      Heap
+      Two multisets
+    Intervals
+      Sort endpoints
+      Set merged ranges
+    Nested parsing
+      Stack
+      Recursion
+    Too many objects
+      Contribution
 ```
 
 ---
@@ -3872,16 +3822,16 @@ When you see a new problem, do not start coding immediately.
 Use this flow:
 
 ```mermaid
-flowchart TD
-    A["Read problem"] --> B["Identify form"]
-    B --> C["Check constraints"]
-    C --> D["Start with brute force"]
-    D --> E["Find bottleneck"]
-    E --> F["Match concept or framework"]
-    F --> G["Choose STL / data structure"]
-    G --> H["Write small template"]
-    H --> I["Dry run samples"]
-    I --> J["Test edge cases"]
+flowchart LR
+    A[Read problem] --> B[Identify form]
+    B --> C[Check constraints]
+    C --> D[Start with brute force]
+    D --> E[Find bottleneck]
+    E --> F[Match concept or framework]
+    F --> G[Choose STL / data structure]
+    G --> H[Write small template]
+    H --> I[Dry run samples]
+    I --> J[Test edge cases]
 ```
 
 Mental model:
@@ -3907,90 +3857,49 @@ STL/DS: vector<long long> prefix
 ### 2. Big Picture Map
 
 ```mermaid
-flowchart TD
-    M0(("CP STL Problem Solving"))
-    M1["Concepts"]
-    M2["Prefix sums"]
-    M3["Sliding window"]
-    M4["Monotonic stack"]
-    M5["Monotonic deque"]
-    M6["Two pointers"]
-    M7["Binary search"]
-    M8["Contribution"]
-    M9["Recursion parsing"]
-    M10["Intervals"]
-    M11["Dynamic statistics"]
-    M12["Frameworks"]
-    M13["Static range query"]
-    M14["Dynamic update query"]
-    M15["Window maintenance"]
-    M16["Offline processing"]
-    M17["Greedy with ordering"]
-    M18["Graph traversal"]
-    M19["State compression"]
-    M20["Problem Forms"]
-    M21["Subarray"]
-    M22["Range query"]
-    M23["Dynamic set"]
-    M24["Brackets and nesting"]
-    M25["Intervals"]
-    M26["Top K"]
-    M27["Median / mode"]
-    M28["Nearest greater"]
-    M29["Parsing"]
-    M30["Geometry printing"]
-    M31["Tactics"]
-    M32["Sort first"]
-    M33["Compress values"]
-    M34["Store indices not values"]
-    M35["Use sentinel"]
-    M36["Lazy deletion"]
-    M37["Reverse scan"]
-    M38["Prefix frequency map"]
-    M39["Maintain invariant"]
-    M40["Split into cases"]
-    M41["Precompute"]
-    M0 --> M1
-    M1 --> M2
-    M1 --> M3
-    M1 --> M4
-    M1 --> M5
-    M1 --> M6
-    M1 --> M7
-    M1 --> M8
-    M1 --> M9
-    M1 --> M10
-    M1 --> M11
-    M0 --> M12
-    M12 --> M13
-    M12 --> M14
-    M12 --> M15
-    M12 --> M16
-    M12 --> M17
-    M12 --> M18
-    M12 --> M19
-    M0 --> M20
-    M20 --> M21
-    M20 --> M22
-    M20 --> M23
-    M20 --> M24
-    M20 --> M25
-    M20 --> M26
-    M20 --> M27
-    M20 --> M28
-    M20 --> M29
-    M20 --> M30
-    M0 --> M31
-    M31 --> M32
-    M31 --> M33
-    M31 --> M34
-    M31 --> M35
-    M31 --> M36
-    M31 --> M37
-    M31 --> M38
-    M31 --> M39
-    M31 --> M40
-    M31 --> M41
+mindmap
+  root((CP STL Problem Solving))
+    Concepts
+      Prefix sums
+      Sliding window
+      Monotonic stack
+      Monotonic deque
+      Two pointers
+      Binary search
+      Contribution
+      Recursion parsing
+      Intervals
+      Dynamic statistics
+    Frameworks
+      Static range query
+      Dynamic update query
+      Window maintenance
+      Offline processing
+      Greedy with ordering
+      Graph traversal
+      State compression
+    Problem Forms
+      Subarray
+      Range query
+      Dynamic set
+      Brackets and nesting
+      Intervals
+      Top K
+      Median / mode
+      Nearest greater
+      Parsing
+      Geometry printing
+    Tactics
+      Sort first
+      Compress values
+      Store indices not values
+      Use sentinel
+      Lazy deletion
+      Reverse scan
+      Prefix frequency map
+      Maintain invariant
+      Split into cases
+      Precompute
 ```
 
 ---
@@ -4041,9 +3950,9 @@ Examples:
 
 ```mermaid
 flowchart LR
-    A["Operation"] --> B["Update structure"]
-    B --> C["Restore invariant"]
-    C --> D["Answer query"]
+    A[Operation] --> B[Update structure]
+    B --> C[Restore invariant]
+    C --> D[Answer query]
 ```
 
 ---
@@ -4117,11 +4026,11 @@ Range update + online query -> Fenwick / segment tree
 Use when a contiguous segment moves through the array.
 
 ```mermaid
-flowchart TD
-    A["Add right element"] --> B{"Window too large?"}
-    B -->|yes| C["Remove left element"]
-    B -->|no| D["Keep"]
-    C --> E["Answer if valid"]
+flowchart LR
+    A[Add right element] --> B{Window too large?}
+    B -->|yes| C[Remove left element]
+    B -->|no| D[Keep]
+    C --> E[Answer if valid]
     D --> E
 ```
 
@@ -4194,10 +4103,10 @@ while (l < r) {
 Use when answer is numeric and feasibility is monotonic.
 
 ```mermaid
-flowchart TD
-    A["Guess mid"] --> B{"Can achieve mid?"}
-    B -->|yes| C["Try better side"]
-    B -->|no| D["Try worse side"]
+flowchart LR
+    A[Guess mid] --> B{Can achieve mid?}
+    B -->|yes| C[Try better side]
+    B -->|no| D[Try worse side]
     C --> A
     D --> A
 ```
@@ -4236,12 +4145,12 @@ largest distance
 Use for nearest greater/smaller element.
 
 ```mermaid
-flowchart TD
-    A["Scan index"] --> B{"Top is useless?"}
-    B -->|yes| C["Pop"]
+flowchart LR
+    A[Scan index] --> B{Top is useless?}
+    B -->|yes| C[Pop]
     C --> B
-    B -->|no| D["Use top as answer"]
-    D --> E["Push current"]
+    B -->|no| D[Use top as answer]
+    D --> E[Push current]
 ```
 
 Next greater to the right:
@@ -4364,11 +4273,11 @@ Examples:
 - process add/remove events
 
 ```mermaid
-flowchart TD
-    A["Read all queries"] --> B["Sort queries/events"]
-    B --> C["Maintain data structure"]
-    C --> D["Answer in sorted order"]
-    D --> E["Return answers in original order"]
+flowchart LR
+    A[Read all queries] --> B[Sort queries/events]
+    B --> C[Maintain data structure]
+    C --> D[Answer in sorted order]
+    D --> E[Return answers in original order]
 ```
 
 ---
@@ -4382,15 +4291,15 @@ flowchart TD
 #### 4.1 Universal Problem Solving Framework
 
 ```mermaid
-flowchart TD
-    A["Read statement"] --> B["Write brute force"]
-    B --> C["Estimate complexity"]
-    C --> D{"Too slow?"}
-    D -->|no| E["Implement clean brute force"]
-    D -->|yes| F["Identify repeated work"]
-    F --> G["Choose optimization pattern"]
-    G --> H["Choose STL"]
-    H --> I["Dry run"]
+flowchart LR
+    A[Read statement] --> B[Write brute force]
+    B --> C[Estimate complexity]
+    C --> D{Too slow?}
+    D -->|no| E[Implement clean brute force]
+    D -->|yes| F[Identify repeated work]
+    F --> G[Choose optimization pattern]
+    G --> H[Choose STL]
+    H --> I[Dry run]
 ```
 
 Checklist:
@@ -4413,15 +4322,15 @@ Checklist:
 #### 4.2 Range Query Framework
 
 ```mermaid
-flowchart TD
-    A["Range Query"] --> B{"Updates?"}
-    B -->|No| C{"Operation?"}
-    C -->|sum| D["Prefix Sum"]
-    C -->|min/max/idempotent| E["Sparse Table"]
-    B -->|Yes| F{"Point or range update?"}
-    F -->|point update + range query| G["Fenwick / Segment Tree"]
-    F -->|range update + point query| H["Difference / Fenwick"]
-    F -->|range update + range query| I["Lazy Segment Tree"]
+flowchart LR
+    A[Range Query] --> B{Updates?}
+    B -->|No| C{Operation?}
+    C -->|sum| D[Prefix Sum]
+    C -->|min/max/idempotent| E[Sparse Table]
+    B -->|Yes| F{Point or range update?}
+    F -->|point update + range query| G[Fenwick / Segment Tree]
+    F -->|range update + point query| H[Difference / Fenwick]
+    F -->|range update + range query| I[Lazy Segment Tree]
 ```
 
 ---
@@ -4431,15 +4340,15 @@ flowchart TD
 #### 4.3 Dynamic Set Framework
 
 ```mermaid
-flowchart TD
-    A["Need dynamic collection"] --> B{"Need sorted order?"}
-    B -->|yes| C["set / multiset"]
-    B -->|no| D{"Need frequency?"}
-    D -->|yes| E["unordered_map / map"]
-    D -->|no| F["vector / unordered_set"]
-    C --> G{"Need duplicate values?"}
-    G -->|yes| H["multiset"]
-    G -->|no| I["set"]
+flowchart LR
+    A[Need dynamic collection] --> B{Need sorted order?}
+    B -->|yes| C[set / multiset]
+    B -->|no| D{Need frequency?}
+    D -->|yes| E[unordered_map / map]
+    D -->|no| F[vector / unordered_set]
+    C --> G{Need duplicate values?}
+    G -->|yes| H[multiset]
+    G -->|no| I[set]
 ```
 
 Operations table:
@@ -4460,16 +4369,16 @@ Operations table:
 #### 4.4 Window Maintenance Framework
 
 ```mermaid
-flowchart TD
-    A["Window problem"] --> B{"Fixed size?"}
-    B -->|yes| C["Add current, remove i-k"]
-    B -->|no| D["Move left while invalid"]
-    C --> E{"Query needed?"}
+flowchart LR
+    A[Window problem] --> B{Fixed size?}
+    B -->|yes| C[Add current, remove i-k]
+    B -->|no| D[Move left while invalid]
+    C --> E{Query needed?}
     D --> E
-    E -->|sum| F["Running sum"]
-    E -->|min/max| G["Deque or multiset"]
-    E -->|distinct/frequency| H["Map"]
-    E -->|median/cost| I["Two multisets"]
+    E -->|sum| F[Running sum]
+    E -->|min/max| G[Deque or multiset]
+    E -->|distinct/frequency| H[Map]
+    E -->|median/cost| I[Two multisets]
 ```
 
 ---
@@ -4481,11 +4390,11 @@ flowchart TD
 Greedy usually needs sorting or a priority queue.
 
 ```mermaid
-flowchart TD
-    A["Greedy Problem"] --> B["Define local choice"]
-    B --> C["Sort or heap by choice key"]
-    C --> D["Process one by one"]
-    D --> E["Maintain feasibility"]
+flowchart LR
+    A[Greedy Problem] --> B[Define local choice]
+    B --> C[Sort or heap by choice key]
+    C --> D[Process one by one]
+    D --> E[Maintain feasibility]
 ```
 
 Clues:
@@ -4507,7 +4416,7 @@ choose largest possible
 
 <a id="p2-51-balanced-brackets-parentheses"></a>
 
-#### 5.1 Balanced Brackets / Parentheses
+#### 5.1 Balanced Brackets  or  Parentheses
 
 Single bracket type:
 
@@ -4577,7 +4486,7 @@ Use prefix + map when negative values exist.
 
 <a id="p2-53-sliding-window-minimum-maximum"></a>
 
-#### 5.3 Sliding Window Minimum / Maximum
+#### 5.3 Sliding Window Minimum  or  Maximum
 
 Options:
 
@@ -4610,7 +4519,7 @@ Index-based deque is safer than value-based deque when duplicates exist.
 
 <a id="p2-54-sliding-window-cost-make-equal"></a>
 
-#### 5.4 Sliding Window Cost / Make Equal
+#### 5.4 Sliding Window Cost  or  Make Equal
 
 Minimum sum of absolute differences occurs at median.
 
@@ -4632,7 +4541,7 @@ long long cost() {
 
 <a id="p2-55-mean-variance-median-mode-dashboard"></a>
 
-#### 5.5 Mean / Variance / Median / Mode Dashboard
+#### 5.5 Mean  or  Variance  or  Median  or  Mode Dashboard
 
 | Statistic | Maintain |
 |---|---|
@@ -4654,7 +4563,7 @@ Update frequency by removing old pair, changing count, inserting new pair.
 
 <a id="p2-56-next-greater-smaller-element"></a>
 
-#### 5.6 Next Greater / Smaller Element
+#### 5.6 Next Greater  or  Smaller Element
 
 ```cpp
 vector<int> nextGreater(vector<int>& a) {
@@ -4711,7 +4620,7 @@ int trap(vector<int>& h) {
 
 <a id="p2-58-intervals-range-coverage"></a>
 
-#### 5.8 Intervals / Range Coverage
+#### 5.8 Intervals  or  Range Coverage
 
 Static point coverage:
 
@@ -4801,20 +4710,20 @@ Do not use plain heap when arbitrary erase is required unless using lazy deletio
 
 <a id="p2-511-molecular-formula-nested-parser"></a>
 
-#### 5.11 Molecular Formula / Nested Parser
+#### 5.11 Molecular Formula  or  Nested Parser
 
 Parsing framework:
 
 ```mermaid
-flowchart TD
-    A["Read char"] --> B{"Type?"}
-    B -->|Capital| C["Parse element"]
-    C --> D["Parse optional number"]
-    D --> E["Add count"]
-    B -->|Open bracket| F["Recursive parse"]
-    F --> G["Parse multiplier"]
-    G --> H["Merge multiplied map"]
-    B -->|Close bracket| I["Return map"]
+flowchart LR
+    A[Read char] --> B{Type?}
+    B -->|Capital| C[Parse element]
+    C --> D[Parse optional number]
+    D --> E[Add count]
+    B -->|Open bracket| F[Recursive parse]
+    F --> G[Parse multiplier]
+    G --> H[Merge multiplied map]
+    B -->|Close bracket| I[Return map]
 ```
 
 Key tactics:
@@ -4830,7 +4739,7 @@ map gives sorted output
 
 <a id="p2-512-pattern-printing-coordinate-geometry"></a>
 
-#### 5.12 Pattern Printing / Coordinate Geometry
+#### 5.12 Pattern Printing  or  Coordinate Geometry
 
 Think in cells, not spaces.
 
@@ -4987,7 +4896,7 @@ Use for:
 
 <a id="p2-68-split-by-sign-parity-modulo"></a>
 
-#### 6.8 Split by Sign / Parity / Modulo
+#### 6.8 Split by Sign  or  Parity  or  Modulo
 
 Many problems depend on a hidden class.
 
@@ -5025,21 +4934,21 @@ long long countDivisible(vector<int>& a, int k) {
 
 ```mermaid
 flowchart TB
-    A["What operations are needed?"] --> B{"LIFO?"}
-    B -->|yes| ST["stack"]
-    B -->|no| C{"FIFO?"}
-    C -->|yes| QU["queue"]
-    C -->|no| D{"Need best min/max only?"}
-    D -->|yes| PQ["priority_queue"]
-    D -->|no| E{"Need sorted order?"}
-    E -->|yes| F{"Duplicates?"}
-    F -->|yes| MS["multiset"]
-    F -->|no| SET["set"]
-    E -->|no| G{"Need key-value count?"}
-    G -->|yes| MAP["map / unordered_map"]
-    G -->|no| H{"Need indexed sequence?"}
-    H -->|yes| VEC["vector"]
-    H -->|no| OTHER["custom structure"]
+    A[What operations are needed?] --> B{LIFO?}
+    B -->|yes| ST[stack]
+    B -->|no| C{FIFO?}
+    C -->|yes| QU[queue]
+    C -->|no| D{Need best min/max only?}
+    D -->|yes| PQ[priority_queue]
+    D -->|no| E{Need sorted order?}
+    E -->|yes| F{Duplicates?}
+    F -->|yes| MS[multiset]
+    F -->|no| SET[set]
+    E -->|no| G{Need key-value count?}
+    G -->|yes| MAP[map / unordered_map]
+    G -->|no| H{Need indexed sequence?}
+    H -->|yes| VEC[vector]
+    H -->|no| OTHER[custom structure]
 ```
 
 | Need | Use |
@@ -5097,29 +5006,29 @@ flowchart TB
 #### 8.2 Revision Flow
 
 ```mermaid
-flowchart TD
-    A["New Problem"] --> B{"Subarray/window?"}
-    B -->|fixed k| C["Sliding Window"]
-    B -->|sum x| D["Prefix Sum + Map"]
-    B -->|valid segment| E["Two Pointers"]
-    A --> F{"Range query?"}
-    F -->|static sum| G["Prefix"]
-    F -->|updates| H["Fenwick / Segment Tree"]
-    A --> I{"Nearest greater/smaller?"}
-    I -->|yes| J["Monotonic Stack"]
-    A --> K{"Min/max window?"}
-    K -->|yes| L["Monotonic Deque"]
-    A --> M{"Dynamic statistic?"}
-    M -->|median| N["Two Multisets"]
-    M -->|mode| O["Frequency + Ordered Set"]
-    M -->|top k| P["Two Multisets / Heap"]
-    A --> Q{"Intervals?"}
-    Q -->|static| R["Sort / Sweep"]
-    Q -->|dynamic| S["Set Merged Intervals"]
-    A --> T{"Nested?"}
-    T -->|yes| U["Stack / Recursion"]
-    A --> V{"Too many objects?"}
-    V -->|yes| W["Contribution"]
+flowchart LR
+    A[New Problem] --> B{Subarray/window?}
+    B -->|fixed k| C[Sliding Window]
+    B -->|sum x| D[Prefix Sum + Map]
+    B -->|valid segment| E[Two Pointers]
+    A --> F{Range query?}
+    F -->|static sum| G[Prefix]
+    F -->|updates| H[Fenwick / Segment Tree]
+    A --> I{Nearest greater/smaller?}
+    I -->|yes| J[Monotonic Stack]
+    A --> K{Min/max window?}
+    K -->|yes| L[Monotonic Deque]
+    A --> M{Dynamic statistic?}
+    M -->|median| N[Two Multisets]
+    M -->|mode| O[Frequency + Ordered Set]
+    M -->|top k| P[Two Multisets / Heap]
+    A --> Q{Intervals?}
+    Q -->|static| R[Sort / Sweep]
+    Q -->|dynamic| S[Set Merged Intervals]
+    A --> T{Nested?}
+    T -->|yes| U[Stack / Recursion]
+    A --> V{Too many objects?}
+    V -->|yes| W[Contribution]
 ```
 
 ---
@@ -5133,7 +5042,7 @@ flowchart TD
 #### 9.1 Minimal C++ Setup
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (18)
 using namespace std;
 
 using ll = long long;
@@ -5220,7 +5129,7 @@ struct Fenwick {
 
 <a id="p2-95-dsu-union-find"></a>
 
-#### 9.5 DSU / Union Find
+#### 9.5 DSU  or  Union Find
 
 Use for connectivity and merging components.
 
@@ -5387,72 +5296,40 @@ Before coding:
 Final memory hook:
 
 ```mermaid
-flowchart TD
-    M0(("Final CP Hooks"))
-    M1["Range sum"]
-    M2["Prefix"]
-    M3["Range update"]
-    M4["Difference"]
-    M5["Fenwick"]
-    M6["Segment tree"]
-    M7["Window"]
-    M8["Running sum"]
-    M9["Map"]
-    M10["Deque"]
-    M11["Multiset"]
-    M12["Nearest element"]
-    M13["Monotonic stack"]
-    M14["Dynamic statistics"]
-    M15["Two multisets"]
-    M16["Frequency set"]
-    M17["Best current item"]
-    M18["Priority queue"]
-    M19["Connectivity"]
-    M20["DSU"]
-    M21["BFS"]
-    M22["DFS"]
-    M23["Intervals"]
-    M24["Sort"]
-    M25["Sweep line"]
-    M26["Merged set"]
-    M27["Huge values"]
-    M28["Coordinate compression"]
-    M29["Too many objects"]
-    M30["Contribution"]
-    M31["Numeric answer"]
-    M32["Binary search answer"]
-    M0 --> M1
-    M1 --> M2
-    M0 --> M3
-    M3 --> M4
-    M3 --> M5
-    M3 --> M6
-    M0 --> M7
-    M7 --> M8
-    M7 --> M9
-    M7 --> M10
-    M7 --> M11
-    M0 --> M12
-    M12 --> M13
-    M0 --> M14
-    M14 --> M15
-    M14 --> M16
-    M0 --> M17
-    M17 --> M18
-    M0 --> M19
-    M19 --> M20
-    M19 --> M21
-    M19 --> M22
-    M0 --> M23
-    M23 --> M24
-    M23 --> M25
-    M23 --> M26
-    M0 --> M27
-    M27 --> M28
-    M0 --> M29
-    M29 --> M30
-    M0 --> M31
-    M31 --> M32
+mindmap
+  root((Final CP Hooks))
+    Range sum
+      Prefix
+    Range update
+      Difference
+      Fenwick
+      Segment tree
+    Window
+      Running sum
+      Map
+      Deque
+      Multiset
+    Nearest element
+      Monotonic stack
+    Dynamic statistics
+      Two multisets
+      Frequency set
+    Best current item
+      Priority queue
+    Connectivity
+      DSU
+      BFS
+      DFS
+    Intervals
+      Sort
+      Sweep line
+      Merged set
+    Huge values
+      Coordinate compression
+    Too many objects
+      Contribution
+    Numeric answer
+      Binary search answer
 ```
 
 ---
@@ -5491,7 +5368,7 @@ Dry run before submitting.
 
 <a id="p3-clickable-index"></a>
 
-## Clickable Index
+## Clickable Index (2)
 
 - [0. How to Use This Guide](#0-how-to-use-this-guide)
 - [1. STL Design Philosophy](#1-stl-design-philosophy)
@@ -5542,13 +5419,13 @@ Use every problem like this:
 ```
 
 ```mermaid
-flowchart TD
-    A["Read problem"] --> B["Find required operations"]
-    B --> C["Choose STL container"]
-    C --> D["Match pattern form"]
-    D --> E["Use C++ template"]
-    E --> F["Dry run samples"]
-    F --> G["Solve variations"]
+flowchart LR
+    A[Read problem] --> B[Find required operations]
+    B --> C[Choose STL container]
+    C --> D[Match pattern form]
+    D --> E[Use C++ template]
+    E --> F[Dry run samples]
+    F --> G[Solve variations]
 ```
 
 ---
@@ -5561,10 +5438,10 @@ STL is built around four connected ideas:
 
 ```mermaid
 flowchart LR
-    A["Container"] --> B["Iterator"]
-    B --> C["Algorithm"]
-    C --> D["Result"]
-    E["Comparator or Lambda"] --> C
+    A[Container] --> B[Iterator]
+    B --> C[Algorithm]
+    C --> D[Result]
+    E[Comparator or Lambda] --> C
 ```
 
 | Component | Meaning | Examples |
@@ -5611,20 +5488,20 @@ Complexity decides if solution passes.
 ## 2. Master STL Thinking Flow
 
 ```mermaid
-flowchart TD
-    A["New problem"] --> B{"What operation repeats?"}
+flowchart LR
+    A[New problem] --> B{"What operation repeats?"}
 
-    B -->|"Access by index"| C["vector or string"]
-    B -->|"Last opened item"| D["stack"]
-    B -->|"Process by arrival order"| E["queue"]
-    B -->|"Need min or max repeatedly"| F["priority_queue"]
-    B -->|"Need sorted order and erase"| G["set or multiset"]
-    B -->|"Need frequency or lookup"| H["map or unordered_map"]
-    B -->|"Need window min or max"| I["monotonic deque"]
-    B -->|"Need nearest greater or smaller"| J["monotonic stack"]
-    B -->|"Need dynamic median"| K["two multisets"]
-    B -->|"Need intervals merged"| L["set of intervals"]
-    B -->|"Need kth order online"| M["PBDS or Fenwick"]
+    B -->|"Access by index"| C[vector or string]
+    B -->|"Last opened item"| D[stack]
+    B -->|"Process by arrival order"| E[queue]
+    B -->|"Need min or max repeatedly"| F[priority_queue]
+    B -->|"Need sorted order and erase"| G[set or multiset]
+    B -->|"Need frequency or lookup"| H[map or unordered_map]
+    B -->|"Need window min or max"| I[monotonic deque]
+    B -->|"Need nearest greater or smaller"| J[monotonic stack]
+    B -->|"Need dynamic median"| K[two multisets]
+    B -->|"Need intervals merged"| L[set of intervals]
+    B -->|"Need kth order online"| M[PBDS or Fenwick]
 ```
 
 <a id="p3-faang-thinking-flow"></a>
@@ -5632,16 +5509,16 @@ flowchart TD
 ### FAANG thinking flow
 
 ```mermaid
-flowchart TD
-    A["Interview problem"] --> B["Start brute force"]
-    B --> C["State bottleneck clearly"]
+flowchart LR
+    A[Interview problem] --> B[Start brute force]
+    B --> C[State bottleneck clearly]
     C --> D{"Can STL remove bottleneck?"}
-    D -->|"Repeated lookup"| E["unordered_map"]
-    D -->|"Need sorted nearest"| F["set"]
-    D -->|"Need stack memory"| G["stack"]
-    D -->|"Need top K"| H["heap"]
-    D -->|"Need window state"| I["deque or map"]
-    E --> J["Explain complexity"]
+    D -->|"Repeated lookup"| E[unordered_map]
+    D -->|"Need sorted nearest"| F[set]
+    D -->|"Need stack memory"| G[stack]
+    D -->|"Need top K"| H[heap]
+    D -->|"Need window state"| I[deque or map]
+    E --> J[Explain complexity]
     F --> J
     G --> J
     H --> J
@@ -5653,17 +5530,17 @@ flowchart TD
 ### CM thinking flow
 
 ```mermaid
-flowchart TD
-    A["Contest problem"] --> B["Check constraints"]
+flowchart LR
+    A[Contest problem] --> B[Check constraints]
     B --> C{"Can O n squared pass?"}
-    C -->|"Yes"| D["Use simple vector loops if safe"]
+    C -->|"Yes"| D[Use simple vector loops if safe]
     C -->|"No"| E{"Can sorting create structure?"}
-    E -->|"Yes"| F["sort plus two pointers or sweep"]
+    E -->|"Yes"| F[sort plus two pointers or sweep]
     E -->|"No"| G{"Need online operations?"}
-    G -->|"Frequency"| H["map or unordered_map"]
-    G -->|"Order and erase"| I["set or multiset"]
-    G -->|"Min max queue"| J["deque or heap"]
-    G -->|"Advanced kth"| K["PBDS or Fenwick"]
+    G -->|"Frequency"| H[map or unordered_map]
+    G -->|"Order and erase"| I[set or multiset]
+    G -->|"Min max queue"| J[deque or heap]
+    G -->|"Advanced kth"| K[PBDS or Fenwick]
 ```
 
 ---
@@ -5674,19 +5551,19 @@ flowchart TD
 
 ```mermaid
 flowchart TB
-    A["Required operation"] --> B{"Order type?"}
-    B -->|"Index order"| C["vector or string"]
-    B -->|"Stack order"| D["stack"]
-    B -->|"Queue order"| E["queue"]
+    A[Required operation] --> B{"Order type?"}
+    B -->|"Index order"| C[vector or string]
+    B -->|"Stack order"| D[stack]
+    B -->|"Queue order"| E[queue]
     B -->|"Sorted order"| F{"Duplicates?"}
-    F -->|"No"| G["set"]
-    F -->|"Yes"| H["multiset"]
-    B -->|"Priority order"| I["priority_queue"]
+    F -->|"No"| G[set]
+    F -->|"Yes"| H[multiset]
+    B -->|"Priority order"| I[priority_queue]
     B -->|"Key lookup"| J{"Need sorted keys?"}
-    J -->|"Yes"| K["map"]
-    J -->|"No"| L["unordered_map"]
-    B -->|"Sliding extremes"| M["deque"]
-    B -->|"Order statistic"| N["PBDS"]
+    J -->|"Yes"| K[map]
+    J -->|"No"| L[unordered_map]
+    B -->|"Sliding extremes"| M[deque]
+    B -->|"Order statistic"| N[PBDS]
 ```
 
 ---
@@ -5716,14 +5593,14 @@ flowchart TB
 ## 5. Core C++ Setup
 
 ```cpp
-#include <bits/stdc++.h>
+# include bits or stdc++.h (19)
 using namespace std;
 
 using ll = long long;
 using pii = pair<int,int>;
 using pll = pair<long long,long long>;
 
-#define all(x) (x).begin(), (x).end()
+# define all(x) (x).begin(), (x).end()
 
 int main() {
     ios::sync_with_stdio(false);
@@ -5746,12 +5623,12 @@ int main() {
 Use `vector` when you need ordered storage, index access, sorting, prefix-like scans, or dynamic push back.
 
 ```mermaid
-flowchart TD
-    A["Need indexed data"] --> B["Use vector"]
+flowchart LR
+    A[Need indexed data] --> B[Use vector]
     B --> C{"Need ordering?"}
-    C -->|"Original order"| D["Scan left to right"]
-    C -->|"Sorted order"| E["sort vector"]
-    C -->|"Compressed values"| F["sort unique copy"]
+    C -->|"Original order"| D[Scan left to right]
+    C -->|"Sorted order"| E[sort vector]
+    C -->|"Compressed values"| F[sort unique copy]
 ```
 
 <a id="p3-tactics"></a>
@@ -5768,7 +5645,7 @@ flowchart TD
 
 <a id="p3-template-vector-input-and-sort"></a>
 
-### Template: vector input and sort
+### Template vector input and sort
 
 ```cpp
 vector<int> readVector(int n) {
@@ -5784,7 +5661,7 @@ void sortVector(vector<int>& a) {
 
 <a id="p3-template-coordinate-compression"></a>
 
-### Template: coordinate compression
+### Template coordinate compression
 
 ```cpp
 vector<int> compressValues(vector<int> a) {
@@ -5828,23 +5705,23 @@ vector<int> compressValues(vector<int> a) {
 
 <a id="p3-form-2"></a>
 
-### Form
+### Form (2)
 
 Strings are vectors of characters with extra operations.
 
 ```mermaid
-flowchart TD
-    A["String problem"] --> B{"What structure?"}
-    B -->|"Prefix or suffix"| C["prefix function or rolling idea"]
-    B -->|"Window substring"| D["map plus two pointers"]
-    B -->|"Palindrome"| E["two pointers"]
-    B -->|"Parsing"| F["stack or recursion"]
-    B -->|"Frequency"| G["array count or map"]
+flowchart LR
+    A[String problem] --> B{"What structure?"}
+    B -->|"Prefix or suffix"| C[prefix function or rolling idea]
+    B -->|"Window substring"| D[map plus two pointers]
+    B -->|"Palindrome"| E[two pointers]
+    B -->|"Parsing"| F[stack or recursion]
+    B -->|"Frequency"| G[array count or map]
 ```
 
 <a id="p3-template-character-frequency"></a>
 
-### Template: character frequency
+### Template character frequency
 
 ```cpp
 array<int, 256> freqString(const string& s) {
@@ -5856,7 +5733,7 @@ array<int, 256> freqString(const string& s) {
 
 <a id="p3-template-valid-palindrome"></a>
 
-### Template: valid palindrome
+### Template valid palindrome
 
 ```cpp
 bool isPalindrome(string s) {
@@ -5872,7 +5749,7 @@ bool isPalindrome(string s) {
 
 <a id="p3-problems-2"></a>
 
-### Problems
+### Problems (2)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -5895,23 +5772,23 @@ bool isPalindrome(string s) {
 
 <a id="p3-form-3"></a>
 
-### Form
+### Form (3)
 
 Use stack when the most recent unresolved object is solved first.
 
 ```mermaid
-flowchart TD
-    A["Read item"] --> B{"Does it close previous item?"}
-    B -->|"Yes"| C["Use stack top"]
-    B -->|"No"| D["Push as unresolved"]
-    C --> E["Pop or update answer"]
+flowchart LR
+    A[Read item] --> B{"Does it close previous item?"}
+    B -->|"Yes"| C[Use stack top]
+    B -->|"No"| D[Push as unresolved]
+    C --> E[Pop or update answer]
     D --> A
     E --> A
 ```
 
 <a id="p3-template-balanced-brackets"></a>
 
-### Template: balanced brackets
+### Template balanced brackets
 
 ```cpp
 bool isValidBrackets(const string& s) {
@@ -5938,7 +5815,7 @@ bool isValidBrackets(const string& s) {
 
 <a id="p3-template-remove-adjacent-duplicates"></a>
 
-### Template: remove adjacent duplicates
+### Template remove adjacent duplicates
 
 ```cpp
 string removeAdjacentDuplicates(const string& s) {
@@ -5953,7 +5830,7 @@ string removeAdjacentDuplicates(const string& s) {
 
 <a id="p3-problems-3"></a>
 
-### Problems
+### Problems (3)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -5981,13 +5858,13 @@ string removeAdjacentDuplicates(const string& s) {
 Use queue when processing happens in arrival order or BFS layers.
 
 ```mermaid
-flowchart TD
-    A["Push source"] --> B["Pop front"]
-    B --> C["Process current"]
-    C --> D["Push next states"]
+flowchart LR
+    A[Push source] --> B[Pop front]
+    B --> C[Process current]
+    C --> D[Push next states]
     D --> E{"Queue empty?"}
     E -->|"No"| B
-    E -->|"Yes"| F["Done"]
+    E -->|"Yes"| F[Done]
 ```
 
 <a id="p3-c-bfs-template"></a>
@@ -6034,7 +5911,7 @@ dq.pop_front();
 
 <a id="p3-problems-4"></a>
 
-### Problems
+### Problems (4)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6055,17 +5932,17 @@ dq.pop_front();
 
 <a id="p3-form-4"></a>
 
-### Form
+### Form (4)
 
 Use heap when only the current best or worst matters.
 
 ```mermaid
-flowchart TD
-    A["Stream of candidates"] --> B["Push into heap"]
+flowchart LR
+    A[Stream of candidates] --> B[Push into heap]
     B --> C{"Heap too large or invalid?"}
-    C -->|"Yes"| D["Pop top"]
-    C -->|"No"| E["Keep"]
-    D --> F["Top is current best"]
+    C -->|"Yes"| D[Pop top]
+    C -->|"No"| E[Keep]
+    D --> F[Top is current best]
     E --> F
 ```
 
@@ -6081,7 +5958,7 @@ priority_queue<int, vector<int>, greater<int>> minHeap;
 
 <a id="p3-template-top-k-largest"></a>
 
-### Template: top K largest
+### Template top K largest
 
 ```cpp
 vector<int> topKLargest(vector<int>& a, int k) {
@@ -6104,7 +5981,7 @@ vector<int> topKLargest(vector<int>& a, int k) {
 
 <a id="p3-template-custom-heap"></a>
 
-### Template: custom heap
+### Template custom heap
 
 ```cpp
 struct Node {
@@ -6123,7 +6000,7 @@ priority_queue<Node, vector<Node>, Compare> pq;
 
 <a id="p3-problems-5"></a>
 
-### Problems
+### Problems (5)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6146,18 +6023,18 @@ priority_queue<Node, vector<Node>, Compare> pq;
 
 <a id="p3-form-5"></a>
 
-### Form
+### Form (5)
 
 Use set or multiset when you need sorted order plus insertion, deletion, and neighbour queries.
 
 ```mermaid
-flowchart TD
-    A["Need ordered dynamic values"] --> B{"Duplicates possible?"}
-    B -->|"No"| C["set"]
-    B -->|"Yes"| D["multiset"]
-    C --> E["lower_bound"]
+flowchart LR
+    A[Need ordered dynamic values] --> B{"Duplicates possible?"}
+    B -->|"No"| C[set]
+    B -->|"Yes"| D[multiset]
+    C --> E[lower_bound]
     D --> E
-    E --> F["Check current and previous iterator"]
+    E --> F[Check current and previous iterator]
 ```
 
 <a id="p3-c-set-lowerbound-template"></a>
@@ -6192,7 +6069,7 @@ void eraseOne(multiset<int>& ms, int x) {
 
 <a id="p3-problems-6"></a>
 
-### Problems
+### Problems (6)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6214,22 +6091,22 @@ void eraseOne(multiset<int>& ms, int x) {
 
 <a id="p3-form-6"></a>
 
-### Form
+### Form (6)
 
 Use maps for grouping, counting, indexing, and prefix relationships.
 
 ```mermaid
-flowchart TD
-    A["Need key lookup"] --> B{"Need sorted traversal?"}
-    B -->|"Yes"| C["map"]
-    B -->|"No"| D["unordered_map"]
-    C --> E["frequency or ordered key"]
-    D --> F["fast average count"]
+flowchart LR
+    A[Need key lookup] --> B{"Need sorted traversal?"}
+    B -->|"Yes"| C[map]
+    B -->|"No"| D[unordered_map]
+    C --> E[frequency or ordered key]
+    D --> F[fast average count]
 ```
 
 <a id="p3-template-frequency-map"></a>
 
-### Template: frequency map
+### Template frequency map
 
 ```cpp
 unordered_map<int,int> frequency(vector<int>& a) {
@@ -6241,7 +6118,7 @@ unordered_map<int,int> frequency(vector<int>& a) {
 
 <a id="p3-template-group-anagrams"></a>
 
-### Template: group anagrams
+### Template group anagrams
 
 ```cpp
 vector<vector<string>> groupAnagrams(vector<string>& strs) {
@@ -6261,7 +6138,7 @@ vector<vector<string>> groupAnagrams(vector<string>& strs) {
 
 <a id="p3-template-prefix-sum-with-map"></a>
 
-### Template: prefix sum with map
+### Template prefix sum with map
 
 ```cpp
 long long countSubarraySumK(vector<int>& a, long long k) {
@@ -6280,7 +6157,7 @@ long long countSubarraySumK(vector<int>& a, long long k) {
 
 <a id="p3-problems-7"></a>
 
-### Problems
+### Problems (7)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6304,20 +6181,20 @@ long long countSubarraySumK(vector<int>& a, long long k) {
 
 <a id="p3-form-7"></a>
 
-### Form
+### Form (7)
 
 Use pair/tuple when each item has multiple fields and sorting order matters.
 
 ```mermaid
-flowchart TD
-    A["Items with fields"] --> B["Store as pair or tuple"]
-    B --> C["Sort by rule"]
-    C --> D["Scan greedily"]
+flowchart LR
+    A[Items with fields] --> B[Store as pair or tuple]
+    B --> C[Sort by rule]
+    C --> D[Scan greedily]
 ```
 
 <a id="p3-template-custom-sort-lambda"></a>
 
-### Template: custom sort lambda
+### Template custom sort lambda
 
 ```cpp
 sort(v.begin(), v.end(), [](const auto& a, const auto& b) {
@@ -6328,7 +6205,7 @@ sort(v.begin(), v.end(), [](const auto& a, const auto& b) {
 
 <a id="p3-template-struct-comparator"></a>
 
-### Template: struct comparator
+### Template struct comparator
 
 ```cpp
 struct Job {
@@ -6342,7 +6219,7 @@ sort(jobs.begin(), jobs.end(), [](const Job& a, const Job& b) {
 
 <a id="p3-problems-8"></a>
 
-### Problems
+### Problems (8)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6379,7 +6256,7 @@ sort(jobs.begin(), jobs.end(), [](const Job& a, const Job& b) {
 
 <a id="p3-template-sort-unique"></a>
 
-### Template: sort unique
+### Template sort unique
 
 ```cpp
 void sortUnique(vector<int>& v) {
@@ -6390,7 +6267,7 @@ void sortUnique(vector<int>& v) {
 
 <a id="p3-template-kth-element-with-nthelement"></a>
 
-### Template: kth element with nth_element
+### Template kth element with nth_element
 
 ```cpp
 int kthSmallest(vector<int> a, int k) {
@@ -6401,7 +6278,7 @@ int kthSmallest(vector<int> a, int k) {
 
 <a id="p3-problems-9"></a>
 
-### Problems
+### Problems (9)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6422,22 +6299,22 @@ int kthSmallest(vector<int> a, int k) {
 
 <a id="p3-form-8"></a>
 
-### Form
+### Form (8)
 
 Use `lower_bound` and `upper_bound` when the data is sorted or ordered.
 
 ```mermaid
-flowchart TD
-    A["Need first position by value"] --> B{"Container sorted?"}
-    B -->|"vector sorted"| C["std lower_bound"]
-    B -->|"set or map"| D["member lower_bound"]
-    C --> E["Iterator to first not less"]
+flowchart LR
+    A[Need first position by value] --> B{"Container sorted?"}
+    B -->|"vector sorted"| C[std lower_bound]
+    B -->|"set or map"| D[member lower_bound]
+    C --> E[Iterator to first not less]
     D --> E
 ```
 
 <a id="p3-template-count-in-sorted-vector-range"></a>
 
-### Template: count in sorted vector range
+### Template count in sorted vector range
 
 ```cpp
 int countInRange(vector<int>& a, int L, int R) {
@@ -6449,7 +6326,7 @@ int countInRange(vector<int>& a, int L, int R) {
 
 <a id="p3-template-map-lowerbound"></a>
 
-### Template: map lower_bound
+### Template map lower_bound
 
 ```cpp
 auto it = mp.lower_bound(key);
@@ -6460,7 +6337,7 @@ if (it != mp.end()) {
 
 <a id="p3-problems-10"></a>
 
-### Problems
+### Problems (10)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6481,22 +6358,22 @@ if (it != mp.end()) {
 
 <a id="p3-form-9"></a>
 
-### Form
+### Form (9)
 
 Use monotonic stack for nearest greater/smaller and rectangle spans.
 
 ```mermaid
-flowchart TD
-    A["Scan elements"] --> B{"Top is useless?"}
-    B -->|"Yes"| C["Pop top"]
+flowchart LR
+    A[Scan elements] --> B{"Top is useless?"}
+    B -->|"Yes"| C[Pop top]
     C --> B
-    B -->|"No"| D["Top is nearest useful"]
-    D --> E["Push current"]
+    B -->|"No"| D[Top is nearest useful]
+    D --> E[Push current]
 ```
 
 <a id="p3-template-next-greater-element-to-right"></a>
 
-### Template: next greater element to right
+### Template next greater element to right
 
 ```cpp
 vector<int> nextGreaterRight(vector<int>& a) {
@@ -6518,7 +6395,7 @@ vector<int> nextGreaterRight(vector<int>& a) {
 
 <a id="p3-template-previous-smaller-index"></a>
 
-### Template: previous smaller index
+### Template previous smaller index
 
 ```cpp
 vector<int> prevSmallerIndex(vector<int>& a) {
@@ -6538,7 +6415,7 @@ vector<int> prevSmallerIndex(vector<int>& a) {
 
 <a id="p3-problems-11"></a>
 
-### Problems
+### Problems (11)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6558,21 +6435,21 @@ vector<int> prevSmallerIndex(vector<int>& a) {
 
 <a id="p3-form-10"></a>
 
-### Form
+### Form (10)
 
 Use deque for sliding window min/max in `O(n)`.
 
 ```mermaid
-flowchart TD
-    A["Add new index"] --> B["Remove worse values from back"]
-    B --> C["Push new index"]
-    C --> D["Remove expired front"]
-    D --> E["Front is window best"]
+flowchart LR
+    A[Add new index] --> B[Remove worse values from back]
+    B --> C[Push new index]
+    C --> D[Remove expired front]
+    D --> E[Front is window best]
 ```
 
 <a id="p3-template-sliding-window-maximum"></a>
 
-### Template: sliding window maximum
+### Template sliding window maximum
 
 ```cpp
 vector<int> maxSlidingWindow(vector<int>& a, int k) {
@@ -6594,7 +6471,7 @@ vector<int> maxSlidingWindow(vector<int>& a, int k) {
 
 <a id="p3-template-shortest-subarray-with-sum-at-least-k"></a>
 
-### Template: shortest subarray with sum at least K
+### Template shortest subarray with sum at least K
 
 ```cpp
 int shortestSubarray(vector<int>& nums, int k) {
@@ -6625,7 +6502,7 @@ int shortestSubarray(vector<int>& nums, int k) {
 
 <a id="p3-problems-12"></a>
 
-### Problems
+### Problems (12)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6643,22 +6520,22 @@ int shortestSubarray(vector<int>& nums, int k) {
 
 <a id="p3-form-11"></a>
 
-### Form
+### Form (11)
 
 Use two multisets when you need median or top K with arbitrary deletions.
 
 ```mermaid
-flowchart TD
-    A["Insert value"] --> B["Put into one half"]
-    B --> C["Rebalance sizes"]
-    C --> D["Erase expired value"]
-    D --> E["Rebalance again"]
-    E --> F["Boundary gives answer"]
+flowchart LR
+    A[Insert value] --> B[Put into one half]
+    B --> C[Rebalance sizes]
+    C --> D[Erase expired value]
+    D --> E[Rebalance again]
+    E --> F[Boundary gives answer]
 ```
 
 <a id="p3-template-sliding-median"></a>
 
-### Template: sliding median
+### Template sliding median
 
 ```cpp
 struct SlidingMedian {
@@ -6701,7 +6578,7 @@ struct SlidingMedian {
 
 <a id="p3-problems-13"></a>
 
-### Problems
+### Problems (13)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6718,22 +6595,22 @@ struct SlidingMedian {
 
 <a id="p3-form-12"></a>
 
-### Form
+### Form (12)
 
 Use intervals when ranges overlap, cover, merge, allocate rooms, or count active objects.
 
 ```mermaid
-flowchart TD
-    A["Intervals"] --> B{"Static or dynamic?"}
-    B -->|"Static"| C["sort intervals or events"]
-    B -->|"Dynamic"| D["set of intervals"]
-    C --> E["Sweep active count"]
-    D --> F["Check neighbour intervals"]
+flowchart LR
+    A[Intervals] --> B{"Static or dynamic?"}
+    B -->|"Static"| C[sort intervals or events]
+    B -->|"Dynamic"| D[set of intervals]
+    C --> E[Sweep active count]
+    D --> F[Check neighbour intervals]
 ```
 
 <a id="p3-template-merge-intervals"></a>
 
-### Template: merge intervals
+### Template merge intervals
 
 ```cpp
 vector<vector<int>> mergeIntervals(vector<vector<int>>& intervals) {
@@ -6753,7 +6630,7 @@ vector<vector<int>> mergeIntervals(vector<vector<int>>& intervals) {
 
 <a id="p3-template-sweep-line-overlap"></a>
 
-### Template: sweep line overlap
+### Template sweep line overlap
 
 ```cpp
 int maxOverlap(vector<pair<int,int>>& intervals) {
@@ -6778,7 +6655,7 @@ int maxOverlap(vector<pair<int,int>>& intervals) {
 
 <a id="p3-problems-14"></a>
 
-### Problems
+### Problems (14)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6801,24 +6678,24 @@ int maxOverlap(vector<pair<int,int>>& intervals) {
 
 <a id="p3-form-13"></a>
 
-### Form
+### Form (13)
 
 Use lazy deletion when heap cannot delete arbitrary old elements directly.
 
 ```mermaid
-flowchart TD
-    A["Need heap with deletion"] --> B["Push new values normally"]
-    B --> C["Mark removed values in map"]
-    C --> D["Before reading top"]
+flowchart LR
+    A[Need heap with deletion] --> B[Push new values normally]
+    B --> C[Mark removed values in map]
+    C --> D[Before reading top]
     D --> E{"Top is marked deleted?"}
-    E -->|"Yes"| F["Pop and decrement mark"]
+    E -->|"Yes"| F[Pop and decrement mark]
     F --> E
-    E -->|"No"| G["Top is valid answer"]
+    E -->|"No"| G[Top is valid answer]
 ```
 
 <a id="p3-template-lazy-heap-cleanup"></a>
 
-### Template: lazy heap cleanup
+### Template lazy heap cleanup
 
 ```cpp
 void clean(priority_queue<int>& pq, unordered_map<int,int>& delayed) {
@@ -6835,7 +6712,7 @@ void clean(priority_queue<int>& pq, unordered_map<int,int>& delayed) {
 
 <a id="p3-problems-15"></a>
 
-### Problems
+### Problems (15)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6852,21 +6729,21 @@ void clean(priority_queue<int>& pq, unordered_map<int,int>& delayed) {
 
 <a id="p3-form-14"></a>
 
-### Form
+### Form (14)
 
 Use compression when values are huge but relative order or equality matters.
 
 ```mermaid
-flowchart TD
-    A["Huge values"] --> B["Copy values"]
-    B --> C["Sort unique"]
-    C --> D["Replace each value by lower_bound index"]
-    D --> E["Use vector Fenwick or counts"]
+flowchart LR
+    A[Huge values] --> B[Copy values]
+    B --> C[Sort unique]
+    C --> D[Replace each value by lower_bound index]
+    D --> E[Use vector Fenwick or counts]
 ```
 
 <a id="p3-template"></a>
 
-### Template
+### Template (2)
 
 ```cpp
 struct Compressor {
@@ -6890,7 +6767,7 @@ struct Compressor {
 
 <a id="p3-problems-16"></a>
 
-### Problems
+### Problems (16)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6908,21 +6785,21 @@ struct Compressor {
 
 <a id="p3-form-15"></a>
 
-### Form
+### Form (15)
 
 Use `bitset` when states are boolean and many transitions can be done by shifting bits.
 
 ```mermaid
-flowchart TD
-    A["Boolean DP states"] --> B["Represent as bitset"]
-    B --> C["Shift by value"]
-    C --> D["OR into current states"]
-    D --> E["Many states update in machine words"]
+flowchart LR
+    A[Boolean DP states] --> B[Represent as bitset]
+    B --> C[Shift by value]
+    C --> D[OR into current states]
+    D --> E[Many states update in machine words]
 ```
 
 <a id="p3-template-subset-sum-bitset"></a>
 
-### Template: subset sum bitset
+### Template subset sum bitset
 
 ```cpp
 const int MAXS = 100000;
@@ -6938,7 +6815,7 @@ void subsetSum(vector<int>& a) {
 
 <a id="p3-problems-17"></a>
 
-### Problems
+### Problems (17)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -6955,13 +6832,13 @@ void subsetSum(vector<int>& a) {
 
 <a id="p3-form-16"></a>
 
-### Form
+### Form (16)
 
 PBDS gives ordered set with kth element and count less than x.
 
 ```cpp
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
+# include ext or pb_ds or assoc_container.hpp
+# include ext or pb_ds or tree_policy.hpp
 using namespace __gnu_pbds;
 
 template<class T>
@@ -7000,7 +6877,7 @@ os.insert({value, timerId++});
 
 <a id="p3-problems-18"></a>
 
-### Problems
+### Problems (18)
 
 | Difficulty | Problem | Platform | Form | Pattern | Tactic | Intuition |
 |---|---|---|---|---|---|---|
@@ -7074,16 +6951,16 @@ CM problems often mix STL with math, greedy, graph, or offline tricks.
 ### CM escalation flow
 
 ```mermaid
-flowchart TD
-    A["Basic STL accepted?"] --> B{"Need faster than O n log n?"}
-    B -->|"No"| C["Use clean STL"]
+flowchart LR
+    A[Basic STL accepted?] --> B{"Need faster than O n log n?"}
+    B -->|"No"| C[Use clean STL]
     B -->|"Yes"| D{"Can process offline?"}
-    D -->|"Yes"| E["Sort queries plus Fenwick or DSU"]
+    D -->|"Yes"| E[Sort queries plus Fenwick or DSU]
     D -->|"No"| F{"Need kth or rank?"}
-    F -->|"Yes"| G["PBDS or Fenwick"]
+    F -->|"Yes"| G[PBDS or Fenwick]
     F -->|"No"| H{"Need dynamic ranges?"}
-    H -->|"Yes"| I["set plus multiset"]
-    H -->|"No"| J["Consider segment tree or custom DS"]
+    H -->|"Yes"| I[set plus multiset]
+    H -->|"No"| J[Consider segment tree or custom DS]
 ```
 
 ---
@@ -7172,22 +7049,22 @@ flowchart TD
 ## 27. Final Revision Flow
 
 ```mermaid
-flowchart TD
-    A["New STL problem"] --> B{"Subarray or window?"}
-    B -->|"Fixed window"| C["Sliding window or deque"]
-    B -->|"Variable valid window"| D["Two pointers plus map"]
+flowchart LR
+    A[New STL problem] --> B{"Subarray or window?"}
+    B -->|"Fixed window"| C[Sliding window or deque]
+    B -->|"Variable valid window"| D[Two pointers plus map]
     A --> E{"Nearest greater or smaller?"}
-    E -->|"Yes"| F["Monotonic stack"]
+    E -->|"Yes"| F[Monotonic stack]
     A --> G{"Need dynamic min max median?"}
-    G -->|"Top only"| H["priority_queue"]
-    G -->|"Median"| I["two heaps or two multisets"]
+    G -->|"Top only"| H[priority_queue]
+    G -->|"Median"| I[two heaps or two multisets]
     A --> J{"Intervals?"}
-    J -->|"Static"| K["sort and sweep"]
-    J -->|"Dynamic"| L["set plus multiset"]
+    J -->|"Static"| K[sort and sweep]
+    J -->|"Dynamic"| L[set plus multiset]
     A --> M{"Frequency or grouping?"}
-    M -->|"Yes"| N["unordered_map or map"]
+    M -->|"Yes"| N[unordered_map or map]
     A --> O{"Need kth or rank?"}
-    O -->|"Yes"| P["PBDS or Fenwick"]
+    O -->|"Yes"| P[PBDS or Fenwick]
 ```
 
 ---
