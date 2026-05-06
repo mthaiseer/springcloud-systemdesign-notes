@@ -177,6 +177,23 @@ Use hash maps and frequency tracking. Standard exact O(1) version needs bucketed
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+inc/dec key
+   |
+Update key frequency
+   |
+Move key to new frequency bucket
+   |
+Empty old bucket?
+   |
+Remove bucket if empty
+   |
+getMaxKey = key from last bucket
+getMinKey = key from first bucket
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -297,6 +314,26 @@ Use a stack for operators and output operands immediately.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Scan expression left to right
+      |
+Operand?
+  | Yes
+  v
+Add to output
+      |
+Operator?
+  | Yes
+  v
+Pop higher/equal precedence operators
+      |
+Push current operator
+      |
+At end: pop remaining operators
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -408,6 +445,23 @@ Use two stacks: one for push, one for pop; transfer only when needed.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+push(x)
+  |
+Push into input stack
+  |
+pop/front?
+  |
+Output stack empty?
+  | Yes
+  v
+Move input stack to output stack
+  |
+Top of output stack is queue front
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -508,6 +562,20 @@ Use frequency map and track best frequency.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Read distances/values
+      |
+For each value, increment frequency
+      |
+Compare frequency with current best
+      |
+Update mode if needed
+      |
+Return value with maximum frequency
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -589,6 +657,22 @@ Use multiset of tower tops and upper_bound.
 | 2 | What structure removes repetition? | Multiset Greedy |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+For each block x
+      |
+Find first tower top > x using upper_bound
+      |
+Found?
+ | Yes                | No
+ v                    v
+Replace that top       Create new tower
+with x                 with top x
+      |
+Number of towers = multiset size
+```
 
 ### Complete C++ Pattern Code
 
@@ -672,6 +756,20 @@ Use set/frequency map to know distinct and duplicate counts.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Count frequency of every value
+      |
+Separate unique values and duplicates
+      |
+Need maximize distinct?
+      |
+Use duplicates/removals greedily
+      |
+Answer from set size / frequency state
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -752,6 +850,22 @@ Maintain decreasing deque of useful indices.
 | 2 | What structure removes repetition? | Monotonic Deque |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+For each index i
+      |
+Remove indices outside window
+      |
+Remove smaller/equal values from deque back
+      |
+Push current index
+      |
+Window complete?
+      |
+Answer = value at deque front
+```
 
 ### Complete C++ Pattern Code
 
@@ -843,6 +957,19 @@ Use std::queue for O(1) front/pop/push.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Receive queue operation
+      |
+push -> q.push(x)
+pop -> q.pop()
+front -> q.front()
+empty -> q.empty()
+      |
+All operations use FIFO order
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -917,6 +1044,22 @@ Track minimum value seen so far.
 | 2 | What structure removes repetition? | Prefix Minimum |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Initialize min_so_far = a[0]
+      |
+Scan array left to right
+      |
+Candidate = a[i] - min_so_far
+      |
+Update answer
+      |
+Update min_so_far
+      |
+Return max difference
+```
 
 ### Complete C++ Pattern Code
 
@@ -1001,6 +1144,18 @@ Use std::sort with comparator.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Read student records
+      |
+Define comparator using roll number
+      |
+Apply std::sort
+      |
+Print sorted records
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -1080,6 +1235,20 @@ Use priority_queue with custom comparator.
 | 2 | What structure removes repetition? | Priority Queue Comparator |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Push element with priority
+      |
+Comparator decides ordering
+      |
+priority_queue maintains heap
+      |
+top() gives best element
+      |
+pop() removes best
+```
 
 ### Complete C++ Pattern Code
 
@@ -1166,6 +1335,21 @@ Use sliding window when condition is monotonic, otherwise prefix sums.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Choose window/prefix idea
+      |
+Expand right endpoint
+      |
+Condition valid?
+ | Yes              | No
+ v                  v
+Update answer       Shrink left / adjust prefix
+      |
+Continue until array ends
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -1248,6 +1432,20 @@ Count frequencies, sort them, remove cheapest types first.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Count frequency of each item type
+      |
+Put frequencies into array
+      |
+Sort frequencies ascending
+      |
+Remove cheapest frequency groups first
+      |
+Remaining groups = answer
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -1328,6 +1526,20 @@ Sort first and repeatedly call next_permutation.
 | 2 | What structure removes repetition? | next_permutation |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Sort initial sequence
+      |
+Print current permutation
+      |
+Call next_permutation
+      |
+More permutations?
+ | Yes -> repeat
+ | No  -> stop
+```
 
 ### Complete C++ Pattern Code
 
@@ -1412,6 +1624,20 @@ Sort/frequency + greedy placement.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Sort / count values
+      |
+Scan in useful order
+      |
+At each step choose locally valid option
+      |
+Maintain previous/neighbor constraint
+      |
+Build final valid arrangement/count
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -1493,6 +1719,22 @@ Use two pointers/sliding window when validity is monotonic.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+left = 0
+      |
+Move right pointer
+      |
+Add current element to state
+      |
+Window invalid?
+      |
+Move left until valid
+      |
+Update longest length
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -1570,6 +1812,19 @@ Use std::set for O(log n) updates/search.
 | 2 | What structure removes repetition? | Set STL |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Operation arrives
+      |
+insert -> set.insert(x)
+erase -> set.erase(x)
+search -> set.find(x)
+bound -> lower_bound/upper_bound
+      |
+Set keeps elements sorted
+```
 
 ### Complete C++ Pattern Code
 
@@ -1651,6 +1906,22 @@ Use set<pair<int,int>> with lower_bound and erase merged intervals.
 | 2 | What structure removes repetition? | Interval Set |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Insert interval [l,r]
+      |
+lower_bound({l, -inf})
+      |
+Check previous interval for overlap/touch
+      |
+While current interval overlaps/touches [l,r]
+      |
+Expand l,r and erase old interval
+      |
+Insert final merged [l,r]
+```
 
 ### Complete C++ Pattern Code
 
@@ -1775,6 +2046,24 @@ Maintain lazy transformation x -> x*mul + add.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Maintain transformation:
+value = original * mul + add
+      |
+Add operation x
+      |
+add = add + x
+      |
+Multiply operation x
+      |
+mul = mul * x
+add = add * x
+      |
+Query value using formula
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -1855,6 +2144,20 @@ Use multimap or map of vectors depending on output needs.
 | 2 | What structure removes repetition? | Multimap |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Insert key-value pair
+      |
+Multiple values may share same key
+      |
+Use multimap or map<key, vector>
+      |
+For a key query, use equal_range
+      |
+Iterate all values for that key
+```
 
 ### Complete C++ Pattern Code
 
@@ -1937,6 +2240,22 @@ Use maps from key to node and frequency to ordered key list.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+get/put key
+      |
+Key exists?
+      |
+Update value/frequency
+      |
+Move key to next frequency list
+      |
+If capacity full, evict from minFreq list
+      |
+Insert new key with freq 1
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -2017,6 +2336,22 @@ Use sliding window with frequency array.
 | 2 | What structure removes repetition? | Frequency Window |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Move right pointer
+      |
+Increase char frequency
+      |
+If new char, distinct++
+      |
+Condition violated?
+      |
+Move left and decrease frequency
+      |
+Update answer/query result
+```
 
 ### Complete C++ Pattern Code
 
@@ -2100,6 +2435,20 @@ Use set/multiset with lower_bound/upper_bound.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Read query
+      |
+Insert/delete/update ordered DS
+      |
+For nearest/bound query use lower_bound
+      |
+For duplicates use multiset
+      |
+Return answer in O(log n)
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -2181,6 +2530,20 @@ Use map/set based on query type.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Read query type
+      |
+Need count? use map
+Need order? use set
+Need duplicates? use multiset
+      |
+Update DS
+      |
+Answer query from maintained state
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -2261,6 +2624,22 @@ Use hash counts and test all powers for complements.
 | 2 | What structure removes repetition? | Hashing + Powers |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Build frequency map
+      |
+For each x
+      |
+Temporarily remove x
+      |
+For each power of two P
+      |
+Need = P - x
+      |
+If need exists, pair found
+```
 
 ### Complete C++ Pattern Code
 
@@ -2355,6 +2734,20 @@ Use deque(s) for efficient end operations.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Read queue operation
+      |
+Front operation -> use deque front
+Back operation -> use deque back
+Middle/balancing operation?
+      |
+Use one/two deques and rebalance
+      |
+Answer operation efficiently
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -2435,6 +2828,22 @@ Find pivot, swap with next larger, reverse suffix.
 | 2 | What structure removes repetition? | Lexicographic Pivot |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Find rightmost pivot where a[i] < a[i+1]
+      |
+No pivot?
+      |
+Reverse whole array
+      |
+Otherwise find rightmost value > pivot
+      |
+Swap
+      |
+Reverse suffix
+```
 
 ### Complete C++ Pattern Code
 
@@ -2532,6 +2941,20 @@ Use std::deque.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Read operation
+      |
+push_front / push_back
+      |
+pop_front / pop_back
+      |
+front / back query
+      |
+Deque supports both ends efficiently
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -2612,6 +3035,20 @@ Use GNU PBDS ordered_set.
 | 2 | What structure removes repetition? | PBDS |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Insert/delete values in ordered_set
+      |
+Need kth element?
+      |
+find_by_order(k)
+      |
+Need count smaller than x?
+      |
+order_of_key(x)
+```
 
 ### Complete C++ Pattern Code
 
@@ -2700,6 +3137,20 @@ Use std::set lower_bound/upper_bound.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Maintain ordered set
+      |
+For query x
+      |
+lower_bound(x) gives first >= x
+      |
+upper_bound(x) gives first > x
+      |
+Use prev/next carefully
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -2781,6 +3232,22 @@ Use two multisets for median and frequency maps for mode.
 | 2 | What structure removes repetition? | Two Multisets + Frequency |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Insert x
+      |
+Update sum for mean
+      |
+Insert into low/high multiset
+      |
+Rebalance sizes
+      |
+Update frequency map for mode
+      |
+Median from multiset tops
+```
 
 ### Complete C++ Pattern Code
 
@@ -2905,6 +3372,20 @@ Use prefix sums.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Build prefix array
+      |
+pref[i+1] = pref[i] + a[i]
+      |
+For query [l,r]
+      |
+answer = pref[r+1] - pref[l]
+      |
+O(1) per query
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -2988,6 +3469,20 @@ Precompute initial phase and cycle after max reaches front.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Simulate until maximum reaches front
+      |
+Store compared pairs
+      |
+After max is front
+      |
+Remaining deque enters cycle
+      |
+Answer large queries using modulo cycle
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -3070,6 +3565,18 @@ Use frequency map/set.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Scan products
+      |
+Already in set/map?
+ | Yes -> duplicate
+ | No  -> insert
+      |
+Frequency map can also count duplicates
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -3150,6 +3657,20 @@ Use hash counts and powers iteration.
 | 2 | What structure removes repetition? | Hashing + Powers |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Build frequency map
+      |
+For each x
+      |
+Check P - x for all powers P
+      |
+Use count carefully for same element
+      |
+Return true if any valid pair exists
+```
 
 ### Complete C++ Pattern Code
 
@@ -3243,6 +3764,22 @@ Use DSU union/find.
 | 2 | What structure removes repetition? | DSU |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Initialize DSU
+      |
+For each friendship
+      |
+union(a,b)
+      |
+For connectivity query
+      |
+find(a) == find(b)?
+      |
+Answer same/different group
+```
 
 ### Complete C++ Pattern Code
 
@@ -3348,6 +3885,20 @@ Sort and greedily match.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Sort both groups/values
+      |
+Use greedy two pointers
+      |
+If current pair valid
+      |
+Count pair and move both
+      |
+Else move pointer blocking progress
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -3428,6 +3979,22 @@ Use stacks for values/operators.
 | 2 | What structure removes repetition? | Stack Expression Evaluation |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Scan expression
+      |
+Value token -> value stack
+      |
+Operator token -> operator stack
+      |
+When precedence/parentheses require
+      |
+Apply operator to values
+      |
+Final value remains
+```
 
 ### Complete C++ Pattern Code
 
@@ -3511,6 +4078,20 @@ Use sliding window or hashing.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Move right pointer
+      |
+Update char/hash/frequency state
+      |
+If condition invalid
+      |
+Move left pointer
+      |
+Count/update valid substrings
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -3588,6 +4169,20 @@ Compare with sorted copy and find mismatch range.
 | 2 | What structure removes repetition? | Sort + Mismatch |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Copy array and sort it
+      |
+Find first index where a[i] != sorted[i]
+      |
+Find last mismatch
+      |
+That subsegment must be fixed
+      |
+Sort/check that range
+```
 
 ### Complete C++ Pattern Code
 
@@ -3670,6 +4265,22 @@ Greedy reset when tank becomes negative.
 | 2 | What structure removes repetition? | Greedy Circular |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Scan stations once
+      |
+tank += gas[i] - cost[i]
+      |
+tank < 0?
+      |
+Start cannot be before i
+      |
+Set start = i+1 and tank = 0
+      |
+If total >= 0, answer start
+```
 
 ### Complete C++ Pattern Code
 
@@ -3766,6 +4377,20 @@ Use min-heap of size k+1.
 | 2 | What structure removes repetition? | Min Heap |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Push first k+1 elements into min-heap
+      |
+Pop smallest to output
+      |
+Push next array element
+      |
+Repeat
+      |
+Pop remaining heap
+```
 
 ### Complete C++ Pattern Code
 
@@ -3864,6 +4489,20 @@ Amortized transfer from input stack to output stack.
 | 2 | What structure removes repetition? | Two Stacks |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+push(x)
+  |
+Push into input stack
+  |
+pop/front?
+  |
+If output stack empty, transfer input to output
+  |
+Use output.top()
+```
 
 ### Complete C++ Pattern Code
 
@@ -3965,6 +4604,20 @@ Count set bits at every position.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+For each bit position
+      |
+Count ones
+      |
+zeros = n - ones
+      |
+Pairs different at this bit = ones * zeros
+      |
+Add to answer
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -4055,6 +4708,20 @@ Use priority_queue.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Push elements
+      |
+Heap keeps best element at top
+      |
+top() answers current best
+      |
+pop() removes best
+      |
+Repeat for ordered extraction
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -4128,6 +4795,20 @@ Frequency map and tie rule; optionally precompute leaders.
 | 2 | What structure removes repetition? | Map + Leader Tracking |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Process votes in order
+      |
+Increase candidate frequency
+      |
+Compare with current leader
+      |
+Apply tie rule if needed
+      |
+Store/print leader
+```
 
 ### Complete C++ Pattern Code
 
@@ -4211,6 +4892,20 @@ Use multiset.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Insert values
+      |
+Duplicates are allowed
+      |
+Need erase one copy?
+      |
+erase(find(x))
+      |
+Use begin/rbegin/lower_bound for queries
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -4291,6 +4986,20 @@ Use set algorithms or two pointers.
 | 2 | What structure removes repetition? | Set Algorithms |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Have two sorted sets
+      |
+Union / intersection / difference
+      |
+Use STL set algorithms
+      |
+Store result in vector/set
+      |
+Print result
+```
 
 ### Complete C++ Pattern Code
 
@@ -4379,6 +5088,20 @@ Use prefix sums/maps or monotonic structures depending on property.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Build prefix / maintain monotonic state
+      |
+For each right endpoint
+      |
+Use previous prefix/state
+      |
+Count valid subarrays ending here
+      |
+Update answer
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -4461,6 +5184,20 @@ Use lower_bound, upper_bound, binary_search.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Sort array
+      |
+lower_bound(x)
+      |
+upper_bound(x)
+      |
+binary_search(x)
+      |
+Use iterator difference for index/count
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -4542,6 +5279,20 @@ Greedy with multiset/heap for best current choice.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Insert available choices into multiset/heap
+      |
+Pick best currently valid option
+      |
+Erase/update chosen option
+      |
+Repeat greedily
+      |
+Return optimized amount/count
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -4622,6 +5373,21 @@ Sort and use two pointers for each fixed first element.
 | 2 | What structure removes repetition? | Sort + Two Pointers |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Sort array
+      |
+Fix first element i
+      |
+Use left=i+1 and right=n-1
+      |
+sum too small -> left++
+sum too large -> right--
+      |
+sum target -> found
+```
 
 ### Complete C++ Pattern Code
 
@@ -4714,6 +5480,21 @@ Sweep line events sorted by time.
 | 2 | What structure removes repetition? | Sweep Line |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Convert intervals to events
+      |
+start event = +1
+end event = -1
+      |
+Sort events by time
+      |
+Scan active count
+      |
+Maximum active = answer
+```
 
 ### Complete C++ Pattern Code
 
@@ -4813,6 +5594,20 @@ Use prefix/suffix maxima or greedy coverage.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Compute best prefix values
+      |
+Compute best suffix values
+      |
+Try every split point
+      |
+Combine pref[split] + suff[split+1]
+      |
+Take maximum
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -4900,6 +5695,20 @@ Group by x/y coordinate and use ordered sets/maps.
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
 
+### Solution Flow Chart
+
+```text
+Group cities by x-coordinate and y-coordinate
+      |
+For query city
+      |
+Search nearest in same x set
+      |
+Search nearest in same y set
+      |
+Take smaller valid distance
+```
+
 ### Complete C++ Pattern Code
 
 ```cpp
@@ -4985,6 +5794,21 @@ Convert arrivals/leavings into events and sweep.
 | 2 | What structure removes repetition? | Sweep Line |
 | 3 | What should be maintained? | The invariant needed for fast answer |
 | 4 | Complexity target | Usually O(n), O(n log n), or O(q log n) |
+
+### Solution Flow Chart
+
+```text
+Convert each customer interval to events
+      |
+arrival = +1
+leaving = -1
+      |
+Sort by time
+      |
+Scan active customers
+      |
+Track maximum active count
+```
 
 ### Complete C++ Pattern Code
 
