@@ -1,0 +1,7317 @@
+# LLD Visual Java Reference With Mermaid Class Diagrams and Full Java Implementations
+
+A visual-first Low-Level Design reference for common interview problems.
+
+
+This version includes:
+
+- Mermaid **class diagrams** with entities, fields, methods, relationships, and cardinality.
+
+- Clear requirement definitions, core flows, REST API flows, request outlines, Mermaid diagrams, trade-offs, failure scenarios, edge cases, and full compact Java implementations.
+
+- All Java sections are full compact implementations with no placeholder markers.
+
+## Clickable Index
+
+### Games & Puzzles
+- [Design Tic Tac Toe](#design-tic-tac-toe)
+- [Design Chess Game](#design-chess-game)
+
+### Data Structures & Search
+- [Design LRU Cache](#design-lru-cache)
+- [Design Search Autocomplete System](#design-search-autocomplete-system)
+
+### Managing States
+- [Design ATM](#design-atm)
+- [Design Elevator System](#design-elevator-system)
+
+### Management Systems
+- [Design Parking Lot](#design-parking-lot)
+- [Design Inventory Management System](#design-inventory-management-system)
+
+### Social & Content Platforms
+- [Design a Social Network](#design-a-social-network)
+- [Design Spotify](#design-spotify)
+
+### Communication & Messaging
+- [Design Pub Sub System](#design-pub-sub-system)
+- [Design Chat Application](#design-chat-application)
+
+### Financial & Payment Systems
+- [Design Payment Gateway](#design-payment-gateway)
+- [Design Splitwise](#design-splitwise)
+
+### E-commerce & Booking Systems
+- [Design Amazon](#design-amazon)
+- [Design Ride Hailing Service](#design-ride-hailing-service)
+
+### Developer Tools & Infrastructure
+- [Design URL Shortener](#design-url-shortener)
+- [Design Rate Limiter](#design-rate-limiter)
+- [Design Version Control System](#design-version-control-system)
+
+---
+
+## Design Tic Tac Toe
+
+**Category:** Games & Puzzles
+
+### 1. Requirements
+
+- Support a 3x3 board with two players using X and O.
+- Reject invalid moves such as occupied cells or out-of-bound positions.
+- Detect row, column, diagonal wins and draw state.
+- Keep the game logic independent from display and scoring.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Support a 3x3 board with two players using X and O.
+- Reject invalid moves such as occupied cells or out-of-bound positions.
+- Detect row, column, diagonal wins and draw state.
+- Keep the game logic independent from display and scoring.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Player chooses cell
+- Game validates cell
+- Board marks symbol
+- Game checks win or draw
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `TicTacToeGame` | Orchestrates turns, moves, status, and win checks. |
+| `Board` | Owns the grid of cells. |
+| `Cell` | Stores one symbol. |
+| `Player` | Stores name and assigned symbol. |
+| `WinningStrategy` | Defines win-checking behavior. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class TicTacToeGame {
+    -Board board
+    -Player playerX
+    -Player playerO
+    -Player currentPlayer
+    -GameStatus status
+    +makeMove()
+    +switchTurn()
+    +checkWinner()
+    +reset()
+  }
+  class Board {
+    -Cell cells
+    -int size
+    +placeSymbol()
+    +isCellEmpty()
+    +isFull()
+    +printBoard()
+  }
+  class Cell {
+    -Symbol symbol
+    +isEmpty()
+    +mark()
+    +clear()
+  }
+  class Player {
+    -String name
+    -Symbol symbol
+    +getName()
+    +getSymbol()
+  }
+  class WinningStrategy {
+    <<interface>>
+    +checkWin()
+  }
+  class Scoreboard {
+    -Map scores
+    +recordWin()
+    +getScore()
+    +printScores()
+  }
+  TicTacToeGame --> Board
+  TicTacToeGame --> Player
+  TicTacToeGame --> WinningStrategy
+  Board *-- Cell
+  Scoreboard --> Player
+  %% Cardinality relationships
+  TicTacToeGame "1" --> "1" Board : owns
+  Board "1" --> "9" Cell : contains
+  TicTacToeGame "1" --> "2" Player : uses
+  TicTacToeGame "1" --> "*" WinningStrategy : uses
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `TicTacToeGame` | 1 | `Board` | 1 | owns |
+| `Board` | 1 | `Cell` | 9 | contains |
+| `TicTacToeGame` | 1 | `Player` | 2 | uses |
+| `TicTacToeGame` | 1 | `WinningStrategy` | * | uses |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Player chooses cell
+- Game validates cell
+- Board marks symbol
+- Game checks win or draw
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Player chooses cell ->
+2. Game validates cell ->
+3. Board marks symbol ->
+4. Game checks win or draw ->
+5. Game switches turn or ends
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/tic-tac-toe` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/tic-tac-toe/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/tic-tac-toe/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/tic-tac-toe/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/tic-tac-toe/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Tic Tac Toe Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  TIC_TAC_TOE_GAME {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  BOARD {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  CELL {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PLAYER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  WINNING_STRATEGY {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  TIC_TAC_TOE_GAME ||--o{ BOARD : owns
+  BOARD ||--o{ CELL : contains
+  TIC_TAC_TOE_GAME ||--o{ PLAYER : uses
+  TIC_TAC_TOE_GAME ||--o{ WINNING_STRATEGY : uses
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Strategy:** Win detection is separated into row, column, and diagonal strategies. Adding a new win rule does not change the game orchestration.
+- **Single Responsibility:** Board manages cells, Game manages gameplay, Player stores identity.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+enum Symbol { X, O, EMPTY }
+enum GameStatus { IN_PROGRESS, X_WON, O_WON, DRAW }
+
+class Player {
+    private final String name;
+    private final Symbol symbol;
+
+    public Player(String name, Symbol symbol) {
+        if (symbol == Symbol.EMPTY) throw new IllegalArgumentException("Player cannot use EMPTY symbol");
+        this.name = name;
+        this.symbol = symbol;
+    }
+
+    public String getName() { return name; }
+    public Symbol getSymbol() { return symbol; }
+}
+
+class Cell {
+    private Symbol symbol = Symbol.EMPTY;
+
+    public boolean isEmpty() { return symbol == Symbol.EMPTY; }
+
+    public void mark(Symbol symbol) {
+        if (!isEmpty()) throw new IllegalStateException("Cell already occupied");
+        this.symbol = symbol;
+    }
+
+    public Symbol getSymbol() { return symbol; }
+    public void clear() { symbol = Symbol.EMPTY; }
+}
+
+class Board {
+    private final Cell[][] cells;
+    private final int size;
+
+    public Board(int size) {
+        this.size = size;
+        this.cells = new Cell[size][size];
+        for (int r = 0; r < size; r++)
+            for (int c = 0; c < size; c++)
+                cells[r][c] = new Cell();
+    }
+
+    public int getSize() { return size; }
+
+    public Cell getCell(int row, int col) {
+        validate(row, col);
+        return cells[row][col];
+    }
+
+    public void placeSymbol(int row, int col, Symbol symbol) {
+        getCell(row, col).mark(symbol);
+    }
+
+    public boolean isCellEmpty(int row, int col) {
+        return getCell(row, col).isEmpty();
+    }
+
+    public boolean isFull() {
+        for (Cell[] row : cells)
+            for (Cell cell : row)
+                if (cell.isEmpty()) return false;
+        return true;
+    }
+
+    private void validate(int row, int col) {
+        if (row < 0 || row >= size || col < 0 || col >= size)
+            throw new IllegalArgumentException("Invalid board position");
+    }
+
+    public void printBoard() {
+        for (Cell[] row : cells) {
+            for (Cell cell : row) {
+                System.out.print((cell.getSymbol() == Symbol.EMPTY ? "_" : cell.getSymbol()) + " ");
+            }
+            System.out.println();
+        }
+    }
+}
+
+interface WinningStrategy {
+    boolean checkWin(Board board, Symbol symbol);
+}
+
+class RowWinningStrategy implements WinningStrategy {
+    public boolean checkWin(Board board, Symbol symbol) {
+        for (int r = 0; r < board.getSize(); r++) {
+            boolean win = true;
+            for (int c = 0; c < board.getSize(); c++)
+                win &= board.getCell(r, c).getSymbol() == symbol;
+            if (win) return true;
+        }
+        return false;
+    }
+}
+
+class ColumnWinningStrategy implements WinningStrategy {
+    public boolean checkWin(Board board, Symbol symbol) {
+        for (int c = 0; c < board.getSize(); c++) {
+            boolean win = true;
+            for (int r = 0; r < board.getSize(); r++)
+                win &= board.getCell(r, c).getSymbol() == symbol;
+            if (win) return true;
+        }
+        return false;
+    }
+}
+
+class DiagonalWinningStrategy implements WinningStrategy {
+    public boolean checkWin(Board board, Symbol symbol) {
+        boolean d1 = true, d2 = true;
+        int n = board.getSize();
+        for (int i = 0; i < n; i++) {
+            d1 &= board.getCell(i, i).getSymbol() == symbol;
+            d2 &= board.getCell(i, n - 1 - i).getSymbol() == symbol;
+        }
+        return d1 || d2;
+    }
+}
+
+class Scoreboard {
+    private final Map<String, Integer> scores = new HashMap<>();
+
+    public void recordWin(Player player) {
+        scores.put(player.getName(), getScore(player.getName()) + 1);
+    }
+
+    public int getScore(String playerName) {
+        return scores.getOrDefault(playerName, 0);
+    }
+
+    public void printScores() {
+        scores.forEach((name, score) -> System.out.println(name + ": " + score));
+    }
+}
+
+class TicTacToeGame {
+    private final Board board;
+    private final Player playerX;
+    private final Player playerO;
+    private Player currentPlayer;
+    private GameStatus status = GameStatus.IN_PROGRESS;
+    private final List<WinningStrategy> strategies = List.of(
+            new RowWinningStrategy(),
+            new ColumnWinningStrategy(),
+            new DiagonalWinningStrategy()
+    );
+
+    public TicTacToeGame(Player playerX, Player playerO) {
+        this.board = new Board(3);
+        this.playerX = playerX;
+        this.playerO = playerO;
+        this.currentPlayer = playerX;
+    }
+
+    public void makeMove(int row, int col) {
+        if (status != GameStatus.IN_PROGRESS) throw new IllegalStateException("Game already over");
+        board.placeSymbol(row, col, currentPlayer.getSymbol());
+
+        if (isWinner(currentPlayer.getSymbol())) {
+            status = currentPlayer.getSymbol() == Symbol.X ? GameStatus.X_WON : GameStatus.O_WON;
+        } else if (board.isFull()) {
+            status = GameStatus.DRAW;
+        } else {
+            switchTurn();
+        }
+    }
+
+    private boolean isWinner(Symbol symbol) {
+        for (WinningStrategy strategy : strategies)
+            if (strategy.checkWin(board, symbol)) return true;
+        return false;
+    }
+
+    private void switchTurn() {
+        currentPlayer = currentPlayer == playerX ? playerO : playerX;
+    }
+
+    public GameStatus getStatus() { return status; }
+    public void printBoard() { board.printBoard(); }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Move outside board
+- Occupied cell
+- Move after game over
+- Draw after final move
+
+---
+
+## Design Chess Game
+
+**Category:** Games & Puzzles
+
+### 1. Requirements
+
+- Represent an 8x8 board, players, cells, and chess pieces.
+- Validate moves based on each piece type.
+- Support capturing opponent pieces.
+- Maintain current player and game status.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Represent an 8x8 board, players, cells, and chess pieces.
+- Validate moves based on each piece type.
+- Support capturing opponent pieces.
+- Maintain current player and game status.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Player selects source and target
+- Game validates ownership
+- Piece validates movement
+- Board moves or captures
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `ChessGame` | Coordinates players, board, moves, and status. |
+| `Board` | Owns all chess cells. |
+| `Cell` | Stores position and optional piece. |
+| `Piece` | Base abstraction for chess pieces. |
+| `Move` | Represents a source-to-target move. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class ChessGame {
+    -Board board
+    -Player whitePlayer
+    -Player blackPlayer
+    -Player currentPlayer
+    -GameStatus status
+    +move()
+    +switchTurn()
+    +isCheck()
+    +isCheckmate()
+  }
+  class Board {
+    -Cell cells
+    +getCell()
+    +movePiece()
+    +setupPieces()
+  }
+  class Cell {
+    -Position position
+    -Piece piece
+    +isEmpty()
+    +setPiece()
+    +removePiece()
+  }
+  class Piece {
+    <<abstract>>
+    -Color color
+    -boolean killed
+    +canMove()
+  }
+  class King {
+    +canMove()
+  }
+  class Queen {
+    +canMove()
+  }
+  class Move {
+    -Cell from
+    -Cell to
+    -Piece piece
+    +isValid()
+  }
+  class Player {
+    -String name
+    -Color color
+    +makeMove()
+  }
+  ChessGame --> Board
+  ChessGame --> Player
+  ChessGame --> Move
+  Board *-- Cell
+  Cell --> Piece
+  Piece <|-- King
+  Piece <|-- Queen
+  %% Cardinality relationships
+  ChessGame "1" --> "1" Board : owns
+  Board "1" --> "64" Cell : contains
+  Cell "0..1" --> "1" Piece : holds
+  ChessGame "1" --> "2" Player : uses
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `ChessGame` | 1 | `Board` | 1 | owns |
+| `Board` | 1 | `Cell` | 64 | contains |
+| `Cell` | 0..1 | `Piece` | 1 | holds |
+| `ChessGame` | 1 | `Player` | 2 | uses |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Player selects source and target
+- Game validates ownership
+- Piece validates movement
+- Board moves or captures
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Player selects source and target ->
+2. Game validates ownership ->
+3. Piece validates movement ->
+4. Board moves or captures ->
+5. Game switches turn
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/chess-game` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/chess-game/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/chess-game/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/chess-game/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/chess-game/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Chess Game Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  CHESS_GAME {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  BOARD {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  CELL {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PIECE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  MOVE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  CHESS_GAME ||--o{ BOARD : owns
+  BOARD ||--o{ CELL : contains
+  CELL ||--o{ PIECE : holds
+  CHESS_GAME ||--o{ PLAYER : uses
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Polymorphism:** Each Piece subclass owns its movement rule through canMove.
+- **State:** GameStatus tracks active, check, checkmate, and stalemate states.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+enum Color { WHITE, BLACK }
+enum GameStatus { ACTIVE, CHECK, CHECKMATE, STALEMATE }
+
+class Position {
+    final int row;
+    final int col;
+    Position(int row, int col) { this.row = row; this.col = col; }
+}
+
+abstract class Piece {
+    protected final Color color;
+    protected boolean killed;
+
+    protected Piece(Color color) { this.color = color; }
+
+    public Color getColor() { return color; }
+    public boolean isKilled() { return killed; }
+    public void kill() { killed = true; }
+
+    public abstract boolean canMove(Board board, Cell from, Cell to);
+
+    protected boolean isOpponent(Cell to) {
+        return !to.isEmpty() && to.getPiece().getColor() != color;
+    }
+}
+
+class King extends Piece {
+    King(Color color) { super(color); }
+
+    public boolean canMove(Board board, Cell from, Cell to) {
+        int dr = Math.abs(from.getPosition().row - to.getPosition().row);
+        int dc = Math.abs(from.getPosition().col - to.getPosition().col);
+        return dr <= 1 && dc <= 1 && (to.isEmpty() || isOpponent(to));
+    }
+}
+
+class Queen extends Piece {
+    Queen(Color color) { super(color); }
+
+    public boolean canMove(Board board, Cell from, Cell to) {
+        int dr = Math.abs(from.getPosition().row - to.getPosition().row);
+        int dc = Math.abs(from.getPosition().col - to.getPosition().col);
+        boolean straight = dr == 0 || dc == 0;
+        boolean diagonal = dr == dc;
+        return (straight || diagonal) && board.isPathClear(from, to) && (to.isEmpty() || isOpponent(to));
+    }
+}
+
+class Rook extends Piece {
+    Rook(Color color) { super(color); }
+
+    public boolean canMove(Board board, Cell from, Cell to) {
+        boolean straight = from.getPosition().row == to.getPosition().row ||
+                           from.getPosition().col == to.getPosition().col;
+        return straight && board.isPathClear(from, to) && (to.isEmpty() || isOpponent(to));
+    }
+}
+
+class Cell {
+    private final Position position;
+    private Piece piece;
+
+    Cell(int row, int col) { this.position = new Position(row, col); }
+
+    public Position getPosition() { return position; }
+    public boolean isEmpty() { return piece == null; }
+    public Piece getPiece() { return piece; }
+    public void setPiece(Piece piece) { this.piece = piece; }
+
+    public Piece removePiece() {
+        Piece removed = piece;
+        piece = null;
+        return removed;
+    }
+}
+
+class Board {
+    private final Cell[][] cells = new Cell[8][8];
+
+    Board() {
+        for (int r = 0; r < 8; r++)
+            for (int c = 0; c < 8; c++)
+                cells[r][c] = new Cell(r, c);
+        setupPieces();
+    }
+
+    public Cell getCell(Position position) {
+        if (position.row < 0 || position.row >= 8 || position.col < 0 || position.col >= 8)
+            throw new IllegalArgumentException("Invalid chess position");
+        return cells[position.row][position.col];
+    }
+
+    public void setupPieces() {
+        cells[0][4].setPiece(new King(Color.BLACK));
+        cells[7][4].setPiece(new King(Color.WHITE));
+        cells[0][3].setPiece(new Queen(Color.BLACK));
+        cells[7][3].setPiece(new Queen(Color.WHITE));
+        cells[0][0].setPiece(new Rook(Color.BLACK));
+        cells[0][7].setPiece(new Rook(Color.BLACK));
+        cells[7][0].setPiece(new Rook(Color.WHITE));
+        cells[7][7].setPiece(new Rook(Color.WHITE));
+    }
+
+    public boolean isPathClear(Cell from, Cell to) {
+        int r1 = from.getPosition().row, c1 = from.getPosition().col;
+        int r2 = to.getPosition().row, c2 = to.getPosition().col;
+        int dr = Integer.compare(r2, r1);
+        int dc = Integer.compare(c2, c1);
+
+        int r = r1 + dr, c = c1 + dc;
+        while (r != r2 || c != c2) {
+            if (!cells[r][c].isEmpty()) return false;
+            r += dr;
+            c += dc;
+        }
+        return true;
+    }
+
+    public void movePiece(Cell from, Cell to) {
+        Piece piece = from.getPiece();
+        if (piece == null) throw new IllegalArgumentException("No piece at source");
+        if (!piece.canMove(this, from, to)) throw new IllegalArgumentException("Illegal move");
+
+        if (!to.isEmpty()) to.getPiece().kill();
+        to.setPiece(from.removePiece());
+    }
+}
+
+class Player {
+    private final String name;
+    private final Color color;
+
+    Player(String name, Color color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public Color getColor() { return color; }
+    public String getName() { return name; }
+}
+
+class Move {
+    private final Cell from;
+    private final Cell to;
+    private final Piece piece;
+
+    Move(Cell from, Cell to) {
+        this.from = from;
+        this.to = to;
+        this.piece = from.getPiece();
+    }
+
+    public boolean isValid(Board board) {
+        return piece != null && piece.canMove(board, from, to);
+    }
+}
+
+class ChessGame {
+    private final Board board = new Board();
+    private final Player whitePlayer;
+    private final Player blackPlayer;
+    private Player currentPlayer;
+    private GameStatus status = GameStatus.ACTIVE;
+
+    ChessGame(Player whitePlayer, Player blackPlayer) {
+        this.whitePlayer = whitePlayer;
+        this.blackPlayer = blackPlayer;
+        this.currentPlayer = whitePlayer;
+    }
+
+    public void move(Position fromPos, Position toPos) {
+        if (status == GameStatus.CHECKMATE || status == GameStatus.STALEMATE)
+            throw new IllegalStateException("Game already ended");
+
+        Cell from = board.getCell(fromPos);
+        Cell to = board.getCell(toPos);
+
+        if (from.isEmpty()) throw new IllegalArgumentException("No piece selected");
+        if (from.getPiece().getColor() != currentPlayer.getColor())
+            throw new IllegalArgumentException("Not current player's piece");
+
+        board.movePiece(from, to);
+        switchTurn();
+    }
+
+    private void switchTurn() {
+        currentPlayer = currentPlayer == whitePlayer ? blackPlayer : whitePlayer;
+    }
+
+    public GameStatus getStatus() { return status; }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design LRU Cache
+
+**Category:** Data Structures & Search
+
+### 1. Requirements
+
+- Support get and put in O(1) average time.
+- Evict the least recently used item when capacity is full.
+- Update recency on both get and put.
+- Keep cache storage and recency tracking consistent.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Support get and put in O(1) average time.
+- Evict the least recently used item when capacity is full.
+- Update recency on both get and put.
+- Keep cache storage and recency tracking consistent.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- get/put called
+- Map locates node
+- Node moves to front
+- If capacity exceeded remove tail node
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `LRUCache` | Coordinates HashMap and linked list. |
+| `Node` | Stores key/value and list pointers. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class LRUCache {
+    -int capacity
+    -Map cache
+    -Node head
+    -Node tail
+    +get()
+    +put()
+    -addToFront()
+    -removeNode()
+    -moveToFront()
+    -evictLeastUsed()
+  }
+  class Node {
+    -int key
+    -int value
+    -Node prev
+    -Node next
+    +getKey()
+    +getValue()
+  }
+  LRUCache --> Node
+  %% Cardinality relationships
+  LRUCache "1" --> "0..capacity" Node : stores
+  Node "1" --> "0..2" Node : links
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `LRUCache` | 1 | `Node` | 0..capacity | stores |
+| `Node` | 1 | `Node` | 0..2 | links |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- get/put called
+- Map locates node
+- Node moves to front
+- If capacity exceeded remove tail node
+### 6. Core Flow
+
+```text
+Core Flow:
+1. get/put called ->
+2. Map locates node ->
+3. Node moves to front ->
+4. If capacity exceeded remove tail node ->
+5. Map and list stay synchronized
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/lru-cache` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/lru-cache/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/lru-cache/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/lru-cache/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/lru-cache/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as LRU Cache Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  L_R_U_CACHE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  NODE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  L_R_U_CACHE ||--o{ NODE : stores
+  NODE ||--o{ NODE : links
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Data Structure Composition:** HashMap gives O(1) lookup and doubly linked list gives O(1) recency updates.
+- **Sentinel Nodes:** Dummy head and tail simplify insert/remove edge cases.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+class Node {
+    int key;
+    int value;
+    Node prev;
+    Node next;
+
+    Node(int key, int value) {
+        this.key = key;
+        this.value = value;
+    }
+}
+
+class LRUCache {
+    private final int capacity;
+    private final Map<Integer, Node> cache = new HashMap<>();
+    private final Node head = new Node(0, 0);
+    private final Node tail = new Node(0, 0);
+
+    public LRUCache(int capacity) {
+        if (capacity <= 0) throw new IllegalArgumentException("Capacity must be positive");
+        this.capacity = capacity;
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    public int get(int key) {
+        Node node = cache.get(key);
+        if (node == null) return -1;
+        moveToFront(node);
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+        Node node = cache.get(key);
+        if (node != null) {
+            node.value = value;
+            moveToFront(node);
+            return;
+        }
+
+        if (cache.size() == capacity) evictLeastUsed();
+
+        Node newNode = new Node(key, value);
+        cache.put(key, newNode);
+        addToFront(newNode);
+    }
+
+    private void addToFront(Node node) {
+        node.next = head.next;
+        node.prev = head;
+        head.next.prev = node;
+        head.next = node;
+    }
+
+    private void removeNode(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void moveToFront(Node node) {
+        removeNode(node);
+        addToFront(node);
+    }
+
+    private void evictLeastUsed() {
+        Node lru = tail.prev;
+        removeNode(lru);
+        cache.remove(lru.key);
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Capacity full
+- Update existing key
+- Read missing key
+- Capacity must be positive
+
+---
+
+## Design Search Autocomplete System
+
+**Category:** Data Structures & Search
+
+### 1. Requirements
+
+- Insert searchable words or sentences.
+- Return suggestions for a prefix.
+- Keep suggestions sorted and limited.
+- Use a Trie for efficient prefix lookup.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Insert searchable words or sentences.
+- Return suggestions for a prefix.
+- Keep suggestions sorted and limited.
+- Use a Trie for efficient prefix lookup.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Insert word into Trie
+- Update suggestions along prefix path
+- Search walks prefix nodes
+- Return stored suggestions
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `AutocompleteSystem` | Exposes insert and prefix search. |
+| `TrieNode` | Stores children and prefix suggestions. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class AutocompleteSystem {
+    -TrieNode root
+    -int limit
+    +insert()
+    +search()
+    +getSuggestions()
+  }
+  class TrieNode {
+    -Map children
+    -boolean isWord
+    -List suggestions
+    +getChild()
+    +addChild()
+    +markWord()
+  }
+  AutocompleteSystem --> TrieNode
+  TrieNode --> TrieNode
+  %% Cardinality relationships
+  AutocompleteSystem "1" --> "1" TrieNode : root
+  TrieNode "1" --> "0..26" TrieNode : children
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `AutocompleteSystem` | 1 | `TrieNode` | 1 | root |
+| `TrieNode` | 1 | `TrieNode` | 0..26 | children |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Insert word into Trie
+- Update suggestions along prefix path
+- Search walks prefix nodes
+- Return stored suggestions
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Insert word into Trie ->
+2. Update suggestions along prefix path ->
+3. Search walks prefix nodes ->
+4. Return stored suggestions
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/search-autocomplete-system` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/search-autocomplete-system/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/search-autocomplete-system/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/search-autocomplete-system/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/search-autocomplete-system/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Search Autocomplete System Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  AUTOCOMPLETE_SYSTEM {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  TRIE_NODE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  AUTOCOMPLETE_SYSTEM ||--o{ TRIE_NODE : root
+  TRIE_NODE ||--o{ TRIE_NODE : children
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Trie:** Each prefix maps to a node, making prefix search efficient.
+- **Precomputed Suggestions:** Suggestions are stored along the path to make lookup fast.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+class TrieNode {
+    Map<Character, TrieNode> children = new HashMap<>();
+    boolean isWord;
+    List<String> suggestions = new ArrayList<>();
+}
+
+class AutocompleteSystem {
+    private final TrieNode root = new TrieNode();
+    private final int limit;
+
+    public AutocompleteSystem(int limit) {
+        this.limit = limit;
+    }
+
+    public void insert(String word) {
+        TrieNode current = root;
+        for (char ch : word.toCharArray()) {
+            current.children.putIfAbsent(ch, new TrieNode());
+            current = current.children.get(ch);
+            addSuggestion(current.suggestions, word);
+        }
+        current.isWord = true;
+    }
+
+    private void addSuggestion(List<String> suggestions, String word) {
+        if (!suggestions.contains(word)) suggestions.add(word);
+        Collections.sort(suggestions);
+        if (suggestions.size() > limit) suggestions.remove(suggestions.size() - 1);
+    }
+
+    public List<String> search(String prefix) {
+        TrieNode node = findNode(prefix);
+        return node == null ? List.of() : new ArrayList<>(node.suggestions);
+    }
+
+    public List<String> getSuggestions(String prefix) {
+        return search(prefix);
+    }
+
+    private TrieNode findNode(String prefix) {
+        TrieNode current = root;
+        for (char ch : prefix.toCharArray()) {
+            current = current.children.get(ch);
+            if (current == null) return null;
+        }
+        return current;
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design ATM
+
+**Category:** Managing States
+
+### 1. Requirements
+
+- Support card insertion, PIN validation, cash withdrawal, and card ejection.
+- Prevent invalid operations based on current ATM state.
+- Validate balance and ATM cash before dispensing.
+- Separate bank validation from ATM state handling.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Support card insertion, PIN validation, cash withdrawal, and card ejection.
+- Prevent invalid operations based on current ATM state.
+- Validate balance and ATM cash before dispensing.
+- Separate bank validation from ATM state handling.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Insert card
+- Enter PIN
+- Bank validates PIN
+- Withdraw requested
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `ATM` | Context object delegating actions to current state. |
+| `ATMState` | State behavior contract. |
+| `CashDispenser` | Tracks and dispenses cash. |
+| `BankService` | Validates PIN and debits account. |
+| `Card` | Represents customer card/account. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class ATM {
+    -ATMState state
+    -CashDispenser dispenser
+    -BankService bankService
+    -Card currentCard
+    +insertCard()
+    +enterPin()
+    +withdraw()
+    +ejectCard()
+    +setState()
+  }
+  class ATMState {
+    <<interface>>
+    +insertCard()
+    +enterPin()
+    +withdraw()
+    +ejectCard()
+  }
+  class IdleState {
+    +insertCard()
+  }
+  class AuthenticatedState {
+    +withdraw()
+    +ejectCard()
+  }
+  class CashDispenser {
+    -int cashAvailable
+    +canDispense()
+    +dispense()
+  }
+  class BankService {
+    +validatePin()
+    +debit()
+  }
+  class Card {
+    -String cardNumber
+    -String accountNumber
+    +getAccountNumber()
+  }
+  ATM --> ATMState
+  ATMState <|.. IdleState
+  ATMState <|.. AuthenticatedState
+  ATM --> CashDispenser
+  ATM --> BankService
+  ATM --> Card
+  %% Cardinality relationships
+  ATM "1" --> "1" ATMState : current state
+  ATM "1" --> "0..1" Card : current card
+  ATM "1" --> "1" CashDispenser : has
+  ATM "1" --> "1" BankService : uses
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `ATM` | 1 | `ATMState` | 1 | current state |
+| `ATM` | 1 | `Card` | 0..1 | current card |
+| `ATM` | 1 | `CashDispenser` | 1 | has |
+| `ATM` | 1 | `BankService` | 1 | uses |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Insert card
+- Enter PIN
+- Bank validates PIN
+- Withdraw requested
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Insert card ->
+2. Enter PIN ->
+3. Bank validates PIN ->
+4. Withdraw requested ->
+5. ATM debits account and dispenses cash
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/atm` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/atm/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/atm/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/atm/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/atm/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as ATM Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  A_T_M {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  A_T_M_STATE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  CASH_DISPENSER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  BANK_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  CARD {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  A_T_M ||--o{ A_T_M_STATE : current_state
+  A_T_M ||--o{ CARD : current_card
+  A_T_M ||--o{ CASH_DISPENSER : has
+  A_T_M ||--o{ BANK_SERVICE : uses
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **State:** ATM behavior changes depending on Idle, CardInserted, and Authenticated states.
+- **Separation of Concerns:** BankService validates account rules while CashDispenser handles cash.
+
+### 8. Full Java Implementation
+
+```java
+interface ATMState {
+    void insertCard(ATM atm, Card card);
+    void enterPin(ATM atm, String pin);
+    void withdraw(ATM atm, double amount);
+    void ejectCard(ATM atm);
+}
+
+class IdleState implements ATMState {
+    public void insertCard(ATM atm, Card card) {
+        atm.setCurrentCard(card);
+        atm.setState(new CardInsertedState());
+    }
+
+    public void enterPin(ATM atm, String pin) {
+        throw new IllegalStateException("Insert card first");
+    }
+
+    public void withdraw(ATM atm, double amount) {
+        throw new IllegalStateException("Insert card first");
+    }
+
+    public void ejectCard(ATM atm) {
+        System.out.println("No card inserted");
+    }
+}
+
+class CardInsertedState implements ATMState {
+    public void insertCard(ATM atm, Card card) {
+        throw new IllegalStateException("Card already inserted");
+    }
+
+    public void enterPin(ATM atm, String pin) {
+        if (atm.getBankService().validatePin(atm.getCurrentCard(), pin)) {
+            atm.setState(new AuthenticatedState());
+        } else {
+            atm.setCurrentCard(null);
+            atm.setState(new IdleState());
+            throw new IllegalArgumentException("Invalid PIN");
+        }
+    }
+
+    public void withdraw(ATM atm, double amount) {
+        throw new IllegalStateException("Authenticate first");
+    }
+
+    public void ejectCard(ATM atm) {
+        atm.setCurrentCard(null);
+        atm.setState(new IdleState());
+    }
+}
+
+class AuthenticatedState implements ATMState {
+    public void insertCard(ATM atm, Card card) {
+        throw new IllegalStateException("Card already inserted");
+    }
+
+    public void enterPin(ATM atm, String pin) {
+        System.out.println("Already authenticated");
+    }
+
+    public void withdraw(ATM atm, double amount) {
+        Card card = atm.getCurrentCard();
+        if (!atm.getDispenser().canDispense(amount)) throw new IllegalStateException("ATM has insufficient cash");
+        if (!atm.getBankService().debit(card.getAccountNumber(), amount)) throw new IllegalStateException("Insufficient balance");
+
+        atm.getDispenser().dispense(amount);
+        atm.setCurrentCard(null);
+        atm.setState(new IdleState());
+    }
+
+    public void ejectCard(ATM atm) {
+        atm.setCurrentCard(null);
+        atm.setState(new IdleState());
+    }
+}
+
+class Card {
+    private final String cardNumber;
+    private final String accountNumber;
+    private final String pin;
+
+    public Card(String cardNumber, String accountNumber, String pin) {
+        this.cardNumber = cardNumber;
+        this.accountNumber = accountNumber;
+        this.pin = pin;
+    }
+
+    public String getAccountNumber() { return accountNumber; }
+    public boolean validatePin(String inputPin) { return pin.equals(inputPin); }
+}
+
+class CashDispenser {
+    private double cashAvailable;
+
+    public CashDispenser(double cashAvailable) {
+        this.cashAvailable = cashAvailable;
+    }
+
+    public boolean canDispense(double amount) {
+        return amount > 0 && cashAvailable >= amount;
+    }
+
+    public void dispense(double amount) {
+        if (!canDispense(amount)) throw new IllegalStateException("Cannot dispense");
+        cashAvailable -= amount;
+        System.out.println("Dispensed: " + amount);
+    }
+}
+
+class BankService {
+    private final java.util.Map<String, Double> balances = new java.util.HashMap<>();
+
+    public void addAccount(String accountNumber, double balance) {
+        balances.put(accountNumber, balance);
+    }
+
+    public boolean validatePin(Card card, String pin) {
+        return card.validatePin(pin);
+    }
+
+    public boolean debit(String accountNumber, double amount) {
+        double balance = balances.getOrDefault(accountNumber, 0.0);
+        if (balance < amount) return false;
+        balances.put(accountNumber, balance - amount);
+        return true;
+    }
+}
+
+class ATM {
+    private ATMState state = new IdleState();
+    private final CashDispenser dispenser;
+    private final BankService bankService;
+    private Card currentCard;
+
+    public ATM(CashDispenser dispenser, BankService bankService) {
+        this.dispenser = dispenser;
+        this.bankService = bankService;
+    }
+
+    public void insertCard(Card card) { state.insertCard(this, card); }
+    public void enterPin(String pin) { state.enterPin(this, pin); }
+    public void withdraw(double amount) { state.withdraw(this, amount); }
+    public void ejectCard() { state.ejectCard(this); }
+
+    public void setState(ATMState state) { this.state = state; }
+    public Card getCurrentCard() { return currentCard; }
+    public void setCurrentCard(Card card) { this.currentCard = card; }
+    public CashDispenser getDispenser() { return dispenser; }
+    public BankService getBankService() { return bankService; }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Wrong PIN
+- Insufficient account balance
+- Insufficient ATM cash
+- Withdraw before authentication
+
+---
+
+## Design Elevator System
+
+**Category:** Managing States
+
+### 1. Requirements
+
+- Support multiple elevators and passenger requests.
+- Assign the best elevator using a dispatcher.
+- Move elevator step by step toward pickup/drop floors.
+- Track elevator direction and state.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Support multiple elevators and passenger requests.
+- Assign the best elevator using a dispatcher.
+- Move elevator step by step toward pickup/drop floors.
+- Track elevator direction and state.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Request submitted
+- Dispatcher selects nearest elevator
+- Elevator queues request
+- Elevator moves to pickup
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `ElevatorSystem` | Entry point for elevator requests. |
+| `Dispatcher` | Chooses elevator for request. |
+| `Elevator` | Tracks floor, state, direction, and queue. |
+| `Request` | Represents pickup and destination. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class ElevatorSystem {
+    -List elevators
+    -Dispatcher dispatcher
+    +requestElevator()
+    +step()
+  }
+  class Elevator {
+    -int id
+    -int currentFloor
+    -Direction direction
+    -ElevatorState state
+    -Queue requests
+    +addRequest()
+    +move()
+    +openDoor()
+    +closeDoor()
+  }
+  class Dispatcher {
+    +assignElevator()
+  }
+  class Request {
+    -int sourceFloor
+    -int destinationFloor
+    -Direction direction
+    +isUp()
+  }
+  ElevatorSystem --> Dispatcher
+  ElevatorSystem --> Elevator
+  Elevator --> Request
+  %% Cardinality relationships
+  ElevatorSystem "1" --> "*" Elevator : manages
+  ElevatorSystem "1" --> "1" Dispatcher : uses
+  Elevator "1" --> "*" Request : queues
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `ElevatorSystem` | 1 | `Elevator` | * | manages |
+| `ElevatorSystem` | 1 | `Dispatcher` | 1 | uses |
+| `Elevator` | 1 | `Request` | * | queues |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Request submitted
+- Dispatcher selects nearest elevator
+- Elevator queues request
+- Elevator moves to pickup
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Request submitted ->
+2. Dispatcher selects nearest elevator ->
+3. Elevator queues request ->
+4. Elevator moves to pickup ->
+5. Elevator moves to destination
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/elevator-system` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/elevator-system/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/elevator-system/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/elevator-system/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/elevator-system/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Elevator System Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  ELEVATOR_SYSTEM {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  DISPATCHER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  ELEVATOR {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  REQUEST {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  ELEVATOR_SYSTEM ||--o{ ELEVATOR : manages
+  ELEVATOR_SYSTEM ||--o{ DISPATCHER : uses
+  ELEVATOR ||--o{ REQUEST : queues
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Strategy:** Dispatcher can be replaced with nearest, least-loaded, or zone-based assignment.
+- **Queue:** Each elevator stores requests and processes them step by step.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+enum Direction { UP, DOWN, IDLE }
+enum ElevatorState { MOVING, IDLE, DOOR_OPEN }
+
+class Request {
+    final int sourceFloor;
+    final int destinationFloor;
+    final Direction direction;
+
+    Request(int sourceFloor, int destinationFloor) {
+        this.sourceFloor = sourceFloor;
+        this.destinationFloor = destinationFloor;
+        this.direction = destinationFloor > sourceFloor ? Direction.UP : Direction.DOWN;
+    }
+
+    public boolean isUp() { return direction == Direction.UP; }
+}
+
+class Elevator {
+    private final int id;
+    private int currentFloor;
+    private Direction direction = Direction.IDLE;
+    private ElevatorState state = ElevatorState.IDLE;
+    private final Queue<Request> requests = new LinkedList<>();
+
+    Elevator(int id, int startFloor) {
+        this.id = id;
+        this.currentFloor = startFloor;
+    }
+
+    public void addRequest(Request request) {
+        requests.offer(request);
+    }
+
+    public void move() {
+        Request request = requests.peek();
+        if (request == null) {
+            direction = Direction.IDLE;
+            state = ElevatorState.IDLE;
+            return;
+        }
+
+        int target = currentFloor == request.sourceFloor ? request.destinationFloor : request.sourceFloor;
+        if (currentFloor < target) {
+            currentFloor++;
+            direction = Direction.UP;
+        } else if (currentFloor > target) {
+            currentFloor--;
+            direction = Direction.DOWN;
+        } else {
+            openDoor();
+            if (currentFloor == request.destinationFloor) requests.poll();
+            closeDoor();
+        }
+        state = requests.isEmpty() ? ElevatorState.IDLE : ElevatorState.MOVING;
+    }
+
+    public void openDoor() { state = ElevatorState.DOOR_OPEN; }
+    public void closeDoor() { state = ElevatorState.IDLE; }
+
+    public int distanceFrom(int floor) { return Math.abs(currentFloor - floor); }
+    public int getCurrentFloor() { return currentFloor; }
+    public int getId() { return id; }
+}
+
+class Dispatcher {
+    public Elevator assignElevator(Request request, List<Elevator> elevators) {
+        if (elevators.isEmpty()) throw new IllegalStateException("No elevators configured");
+
+        Elevator best = elevators.get(0);
+        for (Elevator elevator : elevators) {
+            if (elevator.distanceFrom(request.sourceFloor) < best.distanceFrom(request.sourceFloor)) {
+                best = elevator;
+            }
+        }
+        best.addRequest(request);
+        return best;
+    }
+}
+
+class ElevatorSystem {
+    private final List<Elevator> elevators = new ArrayList<>();
+    private final Dispatcher dispatcher = new Dispatcher();
+
+    ElevatorSystem(int elevatorCount) {
+        for (int i = 1; i <= elevatorCount; i++) elevators.add(new Elevator(i, 0));
+    }
+
+    public Elevator requestElevator(int source, int destination) {
+        if (source == destination) throw new IllegalArgumentException("Source and destination are same");
+        return dispatcher.assignElevator(new Request(source, destination), elevators);
+    }
+
+    public void step() {
+        for (Elevator elevator : elevators) elevator.move();
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design Parking Lot
+
+**Category:** Management Systems
+
+### 1. Requirements
+
+- Support multiple floors and different vehicle/spot sizes.
+- Allocate compatible available spots automatically.
+- Issue parking tickets and calculate fees on exit.
+- Handle concurrent parking operations safely.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Support multiple floors and different vehicle/spot sizes.
+- Allocate compatible available spots automatically.
+- Issue parking tickets and calculate fees on exit.
+- Handle concurrent parking operations safely.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Vehicle enters
+- Allocation strategy finds spot
+- Spot parks vehicle
+- Ticket is issued
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `ParkingLot` | Facade for park/unpark operations. |
+| `ParkingFloor` | Groups parking spots. |
+| `ParkingSpot` | Stores spot size and parked vehicle. |
+| `Vehicle` | Base type for Bike, Car, Truck. |
+| `ParkingTicket` | Tracks vehicle, spot, and time. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class ParkingLot {
+    -List floors
+    -Map activeTickets
+    -FeeStrategy feeStrategy
+    -SpotAllocationStrategy allocationStrategy
+    +parkVehicle()
+    +unparkVehicle()
+    +displayAvailability()
+  }
+  class ParkingFloor {
+    -int floorNumber
+    -List spots
+    +findAvailableSpot()
+    +getAvailableCount()
+  }
+  class ParkingSpot {
+    -String spotId
+    -VehicleSize size
+    -Vehicle parkedVehicle
+    +isAvailable()
+    +canFitVehicle()
+    +parkVehicle()
+    +unparkVehicle()
+  }
+  class Vehicle {
+    <<abstract>>
+    -String licensePlate
+    -VehicleSize size
+    +getLicensePlate()
+    +getSize()
+  }
+  class ParkingTicket {
+    -String ticketId
+    -Vehicle vehicle
+    -ParkingSpot spot
+    -LocalDateTime entryTime
+    -LocalDateTime exitTime
+    +close()
+    +getDurationHours()
+  }
+  class FeeStrategy {
+    <<interface>>
+    +calculateFee()
+  }
+  class SpotAllocationStrategy {
+    <<interface>>
+    +findSpot()
+  }
+  ParkingLot *-- ParkingFloor
+  ParkingFloor *-- ParkingSpot
+  ParkingSpot --> Vehicle
+  ParkingTicket --> Vehicle
+  ParkingTicket --> ParkingSpot
+  ParkingLot --> FeeStrategy
+  ParkingLot --> SpotAllocationStrategy
+  %% Cardinality relationships
+  ParkingLot "1" --> "*" ParkingFloor : contains
+  ParkingFloor "1" --> "*" ParkingSpot : contains
+  ParkingSpot "1" --> "0..1" Vehicle : parks
+  ParkingTicket "1" --> "1" Vehicle : references
+  ParkingTicket "1" --> "1" ParkingSpot : references
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `ParkingLot` | 1 | `ParkingFloor` | * | contains |
+| `ParkingFloor` | 1 | `ParkingSpot` | * | contains |
+| `ParkingSpot` | 1 | `Vehicle` | 0..1 | parks |
+| `ParkingTicket` | 1 | `Vehicle` | 1 | references |
+| `ParkingTicket` | 1 | `ParkingSpot` | 1 | references |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Vehicle enters
+- Allocation strategy finds spot
+- Spot parks vehicle
+- Ticket is issued
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Vehicle enters ->
+2. Allocation strategy finds spot ->
+3. Spot parks vehicle ->
+4. Ticket is issued ->
+5. On exit fee is calculated and spot freed
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/parking-lot` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/parking-lot/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/parking-lot/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/parking-lot/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/parking-lot/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Parking Lot Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  PARKING_LOT {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PARKING_FLOOR {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PARKING_SPOT {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  VEHICLE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PARKING_TICKET {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PARKING_LOT ||--o{ PARKING_FLOOR : contains
+  PARKING_FLOOR ||--o{ PARKING_SPOT : contains
+  PARKING_SPOT ||--o{ VEHICLE : parks
+  PARKING_TICKET ||--o{ VEHICLE : references
+  PARKING_TICKET ||--o{ PARKING_SPOT : references
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Strategy:** Spot allocation and fee calculation are interchangeable.
+- **Facade:** ParkingLot exposes simple park/unpark methods while hiding floors/spots internals.
+
+### 8. Full Java Implementation
+
+```java
+import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
+
+enum VehicleSize { SMALL, MEDIUM, LARGE }
+
+abstract class Vehicle {
+    private final String licensePlate;
+    private final VehicleSize size;
+
+    protected Vehicle(String licensePlate, VehicleSize size) {
+        this.licensePlate = licensePlate;
+        this.size = size;
+    }
+
+    public String getLicensePlate() { return licensePlate; }
+    public VehicleSize getSize() { return size; }
+}
+
+class Bike extends Vehicle { public Bike(String plate) { super(plate, VehicleSize.SMALL); } }
+class Car extends Vehicle { public Car(String plate) { super(plate, VehicleSize.MEDIUM); } }
+class Truck extends Vehicle { public Truck(String plate) { super(plate, VehicleSize.LARGE); } }
+
+class ParkingSpot {
+    private final String spotId;
+    private final VehicleSize size;
+    private Vehicle parkedVehicle;
+
+    public ParkingSpot(String spotId, VehicleSize size) {
+        this.spotId = spotId;
+        this.size = size;
+    }
+
+    public String getSpotId() { return spotId; }
+    public VehicleSize getSize() { return size; }
+    public boolean isAvailable() { return parkedVehicle == null; }
+
+    public boolean canFitVehicle(Vehicle vehicle) {
+        return isAvailable() && size.ordinal() >= vehicle.getSize().ordinal();
+    }
+
+    public synchronized void parkVehicle(Vehicle vehicle) {
+        if (!canFitVehicle(vehicle)) throw new IllegalStateException("Spot unavailable or incompatible");
+        parkedVehicle = vehicle;
+    }
+
+    public synchronized Vehicle unparkVehicle() {
+        if (parkedVehicle == null) throw new IllegalStateException("Spot already empty");
+        Vehicle vehicle = parkedVehicle;
+        parkedVehicle = null;
+        return vehicle;
+    }
+}
+
+class ParkingFloor {
+    private final int floorNumber;
+    private final List<ParkingSpot> spots = new ArrayList<>();
+
+    public ParkingFloor(int floorNumber, Map<VehicleSize, Integer> spotCounts) {
+        this.floorNumber = floorNumber;
+        int seq = 1;
+        for (Map.Entry<VehicleSize, Integer> entry : spotCounts.entrySet()) {
+            for (int i = 0; i < entry.getValue(); i++) {
+                spots.add(new ParkingSpot("F" + floorNumber + "-" + seq++, entry.getKey()));
+            }
+        }
+    }
+
+    public ParkingSpot findAvailableSpot(Vehicle vehicle) {
+        for (ParkingSpot spot : spots)
+            if (spot.canFitVehicle(vehicle)) return spot;
+        return null;
+    }
+
+    public int getAvailableCount(VehicleSize size) {
+        int count = 0;
+        for (ParkingSpot spot : spots)
+            if (spot.isAvailable() && spot.getSize() == size) count++;
+        return count;
+    }
+
+    public int getFloorNumber() { return floorNumber; }
+    public List<ParkingSpot> getSpots() { return spots; }
+}
+
+class ParkingTicket {
+    private final String ticketId;
+    private final Vehicle vehicle;
+    private final ParkingSpot spot;
+    private final LocalDateTime entryTime;
+    private LocalDateTime exitTime;
+
+    public ParkingTicket(String ticketId, Vehicle vehicle, ParkingSpot spot) {
+        this.ticketId = ticketId;
+        this.vehicle = vehicle;
+        this.spot = spot;
+        this.entryTime = LocalDateTime.now();
+    }
+
+    public String getTicketId() { return ticketId; }
+    public Vehicle getVehicle() { return vehicle; }
+    public ParkingSpot getSpot() { return spot; }
+    public LocalDateTime getEntryTime() { return entryTime; }
+
+    public void close() { this.exitTime = LocalDateTime.now(); }
+
+    public long getDurationHours() {
+        LocalDateTime end = exitTime == null ? LocalDateTime.now() : exitTime;
+        long minutes = Duration.between(entryTime, end).toMinutes();
+        return Math.max(1, (long) Math.ceil(minutes / 60.0));
+    }
+}
+
+interface FeeStrategy {
+    double calculateFee(ParkingTicket ticket);
+}
+
+class HourlyFeeStrategy implements FeeStrategy {
+    private final double hourlyRate;
+
+    public HourlyFeeStrategy(double hourlyRate) {
+        this.hourlyRate = hourlyRate;
+    }
+
+    public double calculateFee(ParkingTicket ticket) {
+        return ticket.getDurationHours() * hourlyRate;
+    }
+}
+
+interface SpotAllocationStrategy {
+    ParkingSpot findSpot(List<ParkingFloor> floors, Vehicle vehicle);
+}
+
+class NearestFirstAllocationStrategy implements SpotAllocationStrategy {
+    public ParkingSpot findSpot(List<ParkingFloor> floors, Vehicle vehicle) {
+        for (ParkingFloor floor : floors) {
+            ParkingSpot spot = floor.findAvailableSpot(vehicle);
+            if (spot != null) return spot;
+        }
+        return null;
+    }
+}
+
+class ParkingLot {
+    private final List<ParkingFloor> floors;
+    private final Map<String, ParkingTicket> activeTickets = new ConcurrentHashMap<>();
+    private final FeeStrategy feeStrategy;
+    private final SpotAllocationStrategy allocationStrategy;
+
+    public ParkingLot(List<ParkingFloor> floors, FeeStrategy feeStrategy, SpotAllocationStrategy allocationStrategy) {
+        this.floors = floors;
+        this.feeStrategy = feeStrategy;
+        this.allocationStrategy = allocationStrategy;
+    }
+
+    public synchronized ParkingTicket parkVehicle(Vehicle vehicle) {
+        ParkingSpot spot = allocationStrategy.findSpot(floors, vehicle);
+        if (spot == null) throw new IllegalStateException("No compatible spot available");
+
+        spot.parkVehicle(vehicle);
+        ParkingTicket ticket = new ParkingTicket(UUID.randomUUID().toString(), vehicle, spot);
+        activeTickets.put(ticket.getTicketId(), ticket);
+        return ticket;
+    }
+
+    public synchronized double unparkVehicle(String ticketId) {
+        ParkingTicket ticket = activeTickets.remove(ticketId);
+        if (ticket == null) throw new IllegalArgumentException("Invalid ticket");
+
+        ticket.close();
+        ticket.getSpot().unparkVehicle();
+        return feeStrategy.calculateFee(ticket);
+    }
+
+    public void displayAvailability() {
+        for (ParkingFloor floor : floors) {
+            System.out.println("Floor " + floor.getFloorNumber());
+            for (VehicleSize size : VehicleSize.values()) {
+                System.out.println(size + ": " + floor.getAvailableCount(size));
+            }
+        }
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- No compatible spot
+- Invalid ticket
+- Unpark already free spot
+- Concurrent entry lanes
+
+---
+
+## Design Inventory Management System
+
+**Category:** Management Systems
+
+### 1. Requirements
+
+- Track products across warehouses.
+- Support stock addition, reservation, release, and sale.
+- Prevent overselling and invalid quantities.
+- Expose availability across warehouses.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Track products across warehouses.
+- Support stock addition, reservation, release, and sale.
+- Prevent overselling and invalid quantities.
+- Expose availability across warehouses.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Stock is added
+- Order reserves quantity
+- Reserved stock is sold or released
+- Availability is updated
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `InventoryService` | Coordinates warehouses. |
+| `Warehouse` | Stores inventory items. |
+| `InventoryItem` | Tracks available and reserved stock. |
+| `Product` | Product identity and metadata. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class InventoryService {
+    -List warehouses
+    +addStock()
+    +reserve()
+    +release()
+    +sell()
+    +checkAvailability()
+  }
+  class Warehouse {
+    -String warehouseId
+    -Map items
+    +addItem()
+    +getItem()
+    +removeItem()
+  }
+  class InventoryItem {
+    -Product product
+    -int availableQuantity
+    -int reservedQuantity
+    +reserve()
+    +release()
+    +sell()
+    +getAvailableQuantity()
+  }
+  class Product {
+    -String productId
+    -String name
+    -String category
+    +getProductId()
+    +getName()
+  }
+  InventoryService --> Warehouse
+  Warehouse *-- InventoryItem
+  InventoryItem --> Product
+  %% Cardinality relationships
+  InventoryService "1" --> "*" Warehouse : manages
+  Warehouse "1" --> "*" InventoryItem : contains
+  InventoryItem "1" --> "1" Product : references
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `InventoryService` | 1 | `Warehouse` | * | manages |
+| `Warehouse` | 1 | `InventoryItem` | * | contains |
+| `InventoryItem` | 1 | `Product` | 1 | references |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Stock is added
+- Order reserves quantity
+- Reserved stock is sold or released
+- Availability is updated
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Stock is added ->
+2. Order reserves quantity ->
+3. Reserved stock is sold or released ->
+4. Availability is updated
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/inventory-management-system` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/inventory-management-system/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/inventory-management-system/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/inventory-management-system/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/inventory-management-system/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Inventory Management System Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  INVENTORY_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  WAREHOUSE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  INVENTORY_ITEM {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PRODUCT {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  INVENTORY_SERVICE ||--o{ WAREHOUSE : manages
+  WAREHOUSE ||--o{ INVENTORY_ITEM : contains
+  INVENTORY_ITEM ||--o{ PRODUCT : references
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Service Layer:** InventoryService coordinates stock operations across warehouses.
+- **Encapsulation:** InventoryItem protects available/reserved quantity updates.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+class Product {
+    private final String productId;
+    private final String name;
+    private final String category;
+
+    Product(String productId, String name, String category) {
+        this.productId = productId;
+        this.name = name;
+        this.category = category;
+    }
+
+    public String getProductId() { return productId; }
+    public String getName() { return name; }
+    public String getCategory() { return category; }
+}
+
+class InventoryItem {
+    private final Product product;
+    private int availableQuantity;
+    private int reservedQuantity;
+
+    InventoryItem(Product product, int quantity) {
+        this.product = product;
+        this.availableQuantity = quantity;
+    }
+
+    public synchronized void addStock(int qty) {
+        validateQty(qty);
+        availableQuantity += qty;
+    }
+
+    public synchronized void reserve(int qty) {
+        validateQty(qty);
+        if (availableQuantity < qty) throw new IllegalStateException("Insufficient stock");
+        availableQuantity -= qty;
+        reservedQuantity += qty;
+    }
+
+    public synchronized void release(int qty) {
+        validateQty(qty);
+        if (reservedQuantity < qty) throw new IllegalStateException("Insufficient reserved stock");
+        reservedQuantity -= qty;
+        availableQuantity += qty;
+    }
+
+    public synchronized void sell(int qty) {
+        validateQty(qty);
+        if (reservedQuantity < qty) throw new IllegalStateException("Reserve before selling");
+        reservedQuantity -= qty;
+    }
+
+    public int getAvailableQuantity() { return availableQuantity; }
+    public Product getProduct() { return product; }
+
+    private void validateQty(int qty) {
+        if (qty <= 0) throw new IllegalArgumentException("Quantity must be positive");
+    }
+}
+
+class Warehouse {
+    private final String warehouseId;
+    private final Map<String, InventoryItem> items = new HashMap<>();
+
+    Warehouse(String warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public void addItem(Product product, int qty) {
+        items.compute(product.getProductId(), (id, item) -> {
+            if (item == null) return new InventoryItem(product, qty);
+            item.addStock(qty);
+            return item;
+        });
+    }
+
+    public InventoryItem getItem(String productId) {
+        return items.get(productId);
+    }
+
+    public String getWarehouseId() { return warehouseId; }
+}
+
+class InventoryService {
+    private final List<Warehouse> warehouses = new ArrayList<>();
+
+    public void addWarehouse(Warehouse warehouse) {
+        warehouses.add(warehouse);
+    }
+
+    public void addStock(String warehouseId, Product product, int qty) {
+        Warehouse warehouse = findWarehouse(warehouseId);
+        warehouse.addItem(product, qty);
+    }
+
+    public boolean reserve(Product product, int qty) {
+        for (Warehouse warehouse : warehouses) {
+            InventoryItem item = warehouse.getItem(product.getProductId());
+            if (item != null && item.getAvailableQuantity() >= qty) {
+                item.reserve(qty);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void release(Product product, int qty) {
+        for (Warehouse warehouse : warehouses) {
+            InventoryItem item = warehouse.getItem(product.getProductId());
+            if (item != null) {
+                item.release(qty);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Product not found");
+    }
+
+    public void sell(Product product, int qty) {
+        for (Warehouse warehouse : warehouses) {
+            InventoryItem item = warehouse.getItem(product.getProductId());
+            if (item != null) {
+                item.sell(qty);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Product not found");
+    }
+
+    public int checkAvailability(Product product) {
+        int total = 0;
+        for (Warehouse warehouse : warehouses) {
+            InventoryItem item = warehouse.getItem(product.getProductId());
+            if (item != null) total += item.getAvailableQuantity();
+        }
+        return total;
+    }
+
+    private Warehouse findWarehouse(String warehouseId) {
+        return warehouses.stream()
+                .filter(w -> w.getWarehouseId().equals(warehouseId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Warehouse not found"));
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design a Social Network
+
+**Category:** Social & Content Platforms
+
+### 1. Requirements
+
+- Create users, posts, comments, likes, and follow relationships.
+- Generate a user feed from followed users.
+- Prevent invalid relationships such as self-follow.
+- Keep feed generation separate from user/post storage.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Create users, posts, comments, likes, and follow relationships.
+- Generate a user feed from followed users.
+- Prevent invalid relationships such as self-follow.
+- Keep feed generation separate from user/post storage.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- User creates post
+- Other users follow author
+- Feed service collects followed posts
+- Posts are sorted by time
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `SocialNetworkService` | Creates users, posts, and relationships. |
+| `User` | Stores profile, posts, and followings. |
+| `Post` | Stores content, comments, likes. |
+| `Comment` | Stores comment author and text. |
+| `FeedService` | Builds feed for a user. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class SocialNetworkService {
+    -Map users
+    -FeedService feedService
+    +createUser()
+    +createPost()
+    +follow()
+    +unfollow()
+    +getFeed()
+  }
+  class User {
+    -String userId
+    -String name
+    -Set following
+    +follow()
+    +unfollow()
+  }
+  class Post {
+    -String postId
+    -User author
+    -String content
+    -List comments
+    +like()
+    +comment()
+  }
+  class Comment {
+    -String commentId
+    -User author
+    -String text
+    +edit()
+  }
+  class FeedService {
+    +generateFeed()
+  }
+  SocialNetworkService --> User
+  SocialNetworkService --> FeedService
+  User --> Post
+  Post --> Comment
+  %% Cardinality relationships
+  SocialNetworkService "1" --> "*" User : manages
+  User "1" --> "*" Post : creates
+  Post "1" --> "*" Comment : contains
+  User "*" --> "*" User : follows
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `SocialNetworkService` | 1 | `User` | * | manages |
+| `User` | 1 | `Post` | * | creates |
+| `Post` | 1 | `Comment` | * | contains |
+| `User` | * | `User` | * | follows |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- User creates post
+- Other users follow author
+- Feed service collects followed posts
+- Posts are sorted by time
+### 6. Core Flow
+
+```text
+Core Flow:
+1. User creates post ->
+2. Other users follow author ->
+3. Feed service collects followed posts ->
+4. Posts are sorted by time
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/a-social-network` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/a-social-network/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/a-social-network/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/a-social-network/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/a-social-network/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as a Social Network Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  SOCIAL_NETWORK_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  USER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  POST {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  COMMENT {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  FEED_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  SOCIAL_NETWORK_SERVICE ||--o{ USER : manages
+  USER ||--o{ POST : creates
+  POST ||--o{ COMMENT : contains
+  USER ||--o{ USER : follows
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Service Layer:** SocialNetworkService coordinates users, posts, and relationships.
+- **Strategy-ready Feed:** FeedService can later support ranking, pagination, or ML-based feeds.
+
+### 8. Full Java Implementation
+
+```java
+import java.time.*;
+import java.util.*;
+
+class User {
+    private final String userId;
+    private final String name;
+    private final Set<User> following = new HashSet<>();
+    private final List<Post> posts = new ArrayList<>();
+
+    User(String userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
+
+    public void follow(User user) {
+        if (user == this) throw new IllegalArgumentException("Cannot follow yourself");
+        following.add(user);
+    }
+
+    public void unfollow(User user) { following.remove(user); }
+    public Set<User> getFollowing() { return following; }
+    public List<Post> getPosts() { return posts; }
+    public String getUserId() { return userId; }
+    public String getName() { return name; }
+}
+
+class Comment {
+    private final String commentId;
+    private final User author;
+    private String text;
+
+    Comment(String commentId, User author, String text) {
+        this.commentId = commentId;
+        this.author = author;
+        this.text = text;
+    }
+
+    public void edit(String text) { this.text = text; }
+}
+
+class Post {
+    private final String postId;
+    private final User author;
+    private final String content;
+    private final LocalDateTime createdAt = LocalDateTime.now();
+    private final Set<User> likes = new HashSet<>();
+    private final List<Comment> comments = new ArrayList<>();
+
+    Post(String postId, User author, String content) {
+        this.postId = postId;
+        this.author = author;
+        this.content = content;
+    }
+
+    public void like(User user) { likes.add(user); }
+    public void comment(Comment comment) { comments.add(comment); }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public User getAuthor() { return author; }
+    public String getContent() { return content; }
+}
+
+class FeedService {
+    public List<Post> generateFeed(User user) {
+        List<Post> feed = new ArrayList<>();
+        for (User followed : user.getFollowing()) feed.addAll(followed.getPosts());
+        feed.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
+        return feed;
+    }
+}
+
+class SocialNetworkService {
+    private final Map<String, User> users = new HashMap<>();
+    private final FeedService feedService = new FeedService();
+
+    public User createUser(String name) {
+        String id = UUID.randomUUID().toString();
+        User user = new User(id, name);
+        users.put(id, user);
+        return user;
+    }
+
+    public Post createPost(User user, String content) {
+        Post post = new Post(UUID.randomUUID().toString(), user, content);
+        user.getPosts().add(post);
+        return post;
+    }
+
+    public void follow(User user, User target) { user.follow(target); }
+    public void unfollow(User user, User target) { user.unfollow(target); }
+    public List<Post> getFeed(User user) { return feedService.generateFeed(user); }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design Spotify
+
+**Category:** Social & Content Platforms
+
+### 1. Requirements
+
+- Manage songs, playlists, playback queue, and player state.
+- Support search by title or artist.
+- Support play, pause, and next operations.
+- Separate catalog management from player behavior.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Manage songs, playlists, playback queue, and player state.
+- Support search by title or artist.
+- Support play, pause, and next operations.
+- Separate catalog management from player behavior.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Song added to catalog
+- User searches or creates playlist
+- Song added to queue
+- Player plays, pauses, or skips
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `MusicService` | Catalog and playlist entry point. |
+| `Song` | Song metadata. |
+| `Playlist` | Collection of songs. |
+| `Player` | Playback state machine. |
+| `PlayQueue` | Upcoming songs. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class MusicService {
+    -Map songs
+    -Map playlists
+    -Player player
+    +searchSong()
+    +createPlaylist()
+    +playSong()
+  }
+  class Song {
+    -String songId
+    -String title
+    -String artist
+    -int duration
+    +getTitle()
+    +getArtist()
+  }
+  class Playlist {
+    -String playlistId
+    -String name
+    -List songs
+    +addSong()
+    +removeSong()
+  }
+  class Player {
+    -PlayQueue queue
+    -PlayerState state
+    +play()
+    +pause()
+    +next()
+  }
+  class PlayQueue {
+    -Queue songs
+    +add()
+    +next()
+  }
+  MusicService --> Song
+  MusicService --> Playlist
+  MusicService --> Player
+  Playlist --> Song
+  Player --> PlayQueue
+  %% Cardinality relationships
+  MusicService "1" --> "*" Song : catalog
+  MusicService "1" --> "*" Playlist : manages
+  Playlist "1" --> "*" Song : contains
+  Player "1" --> "1" PlayQueue : uses
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `MusicService` | 1 | `Song` | * | catalog |
+| `MusicService` | 1 | `Playlist` | * | manages |
+| `Playlist` | 1 | `Song` | * | contains |
+| `Player` | 1 | `PlayQueue` | 1 | uses |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Song added to catalog
+- User searches or creates playlist
+- Song added to queue
+- Player plays, pauses, or skips
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Song added to catalog ->
+2. User searches or creates playlist ->
+3. Song added to queue ->
+4. Player plays, pauses, or skips
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/spotify` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/spotify/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/spotify/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/spotify/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/spotify/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Spotify Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  MUSIC_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  SONG {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PLAYLIST {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PLAYER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PLAY_QUEUE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  MUSIC_SERVICE ||--o{ SONG : catalog
+  MUSIC_SERVICE ||--o{ PLAYLIST : manages
+  PLAYLIST ||--o{ SONG : contains
+  PLAYER ||--o{ PLAY_QUEUE : uses
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **State:** PlayerState tracks playing, paused, and stopped.
+- **Queue:** PlayQueue isolates ordering of upcoming songs.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+enum PlayerState { PLAYING, PAUSED, STOPPED }
+
+class Song {
+    private final String songId;
+    private final String title;
+    private final String artist;
+    private final int durationSeconds;
+
+    Song(String songId, String title, String artist, int durationSeconds) {
+        this.songId = songId;
+        this.title = title;
+        this.artist = artist;
+        this.durationSeconds = durationSeconds;
+    }
+
+    public String getSongId() { return songId; }
+    public String getTitle() { return title; }
+    public String getArtist() { return artist; }
+}
+
+class Playlist {
+    private final String playlistId;
+    private final String name;
+    private final List<Song> songs = new ArrayList<>();
+
+    Playlist(String playlistId, String name) {
+        this.playlistId = playlistId;
+        this.name = name;
+    }
+
+    public void addSong(Song song) { songs.add(song); }
+    public void removeSong(Song song) { songs.remove(song); }
+    public List<Song> getSongs() { return songs; }
+}
+
+class PlayQueue {
+    private final Queue<Song> songs = new LinkedList<>();
+
+    public void add(Song song) { songs.offer(song); }
+    public void addAll(Collection<Song> collection) { songs.addAll(collection); }
+    public Song next() { return songs.poll(); }
+    public boolean isEmpty() { return songs.isEmpty(); }
+}
+
+class Player {
+    private final PlayQueue queue = new PlayQueue();
+    private PlayerState state = PlayerState.STOPPED;
+    private Song currentSong;
+
+    public void addToQueue(Song song) { queue.add(song); }
+
+    public Song play() {
+        if (currentSong == null) currentSong = queue.next();
+        if (currentSong == null) throw new IllegalStateException("Queue is empty");
+        state = PlayerState.PLAYING;
+        return currentSong;
+    }
+
+    public void pause() { state = PlayerState.PAUSED; }
+
+    public Song next() {
+        currentSong = queue.next();
+        state = currentSong == null ? PlayerState.STOPPED : PlayerState.PLAYING;
+        return currentSong;
+    }
+
+    public PlayerState getState() { return state; }
+}
+
+class MusicService {
+    private final Map<String, Song> songs = new HashMap<>();
+    private final Map<String, Playlist> playlists = new HashMap<>();
+    private final Player player = new Player();
+
+    public void addSong(Song song) { songs.put(song.getSongId(), song); }
+
+    public List<Song> searchSong(String query) {
+        String q = query.toLowerCase();
+        List<Song> result = new ArrayList<>();
+        for (Song song : songs.values()) {
+            if (song.getTitle().toLowerCase().contains(q) || song.getArtist().toLowerCase().contains(q)) {
+                result.add(song);
+            }
+        }
+        return result;
+    }
+
+    public Playlist createPlaylist(String name) {
+        Playlist playlist = new Playlist(UUID.randomUUID().toString(), name);
+        playlists.put(name, playlist);
+        return playlist;
+    }
+
+    public Song playSong(Song song) {
+        player.addToQueue(song);
+        return player.play();
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design Pub Sub System
+
+**Category:** Communication & Messaging
+
+### 1. Requirements
+
+- Create topics and allow subscribers to subscribe.
+- Publish messages to a topic.
+- Deliver messages to all subscribers of the topic.
+- Keep publishers decoupled from subscribers.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Create topics and allow subscribers to subscribe.
+- Publish messages to a topic.
+- Deliver messages to all subscribers of the topic.
+- Keep publishers decoupled from subscribers.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Subscriber subscribes to topic
+- Publisher publishes message
+- Topic stores message
+- Topic notifies subscribers
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `Broker` | Manages topics. |
+| `Topic` | Stores subscribers and messages. |
+| `Subscriber` | Consumes messages. |
+| `Message` | Payload plus metadata. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class Broker {
+    -Map topics
+    +createTopic()
+    +publish()
+    +subscribe()
+  }
+  class Topic {
+    -String name
+    -List subscribers
+    -Queue messages
+    +addSubscriber()
+    +publish()
+    +notifySubscribers()
+  }
+  class Subscriber {
+    <<interface>>
+    +consume()
+  }
+  class Message {
+    -String messageId
+    -String payload
+    -long timestamp
+    +getPayload()
+  }
+  Broker --> Topic
+  Topic --> Subscriber
+  Topic --> Message
+  %% Cardinality relationships
+  Broker "1" --> "*" Topic : manages
+  Topic "1" --> "*" Subscriber : notifies
+  Topic "1" --> "*" Message : receives
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `Broker` | 1 | `Topic` | * | manages |
+| `Topic` | 1 | `Subscriber` | * | notifies |
+| `Topic` | 1 | `Message` | * | receives |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Subscriber subscribes to topic
+- Publisher publishes message
+- Topic stores message
+- Topic notifies subscribers
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Subscriber subscribes to topic ->
+2. Publisher publishes message ->
+3. Topic stores message ->
+4. Topic notifies subscribers
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/pub-sub-system` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/pub-sub-system/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/pub-sub-system/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/pub-sub-system/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/pub-sub-system/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Pub Sub System Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  BROKER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  TOPIC {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  SUBSCRIBER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  MESSAGE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  BROKER ||--o{ TOPIC : manages
+  TOPIC ||--o{ SUBSCRIBER : notifies
+  TOPIC ||--o{ MESSAGE : receives
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Observer / Pub-Sub:** Topic notifies all subscribers without publisher knowing subscriber details.
+- **Broker:** Broker centralizes topic management.
+
+### 8. Full Java Implementation
+
+```java
+import java.time.*;
+import java.util.*;
+
+class Message {
+    private final String messageId;
+    private final String payload;
+    private final long timestamp;
+
+    Message(String payload) {
+        this.messageId = UUID.randomUUID().toString();
+        this.payload = payload;
+        this.timestamp = Instant.now().toEpochMilli();
+    }
+
+    public String getPayload() { return payload; }
+    public String getMessageId() { return messageId; }
+    public long getTimestamp() { return timestamp; }
+}
+
+interface Subscriber {
+    void consume(Message message);
+}
+
+class PrintSubscriber implements Subscriber {
+    private final String name;
+
+    PrintSubscriber(String name) { this.name = name; }
+
+    public void consume(Message message) {
+        System.out.println(name + " received: " + message.getPayload());
+    }
+}
+
+class Topic {
+    private final String name;
+    private final List<Subscriber> subscribers = new ArrayList<>();
+    private final Queue<Message> messages = new LinkedList<>();
+
+    Topic(String name) { this.name = name; }
+
+    public void addSubscriber(Subscriber subscriber) {
+        subscribers.add(subscriber);
+    }
+
+    public void publish(Message message) {
+        messages.offer(message);
+        notifySubscribers(message);
+    }
+
+    private void notifySubscribers(Message message) {
+        for (Subscriber subscriber : subscribers) subscriber.consume(message);
+    }
+
+    public String getName() { return name; }
+}
+
+class Broker {
+    private final Map<String, Topic> topics = new HashMap<>();
+
+    public Topic createTopic(String name) {
+        return topics.computeIfAbsent(name, Topic::new);
+    }
+
+    public void publish(String topicName, Message message) {
+        Topic topic = topics.get(topicName);
+        if (topic == null) throw new IllegalArgumentException("Topic not found");
+        topic.publish(message);
+    }
+
+    public void subscribe(String topicName, Subscriber subscriber) {
+        createTopic(topicName).addSubscriber(subscriber);
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design Chat Application
+
+**Category:** Communication & Messaging
+
+### 1. Requirements
+
+- Create users and conversations.
+- Allow members to send messages.
+- Track message status such as sent, delivered, and read.
+- Reject messages from non-members.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Create users and conversations.
+- Allow members to send messages.
+- Track message status such as sent, delivered, and read.
+- Reject messages from non-members.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Conversation created
+- Member sends message
+- Conversation stores message
+- Status changes to delivered/read
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `ChatService` | Creates users, conversations, messages. |
+| `Conversation` | Stores members and messages. |
+| `Message` | Stores sender, content, and status. |
+| `User` | Chat participant. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class ChatService {
+    -Map users
+    -Map conversations
+    +createUser()
+    +createConversation()
+    +sendMessage()
+    +markRead()
+  }
+  class User {
+    -String userId
+    -String name
+    -UserStatus status
+    +goOnline()
+    +goOffline()
+  }
+  class Conversation {
+    -String conversationId
+    -List members
+    -List messages
+    +addMember()
+    +addMessage()
+  }
+  class Message {
+    -String messageId
+    -User sender
+    -String content
+    -MessageStatus status
+    +markDelivered()
+    +markRead()
+  }
+  ChatService --> User
+  ChatService --> Conversation
+  Conversation --> User
+  Conversation --> Message
+  %% Cardinality relationships
+  ChatService "1" --> "*" User : manages
+  ChatService "1" --> "*" Conversation : manages
+  Conversation "1" --> "2..*" User : members
+  Conversation "1" --> "*" Message : contains
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `ChatService` | 1 | `User` | * | manages |
+| `ChatService` | 1 | `Conversation` | * | manages |
+| `Conversation` | 1 | `User` | 2..* | members |
+| `Conversation` | 1 | `Message` | * | contains |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Conversation created
+- Member sends message
+- Conversation stores message
+- Status changes to delivered/read
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Conversation created ->
+2. Member sends message ->
+3. Conversation stores message ->
+4. Status changes to delivered/read
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/chat-application` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/chat-application/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/chat-application/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/chat-application/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/chat-application/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Chat Application Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  CHAT_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  CONVERSATION {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  MESSAGE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  USER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  CHAT_SERVICE ||--o{ USER : manages
+  CHAT_SERVICE ||--o{ CONVERSATION : manages
+  CONVERSATION ||--o{ USER : members
+  CONVERSATION ||--o{ MESSAGE : contains
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **State:** MessageStatus tracks sent, delivered, and read.
+- **Aggregate:** Conversation owns the message list and validates members.
+
+### 8. Full Java Implementation
+
+```java
+import java.time.*;
+import java.util.*;
+
+enum UserStatus { ONLINE, OFFLINE }
+enum MessageStatus { SENT, DELIVERED, READ }
+
+class User {
+    private final String userId;
+    private final String name;
+    private UserStatus status = UserStatus.OFFLINE;
+
+    User(String userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
+
+    public void goOnline() { status = UserStatus.ONLINE; }
+    public void goOffline() { status = UserStatus.OFFLINE; }
+    public String getUserId() { return userId; }
+    public String getName() { return name; }
+}
+
+class Message {
+    private final String messageId;
+    private final User sender;
+    private final String content;
+    private final LocalDateTime sentAt = LocalDateTime.now();
+    private MessageStatus status = MessageStatus.SENT;
+
+    Message(String messageId, User sender, String content) {
+        if (content == null || content.isBlank()) throw new IllegalArgumentException("Message cannot be empty");
+        this.messageId = messageId;
+        this.sender = sender;
+        this.content = content;
+    }
+
+    public void markDelivered() { status = MessageStatus.DELIVERED; }
+    public void markRead() { status = MessageStatus.READ; }
+    public MessageStatus getStatus() { return status; }
+}
+
+class Conversation {
+    private final String conversationId;
+    private final List<User> members = new ArrayList<>();
+    private final List<Message> messages = new ArrayList<>();
+
+    Conversation(String conversationId, List<User> members) {
+        this.conversationId = conversationId;
+        this.members.addAll(members);
+    }
+
+    public void addMember(User user) { members.add(user); }
+
+    public void addMessage(Message message, User sender) {
+        if (!members.contains(sender)) throw new IllegalArgumentException("Sender is not a conversation member");
+        messages.add(message);
+    }
+
+    public List<Message> getMessages() { return messages; }
+}
+
+class ChatService {
+    private final Map<String, User> users = new HashMap<>();
+    private final Map<String, Conversation> conversations = new HashMap<>();
+
+    public User createUser(String name) {
+        User user = new User(UUID.randomUUID().toString(), name);
+        users.put(user.getUserId(), user);
+        return user;
+    }
+
+    public Conversation createConversation(List<User> members) {
+        Conversation conversation = new Conversation(UUID.randomUUID().toString(), members);
+        conversations.put(UUID.randomUUID().toString(), conversation);
+        return conversation;
+    }
+
+    public Message sendMessage(Conversation conversation, User sender, String text) {
+        Message message = new Message(UUID.randomUUID().toString(), sender, text);
+        conversation.addMessage(message, sender);
+        message.markDelivered();
+        return message;
+    }
+
+    public void markRead(Message message) {
+        message.markRead();
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design Payment Gateway
+
+**Category:** Financial & Payment Systems
+
+### 1. Requirements
+
+- Initiate, process, and refund payments.
+- Validate payment method and amount.
+- Use pluggable payment processors.
+- Track payment lifecycle status.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Initiate, process, and refund payments.
+- Validate payment method and amount.
+- Use pluggable payment processors.
+- Track payment lifecycle status.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Payment initiated
+- Processor charges method
+- Payment status updated
+- Refund can reverse successful payment
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `PaymentGateway` | Coordinates payment processing. |
+| `Payment` | Payment amount, method, and status. |
+| `PaymentMethod` | Tokenized payment method. |
+| `PaymentProcessor` | Processor abstraction. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class PaymentGateway {
+    -PaymentProcessor processor
+    -Map payments
+    +initiatePayment()
+    +processPayment()
+    +refund()
+  }
+  class Payment {
+    -String paymentId
+    -double amount
+    -PaymentStatus status
+    -PaymentMethod method
+    +markSuccess()
+    +markFailed()
+  }
+  class PaymentMethod {
+    -String type
+    -String token
+    +isValid()
+  }
+  class PaymentProcessor {
+    <<interface>>
+    +charge()
+    +refund()
+  }
+  class StripeProcessor {
+    +charge()
+    +refund()
+  }
+  PaymentGateway --> Payment
+  PaymentGateway --> PaymentProcessor
+  Payment --> PaymentMethod
+  PaymentProcessor <|.. StripeProcessor
+  %% Cardinality relationships
+  PaymentGateway "1" --> "*" Payment : tracks
+  Payment "1" --> "1" PaymentMethod : uses
+  PaymentGateway "1" --> "1" PaymentProcessor : delegates
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `PaymentGateway` | 1 | `Payment` | * | tracks |
+| `Payment` | 1 | `PaymentMethod` | 1 | uses |
+| `PaymentGateway` | 1 | `PaymentProcessor` | 1 | delegates |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Payment initiated
+- Processor charges method
+- Payment status updated
+- Refund can reverse successful payment
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Payment initiated ->
+2. Processor charges method ->
+3. Payment status updated ->
+4. Refund can reverse successful payment
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/payment-gateway` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/payment-gateway/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/payment-gateway/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/payment-gateway/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/payment-gateway/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Payment Gateway Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  PAYMENT_GATEWAY {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PAYMENT {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PAYMENT_METHOD {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PAYMENT_PROCESSOR {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PAYMENT_GATEWAY ||--o{ PAYMENT : tracks
+  PAYMENT ||--o{ PAYMENT_METHOD : uses
+  PAYMENT_GATEWAY ||--o{ PAYMENT_PROCESSOR : delegates
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Strategy:** PaymentProcessor can be Stripe, Razorpay, PayPal, etc.
+- **State:** PaymentStatus protects lifecycle transitions.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+enum PaymentStatus { INITIATED, SUCCESS, FAILED, REFUNDED }
+
+class PaymentMethod {
+    private final String type;
+    private final String token;
+
+    PaymentMethod(String type, String token) {
+        this.type = type;
+        this.token = token;
+    }
+
+    public boolean isValid() {
+        return type != null && !type.isBlank() && token != null && !token.isBlank();
+    }
+}
+
+class Payment {
+    private final String paymentId;
+    private final double amount;
+    private PaymentStatus status = PaymentStatus.INITIATED;
+    private final PaymentMethod method;
+
+    Payment(String paymentId, double amount, PaymentMethod method) {
+        if (amount <= 0) throw new IllegalArgumentException("Amount must be positive");
+        if (!method.isValid()) throw new IllegalArgumentException("Invalid payment method");
+        this.paymentId = paymentId;
+        this.amount = amount;
+        this.method = method;
+    }
+
+    public void markSuccess() { status = PaymentStatus.SUCCESS; }
+    public void markFailed() { status = PaymentStatus.FAILED; }
+    public void markRefunded() { status = PaymentStatus.REFUNDED; }
+    public PaymentStatus getStatus() { return status; }
+    public String getPaymentId() { return paymentId; }
+    public double getAmount() { return amount; }
+}
+
+interface PaymentProcessor {
+    boolean charge(Payment payment);
+    boolean refund(Payment payment);
+}
+
+class StripeProcessor implements PaymentProcessor {
+    public boolean charge(Payment payment) { return true; }
+    public boolean refund(Payment payment) { return payment.getStatus() == PaymentStatus.SUCCESS; }
+}
+
+class PaymentGateway {
+    private final PaymentProcessor processor;
+    private final Map<String, Payment> payments = new HashMap<>();
+
+    PaymentGateway(PaymentProcessor processor) {
+        this.processor = processor;
+    }
+
+    public Payment initiatePayment(double amount, PaymentMethod method) {
+        Payment payment = new Payment(UUID.randomUUID().toString(), amount, method);
+        payments.put(payment.getPaymentId(), payment);
+        return payment;
+    }
+
+    public boolean processPayment(String paymentId) {
+        Payment payment = getPayment(paymentId);
+        boolean success = processor.charge(payment);
+        if (success) payment.markSuccess();
+        else payment.markFailed();
+        return success;
+    }
+
+    public boolean refund(String paymentId) {
+        Payment payment = getPayment(paymentId);
+        boolean success = processor.refund(payment);
+        if (success) payment.markRefunded();
+        return success;
+    }
+
+    private Payment getPayment(String paymentId) {
+        Payment payment = payments.get(paymentId);
+        if (payment == null) throw new IllegalArgumentException("Payment not found");
+        return payment;
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design Splitwise
+
+**Category:** Financial & Payment Systems
+
+### 1. Requirements
+
+- Create groups, members, expenses, and balances.
+- Split expenses using configurable split strategies.
+- Track who owes whom.
+- Support settlements between users.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Create groups, members, expenses, and balances.
+- Split expenses using configurable split strategies.
+- Track who owes whom.
+- Support settlements between users.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Expense is created
+- Split strategy calculates shares
+- Balance sheet records debts
+- Settlement reduces balance
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `SplitwiseService` | Coordinates expenses and settlements. |
+| `Group` | Members and expenses. |
+| `Expense` | Amount, payer, strategy. |
+| `SplitStrategy` | Defines split calculation. |
+| `BalanceSheet` | Tracks user-to-user balances. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class SplitwiseService {
+    -Map users
+    -Map groups
+    -BalanceSheet balanceSheet
+    +addExpense()
+    +settleUp()
+    +getBalances()
+  }
+  class Group {
+    -String groupId
+    -List members
+    -List expenses
+    +addMember()
+    +addExpense()
+  }
+  class User {
+    -String userId
+    -String name
+    +getName()
+  }
+  class Expense {
+    -User paidBy
+    -double amount
+    -SplitStrategy strategy
+    +calculateSplits()
+  }
+  class SplitStrategy {
+    <<interface>>
+    +split()
+  }
+  class BalanceSheet {
+    -Map balances
+    +updateBalance()
+    +getBalance()
+  }
+  SplitwiseService --> Group
+  SplitwiseService --> BalanceSheet
+  Group --> User
+  Group --> Expense
+  Expense --> SplitStrategy
+  %% Cardinality relationships
+  SplitwiseService "1" --> "*" Group : manages
+  Group "1" --> "*" User : members
+  Group "1" --> "*" Expense : contains
+  Expense "1" --> "1" SplitStrategy : uses
+  SplitwiseService "1" --> "1" BalanceSheet : updates
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `SplitwiseService` | 1 | `Group` | * | manages |
+| `Group` | 1 | `User` | * | members |
+| `Group` | 1 | `Expense` | * | contains |
+| `Expense` | 1 | `SplitStrategy` | 1 | uses |
+| `SplitwiseService` | 1 | `BalanceSheet` | 1 | updates |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Expense is created
+- Split strategy calculates shares
+- Balance sheet records debts
+- Settlement reduces balance
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Expense is created ->
+2. Split strategy calculates shares ->
+3. Balance sheet records debts ->
+4. Settlement reduces balance
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/splitwise` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/splitwise/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/splitwise/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/splitwise/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/splitwise/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Splitwise Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  SPLITWISE_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  GROUP {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  EXPENSE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  SPLIT_STRATEGY {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  BALANCE_SHEET {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  SPLITWISE_SERVICE ||--o{ GROUP : manages
+  GROUP ||--o{ USER : members
+  GROUP ||--o{ EXPENSE : contains
+  EXPENSE ||--o{ SPLIT_STRATEGY : uses
+  SPLITWISE_SERVICE ||--o{ BALANCE_SHEET : updates
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Strategy:** SplitStrategy supports equal, exact, percentage, or custom splits.
+- **Balance Sheet:** Central structure records who owes whom.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+class User {
+    private final String userId;
+    private final String name;
+
+    User(String userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
+
+    public String getUserId() { return userId; }
+    public String getName() { return name; }
+}
+
+class Split {
+    final User user;
+    final double amount;
+
+    Split(User user, double amount) {
+        this.user = user;
+        this.amount = amount;
+    }
+}
+
+interface SplitStrategy {
+    List<Split> split(double amount, List<User> users);
+}
+
+class EqualSplitStrategy implements SplitStrategy {
+    public List<Split> split(double amount, List<User> users) {
+        if (users.isEmpty()) throw new IllegalArgumentException("No users to split");
+        double share = amount / users.size();
+        List<Split> splits = new ArrayList<>();
+        for (User user : users) splits.add(new Split(user, share));
+        return splits;
+    }
+}
+
+class Expense {
+    private final User paidBy;
+    private final double amount;
+    private final SplitStrategy strategy;
+
+    Expense(User paidBy, double amount, SplitStrategy strategy) {
+        this.paidBy = paidBy;
+        this.amount = amount;
+        this.strategy = strategy;
+    }
+
+    public List<Split> calculateSplits(List<User> users) {
+        return strategy.split(amount, users);
+    }
+
+    public User getPaidBy() { return paidBy; }
+}
+
+class Group {
+    private final String groupId;
+    private final List<User> members = new ArrayList<>();
+    private final List<Expense> expenses = new ArrayList<>();
+
+    Group(String groupId) { this.groupId = groupId; }
+
+    public void addMember(User user) { members.add(user); }
+    public void addExpense(Expense expense) { expenses.add(expense); }
+    public List<User> getMembers() { return members; }
+}
+
+class BalanceSheet {
+    private final Map<String, Double> balances = new HashMap<>();
+
+    private String key(User from, User to) {
+        return from.getUserId() + "->" + to.getUserId();
+    }
+
+    public void updateBalance(User from, User to, double amount) {
+        balances.put(key(from, to), balances.getOrDefault(key(from, to), 0.0) + amount);
+    }
+
+    public double getBalance(User from, User to) {
+        return balances.getOrDefault(key(from, to), 0.0);
+    }
+
+    public Map<String, Double> getAllBalances() { return balances; }
+}
+
+class SplitwiseService {
+    private final BalanceSheet balanceSheet = new BalanceSheet();
+
+    public void addExpense(Group group, Expense expense) {
+        group.addExpense(expense);
+        for (Split split : expense.calculateSplits(group.getMembers())) {
+            if (split.user != expense.getPaidBy()) {
+                balanceSheet.updateBalance(split.user, expense.getPaidBy(), split.amount);
+            }
+        }
+    }
+
+    public void settleUp(User payer, User payee, double amount) {
+        balanceSheet.updateBalance(payer, payee, -amount);
+    }
+
+    public double getBalance(User from, User to) {
+        return balanceSheet.getBalance(from, to);
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design Amazon
+
+**Category:** E-commerce & Booking Systems
+
+### 1. Requirements
+
+- Search products, manage cart, reserve inventory, and place orders.
+- Prevent checkout when inventory is insufficient.
+- Process payment before order placement.
+- Separate product, cart, inventory, order, and payment responsibilities.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Search products, manage cart, reserve inventory, and place orders.
+- Prevent checkout when inventory is insufficient.
+- Process payment before order placement.
+- Separate product, cart, inventory, order, and payment responsibilities.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- User searches product
+- Product added to cart
+- Inventory reserved
+- Payment succeeds
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `EcommerceService` | Coordinates product search and checkout. |
+| `Product` | Product metadata and price. |
+| `Cart` | User cart. |
+| `Inventory` | Stock reservation and release. |
+| `Order` | Order lifecycle. |
+| `Payment` | Payment execution. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class EcommerceService {
+    -Catalog catalog
+    -Inventory inventory
+    -OrderService orderService
+    +searchProducts()
+    +addToCart()
+    +checkout()
+  }
+  class Product {
+    -String productId
+    -String name
+    -double price
+    +getPrice()
+  }
+  class Cart {
+    -User user
+    -List items
+    +addItem()
+    +removeItem()
+    +total()
+  }
+  class Order {
+    -String orderId
+    -OrderStatus status
+    -Payment payment
+    +place()
+    +cancel()
+  }
+  class Inventory {
+    -Map stock
+    +reserve()
+    +release()
+  }
+  class Payment {
+    -String paymentId
+    -double amount
+    +pay()
+  }
+  EcommerceService --> Product
+  EcommerceService --> Cart
+  EcommerceService --> Order
+  EcommerceService --> Inventory
+  Order --> Payment
+  %% Cardinality relationships
+  EcommerceService "1" --> "*" Product : catalog
+  Cart "1" --> "*" CartItem : contains
+  Order "1" --> "1" Payment : requires
+  EcommerceService "1" --> "1" Inventory : uses
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `EcommerceService` | 1 | `Product` | * | catalog |
+| `Cart` | 1 | `CartItem` | * | contains |
+| `Order` | 1 | `Payment` | 1 | requires |
+| `EcommerceService` | 1 | `Inventory` | 1 | uses |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- User searches product
+- Product added to cart
+- Inventory reserved
+- Payment succeeds
+### 6. Core Flow
+
+```text
+Core Flow:
+1. User searches product ->
+2. Product added to cart ->
+3. Inventory reserved ->
+4. Payment succeeds ->
+5. Order is placed
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/amazon` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/amazon/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/amazon/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/amazon/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/amazon/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Amazon Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  ECOMMERCE_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PRODUCT {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  CART {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  INVENTORY {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  ORDER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  PAYMENT {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  ECOMMERCE_SERVICE ||--o{ PRODUCT : catalog
+  CART ||--o{ CART_ITEM : contains
+  ORDER ||--o{ PAYMENT : requires
+  ECOMMERCE_SERVICE ||--o{ INVENTORY : uses
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Facade:** EcommerceService hides catalog, inventory, cart, order, and payment details.
+- **Transaction Boundary:** Checkout reserves inventory before creating the order.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+enum OrderStatus { CREATED, PLACED, CANCELLED, SHIPPED, DELIVERED }
+
+class Product {
+    private final String productId;
+    private final String name;
+    private final double price;
+
+    Product(String productId, String name, double price) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getProductId() { return productId; }
+    public String getName() { return name; }
+    public double getPrice() { return price; }
+}
+
+class User {
+    private final String userId;
+    private final String name;
+
+    User(String userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
+}
+
+class CartItem {
+    final Product product;
+    int quantity;
+
+    CartItem(Product product, int quantity) {
+        this.product = product;
+        this.quantity = quantity;
+    }
+}
+
+class Cart {
+    private final User user;
+    private final List<CartItem> items = new ArrayList<>();
+
+    Cart(User user) { this.user = user; }
+
+    public void addItem(Product product, int qty) {
+        for (CartItem item : items) {
+            if (item.product.getProductId().equals(product.getProductId())) {
+                item.quantity += qty;
+                return;
+            }
+        }
+        items.add(new CartItem(product, qty));
+    }
+
+    public void removeItem(Product product) {
+        items.removeIf(i -> i.product.getProductId().equals(product.getProductId()));
+    }
+
+    public double total() {
+        double sum = 0;
+        for (CartItem item : items) sum += item.product.getPrice() * item.quantity;
+        return sum;
+    }
+
+    public List<CartItem> getItems() { return items; }
+}
+
+class Inventory {
+    private final Map<String, Integer> stock = new HashMap<>();
+
+    public void addStock(Product product, int qty) {
+        stock.put(product.getProductId(), stock.getOrDefault(product.getProductId(), 0) + qty);
+    }
+
+    public boolean reserve(Product product, int qty) {
+        int available = stock.getOrDefault(product.getProductId(), 0);
+        if (available < qty) return false;
+        stock.put(product.getProductId(), available - qty);
+        return true;
+    }
+
+    public void release(Product product, int qty) {
+        addStock(product, qty);
+    }
+}
+
+class Payment {
+    private final String paymentId;
+    private final double amount;
+    private boolean paid;
+
+    Payment(double amount) {
+        this.paymentId = UUID.randomUUID().toString();
+        this.amount = amount;
+    }
+
+    public boolean pay() {
+        paid = true;
+        return true;
+    }
+}
+
+class Order {
+    private final String orderId;
+    private OrderStatus status = OrderStatus.CREATED;
+    private final Payment payment;
+
+    Order(double amount) {
+        this.orderId = UUID.randomUUID().toString();
+        this.payment = new Payment(amount);
+    }
+
+    public void place() {
+        if (!payment.pay()) throw new IllegalStateException("Payment failed");
+        status = OrderStatus.PLACED;
+    }
+
+    public void cancel() { status = OrderStatus.CANCELLED; }
+    public OrderStatus getStatus() { return status; }
+}
+
+class EcommerceService {
+    private final List<Product> products = new ArrayList<>();
+    private final Inventory inventory = new Inventory();
+
+    public void addProduct(Product product, int qty) {
+        products.add(product);
+        inventory.addStock(product, qty);
+    }
+
+    public List<Product> searchProducts(String query) {
+        List<Product> result = new ArrayList<>();
+        String q = query.toLowerCase();
+        for (Product product : products)
+            if (product.getName().toLowerCase().contains(q)) result.add(product);
+        return result;
+    }
+
+    public Order checkout(Cart cart) {
+        for (CartItem item : cart.getItems())
+            if (!inventory.reserve(item.product, item.quantity))
+                throw new IllegalStateException("Out of stock: " + item.product.getName());
+
+        Order order = new Order(cart.total());
+        order.place();
+        return order;
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design Ride Hailing Service
+
+**Category:** E-commerce & Booking Systems
+
+### 1. Requirements
+
+- Allow riders to request rides.
+- Match riders with available drivers.
+- Track ride status from request to completion.
+- Calculate fare using a configurable strategy.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Allow riders to request rides.
+- Match riders with available drivers.
+- Track ride status from request to completion.
+- Calculate fare using a configurable strategy.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Rider requests ride
+- Matching strategy selects driver
+- Driver accepts
+- Ride starts
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `RideService` | Coordinates ride request and completion. |
+| `Rider` | Customer requesting ride. |
+| `Driver` | Available driver with location. |
+| `Ride` | Ride lifecycle. |
+| `MatchingStrategy` | Driver matching algorithm. |
+| `FareStrategy` | Fare calculation algorithm. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class RideService {
+    -MatchingStrategy matchingStrategy
+    -FareStrategy fareStrategy
+    -Map rides
+    +requestRide()
+    +acceptRide()
+    +startRide()
+    +completeRide()
+  }
+  class Rider {
+    -String riderId
+    -String name
+    +requestRide()
+  }
+  class Driver {
+    -String driverId
+    -String name
+    -Location location
+    -boolean available
+    +acceptRide()
+    +setAvailable()
+  }
+  class Ride {
+    -Rider rider
+    -Driver driver
+    -Location pickup
+    -Location drop
+    -RideStatus status
+    +start()
+    +complete()
+    +cancel()
+  }
+  class MatchingStrategy {
+    <<interface>>
+    +findDriver()
+  }
+  class FareStrategy {
+    <<interface>>
+    +calculateFare()
+  }
+  RideService --> Rider
+  RideService --> Driver
+  RideService --> Ride
+  RideService --> MatchingStrategy
+  RideService --> FareStrategy
+  %% Cardinality relationships
+  RideService "1" --> "*" Ride : tracks
+  Ride "1" --> "1" Rider : has
+  Ride "1" --> "0..1" Driver : assigned
+  RideService "1" --> "1" MatchingStrategy : uses
+  RideService "1" --> "1" FareStrategy : uses
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `RideService` | 1 | `Ride` | * | tracks |
+| `Ride` | 1 | `Rider` | 1 | has |
+| `Ride` | 1 | `Driver` | 0..1 | assigned |
+| `RideService` | 1 | `MatchingStrategy` | 1 | uses |
+| `RideService` | 1 | `FareStrategy` | 1 | uses |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Rider requests ride
+- Matching strategy selects driver
+- Driver accepts
+- Ride starts
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Rider requests ride ->
+2. Matching strategy selects driver ->
+3. Driver accepts ->
+4. Ride starts ->
+5. Fare calculated on completion
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/ride-hailing-service` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/ride-hailing-service/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/ride-hailing-service/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/ride-hailing-service/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/ride-hailing-service/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Ride Hailing Service Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  RIDE_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  RIDER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  DRIVER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  RIDE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  MATCHING_STRATEGY {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  FARE_STRATEGY {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  RIDE_SERVICE ||--o{ RIDE : tracks
+  RIDE ||--o{ RIDER : has
+  RIDE ||--o{ DRIVER : assigned
+  RIDE_SERVICE ||--o{ MATCHING_STRATEGY : uses
+  RIDE_SERVICE ||--o{ FARE_STRATEGY : uses
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Strategy:** MatchingStrategy and FareStrategy are replaceable.
+- **State:** RideStatus tracks request, accepted, started, completed, cancelled.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+enum RideStatus { REQUESTED, ACCEPTED, STARTED, COMPLETED, CANCELLED }
+
+class Location {
+    final double latitude;
+    final double longitude;
+
+    Location(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public double distanceTo(Location other) {
+        double dx = latitude - other.latitude;
+        double dy = longitude - other.longitude;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+}
+
+class Rider {
+    private final String riderId;
+    private final String name;
+
+    Rider(String riderId, String name) {
+        this.riderId = riderId;
+        this.name = name;
+    }
+}
+
+class Driver {
+    private final String driverId;
+    private final String name;
+    private Location location;
+    private boolean available = true;
+
+    Driver(String driverId, String name, Location location) {
+        this.driverId = driverId;
+        this.name = name;
+        this.location = location;
+    }
+
+    public Location getLocation() { return location; }
+    public boolean isAvailable() { return available; }
+    public void setAvailable(boolean available) { this.available = available; }
+}
+
+class Ride {
+    private final String rideId;
+    private final Rider rider;
+    private Driver driver;
+    private final Location pickup;
+    private final Location drop;
+    private RideStatus status = RideStatus.REQUESTED;
+
+    Ride(Rider rider, Location pickup, Location drop) {
+        this.rideId = UUID.randomUUID().toString();
+        this.rider = rider;
+        this.pickup = pickup;
+        this.drop = drop;
+    }
+
+    public void assignDriver(Driver driver) {
+        this.driver = driver;
+        this.status = RideStatus.ACCEPTED;
+    }
+
+    public void start() { status = RideStatus.STARTED; }
+    public void complete() { status = RideStatus.COMPLETED; if (driver != null) driver.setAvailable(true); }
+    public void cancel() { status = RideStatus.CANCELLED; if (driver != null) driver.setAvailable(true); }
+
+    public Location getPickup() { return pickup; }
+    public Location getDrop() { return drop; }
+}
+
+interface MatchingStrategy {
+    Driver findDriver(Rider rider, Location pickup, List<Driver> drivers);
+}
+
+class NearestDriverStrategy implements MatchingStrategy {
+    public Driver findDriver(Rider rider, Location pickup, List<Driver> drivers) {
+        Driver best = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (Driver driver : drivers) {
+            if (driver.isAvailable()) {
+                double d = driver.getLocation().distanceTo(pickup);
+                if (d < bestDistance) {
+                    best = driver;
+                    bestDistance = d;
+                }
+            }
+        }
+        return best;
+    }
+}
+
+interface FareStrategy {
+    double calculateFare(Ride ride);
+}
+
+class DistanceFareStrategy implements FareStrategy {
+    public double calculateFare(Ride ride) {
+        return 5.0 + ride.getPickup().distanceTo(ride.getDrop()) * 10.0;
+    }
+}
+
+class RideService {
+    private final MatchingStrategy matchingStrategy;
+    private final FareStrategy fareStrategy;
+    private final List<Driver> drivers = new ArrayList<>();
+    private final Map<String, Ride> rides = new HashMap<>();
+
+    RideService(MatchingStrategy matchingStrategy, FareStrategy fareStrategy) {
+        this.matchingStrategy = matchingStrategy;
+        this.fareStrategy = fareStrategy;
+    }
+
+    public void addDriver(Driver driver) { drivers.add(driver); }
+
+    public Ride requestRide(Rider rider, Location pickup, Location drop) {
+        Ride ride = new Ride(rider, pickup, drop);
+        Driver driver = matchingStrategy.findDriver(rider, pickup, drivers);
+        if (driver == null) throw new IllegalStateException("No drivers available");
+        driver.setAvailable(false);
+        ride.assignDriver(driver);
+        rides.put(UUID.randomUUID().toString(), ride);
+        return ride;
+    }
+
+    public void startRide(Ride ride) { ride.start(); }
+    public double completeRide(Ride ride) {
+        ride.complete();
+        return fareStrategy.calculateFare(ride);
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design URL Shortener
+
+**Category:** Developer Tools & Infrastructure
+
+### 1. Requirements
+
+- Create short codes for long URLs.
+- Redirect short code to original URL.
+- Support link expiration.
+- Ensure generated codes are unique.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Create short codes for long URLs.
+- Redirect short code to original URL.
+- Support link expiration.
+- Ensure generated codes are unique.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Long URL submitted
+- Code generator creates code
+- Mapping stored
+- Redirect resolves code
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `UrlShortenerService` | Creates and resolves short URLs. |
+| `UrlMapping` | Code to long URL mapping. |
+| `CodeGenerator` | Short-code generation strategy. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class UrlShortenerService {
+    -Map mappings
+    -CodeGenerator codeGenerator
+    +shorten()
+    +redirect()
+    +expire()
+  }
+  class UrlMapping {
+    -String code
+    -String longUrl
+    -LocalDateTime createdAt
+    -boolean active
+    +isActive()
+    +expire()
+  }
+  class CodeGenerator {
+    <<interface>>
+    +generate()
+  }
+  class RandomCodeGenerator {
+    +generate()
+  }
+  UrlShortenerService --> UrlMapping
+  UrlShortenerService --> CodeGenerator
+  CodeGenerator <|.. RandomCodeGenerator
+  %% Cardinality relationships
+  UrlShortenerService "1" --> "*" UrlMapping : stores
+  UrlShortenerService "1" --> "1" CodeGenerator : uses
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `UrlShortenerService` | 1 | `UrlMapping` | * | stores |
+| `UrlShortenerService` | 1 | `CodeGenerator` | 1 | uses |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Long URL submitted
+- Code generator creates code
+- Mapping stored
+- Redirect resolves code
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Long URL submitted ->
+2. Code generator creates code ->
+3. Mapping stored ->
+4. Redirect resolves code ->
+5. Expired code is rejected
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/url-shortener` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/url-shortener/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/url-shortener/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/url-shortener/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/url-shortener/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as URL Shortener Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  URL_SHORTENER_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  URL_MAPPING {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  CODE_GENERATOR {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  URL_SHORTENER_SERVICE ||--o{ URL_MAPPING : stores
+  URL_SHORTENER_SERVICE ||--o{ CODE_GENERATOR : uses
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Strategy:** CodeGenerator can use random, base62 counter, or hash-based generation.
+- **Repository Map:** UrlShortenerService stores and resolves mappings.
+
+### 8. Full Java Implementation
+
+```java
+import java.time.*;
+import java.util.*;
+
+class UrlMapping {
+    private final String code;
+    private final String longUrl;
+    private final LocalDateTime createdAt = LocalDateTime.now();
+    private boolean active = true;
+
+    UrlMapping(String code, String longUrl) {
+        this.code = code;
+        this.longUrl = longUrl;
+    }
+
+    public String getCode() { return code; }
+    public String getLongUrl() { return longUrl; }
+    public boolean isActive() { return active; }
+    public void expire() { active = false; }
+}
+
+interface CodeGenerator {
+    String generate(String longUrl);
+}
+
+class RandomCodeGenerator implements CodeGenerator {
+    private static final String CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private final Random random = new Random();
+
+    public String generate(String longUrl) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 6; i++) sb.append(CHARS.charAt(random.nextInt(CHARS.length())));
+        return sb.toString();
+    }
+}
+
+class UrlShortenerService {
+    private final Map<String, UrlMapping> mappings = new HashMap<>();
+    private final CodeGenerator codeGenerator;
+
+    UrlShortenerService(CodeGenerator codeGenerator) {
+        this.codeGenerator = codeGenerator;
+    }
+
+    public String shorten(String longUrl) {
+        if (longUrl == null || longUrl.isBlank()) throw new IllegalArgumentException("Invalid URL");
+
+        String code;
+        do {
+            code = codeGenerator.generate(longUrl);
+        } while (mappings.containsKey(code));
+
+        mappings.put(code, new UrlMapping(code, longUrl));
+        return code;
+    }
+
+    public String redirect(String code) {
+        UrlMapping mapping = mappings.get(code);
+        if (mapping == null || !mapping.isActive()) throw new IllegalArgumentException("Invalid or expired short URL");
+        return mapping.getLongUrl();
+    }
+
+    public void expire(String code) {
+        UrlMapping mapping = mappings.get(code);
+        if (mapping != null) mapping.expire();
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
+
+## Design Rate Limiter
+
+**Category:** Developer Tools & Infrastructure
+
+### 1. Requirements
+
+- Allow or reject requests based on client quota.
+- Refill quota over time.
+- Support per-client buckets.
+- Keep algorithm pluggable.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Allow or reject requests based on client quota.
+- Refill quota over time.
+- Support per-client buckets.
+- Keep algorithm pluggable.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- Request arrives
+- Client bucket is loaded
+- Bucket refills by time
+- Token consumed if available
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `RateLimiterService` | Public entry point. |
+| `RateLimiter` | Algorithm abstraction. |
+| `TokenBucketRateLimiter` | Token bucket implementation. |
+| `Bucket` | Per-client token bucket. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class RateLimiterService {
+    -RateLimiter limiter
+    +allowRequest()
+  }
+  class RateLimiter {
+    <<interface>>
+    +allow()
+  }
+  class TokenBucketRateLimiter {
+    -Map buckets
+    +allow()
+    -getBucket()
+  }
+  class Bucket {
+    -int capacity
+    -int tokens
+    -long lastRefillTime
+    +tryConsume()
+    +refill()
+  }
+  RateLimiterService --> RateLimiter
+  RateLimiter <|.. TokenBucketRateLimiter
+  TokenBucketRateLimiter --> Bucket
+  %% Cardinality relationships
+  RateLimiterService "1" --> "1" RateLimiter : uses
+  TokenBucketRateLimiter "1" --> "*" Bucket : per client
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `RateLimiterService` | 1 | `RateLimiter` | 1 | uses |
+| `TokenBucketRateLimiter` | 1 | `Bucket` | * | per client |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- Request arrives
+- Client bucket is loaded
+- Bucket refills by time
+- Token consumed if available
+### 6. Core Flow
+
+```text
+Core Flow:
+1. Request arrives ->
+2. Client bucket is loaded ->
+3. Bucket refills by time ->
+4. Token consumed if available ->
+5. Request allowed or rejected
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/rate-limiter` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/rate-limiter/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/rate-limiter/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/rate-limiter/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/rate-limiter/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Rate Limiter Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  RATE_LIMITER_SERVICE {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  RATE_LIMITER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  TOKEN_BUCKET_RATE_LIMITER {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  BUCKET {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  RATE_LIMITER_SERVICE ||--o{ RATE_LIMITER : uses
+  TOKEN_BUCKET_RATE_LIMITER ||--o{ BUCKET : per_client
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Strategy:** RateLimiter interface allows token bucket, leaky bucket, fixed window, or sliding window.
+- **Token Bucket:** Bucket refills over time and consumes one token per request.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.concurrent.*;
+
+interface RateLimiter {
+    boolean allow(String clientId);
+}
+
+class Bucket {
+    private final int capacity;
+    private final int refillTokens;
+    private final long refillIntervalMillis;
+    private int tokens;
+    private long lastRefillTime;
+
+    Bucket(int capacity, int refillTokens, long refillIntervalMillis) {
+        this.capacity = capacity;
+        this.refillTokens = refillTokens;
+        this.refillIntervalMillis = refillIntervalMillis;
+        this.tokens = capacity;
+        this.lastRefillTime = System.currentTimeMillis();
+    }
+
+    public synchronized boolean tryConsume() {
+        refill();
+        if (tokens <= 0) return false;
+        tokens--;
+        return true;
+    }
+
+    public synchronized void refill() {
+        long now = System.currentTimeMillis();
+        long intervals = (now - lastRefillTime) / refillIntervalMillis;
+        if (intervals > 0) {
+            tokens = Math.min(capacity, tokens + (int) intervals * refillTokens);
+            lastRefillTime += intervals * refillIntervalMillis;
+        }
+    }
+}
+
+class TokenBucketRateLimiter implements RateLimiter {
+    private final ConcurrentHashMap<String, Bucket> buckets = new ConcurrentHashMap<>();
+    private final int capacity;
+    private final int refillTokens;
+    private final long refillIntervalMillis;
+
+    TokenBucketRateLimiter(int capacity, int refillTokens, long refillIntervalMillis) {
+        this.capacity = capacity;
+        this.refillTokens = refillTokens;
+        this.refillIntervalMillis = refillIntervalMillis;
+    }
+
+    public boolean allow(String clientId) {
+        return getBucket(clientId).tryConsume();
+    }
+
+    private Bucket getBucket(String clientId) {
+        return buckets.computeIfAbsent(clientId, id -> new Bucket(capacity, refillTokens, refillIntervalMillis));
+    }
+}
+
+class RateLimiterService {
+    private final RateLimiter limiter;
+
+    RateLimiterService(RateLimiter limiter) {
+        this.limiter = limiter;
+    }
+
+    public boolean allowRequest(String clientId) {
+        return limiter.allow(clientId);
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Unknown client
+- Burst traffic
+- Refill timing
+- Multiple requests at same time
+
+---
+
+## Design Version Control System
+
+**Category:** Developer Tools & Infrastructure
+
+### 1. Requirements
+
+- Track working tree, staging area, commits, and branches.
+- Commit staged file snapshots.
+- Create and checkout branches.
+- Restore working tree from branch head.
+
+
+### 1A. Requirement Definition
+
+#### Functional Requirements
+- Track working tree, staging area, commits, and branches.
+- Commit staged file snapshots.
+- Create and checkout branches.
+- Restore working tree from branch head.
+
+#### Non-Functional Requirements
+- Keep core operations efficient for the expected interview scale.
+- Keep business logic modular, testable, and independent from UI/client concerns.
+- Fail fast on invalid input and keep mutable state consistent.
+- Make concurrency-safe boundaries explicit where shared state can change.
+
+#### Out of Scope
+- Production authentication/authorization unless the problem explicitly requires it.
+- Distributed deployment, observability, and billing integrations unless stated.
+- Advanced analytics, ML ranking, or external integrations beyond the LLD scope.
+
+### 2. Core Use Cases
+
+- File added to working tree
+- File staged
+- Commit creates snapshot
+- Branch head moves
+
+### 3. Entities + Responsibilities
+
+| Entity | Responsibility |
+|---|---|
+| `Repository` | Coordinates working tree, staging, commits, branches. |
+| `Commit` | Immutable snapshot node. |
+| `Blob` | File content object. |
+| `Branch` | Named pointer to a commit. |
+
+### 4. System Visualization Diagram
+
+```mermaid
+classDiagram
+  class Repository {
+    -Map commits
+    -Map branches
+    -Branch currentBranch
+    +commit()
+    +checkout()
+    +createBranch()
+  }
+  class Commit {
+    -String commitId
+    -String message
+    -Commit parent
+    -List blobs
+    +getSnapshot()
+  }
+  class Blob {
+    -String path
+    -String contentHash
+    +getContent()
+  }
+  class Branch {
+    -String name
+    -Commit head
+    +moveHead()
+  }
+  Repository --> Commit
+  Repository --> Branch
+  Commit --> Blob
+  Branch --> Commit
+  %% Cardinality relationships
+  Repository "1" --> "*" Branch : manages
+  Repository "1" --> "*" Commit : stores
+  Branch "1" --> "1" Commit : head
+  Commit "1" --> "*" Blob : snapshot
+```
+
+### 5. Relationships and Cardinality
+
+| From | Cardinality | To | Cardinality | Relationship |
+|---|---:|---|---:|---|
+| `Repository` | 1 | `Branch` | * | manages |
+| `Repository` | 1 | `Commit` | * | stores |
+| `Branch` | 1 | `Commit` | 1 | head |
+| `Commit` | 1 | `Blob` | * | snapshot |
+
+
+### 5A. Entity Relation, Cardinality, and Primary Use Cases
+
+The relationship/cardinality table above defines ownership and references between entities. The main use cases are:
+
+- File added to working tree
+- File staged
+- Commit creates snapshot
+- Branch head moves
+### 6. Core Flow
+
+```text
+Core Flow:
+1. File added to working tree ->
+2. File staged ->
+3. Commit creates snapshot ->
+4. Branch head moves ->
+5. Checkout restores snapshot
+```
+
+
+### 6A. API Flow — REST Style
+
+| Method | Endpoint | Purpose | Success Response | Common Failures |
+|---|---|---|---|---|
+| `POST` | `/version-control-system` | Create/start the main resource or session. | `201 Created` with resource id/state. | `400` invalid input, `409` duplicate/conflict. |
+| `GET` | `/version-control-system/{id}` | Read current state. | `200 OK` with resource representation. | `404` not found. |
+| `POST` | `/version-control-system/{id}/actions` | Execute the primary domain action. | `200 OK` with updated state. | `400` invalid action, `409` illegal state. |
+| `PATCH` | `/version-control-system/{id}` | Update allowed mutable metadata/configuration. | `200 OK` with updated resource. | `400` invalid patch, `404` not found. |
+| `DELETE` | `/version-control-system/{id}` | End/remove resource when supported. | `204 No Content`. | `404` not found, `409` active dependencies. |
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API as REST Controller
+  participant Service as Version Control System Service
+  participant Domain as Domain Model
+  participant Store as Repository/DB
+  Client->>API: HTTP request
+  API->>API: validate request DTO
+  API->>Service: call use case
+  Service->>Domain: enforce business rules
+  Service->>Store: read/write state
+  Store-->>Service: persisted state
+  Service-->>API: result or domain error
+  API-->>Client: HTTP status + response DTO
+```
+
+### 6B. Request Flow Outline
+
+1. Client sends a REST request with an idempotency key for write operations when retries are possible.
+2. Controller validates syntax, required fields, and basic authorization assumptions.
+3. Service loads required entities and checks domain invariants.
+4. Domain objects perform the state transition.
+5. Repository persists the new state inside a transaction or synchronized critical section.
+6. Service returns a DTO; controller maps domain errors to clear HTTP status codes.
+
+```mermaid
+flowchart TD
+  A[Receive request] --> B{Request valid?}
+  B -- No --> C[Return 400 Bad Request]
+  B -- Yes --> D[Load entities]
+  D --> E{Entities found?}
+  E -- No --> F[Return 404 Not Found]
+  E -- Yes --> G{Domain rule passes?}
+  G -- No --> H[Return 409 Conflict]
+  G -- Yes --> I[Persist state change]
+  I --> J[Return success response]
+```
+
+### 6C. High-Level, DB, and API Diagrams
+
+#### High-Level Component Diagram
+
+```mermaid
+flowchart LR
+  Client[Client/UI/Test Harness] --> API[REST API Layer]
+  API --> Service[Application Service]
+  Service --> Domain[Domain Entities]
+  Service --> Repo[Repository]
+  Repo --> DB[(Database/In-Memory Store)]
+```
+
+#### DB / Persistence Diagram
+
+```mermaid
+erDiagram
+  REPOSITORY {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  COMMIT {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  BLOB {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  BRANCH {
+    string id PK
+    datetime created_at
+    datetime updated_at
+  }
+  REPOSITORY ||--o{ BRANCH : manages
+  REPOSITORY ||--o{ COMMIT : stores
+  BRANCH ||--o{ COMMIT : head
+  COMMIT ||--o{ BLOB : snapshot
+```
+
+#### API Layer Diagram
+
+```mermaid
+flowchart TB
+  Controller[Controller] --> Validator[Request Validator]
+  Validator --> Mapper[DTO Mapper]
+  Mapper --> UseCase[Use Case Service]
+  UseCase --> Repository[Repository]
+  UseCase --> ErrorMapper[Domain Error Mapper]
+  ErrorMapper --> Response[HTTP Response]
+```
+
+### 7. Design Patterns Used
+
+- **Snapshot:** Commit stores a file snapshot through blobs.
+- **Graph Model:** Branches point to commits; commits link to parents.
+
+### 8. Full Java Implementation
+
+```java
+import java.util.*;
+
+class Blob {
+    private final String path;
+    private final String contentHash;
+    private final String content;
+
+    Blob(String path, String content) {
+        this.path = path;
+        this.content = content;
+        this.contentHash = Integer.toHexString(Objects.hash(path, content));
+    }
+
+    public String getPath() { return path; }
+    public String getContentHash() { return contentHash; }
+    public String getContent() { return content; }
+}
+
+class Commit {
+    private final String commitId;
+    private final String message;
+    private final Commit parent;
+    private final Map<String, Blob> snapshot;
+
+    Commit(String message, Commit parent, Map<String, Blob> snapshot) {
+        this.commitId = UUID.randomUUID().toString();
+        this.message = message;
+        this.parent = parent;
+        this.snapshot = new HashMap<>(snapshot);
+    }
+
+    public String getCommitId() { return commitId; }
+    public Map<String, Blob> getSnapshot() { return new HashMap<>(snapshot); }
+}
+
+class Branch {
+    private final String name;
+    private Commit head;
+
+    Branch(String name, Commit head) {
+        this.name = name;
+        this.head = head;
+    }
+
+    public void moveHead(Commit commit) { this.head = commit; }
+    public Commit getHead() { return head; }
+    public String getName() { return name; }
+}
+
+class Repository {
+    private final Map<String, Commit> commits = new HashMap<>();
+    private final Map<String, Branch> branches = new HashMap<>();
+    private final Map<String, Blob> workingTree = new HashMap<>();
+    private final Map<String, Blob> stagingArea = new HashMap<>();
+    private Branch currentBranch;
+
+    Repository() {
+        Commit initial = new Commit("initial commit", null, Map.of());
+        commits.put(initial.getCommitId(), initial);
+        currentBranch = new Branch("main", initial);
+        branches.put("main", currentBranch);
+    }
+
+    public void addFile(String path, String content) {
+        workingTree.put(path, new Blob(path, content));
+    }
+
+    public void stage(String path) {
+        Blob blob = workingTree.get(path);
+        if (blob == null) throw new IllegalArgumentException("File not found");
+        stagingArea.put(path, blob);
+    }
+
+    public Commit commit(String message) {
+        if (stagingArea.isEmpty()) throw new IllegalStateException("Nothing to commit");
+
+        Map<String, Blob> snapshot = currentBranch.getHead().getSnapshot();
+        snapshot.putAll(stagingArea);
+
+        Commit commit = new Commit(message, currentBranch.getHead(), snapshot);
+        commits.put(commit.getCommitId(), commit);
+        currentBranch.moveHead(commit);
+        stagingArea.clear();
+        return commit;
+    }
+
+    public Branch createBranch(String name) {
+        if (branches.containsKey(name)) throw new IllegalArgumentException("Branch already exists");
+        Branch branch = new Branch(name, currentBranch.getHead());
+        branches.put(name, branch);
+        return branch;
+    }
+
+    public void checkout(String branchName) {
+        Branch branch = branches.get(branchName);
+        if (branch == null) throw new IllegalArgumentException("Branch not found");
+        currentBranch = branch;
+        workingTree.clear();
+        workingTree.putAll(branch.getHead().getSnapshot());
+    }
+}
+```
+
+### 9A. Trade-Offs and Failure Scenarios
+
+| Area | Trade-Off | Failure Scenario | Solution |
+|---|---|---|---|
+| Simplicity vs extensibility | A compact in-memory model is easy to explain; interfaces add flexibility. | New rules require changing core classes. | Keep strategies/services injectable around changing behavior. |
+| Consistency vs throughput | Locking or transactions protect state; they can reduce concurrency. | Two requests update the same entity at once. | Use synchronized sections, optimistic locking, or DB transactions. |
+| Validation depth | Early validation gives clear errors; deep validation costs more. | Invalid operation corrupts state. | Validate at controller and domain boundary; fail before mutation. |
+| Storage choice | In-memory storage is interview-friendly; durable DB is production-ready. | Process restart loses state. | Use repositories so persistence can switch to SQL/NoSQL later. |
+
+```mermaid
+flowchart TD
+  A[Operation requested] --> B{Input valid?}
+  B -- No --> C[Reject with validation error]
+  B -- Yes --> D{Current state allows operation?}
+  D -- No --> E[Reject with conflict/state error]
+  D -- Yes --> F{Concurrent update?}
+  F -- Yes --> G[Retry with lock/transaction/idempotency]
+  F -- No --> H[Commit state change]
+  G --> H
+  H --> I[Return updated result]
+```
+
+
+### 9. Edge Cases
+
+- Invalid input should fail fast with a clear exception.
+- Duplicate or repeated operation should not corrupt state.
+- Boundary conditions should be tested.
+- Concurrent access should be protected where shared mutable state exists.
+
+---
