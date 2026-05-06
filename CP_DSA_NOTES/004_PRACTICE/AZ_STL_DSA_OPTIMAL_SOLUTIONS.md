@@ -179,81 +179,107 @@ Use hash maps and frequency tracking. Standard exact O(1) version needs bucketed
 
 ### Solution Flow Chart
 
-```text
-inc/dec key
-   |
-Update key frequency
-   |
-Move key to new frequency bucket
-   |
-Empty old bucket?
-   |
-Remove bucket if empty
-   |
-getMaxKey = key from last bucket
-getMinKey = key from first bucket
+```mermaid
+flowchart TD
+    A0["Operation inc/dec key"]
+    A1["Update key frequency"]
+    A0 --> A1
+    A2["Move key to new frequency bucket"]
+    A1 --> A2
+    A3["Remove old bucket if empty"]
+    A2 --> A3
+    A4["getMaxKey from last bucket / getMinKey from first bucket"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-class AllOneSimple {
-    unordered_map<string,int> cnt;
+class AllOne {
+    struct Bucket {
+        int freq;
+        unordered_set<string> keys;
+    };
+
+    list<Bucket> buckets;
+    unordered_map<string, list<Bucket>::iterator> where;
 
 public:
     void inc(string key) {
-        cnt[key]++;
+        if (!where.count(key)) {
+            if (buckets.empty() || buckets.front().freq != 1)
+                buckets.push_front({1, {}});
+            buckets.front().keys.insert(key);
+            where[key] = buckets.begin();
+            return;
+        }
+
+        auto it = where[key];
+        int f = it->freq;
+        auto nxt = next(it);
+
+        if (nxt == buckets.end() || nxt->freq != f + 1)
+            nxt = buckets.insert(nxt, {f + 1, {}});
+
+        nxt->keys.insert(key);
+        where[key] = nxt;
+
+        it->keys.erase(key);
+        if (it->keys.empty()) buckets.erase(it);
     }
 
     void dec(string key) {
-        if (!cnt.count(key)) return;
-        cnt[key]--;
-        if (cnt[key] == 0) cnt.erase(key);
+        if (!where.count(key)) return;
+
+        auto it = where[key];
+        int f = it->freq;
+
+        it->keys.erase(key);
+
+        if (f == 1) {
+            where.erase(key);
+        } else {
+            auto prv = it;
+            if (it == buckets.begin()) {
+                prv = buckets.insert(it, {f - 1, {}});
+            } else {
+                --prv;
+                if (prv->freq != f - 1)
+                    prv = buckets.insert(it, {f - 1, {}});
+            }
+
+            prv->keys.insert(key);
+            where[key] = prv;
+        }
+
+        if (it->keys.empty()) buckets.erase(it);
     }
 
     string getMaxKey() {
-        string ans = "";
-        int best = INT_MIN;
-
-        for (auto [key, value] : cnt) {
-            if (value > best) {
-                best = value;
-                ans = key;
-            }
-        }
-
-        return ans;
+        if (buckets.empty()) return "";
+        return *buckets.back().keys.begin();
     }
 
     string getMinKey() {
-        string ans = "";
-        int best = INT_MAX;
-
-        for (auto [key, value] : cnt) {
-            if (value < best) {
-                best = value;
-                ans = key;
-            }
-        }
-
-        return ans;
+        if (buckets.empty()) return "";
+        return *buckets.front().keys.begin();
     }
 };
 
 int main() {
-    AllOneSimple ds;
-
+    AllOne ds;
     ds.inc("apple");
     ds.inc("banana");
     ds.inc("apple");
-
-    cout << "Max key: " << ds.getMaxKey() << "\n";
-    cout << "Min key: " << ds.getMinKey() << "\n";
-
-    return 0;
+    cout << ds.getMaxKey() << "
+";
+    cout << ds.getMinKey() << "
+";
 }
 ```
 
@@ -316,25 +342,22 @@ Use a stack for operators and output operands immediately.
 
 ### Solution Flow Chart
 
-```text
-Scan expression left to right
-      |
-Operand?
-  | Yes
-  v
-Add to output
-      |
-Operator?
-  | Yes
-  v
-Pop higher/equal precedence operators
-      |
-Push current operator
-      |
-At end: pop remaining operators
+```mermaid
+flowchart TD
+    A0["Scan expression left to right"]
+    A1["If operand: add to output"]
+    A0 --> A1
+    A2["If operator: pop higher/equal precedence operators"]
+    A1 --> A2
+    A3["Push current operator"]
+    A2 --> A3
+    A4["At end pop remaining operators"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
@@ -347,39 +370,52 @@ int prec(char c) {
     return 0;
 }
 
-string infixToPostfix(string s) {
-    stack<char> st;
+bool rightAssociative(char c) {
+    return c == '^';
+}
+
+string infixToPostfix(const string& s) {
+    stack<char> ops;
     string out;
 
     for (char c : s) {
-        if (isalnum(c)) out += c;
-        else if (c == '(') st.push(c);
-        else if (c == ')') {
-            while (!st.empty() && st.top() != '(') {
-                out += st.top();
-                st.pop();
+        if (c == ' ') continue;
+
+        if (isalnum(c)) {
+            out += c;
+        } else if (c == '(') {
+            ops.push(c);
+        } else if (c == ')') {
+            while (!ops.empty() && ops.top() != '(') {
+                out += ops.top();
+                ops.pop();
             }
-            if (!st.empty()) st.pop();
+            if (!ops.empty()) ops.pop();
         } else {
-            while (!st.empty() && st.top() != '(' && prec(st.top()) >= prec(c)) {
-                out += st.top();
-                st.pop();
+            while (!ops.empty() && ops.top() != '(') {
+                int pTop = prec(ops.top());
+                int pCur = prec(c);
+
+                if (pTop > pCur || (pTop == pCur && !rightAssociative(c))) {
+                    out += ops.top();
+                    ops.pop();
+                } else break;
             }
-            st.push(c);
+            ops.push(c);
         }
     }
 
-    while (!st.empty()) {
-        out += st.top();
-        st.pop();
+    while (!ops.empty()) {
+        out += ops.top();
+        ops.pop();
     }
+
     return out;
 }
 
 int main() {
-    string s = "A+B*C";
-    cout << infixToPostfix(s) << "\n";
-    return 0;
+    cout << infixToPostfix("A+B*C") << "
+";
 }
 ```
 
@@ -447,33 +483,32 @@ Use two stacks: one for push, one for pop; transfer only when needed.
 
 ### Solution Flow Chart
 
-```text
-push(x)
-  |
-Push into input stack
-  |
-pop/front?
-  |
-Output stack empty?
-  | Yes
-  v
-Move input stack to output stack
-  |
-Top of output stack is queue front
+```mermaid
+flowchart TD
+    A0["push(x): push into input stack"]
+    A1["pop/front requested"]
+    A0 --> A1
+    A2["Is output stack empty?"]
+    A1 --> A2
+    A3["Move input stack to output stack if needed"]
+    A2 --> A3
+    A4["Return output.top()"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-class MyQueue {
+class QueueUsingStacks {
     stack<int> in, out;
 
-    void shift() {
+    void moveIfNeeded() {
         if (!out.empty()) return;
-
         while (!in.empty()) {
             out.push(in.top());
             in.pop();
@@ -485,30 +520,31 @@ public:
         in.push(x);
     }
 
+    int pop() {
+        moveIfNeeded();
+        int ans = out.top();
+        out.pop();
+        return ans;
+    }
+
     int front() {
-        shift();
+        moveIfNeeded();
         return out.top();
     }
 
-    int pop() {
-        shift();
-        int x = out.top();
-        out.pop();
-        return x;
+    bool empty() {
+        return in.empty() && out.empty();
     }
 };
 
 int main() {
-    MyQueue q;
-
-    q.push(10);
-    q.push(20);
-    q.push(30);
-
-    cout << q.pop() << "\n";
-    cout << q.front() << "\n";
-
-    return 0;
+    QueueUsingStacks q;
+    q.push(1);
+    q.push(2);
+    cout << q.pop() << "
+";
+    cout << q.front() << "
+";
 }
 ```
 
@@ -564,40 +600,48 @@ Use frequency map and track best frequency.
 
 ### Solution Flow Chart
 
-```text
-Read distances/values
-      |
-For each value, increment frequency
-      |
-Compare frequency with current best
-      |
-Update mode if needed
-      |
-Return value with maximum frequency
+```mermaid
+flowchart TD
+    A0["Read all distances/values"]
+    A1["Increment frequency in map"]
+    A0 --> A1
+    A2["Compare with current best frequency"]
+    A1 --> A2
+    A3["Update mode if needed"]
+    A2 --> A3
+    A4["Return most frequent value"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+int modeValue(vector<int> distances) {
+    unordered_map<int,int> freq;
+    int bestValue = distances[0];
+    int bestFreq = 0;
 
-    cout << "Pattern: Frequency Map\n";
+    for (int d : distances) {
+        freq[d]++;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
+        if (freq[d] > bestFreq || (freq[d] == bestFreq && d < bestValue)) {
+            bestFreq = freq[d];
+            bestValue = d;
         }
-
-        cout << "\n";
     }
 
-    return 0;
+    return bestValue;
+}
+
+int main() {
+    vector<int> d = {4, 2, 4, 5, 2, 4};
+    cout << modeValue(d) << "
+";
 }
 ```
 
@@ -660,42 +704,48 @@ Use multiset of tower tops and upper_bound.
 
 ### Solution Flow Chart
 
-```text
-For each block x
-      |
-Find first tower top > x using upper_bound
-      |
-Found?
- | Yes                | No
- v                    v
-Replace that top       Create new tower
-with x                 with top x
-      |
-Number of towers = multiset size
+```mermaid
+flowchart TD
+    A0["For each block x"]
+    A1["Find first tower top greater than x"]
+    A0 --> A1
+    A2["If found replace that top with x"]
+    A1 --> A2
+    A3["If not found create new tower"]
+    A2 --> A3
+    A4["Answer is number of tower tops"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Standard CSES Towers optimal solution.
+int minTowers(vector<int>& a) {
+    multiset<int> tops;
 
-    cout << "Pattern: Multiset Greedy\n";
+    for (int x : a) {
+        auto it = tops.upper_bound(x);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
+        if (it != tops.end()) {
+            tops.erase(it);
         }
 
-        cout << "\n";
+        tops.insert(x);
     }
 
-    return 0;
+    return (int)tops.size();
+}
+
+int main() {
+    vector<int> a = {3, 8, 2, 1, 5};
+    cout << minTowers(a) << "
+";
 }
 ```
 
@@ -758,40 +808,47 @@ Use set/frequency map to know distinct and duplicate counts.
 
 ### Solution Flow Chart
 
-```text
-Count frequency of every value
-      |
-Separate unique values and duplicates
-      |
-Need maximize distinct?
-      |
-Use duplicates/removals greedily
-      |
-Answer from set size / frequency state
+```mermaid
+flowchart TD
+    A0["Count frequency of every value"]
+    A1["Find unique and duplicate values"]
+    A0 --> A1
+    A2["Apply removals/changes greedily"]
+    A1 --> A2
+    A3["Maintain distinct count"]
+    A2 --> A3
+    A4["Return final distinct count"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Adaptable optimal template: count distinct values and duplicates.
+int maxDistinctAfterRemovingDuplicates(vector<int> a) {
+    unordered_map<int,int> freq;
 
-    cout << "Pattern: Set + Frequency Map\n";
+    for (int x : a) freq[x]++;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    int distinct = freq.size();
+    int duplicateExtra = 0;
 
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+    for (auto [x, c] : freq) {
+        duplicateExtra += c - 1;
     }
 
-    return 0;
+    return distinct;
+}
+
+int main() {
+    vector<int> a = {1, 1, 2, 3, 3, 4};
+    cout << maxDistinctAfterRemovingDuplicates(a) << "
+";
 }
 ```
 
@@ -853,33 +910,33 @@ Maintain decreasing deque of useful indices.
 
 ### Solution Flow Chart
 
-```text
-For each index i
-      |
-Remove indices outside window
-      |
-Remove smaller/equal values from deque back
-      |
-Push current index
-      |
-Window complete?
-      |
-Answer = value at deque front
+```mermaid
+flowchart TD
+    A0["For each index i"]
+    A1["Remove indices outside current window"]
+    A0 --> A1
+    A2["Remove smaller/equal values from deque back"]
+    A1 --> A2
+    A3["Push current index"]
+    A2 --> A3
+    A4["If window complete answer is deque front"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<int> maxInWindows(vector<int> a, int k) {
+vector<int> maxSlidingWindow(vector<int>& a, int k) {
     deque<int> dq;
     vector<int> ans;
 
     for (int i = 0; i < (int)a.size(); i++) {
         while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
-
         while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back();
 
         dq.push_back(i);
@@ -894,12 +951,9 @@ int main() {
     vector<int> a = {1, 3, -1, -3, 5, 3, 6, 7};
     int k = 3;
 
-    vector<int> ans = maxInWindows(a, k);
-
-    for (int x : ans) cout << x << " ";
-    cout << "\n";
-
-    return 0;
+    for (int x : maxSlidingWindow(a, k)) cout << x << " ";
+    cout << "
+";
 }
 ```
 
@@ -959,39 +1013,42 @@ Use std::queue for O(1) front/pop/push.
 
 ### Solution Flow Chart
 
-```text
-Receive queue operation
-      |
-push -> q.push(x)
-pop -> q.pop()
-front -> q.front()
-empty -> q.empty()
-      |
-All operations use FIFO order
+```mermaid
+flowchart TD
+    A0["Read operation"]
+    A1["push: q.push(x)"]
+    A0 --> A1
+    A2["pop: q.pop()"]
+    A1 --> A2
+    A3["front: q.front()"]
+    A2 --> A3
+    A4["Queue preserves FIFO order"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    queue<int> q;
 
-    cout << "Pattern: Queue STL\n";
+    q.push(10);
+    q.push(20);
+    q.push(30);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    cout << q.front() << "
+";
+    q.pop();
+    cout << q.front() << "
+";
 
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
-    }
-
-    return 0;
+    cout << "size = " << q.size() << "
+";
 }
 ```
 
@@ -1047,42 +1104,43 @@ Track minimum value seen so far.
 
 ### Solution Flow Chart
 
-```text
-Initialize min_so_far = a[0]
-      |
-Scan array left to right
-      |
-Candidate = a[i] - min_so_far
-      |
-Update answer
-      |
-Update min_so_far
-      |
-Return max difference
+```mermaid
+flowchart TD
+    A0["Initialize min_so_far"]
+    A1["Scan array left to right"]
+    A0 --> A1
+    A2["candidate = a(i) - min_so_far"]
+    A1 --> A2
+    A3["Update answer"]
+    A2 --> A3
+    A4["Update min_so_far"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+int maxDifference(vector<int>& a) {
+    int minSoFar = a[0];
+    int ans = INT_MIN;
 
-    cout << "Pattern: Prefix Minimum\n";
-
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+    for (int i = 1; i < (int)a.size(); i++) {
+        ans = max(ans, a[i] - minSoFar);
+        minSoFar = min(minSoFar, a[i]);
     }
 
-    return 0;
+    return ans;
+}
+
+int main() {
+    vector<int> a = {7, 1, 5, 3, 6, 4};
+    cout << maxDifference(a) << "
+";
 }
 ```
 
@@ -1146,38 +1204,46 @@ Use std::sort with comparator.
 
 ### Solution Flow Chart
 
-```text
-Read student records
-      |
-Define comparator using roll number
-      |
-Apply std::sort
-      |
-Print sorted records
+```mermaid
+flowchart TD
+    A0["Read student records"]
+    A1["Define comparator by roll number"]
+    A0 --> A1
+    A2["Call std::sort"]
+    A1 --> A2
+    A3["Print sorted records"]
+    A2 --> A3
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
+struct Student {
+    int roll;
+    string name;
+};
+
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    vector<Student> students = {
+        {3, "Charlie"},
+        {1, "Alice"},
+        {2, "Bob"}
+    };
 
-    cout << "Pattern: Sort Comparator\n";
+    sort(students.begin(), students.end(), [](const Student& a, const Student& b) {
+        if (a.roll != b.roll) return a.roll < b.roll;
+        return a.name < b.name;
+    });
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+    for (auto s : students) {
+        cout << s.roll << " " << s.name << "
+";
     }
-
-    return 0;
 }
 ```
 
@@ -1238,40 +1304,52 @@ Use priority_queue with custom comparator.
 
 ### Solution Flow Chart
 
-```text
-Push element with priority
-      |
-Comparator decides ordering
-      |
-priority_queue maintains heap
-      |
-top() gives best element
-      |
-pop() removes best
+```mermaid
+flowchart TD
+    A0["Push element with priority"]
+    A1["Comparator decides ordering"]
+    A0 --> A1
+    A2["priority_queue maintains heap"]
+    A1 --> A2
+    A3["top gives highest priority"]
+    A2 --> A3
+    A4["pop removes best"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+struct Item {
+    int priority;
+    int id;
+};
 
-    cout << "Pattern: Priority Queue Comparator\n";
-
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+struct Compare {
+    bool operator()(const Item& a, const Item& b) {
+        if (a.priority != b.priority) return a.priority < b.priority;
+        return a.id > b.id;
     }
+};
 
-    return 0;
+int main() {
+    priority_queue<Item, vector<Item>, Compare> pq;
+
+    pq.push({5, 2});
+    pq.push({10, 3});
+    pq.push({10, 1});
+
+    while (!pq.empty()) {
+        Item cur = pq.top();
+        pq.pop();
+        cout << cur.priority << " " << cur.id << "
+";
+    }
 }
 ```
 
@@ -1337,41 +1415,51 @@ Use sliding window when condition is monotonic, otherwise prefix sums.
 
 ### Solution Flow Chart
 
-```text
-Choose window/prefix idea
-      |
-Expand right endpoint
-      |
-Condition valid?
- | Yes              | No
- v                  v
-Update answer       Shrink left / adjust prefix
-      |
-Continue until array ends
+```mermaid
+flowchart TD
+    A0["Choose sliding window/prefix idea"]
+    A1["Expand right endpoint"]
+    A0 --> A1
+    A2["Check validity"]
+    A1 --> A2
+    A3["If invalid shrink/adjust"]
+    A2 --> A3
+    A4["Update best answer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Template: longest subarray with sum <= limit for non-negative values.
+int longestSubarrayAtMostK(vector<int>& a, int limit) {
+    int left = 0;
+    long long sum = 0;
+    int best = 0;
 
-    cout << "Pattern: Sliding Window / Prefix\n";
+    for (int right = 0; right < (int)a.size(); right++) {
+        sum += a[right];
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
+        while (sum > limit) {
+            sum -= a[left];
+            left++;
         }
 
-        cout << "\n";
+        best = max(best, right - left + 1);
     }
 
-    return 0;
+    return best;
+}
+
+int main() {
+    vector<int> a = {1, 2, 1, 3, 2, 1};
+    cout << longestSubarrayAtMostK(a, 5) << "
+";
 }
 ```
 
@@ -1434,40 +1522,52 @@ Count frequencies, sort them, remove cheapest types first.
 
 ### Solution Flow Chart
 
-```text
-Count frequency of each item type
-      |
-Put frequencies into array
-      |
-Sort frequencies ascending
-      |
-Remove cheapest frequency groups first
-      |
-Remaining groups = answer
+```mermaid
+flowchart TD
+    A0["Count frequency of each item type"]
+    A1["Store frequencies in array"]
+    A0 --> A1
+    A2["Sort frequencies ascending"]
+    A1 --> A2
+    A3["Remove cheapest groups first"]
+    A2 --> A3
+    A4["Remaining groups are answer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+int remainingTypesAfterKRemovals(vector<int>& items, int k) {
+    unordered_map<int,int> freq;
+    for (int x : items) freq[x]++;
 
-    cout << "Pattern: Frequency Sort\n";
+    vector<int> counts;
+    for (auto [x, c] : freq) counts.push_back(c);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    sort(counts.begin(), counts.end());
 
-        for (int x : a) {
-            cout << x << " ";
-        }
+    int types = counts.size();
 
-        cout << "\n";
+    for (int c : counts) {
+        if (k >= c) {
+            k -= c;
+            types--;
+        } else break;
     }
 
-    return 0;
+    return types;
+}
+
+int main() {
+    vector<int> items = {1, 1, 2, 2, 3};
+    cout << remainingTypesAfterKRemovals(items, 2) << "
+";
 }
 ```
 
@@ -1529,40 +1629,37 @@ Sort first and repeatedly call next_permutation.
 
 ### Solution Flow Chart
 
-```text
-Sort initial sequence
-      |
-Print current permutation
-      |
-Call next_permutation
-      |
-More permutations?
- | Yes -> repeat
- | No  -> stop
+```mermaid
+flowchart TD
+    A0["Sort initial sequence"]
+    A1["Print current permutation"]
+    A0 --> A1
+    A2["Call next_permutation"]
+    A1 --> A2
+    A3["If exists repeat"]
+    A2 --> A3
+    A4["Stop after last permutation"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    vector<int> a = {1, 2, 3};
 
-    cout << "Pattern: next_permutation\n";
+    sort(a.begin(), a.end());
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
-    }
-
-    return 0;
+    do {
+        for (int x : a) cout << x << " ";
+        cout << "
+";
+    } while (next_permutation(a.begin(), a.end()));
 }
 ```
 
@@ -1626,40 +1723,47 @@ Sort/frequency + greedy placement.
 
 ### Solution Flow Chart
 
-```text
-Sort / count values
-      |
-Scan in useful order
-      |
-At each step choose locally valid option
-      |
-Maintain previous/neighbor constraint
-      |
-Build final valid arrangement/count
+```mermaid
+flowchart TD
+    A0["Sort or count values"]
+    A1["Scan in useful order"]
+    A0 --> A1
+    A2["Choose locally valid option"]
+    A1 --> A2
+    A3["Maintain neighbor constraint"]
+    A2 --> A3
+    A4["Build final answer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Adaptable greedy template: count maximum non-adjacent chosen houses.
+int maxHappyNonAdjacent(vector<int>& happiness) {
+    int take = 0;
+    int skip = 0;
 
-    cout << "Pattern: Greedy + Sorting\n";
+    for (int x : happiness) {
+        int newTake = skip + x;
+        int newSkip = max(skip, take);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+        take = newTake;
+        skip = newSkip;
     }
 
-    return 0;
+    return max(take, skip);
+}
+
+int main() {
+    vector<int> happiness = {4, 1, 2, 9, 3};
+    cout << maxHappyNonAdjacent(happiness) << "
+";
 }
 ```
 
@@ -1721,42 +1825,56 @@ Use two pointers/sliding window when validity is monotonic.
 
 ### Solution Flow Chart
 
-```text
-left = 0
-      |
-Move right pointer
-      |
-Add current element to state
-      |
-Window invalid?
-      |
-Move left until valid
-      |
-Update longest length
+```mermaid
+flowchart TD
+    A0["Set left = 0"]
+    A1["Move right pointer"]
+    A0 --> A1
+    A2["Add current element to state"]
+    A1 --> A2
+    A3["While invalid move left"]
+    A2 --> A3
+    A4["Update longest length"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Longest segment with at most k distinct values.
+int longestAtMostKDistinct(vector<int>& a, int k) {
+    unordered_map<int,int> freq;
+    int left = 0;
+    int best = 0;
 
-    cout << "Pattern: Two Pointers\n";
+    for (int right = 0; right < (int)a.size(); right++) {
+        freq[a[right]]++;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+        while ((int)freq.size() > k) {
+            freq[a[left]]--;
 
-        for (int x : a) {
-            cout << x << " ";
+            if (freq[a[left]] == 0) {
+                freq.erase(a[left]);
+            }
+
+            left++;
         }
 
-        cout << "\n";
+        best = max(best, right - left + 1);
     }
 
-    return 0;
+    return best;
+}
+
+int main() {
+    vector<int> a = {1, 2, 1, 3, 4, 2, 3};
+    cout << longestAtMostKDistinct(a, 2) << "
+";
 }
 ```
 
@@ -1815,39 +1933,44 @@ Use std::set for O(log n) updates/search.
 
 ### Solution Flow Chart
 
-```text
-Operation arrives
-      |
-insert -> set.insert(x)
-erase -> set.erase(x)
-search -> set.find(x)
-bound -> lower_bound/upper_bound
-      |
-Set keeps elements sorted
+```mermaid
+flowchart TD
+    A0["Read operation"]
+    A1["insert/erase/search/bound"]
+    A0 --> A1
+    A2["Use std::set operation"]
+    A1 --> A2
+    A3["Set keeps sorted unique values"]
+    A2 --> A3
+    A4["Answer in O(log n)"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    set<int> s;
 
-    cout << "Pattern: Set STL\n";
+    s.insert(5);
+    s.insert(1);
+    s.insert(3);
+    s.insert(5);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    cout << "Elements: ";
+    for (int x : s) cout << x << " ";
+    cout << "
+";
 
-        for (int x : a) {
-            cout << x << " ";
-        }
+    auto it = s.lower_bound(2);
 
-        cout << "\n";
-    }
-
-    return 0;
+    if (it != s.end()) cout << "first >= 2: " << *it << "
+";
 }
 ```
 
@@ -1909,21 +2032,22 @@ Use set<pair<int,int>> with lower_bound and erase merged intervals.
 
 ### Solution Flow Chart
 
-```text
-Insert interval [l,r]
-      |
-lower_bound({l, -inf})
-      |
-Check previous interval for overlap/touch
-      |
-While current interval overlaps/touches [l,r]
-      |
-Expand l,r and erase old interval
-      |
-Insert final merged [l,r]
+```mermaid
+flowchart TD
+    A0["Insert interval (l,r)"]
+    A1["Find lower_bound({l,-inf})"]
+    A0 --> A1
+    A2["Check previous interval"]
+    A1 --> A2
+    A3["Merge all overlapping/touching intervals"]
+    A2 --> A3
+    A4["Insert final merged interval"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1961,13 +2085,6 @@ struct RangeCover {
 
         ranges.insert({l, r});
     }
-
-    void print() {
-        for (auto [l, r] : ranges) {
-            cout << "[" << l << "," << r << "] ";
-        }
-        cout << "\n";
-    }
 };
 
 int main() {
@@ -1976,16 +2093,16 @@ int main() {
     rc.insertRange(1, 3);
     rc.insertRange(7, 10);
     rc.insertRange(13, 16);
-
-    rc.print();
-
     rc.insertRange(4, 12);
 
-    rc.print();
+    cout << rc.covered(9) << "
+";
 
-    cout << rc.covered(9) << "\n";
-
-    return 0;
+    for (auto [l, r] : rc.ranges) {
+        cout << "[" << l << "," << r << "] ";
+    }
+    cout << "
+";
 }
 ```
 
@@ -2048,44 +2165,56 @@ Maintain lazy transformation x -> x*mul + add.
 
 ### Solution Flow Chart
 
-```text
-Maintain transformation:
-value = original * mul + add
-      |
-Add operation x
-      |
-add = add + x
-      |
-Multiply operation x
-      |
-mul = mul * x
-add = add * x
-      |
-Query value using formula
+```mermaid
+flowchart TD
+    A0["Maintain value = original * mul + add"]
+    A1["Add operation: add += x"]
+    A0 --> A1
+    A2["Multiply operation: mul *= x and add *= x"]
+    A1 --> A2
+    A3["Query using formula"]
+    A2 --> A3
+    A4["Return transformed value"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
+const long long MOD = 1000000007;
+
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    vector<long long> original = {1, 2, 3};
 
-    cout << "Pattern: Lazy Math\n";
+    long long mul = 1;
+    long long add = 0;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    auto applyAdd = [&](long long x) {
+        add = (add + x) % MOD;
+    };
 
-        for (int x : a) {
-            cout << x << " ";
-        }
+    auto applyMul = [&](long long x) {
+        mul = (mul * x) % MOD;
+        add = (add * x) % MOD;
+    };
 
-        cout << "\n";
+    auto value = [&](long long x) {
+        return (x * mul + add) % MOD;
+    };
+
+    applyAdd(5);
+    applyMul(2);
+
+    for (long long x : original) {
+        cout << value(x) << " ";
     }
-
-    return 0;
+    cout << "
+";
 }
 ```
 
@@ -2147,40 +2276,40 @@ Use multimap or map of vectors depending on output needs.
 
 ### Solution Flow Chart
 
-```text
-Insert key-value pair
-      |
-Multiple values may share same key
-      |
-Use multimap or map<key, vector>
-      |
-For a key query, use equal_range
-      |
-Iterate all values for that key
+```mermaid
+flowchart TD
+    A0["Insert key-value pair"]
+    A1["Allow repeated keys"]
+    A0 --> A1
+    A2["Use equal_range for key"]
+    A1 --> A2
+    A3["Iterate all values for that key"]
+    A2 --> A3
+    A4["Return/print values"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    multimap<int,string> mp;
 
-    cout << "Pattern: Multimap\n";
+    mp.insert({1, "Alice"});
+    mp.insert({1, "Bob"});
+    mp.insert({2, "Charlie"});
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    auto range = mp.equal_range(1);
 
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+    for (auto it = range.first; it != range.second; ++it) {
+        cout << it->first << " " << it->second << "
+";
     }
-
-    return 0;
 }
 ```
 
@@ -2242,42 +2371,97 @@ Use maps from key to node and frequency to ordered key list.
 
 ### Solution Flow Chart
 
-```text
-get/put key
-      |
-Key exists?
-      |
-Update value/frequency
-      |
-Move key to next frequency list
-      |
-If capacity full, evict from minFreq list
-      |
-Insert new key with freq 1
+```mermaid
+flowchart TD
+    A0["get/put key"]
+    A1["If key exists update frequency"]
+    A0 --> A1
+    A2["Move key to next frequency list"]
+    A1 --> A2
+    A3["If capacity full evict from minFreq list"]
+    A2 --> A3
+    A4["Insert new key with frequency 1"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+class LFUCache {
+    int capacity;
+    int minFreq = 0;
 
-    cout << "Pattern: HashMap + Lists\n";
+    unordered_map<int, pair<int,int>> keyToValueFreq;
+    unordered_map<int, list<int>> freqToKeys;
+    unordered_map<int, list<int>::iterator> keyPosition;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+public:
+    LFUCache(int cap) {
+        capacity = cap;
     }
 
-    return 0;
+    int get(int key) {
+        if (!keyToValueFreq.count(key)) return -1;
+
+        int value = keyToValueFreq[key].first;
+        int freq = keyToValueFreq[key].second;
+
+        freqToKeys[freq].erase(keyPosition[key]);
+
+        if (freqToKeys[freq].empty() && minFreq == freq) {
+            minFreq++;
+        }
+
+        keyToValueFreq[key].second++;
+        freqToKeys[freq + 1].push_front(key);
+        keyPosition[key] = freqToKeys[freq + 1].begin();
+
+        return value;
+    }
+
+    void put(int key, int value) {
+        if (capacity == 0) return;
+
+        if (keyToValueFreq.count(key)) {
+            keyToValueFreq[key].first = value;
+            get(key);
+            return;
+        }
+
+        if ((int)keyToValueFreq.size() == capacity) {
+            int victim = freqToKeys[minFreq].back();
+
+            freqToKeys[minFreq].pop_back();
+            keyToValueFreq.erase(victim);
+            keyPosition.erase(victim);
+        }
+
+        keyToValueFreq[key] = {value, 1};
+        freqToKeys[1].push_front(key);
+        keyPosition[key] = freqToKeys[1].begin();
+        minFreq = 1;
+    }
+};
+
+int main() {
+    LFUCache cache(2);
+
+    cache.put(1, 10);
+    cache.put(2, 20);
+    cout << cache.get(1) << "
+";
+
+    cache.put(3, 30);
+
+    cout << cache.get(2) << "
+";
+    cout << cache.get(3) << "
+";
 }
 ```
 
@@ -2339,42 +2523,50 @@ Use sliding window with frequency array.
 
 ### Solution Flow Chart
 
-```text
-Move right pointer
-      |
-Increase char frequency
-      |
-If new char, distinct++
-      |
-Condition violated?
-      |
-Move left and decrease frequency
-      |
-Update answer/query result
+```mermaid
+flowchart TD
+    A0["Move right pointer"]
+    A1["Increase character frequency"]
+    A0 --> A1
+    A2["Update distinct count"]
+    A1 --> A2
+    A3["While invalid move left"]
+    A2 --> A3
+    A4["Update answer/query result"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Longest substring with all distinct characters.
+int longestDistinctSubstring(string s) {
+    vector<int> freq(256, 0);
+    int left = 0;
+    int best = 0;
 
-    cout << "Pattern: Frequency Window\n";
+    for (int right = 0; right < (int)s.size(); right++) {
+        freq[s[right]]++;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
+        while (freq[s[right]] > 1) {
+            freq[s[left]]--;
+            left++;
         }
 
-        cout << "\n";
+        best = max(best, right - left + 1);
     }
 
-    return 0;
+    return best;
+}
+
+int main() {
+    cout << longestDistinctSubstring("abcaabcd") << "
+";
 }
 ```
 
@@ -2437,40 +2629,52 @@ Use set/multiset with lower_bound/upper_bound.
 
 ### Solution Flow Chart
 
-```text
-Read query
-      |
-Insert/delete/update ordered DS
-      |
-For nearest/bound query use lower_bound
-      |
-For duplicates use multiset
-      |
-Return answer in O(log n)
+```mermaid
+flowchart TD
+    A0["Read query"]
+    A1["Update ordered DS"]
+    A0 --> A1
+    A2["For bound query use lower_bound/upper_bound"]
+    A1 --> A2
+    A3["Use multiset if duplicates needed"]
+    A2 --> A3
+    A4["Return answer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    multiset<int> ms;
 
-    cout << "Pattern: Ordered Set Queries\n";
+    vector<pair<string,int>> queries = {
+        {"insert", 5},
+        {"insert", 2},
+        {"insert", 5},
+        {"lower_bound", 3},
+        {"erase_one", 5}
+    };
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
+    for (auto [type, x] : queries) {
+        if (type == "insert") {
+            ms.insert(x);
+        } else if (type == "erase_one") {
+            auto it = ms.find(x);
+            if (it != ms.end()) ms.erase(it);
+        } else if (type == "lower_bound") {
+            auto it = ms.lower_bound(x);
+            if (it == ms.end()) cout << "not found
+";
+            else cout << *it << "
+";
         }
-
-        cout << "\n";
     }
-
-    return 0;
 }
 ```
 
@@ -2532,40 +2736,40 @@ Use map/set based on query type.
 
 ### Solution Flow Chart
 
-```text
-Read query type
-      |
-Need count? use map
-Need order? use set
-Need duplicates? use multiset
-      |
-Update DS
-      |
-Answer query from maintained state
+```mermaid
+flowchart TD
+    A0["Read query type"]
+    A1["Choose map/set/multiset"]
+    A0 --> A1
+    A2["Update structure"]
+    A1 --> A2
+    A3["Maintain required state"]
+    A2 --> A3
+    A4["Answer query"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    set<int> s;
 
-    cout << "Pattern: Map / Set\n";
+    s.insert(4);
+    s.insert(9);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    cout << (s.count(4) ? "YES" : "NO") << "
+";
 
-        for (int x : a) {
-            cout << x << " ";
-        }
+    s.erase(4);
 
-        cout << "\n";
-    }
-
-    return 0;
+    cout << (s.count(4) ? "YES" : "NO") << "
+";
 }
 ```
 
@@ -2627,43 +2831,44 @@ Use hash counts and test all powers for complements.
 
 ### Solution Flow Chart
 
-```text
-Build frequency map
-      |
-For each x
-      |
-Temporarily remove x
-      |
-For each power of two P
-      |
-Need = P - x
-      |
-If need exists, pair found
+```mermaid
+flowchart TD
+    A0["Build frequency map"]
+    A1["For each x temporarily remove it"]
+    A0 --> A1
+    A2["For each power P"]
+    A1 --> A2
+    A3["Check need = P - x"]
+    A2 --> A3
+    A4["If need exists pair found"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-bool hasPowerOfTwoPair(vector<int> a) {
-    unordered_map<int,int> count;
+bool hasPairPowerOfTwo(vector<int>& a) {
+    unordered_map<int,int> cnt;
 
-    for (int x : a) count[x]++;
+    for (int x : a) cnt[x]++;
 
     for (int x : a) {
-        count[x]--;
+        cnt[x]--;
 
         for (int p = 1; p <= (1 << 30); p <<= 1) {
             int need = p - x;
 
-            if (count[need] > 0) {
+            if (cnt[need] > 0) {
                 return true;
             }
         }
 
-        count[x]++;
+        cnt[x]++;
     }
 
     return false;
@@ -2671,10 +2876,8 @@ bool hasPowerOfTwoPair(vector<int> a) {
 
 int main() {
     vector<int> a = {1, 5, 7};
-
-    cout << hasPowerOfTwoPair(a) << "\n";
-
-    return 0;
+    cout << hasPairPowerOfTwo(a) << "
+";
 }
 ```
 
@@ -2736,40 +2939,111 @@ Use deque(s) for efficient end operations.
 
 ### Solution Flow Chart
 
-```text
-Read queue operation
-      |
-Front operation -> use deque front
-Back operation -> use deque back
-Middle/balancing operation?
-      |
-Use one/two deques and rebalance
-      |
-Answer operation efficiently
+```mermaid
+flowchart TD
+    A0["Read queue operation"]
+    A1["Use deque front/back operations"]
+    A0 --> A1
+    A2["If middle operation use two deques"]
+    A1 --> A2
+    A3["Rebalance deques"]
+    A2 --> A3
+    A4["Answer efficiently"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Two-deque template for front/middle/back queue.
+class FrontMiddleBackQueue {
+    deque<int> leftPart, rightPart;
 
-    cout << "Pattern: Deque Simulation\n";
-
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
+    void balance() {
+        while (leftPart.size() > rightPart.size()) {
+            rightPart.push_front(leftPart.back());
+            leftPart.pop_back();
         }
 
-        cout << "\n";
+        while (rightPart.size() > leftPart.size() + 1) {
+            leftPart.push_back(rightPart.front());
+            rightPart.pop_front();
+        }
     }
 
-    return 0;
+public:
+    void pushFront(int val) {
+        leftPart.push_front(val);
+        balance();
+    }
+
+    void pushMiddle(int val) {
+        leftPart.push_back(val);
+        balance();
+    }
+
+    void pushBack(int val) {
+        rightPart.push_back(val);
+        balance();
+    }
+
+    int popFront() {
+        if (leftPart.empty() && rightPart.empty()) return -1;
+
+        int ans;
+        if (!leftPart.empty()) {
+            ans = leftPart.front();
+            leftPart.pop_front();
+        } else {
+            ans = rightPart.front();
+            rightPart.pop_front();
+        }
+
+        balance();
+        return ans;
+    }
+
+    int popMiddle() {
+        if (leftPart.empty() && rightPart.empty()) return -1;
+
+        int ans;
+        if (leftPart.size() == rightPart.size()) {
+            ans = leftPart.back();
+            leftPart.pop_back();
+        } else {
+            ans = rightPart.front();
+            rightPart.pop_front();
+        }
+
+        balance();
+        return ans;
+    }
+
+    int popBack() {
+        if (leftPart.empty() && rightPart.empty()) return -1;
+
+        int ans = rightPart.back();
+        rightPart.pop_back();
+
+        balance();
+        return ans;
+    }
+};
+
+int main() {
+    FrontMiddleBackQueue q;
+
+    q.pushFront(1);
+    q.pushBack(2);
+    q.pushMiddle(3);
+
+    cout << q.popMiddle() << "
+";
 }
 ```
 
@@ -2831,56 +3105,52 @@ Find pivot, swap with next larger, reverse suffix.
 
 ### Solution Flow Chart
 
-```text
-Find rightmost pivot where a[i] < a[i+1]
-      |
-No pivot?
-      |
-Reverse whole array
-      |
-Otherwise find rightmost value > pivot
-      |
-Swap
-      |
-Reverse suffix
+```mermaid
+flowchart TD
+    A0["Find rightmost pivot a(i) < a(i+1)"]
+    A1["If no pivot reverse whole array"]
+    A0 --> A1
+    A2["Find rightmost value greater than pivot"]
+    A1 --> A2
+    A3["Swap"]
+    A2 --> A3
+    A4["Reverse suffix"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-void myNextPermutation(vector<int>& a) {
+void nextPermutationOptimal(vector<int>& a) {
     int n = a.size();
-    int pivot = n - 2;
+    int i = n - 2;
 
-    while (pivot >= 0 && a[pivot] >= a[pivot + 1]) {
-        pivot--;
-    }
+    while (i >= 0 && a[i] >= a[i + 1]) i--;
 
-    if (pivot >= 0) {
+    if (i >= 0) {
         int j = n - 1;
 
-        while (a[j] <= a[pivot]) {
-            j--;
-        }
+        while (a[j] <= a[i]) j--;
 
-        swap(a[pivot], a[j]);
+        swap(a[i], a[j]);
     }
 
-    reverse(a.begin() + pivot + 1, a.end());
+    reverse(a.begin() + i + 1, a.end());
 }
 
 int main() {
-    vector<int> a = {1, 2, 3};
+    vector<int> a = {1, 3, 2};
 
-    myNextPermutation(a);
+    nextPermutationOptimal(a);
 
     for (int x : a) cout << x << " ";
-    cout << "\n";
-
-    return 0;
+    cout << "
+";
 }
 ```
 
@@ -2943,40 +3213,42 @@ Use std::deque.
 
 ### Solution Flow Chart
 
-```text
-Read operation
-      |
-push_front / push_back
-      |
-pop_front / pop_back
-      |
-front / back query
-      |
-Deque supports both ends efficiently
+```mermaid
+flowchart TD
+    A0["Read operation"]
+    A1["push_front / push_back"]
+    A0 --> A1
+    A2["pop_front / pop_back"]
+    A1 --> A2
+    A3["front / back query"]
+    A2 --> A3
+    A4["Deque handles both ends efficiently"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    deque<int> dq;
 
-    cout << "Pattern: Deque STL\n";
+    dq.push_back(10);
+    dq.push_front(5);
+    dq.push_back(20);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    cout << dq.front() << " " << dq.back() << "
+";
 
-        for (int x : a) {
-            cout << x << " ";
-        }
+    dq.pop_front();
 
-        cout << "\n";
-    }
-
-    return 0;
+    for (int x : dq) cout << x << " ";
+    cout << "
+";
 }
 ```
 
@@ -3038,19 +3310,22 @@ Use GNU PBDS ordered_set.
 
 ### Solution Flow Chart
 
-```text
-Insert/delete values in ordered_set
-      |
-Need kth element?
-      |
-find_by_order(k)
-      |
-Need count smaller than x?
-      |
-order_of_key(x)
+```mermaid
+flowchart TD
+    A0["Maintain ordered_set"]
+    A1["Insert/delete values"]
+    A0 --> A1
+    A2["find_by_order(k) for kth"]
+    A1 --> A2
+    A3["order_of_key(x) for count smaller"]
+    A2 --> A3
+    A4["Answer order statistic query"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
@@ -3058,13 +3333,8 @@ order_of_key(x)
 using namespace std;
 using namespace __gnu_pbds;
 
-typedef tree<
-    int,
-    null_type,
-    less<int>,
-    rb_tree_tag,
-    tree_order_statistics_node_update
-> ordered_set;
+typedef tree<int, null_type, less<int>, rb_tree_tag,
+tree_order_statistics_node_update> ordered_set;
 
 int main() {
     ordered_set os;
@@ -3073,10 +3343,10 @@ int main() {
     os.insert(20);
     os.insert(30);
 
-    cout << *os.find_by_order(1) << "\n";
-    cout << os.order_of_key(25) << "\n";
-
-    return 0;
+    cout << *os.find_by_order(1) << "
+";
+    cout << os.order_of_key(25) << "
+";
 }
 ```
 
@@ -3139,40 +3409,43 @@ Use std::set lower_bound/upper_bound.
 
 ### Solution Flow Chart
 
-```text
-Maintain ordered set
-      |
-For query x
-      |
-lower_bound(x) gives first >= x
-      |
-upper_bound(x) gives first > x
-      |
-Use prev/next carefully
+```mermaid
+flowchart TD
+    A0["Maintain ordered set"]
+    A1["For query x call lower_bound/upper_bound"]
+    A0 --> A1
+    A2["Check iterator validity"]
+    A1 --> A2
+    A3["Use prev/next carefully"]
+    A2 --> A3
+    A4["Return nearest/bound answer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    set<int> s = {5, 10, 20};
 
-    cout << "Pattern: Set Bounds\n";
+    int x = 12;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    auto it = s.lower_bound(x);
 
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+    if (it != s.end()) {
+        cout << "first >= " << x << " is " << *it << "
+";
     }
 
-    return 0;
+    if (it != s.begin()) {
+        cout << "previous value is " << *prev(it) << "
+";
+    }
 }
 ```
 
@@ -3235,21 +3508,22 @@ Use two multisets for median and frequency maps for mode.
 
 ### Solution Flow Chart
 
-```text
-Insert x
-      |
-Update sum for mean
-      |
-Insert into low/high multiset
-      |
-Rebalance sizes
-      |
-Update frequency map for mode
-      |
-Median from multiset tops
+```mermaid
+flowchart TD
+    A0["Insert x"]
+    A1["Update sum for mean"]
+    A0 --> A1
+    A2["Insert into low/high multiset"]
+    A1 --> A2
+    A3["Rebalance sizes"]
+    A2 --> A3
+    A4["Update frequency map for mode"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
@@ -3290,7 +3564,7 @@ void addNumber(int x) {
     }
 }
 
-double getMedian() {
+double median() {
     if (low.size() == high.size()) {
         return (*low.rbegin() + *high.begin()) / 2.0;
     }
@@ -3306,13 +3580,12 @@ int main() {
 
         int n = low.size() + high.size();
 
-        cout << "After " << x << ": ";
-        cout << "mean=" << fixed << setprecision(2) << (double)sumValues / n;
-        cout << ", median=" << getMedian();
-        cout << ", mode=" << modeValue << "\n";
+        cout << fixed << setprecision(2);
+        cout << "mean=" << (double)sumValues / n;
+        cout << " median=" << median();
+        cout << " mode=" << modeValue << "
+";
     }
-
-    return 0;
 }
 ```
 
@@ -3374,40 +3647,41 @@ Use prefix sums.
 
 ### Solution Flow Chart
 
-```text
-Build prefix array
-      |
-pref[i+1] = pref[i] + a[i]
-      |
-For query [l,r]
-      |
-answer = pref[r+1] - pref[l]
-      |
-O(1) per query
+```mermaid
+flowchart TD
+    A0["Build prefix array"]
+    A1["pref(i+1) = pref(i) + a(i)"]
+    A0 --> A1
+    A2["For query (l,r)"]
+    A1 --> A2
+    A3["answer = pref(r+1) - pref(l)"]
+    A2 --> A3
+    A4["Return in O(1)"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    vector<int> a = {2, 4, 1, 3, 6};
 
-    cout << "Pattern: Prefix Sum\n";
+    vector<int> pref(a.size() + 1, 0);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+    for (int i = 0; i < (int)a.size(); i++) {
+        pref[i + 1] = pref[i] + a[i];
     }
 
-    return 0;
+    int l = 1;
+    int r = 3;
+
+    cout << pref[r + 1] - pref[l] << "
+";
 }
 ```
 
@@ -3471,40 +3745,67 @@ Precompute initial phase and cycle after max reaches front.
 
 ### Solution Flow Chart
 
-```text
-Simulate until maximum reaches front
-      |
-Store compared pairs
-      |
-After max is front
-      |
-Remaining deque enters cycle
-      |
-Answer large queries using modulo cycle
+```mermaid
+flowchart TD
+    A0["Simulate until maximum reaches front"]
+    A1["Store compared pairs"]
+    A0 --> A1
+    A2["After max front, remaining deque cycles"]
+    A1 --> A2
+    A3["Use modulo for large queries"]
+    A2 --> A3
+    A4["Return stored pair"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
+// Standard "Deque Game" style precomputation.
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    deque<int> dq = {3, 1, 5, 2};
+    int n = dq.size();
 
-    cout << "Pattern: Deque + Cycle\n";
+    int mx = *max_element(dq.begin(), dq.end());
+    vector<pair<int,int>> firstPhase;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    while (dq.front() != mx) {
+        int a = dq.front(); dq.pop_front();
+        int b = dq.front(); dq.pop_front();
 
-        for (int x : a) {
-            cout << x << " ";
+        firstPhase.push_back({a, b});
+
+        if (a > b) {
+            dq.push_front(a);
+            dq.push_back(b);
+        } else {
+            dq.push_front(b);
+            dq.push_back(a);
         }
-
-        cout << "\n";
     }
 
-    return 0;
+    dq.pop_front();
+
+    vector<int> cycle(dq.begin(), dq.end());
+
+    vector<long long> queries = {1, 2, 3, 4, 5, 10};
+
+    for (long long q : queries) {
+        if (q <= (long long)firstPhase.size()) {
+            auto [a, b] = firstPhase[q - 1];
+            cout << a << " " << b << "
+";
+        } else {
+            long long idx = (q - firstPhase.size() - 1) % (n - 1);
+            cout << mx << " " << cycle[idx] << "
+";
+        }
+    }
 }
 ```
 
@@ -3567,38 +3868,49 @@ Use frequency map/set.
 
 ### Solution Flow Chart
 
-```text
-Scan products
-      |
-Already in set/map?
- | Yes -> duplicate
- | No  -> insert
-      |
-Frequency map can also count duplicates
+```mermaid
+flowchart TD
+    A0["Scan product list"]
+    A1["If product already seen duplicate found"]
+    A0 --> A1
+    A2["Else insert into set/map"]
+    A1 --> A2
+    A3["Update frequency"]
+    A2 --> A3
+    A4["Return duplicate info"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+vector<string> findDuplicates(vector<string>& products) {
+    unordered_map<string,int> freq;
+    vector<string> duplicates;
 
-    cout << "Pattern: Hash Set\n";
+    for (string p : products) {
+        freq[p]++;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
+        if (freq[p] == 2) {
+            duplicates.push_back(p);
         }
-
-        cout << "\n";
     }
 
-    return 0;
+    return duplicates;
+}
+
+int main() {
+    vector<string> products = {"pen", "book", "pen", "bag", "book"};
+
+    for (string x : findDuplicates(products)) {
+        cout << x << "
+";
+    }
 }
 ```
 
@@ -3660,41 +3972,40 @@ Use hash counts and powers iteration.
 
 ### Solution Flow Chart
 
-```text
-Build frequency map
-      |
-For each x
-      |
-Check P - x for all powers P
-      |
-Use count carefully for same element
-      |
-Return true if any valid pair exists
+```mermaid
+flowchart TD
+    A0["Build frequency map"]
+    A1["For each x check all powers"]
+    A0 --> A1
+    A2["need = P - x"]
+    A1 --> A2
+    A3["Handle same element count carefully"]
+    A2 --> A3
+    A4["Return true if any pair exists"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-bool hasPowerOfTwoPair(vector<int> a) {
-    unordered_map<int,int> count;
+bool hasPairPowerOfTwo(vector<int>& a) {
+    unordered_map<int,int> cnt;
 
-    for (int x : a) count[x]++;
+    for (int x : a) cnt[x]++;
 
     for (int x : a) {
-        count[x]--;
+        cnt[x]--;
 
         for (int p = 1; p <= (1 << 30); p <<= 1) {
-            int need = p - x;
-
-            if (count[need] > 0) {
-                return true;
-            }
+            if (cnt[p - x] > 0) return true;
         }
 
-        count[x]++;
+        cnt[x]++;
     }
 
     return false;
@@ -3702,10 +4013,8 @@ bool hasPowerOfTwoPair(vector<int> a) {
 
 int main() {
     vector<int> a = {1, 5, 7};
-
-    cout << hasPowerOfTwoPair(a) << "\n";
-
-    return 0;
+    cout << hasPairPowerOfTwo(a) << "
+";
 }
 ```
 
@@ -3767,29 +4076,29 @@ Use DSU union/find.
 
 ### Solution Flow Chart
 
-```text
-Initialize DSU
-      |
-For each friendship
-      |
-union(a,b)
-      |
-For connectivity query
-      |
-find(a) == find(b)?
-      |
-Answer same/different group
+```mermaid
+flowchart TD
+    A0["Initialize DSU"]
+    A1["For each friendship union(a,b)"]
+    A0 --> A1
+    A2["For query compare find(a) and find(b)"]
+    A1 --> A2
+    A3["Path compression speeds up"]
+    A2 --> A3
+    A4["Return same/different group"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 struct DSU {
-    vector<int> parent;
-    vector<int> size;
+    vector<int> parent, size;
 
     DSU(int n) {
         parent.resize(n);
@@ -3799,7 +4108,6 @@ struct DSU {
 
     int find(int x) {
         if (parent[x] == x) return x;
-
         return parent[x] = find(parent[x]);
     }
 
@@ -3822,10 +4130,10 @@ int main() {
     dsu.unite(0, 1);
     dsu.unite(3, 4);
 
-    cout << (dsu.find(0) == dsu.find(1)) << "\n";
-    cout << (dsu.find(0) == dsu.find(4)) << "\n";
-
-    return 0;
+    cout << (dsu.find(0) == dsu.find(1)) << "
+";
+    cout << (dsu.find(0) == dsu.find(4)) << "
+";
 }
 ```
 
@@ -3887,40 +4195,55 @@ Sort and greedily match.
 
 ### Solution Flow Chart
 
-```text
-Sort both groups/values
-      |
-Use greedy two pointers
-      |
-If current pair valid
-      |
-Count pair and move both
-      |
-Else move pointer blocking progress
+```mermaid
+flowchart TD
+    A0["Sort groups/values"]
+    A1["Use two pointers"]
+    A0 --> A1
+    A2["If pair valid count it"]
+    A1 --> A2
+    A3["Move both pointers"]
+    A2 --> A3
+    A4["Otherwise move blocking pointer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Adaptable optimal template: greedy pairing after sorting.
+int maxPairs(vector<int> boys, vector<int> girls, int maxDiff) {
+    sort(boys.begin(), boys.end());
+    sort(girls.begin(), girls.end());
 
-    cout << "Pattern: Greedy Pairing\n";
+    int i = 0, j = 0, ans = 0;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
+    while (i < (int)boys.size() && j < (int)girls.size()) {
+        if (abs(boys[i] - girls[j]) <= maxDiff) {
+            ans++;
+            i++;
+            j++;
+        } else if (boys[i] < girls[j]) {
+            i++;
+        } else {
+            j++;
         }
-
-        cout << "\n";
     }
 
-    return 0;
+    return ans;
+}
+
+int main() {
+    vector<int> boys = {1, 4, 6};
+    vector<int> girls = {2, 5, 10};
+
+    cout << maxPairs(boys, girls, 1) << "
+";
 }
 ```
 
@@ -3982,42 +4305,79 @@ Use stacks for values/operators.
 
 ### Solution Flow Chart
 
-```text
-Scan expression
-      |
-Value token -> value stack
-      |
-Operator token -> operator stack
-      |
-When precedence/parentheses require
-      |
-Apply operator to values
-      |
-Final value remains
+```mermaid
+flowchart TD
+    A0["Scan expression"]
+    A1["Value token goes to value stack"]
+    A0 --> A1
+    A2["Operator token goes to operator stack"]
+    A1 --> A2
+    A3["Apply operators by precedence/parentheses"]
+    A2 --> A3
+    A4["Final value remains"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+bool applyOp(bool a, bool b, char op) {
+    if (op == '&') return a & b;
+    if (op == '|') return a | b;
+    return a ^ b;
+}
 
-    cout << "Pattern: Stack Expression Evaluation\n";
+int precedence(char op) {
+    if (op == '&') return 2;
+    if (op == '^') return 1;
+    if (op == '|') return 0;
+    return -1;
+}
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+bool evaluate(string s) {
+    stack<bool> values;
+    stack<char> ops;
 
-        for (int x : a) {
-            cout << x << " ";
+    auto reduce = [&]() {
+        bool b = values.top(); values.pop();
+        bool a = values.top(); values.pop();
+        char op = ops.top(); ops.pop();
+
+        values.push(applyOp(a, b, op));
+    };
+
+    for (char c : s) {
+        if (c == ' ') continue;
+
+        if (c == 'T' || c == 'F') {
+            values.push(c == 'T');
+        } else if (c == '(') {
+            ops.push(c);
+        } else if (c == ')') {
+            while (!ops.empty() && ops.top() != '(') reduce();
+            if (!ops.empty()) ops.pop();
+        } else {
+            while (!ops.empty() && ops.top() != '(' &&
+                   precedence(ops.top()) >= precedence(c)) {
+                reduce();
+            }
+            ops.push(c);
         }
-
-        cout << "\n";
     }
 
-    return 0;
+    while (!ops.empty()) reduce();
+
+    return values.top();
+}
+
+int main() {
+    cout << evaluate("T&F|T") << "
+";
 }
 ```
 
@@ -4080,40 +4440,51 @@ Use sliding window or hashing.
 
 ### Solution Flow Chart
 
-```text
-Move right pointer
-      |
-Update char/hash/frequency state
-      |
-If condition invalid
-      |
-Move left pointer
-      |
-Count/update valid substrings
+```mermaid
+flowchart TD
+    A0["Move right pointer"]
+    A1["Update frequency/hash state"]
+    A0 --> A1
+    A2["If condition invalid move left"]
+    A1 --> A2
+    A3["Count/update valid substrings"]
+    A2 --> A3
+    A4["Return answer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Count substrings with at most k distinct characters.
+long long countAtMostKDistinct(string s, int k) {
+    vector<int> freq(256, 0);
+    int distinct = 0;
+    int left = 0;
+    long long ans = 0;
 
-    cout << "Pattern: Sliding Window / Hashing\n";
+    for (int right = 0; right < (int)s.size(); right++) {
+        if (freq[s[right]]++ == 0) distinct++;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
+        while (distinct > k) {
+            if (--freq[s[left]] == 0) distinct--;
+            left++;
         }
 
-        cout << "\n";
+        ans += right - left + 1;
     }
 
-    return 0;
+    return ans;
+}
+
+int main() {
+    cout << countAtMostKDistinct("abcba", 2) << "
+";
 }
 ```
 
@@ -4172,40 +4543,49 @@ Compare with sorted copy and find mismatch range.
 
 ### Solution Flow Chart
 
-```text
-Copy array and sort it
-      |
-Find first index where a[i] != sorted[i]
-      |
-Find last mismatch
-      |
-That subsegment must be fixed
-      |
-Sort/check that range
+```mermaid
+flowchart TD
+    A0["Copy and sort array"]
+    A1["Find first mismatch"]
+    A0 --> A1
+    A2["Find last mismatch"]
+    A1 --> A2
+    A3["Candidate segment is mismatch range"]
+    A2 --> A3
+    A4["Sort/check that range"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
+pair<int,int> minimalSegmentToSort(vector<int> a) {
+    vector<int> sorted = a;
+    sort(sorted.begin(), sorted.end());
+
+    int l = 0;
+    while (l < (int)a.size() && a[l] == sorted[l]) l++;
+
+    if (l == (int)a.size()) return {-1, -1};
+
+    int r = a.size() - 1;
+    while (r >= 0 && a[r] == sorted[r]) r--;
+
+    return {l, r};
+}
+
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    vector<int> a = {1, 5, 3, 4, 2, 6};
 
-    cout << "Pattern: Sort + Mismatch\n";
+    auto [l, r] = minimalSegmentToSort(a);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
-    }
-
-    return 0;
+    cout << l << " " << r << "
+";
 }
 ```
 
@@ -4268,36 +4648,37 @@ Greedy reset when tank becomes negative.
 
 ### Solution Flow Chart
 
-```text
-Scan stations once
-      |
-tank += gas[i] - cost[i]
-      |
-tank < 0?
-      |
-Start cannot be before i
-      |
-Set start = i+1 and tank = 0
-      |
-If total >= 0, answer start
+```mermaid
+flowchart TD
+    A0["Scan stations once"]
+    A1["tank += gas(i) - cost(i)"]
+    A0 --> A1
+    A2["If tank < 0 set start = i+1"]
+    A1 --> A2
+    A3["Reset tank to 0"]
+    A2 --> A3
+    A4["If total >= 0 answer start"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int canCompleteCircuit(vector<int> gas, vector<int> cost) {
+int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
     int total = 0;
     int tank = 0;
     int start = 0;
 
     for (int i = 0; i < (int)gas.size(); i++) {
-        int gain = gas[i] - cost[i];
+        int diff = gas[i] - cost[i];
 
-        total += gain;
-        tank += gain;
+        total += diff;
+        tank += diff;
 
         if (tank < 0) {
             start = i + 1;
@@ -4305,18 +4686,15 @@ int canCompleteCircuit(vector<int> gas, vector<int> cost) {
         }
     }
 
-    if (total < 0) return -1;
-
-    return start;
+    return total >= 0 ? start : -1;
 }
 
 int main() {
     vector<int> gas = {1, 2, 3, 4, 5};
     vector<int> cost = {3, 4, 5, 1, 2};
 
-    cout << canCompleteCircuit(gas, cost) << "\n";
-
-    return 0;
+    cout << canCompleteCircuit(gas, cost) << "
+";
 }
 ```
 
@@ -4380,32 +4758,35 @@ Use min-heap of size k+1.
 
 ### Solution Flow Chart
 
-```text
-Push first k+1 elements into min-heap
-      |
-Pop smallest to output
-      |
-Push next array element
-      |
-Repeat
-      |
-Pop remaining heap
+```mermaid
+flowchart TD
+    A0["Push elements into min heap"]
+    A1["When heap size > k pop smallest"]
+    A0 --> A1
+    A2["Append popped value to output"]
+    A1 --> A2
+    A3["Continue through array"]
+    A2 --> A3
+    A4["Pop remaining heap"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<int> sortNearlySorted(vector<int> a, int k) {
+vector<int> sortNearlySorted(vector<int>& a, int k) {
     priority_queue<int, vector<int>, greater<int>> pq;
     vector<int> ans;
 
     for (int x : a) {
         pq.push(x);
 
-        if ((int)pq.size() > k) {
+        if ((int)pq.size() > k + 1) {
             ans.push_back(pq.top());
             pq.pop();
         }
@@ -4421,14 +4802,13 @@ vector<int> sortNearlySorted(vector<int> a, int k) {
 
 int main() {
     vector<int> a = {6, 5, 3, 2, 8, 10, 9};
-    int k = 3;
 
-    vector<int> ans = sortNearlySorted(a, k);
+    for (int x : sortNearlySorted(a, 3)) {
+        cout << x << " ";
+    }
 
-    for (int x : ans) cout << x << " ";
-    cout << "\n";
-
-    return 0;
+    cout << "
+";
 }
 ```
 
@@ -4492,25 +4872,28 @@ Amortized transfer from input stack to output stack.
 
 ### Solution Flow Chart
 
-```text
-push(x)
-  |
-Push into input stack
-  |
-pop/front?
-  |
-If output stack empty, transfer input to output
-  |
-Use output.top()
+```mermaid
+flowchart TD
+    A0["push(x): push into input stack"]
+    A1["pop/front requested"]
+    A0 --> A1
+    A2["If output stack empty transfer input to output"]
+    A1 --> A2
+    A3["Use output.top()"]
+    A2 --> A3
+    A4["FIFO preserved"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-class MyQueue {
+class QueueUsingStacks {
     stack<int> in, out;
 
     void shift() {
@@ -4527,30 +4910,31 @@ public:
         in.push(x);
     }
 
+    int pop() {
+        shift();
+
+        int x = out.top();
+        out.pop();
+
+        return x;
+    }
+
     int front() {
         shift();
         return out.top();
     }
-
-    int pop() {
-        shift();
-        int x = out.top();
-        out.pop();
-        return x;
-    }
 };
 
 int main() {
-    MyQueue q;
+    QueueUsingStacks q;
 
-    q.push(10);
-    q.push(20);
-    q.push(30);
+    q.push(5);
+    q.push(9);
 
-    cout << q.pop() << "\n";
-    cout << q.front() << "\n";
-
-    return 0;
+    cout << q.pop() << "
+";
+    cout << q.front() << "
+";
 }
 ```
 
@@ -4606,25 +4990,28 @@ Count set bits at every position.
 
 ### Solution Flow Chart
 
-```text
-For each bit position
-      |
-Count ones
-      |
-zeros = n - ones
-      |
-Pairs different at this bit = ones * zeros
-      |
-Add to answer
+```mermaid
+flowchart TD
+    A0["For each bit position"]
+    A1["Count ones"]
+    A0 --> A1
+    A2["zeros = n - ones"]
+    A1 --> A2
+    A3["Contribution = ones * zeros"]
+    A2 --> A3
+    A4["Add to answer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long totalHammingDistance(vector<int> a) {
+long long totalHammingDistance(vector<int>& a) {
     long long ans = 0;
     int n = a.size();
 
@@ -4645,9 +5032,8 @@ long long totalHammingDistance(vector<int> a) {
 int main() {
     vector<int> a = {4, 14, 2};
 
-    cout << totalHammingDistance(a) << "\n";
-
-    return 0;
+    cout << totalHammingDistance(a) << "
+";
 }
 ```
 
@@ -4710,40 +5096,41 @@ Use priority_queue.
 
 ### Solution Flow Chart
 
-```text
-Push elements
-      |
-Heap keeps best element at top
-      |
-top() answers current best
-      |
-pop() removes best
-      |
-Repeat for ordered extraction
+```mermaid
+flowchart TD
+    A0["Push elements"]
+    A1["Heap keeps best at top"]
+    A0 --> A1
+    A2["top answers current best"]
+    A1 --> A2
+    A3["pop removes best"]
+    A2 --> A3
+    A4["Repeat for ordered extraction"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    priority_queue<int> pq;
 
-    cout << "Pattern: Heap\n";
+    pq.push(7);
+    pq.push(2);
+    pq.push(10);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+    while (!pq.empty()) {
+        cout << pq.top() << " ";
+        pq.pop();
     }
 
-    return 0;
+    cout << "
+";
 }
 ```
 
@@ -4798,40 +5185,58 @@ Frequency map and tie rule; optionally precompute leaders.
 
 ### Solution Flow Chart
 
-```text
-Process votes in order
-      |
-Increase candidate frequency
-      |
-Compare with current leader
-      |
-Apply tie rule if needed
-      |
-Store/print leader
+```mermaid
+flowchart TD
+    A0["Process votes in order"]
+    A1["Increase candidate frequency"]
+    A0 --> A1
+    A2["Compare with current leader"]
+    A1 --> A2
+    A3["Apply tie rule"]
+    A2 --> A3
+    A4["Store/print leader"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Online leader after each vote. Tie goes to latest candidate.
+vector<int> leadersAfterVotes(vector<int>& votes) {
+    unordered_map<int,int> count;
+    vector<int> leaders;
 
-    cout << "Pattern: Map + Leader Tracking\n";
+    int leader = -1;
+    int best = 0;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    for (int candidate : votes) {
+        count[candidate]++;
 
-        for (int x : a) {
-            cout << x << " ";
+        if (count[candidate] >= best) {
+            best = count[candidate];
+            leader = candidate;
         }
 
-        cout << "\n";
+        leaders.push_back(leader);
     }
 
-    return 0;
+    return leaders;
+}
+
+int main() {
+    vector<int> votes = {1, 2, 1, 2, 2};
+
+    for (int x : leadersAfterVotes(votes)) {
+        cout << x << " ";
+    }
+
+    cout << "
+";
 }
 ```
 
@@ -4894,40 +5299,44 @@ Use multiset.
 
 ### Solution Flow Chart
 
-```text
-Insert values
-      |
-Duplicates are allowed
-      |
-Need erase one copy?
-      |
-erase(find(x))
-      |
-Use begin/rbegin/lower_bound for queries
+```mermaid
+flowchart TD
+    A0["Insert values"]
+    A1["Duplicates are allowed"]
+    A0 --> A1
+    A2["Use erase(find(x)) for one copy"]
+    A1 --> A2
+    A3["Use begin/rbegin/lower_bound"]
+    A2 --> A3
+    A4["Answer ordered duplicate queries"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    multiset<int> ms;
 
-    cout << "Pattern: Multiset\n";
+    ms.insert(5);
+    ms.insert(1);
+    ms.insert(5);
+    ms.insert(3);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    auto it = ms.find(5);
 
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+    if (it != ms.end()) {
+        ms.erase(it);
     }
 
-    return 0;
+    for (int x : ms) cout << x << " ";
+    cout << "
+";
 }
 ```
 
@@ -4989,19 +5398,22 @@ Use set algorithms or two pointers.
 
 ### Solution Flow Chart
 
-```text
-Have two sorted sets
-      |
-Union / intersection / difference
-      |
-Use STL set algorithms
-      |
-Store result in vector/set
-      |
-Print result
+```mermaid
+flowchart TD
+    A0["Have two sorted sets"]
+    A1["Choose union/intersection/difference"]
+    A0 --> A1
+    A2["Use STL set algorithm"]
+    A1 --> A2
+    A3["Store result"]
+    A2 --> A3
+    A4["Print result"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
@@ -5011,21 +5423,25 @@ int main() {
     set<int> a = {1, 2, 3};
     set<int> b = {3, 4, 5};
 
-    vector<int> uni;
-    vector<int> inter;
+    vector<int> uni, inter, diff;
 
     set_union(a.begin(), a.end(), b.begin(), b.end(), back_inserter(uni));
     set_intersection(a.begin(), a.end(), b.begin(), b.end(), back_inserter(inter));
+    set_difference(a.begin(), a.end(), b.begin(), b.end(), back_inserter(diff));
 
     cout << "Union: ";
     for (int x : uni) cout << x << " ";
 
-    cout << "\nIntersection: ";
+    cout << "
+Intersection: ";
     for (int x : inter) cout << x << " ";
 
-    cout << "\n";
+    cout << "
+A-B: ";
+    for (int x : diff) cout << x << " ";
 
-    return 0;
+    cout << "
+";
 }
 ```
 
@@ -5090,40 +5506,50 @@ Use prefix sums/maps or monotonic structures depending on property.
 
 ### Solution Flow Chart
 
-```text
-Build prefix / maintain monotonic state
-      |
-For each right endpoint
-      |
-Use previous prefix/state
-      |
-Count valid subarrays ending here
-      |
-Update answer
+```mermaid
+flowchart TD
+    A0["Build prefix or monotonic state"]
+    A1["For each right endpoint"]
+    A0 --> A1
+    A2["Use previous prefix/state"]
+    A1 --> A2
+    A3["Count valid subarrays ending here"]
+    A2 --> A3
+    A4["Update answer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Count subarrays with sum exactly k.
+long long countSubarraysWithSumK(vector<int>& a, int k) {
+    unordered_map<int,int> seenPrefix;
+    seenPrefix[0] = 1;
 
-    cout << "Pattern: Prefix / Monotonic DS\n";
+    int prefix = 0;
+    long long ans = 0;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    for (int x : a) {
+        prefix += x;
 
-        for (int x : a) {
-            cout << x << " ";
-        }
+        ans += seenPrefix[prefix - k];
 
-        cout << "\n";
+        seenPrefix[prefix]++;
     }
 
-    return 0;
+    return ans;
+}
+
+int main() {
+    vector<int> a = {1, 2, 3, -2, 2};
+    cout << countSubarraysWithSumK(a, 3) << "
+";
 }
 ```
 
@@ -5186,40 +5612,43 @@ Use lower_bound, upper_bound, binary_search.
 
 ### Solution Flow Chart
 
-```text
-Sort array
-      |
-lower_bound(x)
-      |
-upper_bound(x)
-      |
-binary_search(x)
-      |
-Use iterator difference for index/count
+```mermaid
+flowchart TD
+    A0["Sort array"]
+    A1["lower_bound(x)"]
+    A0 --> A1
+    A2["upper_bound(x)"]
+    A1 --> A2
+    A3["binary_search(x)"]
+    A2 --> A3
+    A4["Use iterator difference for index/count"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+    vector<int> a = {1, 3, 3, 5, 7, 9};
 
-    cout << "Pattern: Binary Search STL\n";
+    int x = 3;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    auto lb = lower_bound(a.begin(), a.end(), x);
+    auto ub = upper_bound(a.begin(), a.end(), x);
 
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
-    }
-
-    return 0;
+    cout << "first >= x index = " << lb - a.begin() << "
+";
+    cout << "first > x index = " << ub - a.begin() << "
+";
+    cout << "frequency = " << ub - lb << "
+";
+    cout << binary_search(a.begin(), a.end(), 5) << "
+";
 }
 ```
 
@@ -5281,40 +5710,51 @@ Greedy with multiset/heap for best current choice.
 
 ### Solution Flow Chart
 
-```text
-Insert available choices into multiset/heap
-      |
-Pick best currently valid option
-      |
-Erase/update chosen option
-      |
-Repeat greedily
-      |
-Return optimized amount/count
+```mermaid
+flowchart TD
+    A0["Insert choices into multiset/heap"]
+    A1["Pick best valid option"]
+    A0 --> A1
+    A2["Erase/update chosen option"]
+    A1 --> A2
+    A3["Repeat greedily"]
+    A2 --> A3
+    A4["Return optimized answer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Adaptable greedy template: buy maximum items with limited money.
+int maxItems(vector<int>& cost, int money) {
+    multiset<int> prices(cost.begin(), cost.end());
 
-    cout << "Pattern: Greedy + Multiset\n";
+    int bought = 0;
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    while (!prices.empty()) {
+        auto it = prices.begin();
 
-        for (int x : a) {
-            cout << x << " ";
-        }
+        if (*it > money) break;
 
-        cout << "\n";
+        money -= *it;
+        bought++;
+
+        prices.erase(it);
     }
 
-    return 0;
+    return bought;
+}
+
+int main() {
+    vector<int> cost = {4, 2, 8, 1, 3};
+    cout << maxItems(cost, 7) << "
+";
 }
 ```
 
@@ -5376,39 +5816,41 @@ Sort and use two pointers for each fixed first element.
 
 ### Solution Flow Chart
 
-```text
-Sort array
-      |
-Fix first element i
-      |
-Use left=i+1 and right=n-1
-      |
-sum too small -> left++
-sum too large -> right--
-      |
-sum target -> found
+```mermaid
+flowchart TD
+    A0["Sort array"]
+    A1["Fix first element i"]
+    A0 --> A1
+    A2["Set left=i+1 and right=n-1"]
+    A1 --> A2
+    A3["Move left/right based on sum"]
+    A2 --> A3
+    A4["If sum equals target return found"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-bool hasTriplet(vector<int> a, int target) {
+bool hasTriplet(vector<int>& a, int target) {
     sort(a.begin(), a.end());
 
     for (int i = 0; i < (int)a.size(); i++) {
-        int l = i + 1;
-        int r = a.size() - 1;
+        int left = i + 1;
+        int right = a.size() - 1;
 
-        while (l < r) {
-            int sum = a[i] + a[l] + a[r];
+        while (left < right) {
+            int sum = a[i] + a[left] + a[right];
 
             if (sum == target) return true;
 
-            if (sum < target) l++;
-            else r--;
+            if (sum < target) left++;
+            else right--;
         }
     }
 
@@ -5417,11 +5859,9 @@ bool hasTriplet(vector<int> a, int target) {
 
 int main() {
     vector<int> a = {1, 4, 45, 6, 10, 8};
-    int target = 22;
 
-    cout << hasTriplet(a, target) << "\n";
-
-    return 0;
+    cout << hasTriplet(a, 22) << "
+";
 }
 ```
 
@@ -5483,57 +5923,53 @@ Sweep line events sorted by time.
 
 ### Solution Flow Chart
 
-```text
-Convert intervals to events
-      |
-start event = +1
-end event = -1
-      |
-Sort events by time
-      |
-Scan active count
-      |
-Maximum active = answer
+```mermaid
+flowchart TD
+    A0["Convert intervals to events"]
+    A1["start = +1 and end = -1"]
+    A0 --> A1
+    A2["Sort events by time"]
+    A1 --> A2
+    A3["Scan active count"]
+    A2 --> A3
+    A4["Maximum active is answer"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int maxOverlap(vector<pair<int,int>> intervals) {
+int maxSimultaneousEvents(vector<pair<int,int>>& eventsInput) {
     vector<pair<int,int>> events;
 
-    for (auto [start, finish] : intervals) {
+    for (auto [start, finish] : eventsInput) {
         events.push_back({start, +1});
         events.push_back({finish, -1});
     }
 
     sort(events.begin(), events.end());
 
-    int current = 0;
+    int active = 0;
     int best = 0;
 
     for (auto [time, delta] : events) {
-        current += delta;
-        best = max(best, current);
+        active += delta;
+        best = max(best, active);
     }
 
     return best;
 }
 
 int main() {
-    vector<pair<int,int>> intervals = {
-        {1, 4},
-        {2, 5},
-        {7, 9},
-        {3, 6}
-    };
+    vector<pair<int,int>> events = {{1, 4}, {2, 5}, {3, 6}, {7, 9}};
 
-    cout << maxOverlap(intervals) << "\n";
-
-    return 0;
+    cout << maxSimultaneousEvents(events) << "
+";
 }
 ```
 
@@ -5596,40 +6032,60 @@ Use prefix/suffix maxima or greedy coverage.
 
 ### Solution Flow Chart
 
-```text
-Compute best prefix values
-      |
-Compute best suffix values
-      |
-Try every split point
-      |
-Combine pref[split] + suff[split+1]
-      |
-Take maximum
+```mermaid
+flowchart TD
+    A0["Compute prefix best values"]
+    A1["Compute suffix best values"]
+    A0 --> A1
+    A2["Try every split point"]
+    A1 --> A2
+    A3["Combine prefix and suffix"]
+    A2 --> A3
+    A4["Take maximum"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+// Adaptable prefix/suffix optimization template.
+int bestSplitValue(vector<int>& leftValue, vector<int>& rightValue) {
+    int n = leftValue.size();
 
-    cout << "Pattern: Prefix/Suffix Greedy\n";
+    vector<int> pref(n), suff(n);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
+    pref[0] = leftValue[0];
 
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+    for (int i = 1; i < n; i++) {
+        pref[i] = max(pref[i - 1], leftValue[i]);
     }
 
-    return 0;
+    suff[n - 1] = rightValue[n - 1];
+
+    for (int i = n - 2; i >= 0; i--) {
+        suff[i] = max(suff[i + 1], rightValue[i]);
+    }
+
+    int ans = 0;
+
+    for (int split = 0; split + 1 < n; split++) {
+        ans = max(ans, pref[split] + suff[split + 1]);
+    }
+
+    return ans;
+}
+
+int main() {
+    vector<int> leftValue = {1, 4, 2, 8, 5};
+    vector<int> rightValue = {3, 2, 7, 1, 6};
+
+    cout << bestSplitValue(leftValue, rightValue) << "
+";
 }
 ```
 
@@ -5697,40 +6153,71 @@ Group by x/y coordinate and use ordered sets/maps.
 
 ### Solution Flow Chart
 
-```text
-Group cities by x-coordinate and y-coordinate
-      |
-For query city
-      |
-Search nearest in same x set
-      |
-Search nearest in same y set
-      |
-Take smaller valid distance
+```mermaid
+flowchart TD
+    A0["Group cities by x and y coordinate"]
+    A1["For query city search same x set"]
+    A0 --> A1
+    A2["Search same y set"]
+    A1 --> A2
+    A3["Use lower_bound/prev candidates"]
+    A2 --> A3
+    A4["Return nearest valid city"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    vector<int> a = {5, 1, 3, 5, 2};
+int nearestDistanceInSet(set<int>& coords, int value) {
+    int ans = INT_MAX;
 
-    cout << "Pattern: Coordinate Map + Set\n";
+    auto it = coords.lower_bound(value);
 
-    if constexpr (true) {
-        sort(a.begin(), a.end());
-
-        for (int x : a) {
-            cout << x << " ";
-        }
-
-        cout << "\n";
+    if (it != coords.end() && *it != value) {
+        ans = min(ans, abs(*it - value));
     }
 
-    return 0;
+    if (it != coords.begin()) {
+        --it;
+
+        if (*it != value) {
+            ans = min(ans, abs(*it - value));
+        }
+    }
+
+    return ans;
+}
+
+int main() {
+    vector<pair<int,int>> cities = {
+        {0, 0},
+        {0, 5},
+        {3, 0},
+        {10, 0}
+    };
+
+    map<int,set<int>> sameX;
+    map<int,set<int>> sameY;
+
+    for (auto [x, y] : cities) {
+        sameX[x].insert(y);
+        sameY[y].insert(x);
+    }
+
+    int qx = 0;
+    int qy = 0;
+
+    int vertical = nearestDistanceInSet(sameX[qx], qy);
+    int horizontal = nearestDistanceInSet(sameY[qy], qx);
+
+    cout << min(vertical, horizontal) << "
+";
 }
 ```
 
@@ -5797,57 +6284,53 @@ Convert arrivals/leavings into events and sweep.
 
 ### Solution Flow Chart
 
-```text
-Convert each customer interval to events
-      |
-arrival = +1
-leaving = -1
-      |
-Sort by time
-      |
-Scan active customers
-      |
-Track maximum active count
+```mermaid
+flowchart TD
+    A0["Convert each customer interval to events"]
+    A1["arrival = +1 and leaving = -1"]
+    A0 --> A1
+    A2["Sort events by time"]
+    A1 --> A2
+    A3["Scan active customers"]
+    A2 --> A3
+    A4["Track maximum active count"]
+    A3 --> A4
 ```
 
-### Complete C++ Pattern Code
+### Optimal C++ Solution / Template
+
+> For custom AlgoZenith-only titles where the official statement is not available, this is the closest optimal STL/DSA template based on the problem title and known CP pattern.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-int maxOverlap(vector<pair<int,int>> intervals) {
+int maximumCustomers(vector<pair<int,int>>& intervals) {
     vector<pair<int,int>> events;
 
-    for (auto [start, finish] : intervals) {
-        events.push_back({start, +1});
-        events.push_back({finish, -1});
+    for (auto [arrival, leaving] : intervals) {
+        events.push_back({arrival, +1});
+        events.push_back({leaving, -1});
     }
 
     sort(events.begin(), events.end());
 
-    int current = 0;
-    int best = 0;
+    int active = 0;
+    int answer = 0;
 
     for (auto [time, delta] : events) {
-        current += delta;
-        best = max(best, current);
+        active += delta;
+        answer = max(answer, active);
     }
 
-    return best;
+    return answer;
 }
 
 int main() {
-    vector<pair<int,int>> intervals = {
-        {1, 4},
-        {2, 5},
-        {7, 9},
-        {3, 6}
-    };
+    vector<pair<int,int>> intervals = {{1, 4}, {2, 5}, {3, 6}, {7, 9}};
 
-    cout << maxOverlap(intervals) << "\n";
-
-    return 0;
+    cout << maximumCustomers(intervals) << "
+";
 }
 ```
 
