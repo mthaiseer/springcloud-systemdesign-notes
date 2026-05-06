@@ -2,7 +2,6 @@
 
 A visual-first Low-Level Design reference for common interview problems.
 
-
 This version includes:
 
 - Mermaid **class diagrams** with entities, fields, methods, relationships, and cardinality.
@@ -62,7 +61,6 @@ This version includes:
 - Reject invalid moves such as occupied cells or out-of-bound positions.
 - Detect row, column, diagonal wins and draw state.
 - Keep the game logic independent from display and scoring.
-
 
 ### 1A. Requirement Definition
 
@@ -150,7 +148,7 @@ classDiagram
   TicTacToeGame --> WinningStrategy
   Board *-- Cell
   Scoreboard --> Player
-  %% Cardinality relationships
+
   TicTacToeGame "1" --> "1" Board : owns
   Board "1" --> "9" Cell : contains
   TicTacToeGame "1" --> "2" Player : uses
@@ -165,7 +163,6 @@ classDiagram
 | `Board` | 1 | `Cell` | 9 | contains |
 | `TicTacToeGame` | 1 | `Player` | 2 | uses |
 | `TicTacToeGame` | 1 | `WinningStrategy` | * | uses |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -185,7 +182,6 @@ Core Flow:
 4. Game checks win or draw ->
 5. Game switches turn or ends
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -511,7 +507,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Move outside board
@@ -531,7 +526,6 @@ flowchart TD
 - Validate moves based on each piece type.
 - Support capturing opponent pieces.
 - Maintain current player and game status.
-
 
 ### 1A. Requirement Definition
 
@@ -627,7 +621,7 @@ classDiagram
   Cell --> Piece
   Piece <|-- King
   Piece <|-- Queen
-  %% Cardinality relationships
+
   ChessGame "1" --> "1" Board : owns
   Board "1" --> "64" Cell : contains
   Cell "0..1" --> "1" Piece : holds
@@ -642,7 +636,6 @@ classDiagram
 | `Board` | 1 | `Cell` | 64 | contains |
 | `Cell` | 0..1 | `Piece` | 1 | holds |
 | `ChessGame` | 1 | `Player` | 2 | uses |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -662,7 +655,6 @@ Core Flow:
 4. Board moves or captures ->
 5. Game switches turn
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -998,7 +990,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -1018,7 +1009,6 @@ flowchart TD
 - Evict the least recently used item when capacity is full.
 - Update recency on both get and put.
 - Keep cache storage and recency tracking consistent.
-
 
 ### 1A. Requirement Definition
 
@@ -1078,7 +1068,7 @@ classDiagram
     +getValue()
   }
   LRUCache --> Node
-  %% Cardinality relationships
+
   LRUCache "1" --> "0..capacity" Node : stores
   Node "1" --> "0..2" Node : links
 ```
@@ -1089,7 +1079,6 @@ classDiagram
 |---|---:|---|---:|---|
 | `LRUCache` | 1 | `Node` | 0..capacity | stores |
 | `Node` | 1 | `Node` | 0..2 | links |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -1109,7 +1098,6 @@ Core Flow:
 4. If capacity exceeded remove tail node ->
 5. Map and list stay synchronized
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -1307,7 +1295,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Capacity full
@@ -1327,7 +1314,6 @@ flowchart TD
 - Return suggestions for a prefix.
 - Keep suggestions sorted and limited.
 - Use a Trie for efficient prefix lookup.
-
 
 ### 1A. Requirement Definition
 
@@ -1383,7 +1369,7 @@ classDiagram
   }
   AutocompleteSystem --> TrieNode
   TrieNode --> TrieNode
-  %% Cardinality relationships
+
   AutocompleteSystem "1" --> "1" TrieNode : root
   TrieNode "1" --> "0..26" TrieNode : children
 ```
@@ -1394,7 +1380,6 @@ classDiagram
 |---|---:|---|---:|---|
 | `AutocompleteSystem` | 1 | `TrieNode` | 1 | root |
 | `TrieNode` | 1 | `TrieNode` | 0..26 | children |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -1413,7 +1398,6 @@ Core Flow:
 3. Search walks prefix nodes ->
 4. Return stored suggestions
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -1589,7 +1573,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -1609,7 +1592,6 @@ flowchart TD
 - Prevent invalid operations based on current ATM state.
 - Validate balance and ATM cash before dispensing.
 - Separate bank validation from ATM state handling.
-
 
 ### 1A. Requirement Definition
 
@@ -1696,7 +1678,7 @@ classDiagram
   ATM --> CashDispenser
   ATM --> BankService
   ATM --> Card
-  %% Cardinality relationships
+
   ATM "1" --> "1" ATMState : current state
   ATM "1" --> "0..1" Card : current card
   ATM "1" --> "1" CashDispenser : has
@@ -1711,7 +1693,6 @@ classDiagram
 | `ATM` | 1 | `Card` | 0..1 | current card |
 | `ATM` | 1 | `CashDispenser` | 1 | has |
 | `ATM` | 1 | `BankService` | 1 | uses |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -1731,7 +1712,6 @@ Core Flow:
 4. Withdraw requested ->
 5. ATM debits account and dispenses cash
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -2024,7 +2004,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Wrong PIN
@@ -2044,7 +2023,6 @@ flowchart TD
 - Assign the best elevator using a dispatcher.
 - Move elevator step by step toward pickup/drop floors.
 - Track elevator direction and state.
-
 
 ### 1A. Requirement Definition
 
@@ -2114,7 +2092,7 @@ classDiagram
   ElevatorSystem --> Dispatcher
   ElevatorSystem --> Elevator
   Elevator --> Request
-  %% Cardinality relationships
+
   ElevatorSystem "1" --> "*" Elevator : manages
   ElevatorSystem "1" --> "1" Dispatcher : uses
   Elevator "1" --> "*" Request : queues
@@ -2127,7 +2105,6 @@ classDiagram
 | `ElevatorSystem` | 1 | `Elevator` | * | manages |
 | `ElevatorSystem` | 1 | `Dispatcher` | 1 | uses |
 | `Elevator` | 1 | `Request` | * | queues |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -2147,7 +2124,6 @@ Core Flow:
 4. Elevator moves to pickup ->
 5. Elevator moves to destination
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -2382,7 +2358,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -2402,7 +2377,6 @@ flowchart TD
 - Allocate compatible available spots automatically.
 - Issue parking tickets and calculate fees on exit.
 - Handle concurrent parking operations safely.
-
 
 ### 1A. Requirement Definition
 
@@ -2499,7 +2473,7 @@ classDiagram
   ParkingTicket --> ParkingSpot
   ParkingLot --> FeeStrategy
   ParkingLot --> SpotAllocationStrategy
-  %% Cardinality relationships
+
   ParkingLot "1" --> "*" ParkingFloor : contains
   ParkingFloor "1" --> "*" ParkingSpot : contains
   ParkingSpot "1" --> "0..1" Vehicle : parks
@@ -2516,7 +2490,6 @@ classDiagram
 | `ParkingSpot` | 1 | `Vehicle` | 0..1 | parks |
 | `ParkingTicket` | 1 | `Vehicle` | 1 | references |
 | `ParkingTicket` | 1 | `ParkingSpot` | 1 | references |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -2536,7 +2509,6 @@ Core Flow:
 4. Ticket is issued ->
 5. On exit fee is calculated and spot freed
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -2863,7 +2835,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - No compatible spot
@@ -2883,7 +2854,6 @@ flowchart TD
 - Support stock addition, reservation, release, and sale.
 - Prevent overselling and invalid quantities.
 - Expose availability across warehouses.
-
 
 ### 1A. Requirement Definition
 
@@ -2958,7 +2928,7 @@ classDiagram
   InventoryService --> Warehouse
   Warehouse *-- InventoryItem
   InventoryItem --> Product
-  %% Cardinality relationships
+
   InventoryService "1" --> "*" Warehouse : manages
   Warehouse "1" --> "*" InventoryItem : contains
   InventoryItem "1" --> "1" Product : references
@@ -2971,7 +2941,6 @@ classDiagram
 | `InventoryService` | 1 | `Warehouse` | * | manages |
 | `Warehouse` | 1 | `InventoryItem` | * | contains |
 | `InventoryItem` | 1 | `Product` | 1 | references |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -2990,7 +2959,6 @@ Core Flow:
 3. Reserved stock is sold or released ->
 4. Availability is updated
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -3272,7 +3240,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -3292,7 +3259,6 @@ flowchart TD
 - Generate a user feed from followed users.
 - Prevent invalid relationships such as self-follow.
 - Keep feed generation separate from user/post storage.
-
 
 ### 1A. Requirement Definition
 
@@ -3371,7 +3337,7 @@ classDiagram
   SocialNetworkService --> FeedService
   User --> Post
   Post --> Comment
-  %% Cardinality relationships
+
   SocialNetworkService "1" --> "*" User : manages
   User "1" --> "*" Post : creates
   Post "1" --> "*" Comment : contains
@@ -3386,7 +3352,6 @@ classDiagram
 | `User` | 1 | `Post` | * | creates |
 | `Post` | 1 | `Comment` | * | contains |
 | `User` | * | `User` | * | follows |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -3405,7 +3370,6 @@ Core Flow:
 3. Feed service collects followed posts ->
 4. Posts are sorted by time
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -3639,7 +3603,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -3659,7 +3622,6 @@ flowchart TD
 - Support search by title or artist.
 - Support play, pause, and next operations.
 - Separate catalog management from player behavior.
-
 
 ### 1A. Requirement Definition
 
@@ -3741,7 +3703,7 @@ classDiagram
   MusicService --> Player
   Playlist --> Song
   Player --> PlayQueue
-  %% Cardinality relationships
+
   MusicService "1" --> "*" Song : catalog
   MusicService "1" --> "*" Playlist : manages
   Playlist "1" --> "*" Song : contains
@@ -3756,7 +3718,6 @@ classDiagram
 | `MusicService` | 1 | `Playlist` | * | manages |
 | `Playlist` | 1 | `Song` | * | contains |
 | `Player` | 1 | `PlayQueue` | 1 | uses |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -3775,7 +3736,6 @@ Core Flow:
 3. Song added to queue ->
 4. Player plays, pauses, or skips
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -4018,7 +3978,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -4038,7 +3997,6 @@ flowchart TD
 - Publish messages to a topic.
 - Deliver messages to all subscribers of the topic.
 - Keep publishers decoupled from subscribers.
-
 
 ### 1A. Requirement Definition
 
@@ -4106,7 +4064,7 @@ classDiagram
   Broker --> Topic
   Topic --> Subscriber
   Topic --> Message
-  %% Cardinality relationships
+
   Broker "1" --> "*" Topic : manages
   Topic "1" --> "*" Subscriber : notifies
   Topic "1" --> "*" Message : receives
@@ -4119,7 +4077,6 @@ classDiagram
 | `Broker` | 1 | `Topic` | * | manages |
 | `Topic` | 1 | `Subscriber` | * | notifies |
 | `Topic` | 1 | `Message` | * | receives |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -4138,7 +4095,6 @@ Core Flow:
 3. Topic stores message ->
 4. Topic notifies subscribers
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -4348,7 +4304,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -4368,7 +4323,6 @@ flowchart TD
 - Allow members to send messages.
 - Track message status such as sent, delivered, and read.
 - Reject messages from non-members.
-
 
 ### 1A. Requirement Definition
 
@@ -4443,7 +4397,7 @@ classDiagram
   ChatService --> Conversation
   Conversation --> User
   Conversation --> Message
-  %% Cardinality relationships
+
   ChatService "1" --> "*" User : manages
   ChatService "1" --> "*" Conversation : manages
   Conversation "1" --> "2..*" User : members
@@ -4458,7 +4412,6 @@ classDiagram
 | `ChatService` | 1 | `Conversation` | * | manages |
 | `Conversation` | 1 | `User` | 2..* | members |
 | `Conversation` | 1 | `Message` | * | contains |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -4477,7 +4430,6 @@ Core Flow:
 3. Conversation stores message ->
 4. Status changes to delivered/read
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -4703,7 +4655,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -4723,7 +4674,6 @@ flowchart TD
 - Validate payment method and amount.
 - Use pluggable payment processors.
 - Track payment lifecycle status.
-
 
 ### 1A. Requirement Definition
 
@@ -4797,7 +4747,7 @@ classDiagram
   PaymentGateway --> PaymentProcessor
   Payment --> PaymentMethod
   PaymentProcessor <|.. StripeProcessor
-  %% Cardinality relationships
+
   PaymentGateway "1" --> "*" Payment : tracks
   Payment "1" --> "1" PaymentMethod : uses
   PaymentGateway "1" --> "1" PaymentProcessor : delegates
@@ -4810,7 +4760,6 @@ classDiagram
 | `PaymentGateway` | 1 | `Payment` | * | tracks |
 | `Payment` | 1 | `PaymentMethod` | 1 | uses |
 | `PaymentGateway` | 1 | `PaymentProcessor` | 1 | delegates |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -4829,7 +4778,6 @@ Core Flow:
 3. Payment status updated ->
 4. Refund can reverse successful payment
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -5051,7 +4999,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -5071,7 +5018,6 @@ flowchart TD
 - Split expenses using configurable split strategies.
 - Track who owes whom.
 - Support settlements between users.
-
 
 ### 1A. Requirement Definition
 
@@ -5153,7 +5099,7 @@ classDiagram
   Group --> User
   Group --> Expense
   Expense --> SplitStrategy
-  %% Cardinality relationships
+
   SplitwiseService "1" --> "*" Group : manages
   Group "1" --> "*" User : members
   Group "1" --> "*" Expense : contains
@@ -5170,7 +5116,6 @@ classDiagram
 | `Group` | 1 | `Expense` | * | contains |
 | `Expense` | 1 | `SplitStrategy` | 1 | uses |
 | `SplitwiseService` | 1 | `BalanceSheet` | 1 | updates |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -5189,7 +5134,6 @@ Core Flow:
 3. Balance sheet records debts ->
 4. Settlement reduces balance
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -5440,7 +5384,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -5460,7 +5403,6 @@ flowchart TD
 - Prevent checkout when inventory is insufficient.
 - Process payment before order placement.
 - Separate product, cart, inventory, order, and payment responsibilities.
-
 
 ### 1A. Requirement Definition
 
@@ -5546,7 +5488,7 @@ classDiagram
   EcommerceService --> Order
   EcommerceService --> Inventory
   Order --> Payment
-  %% Cardinality relationships
+
   EcommerceService "1" --> "*" Product : catalog
   Cart "1" --> "*" CartItem : contains
   Order "1" --> "1" Payment : requires
@@ -5561,7 +5503,6 @@ classDiagram
 | `Cart` | 1 | `CartItem` | * | contains |
 | `Order` | 1 | `Payment` | 1 | requires |
 | `EcommerceService` | 1 | `Inventory` | 1 | uses |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -5581,7 +5522,6 @@ Core Flow:
 4. Payment succeeds ->
 5. Order is placed
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -5879,7 +5819,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -5899,7 +5838,6 @@ flowchart TD
 - Match riders with available drivers.
 - Track ride status from request to completion.
 - Calculate fare using a configurable strategy.
-
 
 ### 1A. Requirement Definition
 
@@ -5987,7 +5925,7 @@ classDiagram
   RideService --> Ride
   RideService --> MatchingStrategy
   RideService --> FareStrategy
-  %% Cardinality relationships
+
   RideService "1" --> "*" Ride : tracks
   Ride "1" --> "1" Rider : has
   Ride "1" --> "0..1" Driver : assigned
@@ -6004,7 +5942,6 @@ classDiagram
 | `Ride` | 1 | `Driver` | 0..1 | assigned |
 | `RideService` | 1 | `MatchingStrategy` | 1 | uses |
 | `RideService` | 1 | `FareStrategy` | 1 | uses |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -6024,7 +5961,6 @@ Core Flow:
 4. Ride starts ->
 5. Fare calculated on completion
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -6308,7 +6244,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -6328,7 +6263,6 @@ flowchart TD
 - Redirect short code to original URL.
 - Support link expiration.
 - Ensure generated codes are unique.
-
 
 ### 1A. Requirement Definition
 
@@ -6393,7 +6327,7 @@ classDiagram
   UrlShortenerService --> UrlMapping
   UrlShortenerService --> CodeGenerator
   CodeGenerator <|.. RandomCodeGenerator
-  %% Cardinality relationships
+
   UrlShortenerService "1" --> "*" UrlMapping : stores
   UrlShortenerService "1" --> "1" CodeGenerator : uses
 ```
@@ -6404,7 +6338,6 @@ classDiagram
 |---|---:|---|---:|---|
 | `UrlShortenerService` | 1 | `UrlMapping` | * | stores |
 | `UrlShortenerService` | 1 | `CodeGenerator` | 1 | uses |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -6424,7 +6357,6 @@ Core Flow:
 4. Redirect resolves code ->
 5. Expired code is rejected
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -6621,7 +6553,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Invalid input should fail fast with a clear exception.
@@ -6641,7 +6572,6 @@ flowchart TD
 - Refill quota over time.
 - Support per-client buckets.
 - Keep algorithm pluggable.
-
 
 ### 1A. Requirement Definition
 
@@ -6705,7 +6635,7 @@ classDiagram
   RateLimiterService --> RateLimiter
   RateLimiter <|.. TokenBucketRateLimiter
   TokenBucketRateLimiter --> Bucket
-  %% Cardinality relationships
+
   RateLimiterService "1" --> "1" RateLimiter : uses
   TokenBucketRateLimiter "1" --> "*" Bucket : per client
 ```
@@ -6716,7 +6646,6 @@ classDiagram
 |---|---:|---|---:|---|
 | `RateLimiterService` | 1 | `RateLimiter` | 1 | uses |
 | `TokenBucketRateLimiter` | 1 | `Bucket` | * | per client |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -6736,7 +6665,6 @@ Core Flow:
 4. Token consumed if available ->
 5. Request allowed or rejected
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -6942,7 +6870,6 @@ flowchart TD
   H --> I[Return updated result]
 ```
 
-
 ### 9. Edge Cases
 
 - Unknown client
@@ -6962,7 +6889,6 @@ flowchart TD
 - Commit staged file snapshots.
 - Create and checkout branches.
 - Restore working tree from branch head.
-
 
 ### 1A. Requirement Definition
 
@@ -7032,7 +6958,7 @@ classDiagram
   Repository --> Branch
   Commit --> Blob
   Branch --> Commit
-  %% Cardinality relationships
+
   Repository "1" --> "*" Branch : manages
   Repository "1" --> "*" Commit : stores
   Branch "1" --> "1" Commit : head
@@ -7047,7 +6973,6 @@ classDiagram
 | `Repository` | 1 | `Commit` | * | stores |
 | `Branch` | 1 | `Commit` | 1 | head |
 | `Commit` | 1 | `Blob` | * | snapshot |
-
 
 ### 5A. Entity Relation, Cardinality, and Primary Use Cases
 
@@ -7067,7 +6992,6 @@ Core Flow:
 4. Branch head moves ->
 5. Checkout restores snapshot
 ```
-
 
 ### 6A. API Flow — REST Style
 
@@ -7305,7 +7229,6 @@ flowchart TD
   G --> H
   H --> I[Return updated result]
 ```
-
 
 ### 9. Edge Cases
 
