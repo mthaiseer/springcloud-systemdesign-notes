@@ -1,13 +1,10 @@
 
-# CP DSA Math Visual Reference — Candidate Master Improved Edition — No Rich Render Errors
+# CP DSA Math Visual Reference — Candidate Master Improved Edition with Flow Charts
 
-> Compatibility version: Mermaid diagrams were converted into plain Markdown flow steps. This prevents `Unable to render rich display` errors in viewers that cannot handle many Mermaid diagrams.
-
-
-> Optimized render-safe edition: duplicate table diagrams and generic problem diagrams were removed; each problem keeps the useful detailed solution flowchart and dry-run flowchart.
+> Render-safe edition: Mermaid rich diagrams are converted to collapsible plain-text flow steps, and C++ code is collapsible.
 
 
-> This version keeps the original guide content and adds detailed Mermaid solution-step flowcharts plus dry-run flowcharts for each practice problem.
+> This version avoids Mermaid rendering failures while preserving the same learning flow.
 
 A visual, step-by-step mathematical foundation guide for Competitive Programming and DSA, aimed at building strong fundamentals toward Candidate Master level.
 
@@ -44,8 +41,25 @@ A visual, step-by-step mathematical foundation guide for Competitive Programming
 
 ## 0. Master Mental Map
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CP Math Problem
+2. Modulo cycle
+3. Fast power
+4. GCD LCM
+5. Prime factorization
+6. Prefix sum
+7. Counting
+8. Sequence formula
+9. Geometry
+10. Complexity
+11. Invariant
+12. Binary search on answer
+```
+
+</details>
 
 Core idea:
 
@@ -53,8 +67,21 @@ Core idea:
 
 General framework:
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Read problem
+2. Try small examples
+3. Find repeated structure
+4. Choose formula or helper
+5. Check constraints
+6. Check overflow
+7. Implement
+8. Test edge cases
+```
+
+</details>
 
 ### Master Pattern Table
 
@@ -77,8 +104,21 @@ General framework:
 
 ### Problem Solving Loop
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Stuck
+2. Make smallest cases
+3. Write brute force idea
+4. Record answers
+5. Find sequence or invariant
+6. Prove pattern
+7. Code optimized version
+8. Stress test mentally
+```
+
+</details>
 
 
 ---
@@ -113,10 +153,23 @@ b = 3 items per group
 ceil(10 / 3) = 4 groups
 ```
 
-**Left-to-right flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. 10 items
+2. Group size 3
+3. 3 full groups
+4. 1 leftover item
+5. Need 4 groups
+```
+
+</details>
 
 ### C++ Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 long long ceilDiv(long long a, long long b) {
@@ -124,7 +177,12 @@ return a / b + (a % b != 0);
 }
 ```
 
+</details>
+
 ### Signed version
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 long long floorDiv(long long a, long long b) {
@@ -141,6 +199,8 @@ if (r != 0 && ((r > 0) == (b > 0))) q++;
 return q;
 }
 ```
+
+</details>
 
 ### Dry Run
 
@@ -177,8 +237,19 @@ ceil(n / k)
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Codeforces 151A Soft Drinking
+2. Topic Ceiling Division
+3. Concepts minimum among limiting resources, integer d...
+4. Goal Convert the statement into a known math pattern
+5. Hint Compute each resource capacity and take minimum.
+6. Complexity O1
+```
+
+</details>
 
 
 #### Approach Logic
@@ -194,12 +265,18 @@ ceil(n / k)
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Compute how many toasts can be made from drink.'
-2. 'Compute how many toasts can be made from limes.'
-3. 'Compute how many toasts can be made from salt.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Compute how many toasts can be made from drink.
+2. Compute how many toasts can be made from limes.
+3. Compute how many toasts can be made from salt.
 4. 'The answer is the minimum of these values divided b...
 5. 'This is not pure ceiling division, but it trains in...
+```
+
+</details>
 
 #### Dry Run
 
@@ -214,13 +291,19 @@ answer = 6 / 3 = 2
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 3 friends'
-2. 'drink gives 10 total toasts'
-3. 'limes give 6 toasts'
-4. 'salt gives 9 toasts'
-5. 'bottleneck = 6'
-6. 'answer = 6 / 3 = 2'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 3 friends
+2. drink gives 10 total toasts
+3. limes give 6 toasts
+4. salt gives 9 toasts
+5. bottleneck = 6
+6. answer = 6 / 3 = 2
+```
+
+</details>
 
 ### Practice Problem: [Codeforces 919A Supermarket](https://codeforces.com/problemset/problem/919/A)
 
@@ -235,8 +318,19 @@ answer = 6 / 3 = 2
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Codeforces 919A Supermarket
+2. Topic Ceiling Division
+3. Concepts ratio comparison, price per unit, minimum v...
+4. Goal Convert the statement into a known math pattern
+5. Hint Track minimum double ratio.
+6. Complexity On
+```
+
+</details>
 
 
 #### Approach Logic
@@ -251,11 +345,17 @@ answer = 6 / 3 = 2
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'For each shop, compute price per unit as a / b.'
-2. 'Find the minimum price per unit.'
-3. 'Multiply by required amount.'
-4. 'Use double because the answer can be fractional.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. For each shop, compute price per unit as a / b.
+2. Find the minimum price per unit.
+3. Multiply by required amount.
+4. Use double because the answer can be fractional.
+```
+
+</details>
 
 #### Dry Run
 
@@ -268,11 +368,17 @@ answer = 3 * 4 = 12
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'Shop 1 price 10 for 2 kg gives 5 per kg'
-2. 'Shop 2 price 15 for 5 kg gives 3 per kg'
-3. 'Need 4 kg'
-4. 'answer = 3 4 = 12'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Shop 1 price 10 for 2 kg gives 5 per kg
+2. Shop 2 price 15 for 5 kg gives 3 per kg
+3. Need 4 kg
+4. answer = 3 4 = 12
+```
+
+</details>
 
 
 ---
@@ -315,10 +421,22 @@ After 100 days in a 7 day cycle:
 (3 + 100) % 7 = 103 % 7 = 5
 ```
 
-**Left-to-right flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Start position
+2. Add steps
+3. Take modulo
+4. Final cycle position
+```
+
+</details>
 
 ### C++ Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 long long norm(long long x, long long mod) {
@@ -327,6 +445,8 @@ if (x < 0) x += mod;
 return x;
 }
 ```
+
+</details>
 
 ### Dry Run
 
@@ -364,8 +484,19 @@ Think modulo.
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Codeforces 913A Modular Exponentiation
+2. Topic Modulo and Cycles
+3. Concepts modulo, powers of two, overflow avoidance
+4. Goal Convert the statement into a known math pattern
+5. Hint If n is large enough, directly print m.
+6. Complexity O1
+```
+
+</details>
 
 
 #### Approach Logic
@@ -380,11 +511,17 @@ Think modulo.
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'The problem asks for m mod 2^n.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. The problem asks for m mod 2^n.
 2. 'If n is very large, then 2^n is bigger than m, so a...
-3. 'Otherwise compute 2^n safely and output m % value.'
-4. 'Key trick: avoid computing impossible huge powers.'
+3. Otherwise compute 2^n safely and output m % value.
+4. Key trick: avoid computing impossible huge powers.
+```
+
+</details>
 
 #### Dry Run
 
@@ -402,15 +539,21 @@ answer = 100
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 3, m = 10'
-2. '2^3 = 8'
-3. '10 mod 8 = 2'
-4. 'answer = 2'
-5. 'n = 40, m = 100'
-6. '2^40 is larger than 100'
-7. '100 mod huge number = 100'
-8. 'answer = 100'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 3, m = 10
+2. 2^3 = 8
+3. 10 mod 8 = 2
+4. answer = 2
+5. n = 40, m = 100
+6. 2^40 is larger than 100
+7. 100 mod huge number = 100
+8. answer = 100
+```
+
+</details>
 
 ### Practice Problem: [CSES Increasing Array](https://cses.fi/problemset/task/1094)
 
@@ -425,8 +568,19 @@ answer = 100
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Increasing Array
+2. Topic Modulo and Cycles
+3. Concepts monotonic invariant, operation count
+4. Goal Convert the statement into a known math pattern
+5. Hint Track previous maximum.
+6. Complexity On
+```
+
+</details>
 
 
 #### Approach Logic
@@ -441,11 +595,17 @@ answer = 100
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. 'Maintain the invariant that the processed prefix is...
 2. 'If current value is smaller than previous value, in...
-3. 'Add the difference to answer.'
+3. Add the difference to answer.
 4. 'This is a math invariant problem more than a simula...
+```
+
+</details>
 
 #### Dry Run
 
@@ -461,14 +621,20 @@ answer = 1 + 4 = 5
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'array = 3 2 5 1 7'
-2. 'prev = 3'
-3. '2 is smaller than 3, add 1, make it 3'
-4. '5 is okay, prev = 5'
-5. '1 is smaller than 5, add 4, make it 5'
-6. '7 is okay'
-7. 'answer = 1 + 4 = 5'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. array = 3 2 5 1 7
+2. prev = 3
+3. 2 is smaller than 3, add 1, make it 3
+4. 5 is okay, prev = 5
+5. 1 is smaller than 5, add 4, make it 5
+6. 7 is okay
+7. answer = 1 + 4 = 5
+```
+
+</details>
 
 
 ---
@@ -491,10 +657,24 @@ x^13 = x^8 * x^4 * x^1
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Set result to 1
+2. Multiply result by base
+3. Skip multiply
+4. Square base
+5. Divide exponent by 2
+6. Return result
+```
+
+</details>
 
 ### C++ Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 long long binPow(long long base, long long exp) {
@@ -508,7 +688,12 @@ return res;
 }
 ```
 
+</details>
+
 ### Modular C++ Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 long long modPow(long long base, long long exp, long long mod) {
@@ -523,7 +708,12 @@ return res;
 }
 ```
 
+</details>
+
 ### Java Helper
+
+<details>
+<summary>Java Code</summary>
 
 ```java
 static long modPow(long base, long exp, long mod) {
@@ -537,6 +727,8 @@ exp >>= 1;
 return res;
 }
 ```
+
+</details>
 
 ### Dry Run: compute `3^13`
 
@@ -578,8 +770,19 @@ need matrix power later
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Exponentiation
+2. Topic Binary Exponentiation
+3. Concepts binary exponentiation, modulo, many queries
+4. Goal Convert the statement into a known math pattern
+5. Hint Use modPowa, b, MOD.
+6. Complexity Olog b per query
+```
+
+</details>
 
 
 #### Approach Logic
@@ -595,12 +798,18 @@ need matrix power later
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Each query gives a and b.'
-2. 'Direct multiplication is impossible when b is large.'
-3. 'Use modular binary exponentiation.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Each query gives a and b.
+2. Direct multiplication is impossible when b is large.
+3. Use modular binary exponentiation.
 4. 'For every odd exponent bit, multiply answer by curr...
-5. 'Square base every step and halve exponent.'
+5. Square base every step and halve exponent.
+```
+
+</details>
 
 #### Dry Run
 
@@ -613,11 +822,17 @@ answer = 1594323
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'a = 3, b = 13, mod = 1000000007'
-2. '13 binary is 1101'
-3. 'Use powers 3^1, 3^4, 3^8'
-4. 'answer = 1594323'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. a = 3, b = 13, mod = 1000000007
+2. 13 binary is 1101
+3. Use powers 3^1, 3^4, 3^8
+4. answer = 1594323
+```
+
+</details>
 
 ### Practice Problem: [CSES Exponentiation II](https://cses.fi/problemset/task/1712)
 
@@ -632,8 +847,19 @@ answer = 1594323
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Exponentiation II
+2. Topic Binary Exponentiation
+3. Concepts Fermat reduction, nested exponent, modular...
+4. Goal Convert the statement into a known math pattern
+5. Hint Use modPow twice.
+6. Complexity Olog c plus log MOD
+```
+
+</details>
 
 
 #### Approach Logic
@@ -649,12 +875,18 @@ answer = 1594323
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Need compute a^(b^c) mod MOD.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Need compute a^(b^c) mod MOD.
 2. 'Since MOD is prime, reduce exponent modulo MOD minu...
-3. 'Compute e = b^c mod MOD minus 1.'
-4. 'Answer is a^e mod MOD.'
+3. Compute e = b^c mod MOD minus 1.
+4. Answer is a^e mod MOD.
 5. 'This combines Fermat theorem and binary exponentiat...
+```
+
+</details>
 
 #### Dry Run
 
@@ -667,11 +899,17 @@ For huge values compute exponent modulo MOD minus 1
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'a = 2, b = 3, c = 2'
-2. 'exponent = 3^2 = 9'
-3. 'answer = 2^9 = 512'
-4. 'For huge values compute exponent modulo MOD minus 1'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. a = 2, b = 3, c = 2
+2. exponent = 3^2 = 9
+3. answer = 2^9 = 512
+4. For huge values compute exponent modulo MOD minus 1
+```
+
+</details>
 
 
 ---
@@ -700,10 +938,22 @@ a^(M - 1) = 1 mod M
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Need division under modulo
+2. Use Fermat inverse
+3. Compute power M minus 2
+4. Use extended gcd if inverse exists
+```
+
+</details>
 
 ### C++ Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 const long long MOD = 1000000007LL;
@@ -724,6 +974,8 @@ long long modInversePrime(long long a) {
 return modPow(a, MOD - 2, MOD);
 }
 ```
+
+</details>
 
 ### Dry Run
 
@@ -748,8 +1000,19 @@ Division means multiply by inverse.
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Binomial Coefficients
+2. Topic Modular Arithmetic
+3. Concepts factorials, inverse factorials, nCr modulo...
+4. Goal Convert the statement into a known math pattern
+5. Hint Precompute factorial and inverse factorial.
+6. Complexity OmaxN log MOD plus q
+```
+
+</details>
 
 
 #### Approach Logic
@@ -765,12 +1028,18 @@ Division means multiply by inverse.
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Need answer many nCr queries under prime modulo.'
-2. 'Precompute factorials up to maximum n.'
-3. 'Precompute inverse factorials using Fermat inverse.'
-4. 'Answer each query as fact(n) invFact(r) invFact(n-r).'
-5. 'This changes each query from O(n) to O(1).'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Need answer many nCr queries under prime modulo.
+2. Precompute factorials up to maximum n.
+3. Precompute inverse factorials using Fermat inverse.
+4. Answer each query as fact(n) invFact(r) invFact(n-r).
+5. This changes each query from O(n) to O(1).
+```
+
+</details>
 
 #### Dry Run
 
@@ -785,13 +1054,19 @@ Under modulo division becomes multiply by inverse
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 5, r = 2'
-2. 'fact(5) = 120'
-3. 'fact(2) = 2'
-4. 'fact(3) = 6'
-5. 'C(5,2) = 120 / 12 = 10'
-6. 'Under modulo division becomes multiply by inverse'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 5, r = 2
+2. fact(5) = 120
+3. fact(2) = 2
+4. fact(3) = 6
+5. C(5,2) = 120 / 12 = 10
+6. Under modulo division becomes multiply by inverse
+```
+
+</details>
 
 ### Practice Problem: [CSES Distributing Apples](https://cses.fi/problemset/task/1716)
 
@@ -806,8 +1081,19 @@ Under modulo division becomes multiply by inverse
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Distributing Apples
+2. Topic Modular Arithmetic
+3. Concepts stars and bars, nCr modulo prime
+4. Goal Convert the statement into a known math pattern
+5. Hint Answer nCrn plus m minus 1, n minus 1.
+6. Complexity OmaxN log MOD plus 1
+```
+
+</details>
 
 
 #### Approach Logic
@@ -822,11 +1108,17 @@ Under modulo division becomes multiply by inverse
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Distribute m identical apples among n children.'
-2. 'This is stars and bars.'
-3. 'Number of ways is C(n + m - 1, n - 1).'
-4. 'Use modular nCr precomputation.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Distribute m identical apples among n children.
+2. This is stars and bars.
+3. Number of ways is C(n + m - 1, n - 1).
+4. Use modular nCr precomputation.
+```
+
+</details>
 
 #### Dry Run
 
@@ -840,12 +1132,18 @@ Choose separator positions = C(6,2) = 15
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 3 children, m = 4 apples'
-2. 'Represent as stars and bars'
-3. 'with 2 separators'
-4. 'Total positions = 4 + 3 - 1 = 6'
-5. 'Choose separator positions = C(6,2) = 15'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 3 children, m = 4 apples
+2. Represent as stars and bars
+3. with 2 separators
+4. Total positions = 4 + 3 - 1 = 6
+5. Choose separator positions = C(6,2) = 15
+```
+
+</details>
 
 
 ---
@@ -867,10 +1165,23 @@ gcd(a, b) * lcm(a, b) = a * b
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Start with a and b
+2. r equals a modulo b
+3. a becomes b
+4. b becomes r
+5. a is gcd
+```
+
+</details>
 
 ### C++ Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 long long gcdll(long long a, long long b) {
@@ -886,6 +1197,8 @@ long long lcmll(long long a, long long b) {
 return a / gcdll(a, b) * b;
 }
 ```
+
+</details>
 
 ### Dry Run
 
@@ -930,8 +1243,19 @@ synchronization
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Common Divisors
+2. Topic GCD and LCM
+3. Concepts divisors, frequency counting, largest commo...
+4. Goal Convert the statement into a known math pattern
+5. Hint Use frequency array and multiples loop.
+6. Complexity OmaxA log maxA
+```
+
+</details>
 
 
 #### Approach Logic
@@ -947,12 +1271,18 @@ synchronization
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Count frequency of every value.'
-2. 'Iterate possible divisor from maximum value downward.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Count frequency of every value.
+2. Iterate possible divisor from maximum value downward.
 3. 'Count how many array values are multiples of this d...
 4. 'First divisor that appears in at least two numbers...
-5. 'This avoids checking every pair.'
+5. This avoids checking every pair.
+```
+
+</details>
 
 #### Dry Run
 
@@ -966,12 +1296,18 @@ answer = 5
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'array = 6 10 15'
-2. 'Check divisor 15 gives one multiple'
-3. 'Check divisor 10 gives one multiple'
-4. 'Check divisor 5 gives two multiples 10 and 15'
-5. 'answer = 5'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. array = 6 10 15
+2. Check divisor 15 gives one multiple
+3. Check divisor 10 gives one multiple
+4. Check divisor 5 gives two multiples 10 and 15
+5. answer = 5
+```
+
+</details>
 
 ### Practice Problem: [Codeforces 1458A Row GCD](https://codeforces.com/problemset/problem/1458/A)
 
@@ -986,8 +1322,19 @@ answer = 5
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Codeforces 1458A Row GCD
+2. Topic GCD and LCM
+3. Concepts gcd transformation, difference invariant
+4. Goal Convert the statement into a known math pattern
+5. Hint Compute gcd of differences once.
+6. Complexity On log A plus q log A
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1002,11 +1349,17 @@ answer = 5
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. 'For array a, compute gcd of all differences a(i) -...
 2. 'For each query b, answer is gcd(a(0) + b, differenc...
 3. 'Key identity: gcd of shifted numbers depends on fir...
 4. 'This is a classic CM level gcd transformation patte...
+```
+
+</details>
 
 #### Dry Run
 
@@ -1020,12 +1373,18 @@ answer = gcd(6 + 2, 4) = gcd(8,4) = 4
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'a = (6, 10, 14)'
-2. 'differences from first = 4, 8'
-3. 'g = gcd(4,8) = 4'
-4. 'query b = 2'
-5. 'answer = gcd(6 + 2, 4) = gcd(8,4) = 4'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. a = (6, 10, 14)
+2. differences from first = 4, 8
+3. g = gcd(4,8) = 4
+4. query b = 2
+5. answer = gcd(6 + 2, 4) = gcd(8,4) = 4
+```
+
+</details>
 
 
 ---
@@ -1052,6 +1411,9 @@ So check only:
 
 ### C++ Prime Check
 
+<details>
+<summary>C++ Code</summary>
+
 ```cpp
 bool isPrime(long long n) {
 if (n < 2) return false;
@@ -1061,6 +1423,8 @@ if (n % d == 0) return false;
 return true;
 }
 ```
+
+</details>
 
 ### Divisor count formula
 
@@ -1086,10 +1450,24 @@ Divisors: 1, 2, 3, 6, 9, 18
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Number n
+2. Try divisor d
+3. Count exponent
+4. Increase d
+5. Remaining n is prime
+6. Done
+```
+
+</details>
 
 ### C++ Factorization
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 vector<pair<long long,int>> factorize(long long n) {
@@ -1109,7 +1487,12 @@ return f;
 }
 ```
 
+</details>
+
 ### Sieve Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 vector<int> primes;
@@ -1130,7 +1513,12 @@ isComposite[(int)j] = true;
 }
 ```
 
+</details>
+
 ### Smallest Prime Factor Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 vector<int> spf;
@@ -1162,6 +1550,8 @@ return res;
 }
 ```
 
+</details>
+
 ### Practice Problem: [CSES Counting Divisors](https://cses.fi/problemset/task/1713)
 
 | Field | Details |
@@ -1175,8 +1565,19 @@ return res;
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Counting Divisors
+2. Topic Primes and Divisors
+3. Concepts prime factorization, divisor count formula,...
+4. Goal Convert the statement into a known math pattern
+5. Hint Build SPF then apply divisor formula.
+6. Complexity OmaxA log log maxA plus q log A
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1191,11 +1592,17 @@ return res;
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'For each query number x, factorize it.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. For each query number x, factorize it.
 2. 'If x = p1^a1 p2^a2, divisor count is product of (ai...
-3. 'Since many queries exist, use SPF precomputation.'
-4. 'Factor each number in logarithmic like time.'
+3. Since many queries exist, use SPF precomputation.
+4. Factor each number in logarithmic like time.
+```
+
+</details>
 
 #### Dry Run
 
@@ -1208,11 +1615,17 @@ answer = 6
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'x = 18'
-2. '18 = 2^1 3^2'
-3. 'divisors = (1 + 1) (2 + 1) = 6'
-4. 'answer = 6'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. x = 18
+2. 18 = 2^1 3^2
+3. divisors = (1 + 1) (2 + 1) = 6
+4. answer = 6
+```
+
+</details>
 
 ### Practice Problem: [Codeforces 546D Soldier and Number Game](https://codeforces.com/problemset/problem/546/D)
 
@@ -1227,8 +1640,19 @@ answer = 6
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Codeforces 546D Soldier and Number Game
+2. Topic Primes and Divisors
+3. Concepts prime factor count prefix, SPF, range query
+4. Goal Convert the statement into a known math pattern
+5. Hint Precompute factor counts and prefix.
+6. Complexity OmaxN log log maxN plus q
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1243,11 +1667,17 @@ answer = 6
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. 'Precompute number of prime factors with multiplicit...
-2. 'Build prefix sum over those counts.'
-3. 'For query a b, answer is prefix(a) minus prefix(b).'
-4. 'This combines SPF and prefix sums.'
+2. Build prefix sum over those counts.
+3. For query a b, answer is prefix(a) minus prefix(b).
+4. This combines SPF and prefix sums.
+```
+
+</details>
 
 #### Dry Run
 
@@ -1260,11 +1690,17 @@ answer = count factors in 4 and 5
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'primeFactorCount(10) = 2 because 10 = 2 5'
-2. 'primeFactorCount(12) = 3 because 12 = 2 2 3'
-3. 'For query a = 5, b = 3'
-4. 'answer = count factors in 4 and 5'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. primeFactorCount(10) = 2 because 10 = 2 5
+2. primeFactorCount(12) = 3 because 12 = 2 2 3
+3. For query a = 5, b = 3
+4. answer = count factors in 4 and 5
+```
+
+</details>
 
 
 ---
@@ -1291,10 +1727,22 @@ range_sum(1, 3) = pref[4] - pref[1] = 10 - 1 = 9
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Input array
+2. Build prefix array
+3. Read query l r
+4. Answer equals prefix right plus one minus prefix left
+```
+
+</details>
 
 ### C++ Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 vector<long long> buildPrefix(const vector<int>& a) {
@@ -1310,6 +1758,8 @@ long long rangeSum(const vector<long long>& pref, int l, int r) {
 return pref[r + 1] - pref[l];
 }
 ```
+
+</details>
 
 ### 2D Prefix Formula
 
@@ -1348,8 +1798,19 @@ Use prefix sum when there are many range sum queries and array does not change.
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Static Range Sum Queries
+2. Topic Prefix Sum
+3. Concepts prefix sum, range query, O one answer
+4. Goal Convert the statement into a known math pattern
+5. Hint Build prefix once.
+6. Complexity On plus q
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1364,11 +1825,17 @@ Use prefix sum when there are many range sum queries and array does not change.
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. 'Build prefix array where pref(i) is sum of first i...
 2. 'For every query (l, r), convert to zero based or on...
-3. 'Answer using subtraction of two prefix values.'
-4. 'Avoid summing inside each query.'
+3. Answer using subtraction of two prefix values.
+4. Avoid summing inside each query.
+```
+
+</details>
 
 #### Dry Run
 
@@ -1381,11 +1848,17 @@ answer = pref[4] - pref[1] = 14 - 2 = 12
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'a = (2, 4, 1, 7)'
-2. 'query l = 2, r = 4 one based'
-3. 'zero based range is 1 to 3'
-4. 'answer = pref(4) - pref(1) = 14 - 2 = 12'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. a = (2, 4, 1, 7)
+2. query l = 2, r = 4 one based
+3. zero based range is 1 to 3
+4. answer = pref(4) - pref(1) = 14 - 2 = 12
+```
+
+</details>
 
 ### Practice Problem: [CSES Forest Queries](https://cses.fi/problemset/task/1652)
 
@@ -1400,8 +1873,19 @@ answer = pref[4] - pref[1] = 14 - 2 = 12
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Forest Queries
+2. Topic Prefix Sum
+3. Concepts 2D prefix sum, rectangle query
+4. Goal Convert the statement into a known math pattern
+5. Hint Use one based 2D prefix.
+6. Complexity On squared plus q
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1416,11 +1900,17 @@ answer = pref[4] - pref[1] = 14 - 2 = 12
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Convert each tree cell to 1 and empty cell to 0.'
-2. 'Build 2D prefix sum.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Convert each tree cell to 1 and empty cell to 0.
+2. Build 2D prefix sum.
 3. 'For a rectangle query, use inclusion exclusion on f...
 4. 'Be careful with one based indexing to simplify boun...
+```
+
+</details>
 
 #### Dry Run
 
@@ -1434,12 +1924,18 @@ Query whole grid answer = 2
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'Grid values:'
-2. '1 0'
-3. '0 1'
-4. 'pref rectangle full grid = 2'
-5. 'Query whole grid answer = 2'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Grid values:
+2. 1 0
+3. 0 1
+4. pref rectangle full grid = 2
+5. Query whole grid answer = 2
+```
+
+</details>
 
 
 ---
@@ -1478,10 +1974,22 @@ Special power of two sum:
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Sequence
+2. Arithmetic
+3. Geometric
+4. Look for another pattern
+```
+
+</details>
 
 ### C++ Helpers
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 long long arithmeticTerm(long long a1, long long d, long long n) {
@@ -1492,6 +2000,8 @@ long long arithmeticSum(long long a1, long long an, long long n) {
 return n * (a1 + an) / 2;
 }
 ```
+
+</details>
 
 ### Dry Run
 
@@ -1520,8 +2030,19 @@ a1 = 3, r = 2
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Number Spiral
+2. Topic Sequences
+3. Concepts pattern by layer, parity, formula
+4. Goal Convert the statement into a known math pattern
+5. Hint Use max coordinate and parity.
+6. Complexity O1 per query
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1536,11 +2057,17 @@ a1 = 3, r = 2
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'The value depends on the layer max(row, col).'
-2. 'The square at the end of each layer is layer squared.'
-3. 'Direction changes based on parity of the layer.'
-4. 'Derive formula separately for even and odd layers.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. The value depends on the layer max(row, col).
+2. The square at the end of each layer is layer squared.
+3. Direction changes based on parity of the layer.
+4. Derive formula separately for even and odd layers.
+```
+
+</details>
 
 #### Dry Run
 
@@ -1554,12 +2081,18 @@ answer = 8
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'row = 2, col = 3'
-2. 'layer = 3'
-3. 'layer square = 9'
-4. 'For odd layer, values decrease along row direction'
-5. 'answer = 8'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. row = 2, col = 3
+2. layer = 3
+3. layer square = 9
+4. For odd layer, values decrease along row direction
+5. answer = 8
+```
+
+</details>
 
 ### Practice Problem: [CSES Weird Algorithm](https://cses.fi/problemset/task/1068)
 
@@ -1574,8 +2107,19 @@ answer = 8
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Weird Algorithm
+2. Topic Sequences
+3. Concepts sequence simulation, parity transition
+4. Goal Convert the statement into a known math pattern
+5. Hint Use long long.
+6. Complexity Depends on sequence length
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1591,12 +2135,18 @@ answer = 8
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Start from n.'
-2. 'If n is even, divide by two.'
-3. 'If n is odd, replace by 3n plus 1.'
-4. 'Continue until n becomes one.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Start from n.
+2. If n is even, divide by two.
+3. If n is odd, replace by 3n plus 1.
+4. Continue until n becomes one.
 5. 'This is not formula based, but it trains sequence t...
+```
+
+</details>
 
 #### Dry Run
 
@@ -1611,13 +2161,19 @@ sequence ends
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 3'
-2. '3 is odd so 10'
-3. '10 is even so 5'
-4. '5 is odd so 16'
-5. '16 8 4 2 1'
-6. 'sequence ends'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 3
+2. 3 is odd so 10
+3. 10 is even so 5
+4. 5 is odd so 16
+5. 16 8 4 2 1
+6. sequence ends
+```
+
+</details>
 
 
 ---
@@ -1655,10 +2211,23 @@ For `n = 5`:
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Loop summing formula
+2. Identify expression
+3. Split constants and variables
+4. Apply known sum formula
+5. Get constant time answer
+```
+
+</details>
 
 ### C++ Helpers
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 long long sumN(long long n) {
@@ -1675,6 +2244,8 @@ return s * s;
 }
 ```
 
+</details>
+
 ### Practice Problem: [CSES Missing Number](https://cses.fi/problemset/task/1083)
 
 | Field | Details |
@@ -1688,8 +2259,19 @@ return s * s;
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Missing Number
+2. Topic Summation Formulas
+3. Concepts sum formula, missing value
+4. Goal Convert the statement into a known math pattern
+5. Hint Use sum formula.
+6. Complexity On
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1704,11 +2286,17 @@ return s * s;
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Sum of numbers from 1 to n is n(n+1)/2.'
-2. 'Read n-1 numbers and compute their sum.'
-3. 'Missing number is expected sum minus actual sum.'
-4. 'Use long long because sum can be large.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Sum of numbers from 1 to n is n(n+1)/2.
+2. Read n-1 numbers and compute their sum.
+3. Missing number is expected sum minus actual sum.
+4. Use long long because sum can be large.
+```
+
+</details>
 
 #### Dry Run
 
@@ -1722,12 +2310,18 @@ missing = 4
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 5'
-2. 'numbers = 2 3 1 5'
-3. 'expected sum = 5 6 / 2 = 15'
-4. 'actual sum = 11'
-5. 'missing = 4'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 5
+2. numbers = 2 3 1 5
+3. expected sum = 5 6 / 2 = 15
+4. actual sum = 11
+5. missing = 4
+```
+
+</details>
 
 ### Practice Problem: [CSES Two Sets](https://cses.fi/problemset/task/1092)
 
@@ -1742,8 +2336,19 @@ missing = 4
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Two Sets
+2. Topic Summation Formulas
+3. Concepts sum parity, constructive partition
+4. Goal Convert the statement into a known math pattern
+5. Hint Check parity then construct greedily.
+6. Complexity On
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1759,12 +2364,18 @@ missing = 4
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Total sum is n(n+1)/2.'
-2. 'If total sum is odd, equal partition is impossible.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Total sum is n(n+1)/2.
+2. If total sum is odd, equal partition is impossible.
 3. 'Otherwise target each set sum is total divided by t...
-4. 'Greedily take large numbers while target remains.'
-5. 'This uses summation plus constructive thinking.'
+4. Greedily take large numbers while target remains.
+5. This uses summation plus constructive thinking.
+```
+
+</details>
 
 #### Dry Run
 
@@ -1781,15 +2392,21 @@ other set = 2 3 4 5
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 7'
-2. 'total = 28'
-3. 'target = 14'
-4. 'take 7 target becomes 7'
-5. 'take 6 target becomes 1'
-6. 'take 1 target becomes 0'
-7. 'one set = 7 6 1'
-8. 'other set = 2 3 4 5'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 7
+2. total = 28
+3. target = 14
+4. take 7 target becomes 7
+5. take 6 target becomes 1
+6. take 1 target becomes 0
+7. one set = 7 6 1
+8. other set = 2 3 4 5
+```
+
+</details>
 
 
 ---
@@ -1860,10 +2477,23 @@ C(n + k - 1, k - 1)
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Counting problem
+2. Permutation
+3. Combination
+4. Use complement
+5. Stars and bars
+```
+
+</details>
 
 ### C++ Small nCr Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 long long nCrSmall(int n, int r) {
@@ -1877,7 +2507,12 @@ return ans;
 }
 ```
 
+</details>
+
 ### Modular nCr helper for prime MOD
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 const int MAXN = 1000000;
@@ -1897,6 +2532,8 @@ return fact[n] * invFact[r] % MOD * invFact[n - r] % MOD;
 }
 ```
 
+</details>
+
 ### Practice Problem: [CSES Creating Strings](https://cses.fi/problemset/task/1622)
 
 | Field | Details |
@@ -1910,8 +2547,19 @@ return fact[n] * invFact[r] % MOD * invFact[n - r] % MOD;
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Creating Strings
+2. Topic Counting
+3. Concepts permutations with duplicate characters
+4. Goal Convert the statement into a known math pattern
+5. Hint Sort then use next_permutation.
+6. Complexity Ok times n
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1926,11 +2574,17 @@ return fact[n] * invFact[r] % MOD * invFact[n - r] % MOD;
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Need print all distinct permutations of a string.'
-2. 'Sort the string first.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Need print all distinct permutations of a string.
+2. Sort the string first.
 3. 'Use nextpermutation to generate permutations in sor...
 4. 'Since duplicates exist, sorting plus next permutati...
+```
+
+</details>
 
 #### Dry Run
 
@@ -1946,14 +2600,20 @@ count = 3
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 's = aab'
-2. 'sorted = aab'
-3. 'permutations:'
-4. 'aab'
-5. 'aba'
-6. 'baa'
-7. 'count = 3'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. s = aab
+2. sorted = aab
+3. permutations:
+4. aab
+5. aba
+6. baa
+7. count = 3
+```
+
+</details>
 
 ### Practice Problem: [CSES Distributing Apples](https://cses.fi/problemset/task/1716)
 
@@ -1968,8 +2628,19 @@ count = 3
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Distributing Apples
+2. Topic Counting
+3. Concepts stars and bars, modular combination
+4. Goal Convert the statement into a known math pattern
+5. Hint Use modular nCr.
+6. Complexity OmaxN log MOD
+```
+
+</details>
 
 
 #### Approach Logic
@@ -1984,11 +2655,17 @@ count = 3
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Apples are identical and children are distinct.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Apples are identical and children are distinct.
 2. 'Need non negative solutions to x1 + x2 + ... + xn =...
-3. 'Apply stars and bars.'
-4. 'Answer is C(n + m - 1, m) or C(n + m - 1, n - 1).'
+3. Apply stars and bars.
+4. Answer is C(n + m - 1, m) or C(n + m - 1, n - 1).
+```
+
+</details>
 
 #### Dry Run
 
@@ -2001,11 +2678,17 @@ C(6,2) = 15
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 3, m = 4'
-2. 'Need x1 + x2 + x3 = 4'
-3. 'Formula C(4 + 3 - 1, 3 - 1)'
-4. 'C(6,2) = 15'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 3, m = 4
+2. Need x1 + x2 + x3 = 4
+3. Formula C(4 + 3 - 1, 3 - 1)
+4. C(6,2) = 15
+```
+
+</details>
 
 
 ---
@@ -2057,10 +2740,23 @@ n > 0 and (n & (n - 1)) == 0
 
 ### Flowchart
 
-**Left-to-right flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. n
+2. n divided by two
+3. divided by two again
+4. Continue
+5. Number of steps is log n
+```
+
+</details>
 
 ### C++ Helpers
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 bool isPowerOfTwo(long long n) {
@@ -2072,6 +2768,8 @@ if (n == 0) return 1;
 return 64 - __builtin_clzll(n);
 }
 ```
+
+</details>
 
 ### Dry Run
 
@@ -2104,8 +2802,19 @@ So 8 is power of two.
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Gray Code
+2. Topic Logs Bits and Halving
+3. Concepts bits, xor, binary representation
+4. Goal Convert the statement into a known math pattern
+5. Hint Use gray i i greater thangreater than 1.
+6. Complexity On times 2 n
+```
+
+</details>
 
 
 #### Approach Logic
@@ -2120,11 +2829,17 @@ So 8 is power of two.
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. 'Gray code of number i is i xor (i shifted right by...
-2. 'Generate values from 0 to 2^n - 1.'
-3. 'Print each value as binary with exactly n bits.'
-4. 'Adjacent Gray codes differ by one bit.'
+2. Generate values from 0 to 2^n - 1.
+3. Print each value as binary with exactly n bits.
+4. Adjacent Gray codes differ by one bit.
+```
+
+</details>
 
 #### Dry Run
 
@@ -2139,13 +2854,19 @@ Each adjacent pair differs by one bit
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 2'
-2. 'i = 0 gives 00'
-3. 'i = 1 gives 01'
-4. 'i = 2 gives 11'
-5. 'i = 3 gives 10'
-6. 'Each adjacent pair differs by one bit'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 2
+2. i = 0 gives 00
+3. i = 1 gives 01
+4. i = 2 gives 11
+5. i = 3 gives 10
+6. Each adjacent pair differs by one bit
+```
+
+</details>
 
 ### Practice Problem: [CSES Subset Sums](https://cses.fi/problemset/task/1655)
 
@@ -2160,8 +2881,19 @@ Each adjacent pair differs by one bit
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Subset Sums
+2. Topic Logs Bits and Halving
+3. Concepts xor basis, bit linear algebra
+4. Goal Convert the statement into a known math pattern
+5. Hint Use xor basis.
+6. Complexity On log A
+```
+
+</details>
 
 
 #### Approach Logic
@@ -2176,11 +2908,17 @@ Each adjacent pair differs by one bit
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'This is an advanced bit math problem.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. This is an advanced bit math problem.
 2. 'Maintain a xor basis where each basis element has a...
 3. 'Insert each number by reducing it with existing bas...
 4. 'Maximum xor is built greedily from high bit to low...
+```
+
+</details>
 
 #### Dry Run
 
@@ -2194,12 +2932,18 @@ maximum subset xor = 6
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'numbers = 3, 5'
-2. '3 binary 011'
-3. '5 binary 101'
-4. 'possible xor 3 xor 5 = 6'
-5. 'maximum subset xor = 6'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. numbers = 3, 5
+2. 3 binary 011
+3. 5 binary 101
+4. possible xor 3 xor 5 = 6
+5. maximum subset xor = 6
+```
+
+</details>
 
 
 ---
@@ -2257,8 +3001,18 @@ y = 3
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Equation
+2. Move constants
+3. Isolate variable
+4. Divide coefficient
+5. Check answer
+```
+
+</details>
 
 ### CP Pattern
 
@@ -2288,8 +3042,19 @@ answer = ceil((n - b) / a)
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Apple Division
+2. Topic Algebra
+3. Concepts minimize difference, total sum relation, su...
+4. Goal Convert the statement into a known math pattern
+5. Hint Use bitmask subset enumeration.
+6. Complexity O2 n times n or O2 n
+```
+
+</details>
 
 
 #### Approach Logic
@@ -2305,12 +3070,18 @@ answer = ceil((n - b) / a)
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Let total sum be S.'
-2. 'If one group sum is x, other group sum is S - x.'
-3. 'Difference is abs(S - 2x).'
-4. 'Try all subsets because n is small.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Let total sum be S.
+2. If one group sum is x, other group sum is S - x.
+3. Difference is abs(S - 2x).
+4. Try all subsets because n is small.
 5. 'This is algebra plus brute force based on constrain...
+```
+
+</details>
 
 #### Dry Run
 
@@ -2324,12 +3095,18 @@ difference = abs(12 - 2*5) = 2
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'weights = 3 2 7'
-2. 'total = 12'
-3. 'choose subset 3 plus 2 = 5'
-4. 'other = 7'
-5. 'difference = abs(12 - 25) = 2'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. weights = 3 2 7
+2. total = 12
+3. choose subset 3 plus 2 = 5
+4. other = 7
+5. difference = abs(12 - 25) = 2
+```
+
+</details>
 
 ### Practice Problem: [Codeforces 1360D Buying Shovels](https://codeforces.com/problemset/problem/1360/D)
 
@@ -2344,8 +3121,19 @@ difference = abs(12 - 2*5) = 2
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Codeforces 1360D Buying Shovels
+2. Topic Algebra
+3. Concepts factor choice, minimize packages, divisor c...
+4. Goal Convert the statement into a known math pattern
+5. Hint Scan divisors up to sqrt n.
+6. Complexity Osqrt n per test
+```
+
+</details>
 
 
 #### Approach Logic
@@ -2361,12 +3149,18 @@ difference = abs(12 - 2*5) = 2
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Need split n shovels into packages of equal size.'
-2. 'Package size must divide n.'
-3. 'Choose largest divisor not exceeding k.'
-4. 'Answer is n / chosenDivisor.'
-5. 'This uses algebraic rearrangement and divisors.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Need split n shovels into packages of equal size.
+2. Package size must divide n.
+3. Choose largest divisor not exceeding k.
+4. Answer is n / chosenDivisor.
+5. This uses algebraic rearrangement and divisors.
+```
+
+</details>
 
 #### Dry Run
 
@@ -2379,11 +3173,17 @@ answer = 12 / 4 = 3 packages
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 12, k = 5'
-2. 'divisors not above 5 are 1 2 3 4'
-3. 'largest is 4'
-4. 'answer = 12 / 4 = 3 packages'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 12, k = 5
+2. divisors not above 5 are 1 2 3 4
+3. largest is 4
+4. answer = 12 / 4 = 3 packages
+```
+
+</details>
 
 
 ---
@@ -2420,8 +3220,17 @@ D < 0: no real roots
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Compute D
+2. Two real roots
+3. One real root
+4. No real roots
+```
+
+</details>
 
 ### Example
 
@@ -2435,6 +3244,9 @@ x = 3 or 2
 
 ### C++ Helper
 
+<details>
+<summary>C++ Code</summary>
+
 ```cpp
 vector<double> quadratic(double a, double b, double c) {
 double D = b * b - 4 * a * c;
@@ -2445,6 +3257,8 @@ if (D > 0) roots.push_back((-b - sqrt(D)) / (2 * a));
 return roots;
 }
 ```
+
+</details>
 
 ### CP Pattern
 
@@ -2474,8 +3288,19 @@ x around sqrt(2n)
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Number Spiral
+2. Topic Quadratic Formula
+3. Concepts square layers, parity, coordinate formula
+4. Goal Convert the statement into a known math pattern
+5. Hint Use layer equals maxrow, col.
+6. Complexity O1
+```
+
+</details>
 
 
 #### Approach Logic
@@ -2490,11 +3315,17 @@ x around sqrt(2n)
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Each layer is based on maximum of row and column.'
-2. 'Layer end value is square of layer number.'
-3. 'The direction depends on odd or even layer.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Each layer is based on maximum of row and column.
+2. Layer end value is square of layer number.
+3. The direction depends on odd or even layer.
 4. 'Though not solving roots, it trains square layer fo...
+```
+
+</details>
 
 #### Dry Run
 
@@ -2508,12 +3339,18 @@ answer derived from 16 and offset
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'row = 4, col = 2'
-2. 'layer = 4'
-3. 'layer square = 16'
-4. 'even layer direction uses row as increasing side'
-5. 'answer derived from 16 and offset'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. row = 4, col = 2
+2. layer = 4
+3. layer square = 16
+4. even layer direction uses row as increasing side
+5. answer derived from 16 and offset
+```
+
+</details>
 
 ### Practice Problem: [Codeforces 1352C K-th Not Divisible by n](https://codeforces.com/problemset/problem/1352/C)
 
@@ -2528,8 +3365,19 @@ answer derived from 16 and offset
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Codeforces 1352C Kminusth Not Divisible by n
+2. Topic Quadratic Formula
+3. Concepts counting formula, inverse reasoning
+4. Goal Convert the statement into a known math pattern
+5. Hint Use derived formula.
+6. Complexity O1
+```
+
+</details>
 
 
 #### Approach Logic
@@ -2544,11 +3392,17 @@ answer derived from 16 and offset
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Need kth positive integer not divisible by n.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Need kth positive integer not divisible by n.
 2. 'Among numbers up to x, count not divisible by n is...
-3. 'Find smallest x such that this count is at least k.'
+3. Find smallest x such that this count is at least k.
 4. 'Formula solution exists: answer is k + floor((k - 1...
+```
+
+</details>
 
 #### Dry Run
 
@@ -2562,12 +3416,18 @@ formula = 7 + floor(6 / 2) = 10
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'n = 3, k = 7'
-2. 'numbers not divisible by 3:'
-3. '1 2 4 5 7 8 10'
-4. 'answer = 10'
-5. 'formula = 7 + floor(6 / 2) = 10'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. n = 3, k = 7
+2. numbers not divisible by 3:
+3. 1 2 4 5 7 8 10
+4. answer = 10
+5. formula = 7 + floor(6 / 2) = 10
+```
+
+</details>
 
 
 ---
@@ -2622,10 +3482,23 @@ abs(cross(b - a, c - a))
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Geometry problem
+2. Identify shape
+3. Choose formula
+4. Plug values
+5. Check precision
+```
+
+</details>
 
 ### C++ Helpers
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
 struct Point {
@@ -2646,6 +3519,8 @@ long long dy = a.y - b.y;
 return dx * dx + dy * dy;
 }
 ```
+
+</details>
 
 ### Pattern
 
@@ -2668,8 +3543,19 @@ compare squared distances instead
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Point Location Test
+2. Topic Geometry
+3. Concepts cross product, orientation
+4. Goal Convert the statement into a known math pattern
+5. Hint Use integer cross product.
+6. Complexity O1 per query
+```
+
+</details>
 
 
 #### Approach Logic
@@ -2685,12 +3571,18 @@ compare squared distances instead
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. 'Given directed line from point A to point B and que...
-2. 'Compute cross product of vectors AB and AC.'
-3. 'If cross is positive, C is on left side.'
-4. 'If cross is negative, C is on right side.'
-5. 'If cross is zero, points are collinear.'
+2. Compute cross product of vectors AB and AC.
+3. If cross is positive, C is on left side.
+4. If cross is negative, C is on right side.
+5. If cross is zero, points are collinear.
+```
+
+</details>
 
 #### Dry Run
 
@@ -2703,11 +3595,17 @@ positive so C is left
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'A = (0,0), B = (4,0), C = (2,2)'
-2. 'AB = (4,0), AC = (2,2)'
-3. 'cross = 42 - 02 = 8'
-4. 'positive so C is left'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. A = (0,0), B = (4,0), C = (2,2)
+2. AB = (4,0), AC = (2,2)
+3. cross = 42 - 02 = 8
+4. positive so C is left
+```
+
+</details>
 
 ### Practice Problem: [CSES Polygon Area](https://cses.fi/problemset/task/2191)
 
@@ -2722,8 +3620,19 @@ positive so C is left
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Polygon Area
+2. Topic Geometry
+3. Concepts shoelace formula, cross product sum
+4. Goal Convert the statement into a known math pattern
+5. Hint Use long long cross sum.
+6. Complexity On
+```
+
+</details>
 
 
 #### Approach Logic
@@ -2738,11 +3647,17 @@ positive so C is left
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Traverse polygon vertices in order.'
-2. 'Add xi ynext - yi xnext for every edge.'
-3. 'Absolute value of this sum is twice the area.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Traverse polygon vertices in order.
+2. Add xi ynext - yi xnext for every edge.
+3. Absolute value of this sum is twice the area.
 4. 'Print doubled area if problem asks doubled area, ot...
+```
+
+</details>
 
 #### Dry Run
 
@@ -2754,10 +3669,16 @@ area = 12 / 2 = 6
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'Triangle (0,0), (4,0), (0,3)'
-2. 'sum = 0 + 12 + 0 = 12'
-3. 'area = 12 / 2 = 6'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Triangle (0,0), (4,0), (0,3)
+2. sum = 0 + 12 + 0 = 12
+3. area = 12 / 2 = 6
+```
+
+</details>
 
 
 ---
@@ -2798,8 +3719,18 @@ n, n/2, n/4, ..., 1 = O(log n)
 
 ### Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Analyze code
+2. O n
+3. O n squared usually
+4. O log n
+5. Check recursion or data structure
+```
+
+</details>
 
 ### Mental constraint guide
 
@@ -2826,8 +3757,19 @@ n >= 1000000000 O(log n) or O(1)
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Apartments
+2. Topic Big O
+3. Concepts sorting, two pointers, complexity reduction
+4. Goal Convert the statement into a known math pattern
+5. Hint Sort then two pointers.
+6. Complexity On log n plus m log m
+```
+
+</details>
 
 
 #### Approach Logic
@@ -2844,13 +3786,19 @@ n >= 1000000000 O(log n) or O(1)
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Sort applicants and apartments.'
-2. 'Use two pointers.'
-3. 'If apartment fits applicant, match both.'
-4. 'If apartment too small, move apartment pointer.'
-5. 'If apartment too large, move applicant pointer.'
-6. 'Complexity is sorting plus linear scan.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Sort applicants and apartments.
+2. Use two pointers.
+3. If apartment fits applicant, match both.
+4. If apartment too small, move apartment pointer.
+5. If apartment too large, move applicant pointer.
+6. Complexity is sorting plus linear scan.
+```
+
+</details>
 
 #### Dry Run
 
@@ -2866,14 +3814,20 @@ answer includes this match
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'applicants = 60 45 80'
-2. 'apartments = 30 60 75'
-3. 'k = 5'
-4. '45 cannot use 30, move apartment'
-5. '45 cannot use 60 if range is 40 to 50, move applicant'
-6. '60 matches 60'
-7. 'answer includes this match'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. applicants = 60 45 80
+2. apartments = 30 60 75
+3. k = 5
+4. 45 cannot use 30, move apartment
+5. 45 cannot use 60 if range is 40 to 50, move applicant
+6. 60 matches 60
+7. answer includes this match
+```
+
+</details>
 
 ### Practice Problem: [CSES Ferris Wheel](https://cses.fi/problemset/task/1090)
 
@@ -2888,8 +3842,19 @@ answer includes this match
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Ferris Wheel
+2. Topic Big O
+3. Concepts greedy, sorting, two pointers
+4. Goal Convert the statement into a known math pattern
+5. Hint Sort and use two pointers.
+6. Complexity On log n
+```
+
+</details>
 
 
 #### Approach Logic
@@ -2905,12 +3870,18 @@ answer includes this match
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Sort weights.'
-2. 'Pair lightest with heaviest when possible.'
-3. 'If they fit, use one gondola for both.'
-4. 'Otherwise heaviest goes alone.'
-5. 'Move pointers and count gondolas.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Sort weights.
+2. Pair lightest with heaviest when possible.
+3. If they fit, use one gondola for both.
+4. Otherwise heaviest goes alone.
+5. Move pointers and count gondolas.
+```
+
+</details>
 
 #### Dry Run
 
@@ -2925,13 +3896,19 @@ answer = 3
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'weights = 2 3 7 9'
-2. 'limit = 10'
-3. '2 plus 9 too big so 9 alone'
-4. '2 plus 7 fits so pair'
-5. '3 alone'
-6. 'answer = 3'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. weights = 2 3 7 9
+2. limit = 10
+3. 2 plus 9 too big so 9 alone
+4. 2 plus 7 fits so pair
+5. 3 alone
+6. answer = 3
+```
+
+</details>
 
 
 ---
@@ -2940,8 +3917,21 @@ answer = 3
 
 ### Universal checklist
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Stuck
+2. Try n equals one two three
+3. Write brute force
+4. Observe pattern
+5. Convert pattern to formula
+6. Check constraints
+7. Use helper
+8. Test edge cases
+```
+
+</details>
 
 ### Pattern recognition table
 
@@ -2998,8 +3988,17 @@ This section adds deeper patterns that often separate beginner math from CM dire
 
 An invariant is something that remains true after every operation.
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Operation problem
+2. Find value that does not change
+3. Use invariant to prove possible
+4. Construct or reject
+```
+
+</details>
 
 | Signal | Example thought |
 |---|---|
@@ -3011,15 +4010,34 @@ An invariant is something that remains true after every operation.
 
 Count everything, subtract bad cases.
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Count good cases
+2. Count total
+3. Count bad
+4. Good equals total minus bad
+5. Count good directly
+```
+
+</details>
 
 ### Pattern 3: Binary Search on Answer
 
 If answer has monotonic property, binary search it.
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Candidate answer mid
+2. Check if mid works
+3. Try smaller or larger better side
+4. Move opposite side
+```
+
+</details>
 
 | Requirement | Meaning |
 |---|---|
@@ -3037,8 +4055,17 @@ diff[r + 1] -= x
 final array = prefix of diff
 ```
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Range update
+2. Mark start plus value
+3. Mark after end minus value
+4. Prefix diff to recover array
+```
+
+</details>
 
 ### Pattern 5: Prefix with Frequency
 
@@ -3092,8 +4119,18 @@ Examples:
 
 Instead of counting each object directly, count how much each object contributes.
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Total answer
+2. Pick one element
+3. Count times it appears
+4. Multiply value by count
+5. Sum all contributions
+```
+
+</details>
 
 This is common in subarray contribution problems.
 
@@ -3125,8 +4162,19 @@ Even if events are dependent, linearity still works.
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Factory Machines
+2. Topic Binary Search on Answer
+3. Concepts binary search, monotonic predicate, product...
+4. Goal Convert the statement into a known math pattern
+5. Hint Binary search minimum time.
+6. Complexity On log answer
+```
+
+</details>
 
 
 #### Approach Logic
@@ -3141,11 +4189,17 @@ Even if events are dependent, linearity still works.
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. 'If time t is enough to produce required products, a...
-2. 'This monotonic property allows binary search.'
-3. 'Check function sums t / machineTime(i).'
-4. 'Stop early if count reaches target to avoid overflow.'
+2. This monotonic property allows binary search.
+3. Check function sums t / machineTime(i).
+4. Stop early if count reaches target to avoid overflow.
+```
+
+</details>
 
 #### Dry Run
 
@@ -3160,13 +4214,19 @@ try smaller time
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'machines = 2 3 7'
-2. 'target = 5'
-3. 'time = 6'
-4. 'produced = 6/2 + 6/3 + 6/7 = 3 + 2 + 0 = 5'
-5. 'time 6 works'
-6. 'try smaller time'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. machines = 2 3 7
+2. target = 5
+3. time = 6
+4. produced = 6/2 + 6/3 + 6/7 = 3 + 2 + 0 = 5
+5. time 6 works
+6. try smaller time
+```
+
+</details>
 
 ### Practice Problem: [CSES Increasing Array Queries](https://cses.fi/problemset/task/2416)
 
@@ -3181,8 +4241,19 @@ try smaller time
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Increasing Array Queries
+2. Topic Difference Array
+3. Concepts prefix style thinking, monotonic stack, con...
+4. Goal Convert the statement into a known math pattern
+5. Hint Study after basic prefix sums.
+6. Complexity Advanced
+```
+
+</details>
 
 
 #### Approach Logic
@@ -3197,11 +4268,17 @@ try smaller time
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'This is more advanced than basic prefix sum.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. This is more advanced than basic prefix sum.
 2. 'It asks how much must be added to make subarray non...
 3. 'Use structure over next greater elements and prefix...
-4. 'Learn it after mastering prefix and monotonic stack.'
+4. Learn it after mastering prefix and monotonic stack.
+```
+
+</details>
 
 #### Dry Run
 
@@ -3215,12 +4292,18 @@ total = 3
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'array = 3 1 2'
-2. 'to make full range non decreasing:'
-3. '1 becomes 3 add 2'
-4. '2 becomes 3 add 1'
-5. 'total = 3'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. array = 3 1 2
+2. to make full range non decreasing:
+3. 1 becomes 3 add 2
+4. 2 becomes 3 add 1
+5. total = 3
+```
+
+</details>
 
 ### Practice Problem: [CSES Counting Coprime Pairs](https://cses.fi/problemset/task/2417)
 
@@ -3235,8 +4318,19 @@ total = 3
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Counting Coprime Pairs
+2. Topic Inclusion Exclusion
+3. Concepts mobius, inclusion exclusion, coprime counting
+4. Goal Convert the statement into a known math pattern
+5. Hint Use divisor counts and Mobius.
+6. Complexity OmaxA log maxA
+```
+
+</details>
 
 
 #### Approach Logic
@@ -3251,11 +4345,17 @@ total = 3
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Count how many numbers are divisible by each d.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Count how many numbers are divisible by each d.
 2. 'Number of pairs with gcd exactly one can be counted...
-3. 'This is advanced number theory.'
+3. This is advanced number theory.
 4. 'Start by understanding divisor multiples and inclus...
+```
+
+</details>
 
 #### Dry Run
 
@@ -3270,13 +4370,19 @@ answer = 2
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'numbers = 2 3 4'
-2. 'coprime pairs:'
-3. '2 and 3 yes'
-4. '2 and 4 no'
-5. '3 and 4 yes'
-6. 'answer = 2'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. numbers = 2 3 4
+2. coprime pairs:
+3. 2 and 3 yes
+4. 2 and 4 no
+5. 3 and 4 yes
+6. answer = 2
+```
+
+</details>
 
 ### Practice Problem: [CSES Nim Game I](https://cses.fi/problemset/task/1730)
 
@@ -3291,8 +4397,19 @@ answer = 2
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. CSES Nim Game I
+2. Topic Game Theory
+3. Concepts xor invariant, impartial games
+4. Goal Convert the statement into a known math pattern
+5. Hint Xor all piles.
+6. Complexity On
+```
+
+</details>
 
 
 #### Approach Logic
@@ -3307,11 +4424,17 @@ answer = 2
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Compute xor of all pile sizes.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Compute xor of all pile sizes.
 2. 'If xor is zero, current player loses with perfect p...
-3. 'Otherwise current player wins.'
-4. 'This is a core game theory pattern.'
+3. Otherwise current player wins.
+4. This is a core game theory pattern.
+```
+
+</details>
 
 #### Dry Run
 
@@ -3324,11 +4447,17 @@ first player wins
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'piles = 3 4 5'
-2. 'xor = 3 xor 4 xor 5 = 2'
-3. 'xor is non zero'
-4. 'first player wins'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. piles = 3 4 5
+2. xor = 3 xor 4 xor 5 = 2
+3. xor is non zero
+4. first player wins
+```
+
+</details>
 
 ### Practice Problem: [Codeforces 1096F Inversion Expectation](https://codeforces.com/problemset/problem/1096/F)
 
@@ -3343,8 +4472,19 @@ first player wins
 
 #### Mermaid Table Diagram
 
-**Top-down flow:**
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
 1. Codeforces 1096F Inversion Expectation
+2. Topic Expected Value
+3. Concepts linearity of expectation, inversions, modul...
+4. Goal Convert the statement into a known math pattern
+5. Hint Use linearity of expectation.
+6. Complexity Advanced
+```
+
+</details>
 
 
 #### Approach Logic
@@ -3360,12 +4500,18 @@ first player wins
 
 #### Detailed Solution Flowchart
 
-**Top-down flow:**
-1. 'Expected inversions can be calculated pair by pair.'
-2. 'For each pair, add probability that pair is inverted.'
-3. 'Known values contribute 0 or 1.'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. Expected inversions can be calculated pair by pair.
+2. For each pair, add probability that pair is inverted.
+3. Known values contribute 0 or 1.
 4. 'Unknown values contribute probability under remaini...
-5. 'This is advanced but very important for 1800 plus.'
+5. This is advanced but very important for 1800 plus.
+```
+
+</details>
 
 #### Dry Run
 
@@ -3378,11 +4524,17 @@ total expectation is sum of pair probabilities
 
 #### Dry Run Flowchart
 
-**Left-to-right flow:**
-1. 'array = (2, unknown, 1)'
-2. 'pair 2 and 1 is always inversion'
-3. 'pairs with unknown depend on probability'
-4. 'total expectation is sum of pair probabilities'
+<details>
+<summary>Flow diagram — plain text (render-safe)</summary>
+
+```text
+1. array = (2, unknown, 1)
+2. pair 2 and 1 is always inversion
+3. pairs with unknown depend on probability
+4. total expectation is sum of pair probabilities
+```
+
+</details>
 
 
 ---
@@ -3512,6 +4664,9 @@ Ask these questions:
 
 ## 21. Compact C++ Template
 
+<details>
+<summary>C++ Code</summary>
+
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
@@ -3612,10 +4767,15 @@ return dx * dx + dy * dy;
 }
 ```
 
+</details>
+
 
 ---
 
 ## 22. Java Helper Pack
+
+<details>
+<summary>Java Code</summary>
 
 ```java
 import java.io.*;
@@ -3659,6 +4819,8 @@ return a / b + (a % b != 0 ? 1 : 0);
     }
 }
 ```
+
+</details>
 
 
 ---
