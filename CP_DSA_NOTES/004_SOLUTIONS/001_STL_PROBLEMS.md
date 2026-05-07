@@ -1,10601 +1,5178 @@
-# STL Problem Solutions — Difficulty Ordered
 
-> Problems are grouped by difficulty with cleaner hints, beginner-friendly approach logic, Mermaid flows, and collapsible code.
+# CP DSA Math Visual Reference — Candidate Master Improved Edition with Flow Charts
+
+> Render-safe update: every Mermaid block was sanitized and placed in a collapsible section, and every C++ block is collapsible for easier reading.
+
+
+> This version keeps the original guide content and adds detailed Mermaid solution-step flowcharts plus dry-run flowcharts for each practice problem.
+
+A visual, step-by-step mathematical foundation guide for Competitive Programming and DSA, aimed at building strong fundamentals toward Candidate Master level.
+
+
+
+---
 
 ## Clickable Index
 
-### Easy
-
-- [Easy — Contains Duplicate](#easy-contains-duplicate)
-- [Easy — Merge Sorted Array](#easy-merge-sorted-array)
-- [Easy — Move Zeroes](#easy-move-zeroes)
-- [Easy — Remove Duplicates from Sorted Array](#easy-remove-duplicates-from-sorted-array)
-- [Easy — Valid Anagram](#easy-valid-anagram)
-- [Easy — Valid Palindrome](#easy-valid-palindrome)
-- [Easy — Ransom Note](#easy-ransom-note)
-- [Easy — Valid Parentheses](#easy-valid-parentheses)
-- [Easy — Baseball Game](#easy-baseball-game)
-- [Easy — Remove All Adjacent Duplicates In String](#easy-remove-all-adjacent-duplicates-in-string)
-- [Easy — Implement Queue using Stacks](#easy-implement-queue-using-stacks)
-- [Easy — Number of Recent Calls](#easy-number-of-recent-calls)
-- [Easy — Last Stone Weight](#easy-last-stone-weight)
-- [Easy — Kth Largest Element in a Stream](#easy-kth-largest-element-in-a-stream)
-- [Easy — Contains Duplicate III](#easy-contains-duplicate-iii)
-- [Easy — Two Sum](#easy-two-sum)
-- [Easy — Majority Element](#easy-majority-element)
-- [Easy — First Unique Character in a String](#easy-first-unique-character-in-a-string)
-- [Easy — Meeting Rooms](#easy-meeting-rooms)
-- [Easy — Squares of a Sorted Array](#easy-squares-of-a-sorted-array)
-- [Easy — Intersection of Two Arrays](#easy-intersection-of-two-arrays)
-- [Easy — Binary Search](#easy-binary-search)
-- [Easy — Search Insert Position](#easy-search-insert-position)
-- [Easy — Next Greater Element I](#easy-next-greater-element-i)
-- [Easy — CSES Weird Algorithm](#easy-cses-weird-algorithm)
-
-### Medium
-
-- [Medium — Sort Colors](#medium-sort-colors)
-- [Medium — Next Permutation](#medium-next-permutation)
-- [Medium — Merge Intervals](#medium-merge-intervals)
-- [Medium — Product of Array Except Self](#medium-product-of-array-except-self)
-- [Medium — Group Anagrams](#medium-group-anagrams)
-- [Medium — Longest Substring Without Repeating Characters](#medium-longest-substring-without-repeating-characters)
-- [Medium — Minimum Window Substring](#medium-minimum-window-substring)
-- [Medium — Decode String](#medium-decode-string)
-- [Medium — Min Stack](#medium-min-stack)
-- [Medium — Evaluate Reverse Polish Notation](#medium-evaluate-reverse-polish-notation)
-- [Medium — Daily Temperatures](#medium-daily-temperatures)
-- [Medium — Rotting Oranges](#medium-rotting-oranges)
-- [Medium — Number of Islands](#medium-number-of-islands)
-- [Medium — Open the Lock](#medium-open-the-lock)
-- [Medium — Kth Largest Element in an Array](#medium-kth-largest-element-in-an-array)
-- [Medium — Top K Frequent Elements](#medium-top-k-frequent-elements)
-- [Medium — K Closest Points to Origin](#medium-k-closest-points-to-origin)
-- [Medium — Task Scheduler](#medium-task-scheduler)
-- [Medium — My Calendar I](#medium-my-calendar-i)
-- [Medium — Exam Room](#medium-exam-room)
-- [Medium — Time Based Key-Value Store](#medium-time-based-key-value-store)
-- [Medium — Subarray Sum Equals K](#medium-subarray-sum-equals-k)
-- [Medium — Longest Consecutive Sequence](#medium-longest-consecutive-sequence)
-- [Medium — LRU Cache](#medium-lru-cache)
-- [Medium — Non-overlapping Intervals](#medium-non-overlapping-intervals)
-- [Medium — Minimum Number of Arrows to Burst Balloons](#medium-minimum-number-of-arrows-to-burst-balloons)
-- [Medium — Queue Reconstruction by Height](#medium-queue-reconstruction-by-height)
-- [Medium — Largest Number](#medium-largest-number)
-- [Medium — 3Sum](#medium-3sum)
-- [Medium — 4Sum](#medium-4sum)
-- [Medium — Find K Closest Elements](#medium-find-k-closest-elements)
-- [Medium — Find First and Last Position of Element in Sorted Array](#medium-find-first-and-last-position-of-element-in-sorted-array)
-- [Medium — Search a 2D Matrix](#medium-search-a-2d-matrix)
-- [Medium — Successful Pairs of Spells and Potions](#medium-successful-pairs-of-spells-and-potions)
-- [Medium — Online Stock Span](#medium-online-stock-span)
-- [Medium — Sum of Subarray Minimums](#medium-sum-of-subarray-minimums)
-- [Medium — Sliding Window Maximum](#medium-sliding-window-maximum)
-- [Medium — Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit](#medium-longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit)
-- [Medium — Constrained Subsequence Sum](#medium-constrained-subsequence-sum)
-- [Medium — Insert Interval](#medium-insert-interval)
-- [Medium — Meeting Rooms II](#medium-meeting-rooms-ii)
-- [Medium — Car Pooling](#medium-car-pooling)
-- [Medium — Reverse Pairs](#medium-reverse-pairs)
-- [Medium — Partition Equal Subset Sum](#medium-partition-equal-subset-sum)
-- [Medium — Last Stone Weight II](#medium-last-stone-weight-ii)
-
-### Hard
-
-- [Hard — First Missing Positive](#hard-first-missing-positive)
-- [Hard — Trapping Rain Water](#hard-trapping-rain-water)
-- [Hard — Text Justification](#hard-text-justification)
-- [Hard — Substring with Concatenation of All Words](#hard-substring-with-concatenation-of-all-words)
-- [Hard — Basic Calculator](#hard-basic-calculator)
-- [Hard — Largest Rectangle in Histogram](#hard-largest-rectangle-in-histogram)
-- [Hard — Sliding Puzzle](#hard-sliding-puzzle)
-- [Hard — Find Median from Data Stream](#hard-find-median-from-data-stream)
-- [Hard — Merge k Sorted Lists](#hard-merge-k-sorted-lists)
-- [Hard — IPO](#hard-ipo)
-- [Hard — My Calendar III](#hard-my-calendar-iii)
-- [Hard — All O one Data Structure](#hard-all-o-one-data-structure)
-- [Hard — Russian Doll Envelopes](#hard-russian-doll-envelopes)
-- [Hard — Maximum Profit in Job Scheduling](#hard-maximum-profit-in-job-scheduling)
-- [Hard — Median of Two Sorted Arrays](#hard-median-of-two-sorted-arrays)
-- [Hard — Count of Smaller Numbers After Self](#hard-count-of-smaller-numbers-after-self)
-- [Hard — Maximal Rectangle](#hard-maximal-rectangle)
-- [Hard — Shortest Subarray with Sum at Least K](#hard-shortest-subarray-with-sum-at-least-k)
-- [Hard — Sliding Window Median](#hard-sliding-window-median)
-- [Hard — Employee Free Time](#hard-employee-free-time)
-- [Hard — Maximum Performance of a Team](#hard-maximum-performance-of-a-team)
-- [Hard — Create Sorted Array through Instructions](#hard-create-sorted-array-through-instructions)
-
-### CM
-
-- [CM — CSES Collecting Numbers](#cm-cses-collecting-numbers)
-- [CM — CSES Josephus Problem I](#cm-cses-josephus-problem-i)
-- [CM — CSES String Matching](#cm-cses-string-matching)
-- [CM — CSES Nearest Smaller Values](#cm-cses-nearest-smaller-values)
-- [CM — CSES Labyrinth](#cm-cses-labyrinth)
-- [CM — CSES Monsters](#cm-cses-monsters)
-- [CM — CSES Flight Discount](#cm-cses-flight-discount)
-- [CM — CSES Traffic Lights](#cm-cses-traffic-lights)
-- [CM — CSES Room Allocation](#cm-cses-room-allocation)
-- [CM — CSES Sliding Median](#cm-cses-sliding-median)
-- [CM — CSES Sum of Four Values](#cm-cses-sum-of-four-values)
-- [CM — CSES Subarray Sums II](#cm-cses-subarray-sums-ii)
-- [CM — CSES Movie Festival](#cm-cses-movie-festival)
-- [CM — CSES Tasks and Deadlines](#cm-cses-tasks-and-deadlines)
-- [CM — CSES Sum of Two Values](#cm-cses-sum-of-two-values)
-- [CM — CSES Sum of Three Values](#cm-cses-sum-of-three-values)
-- [CM — CSES Factory Machines](#cm-cses-factory-machines)
-- [CM — CSES Subarray Sums I](#cm-cses-subarray-sums-i)
-- [CM — CSES Sliding Window Minimum](#cm-cses-sliding-window-minimum)
-- [CM — CSES Sliding Cost](#cm-cses-sliding-cost)
-- [CM — CSES Restaurant Customers](#cm-cses-restaurant-customers)
-- [CM — CSES Concert Tickets](#cm-cses-concert-tickets)
-- [CM — CSES Nested Ranges Count](#cm-cses-nested-ranges-count)
-- [CM — CSES Salary Queries](#cm-cses-salary-queries)
-- [CM — CSES Money Sums](#cm-cses-money-sums)
-- [CM — CSES School Excursion](#cm-cses-school-excursion)
-- [CM — CSES List Removals](#cm-cses-list-removals)
-- [CM — CSES Josephus Problem II](#cm-cses-josephus-problem-ii)
-- [CM — CSES Nested Ranges Check](#cm-cses-nested-ranges-check)
-- [CM — CSES Movie Festival II](#cm-cses-movie-festival-ii)
-- [CM — CSES Collecting Numbers II](#cm-cses-collecting-numbers-ii)
+- [0. Master Mental Map](#0-master-mental-map)
+- [1. Ceiling Division](#1-ceiling-division)
+- [2. Modulo and Cycles](#2-modulo-and-cycles)
+- [3. Binary Exponentiation](#3-binary-exponentiation)
+- [4. Modular Arithmetic](#4-modular-arithmetic)
+- [5. GCD and LCM](#5-gcd-and-lcm)
+- [6. Primes and Divisors](#6-primes-and-divisors)
+- [7. Prefix Sum](#7-prefix-sum)
+- [8. Arithmetic and Geometric Sequences](#8-arithmetic-and-geometric-sequences)
+- [9. Summation Formulas](#9-summation-formulas)
+- [10. Counting Permutation Combination](#10-counting-permutation-combination)
+- [11. Logs Bits and Halving](#11-logs-bits-and-halving)
+- [12. Algebra and Equations](#12-algebra-and-equations)
+- [13. Quadratic Formula](#13-quadratic-formula)
+- [14. Geometry Basics](#14-geometry-basics)
+- [15. Big O Mathematics](#15-big-o-mathematics)
+- [16. CP Problem Solving Framework](#16-cp-problem-solving-framework)
+- [17. Candidate Master Pattern Library](#17-candidate-master-pattern-library)
+- [18. Final Formula Sheet](#18-final-formula-sheet)
+- [19. Practice Roadmap](#19-practice-roadmap)
+- [20. Compact C++ Template](#20-compact-c-template)
+- [21. Java Helper Pack](#21-java-helper-pack)
 
 ---
 
-# Easy Problems
+## 0. Master Mental Map
 
-## 1. Easy — Contains Duplicate
-
-**Platform:** LeetCode  
-**Link:** [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/)  
-**Pattern:** `sort or set`  
-**Form:** `duplicates`
-
-### Mermaid Solution Flow
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
+A["CP Math Problem"] --> B{Identify pattern}
+B --> C["Modulo cycle"]
+B --> D["Fast power"]
+B --> E["GCD LCM"]
+B --> F["Prime factorization"]
+B --> G["Prefix sum"]
+B --> H["Counting"]
+B --> I["Sequence formula"]
+B --> J["Geometry"]
+B --> K["Complexity"]
+B --> L["Invariant"]
+B --> M["Binary search on answer"]
+```
+
+</details>
+
+Core idea:
+
+> CP math converts slow simulation into formulas, patterns, and reusable helpers.
+
+General framework:
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Read problem"] --> B["Try small examples"]
+B --> C["Find repeated structure"]
+C --> D["Choose formula or helper"]
+D --> E["Check constraints"]
+E --> F["Check overflow"]
+F --> G["Implement"]
+G --> H["Test edge cases"]
+```
+
+</details>
+
+### Master Pattern Table
+
+| Signal in problem | Mathematical thought | Typical tool |
+|---|---|---|
+| minimum groups or days | round up division | ceiling division |
+| repeated after k steps | cycle position | modulo |
+| huge exponent | use binary bits | binary exponentiation |
+| divide under modulo | multiply by inverse | Fermat or extended gcd |
+| common divisor | reduce using gcd | Euclid |
+| cycles meet | common multiple | lcm |
+| many range sums | subtract prefix | prefix sum |
+| count ways | product sum complement | combinatorics |
+| order matters | arrangement | permutation |
+| order ignored | selection | combination |
+| repeated halving | logarithmic steps | binary search or powers |
+| prime factors matter | exponent formula | factorization |
+| large n up to 1e9 | no linear loops | formula or log |
+| construct answer | preserve truth | invariant |
+
+### Problem Solving Loop
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Stuck"] --> B["Make smallest cases"]
+B --> C["Write brute force idea"]
+C --> D["Record answers"]
+D --> E["Find sequence or invariant"]
+E --> F["Prove pattern"]
+F --> G["Code optimized version"]
+G --> H["Stress test mentally"]
+```
+
+</details>
+
+
+---
+
+## 1. Ceiling Division
+
+### Formula
+
+For positive integers `a` and `b`:
+
+```text
+ceil(a / b) = (a + b - 1) / b
+```
+
+Equivalent safer formula:
+
+```text
+ceil(a / b) = a / b + (a % b != 0)
+```
+
+For non negative integers, the second formula avoids overflow from `a + b - 1`.
+
+### When to use
+
+Use when you need minimum groups, days, operations, pages, packets, buses, boxes, rounds, or batches.
+
+### Example
+
+```text
+a = 10 items
+b = 3 items per group
+ceil(10 / 3) = 4 groups
 ```
 
 <details>
-<summary>Hints</summary>
+<summary>Mermaid Diagram</summary>
 
-- Form: **duplicates**
-- Pattern: **sort or set**
-- Tactic: **sort and compare neighbours**
-- Core intuition: duplicates become adjacent
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort or set** because it keeps only the useful information needed for future operations.
-- **Main Trick:** sort and compare neighbours.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
+```mermaid
+flowchart LR
+A["10 items"] --> B["Group size 3"]
+B --> C["3 full groups"]
+C --> D["1 leftover item"]
+D --> E["Need 4 groups"]
+```
 
 </details>
 
+### C++ Helper
+
 <details>
-<summary>Code / Template</summary>
+<summary>C++ Code</summary>
 
 ```cpp
-bool containsDuplicate(vector<int>& nums) {
-    unordered_set<int> seen;
-
-    for (int x : nums) {
-        if (seen.count(x)) return true;
-        seen.insert(x);
-    }
-
-    return false;
+long long ceilDiv(long long a, long long b) {
+    return a / b + (a % b != 0);
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : duplicates
-Think about   : sort or set
-Main action   : sort and compare neighbours
-Core idea     : duplicates become adjacent
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-merge-sorted-array"></a>
-
-## 2. Easy — Merge Sorted Array
-
-**Platform:** LeetCode  
-**Link:** [Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/)  
-**Pattern:** `two pointers`  
-**Form:** `merge arrays`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort or initialize left/right"]
-    A1["Move pointers by condition"]
-    A0 --> A1
-    A2["Skip duplicates if needed"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Continue until pointers cross"]
-    A3 --> A4
-```
+### Signed version
 
 <details>
-<summary>Hints</summary>
-
-- Form: **merge arrays**
-- Pattern: **two pointers**
-- Tactic: **fill from back**
-- Core intuition: largest final position is safe
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two pointers** because it keeps only the useful information needed for future operations.
-- **Main Trick:** fill from back.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
+<summary>C++ Code</summary>
 
 ```cpp
-void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
-    int i = m - 1;
-    int j = n - 1;
-    int k = m + n - 1;
+long long floorDiv(long long a, long long b) {
+    long long q = a / b;
+    long long r = a % b;
+    if (r != 0 && ((r > 0) != (b > 0))) q--;
+    return q;
+}
 
-    while (j >= 0) {
-        if (i >= 0 && nums1[i] > nums2[j]) {
-            nums1[k--] = nums1[i--];
-        } else {
-            nums1[k--] = nums2[j--];
-        }
-    }
+long long ceilDivSigned(long long a, long long b) {
+    long long q = a / b;
+    long long r = a % b;
+    if (r != 0 && ((r > 0) == (b > 0))) q++;
+    return q;
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
+### Dry Run
 
 ```text
-If you see    : merge arrays
-Think about   : two pointers
-Main action   : fill from back
-Core idea     : largest final position is safe
+a = 17, b = 5
+17 / 5 = 3 remainder 2
+Since remainder exists, answer = 3 + 1 = 4
 ```
 
-</details>
+### Pattern
 
-[Back to index](#clickable-index)
+If the problem says:
 
----
+```text
+minimum number of operations where each operation handles at most k items
+```
 
-<a id="easy-move-zeroes"></a>
+Think:
 
-## 3. Easy — Move Zeroes
+```text
+ceil(n / k)
+```
 
-**Platform:** LeetCode  
-**Link:** [Move Zeroes](https://leetcode.com/problems/move-zeroes/)  
-**Pattern:** `write pointer`  
-**Form:** `stable partition`
+### Practice Problem: [Codeforces 151A Soft Drinking](https://codeforces.com/problemset/problem/151/A)
 
-### Mermaid Solution Flow
+| Field | Details |
+|---|---|
+| Topic | Ceiling Division |
+| Main concepts | minimum among limiting resources, integer division |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Compute each resource capacity and take minimum. |
+| Complexity | O(1) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
+A["Codeforces 151A Soft Drinking"] --> B["Topic Ceiling Division"]
+A --> C["Concepts minimum among limiting resources, integer d..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Compute each resource capacity and take minimum."]
+A --> F["Complexity O1"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Compute how many toasts can be made from drink.
+2. Compute how many toasts can be made from limes.
+3. Compute how many toasts can be made from salt.
+4. The answer is the minimum of these values divided by number of friends.
+5. This is not pure ceiling division, but it trains integer groups and bottleneck thinking.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S1_0["Compute how many toasts can be made from drink."]
+    S1_1["Compute how many toasts can be made from limes."]
+    S1_2["Compute how many toasts can be made from salt."]
+    S1_3["'The answer is the minimum of these values divided b..."]
+    S1_4["'This is not pure ceiling division, but it trains in..."]
+    S1_0 --> S1_1
+    S1_1 --> S1_2
+    S1_2 --> S1_3
+    S1_3 --> S1_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+n = 3 friends
+drink gives 10 total toasts
+limes give 6 toasts
+salt gives 9 toasts
+bottleneck = 6
+answer = 6 / 3 = 2
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D1_0["n equals 3 friends"]
+    D1_1["drink gives 10 total toasts"]
+    D1_2["limes give 6 toasts"]
+    D1_3["salt gives 9 toasts"]
+    D1_4["bottleneck equals 6"]
+    D1_5["answer equals 6 div 3 equals 2"]
+    D1_0 --> D1_1
+    D1_1 --> D1_2
+    D1_2 --> D1_3
+    D1_3 --> D1_4
+    D1_4 --> D1_5
+```
+
+</details>
+
+### Practice Problem: [Codeforces 919A Supermarket](https://codeforces.com/problemset/problem/919/A)
+
+| Field | Details |
+|---|---|
+| Topic | Ceiling Division |
+| Main concepts | ratio comparison, price per unit, minimum value |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Track minimum double ratio. |
+| Complexity | O(n) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Codeforces 919A Supermarket"] --> B["Topic Ceiling Division"]
+A --> C["Concepts ratio comparison, price per unit, minimum v..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Track minimum double ratio."]
+A --> F["Complexity On"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. For each shop, compute price per unit as `a / b`.
+2. Find the minimum price per unit.
+3. Multiply by required amount.
+4. Use double because the answer can be fractional.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S2_0["For each shop, compute price per unit as a div b."]
+    S2_1["Find the minimum price per unit."]
+    S2_2["Multiply by required amount."]
+    S2_3["Use double because the answer can be fractional."]
+    S2_0 --> S2_1
+    S2_1 --> S2_2
+    S2_2 --> S2_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+Shop 1 price 10 for 2 kg gives 5 per kg
+Shop 2 price 15 for 5 kg gives 3 per kg
+Need 4 kg
+answer = 3 * 4 = 12
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D2_0["Shop 1 price 10 for 2 kg gives 5 per kg"]
+    D2_1["Shop 2 price 15 for 5 kg gives 3 per kg"]
+    D2_2["Need 4 kg"]
+    D2_3["answer equals 3 4 equals 12"]
+    D2_0 --> D2_1
+    D2_1 --> D2_2
+    D2_2 --> D2_3
+```
+
+</details>
+
+
+---
+
+## 2. Modulo and Cycles
+
+### Formula
+
+```text
+remainder = a % m
+```
+
+Modulo keeps a number inside range:
+
+```text
+0 to m - 1
+```
+
+Cycle movement:
+
+```text
+new_position = (start + steps) % cycle_length
+```
+
+Negative normalization:
+
+```text
+normalized = ((x % m) + m) % m
+```
+
+### Meaning
+
+Modulo means position inside a repeated cycle.
+
+### Example
+
+```text
+Today = 3
+After 100 days in a 7 day cycle:
+(3 + 100) % 7 = 103 % 7 = 5
 ```
 
 <details>
-<summary>Hints</summary>
+<summary>Mermaid Diagram</summary>
 
-- Form: **stable partition**
-- Pattern: **write pointer**
-- Tactic: **overwrite nonzero**
-- Core intuition: keep order with one pass
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **write pointer** because it keeps only the useful information needed for future operations.
-- **Main Trick:** overwrite nonzero.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
+```mermaid
+flowchart LR
+A["Start position"] --> B["Add steps"]
+B --> C["Take modulo"]
+C --> D["Final cycle position"]
+```
 
 </details>
 
+### C++ Helper
+
 <details>
-<summary>Code / Template</summary>
+<summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: write pointer
-// Form: stable partition
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: overwrite nonzero.
-    // 3. Maintain invariant.
-    // 4. Return answer.
+long long norm(long long x, long long mod) {
+    x %= mod;
+    if (x < 0) x += mod;
+    return x;
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
+### Dry Run
 
 ```text
-If you see    : stable partition
-Think about   : write pointer
-Main action   : overwrite nonzero
-Core idea     : keep order with one pass
+x = -3, mod = 7
+-3 % 7 = -3 in C++
+Add 7
+answer = 4
 ```
 
-</details>
+### Pattern
 
-[Back to index](#clickable-index)
+If the problem says:
 
----
+```text
+repeats every k
+clock
+days
+circular array
+large number of moves
+```
 
-<a id="easy-remove-duplicates-from-sorted-array"></a>
+Think modulo.
 
-## 4. Easy — Remove Duplicates from Sorted Array
+### Practice Problem: [Codeforces 913A Modular Exponentiation](https://codeforces.com/problemset/problem/913/A)
 
-**Platform:** LeetCode  
-**Link:** [Remove Duplicates from Sorted Array](https://leetcode.com/problems/remove-duplicates-from-sorted-array/)  
-**Pattern:** `slow-fast pointer`  
-**Form:** `compact sorted array`
+| Field | Details |
+|---|---|
+| Topic | Modulo and Cycles |
+| Main concepts | modulo, powers of two, overflow avoidance |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | If n is large enough, directly print m. |
+| Complexity | O(1) |
 
-### Mermaid Solution Flow
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
+A["Codeforces 913A Modular Exponentiation"] --> B["Topic Modulo and Cycles"]
+A --> C["Concepts modulo, powers of two, overflow avoidance"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint If n is large enough, directly print m."]
+A --> F["Complexity O1"]
 ```
 
-<details>
-<summary>Hints</summary>
+</details>
 
-- Form: **compact sorted array**
-- Pattern: **slow-fast pointer**
-- Tactic: **write unique**
-- Core intuition: sorted duplicates are grouped
-- First write brute force, then identify which repeated operation the STL structure removes.
+
+#### Approach Logic
+
+
+1. The problem asks for `m mod 2^n`.
+2. If `n` is very large, then `2^n` is bigger than `m`, so answer is `m`.
+3. Otherwise compute `2^n` safely and output `m % value`.
+4. Key trick: avoid computing impossible huge powers.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S3_0["The problem asks for m mod 2 power n."]
+    S3_1["'If n is very large, then 2 power n is bigger than m, so a..."]
+    S3_2["Otherwise compute 2 power n safely and output m mod value."]
+    S3_3["Key trick avoid computing impossible huge powers."]
+    S3_0 --> S3_1
+    S3_1 --> S3_2
+    S3_2 --> S3_3
+```
 
 </details>
 
-<details>
-<summary>Approach</summary>
+#### Dry Run
 
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **slow-fast pointer** because it keeps only the useful information needed for future operations.
-- **Main Trick:** write unique.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
+```text
+n = 3, m = 10
+2^3 = 8
+10 mod 8 = 2
+answer = 2
+
+n = 40, m = 100
+2^40 is larger than 100
+100 mod huge number = 100
+answer = 100
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D3_0["n equals 3, m equals 10"]
+    D3_1["2 power 3 equals 8"]
+    D3_2["10 mod 8 equals 2"]
+    D3_3["answer equals 2"]
+    D3_4["n equals 40, m equals 100"]
+    D3_5["2 power 40 is larger than 100"]
+    D3_6["100 mod huge number equals 100"]
+    D3_7["answer equals 100"]
+    D3_0 --> D3_1
+    D3_1 --> D3_2
+    D3_2 --> D3_3
+    D3_3 --> D3_4
+    D3_4 --> D3_5
+    D3_5 --> D3_6
+    D3_6 --> D3_7
+```
 
 </details>
 
+### Practice Problem: [CSES Increasing Array](https://cses.fi/problemset/task/1094)
+
+| Field | Details |
+|---|---|
+| Topic | Modulo and Cycles |
+| Main concepts | monotonic invariant, operation count |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Track previous maximum. |
+| Complexity | O(n) |
+
+
+#### Mermaid Table Diagram
+
 <details>
-<summary>Code / Template</summary>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Increasing Array"] --> B["Topic Modulo and Cycles"]
+A --> C["Concepts monotonic invariant, operation count"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Track previous maximum."]
+A --> F["Complexity On"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Maintain the invariant that the processed prefix is non decreasing.
+2. If current value is smaller than previous value, increase it to previous value.
+3. Add the difference to answer.
+4. This is a math invariant problem more than a simulation problem.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S4_0["'Maintain the invariant that the processed prefix is..."]
+    S4_1["'If current value is smaller than previous value, in..."]
+    S4_2["Add the difference to answer."]
+    S4_3["'This is a math invariant problem more than a simula..."]
+    S4_0 --> S4_1
+    S4_1 --> S4_2
+    S4_2 --> S4_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+array = 3 2 5 1 7
+prev = 3
+2 is smaller than 3, add 1, make it 3
+5 is okay, prev = 5
+1 is smaller than 5, add 4, make it 5
+7 is okay
+answer = 1 + 4 = 5
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D4_0["array equals 3 2 5 1 7"]
+    D4_1["prev equals 3"]
+    D4_2["2 is smaller than 3, add 1, make it 3"]
+    D4_3["5 is okay, prev equals 5"]
+    D4_4["1 is smaller than 5, add 4, make it 5"]
+    D4_5["7 is okay"]
+    D4_6["answer equals 1 plus 4 equals 5"]
+    D4_0 --> D4_1
+    D4_1 --> D4_2
+    D4_2 --> D4_3
+    D4_3 --> D4_4
+    D4_4 --> D4_5
+    D4_5 --> D4_6
+```
+
+</details>
+
+
+---
+
+## 3. Binary Exponentiation
+
+### Mathematical formula
+
+```text
+x^n = x^(n/2) * x^(n/2), if n is even
+x^n = x^(n/2) * x^(n/2) * x, if n is odd
+```
+
+Binary representation idea:
+
+```text
+13 = 8 + 4 + 1
+x^13 = x^8 * x^4 * x^1
+```
+
+### Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Set result to 1"] --> B{Exponent greater than zero}
+B -->|Yes| C{Exponent is odd}
+C -->|Yes| D["Multiply result by base"]
+C -->|No| E["Skip multiply"]
+D --> F["Square base"]
+E --> F
+F --> G["Divide exponent by 2"]
+G --> B
+B -->|No| H["Return result"]
+```
+
+</details>
+
+### C++ Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+long long binPow(long long base, long long exp) {
+    long long res = 1;
+    while (exp > 0) {
+        if (exp & 1) res *= base;
+        base *= base;
+        exp >>= 1;
     }
+    return res;
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
+### Modular C++ Helper
 
-```text
-If you see    : compact sorted array
-Think about   : slow-fast pointer
-Main action   : write unique
-Core idea     : sorted duplicates are grouped
+<details>
+<summary>C++ Code</summary>
+
+```cpp
+long long modPow(long long base, long long exp, long long mod) {
+    long long res = 1 % mod;
+    base %= mod;
+    while (exp > 0) {
+        if (exp & 1) res = (__int128)res * base % mod;
+        base = (__int128)base * base % mod;
+        exp >>= 1;
+    }
+    return res;
+}
 ```
 
 </details>
 
-[Back to index](#clickable-index)
+### Java Helper
 
----
+```java
+static long modPow(long base, long exp, long mod) {
+long res = 1 % mod;
+base %= mod;
+while (exp > 0) {
+if ((exp & 1) == 1) res = (res * base) % mod;
+base = (base * base) % mod;
+exp >>= 1;
+    }
+return res;
+}
+```
 
-<a id="medium-sort-colors"></a>
+### Dry Run: compute `3^13`
 
-## 5. Easy — Valid Anagram
+```text
+13 in binary = 1101
+Use powers: 3^1, 3^4, 3^8
+3^13 = 3^8 * 3^4 * 3^1
+```
 
-**Platform:** LeetCode  
-**Link:** [Valid Anagram](https://leetcode.com/problems/valid-anagram/)  
-**Pattern:** `count array`  
-**Form:** `frequency`
+| exp | base | res | action |
+|---:|---:|---:|---|
+| 13 | 3 | 1 | odd so res becomes 3 |
+| 6 | 9 | 3 | even so skip |
+| 3 | 81 | 3 | odd so res becomes 243 |
+| 1 | 6561 | 243 | odd so res becomes 1594323 |
+| 0 | done | 1594323 | return |
 
-### Mermaid Solution Flow
+### Pattern
+
+Use binary exponentiation when:
+
+```text
+exponent is huge
+need power modulo M
+need repeated squaring
+need matrix power later
+```
+
+### Practice Problem: [CSES Exponentiation](https://cses.fi/problemset/task/1095)
+
+| Field | Details |
+|---|---|
+| Topic | Binary Exponentiation |
+| Main concepts | binary exponentiation, modulo, many queries |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use modPow(a, b, MOD). |
+| Complexity | O(log b) per query |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
+A["CSES Exponentiation"] --> B["Topic Binary Exponentiation"]
+A --> C["Concepts binary exponentiation, modulo, many queries"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use modPowa, b, MOD."]
+A --> F["Complexity Olog b per query"]
 ```
 
-<details>
-<summary>Hints</summary>
+</details>
 
-- Form: **frequency**
-- Pattern: **count array**
-- Tactic: **compare counts**
-- Core intuition: same letters means same count vector
-- First write brute force, then identify which repeated operation the STL structure removes.
+
+#### Approach Logic
+
+
+1. Each query gives `a` and `b`.
+2. Direct multiplication is impossible when `b` is large.
+3. Use modular binary exponentiation.
+4. For every odd exponent bit, multiply answer by current base.
+5. Square base every step and halve exponent.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S5_0["Each query gives a and b."]
+    S5_1["Direct multiplication is impossible when b is large."]
+    S5_2["Use modular binary exponentiation."]
+    S5_3["'For every odd exponent bit, multiply answer by curr..."]
+    S5_4["Square base every step and halve exponent."]
+    S5_0 --> S5_1
+    S5_1 --> S5_2
+    S5_2 --> S5_3
+    S5_3 --> S5_4
+```
 
 </details>
 
-<details>
-<summary>Approach</summary>
+#### Dry Run
 
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **count array** because it keeps only the useful information needed for future operations.
-- **Main Trick:** compare counts.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
+```text
+a = 3, b = 13, mod = 1000000007
+13 binary is 1101
+Use powers 3^1, 3^4, 3^8
+answer = 1594323
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D5_0["a equals 3, b equals 13, mod equals 1000000007"]
+    D5_1["13 binary is 1101"]
+    D5_2["Use powers 3 power 1, 3 power 4, 3 power 8"]
+    D5_3["answer equals 1594323"]
+    D5_0 --> D5_1
+    D5_1 --> D5_2
+    D5_2 --> D5_3
+```
 
 </details>
 
+### Practice Problem: [CSES Exponentiation II](https://cses.fi/problemset/task/1712)
+
+| Field | Details |
+|---|---|
+| Topic | Binary Exponentiation |
+| Main concepts | Fermat reduction, nested exponent, modular power |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use modPow twice. |
+| Complexity | O(log c plus log MOD) |
+
+
+#### Mermaid Table Diagram
+
 <details>
-<summary>Code / Template</summary>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Exponentiation II"] --> B["Topic Binary Exponentiation"]
+A --> C["Concepts Fermat reduction, nested exponent, modular..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use modPow twice."]
+A --> F["Complexity Olog c plus log MOD"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Need compute `a^(b^c) mod MOD`.
+2. Since MOD is prime, reduce exponent modulo `MOD minus 1`.
+3. Compute `e = b^c mod MOD minus 1`.
+4. Answer is `a^e mod MOD`.
+5. This combines Fermat theorem and binary exponentiation.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S6_0["Need compute a power b power c mod MOD."]
+    S6_1["'Since MOD is prime, reduce exponent modulo MOD minu..."]
+    S6_2["Compute e equals b power c mod MOD minus 1."]
+    S6_3["Answer is a power e mod MOD."]
+    S6_4["'This combines Fermat theorem and binary exponentiat..."]
+    S6_0 --> S6_1
+    S6_1 --> S6_2
+    S6_2 --> S6_3
+    S6_3 --> S6_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+a = 2, b = 3, c = 2
+exponent = 3^2 = 9
+answer = 2^9 = 512
+For huge values compute exponent modulo MOD minus 1
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D6_0["a equals 2, b equals 3, c equals 2"]
+    D6_1["exponent equals 3 power 2 equals 9"]
+    D6_2["answer equals 2 power 9 equals 512"]
+    D6_3["For huge values compute exponent modulo MOD minus 1"]
+    D6_0 --> D6_1
+    D6_1 --> D6_2
+    D6_2 --> D6_3
+```
+
+</details>
+
+
+---
+
+## 4. Modular Arithmetic
+
+### Formulas
+
+```text
+(a + b) mod M = ((a mod M) + (b mod M)) mod M
+(a - b) mod M = ((a mod M) - (b mod M) + M) mod M
+(a * b) mod M = ((a mod M) * (b mod M)) mod M
+```
+
+For prime `M` and `a` not divisible by `M`:
+
+```text
+a^(-1) mod M = a^(M - 2) mod M
+```
+
+This is based on Fermat's Little Theorem:
+
+```text
+a^(M - 1) = 1 mod M
+```
+
+### Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Need division under modulo"] --> B{Modulo is prime}
+B -->|Yes| C["Use Fermat inverse"]
+C --> D["Compute power M minus 2"]
+B -->|No| E["Use extended gcd if inverse exists"]
+```
+
+</details>
+
+### C++ Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
-bool isAnagram(string s, string t) {
-    if (s.size() != t.size()) return false;
+const long long MOD = 1000000007LL;
 
-    array<int, 26> cnt{};
+long long addMod(long long a, long long b) {
+    return (a % MOD + b % MOD) % MOD;
+}
 
-    for (char c : s) cnt[c - 'a']++;
-    for (char c : t) cnt[c - 'a']--;
+long long subMod(long long a, long long b) {
+    return (a % MOD - b % MOD + MOD) % MOD;
+}
 
-    for (int x : cnt) {
-        if (x != 0) return false;
+long long mulMod(long long a, long long b) {
+    return (__int128)(a % MOD) * (b % MOD) % MOD;
+}
+
+long long modInversePrime(long long a) {
+    return modPow(a, MOD - 2, MOD);
+}
+```
+
+</details>
+
+### Dry Run
+
+Find `3 / 2 mod 7`.
+
+```text
+Division means multiply by inverse.
+2 inverse mod 7 = 2^(7 - 2) mod 7 = 2^5 mod 7 = 32 mod 7 = 4
+3 / 2 mod 7 = 3 * 4 mod 7 = 12 mod 7 = 5
+```
+
+### Practice Problem: [CSES Binomial Coefficients](https://cses.fi/problemset/task/1079)
+
+| Field | Details |
+|---|---|
+| Topic | Modular Arithmetic |
+| Main concepts | factorials, inverse factorials, nCr modulo prime |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Precompute factorial and inverse factorial. |
+| Complexity | O(maxN log MOD plus q) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Binomial Coefficients"] --> B["Topic Modular Arithmetic"]
+A --> C["Concepts factorials, inverse factorials, nCr modulo..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Precompute factorial and inverse factorial."]
+A --> F["Complexity OmaxN log MOD plus q"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Need answer many `nCr` queries under prime modulo.
+2. Precompute factorials up to maximum n.
+3. Precompute inverse factorials using Fermat inverse.
+4. Answer each query as `fact[n] * invFact[r] * invFact[n-r]`.
+5. This changes each query from O(n) to O(1).
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S7_0["Need answer many nCr queries under prime modulo."]
+    S7_1["Precompute factorials up to maximum n."]
+    S7_2["Precompute inverse factorials using Fermat inverse."]
+    S7_3["Answer each query as fact n invFact r invFact n-r ."]
+    S7_4["This changes each query from O n to O 1 ."]
+    S7_0 --> S7_1
+    S7_1 --> S7_2
+    S7_2 --> S7_3
+    S7_3 --> S7_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+n = 5, r = 2
+fact[5] = 120
+fact[2] = 2
+fact[3] = 6
+C(5,2) = 120 / 12 = 10
+Under modulo division becomes multiply by inverse
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D7_0["n equals 5, r equals 2"]
+    D7_1["fact 5 equals 120"]
+    D7_2["fact 2 equals 2"]
+    D7_3["fact 3 equals 6"]
+    D7_4["C 5,2 equals 120 div 12 equals 10"]
+    D7_5["Under modulo division becomes multiply by inverse"]
+    D7_0 --> D7_1
+    D7_1 --> D7_2
+    D7_2 --> D7_3
+    D7_3 --> D7_4
+    D7_4 --> D7_5
+```
+
+</details>
+
+### Practice Problem: [CSES Distributing Apples](https://cses.fi/problemset/task/1716)
+
+| Field | Details |
+|---|---|
+| Topic | Modular Arithmetic |
+| Main concepts | stars and bars, nCr modulo prime |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Answer nCr(n + m - 1, n - 1). |
+| Complexity | O(maxN log MOD plus 1) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Distributing Apples"] --> B["Topic Modular Arithmetic"]
+A --> C["Concepts stars and bars, nCr modulo prime"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Answer nCrn plus m minus 1, n minus 1."]
+A --> F["Complexity OmaxN log MOD plus 1"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Distribute `m` identical apples among `n` children.
+2. This is stars and bars.
+3. Number of ways is `C(n + m - 1, n - 1)`.
+4. Use modular nCr precomputation.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S8_0["Distribute m identical apples among n children."]
+    S8_1["This is stars and bars."]
+    S8_2["Number of ways is C n plus m - 1, n - 1 ."]
+    S8_3["Use modular nCr precomputation."]
+    S8_0 --> S8_1
+    S8_1 --> S8_2
+    S8_2 --> S8_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+n = 3 children, m = 4 apples
+Represent as stars and bars
+**** with 2 separators
+Total positions = 4 + 3 - 1 = 6
+Choose separator positions = C(6,2) = 15
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D8_0["n equals 3 children, m equals 4 apples"]
+    D8_1["Represent as stars and bars"]
+    D8_2["with 2 separators"]
+    D8_3["Total positions equals 4 plus 3 - 1 equals 6"]
+    D8_4["Choose separator positions equals C 6,2 equals 15"]
+    D8_0 --> D8_1
+    D8_1 --> D8_2
+    D8_2 --> D8_3
+    D8_3 --> D8_4
+```
+
+</details>
+
+
+---
+
+## 5. GCD and LCM
+
+### Formulas
+
+```text
+gcd(a, b) = gcd(b, a mod b)
+lcm(a, b) = a / gcd(a, b) * b
+```
+
+Important property:
+
+```text
+gcd(a, b) * lcm(a, b) = a * b
+```
+
+### Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Start with a and b"] --> B{b equals zero}
+B -->|No| C["r equals a modulo b"]
+C --> D["a becomes b"]
+D --> E["b becomes r"]
+E --> B
+B -->|Yes| F["a is gcd"]
+```
+
+</details>
+
+### C++ Helper
+
+<details>
+<summary>C++ Code</summary>
+
+```cpp
+long long gcdll(long long a, long long b) {
+    while (b != 0) {
+        long long r = a % b;
+        a = b;
+        b = r;
     }
+    return a;
+}
 
+long long lcmll(long long a, long long b) {
+    return a / gcdll(a, b) * b;
+}
+```
+
+</details>
+
+### Dry Run
+
+```text
+gcd(48, 18)
+48 % 18 = 12
+18 % 12 = 6
+12 % 6 = 0
+answer = 6
+```
+
+### Pattern
+
+Use GCD when the problem has:
+
+```text
+common divisor
+reduce fraction
+same step size
+period alignment
+minimum repeating length
+```
+
+Use LCM when the problem has:
+
+```text
+when two cycles meet again
+common multiple
+synchronization
+```
+
+### Practice Problem: [CSES Common Divisors](https://cses.fi/problemset/task/1081)
+
+| Field | Details |
+|---|---|
+| Topic | GCD and LCM |
+| Main concepts | divisors, frequency counting, largest common divisor |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use frequency array and multiples loop. |
+| Complexity | O(maxA log maxA) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Common Divisors"] --> B["Topic GCD and LCM"]
+A --> C["Concepts divisors, frequency counting, largest commo..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use frequency array and multiples loop."]
+A --> F["Complexity OmaxA log maxA"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Count frequency of every value.
+2. Iterate possible divisor from maximum value downward.
+3. Count how many array values are multiples of this divisor.
+4. First divisor that appears in at least two numbers is the answer.
+5. This avoids checking every pair.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S9_0["Count frequency of every value."]
+    S9_1["Iterate possible divisor from maximum value downward."]
+    S9_2["'Count how many array values are multiples of this d..."]
+    S9_3["'First divisor that appears in at least two numbers..."]
+    S9_4["This avoids checking every pair."]
+    S9_0 --> S9_1
+    S9_1 --> S9_2
+    S9_2 --> S9_3
+    S9_3 --> S9_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+array = 6 10 15
+Check divisor 15 gives one multiple
+Check divisor 10 gives one multiple
+Check divisor 5 gives two multiples 10 and 15
+answer = 5
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D9_0["array equals 6 10 15"]
+    D9_1["Check divisor 15 gives one multiple"]
+    D9_2["Check divisor 10 gives one multiple"]
+    D9_3["Check divisor 5 gives two multiples 10 and 15"]
+    D9_4["answer equals 5"]
+    D9_0 --> D9_1
+    D9_1 --> D9_2
+    D9_2 --> D9_3
+    D9_3 --> D9_4
+```
+
+</details>
+
+### Practice Problem: [Codeforces 1458A Row GCD](https://codeforces.com/problemset/problem/1458/A)
+
+| Field | Details |
+|---|---|
+| Topic | GCD and LCM |
+| Main concepts | gcd transformation, difference invariant |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Compute gcd of differences once. |
+| Complexity | O(n log A plus q log A) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Codeforces 1458A Row GCD"] --> B["Topic GCD and LCM"]
+A --> C["Concepts gcd transformation, difference invariant"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Compute gcd of differences once."]
+A --> F["Complexity On log A plus q log A"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. For array `a`, compute gcd of all differences `a[i] - a[0]`.
+2. For each query `b`, answer is `gcd(a[0] + b, differenceGcd)`.
+3. Key identity: gcd of shifted numbers depends on first shifted value and differences.
+4. This is a classic CM level gcd transformation pattern.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S10_0["'For array a, compute gcd of all differences a i -..."]
+    S10_1["'For each query b, answer is gcd a 0 plus b, differenc..."]
+    S10_2["'Key identity gcd of shifted numbers depends on fir..."]
+    S10_3["'This is a classic CM level gcd transformation patte..."]
+    S10_0 --> S10_1
+    S10_1 --> S10_2
+    S10_2 --> S10_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+a = [6, 10, 14]
+differences from first = 4, 8
+g = gcd(4,8) = 4
+query b = 2
+answer = gcd(6 + 2, 4) = gcd(8,4) = 4
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D10_0["a equals 6, 10, 14"]
+    D10_1["differences from first equals 4, 8"]
+    D10_2["g equals gcd 4,8 equals 4"]
+    D10_3["query b equals 2"]
+    D10_4["answer equals gcd 6 plus 2, 4 equals gcd 8,4 equals 4"]
+    D10_0 --> D10_1
+    D10_1 --> D10_2
+    D10_2 --> D10_3
+    D10_3 --> D10_4
+```
+
+</details>
+
+
+---
+
+## 6. Primes and Divisors
+
+### Prime definition
+
+A prime number has exactly two positive divisors:
+
+```text
+1 and itself
+```
+
+### Prime check formula
+
+If `n` has a divisor greater than `sqrt(n)`, it must also have a paired divisor smaller than `sqrt(n)`.
+
+So check only:
+
+```text
+2 to sqrt(n)
+```
+
+### C++ Prime Check
+
+<details>
+<summary>C++ Code</summary>
+
+```cpp
+bool isPrime(long long n) {
+    if (n < 2) return false;
+    for (long long d = 2; d * d <= n; d++) {
+        if (n % d == 0) return false;
+    }
     return true;
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
+### Divisor count formula
+
+If:
 
 ```text
-If you see    : frequency
-Think about   : count array
-Main action   : compare counts
-Core idea     : same letters means same count vector
+n = p1^a1 * p2^a2 * ... * pk^ak
 ```
 
-</details>
+Then:
 
-[Back to index](#clickable-index)
+```text
+number_of_divisors = (a1 + 1)(a2 + 1)...(ak + 1)
+```
 
----
+### Example
 
-<a id="easy-valid-palindrome"></a>
+```text
+18 = 2^1 * 3^2
+number of divisors = (1 + 1)(2 + 1) = 6
+Divisors: 1, 2, 3, 6, 9, 18
+```
 
-## 6. Easy — Valid Palindrome
+### Flowchart
 
-**Platform:** LeetCode  
-**Link:** [Valid Palindrome](https://leetcode.com/problems/valid-palindrome/)  
-**Pattern:** `two pointers`  
-**Form:** `palindrome`
-
-### Mermaid Solution Flow
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Sort or initialize left/right"]
-    A1["Move pointers by condition"]
-    A0 --> A1
-    A2["Skip duplicates if needed"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Continue until pointers cross"]
-    A3 --> A4
+A["Number n"] --> B["Try divisor d"]
+B --> C{d times d less or equal n}
+C -->|Yes| D{d divides n}
+D -->|Yes| E["Count exponent"]
+D -->|No| F["Increase d"]
+E --> F
+F --> C
+C -->|No| G{n greater than one}
+G -->|Yes| H["Remaining n is prime"]
+G -->|No| I["Done"]
+H --> I
 ```
 
-<details>
-<summary>Hints</summary>
-
-- Form: **palindrome**
-- Pattern: **two pointers**
-- Tactic: **skip non-alnum**
-- Core intuition: compare mirrored valid chars
-- First write brute force, then identify which repeated operation the STL structure removes.
-
 </details>
 
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two pointers** because it keeps only the useful information needed for future operations.
-- **Main Trick:** skip non-alnum.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
+### C++ Factorization
 
 <details>
-<summary>Code / Template</summary>
+<summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : palindrome
-Think about   : two pointers
-Main action   : skip non-alnum
-Core idea     : compare mirrored valid chars
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-ransom-note"></a>
-
-## 7. Easy — Ransom Note
-
-**Platform:** LeetCode  
-**Link:** [Ransom Note](https://leetcode.com/problems/ransom-note/)  
-**Pattern:** `count chars`  
-**Form:** `frequency need`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **frequency need**
-- Pattern: **count chars**
-- Tactic: **decrement available**
-- Core intuition: magazine supplies letters
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **count chars** because it keeps only the useful information needed for future operations.
-- **Main Trick:** decrement available.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : frequency need
-Think about   : count chars
-Main action   : decrement available
-Core idea     : magazine supplies letters
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-group-anagrams"></a>
-
-## 8. Easy — Valid Parentheses
-
-**Platform:** LeetCode  
-**Link:** [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)  
-**Pattern:** `stack`  
-**Form:** `bracket matching`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **bracket matching**
-- Pattern: **stack**
-- Tactic: **push open pop close**
-- Core intuition: latest open must close first
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **stack** because it keeps only the useful information needed for future operations.
-- **Main Trick:** push open pop close.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-bool isValid(string s) {
-    stack<char> st;
-    unordered_map<char,char> mp = {{')','('}, {']','['}, {'}','{'}};
-
-    for (char c : s) {
-        if (c == '(' || c == '[' || c == '{') {
-            st.push(c);
-        } else {
-            if (st.empty() || st.top() != mp[c]) return false;
-            st.pop();
+vector<pair<long long,int>> factorize(long long n) {
+    vector<pair<long long,int>> f;
+    for (long long d = 2; d * d <= n; d++) {
+        if (n % d == 0) {
+            int cnt = 0;
+            while (n % d == 0) {
+                n /= d;
+                cnt++;
+            }
+            f.push_back({d, cnt});
         }
     }
-
-    return st.empty();
+    if (n > 1) f.push_back({n, 1});
+    return f;
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : bracket matching
-Think about   : stack
-Main action   : push open pop close
-Core idea     : latest open must close first
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-baseball-game"></a>
-
-## 9. Easy — Baseball Game
-
-**Platform:** LeetCode  
-**Link:** [Baseball Game](https://leetcode.com/problems/baseball-game/)  
-**Pattern:** `stack/vector`  
-**Form:** `operation history`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
+### Sieve Helper
 
 <details>
-<summary>Hints</summary>
-
-- Form: **operation history**
-- Pattern: **stack/vector**
-- Tactic: **store scores**
-- Core intuition: operations reference previous scores
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **stack/vector** because it keeps only the useful information needed for future operations.
-- **Main Trick:** store scores.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
+<summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: stack/vector
-// Form: operation history
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: store scores.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : operation history
-Think about   : stack/vector
-Main action   : store scores
-Core idea     : operations reference previous scores
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-remove-all-adjacent-duplicates-in-string"></a>
-
-## 10. Easy — Remove All Adjacent Duplicates In String
-
-**Platform:** LeetCode  
-**Link:** [Remove All Adjacent Duplicates In String](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/)  
-**Pattern:** `stack string`  
-**Form:** `cancellation`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **cancellation**
-- Pattern: **stack string**
-- Tactic: **pop equal top**
-- Core intuition: adjacent equal cancels latest
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **stack string** because it keeps only the useful information needed for future operations.
-- **Main Trick:** pop equal top.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: stack string
-// Form: cancellation
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: pop equal top.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : cancellation
-Think about   : stack string
-Main action   : pop equal top
-Core idea     : adjacent equal cancels latest
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-min-stack"></a>
-
-## 11. Easy — Implement Queue using Stacks
-
-**Platform:** LeetCode  
-**Link:** [Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/)  
-**Pattern:** `two stacks`  
-**Form:** `data structure design`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **data structure design**
-- Pattern: **two stacks**
-- Tactic: **move only when needed**
-- Core intuition: reverse stack gives FIFO
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two stacks** because it keeps only the useful information needed for future operations.
-- **Main Trick:** move only when needed.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: two stacks
-// Form: data structure design
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: move only when needed.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : data structure design
-Think about   : two stacks
-Main action   : move only when needed
-Core idea     : reverse stack gives FIFO
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-number-of-recent-calls"></a>
-
-## 12. Easy — Number of Recent Calls
-
-**Platform:** LeetCode  
-**Link:** [Number of Recent Calls](https://leetcode.com/problems/number-of-recent-calls/)  
-**Pattern:** `queue`  
-**Form:** `time window`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **time window**
-- Pattern: **queue**
-- Tactic: **pop old calls**
-- Core intuition: queue holds valid recent calls
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **queue** because it keeps only the useful information needed for future operations.
-- **Main Trick:** pop old calls.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: queue
-// Form: time window
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: pop old calls.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : time window
-Think about   : queue
-Main action   : pop old calls
-Core idea     : queue holds valid recent calls
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-rotting-oranges"></a>
-
-## 13. Easy — Last Stone Weight
-
-**Platform:** LeetCode  
-**Link:** [Last Stone Weight](https://leetcode.com/problems/last-stone-weight/)  
-**Pattern:** `max heap`  
-**Form:** `repeated max`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **repeated max**
-- Pattern: **max heap**
-- Tactic: **smash two largest**
-- Core intuition: only largest stones matter
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **max heap** because it keeps only the useful information needed for future operations.
-- **Main Trick:** smash two largest.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : repeated max
-Think about   : max heap
-Main action   : smash two largest
-Core idea     : only largest stones matter
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-kth-largest-element-in-a-stream"></a>
-
-## 14. Easy — Kth Largest Element in a Stream
-
-**Platform:** LeetCode  
-**Link:** [Kth Largest Element in a Stream](https://leetcode.com/problems/kth-largest-element-in-a-stream/)  
-**Pattern:** `min heap size k`  
-**Form:** `stream kth`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **stream kth**
-- Pattern: **min heap size k**
-- Tactic: **pop smaller extras**
-- Core intuition: heap stores top k
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **min heap size k** because it keeps only the useful information needed for future operations.
-- **Main Trick:** pop smaller extras.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : stream kth
-Think about   : min heap size k
-Main action   : pop smaller extras
-Core idea     : heap stores top k
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-kth-largest-element-in-an-array"></a>
-
-## 15. Easy — Contains Duplicate III
-
-**Platform:** LeetCode  
-**Link:** [Contains Duplicate III](https://leetcode.com/problems/contains-duplicate-iii/)  
-**Pattern:** `set window`  
-**Form:** `nearby value`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **nearby value**
-- Pattern: **set window**
-- Tactic: **lower_bound x minus t**
-- Core intuition: closest candidate is around lower bound
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **set window** because it keeps only the useful information needed for future operations.
-- **Main Trick:** lower_bound x minus t.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: set window
-// Form: nearby value
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: lower_bound x minus t.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : nearby value
-Think about   : set window
-Main action   : lower_bound x minus t
-Core idea     : closest candidate is around lower bound
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-my-calendar-i"></a>
-
-## 16. Easy — Two Sum
-
-**Platform:** LeetCode  
-**Link:** [Two Sum](https://leetcode.com/problems/two-sum/)  
-**Pattern:** `unordered_map`  
-**Form:** `complement lookup`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **complement lookup**
-- Pattern: **unordered_map**
-- Tactic: **store seen value index**
-- Core intuition: target needs previous complement
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **unordered_map** because it keeps only the useful information needed for future operations.
-- **Main Trick:** store seen value index.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-vector<int> twoSum(vector<int>& nums, int target) {
-    unordered_map<int,int> pos;
-
-    for (int i = 0; i < (int)nums.size(); i++) {
-        int need = target - nums[i];
-
-        if (pos.count(need)) {
-            return {pos[need], i};
-        }
-
-        pos[nums[i]] = i;
-    }
-
-    return {};
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : complement lookup
-Think about   : unordered_map
-Main action   : store seen value index
-Core idea     : target needs previous complement
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-majority-element"></a>
-
-## 17. Easy — Majority Element
-
-**Platform:** LeetCode  
-**Link:** [Majority Element](https://leetcode.com/problems/majority-element/)  
-**Pattern:** `map/count`  
-**Form:** `frequency`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **frequency**
-- Pattern: **map/count**
-- Tactic: **count occurrences**
-- Core intuition: majority crosses n/2
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **map/count** because it keeps only the useful information needed for future operations.
-- **Main Trick:** count occurrences.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : frequency
-Think about   : map/count
-Main action   : count occurrences
-Core idea     : majority crosses n/2
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-first-unique-character-in-a-string"></a>
-
-## 18. Easy — First Unique Character in a String
-
-**Platform:** LeetCode  
-**Link:** [First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/)  
-**Pattern:** `count array/map`  
-**Form:** `frequency`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **frequency**
-- Pattern: **count array/map**
-- Tactic: **two passes**
-- Core intuition: unique means count one
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **count array/map** because it keeps only the useful information needed for future operations.
-- **Main Trick:** two passes.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : frequency
-Think about   : count array/map
-Main action   : two passes
-Core idea     : unique means count one
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-subarray-sum-equals-k"></a>
-
-## 19. Easy — Meeting Rooms
-
-**Platform:** LeetCode  
-**Link:** [Meeting Rooms](https://leetcode.com/problems/meeting-rooms/)  
-**Pattern:** `sort by start`  
-**Form:** `intervals`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Convert to intervals/events"]
-    A1["Sort by time/start"]
-    A0 --> A1
-    A2["Scan in order"]
-    A1 --> A2
-    A3["Maintain active/merged state"]
-    A2 --> A3
-    A4["Update answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **intervals**
-- Pattern: **sort by start**
-- Tactic: **compare previous end**
-- Core intuition: overlap violates room
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort by start** because it keeps only the useful information needed for future operations.
-- **Main Trick:** compare previous end.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : intervals
-Think about   : sort by start
-Main action   : compare previous end
-Core idea     : overlap violates room
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-non-overlapping-intervals"></a>
-
-## 20. Easy — Squares of a Sorted Array
-
-**Platform:** LeetCode  
-**Link:** [Squares of a Sorted Array](https://leetcode.com/problems/squares-of-a-sorted-array/)  
-**Pattern:** `two pointers`  
-**Form:** `sorted transform`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort or initialize left/right"]
-    A1["Move pointers by condition"]
-    A0 --> A1
-    A2["Skip duplicates if needed"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Continue until pointers cross"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **sorted transform**
-- Pattern: **two pointers**
-- Tactic: **fill from back**
-- Core intuition: largest square at ends
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two pointers** because it keeps only the useful information needed for future operations.
-- **Main Trick:** fill from back.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : sorted transform
-Think about   : two pointers
-Main action   : fill from back
-Core idea     : largest square at ends
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-intersection-of-two-arrays"></a>
-
-## 21. Easy — Intersection of Two Arrays
-
-**Platform:** LeetCode  
-**Link:** [Intersection of Two Arrays](https://leetcode.com/problems/intersection-of-two-arrays/)  
-**Pattern:** `sort unique`  
-**Form:** `set operations`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **set operations**
-- Pattern: **sort unique**
-- Tactic: **two pointers**
-- Core intuition: sorted arrays reveal equal values
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort unique** because it keeps only the useful information needed for future operations.
-- **Main Trick:** two pointers.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : set operations
-Think about   : sort unique
-Main action   : two pointers
-Core idea     : sorted arrays reveal equal values
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-3sum"></a>
-
-## 22. Easy — Binary Search
-
-**Platform:** LeetCode  
-**Link:** [Binary Search](https://leetcode.com/problems/binary-search/)  
-**Pattern:** `lower_bound`  
-**Form:** `sorted search`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort / use ordered structure"]
-    A1["Define target condition"]
-    A0 --> A1
-    A2["Use lower_bound / binary search"]
-    A1 --> A2
-    A3["Check candidate index"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **sorted search**
-- Pattern: **lower_bound**
-- Tactic: **compare mid**
-- Core intuition: sorted halves eliminate
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **lower_bound** because it keeps only the useful information needed for future operations.
-- **Main Trick:** compare mid.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int searchInsert(vector<int>& nums, int target) {
-    return lower_bound(nums.begin(), nums.end(), target) - nums.begin();
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : sorted search
-Think about   : lower_bound
-Main action   : compare mid
-Core idea     : sorted halves eliminate
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-search-insert-position"></a>
-
-## 23. Easy — Search Insert Position
-
-**Platform:** LeetCode  
-**Link:** [Search Insert Position](https://leetcode.com/problems/search-insert-position/)  
-**Pattern:** `lower_bound`  
-**Form:** `insertion index`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort / use ordered structure"]
-    A1["Define target condition"]
-    A0 --> A1
-    A2["Use lower_bound / binary search"]
-    A1 --> A2
-    A3["Check candidate index"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **insertion index**
-- Pattern: **lower_bound**
-- Tactic: **first not less**
-- Core intuition: insert before first bigger/equal
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **lower_bound** because it keeps only the useful information needed for future operations.
-- **Main Trick:** first not less.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int searchInsert(vector<int>& nums, int target) {
-    return lower_bound(nums.begin(), nums.end(), target) - nums.begin();
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : insertion index
-Think about   : lower_bound
-Main action   : first not less
-Core idea     : insert before first bigger/equal
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-find-first-and-last-position-of-element-in-sorted-array"></a>
-
-## 24. Easy — Next Greater Element I
-
-**Platform:** LeetCode  
-**Link:** [Next Greater Element I](https://leetcode.com/problems/next-greater-element-i/)  
-**Pattern:** `monotonic stack + map`  
-**Form:** `next greater`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **next greater**
-- Pattern: **monotonic stack + map**
-- Tactic: **precompute next greater**
-- Core intuition: decreasing stack waits for greater
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **monotonic stack + map** because it keeps only the useful information needed for future operations.
-- **Main Trick:** precompute next greater.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-vector<int> nextGreaterRight(vector<int>& a) {
-    int n = a.size();
-    vector<int> ans(n, -1);
-    stack<int> st;
-
-    for (int i = 0; i < n; i++) {
-        while (!st.empty() && a[st.top()] < a[i]) {
-            ans[st.top()] = a[i];
-            st.pop();
-        }
-
-        st.push(i);
-    }
-
-    return ans;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : next greater
-Think about   : monotonic stack + map
-Main action   : precompute next greater
-Core idea     : decreasing stack waits for greater
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-online-stock-span"></a>
-
-## 25. Easy — CSES Weird Algorithm
-
-**Platform:** CSES  
-**Link:** [CSES Weird Algorithm](https://cses.fi/problemset/task/1068)  
-**Pattern:** `vector output`  
-**Form:** `simulation`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **simulation**
-- Pattern: **vector output**
-- Tactic: **while loop**
-- Core intuition: direct process
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **vector output** because it keeps only the useful information needed for future operations.
-- **Main Trick:** while loop.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: vector output
-// Form: simulation
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: while loop.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : simulation
-Think about   : vector output
-Main action   : while loop
-Core idea     : direct process
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-nested-ranges-check"></a>
-
-# Medium Problems
-
-## 26. Medium — Sort Colors
-
-**Platform:** LeetCode  
-**Link:** [Sort Colors](https://leetcode.com/problems/sort-colors/)  
-**Pattern:** `Dutch flag`  
-**Form:** `3-way partition`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **3-way partition**
-- Pattern: **Dutch flag**
-- Tactic: **low mid high**
-- Core intuition: place each color region
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **Dutch flag** because it keeps only the useful information needed for future operations.
-- **Main Trick:** low mid high.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: Dutch flag
-// Form: 3-way partition
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: low mid high.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : 3-way partition
-Think about   : Dutch flag
-Main action   : low mid high
-Core idea     : place each color region
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-next-permutation"></a>
-
-## 27. Medium — Next Permutation
-
-**Platform:** LeetCode  
-**Link:** [Next Permutation](https://leetcode.com/problems/next-permutation/)  
-**Pattern:** `STL algorithm logic`  
-**Form:** `permutation`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **permutation**
-- Pattern: **STL algorithm logic**
-- Tactic: **pivot suffix reverse**
-- Core intuition: next lexicographic order changes suffix
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **STL algorithm logic** because it keeps only the useful information needed for future operations.
-- **Main Trick:** pivot suffix reverse.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: STL algorithm logic
-// Form: permutation
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: pivot suffix reverse.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : permutation
-Think about   : STL algorithm logic
-Main action   : pivot suffix reverse
-Core idea     : next lexicographic order changes suffix
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-merge-intervals"></a>
-
-## 28. Medium — Merge Intervals
-
-**Platform:** LeetCode  
-**Link:** [Merge Intervals](https://leetcode.com/problems/merge-intervals/)  
-**Pattern:** `sort and merge`  
-**Form:** `intervals`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Convert to intervals/events"]
-    A1["Sort by time/start"]
-    A0 --> A1
-    A2["Scan in order"]
-    A1 --> A2
-    A3["Maintain active/merged state"]
-    A2 --> A3
-    A4["Update answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **intervals**
-- Pattern: **sort and merge**
-- Tactic: **compare start with current end**
-- Core intuition: overlap extends interval
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort and merge** because it keeps only the useful information needed for future operations.
-- **Main Trick:** compare start with current end.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-vector<vector<int>> merge(vector<vector<int>>& intervals) {
-    sort(intervals.begin(), intervals.end());
-
-    vector<vector<int>> ans;
-
-    for (auto cur : intervals) {
-        if (ans.empty() || ans.back()[1] < cur[0]) {
-            ans.push_back(cur);
-        } else {
-            ans.back()[1] = max(ans.back()[1], cur[1]);
-        }
-    }
-
-    return ans;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : intervals
-Think about   : sort and merge
-Main action   : compare start with current end
-Core idea     : overlap extends interval
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-product-of-array-except-self"></a>
-
-## 29. Medium — Product of Array Except Self
-
-**Platform:** LeetCode  
-**Link:** [Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/)  
-**Pattern:** `prefix suffix`  
-**Form:** `array scan`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **array scan**
-- Pattern: **prefix suffix**
-- Tactic: **two passes**
-- Core intuition: answer is left product times right product
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **prefix suffix** because it keeps only the useful information needed for future operations.
-- **Main Trick:** two passes.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: prefix suffix
-// Form: array scan
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: two passes.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : array scan
-Think about   : prefix suffix
-Main action   : two passes
-Core idea     : answer is left product times right product
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-first-missing-positive"></a>
-
-## 30. Medium — Group Anagrams
-
-**Platform:** LeetCode  
-**Link:** [Group Anagrams](https://leetcode.com/problems/group-anagrams/)  
-**Pattern:** `map by key`  
-**Form:** `grouping`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **grouping**
-- Pattern: **map by key**
-- Tactic: **sorted string as key**
-- Core intuition: anagrams share canonical form
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **map by key** because it keeps only the useful information needed for future operations.
-- **Main Trick:** sorted string as key.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : grouping
-Think about   : map by key
-Main action   : sorted string as key
-Core idea     : anagrams share canonical form
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-longest-substring-without-repeating-characters"></a>
-
-## 31. Medium — Longest Substring Without Repeating Characters
-
-**Platform:** LeetCode  
-**Link:** [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/)  
-**Pattern:** `sliding set/map`  
-**Form:** `window`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **window**
-- Pattern: **sliding set/map**
-- Tactic: **move left past duplicate**
-- Core intuition: window invariant has unique chars
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sliding set/map** because it keeps only the useful information needed for future operations.
-- **Main Trick:** move left past duplicate.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : window
-Think about   : sliding set/map
-Main action   : move left past duplicate
-Core idea     : window invariant has unique chars
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-minimum-window-substring"></a>
-
-## 32. Medium — Minimum Window Substring
-
-**Platform:** LeetCode  
-**Link:** [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/)  
-**Pattern:** `map counts`  
-**Form:** `covering window`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **covering window**
-- Pattern: **map counts**
-- Tactic: **expand then shrink**
-- Core intuition: smallest valid window after coverage
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **map counts** because it keeps only the useful information needed for future operations.
-- **Main Trick:** expand then shrink.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : covering window
-Think about   : map counts
-Main action   : expand then shrink
-Core idea     : smallest valid window after coverage
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-decode-string"></a>
-
-## 33. Medium — Decode String
-
-**Platform:** LeetCode  
-**Link:** [Decode String](https://leetcode.com/problems/decode-string/)  
-**Pattern:** `stack`  
-**Form:** `nested parsing`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **nested parsing**
-- Pattern: **stack**
-- Tactic: **save previous state**
-- Core intuition: brackets nest last-in-first-out
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **stack** because it keeps only the useful information needed for future operations.
-- **Main Trick:** save previous state.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: stack
-// Form: nested parsing
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: save previous state.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : nested parsing
-Think about   : stack
-Main action   : save previous state
-Core idea     : brackets nest last-in-first-out
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-text-justification"></a>
-
-## 34. Medium — Min Stack
-
-**Platform:** LeetCode  
-**Link:** [Min Stack](https://leetcode.com/problems/min-stack/)  
-**Pattern:** `auxiliary stack`  
-**Form:** `stack with min`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **stack with min**
-- Pattern: **auxiliary stack**
-- Tactic: **store current min**
-- Core intuition: min must rollback with pop
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **auxiliary stack** because it keeps only the useful information needed for future operations.
-- **Main Trick:** store current min.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: auxiliary stack
-// Form: stack with min
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: store current min.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : stack with min
-Think about   : auxiliary stack
-Main action   : store current min
-Core idea     : min must rollback with pop
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-evaluate-reverse-polish-notation"></a>
-
-## 35. Medium — Evaluate Reverse Polish Notation
-
-**Platform:** LeetCode  
-**Link:** [Evaluate Reverse Polish Notation](https://leetcode.com/problems/evaluate-reverse-polish-notation/)  
-**Pattern:** `stack`  
-**Form:** `expression eval`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **expression eval**
-- Pattern: **stack**
-- Tactic: **apply operator to top two**
-- Core intuition: postfix puts operands before operator
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **stack** because it keeps only the useful information needed for future operations.
-- **Main Trick:** apply operator to top two.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: stack
-// Form: expression eval
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: apply operator to top two.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : expression eval
-Think about   : stack
-Main action   : apply operator to top two
-Core idea     : postfix puts operands before operator
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-daily-temperatures"></a>
-
-## 36. Medium — Daily Temperatures
-
-**Platform:** LeetCode  
-**Link:** [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/)  
-**Pattern:** `monotonic stack`  
-**Form:** `next greater`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **next greater**
-- Pattern: **monotonic stack**
-- Tactic: **store indices**
-- Core intuition: warmer day resolves colder days
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **monotonic stack** because it keeps only the useful information needed for future operations.
-- **Main Trick:** store indices.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-vector<int> dailyTemperatures(vector<int>& t) {
-    int n = t.size();
-    vector<int> ans(n, 0);
-    stack<int> st;
-
-    for (int i = 0; i < n; i++) {
-        while (!st.empty() && t[i] > t[st.top()]) {
-            int j = st.top();
-            st.pop();
-            ans[j] = i - j;
-        }
-
-        st.push(i);
-    }
-
-    return ans;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : next greater
-Think about   : monotonic stack
-Main action   : store indices
-Core idea     : warmer day resolves colder days
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-basic-calculator"></a>
-
-## 37. Medium — Rotting Oranges
-
-**Platform:** LeetCode  
-**Link:** [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/)  
-**Pattern:** `multi-source queue`  
-**Form:** `grid BFS`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **grid BFS**
-- Pattern: **multi-source queue**
-- Tactic: **start all rotten**
-- Core intuition: infection spreads by layers
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **multi-source queue** because it keeps only the useful information needed for future operations.
-- **Main Trick:** start all rotten.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: multi-source queue
-// Form: grid BFS
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: start all rotten.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : grid BFS
-Think about   : multi-source queue
-Main action   : start all rotten
-Core idea     : infection spreads by layers
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-number-of-islands"></a>
-
-## 38. Medium — Number of Islands
-
-**Platform:** LeetCode  
-**Link:** [Number of Islands](https://leetcode.com/problems/number-of-islands/)  
-**Pattern:** `BFS/DFS queue`  
-**Form:** `flood fill`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **flood fill**
-- Pattern: **BFS/DFS queue**
-- Tactic: **mark visited**
-- Core intuition: each BFS consumes one island
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **BFS/DFS queue** because it keeps only the useful information needed for future operations.
-- **Main Trick:** mark visited.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: BFS/DFS queue
-// Form: flood fill
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: mark visited.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : flood fill
-Think about   : BFS/DFS queue
-Main action   : mark visited
-Core idea     : each BFS consumes one island
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-open-the-lock"></a>
-
-## 39. Medium — Open the Lock
-
-**Platform:** LeetCode  
-**Link:** [Open the Lock](https://leetcode.com/problems/open-the-lock/)  
-**Pattern:** `queue states`  
-**Form:** `state BFS`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **state BFS**
-- Pattern: **queue states**
-- Tactic: **generate neighbours**
-- Core intuition: shortest moves in unweighted state graph
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **queue states** because it keeps only the useful information needed for future operations.
-- **Main Trick:** generate neighbours.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: queue states
-// Form: state BFS
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: generate neighbours.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : state BFS
-Think about   : queue states
-Main action   : generate neighbours
-Core idea     : shortest moves in unweighted state graph
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-sliding-puzzle"></a>
-
-## 40. Medium — Kth Largest Element in an Array
-
-**Platform:** LeetCode  
-**Link:** [Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/)  
-**Pattern:** `heap/quickselect`  
-**Form:** `kth largest`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **kth largest**
-- Pattern: **heap/quickselect**
-- Tactic: **keep k largest**
-- Core intuition: kth is min of top k
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **heap/quickselect** because it keeps only the useful information needed for future operations.
-- **Main Trick:** keep k largest.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : kth largest
-Think about   : heap/quickselect
-Main action   : keep k largest
-Core idea     : kth is min of top k
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-top-k-frequent-elements"></a>
-
-## 41. Medium — Top K Frequent Elements
-
-**Platform:** LeetCode  
-**Link:** [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/)  
-**Pattern:** `map + heap`  
-**Form:** `frequency top k`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **frequency top k**
-- Pattern: **map + heap**
-- Tactic: **heap by count**
-- Core intuition: frequency decides rank
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **map + heap** because it keeps only the useful information needed for future operations.
-- **Main Trick:** heap by count.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-vector<int> topKFrequent(vector<int>& nums, int k) {
-    unordered_map<int,int> freq;
-    for (int x : nums) freq[x]++;
-
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
-
-    for (auto [x, c] : freq) {
-        pq.push({c, x});
-
-        if ((int)pq.size() > k) pq.pop();
-    }
-
-    vector<int> ans;
-
-    while (!pq.empty()) {
-        ans.push_back(pq.top().second);
-        pq.pop();
-    }
-
-    return ans;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : frequency top k
-Think about   : map + heap
-Main action   : heap by count
-Core idea     : frequency decides rank
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-k-closest-points-to-origin"></a>
-
-## 42. Medium — K Closest Points to Origin
-
-**Platform:** LeetCode  
-**Link:** [K Closest Points to Origin](https://leetcode.com/problems/k-closest-points-to-origin/)  
-**Pattern:** `heap`  
-**Form:** `top k by distance`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **top k by distance**
-- Pattern: **heap**
-- Tactic: **compare squared distance**
-- Core intuition: no need sqrt
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **heap** because it keeps only the useful information needed for future operations.
-- **Main Trick:** compare squared distance.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : top k by distance
-Think about   : heap
-Main action   : compare squared distance
-Core idea     : no need sqrt
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-task-scheduler"></a>
-
-## 43. Medium — Task Scheduler
-
-**Platform:** LeetCode  
-**Link:** [Task Scheduler](https://leetcode.com/problems/task-scheduler/)  
-**Pattern:** `max heap + cooldown`  
-**Form:** `greedy scheduling`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **greedy scheduling**
-- Pattern: **max heap + cooldown**
-- Tactic: **always use most frequent**
-- Core intuition: reduce future bottleneck
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **max heap + cooldown** because it keeps only the useful information needed for future operations.
-- **Main Trick:** always use most frequent.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : greedy scheduling
-Think about   : max heap + cooldown
-Main action   : always use most frequent
-Core idea     : reduce future bottleneck
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-find-median-from-data-stream"></a>
-
-## 44. Medium — My Calendar I
-
-**Platform:** LeetCode  
-**Link:** [My Calendar I](https://leetcode.com/problems/my-calendar-i/)  
-**Pattern:** `set ordered intervals`  
-**Form:** `interval booking`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Convert to intervals/events"]
-    A1["Sort by time/start"]
-    A0 --> A1
-    A2["Scan in order"]
-    A1 --> A2
-    A3["Maintain active/merged state"]
-    A2 --> A3
-    A4["Update answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **interval booking**
-- Pattern: **set ordered intervals**
-- Tactic: **check prev and next**
-- Core intuition: only neighbours can overlap
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **set ordered intervals** because it keeps only the useful information needed for future operations.
-- **Main Trick:** check prev and next.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : interval booking
-Think about   : set ordered intervals
-Main action   : check prev and next
-Core idea     : only neighbours can overlap
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-exam-room"></a>
-
-## 45. Medium — Exam Room
-
-**Platform:** LeetCode  
-**Link:** [Exam Room](https://leetcode.com/problems/exam-room/)  
-**Pattern:** `set`  
-**Form:** `dynamic gaps`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **dynamic gaps**
-- Pattern: **set**
-- Tactic: **maintain occupied seats**
-- Core intuition: best seat depends on gaps
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **set** because it keeps only the useful information needed for future operations.
-- **Main Trick:** maintain occupied seats.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: set
-// Form: dynamic gaps
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: maintain occupied seats.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : dynamic gaps
-Think about   : set
-Main action   : maintain occupied seats
-Core idea     : best seat depends on gaps
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-time-based-key-value-store"></a>
-
-## 46. Medium — Time Based Key-Value Store
-
-**Platform:** LeetCode  
-**Link:** [Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/)  
-**Pattern:** `map/vector`  
-**Form:** `ordered versions`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **ordered versions**
-- Pattern: **map/vector**
-- Tactic: **upper_bound timestamp**
-- Core intuition: latest previous value is answer
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **map/vector** because it keeps only the useful information needed for future operations.
-- **Main Trick:** upper_bound timestamp.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : ordered versions
-Think about   : map/vector
-Main action   : upper_bound timestamp
-Core idea     : latest previous value is answer
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-my-calendar-iii"></a>
-
-## 47. Medium — Subarray Sum Equals K
-
-**Platform:** LeetCode  
-**Link:** [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)  
-**Pattern:** `map frequency`  
-**Form:** `prefix equality`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **prefix equality**
-- Pattern: **map frequency**
-- Tactic: **count previous prefix**
-- Core intuition: equal difference gives sum k
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **map frequency** because it keeps only the useful information needed for future operations.
-- **Main Trick:** count previous prefix.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-long long countSubarraySumK(vector<int>& a, long long k) {
-    unordered_map<long long,long long> freq;
-    freq[0] = 1;
-
-    long long pref = 0;
-    long long ans = 0;
-
-    for (int x : a) {
-        pref += x;
-        ans += freq[pref - k];
-        freq[pref]++;
-    }
-
-    return ans;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : prefix equality
-Think about   : map frequency
-Main action   : count previous prefix
-Core idea     : equal difference gives sum k
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-longest-consecutive-sequence"></a>
-
-## 48. Medium — Longest Consecutive Sequence
-
-**Platform:** LeetCode  
-**Link:** [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/)  
-**Pattern:** `unordered_set`  
-**Form:** `set lookup`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **set lookup**
-- Pattern: **unordered_set**
-- Tactic: **start only at sequence beginning**
-- Core intuition: each number processed once
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **unordered_set** because it keeps only the useful information needed for future operations.
-- **Main Trick:** start only at sequence beginning.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: unordered_set
-// Form: set lookup
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: start only at sequence beginning.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : set lookup
-Think about   : unordered_set
-Main action   : start only at sequence beginning
-Core idea     : each number processed once
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-lru-cache"></a>
-
-## 49. Medium — LRU Cache
-
-**Platform:** LeetCode  
-**Link:** [LRU Cache](https://leetcode.com/problems/lru-cache/)  
-**Pattern:** `list + unordered_map`  
-**Form:** `design`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **design**
-- Pattern: **list + unordered_map**
-- Tactic: **map key to list iterator**
-- Core intuition: O(1) move to front
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **list + unordered_map** because it keeps only the useful information needed for future operations.
-- **Main Trick:** map key to list iterator.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-class LRUCache {
-    int cap;
-    list<pair<int,int>> order;
-    unordered_map<int, list<pair<int,int>>::iterator> where;
-
-public:
-    LRUCache(int capacity) : cap(capacity) {}
-
-    int get(int key) {
-        if (!where.count(key)) return -1;
-
-        auto it = where[key];
-        int value = it->second;
-
-        order.erase(it);
-        order.push_front({key, value});
-        where[key] = order.begin();
-
-        return value;
-    }
-
-    void put(int key, int value) {
-        if (where.count(key)) {
-            order.erase(where[key]);
-        } else if ((int)order.size() == cap) {
-            where.erase(order.back().first);
-            order.pop_back();
-        }
-
-        order.push_front({key, value});
-        where[key] = order.begin();
-    }
-};
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : design
-Think about   : list + unordered_map
-Main action   : map key to list iterator
-Core idea     : O(1) move to front
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-all-o-one-data-structure"></a>
-
-## 50. Medium — Non-overlapping Intervals
-
-**Platform:** LeetCode  
-**Link:** [Non-overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/)  
-**Pattern:** `greedy sort by end`  
-**Form:** `interval removal`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Convert to intervals/events"]
-    A1["Sort by time/start"]
-    A0 --> A1
-    A2["Scan in order"]
-    A1 --> A2
-    A3["Maintain active/merged state"]
-    A2 --> A3
-    A4["Update answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **interval removal**
-- Pattern: **greedy sort by end**
-- Tactic: **keep earliest ending**
-- Core intuition: more space for future intervals
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **greedy sort by end** because it keeps only the useful information needed for future operations.
-- **Main Trick:** keep earliest ending.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : interval removal
-Think about   : greedy sort by end
-Main action   : keep earliest ending
-Core idea     : more space for future intervals
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-minimum-number-of-arrows-to-burst-balloons"></a>
-
-## 51. Medium — Minimum Number of Arrows to Burst Balloons
-
-**Platform:** LeetCode  
-**Link:** [Minimum Number of Arrows to Burst Balloons](https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/)  
-**Pattern:** `sort by end`  
-**Form:** `interval stabbing`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Convert to intervals/events"]
-    A1["Sort by time/start"]
-    A0 --> A1
-    A2["Scan in order"]
-    A1 --> A2
-    A3["Maintain active/merged state"]
-    A2 --> A3
-    A4["Update answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **interval stabbing**
-- Pattern: **sort by end**
-- Tactic: **shoot at end**
-- Core intuition: one arrow covers all overlapping intervals
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort by end** because it keeps only the useful information needed for future operations.
-- **Main Trick:** shoot at end.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : interval stabbing
-Think about   : sort by end
-Main action   : shoot at end
-Core idea     : one arrow covers all overlapping intervals
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-queue-reconstruction-by-height"></a>
-
-## 52. Medium — Queue Reconstruction by Height
-
-**Platform:** LeetCode  
-**Link:** [Queue Reconstruction by Height](https://leetcode.com/problems/queue-reconstruction-by-height/)  
-**Pattern:** `sort + insert`  
-**Form:** `custom sorting`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **custom sorting**
-- Pattern: **sort + insert**
-- Tactic: **tall first**
-- Core intuition: shorter people do not affect taller count
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort + insert** because it keeps only the useful information needed for future operations.
-- **Main Trick:** tall first.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : custom sorting
-Think about   : sort + insert
-Main action   : tall first
-Core idea     : shorter people do not affect taller count
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-largest-number"></a>
-
-## 53. Medium — Largest Number
-
-**Platform:** LeetCode  
-**Link:** [Largest Number](https://leetcode.com/problems/largest-number/)  
-**Pattern:** `custom string sort`  
-**Form:** `comparator`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **comparator**
-- Pattern: **custom string sort**
-- Tactic: **compare ab vs ba**
-- Core intuition: best concatenation order
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **custom string sort** because it keeps only the useful information needed for future operations.
-- **Main Trick:** compare ab vs ba.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : comparator
-Think about   : custom string sort
-Main action   : compare ab vs ba
-Core idea     : best concatenation order
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-russian-doll-envelopes"></a>
-
-## 54. Medium — 3Sum
-
-**Platform:** LeetCode  
-**Link:** [3Sum](https://leetcode.com/problems/3sum/)  
-**Pattern:** `sort + two pointers`  
-**Form:** `sorted triples`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort or initialize left/right"]
-    A1["Move pointers by condition"]
-    A0 --> A1
-    A2["Skip duplicates if needed"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Continue until pointers cross"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **sorted triples**
-- Pattern: **sort + two pointers**
-- Tactic: **skip duplicates**
-- Core intuition: fixing one reduces to two sum
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort + two pointers** because it keeps only the useful information needed for future operations.
-- **Main Trick:** skip duplicates.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-vector<vector<int>> threeSum(vector<int>& nums) {
-    sort(nums.begin(), nums.end());
-
-    vector<vector<int>> ans;
-    int n = nums.size();
-
-    for (int i = 0; i < n; i++) {
-        if (i && nums[i] == nums[i - 1]) continue;
-
-        int l = i + 1, r = n - 1;
-
-        while (l < r) {
-            long long sum = 1LL * nums[i] + nums[l] + nums[r];
-
-            if (sum == 0) {
-                ans.push_back({nums[i], nums[l], nums[r]});
-                l++;
-                r--;
-
-                while (l < r && nums[l] == nums[l - 1]) l++;
-                while (l < r && nums[r] == nums[r + 1]) r--;
-            } else if (sum < 0) {
-                l++;
-            } else {
-                r--;
+vector<int> primes;
+vector<bool> isComposite;
+
+void sieve(int n) {
+    isComposite.assign(n + 1, false);
+    for (int i = 2; i <= n; i++) {
+        if (!isComposite[i]) {
+            primes.push_back(i);
+            if ((long long)i * i <= n) {
+                for (long long j = 1LL * i * i; j <= n; j += i) {
+                    isComposite[(int)j] = true;
+                }
             }
         }
     }
-
-    return ans;
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : sorted triples
-Think about   : sort + two pointers
-Main action   : skip duplicates
-Core idea     : fixing one reduces to two sum
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-4sum"></a>
-
-## 55. Medium — 4Sum
-
-**Platform:** LeetCode  
-**Link:** [4Sum](https://leetcode.com/problems/4sum/)  
-**Pattern:** `nested fix + two pointers`  
-**Form:** `sorted quadruples`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort or initialize left/right"]
-    A1["Move pointers by condition"]
-    A0 --> A1
-    A2["Skip duplicates if needed"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Continue until pointers cross"]
-    A3 --> A4
-```
+### Smallest Prime Factor Helper
 
 <details>
-<summary>Hints</summary>
-
-- Form: **sorted quadruples**
-- Pattern: **nested fix + two pointers**
-- Tactic: **skip duplicates**
-- Core intuition: reduce dimension stepwise
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **nested fix + two pointers** because it keeps only the useful information needed for future operations.
-- **Main Trick:** skip duplicates.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
+<summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : sorted quadruples
-Think about   : nested fix + two pointers
-Main action   : skip duplicates
-Core idea     : reduce dimension stepwise
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-find-k-closest-elements"></a>
-
-## 56. Medium — Find K Closest Elements
-
-**Platform:** LeetCode  
-**Link:** [Find K Closest Elements](https://leetcode.com/problems/find-k-closest-elements/)  
-**Pattern:** `lower_bound or binary`  
-**Form:** `sorted window`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort / use ordered structure"]
-    A1["Define target condition"]
-    A0 --> A1
-    A2["Use lower_bound / binary search"]
-    A1 --> A2
-    A3["Check candidate index"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **sorted window**
-- Pattern: **lower_bound or binary**
-- Tactic: **choose window**
-- Core intuition: answer is contiguous around x
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **lower_bound or binary** because it keeps only the useful information needed for future operations.
-- **Main Trick:** choose window.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : sorted window
-Think about   : lower_bound or binary
-Main action   : choose window
-Core idea     : answer is contiguous around x
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-median-of-two-sorted-arrays"></a>
-
-## 57. Medium — Find First and Last Position of Element in Sorted Array
-
-**Platform:** LeetCode  
-**Link:** [Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)  
-**Pattern:** `lower and upper bound`  
-**Form:** `range equal`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **range equal**
-- Pattern: **lower and upper bound**
-- Tactic: **endpoints**
-- Core intuition: equal block is contiguous
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **lower and upper bound** because it keeps only the useful information needed for future operations.
-- **Main Trick:** endpoints.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: lower and upper bound
-// Form: range equal
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: endpoints.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : range equal
-Think about   : lower and upper bound
-Main action   : endpoints
-Core idea     : equal block is contiguous
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-search-a-2d-matrix"></a>
-
-## 58. Medium — Search a 2D Matrix
-
-**Platform:** LeetCode  
-**Link:** [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/)  
-**Pattern:** `binary search`  
-**Form:** `flattened search`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort / use ordered structure"]
-    A1["Define target condition"]
-    A0 --> A1
-    A2["Use lower_bound / binary search"]
-    A1 --> A2
-    A3["Check candidate index"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **flattened search**
-- Pattern: **binary search**
-- Tactic: **index mapping**
-- Core intuition: matrix acts like sorted array
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **binary search** because it keeps only the useful information needed for future operations.
-- **Main Trick:** index mapping.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : flattened search
-Think about   : binary search
-Main action   : index mapping
-Core idea     : matrix acts like sorted array
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-successful-pairs-of-spells-and-potions"></a>
-
-## 59. Medium — Successful Pairs of Spells and Potions
-
-**Platform:** LeetCode  
-**Link:** [Successful Pairs of Spells and Potions](https://leetcode.com/problems/successful-pairs-of-spells-and-potions/)  
-**Pattern:** `sort + lower_bound`  
-**Form:** `count threshold`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort / use ordered structure"]
-    A1["Define target condition"]
-    A0 --> A1
-    A2["Use lower_bound / binary search"]
-    A1 --> A2
-    A3["Check candidate index"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **count threshold**
-- Pattern: **sort + lower_bound**
-- Tactic: **need ceil(success/spell)**
-- Core intuition: all later potions work
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort + lower_bound** because it keeps only the useful information needed for future operations.
-- **Main Trick:** need ceil(success/spell).
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : count threshold
-Think about   : sort + lower_bound
-Main action   : need ceil(success/spell)
-Core idea     : all later potions work
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-count-of-smaller-numbers-after-self"></a>
-
-## 60. Medium — Online Stock Span
-
-**Platform:** LeetCode  
-**Link:** [Online Stock Span](https://leetcode.com/problems/online-stock-span/)  
-**Pattern:** `compressed stack`  
-**Form:** `previous greater`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **previous greater**
-- Pattern: **compressed stack**
-- Tactic: **store price and span**
-- Core intuition: merge weaker previous days
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **compressed stack** because it keeps only the useful information needed for future operations.
-- **Main Trick:** store price and span.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: compressed stack
-// Form: previous greater
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: store price and span.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : previous greater
-Think about   : compressed stack
-Main action   : store price and span
-Core idea     : merge weaker previous days
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-sum-of-subarray-minimums"></a>
-
-## 61. Medium — Sum of Subarray Minimums
-
-**Platform:** LeetCode  
-**Link:** [Sum of Subarray Minimums](https://leetcode.com/problems/sum-of-subarray-minimums/)  
-**Pattern:** `prev/next smaller`  
-**Form:** `contribution`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **contribution**
-- Pattern: **prev/next smaller**
-- Tactic: **count span**
-- Core intuition: each value contributes as minimum
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **prev/next smaller** because it keeps only the useful information needed for future operations.
-- **Main Trick:** count span.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: prev/next smaller
-// Form: contribution
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: count span.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : contribution
-Think about   : prev/next smaller
-Main action   : count span
-Core idea     : each value contributes as minimum
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-maximal-rectangle"></a>
-
-## 62. Medium — Sliding Window Maximum
-
-**Platform:** LeetCode  
-**Link:** [Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/)  
-**Pattern:** `monotonic deque`  
-**Form:** `window max`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Move window/index"]
-    A1["Remove expired front"]
-    A0 --> A1
-    A2["Remove worse back values"]
-    A1 --> A2
-    A3["Push current index"]
-    A2 --> A3
-    A4["Front gives answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **window max**
-- Pattern: **monotonic deque**
-- Tactic: **remove weaker old values**
-- Core intuition: front always best
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **monotonic deque** because it keeps only the useful information needed for future operations.
-- **Main Trick:** remove weaker old values.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-    deque<int> dq;
-    vector<int> ans;
-
-    for (int i = 0; i < (int)nums.size(); i++) {
-        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
-        while (!dq.empty() && nums[dq.back()] <= nums[i]) dq.pop_back();
-
-        dq.push_back(i);
-
-        if (i >= k - 1) ans.push_back(nums[dq.front()]);
-    }
-
-    return ans;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : window max
-Think about   : monotonic deque
-Main action   : remove weaker old values
-Core idea     : front always best
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit"></a>
-
-## 63. Medium — Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit
-
-**Platform:** LeetCode  
-**Link:** [Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit](https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/)  
-**Pattern:** `two deques`  
-**Form:** `window min max`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Move window/index"]
-    A1["Remove expired front"]
-    A0 --> A1
-    A2["Remove worse back values"]
-    A1 --> A2
-    A3["Push current index"]
-    A2 --> A3
-    A4["Front gives answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **window min max**
-- Pattern: **two deques**
-- Tactic: **maintain max-min**
-- Core intuition: valid window bounded by extremes
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two deques** because it keeps only the useful information needed for future operations.
-- **Main Trick:** maintain max-min.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: two deques
-// Form: window min max
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: maintain max-min.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : window min max
-Think about   : two deques
-Main action   : maintain max-min
-Core idea     : valid window bounded by extremes
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-constrained-subsequence-sum"></a>
-
-## 64. Medium — Constrained Subsequence Sum
-
-**Platform:** LeetCode  
-**Link:** [Constrained Subsequence Sum](https://leetcode.com/problems/constrained-subsequence-sum/)  
-**Pattern:** `monotonic deque`  
-**Form:** `DP window max`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Move window/index"]
-    A1["Remove expired front"]
-    A0 --> A1
-    A2["Remove worse back values"]
-    A1 --> A2
-    A3["Push current index"]
-    A2 --> A3
-    A4["Front gives answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **DP window max**
-- Pattern: **monotonic deque**
-- Tactic: **keep best dp in range**
-- Core intuition: transition needs max previous
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **monotonic deque** because it keeps only the useful information needed for future operations.
-- **Main Trick:** keep best dp in range.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-vector<int> windowMax(vector<int>& a, int k) {
-    deque<int> dq;
-    vector<int> ans;
-
-    for (int i = 0; i < (int)a.size(); i++) {
-        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
-        while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back();
-
-        dq.push_back(i);
-
-        if (i >= k - 1) ans.push_back(a[dq.front()]);
-    }
-
-    return ans;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : DP window max
-Think about   : monotonic deque
-Main action   : keep best dp in range
-Core idea     : transition needs max previous
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-shortest-subarray-with-sum-at-least-k"></a>
-
-## 65. Medium — Insert Interval
-
-**Platform:** LeetCode  
-**Link:** [Insert Interval](https://leetcode.com/problems/insert-interval/)  
-**Pattern:** `three phases`  
-**Form:** `insert merge`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **insert merge**
-- Pattern: **three phases**
-- Tactic: **before overlap after**
-- Core intuition: only overlap group changes
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **three phases** because it keeps only the useful information needed for future operations.
-- **Main Trick:** before overlap after.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: three phases
-// Form: insert merge
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: before overlap after.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : insert merge
-Think about   : three phases
-Main action   : before overlap after
-Core idea     : only overlap group changes
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-meeting-rooms-ii"></a>
-
-## 66. Medium — Meeting Rooms II
-
-**Platform:** LeetCode  
-**Link:** [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/)  
-**Pattern:** `min heap or sweep`  
-**Form:** `room count`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **room count**
-- Pattern: **min heap or sweep**
-- Tactic: **active meetings**
-- Core intuition: max simultaneous rooms needed
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **min heap or sweep** because it keeps only the useful information needed for future operations.
-- **Main Trick:** active meetings.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : room count
-Think about   : min heap or sweep
-Main action   : active meetings
-Core idea     : max simultaneous rooms needed
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-car-pooling"></a>
-
-## 67. Medium — Car Pooling
-
-**Platform:** LeetCode  
-**Link:** [Car Pooling](https://leetcode.com/problems/car-pooling/)  
-**Pattern:** `sweep/difference`  
-**Form:** `range events`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Convert to intervals/events"]
-    A1["Sort by time/start"]
-    A0 --> A1
-    A2["Scan in order"]
-    A1 --> A2
-    A3["Maintain active/merged state"]
-    A2 --> A3
-    A4["Update answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **range events**
-- Pattern: **sweep/difference**
-- Tactic: **passenger delta**
-- Core intuition: active passengers must fit capacity
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sweep/difference** because it keeps only the useful information needed for future operations.
-- **Main Trick:** passenger delta.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : range events
-Think about   : sweep/difference
-Main action   : passenger delta
-Core idea     : active passengers must fit capacity
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-employee-free-time"></a>
-
-## 68. Medium — Reverse Pairs
-
-**Platform:** LeetCode  
-**Link:** [Reverse Pairs](https://leetcode.com/problems/reverse-pairs/)  
-**Pattern:** `merge/Fenwick`  
-**Form:** `pair count`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Compress/index values"]
-    A1["Process in chosen order"]
-    A0 --> A1
-    A2["Query rank/count/kth"]
-    A1 --> A2
-    A3["Update structure"]
-    A2 --> A3
-    A4["Store answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **pair count**
-- Pattern: **merge/Fenwick**
-- Tactic: **compress values and doubled values**
-- Core intuition: count previous bigger than twice
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **merge/Fenwick** because it keeps only the useful information needed for future operations.
-- **Main Trick:** compress values and doubled values.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: merge/Fenwick
-// Form: pair count
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: compress values and doubled values.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : pair count
-Think about   : merge/Fenwick
-Main action   : compress values and doubled values
-Core idea     : count previous bigger than twice
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-create-sorted-array-through-instructions"></a>
-
-## 69. Medium — Partition Equal Subset Sum
-
-**Platform:** LeetCode  
-**Link:** [Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/)  
-**Pattern:** `bitset DP`  
-**Form:** `subset sum`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **subset sum**
-- Pattern: **bitset DP**
-- Tactic: **shift by number**
-- Core intuition: possible sums move by x
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **bitset DP** because it keeps only the useful information needed for future operations.
-- **Main Trick:** shift by number.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: bitset DP
-// Form: subset sum
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: shift by number.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : subset sum
-Think about   : bitset DP
-Main action   : shift by number
-Core idea     : possible sums move by x
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-last-stone-weight-ii"></a>
-
-## 70. Medium — Last Stone Weight II
-
-**Platform:** LeetCode  
-**Link:** [Last Stone Weight II](https://leetcode.com/problems/last-stone-weight-ii/)  
-**Pattern:** `bitset DP`  
-**Form:** `subset balance`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **subset balance**
-- Pattern: **bitset DP**
-- Tactic: **find closest half**
-- Core intuition: split stones into two groups
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **bitset DP** because it keeps only the useful information needed for future operations.
-- **Main Trick:** find closest half.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: bitset DP
-// Form: subset balance
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: find closest half.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : subset balance
-Think about   : bitset DP
-Main action   : find closest half
-Core idea     : split stones into two groups
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-money-sums"></a>
-
-# Hard Problems
-
-## 71. Hard — First Missing Positive
-
-**Platform:** LeetCode  
-**Link:** [First Missing Positive](https://leetcode.com/problems/first-missing-positive/)  
-**Pattern:** `cyclic sort`  
-**Form:** `index placement`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **index placement**
-- Pattern: **cyclic sort**
-- Tactic: **put x at x minus one**
-- Core intuition: array index acts as hash
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **cyclic sort** because it keeps only the useful information needed for future operations.
-- **Main Trick:** put x at x minus one.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : index placement
-Think about   : cyclic sort
-Main action   : put x at x minus one
-Core idea     : array index acts as hash
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-trapping-rain-water"></a>
-
-## 72. Hard — Trapping Rain Water
-
-**Platform:** LeetCode  
-**Link:** [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/)  
-**Pattern:** `two pointers or prefix max`  
-**Form:** `boundary arrays`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort or initialize left/right"]
-    A1["Move pointers by condition"]
-    A0 --> A1
-    A2["Skip duplicates if needed"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Continue until pointers cross"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **boundary arrays**
-- Pattern: **two pointers or prefix max**
-- Tactic: **left max right max**
-- Core intuition: water depends on smaller wall
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two pointers or prefix max** because it keeps only the useful information needed for future operations.
-- **Main Trick:** left max right max.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : boundary arrays
-Think about   : two pointers or prefix max
-Main action   : left max right max
-Core idea     : water depends on smaller wall
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-collecting-numbers"></a>
-
-## 73. Hard — Text Justification
-
-**Platform:** LeetCode  
-**Link:** [Text Justification](https://leetcode.com/problems/text-justification/)  
-**Pattern:** `vector group`  
-**Form:** `formatting`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **formatting**
-- Pattern: **vector group**
-- Tactic: **distribute spaces**
-- Core intuition: each line is greedy group
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **vector group** because it keeps only the useful information needed for future operations.
-- **Main Trick:** distribute spaces.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: vector group
-// Form: formatting
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: distribute spaces.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : formatting
-Think about   : vector group
-Main action   : distribute spaces
-Core idea     : each line is greedy group
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-substring-with-concatenation-of-all-words"></a>
-
-## 74. Hard — Substring with Concatenation of All Words
-
-**Platform:** LeetCode  
-**Link:** [Substring with Concatenation of All Words](https://leetcode.com/problems/substring-with-concatenation-of-all-words/)  
-**Pattern:** `hash map`  
-**Form:** `fixed word window`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **fixed word window**
-- Pattern: **hash map**
-- Tactic: **scan by offset**
-- Core intuition: words align by length
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **hash map** because it keeps only the useful information needed for future operations.
-- **Main Trick:** scan by offset.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : fixed word window
-Think about   : hash map
-Main action   : scan by offset
-Core idea     : words align by length
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-string-matching"></a>
-
-## 75. Hard — Basic Calculator
-
-**Platform:** LeetCode  
-**Link:** [Basic Calculator](https://leetcode.com/problems/basic-calculator/)  
-**Pattern:** `stack/sign`  
-**Form:** `expression parsing`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **expression parsing**
-- Pattern: **stack/sign**
-- Tactic: **push context at parenthesis**
-- Core intuition: parentheses change sign context
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **stack/sign** because it keeps only the useful information needed for future operations.
-- **Main Trick:** push context at parenthesis.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: stack/sign
-// Form: expression parsing
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: push context at parenthesis.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : expression parsing
-Think about   : stack/sign
-Main action   : push context at parenthesis
-Core idea     : parentheses change sign context
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-largest-rectangle-in-histogram"></a>
-
-## 76. Hard — Largest Rectangle in Histogram
-
-**Platform:** LeetCode  
-**Link:** [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/)  
-**Pattern:** `monotonic stack`  
-**Form:** `nearest smaller`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **nearest smaller**
-- Pattern: **monotonic stack**
-- Tactic: **pop when height drops**
-- Core intuition: popped bar finds maximal width
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **monotonic stack** because it keeps only the useful information needed for future operations.
-- **Main Trick:** pop when height drops.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int largestRectangleArea(vector<int>& h) {
-    stack<int> st;
-    int ans = 0;
-    int n = h.size();
-
-    for (int i = 0; i <= n; i++) {
-        int cur = (i == n ? 0 : h[i]);
-
-        while (!st.empty() && h[st.top()] > cur) {
-            int height = h[st.top()];
-            st.pop();
-
-            int left = st.empty() ? -1 : st.top();
-            int width = i - left - 1;
-
-            ans = max(ans, height * width);
-        }
-
-        st.push(i);
-    }
-
-    return ans;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : nearest smaller
-Think about   : monotonic stack
-Main action   : pop when height drops
-Core idea     : popped bar finds maximal width
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-nearest-smaller-values"></a>
-
-## 77. Hard — Sliding Puzzle
-
-**Platform:** LeetCode  
-**Link:** [Sliding Puzzle](https://leetcode.com/problems/sliding-puzzle/)  
-**Pattern:** `queue + set`  
-**Form:** `state BFS`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **state BFS**
-- Pattern: **queue + set**
-- Tactic: **encode board string**
-- Core intuition: each move is one edge
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **queue + set** because it keeps only the useful information needed for future operations.
-- **Main Trick:** encode board string.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: queue + set
-// Form: state BFS
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: encode board string.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : state BFS
-Think about   : queue + set
-Main action   : encode board string
-Core idea     : each move is one edge
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-labyrinth"></a>
-
-## 78. Hard — Find Median from Data Stream
-
-**Platform:** LeetCode  
-**Link:** [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/)  
-**Pattern:** `two heaps`  
-**Form:** `dynamic median`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **dynamic median**
-- Pattern: **two heaps**
-- Tactic: **balance sizes**
-- Core intuition: median lies between halves
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two heaps** because it keeps only the useful information needed for future operations.
-- **Main Trick:** balance sizes.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-class MedianFinder {
-    priority_queue<int> low;
-    priority_queue<int, vector<int>, greater<int>> high;
-
-public:
-    void addNum(int num) {
-        if (low.empty() || num <= low.top()) low.push(num);
-        else high.push(num);
-
-        if (low.size() > high.size() + 1) {
-            high.push(low.top());
-            low.pop();
-        }
-
-        if (high.size() > low.size()) {
-            low.push(high.top());
-            high.pop();
+vector<int> spf;
+
+void buildSPF(int n) {
+    spf.resize(n + 1);
+    for (int i = 0; i <= n; i++) spf[i] = i;
+    for (int i = 2; i * i <= n; i++) {
+        if (spf[i] == i) {
+            for (long long j = 1LL * i * i; j <= n; j += i) {
+                if (spf[(int)j] == j) spf[(int)j] = i;
+            }
         }
     }
+}
 
-    double findMedian() {
-        if (low.size() == high.size()) {
-            return (low.top() + high.top()) / 2.0;
+vector<pair<int,int>> factorizeSPF(int x) {
+    vector<pair<int,int>> res;
+    while (x > 1) {
+        int p = spf[x];
+        int cnt = 0;
+        while (x % p == 0) {
+            x /= p;
+            cnt++;
         }
-
-        return low.top();
+        res.push_back({p, cnt});
     }
-};
+    return res;
+}
 ```
 
 </details>
+
+### Practice Problem: [CSES Counting Divisors](https://cses.fi/problemset/task/1713)
+
+| Field | Details |
+|---|---|
+| Topic | Primes and Divisors |
+| Main concepts | prime factorization, divisor count formula, precomputation |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Build SPF then apply divisor formula. |
+| Complexity | O(maxA log log maxA plus q log A) |
+
+
+#### Mermaid Table Diagram
 
 <details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : dynamic median
-Think about   : two heaps
-Main action   : balance sizes
-Core idea     : median lies between halves
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-merge-k-sorted-lists"></a>
-
-## 79. Hard — Merge k Sorted Lists
-
-**Platform:** LeetCode  
-**Link:** [Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/)  
-**Pattern:** `min heap`  
-**Form:** `k-way merge`
-
-### Mermaid Solution Flow
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **k-way merge**
-- Pattern: **min heap**
-- Tactic: **push next from same list**
-- Core intuition: smallest head is next answer
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **min heap** because it keeps only the useful information needed for future operations.
-- **Main Trick:** push next from same list.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+A["CSES Counting Divisors"] --> B["Topic Primes and Divisors"]
+A --> C["Concepts prime factorization, divisor count formula,..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Build SPF then apply divisor formula."]
+A --> F["Complexity OmaxA log log maxA plus q log A"]
 ```
 
 </details>
 
+
+#### Approach Logic
+
+
+1. For each query number `x`, factorize it.
+2. If `x = p1^a1 * p2^a2`, divisor count is product of `(ai + 1)`.
+3. Since many queries exist, use SPF precomputation.
+4. Factor each number in logarithmic like time.
+
+
+
+#### Detailed Solution Flowchart
+
 <details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : k-way merge
-Think about   : min heap
-Main action   : push next from same list
-Core idea     : smallest head is next answer
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-ipo"></a>
-
-## 80. Hard — IPO
-
-**Platform:** LeetCode  
-**Link:** [IPO](https://leetcode.com/problems/ipo/)  
-**Pattern:** `sort + max heap`  
-**Form:** `greedy selection`
-
-### Mermaid Solution Flow
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **greedy selection**
-- Pattern: **sort + max heap**
-- Tactic: **add affordable profits**
-- Core intuition: choose best available project
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort + max heap** because it keeps only the useful information needed for future operations.
-- **Main Trick:** add affordable profits.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+    S11_0["For each query number x, factorize it."]
+    S11_1["'If x equals p1 power a1 p2 power a2, divisor count is product of a..."]
+    S11_2["Since many queries exist, use SPF precomputation."]
+    S11_3["Factor each number in logarithmic like time."]
+    S11_0 --> S11_1
+    S11_1 --> S11_2
+    S11_2 --> S11_3
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
+#### Dry Run
 
 ```text
-If you see    : greedy selection
-Think about   : sort + max heap
-Main action   : add affordable profits
-Core idea     : choose best available project
+x = 18
+18 = 2^1 * 3^2
+divisors = (1 + 1) * (2 + 1) = 6
+answer = 6
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D11_0["x equals 18"]
+    D11_1["18 equals 2 power 1 3 power 2"]
+    D11_2["divisors equals 1 plus 1 2 plus 1 equals 6"]
+    D11_3["answer equals 6"]
+    D11_0 --> D11_1
+    D11_1 --> D11_2
+    D11_2 --> D11_3
 ```
 
 </details>
 
-[Back to index](#clickable-index)
+### Practice Problem: [Codeforces 546D Soldier and Number Game](https://codeforces.com/problemset/problem/546/D)
 
----
+| Field | Details |
+|---|---|
+| Topic | Primes and Divisors |
+| Main concepts | prime factor count prefix, SPF, range query |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Precompute factor counts and prefix. |
+| Complexity | O(maxN log log maxN plus q) |
 
-<a id="cm-cses-flight-discount"></a>
 
-## 81. Hard — My Calendar III
+#### Mermaid Table Diagram
 
-**Platform:** LeetCode  
-**Link:** [My Calendar III](https://leetcode.com/problems/my-calendar-iii/)  
-**Pattern:** `map ordered events`  
-**Form:** `sweep events`
-
-### Mermaid Solution Flow
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **sweep events**
-- Pattern: **map ordered events**
-- Tactic: **active count scan**
-- Core intuition: maximum overlap is prefix of events
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **map ordered events** because it keeps only the useful information needed for future operations.
-- **Main Trick:** active count scan.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+A["Codeforces 546D Soldier and Number Game"] --> B["Topic Primes and Divisors"]
+A --> C["Concepts prime factor count prefix, SPF, range query"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Precompute factor counts and prefix."]
+A --> F["Complexity OmaxN log log maxN plus q"]
 ```
 
 </details>
 
+
+#### Approach Logic
+
+
+1. Precompute number of prime factors with multiplicity for every number.
+2. Build prefix sum over those counts.
+3. For query `a b`, answer is prefix[a] minus prefix[b].
+4. This combines SPF and prefix sums.
+
+
+
+#### Detailed Solution Flowchart
+
 <details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : sweep events
-Think about   : map ordered events
-Main action   : active count scan
-Core idea     : maximum overlap is prefix of events
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-traffic-lights"></a>
-
-## 82. Hard — All O one Data Structure
-
-**Platform:** LeetCode  
-**Link:** [All O one Data Structure](https://leetcode.com/problems/all-oone-data-structure/)  
-**Pattern:** `list + map`  
-**Form:** `design counts`
-
-### Mermaid Solution Flow
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **design counts**
-- Pattern: **list + map**
-- Tactic: **buckets by frequency**
-- Core intuition: O(1) min and max buckets
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **list + map** because it keeps only the useful information needed for future operations.
-- **Main Trick:** buckets by frequency.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-class AllOne {
-    map<string,int> keyFreq;
-    map<int,set<string>> freqKeys;
-
-    void eraseFromFreq(const string& key, int f) {
-        freqKeys[f].erase(key);
-
-        if (freqKeys[f].empty()) {
-            freqKeys.erase(f);
-        }
-    }
-
-public:
-    void inc(string key) {
-        int oldFreq = keyFreq[key];
-
-        if (oldFreq > 0) eraseFromFreq(key, oldFreq);
-
-        int newFreq = oldFreq + 1;
-        keyFreq[key] = newFreq;
-        freqKeys[newFreq].insert(key);
-    }
-
-    void dec(string key) {
-        int oldFreq = keyFreq[key];
-
-        eraseFromFreq(key, oldFreq);
-
-        int newFreq = oldFreq - 1;
-
-        if (newFreq == 0) {
-            keyFreq.erase(key);
-        } else {
-            keyFreq[key] = newFreq;
-            freqKeys[newFreq].insert(key);
-        }
-    }
-
-    string getMaxKey() {
-        if (freqKeys.empty()) return "";
-        return *freqKeys.rbegin()->second.rbegin();
-    }
-
-    string getMinKey() {
-        if (freqKeys.empty()) return "";
-        return *freqKeys.begin()->second.rbegin();
-    }
-};
+    S12_0["'Precompute number of prime factors with multiplicit..."]
+    S12_1["Build prefix sum over those counts."]
+    S12_2["For query a b, answer is prefix a minus prefix b ."]
+    S12_3["This combines SPF and prefix sums."]
+    S12_0 --> S12_1
+    S12_1 --> S12_2
+    S12_2 --> S12_3
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
+#### Dry Run
 
 ```text
-If you see    : design counts
-Think about   : list + map
-Main action   : buckets by frequency
-Core idea     : O(1) min and max buckets
+primeFactorCount[10] = 2 because 10 = 2 * 5
+primeFactorCount[12] = 3 because 12 = 2 * 2 * 3
+For query a = 5, b = 3
+answer = count factors in 4 and 5
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D12_0["primeFactorCount 10 equals 2 because 10 equals 2 5"]
+    D12_1["primeFactorCount 12 equals 3 because 12 equals 2 2 3"]
+    D12_2["For query a equals 5, b equals 3"]
+    D12_3["answer equals count factors in 4 and 5"]
+    D12_0 --> D12_1
+    D12_1 --> D12_2
+    D12_2 --> D12_3
 ```
 
 </details>
 
-[Back to index](#clickable-index)
 
 ---
 
-<a id="cm-cses-sum-of-four-values"></a>
+## 7. Prefix Sum
 
-## 83. Hard — Russian Doll Envelopes
+### Formula
 
-**Platform:** LeetCode  
-**Link:** [Russian Doll Envelopes](https://leetcode.com/problems/russian-doll-envelopes/)  
-**Pattern:** `sort + LIS`  
-**Form:** `2D sorting`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **2D sorting**
-- Pattern: **sort + LIS**
-- Tactic: **width asc height desc**
-- Core intuition: avoid equal width nesting
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort + LIS** because it keeps only the useful information needed for future operations.
-- **Main Trick:** width asc height desc.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
+For 0 indexed array:
 
 ```text
-If you see    : 2D sorting
-Think about   : sort + LIS
-Main action   : width asc height desc
-Core idea     : avoid equal width nesting
+pref[0] = 0
+pref[i + 1] = pref[i] + a[i]
+range_sum(l, r) = pref[r + 1] - pref[l]
 ```
 
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-maximum-profit-in-job-scheduling"></a>
-
-## 84. Hard — Maximum Profit in Job Scheduling
-
-**Platform:** LeetCode  
-**Link:** [Maximum Profit in Job Scheduling](https://leetcode.com/problems/maximum-profit-in-job-scheduling/)  
-**Pattern:** `sort + DP + binary search`  
-**Form:** `weighted intervals`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort / use ordered structure"]
-    A1["Define target condition"]
-    A0 --> A1
-    A2["Use lower_bound / binary search"]
-    A1 --> A2
-    A3["Check candidate index"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **weighted intervals**
-- Pattern: **sort + DP + binary search**
-- Tactic: **previous compatible job**
-- Core intuition: choose job or skip
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort + DP + binary search** because it keeps only the useful information needed for future operations.
-- **Main Trick:** previous compatible job.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
+### Example
 
 ```text
-If you see    : weighted intervals
-Think about   : sort + DP + binary search
-Main action   : previous compatible job
-Core idea     : choose job or skip
+a = [1, 2, 3, 4, 5]
+pref = [0, 1, 3, 6, 10, 15]
+range_sum(1, 3) = pref[4] - pref[1] = 10 - 1 = 9
 ```
 
-</details>
+### Flowchart
 
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-movie-festival"></a>
-
-## 85. Hard — Median of Two Sorted Arrays
-
-**Platform:** LeetCode  
-**Link:** [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/)  
-**Pattern:** `binary search`  
-**Form:** `partition`
-
-### Mermaid Solution Flow
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Sort / use ordered structure"]
-    A1["Define target condition"]
-    A0 --> A1
-    A2["Use lower_bound / binary search"]
-    A1 --> A2
-    A3["Check candidate index"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
+A["Input array"] --> B["Build prefix array"]
+B --> C["Read query l r"]
+C --> D["Answer equals prefix right plus one minus prefix left"]
 ```
 
-<details>
-<summary>Hints</summary>
-
-- Form: **partition**
-- Pattern: **binary search**
-- Tactic: **partition smaller array**
-- Core intuition: left half must be <= right half
-- First write brute force, then identify which repeated operation the STL structure removes.
-
 </details>
 
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **binary search** because it keeps only the useful information needed for future operations.
-- **Main Trick:** partition smaller array.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
+### C++ Helper
 
 <details>
-<summary>Code / Template</summary>
+<summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: binary search
-// Form: partition
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: partition smaller array.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : partition
-Think about   : binary search
-Main action   : partition smaller array
-Core idea     : left half must be <= right half
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-sum-of-two-values"></a>
-
-## 86. Hard — Count of Smaller Numbers After Self
-
-**Platform:** LeetCode  
-**Link:** [Count of Smaller Numbers After Self](https://leetcode.com/problems/count-of-smaller-numbers-after-self/)  
-**Pattern:** `Fenwick/PBDS`  
-**Form:** `order count`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Compress/index values"]
-    A1["Process in chosen order"]
-    A0 --> A1
-    A2["Query rank/count/kth"]
-    A1 --> A2
-    A3["Update structure"]
-    A2 --> A3
-    A4["Store answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **order count**
-- Pattern: **Fenwick/PBDS**
-- Tactic: **insert from right**
-- Core intuition: count previously inserted smaller
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **Fenwick/PBDS** because it keeps only the useful information needed for future operations.
-- **Main Trick:** insert from right.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-#include <ext/pb_ds/assoc_container.hpp>
-using namespace __gnu_pbds;
-
-template<class T>
-using ordered_set = tree<T, null_type, less<T>, rb_tree_tag,
-tree_order_statistics_node_update>;
-
-ordered_set<int> os;
-
-os.insert(10);
-os.insert(20);
-
-int countLess = os.order_of_key(20);
-int kth = *os.find_by_order(0);
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : order count
-Think about   : Fenwick/PBDS
-Main action   : insert from right
-Core idea     : count previously inserted smaller
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-factory-machines"></a>
-
-## 87. Hard — Maximal Rectangle
-
-**Platform:** LeetCode  
-**Link:** [Maximal Rectangle](https://leetcode.com/problems/maximal-rectangle/)  
-**Pattern:** `stack per row`  
-**Form:** `matrix histogram`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **matrix histogram**
-- Pattern: **stack per row**
-- Tactic: **heights build histogram**
-- Core intuition: each row becomes histogram problem
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **stack per row** because it keeps only the useful information needed for future operations.
-- **Main Trick:** heights build histogram.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: stack per row
-// Form: matrix histogram
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: heights build histogram.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : matrix histogram
-Think about   : stack per row
-Main action   : heights build histogram
-Core idea     : each row becomes histogram problem
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-sliding-window-maximum"></a>
-
-## 88. Hard — Shortest Subarray with Sum at Least K
-
-**Platform:** LeetCode  
-**Link:** [Shortest Subarray with Sum at Least K](https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/)  
-**Pattern:** `increasing prefix deque`  
-**Form:** `prefix deque`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Move window/index"]
-    A1["Remove expired front"]
-    A0 --> A1
-    A2["Remove worse back values"]
-    A1 --> A2
-    A3["Push current index"]
-    A2 --> A3
-    A4["Front gives answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **prefix deque**
-- Pattern: **increasing prefix deque**
-- Tactic: **discard dominated prefixes**
-- Core intuition: smaller earlier prefix is better
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **increasing prefix deque** because it keeps only the useful information needed for future operations.
-- **Main Trick:** discard dominated prefixes.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: increasing prefix deque
-// Form: prefix deque
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: discard dominated prefixes.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : prefix deque
-Think about   : increasing prefix deque
-Main action   : discard dominated prefixes
-Core idea     : smaller earlier prefix is better
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-sliding-window-minimum"></a>
-
-## 89. Hard — Sliding Window Median
-
-**Platform:** LeetCode  
-**Link:** [Sliding Window Median](https://leetcode.com/problems/sliding-window-median/)  
-**Pattern:** `two multisets/heaps`  
-**Form:** `dynamic median`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **dynamic median**
-- Pattern: **two multisets/heaps**
-- Tactic: **insert erase balance**
-- Core intuition: median is boundary of halves
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two multisets/heaps** because it keeps only the useful information needed for future operations.
-- **Main Trick:** insert erase balance.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : dynamic median
-Think about   : two multisets/heaps
-Main action   : insert erase balance
-Core idea     : median is boundary of halves
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-sliding-cost"></a>
-
-## 90. Hard — Employee Free Time
-
-**Platform:** LeetCode  
-**Link:** [Employee Free Time](https://leetcode.com/problems/employee-free-time/)  
-**Pattern:** `merge all`  
-**Form:** `interval union`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Convert to intervals/events"]
-    A1["Sort by time/start"]
-    A0 --> A1
-    A2["Scan in order"]
-    A1 --> A2
-    A3["Maintain active/merged state"]
-    A2 --> A3
-    A4["Update answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **interval union**
-- Pattern: **merge all**
-- Tactic: **gaps after merge**
-- Core intuition: free time is complement of busy union
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **merge all** because it keeps only the useful information needed for future operations.
-- **Main Trick:** gaps after merge.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : interval union
-Think about   : merge all
-Main action   : gaps after merge
-Core idea     : free time is complement of busy union
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-restaurant-customers"></a>
-
-## 91. Hard — Maximum Performance of a Team
-
-**Platform:** LeetCode  
-**Link:** [Maximum Performance of a Team](https://leetcode.com/problems/maximum-performance-of-a-team/)  
-**Pattern:** `min heap`  
-**Form:** `top k with sorted factor`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **top k with sorted factor**
-- Pattern: **min heap**
-- Tactic: **remove smallest speed**
-- Core intuition: efficiency fixed by sorted order
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **min heap** because it keeps only the useful information needed for future operations.
-- **Main Trick:** remove smallest speed.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : top k with sorted factor
-Think about   : min heap
-Main action   : remove smallest speed
-Core idea     : efficiency fixed by sorted order
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-concert-tickets"></a>
-
-## 92. Hard — Create Sorted Array through Instructions
-
-**Platform:** LeetCode  
-**Link:** [Create Sorted Array through Instructions](https://leetcode.com/problems/create-sorted-array-through-instructions/)  
-**Pattern:** `Fenwick + compression`  
-**Form:** `dynamic rank count`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Compress/index values"]
-    A1["Process in chosen order"]
-    A0 --> A1
-    A2["Query rank/count/kth"]
-    A1 --> A2
-    A3["Update structure"]
-    A2 --> A3
-    A4["Store answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **dynamic rank count**
-- Pattern: **Fenwick + compression**
-- Tactic: **count less and greater**
-- Core intuition: insertion cost from ranks
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **Fenwick + compression** because it keeps only the useful information needed for future operations.
-- **Main Trick:** count less and greater.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: Fenwick + compression
-// Form: dynamic rank count
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: count less and greater.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : dynamic rank count
-Think about   : Fenwick + compression
-Main action   : count less and greater
-Core idea     : insertion cost from ranks
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-nested-ranges-count"></a>
-
-# CM Problems
-
-## 93. CM — CSES Collecting Numbers
-
-**Platform:** CSES  
-**Link:** [CSES Collecting Numbers](https://cses.fi/problemset/task/2216)  
-**Pattern:** `positions array`  
-**Form:** `permutation order`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **permutation order**
-- Pattern: **positions array**
-- Tactic: **count breaks**
-- Core intuition: new round starts when position decreases
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **positions array** because it keeps only the useful information needed for future operations.
-- **Main Trick:** count breaks.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: positions array
-// Form: permutation order
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: count breaks.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : permutation order
-Think about   : positions array
-Main action   : count breaks
-Core idea     : new round starts when position decreases
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-josephus-problem-i"></a>
-
-## 94. CM — CSES Josephus Problem I
-
-**Platform:** CSES  
-**Link:** [CSES Josephus Problem I](https://cses.fi/problemset/task/2162)  
-**Pattern:** `queue/vector`  
-**Form:** `simulation`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **simulation**
-- Pattern: **queue/vector**
-- Tactic: **rotate remove**
-- Core intuition: circular process needs efficient order
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **queue/vector** because it keeps only the useful information needed for future operations.
-- **Main Trick:** rotate remove.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: queue/vector
-// Form: simulation
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: rotate remove.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : simulation
-Think about   : queue/vector
-Main action   : rotate remove
-Core idea     : circular process needs efficient order
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-valid-anagram"></a>
-
-## 95. CM — CSES String Matching
-
-**Platform:** CSES  
-**Link:** [CSES String Matching](https://cses.fi/problemset/task/1753)  
-**Pattern:** `string algorithm`  
-**Form:** `pattern search`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **pattern search**
-- Pattern: **string algorithm**
-- Tactic: **prefix/hash**
-- Core intuition: repeated pattern matching needs linear scan
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **string algorithm** because it keeps only the useful information needed for future operations.
-- **Main Trick:** prefix/hash.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: string algorithm
-// Form: pattern search
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: prefix/hash.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : pattern search
-Think about   : string algorithm
-Main action   : prefix/hash
-Core idea     : repeated pattern matching needs linear scan
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-valid-parentheses"></a>
-
-## 96. CM — CSES Nearest Smaller Values
-
-**Platform:** CSES  
-**Link:** [CSES Nearest Smaller Values](https://cses.fi/problemset/task/1645)  
-**Pattern:** `monotonic stack`  
-**Form:** `nearest smaller`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read item"]
-    A1["Check stack top"]
-    A0 --> A1
-    A2["Pop resolved/useless items"]
-    A1 --> A2
-    A3["Use top if needed"]
-    A2 --> A3
-    A4["Push current item"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **nearest smaller**
-- Pattern: **monotonic stack**
-- Tactic: **remove bigger candidates**
-- Core intuition: remaining top is nearest smaller
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **monotonic stack** because it keeps only the useful information needed for future operations.
-- **Main Trick:** remove bigger candidates.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-vector<int> nextGreaterRight(vector<int>& a) {
-    int n = a.size();
-    vector<int> ans(n, -1);
-    stack<int> st;
-
+vector<long long> buildPrefix(const vector<int>& a) {
+    int n = (int)a.size();
+    vector<long long> pref(n + 1, 0);
     for (int i = 0; i < n; i++) {
-        while (!st.empty() && a[st.top()] < a[i]) {
-            ans[st.top()] = a[i];
-            st.pop();
-        }
-
-        st.push(i);
+        pref[i + 1] = pref[i] + a[i];
     }
+    return pref;
+}
 
+long long rangeSum(const vector<long long>& pref, int l, int r) {
+    return pref[r + 1] - pref[l];
+}
+```
+
+</details>
+
+### 2D Prefix Formula
+
+```text
+pref[i][j] = grid sum from row 1 col 1 to row i col j
+
+sum rectangle = pref[x2][y2] - pref[x1 - 1][y2] - pref[x2][y1 - 1] + pref[x1 - 1][y1 - 1]
+```
+
+### Dry Run
+
+```text
+a = [2, 4, 1, 7]
+pref[0] = 0
+pref[1] = 2
+pref[2] = 6
+pref[3] = 7
+pref[4] = 14
+sum from index 1 to 3 = pref[4] - pref[1] = 14 - 2 = 12
+```
+
+### Pattern
+
+Use prefix sum when there are many range sum queries and array does not change.
+
+### Practice Problem: [CSES Static Range Sum Queries](https://cses.fi/problemset/task/1646)
+
+| Field | Details |
+|---|---|
+| Topic | Prefix Sum |
+| Main concepts | prefix sum, range query, O one answer |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Build prefix once. |
+| Complexity | O(n plus q) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Static Range Sum Queries"] --> B["Topic Prefix Sum"]
+A --> C["Concepts prefix sum, range query, O one answer"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Build prefix once."]
+A --> F["Complexity On plus q"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Build prefix array where `pref[i]` is sum of first `i` elements.
+2. For every query `[l, r]`, convert to zero based or one based carefully.
+3. Answer using subtraction of two prefix values.
+4. Avoid summing inside each query.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S13_0["'Build prefix array where pref i is sum of first i..."]
+    S13_1["'For every query l, r , convert to zero based or on..."]
+    S13_2["Answer using subtraction of two prefix values."]
+    S13_3["Avoid summing inside each query."]
+    S13_0 --> S13_1
+    S13_1 --> S13_2
+    S13_2 --> S13_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+a = [2, 4, 1, 7]
+query l = 2, r = 4 one based
+zero based range is 1 to 3
+answer = pref[4] - pref[1] = 14 - 2 = 12
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D13_0["a equals 2, 4, 1, 7"]
+    D13_1["query l equals 2, r equals 4 one based"]
+    D13_2["zero based range is 1 to 3"]
+    D13_3["answer equals pref 4 - pref 1 equals 14 - 2 equals 12"]
+    D13_0 --> D13_1
+    D13_1 --> D13_2
+    D13_2 --> D13_3
+```
+
+</details>
+
+### Practice Problem: [CSES Forest Queries](https://cses.fi/problemset/task/1652)
+
+| Field | Details |
+|---|---|
+| Topic | Prefix Sum |
+| Main concepts | 2D prefix sum, rectangle query |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use one based 2D prefix. |
+| Complexity | O(n squared plus q) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Forest Queries"] --> B["Topic Prefix Sum"]
+A --> C["Concepts 2D prefix sum, rectangle query"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use one based 2D prefix."]
+A --> F["Complexity On squared plus q"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Convert each tree cell to 1 and empty cell to 0.
+2. Build 2D prefix sum.
+3. For a rectangle query, use inclusion exclusion on four prefix cells.
+4. Be careful with one based indexing to simplify boundaries.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S14_0["Convert each tree cell to 1 and empty cell to 0."]
+    S14_1["Build 2D prefix sum."]
+    S14_2["'For a rectangle query, use inclusion exclusion on f..."]
+    S14_3["'Be careful with one based indexing to simplify boun..."]
+    S14_0 --> S14_1
+    S14_1 --> S14_2
+    S14_2 --> S14_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+Grid values:
+1 0
+0 1
+pref rectangle full grid = 2
+Query whole grid answer = 2
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D14_0["Grid values"]
+    D14_1["1 0"]
+    D14_2["0 1"]
+    D14_3["pref rectangle full grid equals 2"]
+    D14_4["Query whole grid answer equals 2"]
+    D14_0 --> D14_1
+    D14_1 --> D14_2
+    D14_2 --> D14_3
+    D14_3 --> D14_4
+```
+
+</details>
+
+
+---
+
+## 8. Arithmetic and Geometric Sequences
+
+### Arithmetic sequence formula
+
+```text
+a_n = a_1 + (n - 1)d
+```
+
+Sum:
+
+```text
+S_n = n(a_1 + a_n) / 2
+```
+
+### Geometric sequence formula
+
+```text
+a_n = a_1 * r^(n - 1)
+```
+
+Sum if `r != 1`:
+
+```text
+S_n = a_1(r^n - 1) / (r - 1)
+```
+
+Special power of two sum:
+
+```text
+1 + 2 + 4 + ... + 2^(n - 1) = 2^n - 1
+```
+
+### Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Sequence"] --> B{Difference same}
+B -->|Yes| C["Arithmetic"]
+B -->|No| D{Ratio same}
+D -->|Yes| E["Geometric"]
+D -->|No| F["Look for another pattern"]
+```
+
+</details>
+
+### C++ Helpers
+
+<details>
+<summary>C++ Code</summary>
+
+```cpp
+long long arithmeticTerm(long long a1, long long d, long long n) {
+    return a1 + (n - 1) * d;
+}
+
+long long arithmeticSum(long long a1, long long an, long long n) {
+    return n * (a1 + an) / 2;
+}
+```
+
+</details>
+
+### Dry Run
+
+```text
+Arithmetic: 5, 8, 11, 14
+a1 = 5, d = 3
+4th term = 5 + (4 - 1) * 3 = 14
+```
+
+```text
+Geometric: 3, 6, 12, 24
+a1 = 3, r = 2
+4th term = 3 * 2^(4 - 1) = 24
+```
+
+### Practice Problem: [CSES Number Spiral](https://cses.fi/problemset/task/1071)
+
+| Field | Details |
+|---|---|
+| Topic | Sequences |
+| Main concepts | pattern by layer, parity, formula |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use max coordinate and parity. |
+| Complexity | O(1) per query |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Number Spiral"] --> B["Topic Sequences"]
+A --> C["Concepts pattern by layer, parity, formula"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use max coordinate and parity."]
+A --> F["Complexity O1 per query"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. The value depends on the layer `max(row, col)`.
+2. The square at the end of each layer is `layer squared`.
+3. Direction changes based on parity of the layer.
+4. Derive formula separately for even and odd layers.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S15_0["The value depends on the layer max row, col ."]
+    S15_1["The square at the end of each layer is layer squared."]
+    S15_2["Direction changes based on parity of the layer."]
+    S15_3["Derive formula separately for even and odd layers."]
+    S15_0 --> S15_1
+    S15_1 --> S15_2
+    S15_2 --> S15_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+row = 2, col = 3
+layer = 3
+layer square = 9
+For odd layer, values decrease along row direction
+answer = 8
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D15_0["row equals 2, col equals 3"]
+    D15_1["layer equals 3"]
+    D15_2["layer square equals 9"]
+    D15_3["For odd layer, values decrease along row direction"]
+    D15_4["answer equals 8"]
+    D15_0 --> D15_1
+    D15_1 --> D15_2
+    D15_2 --> D15_3
+    D15_3 --> D15_4
+```
+
+</details>
+
+### Practice Problem: [CSES Weird Algorithm](https://cses.fi/problemset/task/1068)
+
+| Field | Details |
+|---|---|
+| Topic | Sequences |
+| Main concepts | sequence simulation, parity transition |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use long long. |
+| Complexity | Depends on sequence length |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Weird Algorithm"] --> B["Topic Sequences"]
+A --> C["Concepts sequence simulation, parity transition"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use long long."]
+A --> F["Complexity Depends on sequence length"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Start from n.
+2. If n is even, divide by two.
+3. If n is odd, replace by `3n plus 1`.
+4. Continue until n becomes one.
+5. This is not formula based, but it trains sequence transitions and overflow awareness.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S16_0["Start from n."]
+    S16_1["If n is even, divide by two."]
+    S16_2["If n is odd, replace by 3n plus 1."]
+    S16_3["Continue until n becomes one."]
+    S16_4["'This is not formula based, but it trains sequence t..."]
+    S16_0 --> S16_1
+    S16_1 --> S16_2
+    S16_2 --> S16_3
+    S16_3 --> S16_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+n = 3
+3 is odd so 10
+10 is even so 5
+5 is odd so 16
+16 8 4 2 1
+sequence ends
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D16_0["n equals 3"]
+    D16_1["3 is odd so 10"]
+    D16_2["10 is even so 5"]
+    D16_3["5 is odd so 16"]
+    D16_4["16 8 4 2 1"]
+    D16_5["sequence ends"]
+    D16_0 --> D16_1
+    D16_1 --> D16_2
+    D16_2 --> D16_3
+    D16_3 --> D16_4
+    D16_4 --> D16_5
+```
+
+</details>
+
+
+---
+
+## 9. Summation Formulas
+
+### Core formulas
+
+```text
+1 + 2 + ... + n = n(n + 1) / 2
+1^2 + 2^2 + ... + n^2 = n(n + 1)(2n + 1) / 6
+1^3 + 2^3 + ... + n^3 = [n(n + 1) / 2]^2
+```
+
+### Summation properties
+
+```text
+sum(c * a_i) = c * sum(a_i)
+sum(a_i + b_i) = sum(a_i) + sum(b_i)
+```
+
+### Example
+
+```text
+sum from i = 1 to n of (3i + 2)
+= 3 * sum(i) + 2n
+= 3n(n + 1)/2 + 2n
+```
+
+For `n = 5`:
+
+```text
+3 * 5 * 6 / 2 + 10 = 55
+```
+
+### Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Loop summing formula"] --> B["Identify expression"]
+B --> C["Split constants and variables"]
+C --> D["Apply known sum formula"]
+D --> E["Get constant time answer"]
+```
+
+</details>
+
+### C++ Helpers
+
+<details>
+<summary>C++ Code</summary>
+
+```cpp
+long long sumN(long long n) {
+    return n * (n + 1) / 2;
+}
+
+long long sumSquares(long long n) {
+    return n * (n + 1) * (2 * n + 1) / 6;
+}
+
+long long sumCubes(long long n) {
+    long long s = n * (n + 1) / 2;
+    return s * s;
+}
+```
+
+</details>
+
+### Practice Problem: [CSES Missing Number](https://cses.fi/problemset/task/1083)
+
+| Field | Details |
+|---|---|
+| Topic | Summation Formulas |
+| Main concepts | sum formula, missing value |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use sum formula. |
+| Complexity | O(n) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Missing Number"] --> B["Topic Summation Formulas"]
+A --> C["Concepts sum formula, missing value"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use sum formula."]
+A --> F["Complexity On"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Sum of numbers from `1` to `n` is `n(n+1)/2`.
+2. Read `n-1` numbers and compute their sum.
+3. Missing number is expected sum minus actual sum.
+4. Use long long because sum can be large.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S17_0["Sum of numbers from 1 to n is n n plus 1 div 2."]
+    S17_1["Read n-1 numbers and compute their sum."]
+    S17_2["Missing number is expected sum minus actual sum."]
+    S17_3["Use long long because sum can be large."]
+    S17_0 --> S17_1
+    S17_1 --> S17_2
+    S17_2 --> S17_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+n = 5
+numbers = 2 3 1 5
+expected sum = 5 * 6 / 2 = 15
+actual sum = 11
+missing = 4
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D17_0["n equals 5"]
+    D17_1["numbers equals 2 3 1 5"]
+    D17_2["expected sum equals 5 6 div 2 equals 15"]
+    D17_3["actual sum equals 11"]
+    D17_4["missing equals 4"]
+    D17_0 --> D17_1
+    D17_1 --> D17_2
+    D17_2 --> D17_3
+    D17_3 --> D17_4
+```
+
+</details>
+
+### Practice Problem: [CSES Two Sets](https://cses.fi/problemset/task/1092)
+
+| Field | Details |
+|---|---|
+| Topic | Summation Formulas |
+| Main concepts | sum parity, constructive partition |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Check parity then construct greedily. |
+| Complexity | O(n) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Two Sets"] --> B["Topic Summation Formulas"]
+A --> C["Concepts sum parity, constructive partition"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Check parity then construct greedily."]
+A --> F["Complexity On"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Total sum is `n(n+1)/2`.
+2. If total sum is odd, equal partition is impossible.
+3. Otherwise target each set sum is total divided by two.
+4. Greedily take large numbers while target remains.
+5. This uses summation plus constructive thinking.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S18_0["Total sum is n n plus 1 div 2."]
+    S18_1["If total sum is odd, equal partition is impossible."]
+    S18_2["'Otherwise target each set sum is total divided by t..."]
+    S18_3["Greedily take large numbers while target remains."]
+    S18_4["This uses summation plus constructive thinking."]
+    S18_0 --> S18_1
+    S18_1 --> S18_2
+    S18_2 --> S18_3
+    S18_3 --> S18_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+n = 7
+total = 28
+target = 14
+take 7 target becomes 7
+take 6 target becomes 1
+take 1 target becomes 0
+one set = 7 6 1
+other set = 2 3 4 5
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D18_0["n equals 7"]
+    D18_1["total equals 28"]
+    D18_2["target equals 14"]
+    D18_3["take 7 target becomes 7"]
+    D18_4["take 6 target becomes 1"]
+    D18_5["take 1 target becomes 0"]
+    D18_6["one set equals 7 6 1"]
+    D18_7["other set equals 2 3 4 5"]
+    D18_0 --> D18_1
+    D18_1 --> D18_2
+    D18_2 --> D18_3
+    D18_3 --> D18_4
+    D18_4 --> D18_5
+    D18_5 --> D18_6
+    D18_6 --> D18_7
+```
+
+</details>
+
+
+---
+
+## 10. Counting Permutation Combination
+
+### Product rule
+
+```text
+If task A has x ways and task B has y ways:
+total = x * y
+```
+
+### Sum rule
+
+```text
+If choose A or B:
+total = x + y
+```
+
+### Complement rule
+
+```text
+good = total - bad
+```
+
+### Factorial
+
+```text
+n! = n * (n - 1) * ... * 1
+```
+
+### Permutation
+
+Order matters:
+
+```text
+P(n, r) = n! / (n - r)!
+```
+
+### Combination
+
+Order does not matter:
+
+```text
+C(n, r) = n! / (r!(n - r)!)
+```
+
+Symmetry:
+
+```text
+C(n, r) = C(n, n - r)
+```
+
+### Stars and Bars
+
+Number of non negative integer solutions to:
+
+```text
+x1 + x2 + ... + xk = n
+```
+
+is:
+
+```text
+C(n + k - 1, k - 1)
+```
+
+### Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Counting problem"] --> B{Order matters}
+B -->|Yes| C["Permutation"]
+B -->|No| D["Combination"]
+A --> E{Easier to count bad}
+E -->|Yes| F["Use complement"]
+A --> G{Identical items into boxes}
+G -->|Yes| H["Stars and bars"]
+```
+
+</details>
+
+### C++ Small nCr Helper
+
+<details>
+<summary>C++ Code</summary>
+
+```cpp
+long long nCrSmall(int n, int r) {
+    if (r < 0 || r > n) return 0;
+    r = min(r, n - r);
+    long long ans = 1;
+    for (int i = 1; i <= r; i++) {
+        ans = ans * (n - r + i) / i;
+    }
     return ans;
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : nearest smaller
-Think about   : monotonic stack
-Main action   : remove bigger candidates
-Core idea     : remaining top is nearest smaller
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-implement-queue-using-stacks"></a>
-
-## 97. CM — CSES Labyrinth
-
-**Platform:** CSES  
-**Link:** [CSES Labyrinth](https://cses.fi/problemset/task/1193)  
-**Pattern:** `BFS queue`  
-**Form:** `grid shortest path`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
+### Modular nCr helper for prime MOD
 
 <details>
-<summary>Hints</summary>
-
-- Form: **grid shortest path**
-- Pattern: **BFS queue**
-- Tactic: **parent reconstruction**
-- Core intuition: BFS gives shortest path
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **BFS queue** because it keeps only the useful information needed for future operations.
-- **Main Trick:** parent reconstruction.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
+<summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: BFS queue
-// Form: grid shortest path
+const int MAXN = 1000000;
+const long long MOD = 1000000007LL;
+long long fact[MAXN + 1], invFact[MAXN + 1];
 
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: parent reconstruction.
-    // 3. Maintain invariant.
-    // 4. Return answer.
+void buildFactorials() {
+    fact[0] = 1;
+    for (int i = 1; i <= MAXN; i++) fact[i] = fact[i - 1] * i % MOD;
+    invFact[MAXN] = modPow(fact[MAXN], MOD - 2, MOD);
+    for (int i = MAXN - 1; i >= 0; i--) invFact[i] = invFact[i + 1] * (i + 1) % MOD;
+}
+
+long long nCrMod(int n, int r) {
+    if (r < 0 || r > n) return 0;
+    return fact[n] * invFact[r] % MOD * invFact[n - r] % MOD;
 }
 ```
 
 </details>
 
+### Practice Problem: [CSES Creating Strings](https://cses.fi/problemset/task/1622)
+
+| Field | Details |
+|---|---|
+| Topic | Counting |
+| Main concepts | permutations with duplicate characters |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Sort then use next_permutation. |
+| Complexity | O(k times n) |
+
+
+#### Mermaid Table Diagram
+
 <details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : grid shortest path
-Think about   : BFS queue
-Main action   : parent reconstruction
-Core idea     : BFS gives shortest path
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-monsters"></a>
-
-## 98. CM — CSES Monsters
-
-**Platform:** CSES  
-**Link:** [CSES Monsters](https://cses.fi/problemset/task/1194)  
-**Pattern:** `BFS twice`  
-**Form:** `multi-source escape`
-
-### Mermaid Solution Flow
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
+A["CSES Creating Strings"] --> B["Topic Counting"]
+A --> C["Concepts permutations with duplicate characters"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Sort then use next_permutation."]
+A --> F["Complexity Ok times n"]
 ```
 
-<details>
-<summary>Hints</summary>
+</details>
 
-- Form: **multi-source escape**
-- Pattern: **BFS twice**
-- Tactic: **compare monster time**
-- Core intuition: escape only if player arrives earlier
-- First write brute force, then identify which repeated operation the STL structure removes.
+
+#### Approach Logic
+
+
+1. Need print all distinct permutations of a string.
+2. Sort the string first.
+3. Use `next_permutation` to generate permutations in sorted order.
+4. Since duplicates exist, sorting plus next permutation naturally avoids duplicate arrangements.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S19_0["Need print all distinct permutations of a string."]
+    S19_1["Sort the string first."]
+    S19_2["'Use nextpermutation to generate permutations in sor..."]
+    S19_3["'Since duplicates exist, sorting plus next permutati..."]
+    S19_0 --> S19_1
+    S19_1 --> S19_2
+    S19_2 --> S19_3
+```
 
 </details>
 
-<details>
-<summary>Approach</summary>
+#### Dry Run
 
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **BFS twice** because it keeps only the useful information needed for future operations.
-- **Main Trick:** compare monster time.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
+```text
+s = aab
+sorted = aab
+permutations:
+aab
+aba
+baa
+count = 3
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D19_0["s equals aab"]
+    D19_1["sorted equals aab"]
+    D19_2["permutations"]
+    D19_3["aab"]
+    D19_4["aba"]
+    D19_5["baa"]
+    D19_6["count equals 3"]
+    D19_0 --> D19_1
+    D19_1 --> D19_2
+    D19_2 --> D19_3
+    D19_3 --> D19_4
+    D19_4 --> D19_5
+    D19_5 --> D19_6
+```
 
 </details>
 
+### Practice Problem: [CSES Distributing Apples](https://cses.fi/problemset/task/1716)
+
+| Field | Details |
+|---|---|
+| Topic | Counting |
+| Main concepts | stars and bars, modular combination |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use modular nCr. |
+| Complexity | O(maxN log MOD) |
+
+
+#### Mermaid Table Diagram
+
 <details>
-<summary>Code / Template</summary>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Distributing Apples"] --> B["Topic Counting"]
+A --> C["Concepts stars and bars, modular combination"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use modular nCr."]
+A --> F["Complexity OmaxN log MOD"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Apples are identical and children are distinct.
+2. Need non negative solutions to `x1 + x2 + ... + xn = m`.
+3. Apply stars and bars.
+4. Answer is `C(n + m - 1, m)` or `C(n + m - 1, n - 1)`.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S20_0["Apples are identical and children are distinct."]
+    S20_1["'Need non negative solutions to x1 plus x2 plus ... plus xn equals ..."]
+    S20_2["Apply stars and bars."]
+    S20_3["Answer is C n plus m - 1, m or C n plus m - 1, n - 1 ."]
+    S20_0 --> S20_1
+    S20_1 --> S20_2
+    S20_2 --> S20_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+n = 3, m = 4
+Need x1 + x2 + x3 = 4
+Formula C(4 + 3 - 1, 3 - 1)
+C(6,2) = 15
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D20_0["n equals 3, m equals 4"]
+    D20_1["Need x1 plus x2 plus x3 equals 4"]
+    D20_2["Formula C 4 plus 3 - 1, 3 - 1"]
+    D20_3["C 6,2 equals 15"]
+    D20_0 --> D20_1
+    D20_1 --> D20_2
+    D20_2 --> D20_3
+```
+
+</details>
+
+
+---
+
+## 11. Logs Bits and Halving
+
+### Log meaning
+
+```text
+2^3 = 8
+log2(8) = 3
+```
+
+Log asks:
+
+```text
+What power gives this number?
+```
+
+### Formulas
+
+```text
+log(xy) = log(x) + log(y)
+log(x / y) = log(x) - log(y)
+log(x^k) = k log(x)
+```
+
+### Bits needed
+
+For positive `n`:
+
+```text
+bits = floor(log2(n)) + 1
+```
+
+### Digits needed
+
+For positive `n`:
+
+```text
+digits = floor(log10(n)) + 1
+```
+
+### Power of two check
+
+```text
+n > 0 and (n & (n - 1)) == 0
+```
+
+### Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+A["n"] --> B["n divided by two"]
+B --> C["divided by two again"]
+C --> D["Continue"]
+D --> E["Number of steps is log n"]
+```
+
+</details>
+
+### C++ Helpers
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: BFS twice
-// Form: multi-source escape
+bool isPowerOfTwo(long long n) {
+    return n > 0 && (n & (n - 1)) == 0;
+}
 
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: compare monster time.
-    // 3. Maintain invariant.
-    // 4. Return answer.
+int bitCount(unsigned long long n) {
+    if (n == 0) return 1;
+    return 64 - __builtin_clzll(n);
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
+### Dry Run
 
 ```text
-If you see    : multi-source escape
-Think about   : BFS twice
-Main action   : compare monster time
-Core idea     : escape only if player arrives earlier
+8 = 1000
+7 = 0111
+8 & 7 = 0000
+So 8 is power of two.
 ```
 
-</details>
+### Where used
 
-[Back to index](#clickable-index)
+- binary search
+- heap height
+- divide and conquer
+- binary exponentiation
+- sparse table
+- lifting in trees
 
----
+### Practice Problem: [CSES Gray Code](https://cses.fi/problemset/task/2205)
 
-<a id="easy-last-stone-weight"></a>
+| Field | Details |
+|---|---|
+| Topic | Logs Bits and Halving |
+| Main concepts | bits, xor, binary representation |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use gray = i ^ (i >> 1). |
+| Complexity | O(n times 2^n) |
 
-## 99. CM — CSES Flight Discount
 
-**Platform:** CSES  
-**Link:** [CSES Flight Discount](https://cses.fi/problemset/task/1195)  
-**Pattern:** `priority queue`  
-**Form:** `shortest path state`
+#### Mermaid Table Diagram
 
-### Mermaid Solution Flow
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
+A["CSES Gray Code"] --> B["Topic Logs Bits and Halving"]
+A --> C["Concepts bits, xor, binary representation"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use gray i i greater thangreater than 1."]
+A --> F["Complexity On times 2 n"]
 ```
 
-<details>
-<summary>Hints</summary>
+</details>
 
-- Form: **shortest path state**
-- Pattern: **priority queue**
-- Tactic: **Dijkstra with used coupon state**
-- Core intuition: heap picks shortest state
-- First write brute force, then identify which repeated operation the STL structure removes.
+
+#### Approach Logic
+
+
+1. Gray code of number `i` is `i xor (i shifted right by one)`.
+2. Generate values from `0` to `2^n - 1`.
+3. Print each value as binary with exactly `n` bits.
+4. Adjacent Gray codes differ by one bit.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S21_0["'Gray code of number i is i xor i shifted right by..."]
+    S21_1["Generate values from 0 to 2 power n - 1."]
+    S21_2["Print each value as binary with exactly n bits."]
+    S21_3["Adjacent Gray codes differ by one bit."]
+    S21_0 --> S21_1
+    S21_1 --> S21_2
+    S21_2 --> S21_3
+```
 
 </details>
 
-<details>
-<summary>Approach</summary>
+#### Dry Run
 
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **priority queue** because it keeps only the useful information needed for future operations.
-- **Main Trick:** Dijkstra with used coupon state.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
+```text
+n = 2
+i = 0 gives 00
+i = 1 gives 01
+i = 2 gives 11
+i = 3 gives 10
+Each adjacent pair differs by one bit
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D21_0["n equals 2"]
+    D21_1["i equals 0 gives 00"]
+    D21_2["i equals 1 gives 01"]
+    D21_3["i equals 2 gives 11"]
+    D21_4["i equals 3 gives 10"]
+    D21_5["Each adjacent pair differs by one bit"]
+    D21_0 --> D21_1
+    D21_1 --> D21_2
+    D21_2 --> D21_3
+    D21_3 --> D21_4
+    D21_4 --> D21_5
+```
 
 </details>
 
+### Practice Problem: [CSES Subset Sums](https://cses.fi/problemset/task/1655)
+
+| Field | Details |
+|---|---|
+| Topic | Logs Bits and Halving |
+| Main concepts | xor basis, bit linear algebra |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use xor basis. |
+| Complexity | O(n log A) |
+
+
+#### Mermaid Table Diagram
+
 <details>
-<summary>Code / Template</summary>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Subset Sums"] --> B["Topic Logs Bits and Halving"]
+A --> C["Concepts xor basis, bit linear algebra"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use xor basis."]
+A --> F["Complexity On log A"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. This is an advanced bit math problem.
+2. Maintain a xor basis where each basis element has a unique highest set bit.
+3. Insert each number by reducing it with existing basis values.
+4. Maximum xor is built greedily from high bit to low bit.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S22_0["This is an advanced bit math problem."]
+    S22_1["'Maintain a xor basis where each basis element has a..."]
+    S22_2["'Insert each number by reducing it with existing bas..."]
+    S22_3["'Maximum xor is built greedily from high bit to low..."]
+    S22_0 --> S22_1
+    S22_1 --> S22_2
+    S22_2 --> S22_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+numbers = 3, 5
+3 binary 011
+5 binary 101
+possible xor 3 xor 5 = 6
+maximum subset xor = 6
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D22_0["numbers equals 3, 5"]
+    D22_1["3 binary 011"]
+    D22_2["5 binary 101"]
+    D22_3["possible xor 3 xor 5 equals 6"]
+    D22_4["maximum subset xor equals 6"]
+    D22_0 --> D22_1
+    D22_1 --> D22_2
+    D22_2 --> D22_3
+    D22_3 --> D22_4
+```
+
+</details>
+
+
+---
+
+## 12. Algebra and Equations
+
+### Basic formulas
+
+Distributive property:
+
+```text
+a(b + c) = ab + ac
+```
+
+Factoring:
+
+```text
+ab + ac = a(b + c)
+```
+
+Linear equation:
+
+```text
+ax + b = c
+x = (c - b) / a
+```
+
+Inequality warning:
+
+```text
+If multiply or divide by negative, flip sign.
+```
+
+Example:
+
+```text
+-2x > 6
+x < -3
+```
+
+### System of equations
+
+```text
+x + y = 10
+x - y = 4
+```
+
+Add equations:
+
+```text
+2x = 14
+x = 7
+y = 3
+```
+
+### Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Equation"] --> B["Move constants"]
+B --> C["Isolate variable"]
+C --> D["Divide coefficient"]
+D --> E["Check answer"]
+```
+
+</details>
+
+### CP Pattern
+
+Many CP problems hide algebra like:
+
+```text
+Find minimum x such that ax + b >= n
+```
+
+Rearrange:
+
+```text
+x >= (n - b) / a
+answer = ceil((n - b) / a)
+```
+
+### Practice Problem: [CSES Apple Division](https://cses.fi/problemset/task/1623)
+
+| Field | Details |
+|---|---|
+| Topic | Algebra |
+| Main concepts | minimize difference, total sum relation, subset search |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use bitmask subset enumeration. |
+| Complexity | O(2^n times n) or O(2^n) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Apple Division"] --> B["Topic Algebra"]
+A --> C["Concepts minimize difference, total sum relation, su..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use bitmask subset enumeration."]
+A --> F["Complexity O2 n times n or O2 n"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Let total sum be `S`.
+2. If one group sum is `x`, other group sum is `S - x`.
+3. Difference is `abs(S - 2x)`.
+4. Try all subsets because n is small.
+5. This is algebra plus brute force based on constraints.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S23_0["Let total sum be S."]
+    S23_1["If one group sum is x, other group sum is S - x."]
+    S23_2["Difference is abs S - 2x ."]
+    S23_3["Try all subsets because n is small."]
+    S23_4["'This is algebra plus brute force based on constrain..."]
+    S23_0 --> S23_1
+    S23_1 --> S23_2
+    S23_2 --> S23_3
+    S23_3 --> S23_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+weights = 3 2 7
+total = 12
+choose subset 3 plus 2 = 5
+other = 7
+difference = abs(12 - 2*5) = 2
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D23_0["weights equals 3 2 7"]
+    D23_1["total equals 12"]
+    D23_2["choose subset 3 plus 2 equals 5"]
+    D23_3["other equals 7"]
+    D23_4["difference equals abs 12 - 25 equals 2"]
+    D23_0 --> D23_1
+    D23_1 --> D23_2
+    D23_2 --> D23_3
+    D23_3 --> D23_4
+```
+
+</details>
+
+### Practice Problem: [Codeforces 1360D Buying Shovels](https://codeforces.com/problemset/problem/1360/D)
+
+| Field | Details |
+|---|---|
+| Topic | Algebra |
+| Main concepts | factor choice, minimize packages, divisor constraint |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Scan divisors up to sqrt n. |
+| Complexity | O(sqrt n) per test |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Codeforces 1360D Buying Shovels"] --> B["Topic Algebra"]
+A --> C["Concepts factor choice, minimize packages, divisor c..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Scan divisors up to sqrt n."]
+A --> F["Complexity Osqrt n per test"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Need split `n` shovels into packages of equal size.
+2. Package size must divide `n`.
+3. Choose largest divisor not exceeding `k`.
+4. Answer is `n / chosenDivisor`.
+5. This uses algebraic rearrangement and divisors.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S24_0["Need split n shovels into packages of equal size."]
+    S24_1["Package size must divide n."]
+    S24_2["Choose largest divisor not exceeding k."]
+    S24_3["Answer is n div chosenDivisor."]
+    S24_4["This uses algebraic rearrangement and divisors."]
+    S24_0 --> S24_1
+    S24_1 --> S24_2
+    S24_2 --> S24_3
+    S24_3 --> S24_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+n = 12, k = 5
+divisors not above 5 are 1 2 3 4
+largest is 4
+answer = 12 / 4 = 3 packages
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D24_0["n equals 12, k equals 5"]
+    D24_1["divisors not above 5 are 1 2 3 4"]
+    D24_2["largest is 4"]
+    D24_3["answer equals 12 div 4 equals 3 packages"]
+    D24_0 --> D24_1
+    D24_1 --> D24_2
+    D24_2 --> D24_3
+```
+
+</details>
+
+
+---
+
+## 13. Quadratic Formula
+
+### Formula
+
+For:
+
+```text
+ax^2 + bx + c = 0
+```
+
+Roots:
+
+```text
+x = (-b plus or minus sqrt(b^2 - 4ac)) / (2a)
+```
+
+Discriminant:
+
+```text
+D = b^2 - 4ac
+```
+
+### Cases
+
+```text
+D > 0: two real roots
+D = 0: one real root
+D < 0: no real roots
+```
+
+### Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Compute D"] --> B{D value}
+B -->|Positive| C["Two real roots"]
+B -->|Zero| D["One real root"]
+B -->|Negative| E["No real roots"]
+```
+
+</details>
+
+### Example
+
+```text
+x^2 - 5x + 6 = 0
+a = 1, b = -5, c = 6
+D = 25 - 24 = 1
+x = (5 plus or minus 1) / 2
+x = 3 or 2
+```
+
+### C++ Helper
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: priority queue
-// Form: shortest path state
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: Dijkstra with used coupon state.
-    // 3. Maintain invariant.
-    // 4. Return answer.
+vector<double> quadratic(double a, double b, double c) {
+    double D = b * b - 4 * a * c;
+    vector<double> roots;
+    if (D < 0) return roots;
+    roots.push_back((-b + sqrt(D)) / (2 * a));
+    if (D > 0) roots.push_back((-b - sqrt(D)) / (2 * a));
+    return roots;
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
+### CP Pattern
+
+Use quadratic logic when:
 
 ```text
-If you see    : shortest path state
-Think about   : priority queue
-Main action   : Dijkstra with used coupon state
-Core idea     : heap picks shortest state
+answer depends on triangular number
+x(x + 1) / 2 <= n
 ```
 
-</details>
+This gives approximately:
 
-[Back to index](#clickable-index)
+```text
+x around sqrt(2n)
+```
 
----
+### Practice Problem: [CSES Number Spiral](https://cses.fi/problemset/task/1071)
 
-<a id="easy-contains-duplicate-iii"></a>
+| Field | Details |
+|---|---|
+| Topic | Quadratic Formula |
+| Main concepts | square layers, parity, coordinate formula |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use layer equals max(row, col). |
+| Complexity | O(1) |
 
-## 100. CM — CSES Traffic Lights
 
-**Platform:** CSES  
-**Link:** [CSES Traffic Lights](https://cses.fi/problemset/task/1163)  
-**Pattern:** `set + multiset`  
-**Form:** `dynamic intervals`
+#### Mermaid Table Diagram
 
-### Mermaid Solution Flow
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Convert to intervals/events"]
-    A1["Sort by time/start"]
-    A0 --> A1
-    A2["Scan in order"]
-    A1 --> A2
-    A3["Maintain active/merged state"]
-    A2 --> A3
-    A4["Update answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **dynamic intervals**
-- Pattern: **set + multiset**
-- Tactic: **split segment**
-- Core intuition: longest gap after each insertion
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **set + multiset** because it keeps only the useful information needed for future operations.
-- **Main Trick:** split segment.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+A["CSES Number Spiral"] --> B["Topic Quadratic Formula"]
+A --> C["Concepts square layers, parity, coordinate formula"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use layer equals maxrow, col."]
+A --> F["Complexity O1"]
 ```
 
 </details>
 
+
+#### Approach Logic
+
+
+1. Each layer is based on maximum of row and column.
+2. Layer end value is square of layer number.
+3. The direction depends on odd or even layer.
+4. Though not solving roots, it trains square layer formulas.
+
+
+
+#### Detailed Solution Flowchart
+
 <details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : dynamic intervals
-Think about   : set + multiset
-Main action   : split segment
-Core idea     : longest gap after each insertion
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-room-allocation"></a>
-
-## 101. CM — CSES Room Allocation
-
-**Platform:** CSES  
-**Link:** [CSES Room Allocation](https://cses.fi/problemset/task/1164)  
-**Pattern:** `set/heap`  
-**Form:** `interval resources`
-
-### Mermaid Solution Flow
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Read candidate"]
-    A1["Push into heap"]
-    A0 --> A1
-    A2["Remove invalid/excess items"]
-    A1 --> A2
-    A3["Heap top is best"]
-    A2 --> A3
-    A4["Use answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **interval resources**
-- Pattern: **set/heap**
-- Tactic: **reuse earliest finishing room**
-- Core intuition: sorted endings choose available room
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **set/heap** because it keeps only the useful information needed for future operations.
-- **Main Trick:** reuse earliest finishing room.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log k)` or `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+    S25_0["Each layer is based on maximum of row and column."]
+    S25_1["Layer end value is square of layer number."]
+    S25_2["The direction depends on odd or even layer."]
+    S25_3["'Though not solving roots, it trains square layer fo..."]
+    S25_0 --> S25_1
+    S25_1 --> S25_2
+    S25_2 --> S25_3
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
+#### Dry Run
 
 ```text
-If you see    : interval resources
-Think about   : set/heap
-Main action   : reuse earliest finishing room
-Core idea     : sorted endings choose available room
+row = 4, col = 2
+layer = 4
+layer square = 16
+even layer direction uses row as increasing side
+answer derived from 16 and offset
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D25_0["row equals 4, col equals 2"]
+    D25_1["layer equals 4"]
+    D25_2["layer square equals 16"]
+    D25_3["even layer direction uses row as increasing side"]
+    D25_4["answer derived from 16 and offset"]
+    D25_0 --> D25_1
+    D25_1 --> D25_2
+    D25_2 --> D25_3
+    D25_3 --> D25_4
 ```
 
 </details>
 
-[Back to index](#clickable-index)
+### Practice Problem: [Codeforces 1352C K-th Not Divisible by n](https://codeforces.com/problemset/problem/1352/C)
 
----
+| Field | Details |
+|---|---|
+| Topic | Quadratic Formula |
+| Main concepts | counting formula, inverse reasoning |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use derived formula. |
+| Complexity | O(1) |
 
-<a id="cm-cses-sliding-median"></a>
 
-## 102. CM — CSES Sliding Median
+#### Mermaid Table Diagram
 
-**Platform:** CSES  
-**Link:** [CSES Sliding Median](https://cses.fi/problemset/task/1076)  
-**Pattern:** `two multisets`  
-**Form:** `window median`
-
-### Mermaid Solution Flow
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Insert/delete value"]
-    A1["Maintain sorted buckets/halves"]
-    A0 --> A1
-    A2["Rebalance if needed"]
-    A1 --> A2
-    A3["Read boundary value"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
+A["Codeforces 1352C Kminusth Not Divisible by n"] --> B["Topic Quadratic Formula"]
+A --> C["Concepts counting formula, inverse reasoning"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use derived formula."]
+A --> F["Complexity O1"]
 ```
 
-<details>
-<summary>Hints</summary>
+</details>
 
-- Form: **window median**
-- Pattern: **two multisets**
-- Tactic: **balance halves**
-- Core intuition: median is max of lower half
-- First write brute force, then identify which repeated operation the STL structure removes.
+
+#### Approach Logic
+
+
+1. Need kth positive integer not divisible by n.
+2. Among numbers up to x, count not divisible by n is `x - floor(x / n)`.
+3. Find smallest x such that this count is at least k.
+4. Formula solution exists: answer is `k + floor((k - 1)/(n - 1))`.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S26_0["Need kth positive integer not divisible by n."]
+    S26_1["'Among numbers up to x, count not divisible by n is..."]
+    S26_2["Find smallest x such that this count is at least k."]
+    S26_3["'Formula solution exists answer is k plus floor k - 1..."]
+    S26_0 --> S26_1
+    S26_1 --> S26_2
+    S26_2 --> S26_3
+```
 
 </details>
 
-<details>
-<summary>Approach</summary>
+#### Dry Run
 
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two multisets** because it keeps only the useful information needed for future operations.
-- **Main Trick:** balance halves.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
+```text
+n = 3, k = 7
+numbers not divisible by 3:
+1 2 4 5 7 8 10
+answer = 10
+formula = 7 + floor(6 / 2) = 10
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D26_0["n equals 3, k equals 7"]
+    D26_1["numbers not divisible by 3"]
+    D26_2["1 2 4 5 7 8 10"]
+    D26_3["answer equals 10"]
+    D26_4["formula equals 7 plus floor 6 div 2 equals 10"]
+    D26_0 --> D26_1
+    D26_1 --> D26_2
+    D26_2 --> D26_3
+    D26_3 --> D26_4
+```
 
 </details>
 
+
+---
+
+## 14. Geometry Basics
+
+### Formulas
+
+Rectangle:
+
+```text
+area = length * width
+perimeter = 2(length + width)
+```
+
+Triangle:
+
+```text
+area = base * height / 2
+```
+
+Circle:
+
+```text
+area = pi * r^2
+circumference = 2 * pi * r
+```
+
+Distance between points:
+
+```text
+distance = sqrt((x2 - x1)^2 + (y2 - y1)^2)
+```
+
+Slope:
+
+```text
+slope = (y2 - y1) / (x2 - x1)
+```
+
+Vector cross product:
+
+```text
+cross(a, b) = ax * by - ay * bx
+```
+
+Triangle doubled area:
+
+```text
+abs(cross(b - a, c - a))
+```
+
+### Flowchart
+
 <details>
-<summary>Code / Template</summary>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Geometry problem"] --> B["Identify shape"]
+B --> C["Choose formula"]
+C --> D["Plug values"]
+D --> E["Check precision"]
+```
+
+</details>
+
+### C++ Helpers
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
-struct TwoHalves {
-    multiset<int> low, high;
-
-    void rebalance() {
-        while (low.size() > high.size() + 1) {
-            high.insert(*low.rbegin());
-            low.erase(prev(low.end()));
-        }
-
-        while (high.size() > low.size()) {
-            low.insert(*high.begin());
-            high.erase(high.begin());
-        }
-    }
-
-    void add(int x) {
-        if (low.empty() || x <= *low.rbegin()) low.insert(x);
-        else high.insert(x);
-
-        rebalance();
-    }
-
-    void remove(int x) {
-        auto it = low.find(x);
-
-        if (it != low.end()) low.erase(it);
-        else high.erase(high.find(x));
-
-        rebalance();
-    }
-
-    int median() {
-        return *low.rbegin();
-    }
+struct Point {
+    long long x, y;
 };
-```
 
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : window median
-Think about   : two multisets
-Main action   : balance halves
-Core idea     : median is max of lower half
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-two-sum"></a>
-
-## 103. CM — CSES Sum of Four Values
-
-**Platform:** CSES  
-**Link:** [CSES Sum of Four Values](https://cses.fi/problemset/task/1642)  
-**Pattern:** `map pairs`  
-**Form:** `pair sum lookup`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **pair sum lookup**
-- Pattern: **map pairs**
-- Tactic: **store earlier pairs**
-- Core intuition: two pairs form target
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **map pairs** because it keeps only the useful information needed for future operations.
-- **Main Trick:** store earlier pairs.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
+long long cross(Point a, Point b, Point c) {
+    long long x1 = b.x - a.x;
+    long long y1 = b.y - a.y;
+    long long x2 = c.x - a.x;
+    long long y2 = c.y - a.y;
+    return x1 * y2 - y1 * x2;
 }
 
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
+long long dist2(Point a, Point b) {
+    long long dx = a.x - b.x;
+    long long dy = a.y - b.y;
+    return dx * dx + dy * dy;
 }
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
+### Pattern
+
+If only comparison is needed, avoid `sqrt`:
 
 ```text
-If you see    : pair sum lookup
-Think about   : map pairs
-Main action   : store earlier pairs
-Core idea     : two pairs form target
+compare squared distances instead
 ```
 
-</details>
+### Practice Problem: [CSES Point Location Test](https://cses.fi/problemset/task/2189)
 
-[Back to index](#clickable-index)
+| Field | Details |
+|---|---|
+| Topic | Geometry |
+| Main concepts | cross product, orientation |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use integer cross product. |
+| Complexity | O(1) per query |
 
----
 
-<a id="cm-cses-subarray-sums-ii"></a>
+#### Mermaid Table Diagram
 
-## 104. CM — CSES Subarray Sums II
-
-**Platform:** CSES  
-**Link:** [CSES Subarray Sums II](https://cses.fi/problemset/task/1661)  
-**Pattern:** `map frequency`  
-**Form:** `prefix count`
-
-### Mermaid Solution Flow
+<details>
+<summary>Mermaid Diagram</summary>
 
 ```mermaid
 flowchart TD
-    A0["Scan input"]
-    A1["Update frequency / lookup map"]
-    A0 --> A1
-    A2["Check complement or needed state"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Store current state"]
-    A3 --> A4
+A["CSES Point Location Test"] --> B["Topic Geometry"]
+A --> C["Concepts cross product, orientation"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use integer cross product."]
+A --> F["Complexity O1 per query"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Given directed line from point A to point B and query point C.
+2. Compute cross product of vectors AB and AC.
+3. If cross is positive, C is on left side.
+4. If cross is negative, C is on right side.
+5. If cross is zero, points are collinear.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S27_0["'Given directed line from point A to point B and que..."]
+    S27_1["Compute cross product of vectors AB and AC."]
+    S27_2["If cross is positive, C is on left side."]
+    S27_3["If cross is negative, C is on right side."]
+    S27_4["If cross is zero, points are collinear."]
+    S27_0 --> S27_1
+    S27_1 --> S27_2
+    S27_2 --> S27_3
+    S27_3 --> S27_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+A = (0,0), B = (4,0), C = (2,2)
+AB = (4,0), AC = (2,2)
+cross = 4*2 - 0*2 = 8
+positive so C is left
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D27_0["A equals 0,0 , B equals 4,0 , C equals 2,2"]
+    D27_1["AB equals 4,0 , AC equals 2,2"]
+    D27_2["cross equals 42 - 02 equals 8"]
+    D27_3["positive so C is left"]
+    D27_0 --> D27_1
+    D27_1 --> D27_2
+    D27_2 --> D27_3
+```
+
+</details>
+
+### Practice Problem: [CSES Polygon Area](https://cses.fi/problemset/task/2191)
+
+| Field | Details |
+|---|---|
+| Topic | Geometry |
+| Main concepts | shoelace formula, cross product sum |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use long long cross sum. |
+| Complexity | O(n) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Polygon Area"] --> B["Topic Geometry"]
+A --> C["Concepts shoelace formula, cross product sum"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use long long cross sum."]
+A --> F["Complexity On"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Traverse polygon vertices in order.
+2. Add `xi * y_next - yi * x_next` for every edge.
+3. Absolute value of this sum is twice the area.
+4. Print doubled area if problem asks doubled area, otherwise divide by two carefully.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S28_0["Traverse polygon vertices in order."]
+    S28_1["Add xi ynext - yi xnext for every edge."]
+    S28_2["Absolute value of this sum is twice the area."]
+    S28_3["'Print doubled area if problem asks doubled area, ot..."]
+    S28_0 --> S28_1
+    S28_1 --> S28_2
+    S28_2 --> S28_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+Triangle (0,0), (4,0), (0,3)
+sum = 0 + 12 + 0 = 12
+area = 12 / 2 = 6
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D28_0["Triangle 0,0 , 4,0 , 0,3"]
+    D28_1["sum equals 0 plus 12 plus 0 equals 12"]
+    D28_2["area equals 12 div 2 equals 6"]
+    D28_0 --> D28_1
+    D28_1 --> D28_2
+```
+
+</details>
+
+
+---
+
+## 15. Big O Mathematics
+
+### Common complexities
+
+```text
+O(1)        constant
+O(log n)    halving
+O(n)        one loop
+O(n log n)  sorting or divide and conquer with linear merge
+O(n^2)      nested loops
+O(2^n)      subsets
+O(n!)       permutations
+```
+
+### Loop formulas
+
+Full nested loop:
+
+```text
+n * n = n^2
+```
+
+Triangular loop:
+
+```text
+1 + 2 + ... + n = n(n + 1) / 2 = O(n^2)
+```
+
+Halving loop:
+
+```text
+n, n/2, n/4, ..., 1 = O(log n)
+```
+
+### Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Analyze code"] --> B{Single loop}
+B -->|Yes| C["O n"]
+B -->|No| D{Nested loops}
+D -->|Yes| E["O n squared usually"]
+D -->|No| F{Divide by two}
+F -->|Yes| G["O log n"]
+F -->|No| H["Check recursion or data structure"]
+```
+
+</details>
+
+### Mental constraint guide
+
+```text
+n <= 10        O(n!) or O(2^n) may pass
+n <= 20        O(2^n) may pass
+n <= 500       O(n^3) may pass
+n <= 5000      O(n^2) may pass
+n <= 200000    O(n log n) usually needed
+n <= 1000000   O(n) or O(n log n)
+n >= 1000000000 O(log n) or O(1)
+```
+
+### Practice Problem: [CSES Apartments](https://cses.fi/problemset/task/1084)
+
+| Field | Details |
+|---|---|
+| Topic | Big O |
+| Main concepts | sorting, two pointers, complexity reduction |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Sort then two pointers. |
+| Complexity | O(n log n plus m log m) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Apartments"] --> B["Topic Big O"]
+A --> C["Concepts sorting, two pointers, complexity reduction"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Sort then two pointers."]
+A --> F["Complexity On log n plus m log m"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Sort applicants and apartments.
+2. Use two pointers.
+3. If apartment fits applicant, match both.
+4. If apartment too small, move apartment pointer.
+5. If apartment too large, move applicant pointer.
+6. Complexity is sorting plus linear scan.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S29_0["Sort applicants and apartments."]
+    S29_1["Use two pointers."]
+    S29_2["If apartment fits applicant, match both."]
+    S29_3["If apartment too small, move apartment pointer."]
+    S29_4["If apartment too large, move applicant pointer."]
+    S29_5["Complexity is sorting plus linear scan."]
+    S29_0 --> S29_1
+    S29_1 --> S29_2
+    S29_2 --> S29_3
+    S29_3 --> S29_4
+    S29_4 --> S29_5
+```
+
+</details>
+
+#### Dry Run
+
+```text
+applicants = 60 45 80
+apartments = 30 60 75
+k = 5
+45 cannot use 30, move apartment
+45 cannot use 60 if range is 40 to 50, move applicant
+60 matches 60
+answer includes this match
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D29_0["applicants equals 60 45 80"]
+    D29_1["apartments equals 30 60 75"]
+    D29_2["k equals 5"]
+    D29_3["45 cannot use 30, move apartment"]
+    D29_4["45 cannot use 60 if range is 40 to 50, move applicant"]
+    D29_5["60 matches 60"]
+    D29_6["answer includes this match"]
+    D29_0 --> D29_1
+    D29_1 --> D29_2
+    D29_2 --> D29_3
+    D29_3 --> D29_4
+    D29_4 --> D29_5
+    D29_5 --> D29_6
+```
+
+</details>
+
+### Practice Problem: [CSES Ferris Wheel](https://cses.fi/problemset/task/1090)
+
+| Field | Details |
+|---|---|
+| Topic | Big O |
+| Main concepts | greedy, sorting, two pointers |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Sort and use two pointers. |
+| Complexity | O(n log n) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Ferris Wheel"] --> B["Topic Big O"]
+A --> C["Concepts greedy, sorting, two pointers"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Sort and use two pointers."]
+A --> F["Complexity On log n"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+1. Sort weights.
+2. Pair lightest with heaviest when possible.
+3. If they fit, use one gondola for both.
+4. Otherwise heaviest goes alone.
+5. Move pointers and count gondolas.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S30_0["Sort weights."]
+    S30_1["Pair lightest with heaviest when possible."]
+    S30_2["If they fit, use one gondola for both."]
+    S30_3["Otherwise heaviest goes alone."]
+    S30_4["Move pointers and count gondolas."]
+    S30_0 --> S30_1
+    S30_1 --> S30_2
+    S30_2 --> S30_3
+    S30_3 --> S30_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+weights = 2 3 7 9
+limit = 10
+2 plus 9 too big so 9 alone
+2 plus 7 fits so pair
+3 alone
+answer = 3
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D30_0["weights equals 2 3 7 9"]
+    D30_1["limit equals 10"]
+    D30_2["2 plus 9 too big so 9 alone"]
+    D30_3["2 plus 7 fits so pair"]
+    D30_4["3 alone"]
+    D30_5["answer equals 3"]
+    D30_0 --> D30_1
+    D30_1 --> D30_2
+    D30_2 --> D30_3
+    D30_3 --> D30_4
+    D30_4 --> D30_5
+```
+
+</details>
+
+
+---
+
+## 16. CP Problem Solving Framework
+
+### Universal checklist
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Stuck"] --> B["Try n equals one two three"]
+B --> C["Write brute force"]
+C --> D["Observe pattern"]
+D --> E["Convert pattern to formula"]
+E --> F["Check constraints"]
+F --> G["Use helper"]
+G --> H["Test edge cases"]
+```
+
+</details>
+
+### Pattern recognition table
+
+| Problem phrase | Think |
+|---|---|
+| after many steps | modulo |
+| minimum groups | ceiling division |
+| repeated multiplication | binary exponentiation |
+| divide under mod | modular inverse |
+| many range sums | prefix sum |
+| common divisor | gcd |
+| cycles meet | lcm |
+| choose objects | combination |
+| order arrangements | permutation |
+| halves each time | logarithm |
+| loop sum | summation formula |
+| prime factors | divisor formula |
+| maintain truth | invariant |
+| answer monotonic | binary search on answer |
+| total minus invalid | complement counting |
+
+### Constraints to solution table
+
+| Constraint | Usually possible |
+|---|---|
+| n <= 10 | permutations or exhaustive search |
+| n <= 20 | bitmask subsets |
+| n <= 500 | cubic DP or Floyd |
+| n <= 5000 | quadratic |
+| n <= 200000 | n log n |
+| n <= 1000000 | linear or sieve |
+| n up to 1e9 | sqrt, log, or formula |
+| n up to 1e18 | log, digit DP, math |
+
+### Debugging checklist
+
+1. Are indices zero based or one based?
+2. Is overflow possible?
+3. Does modulo need normalization?
+4. Are edge cases `0` and `1` handled?
+5. Is the answer type `long long`?
+6. Can multiplication use `__int128`?
+7. Did you reset data between test cases?
+8. Is the formula valid for all constraints?
+
+
+---
+
+## 17. Candidate Master Pattern Library
+
+This section adds deeper patterns that often separate beginner math from CM direction.
+
+### Pattern 1: Invariant
+
+An invariant is something that remains true after every operation.
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Operation problem"] --> B["Find value that does not change"]
+B --> C["Use invariant to prove possible"]
+C --> D["Construct or reject"]
+```
+
+</details>
+
+| Signal | Example thought |
+|---|---|
+| can perform operation many times | what remains unchanged |
+| transform array | sum parity or gcd may stay fixed |
+| game or moves | parity may decide winner |
+
+### Pattern 2: Complement Counting
+
+Count everything, subtract bad cases.
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Count good cases"] --> B{Bad cases easier}
+B -->|Yes| C["Count total"]
+C --> D["Count bad"]
+D --> E["Good equals total minus bad"]
+B -->|No| F["Count good directly"]
+```
+
+</details>
+
+### Pattern 3: Binary Search on Answer
+
+If answer has monotonic property, binary search it.
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Candidate answer mid"] --> B["Check if mid works"]
+B --> C{Works}
+C -->|Yes| D["Try smaller or larger better side"]
+C -->|No| E["Move opposite side"]
+```
+
+</details>
+
+| Requirement | Meaning |
+|---|---|
+| Search space | possible answer values |
+| Check function | tells if candidate works |
+| Monotonic | once true always true, or once false always false |
+
+### Pattern 4: Difference Array
+
+For many range additions, use difference array.
+
+```text
+diff[l] += x
+diff[r + 1] -= x
+final array = prefix of diff
 ```
 
 <details>
-<summary>Hints</summary>
+<summary>Mermaid Diagram</summary>
 
-- Form: **prefix count**
-- Pattern: **map frequency**
-- Tactic: **count prefix minus x**
-- Core intuition: every old prefix creates subarray
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **map frequency** because it keeps only the useful information needed for future operations.
-- **Main Trick:** count prefix minus x.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
+```mermaid
+flowchart TD
+A["Range update"] --> B["Mark start plus value"]
+B --> C["Mark after end minus value"]
+C --> D["Prefix diff to recover array"]
+```
 
 </details>
 
+### Pattern 5: Prefix with Frequency
+
+Sometimes prefix sum is not enough. Use prefix counts.
+
+```text
+count of value v in range l r = pref[v][r] - pref[v][l - 1]
+```
+
+### Pattern 6: GCD of Differences
+
+For shifted arrays:
+
+```text
+gcd(a1 + x, a2 + x, ..., an + x)
+= gcd(a1 + x, a2 - a1, a3 - a1, ..., an - a1)
+```
+
+This is important for Codeforces Row GCD style problems.
+
+### Pattern 7: Prime Exponent Thinking
+
+If:
+
+```text
+n = p1^a1 * p2^a2 * ... * pk^ak
+```
+
+Then many properties become exponent problems:
+
+| Question | Formula |
+|---|---|
+| divisor count | product of ai plus one |
+| perfect square | all ai even |
+| perfect cube | all ai divisible by three |
+| gcd exponents | min exponents |
+| lcm exponents | max exponents |
+
+### Pattern 8: Modulo State Compression
+
+If process repeats based on remainder, track remainder state.
+
+Examples:
+
+- prefix sum modulo k
+- cycle detection
+- DP by remainder
+- divisibility tests
+
+### Pattern 9: Linear Contribution
+
+Instead of counting each object directly, count how much each object contributes.
+
 <details>
-<summary>Code / Template</summary>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Total answer"] --> B["Pick one element"]
+B --> C["Count times it appears"]
+C --> D["Multiply value by count"]
+D --> E["Sum all contributions"]
+```
+
+</details>
+
+This is common in subarray contribution problems.
+
+### Pattern 10: Indicator Variables
+
+For expected value:
+
+```text
+E[sum Xi] = sum E[Xi]
+```
+
+Even if events are dependent, linearity still works.
+
+
+---
+
+## 18. Advanced Practice Problems With Approach Flow
+
+### Practice Problem: [CSES Factory Machines](https://cses.fi/problemset/task/1620)
+
+| Field | Details |
+|---|---|
+| Topic | Binary Search on Answer |
+| Main concepts | binary search, monotonic predicate, production count |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Binary search minimum time. |
+| Complexity | O(n log answer) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Factory Machines"] --> B["Topic Binary Search on Answer"]
+A --> C["Concepts binary search, monotonic predicate, product..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Binary search minimum time."]
+A --> F["Complexity On log answer"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+     1. If time `t` is enough to produce required products, any larger time is also enough.
+     2. This monotonic property allows binary search.
+     3. Check function sums `t / machineTime[i]`.
+     4. Stop early if count reaches target to avoid overflow.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S31_0["'If time t is enough to produce required products, a..."]
+    S31_1["This monotonic property allows binary search."]
+    S31_2["Check function sums t div machineTime i ."]
+    S31_3["Stop early if count reaches target to avoid overflow."]
+    S31_0 --> S31_1
+    S31_1 --> S31_2
+    S31_2 --> S31_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+machines = 2 3 7
+target = 5
+time = 6
+produced = 6/2 + 6/3 + 6/7 = 3 + 2 + 0 = 5
+time 6 works
+try smaller time
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D31_0["machines equals 2 3 7"]
+    D31_1["target equals 5"]
+    D31_2["time equals 6"]
+    D31_3["produced equals 6 div 2 plus 6 div 3 plus 6 div 7 equals 3 plus 2 p..."]
+    D31_4["time 6 works"]
+    D31_5["try smaller time"]
+    D31_0 --> D31_1
+    D31_1 --> D31_2
+    D31_2 --> D31_3
+    D31_3 --> D31_4
+    D31_4 --> D31_5
+```
+
+</details>
+
+### Practice Problem: [CSES Increasing Array Queries](https://cses.fi/problemset/task/2416)
+
+| Field | Details |
+|---|---|
+| Topic | Difference Array |
+| Main concepts | prefix style thinking, monotonic stack, contribution |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Study after basic prefix sums. |
+| Complexity | Advanced |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Increasing Array Queries"] --> B["Topic Difference Array"]
+A --> C["Concepts prefix style thinking, monotonic stack, con..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Study after basic prefix sums."]
+A --> F["Complexity Advanced"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+     1. This is more advanced than basic prefix sum.
+     2. It asks how much must be added to make subarray non decreasing.
+     3. Use structure over next greater elements and prefix contributions.
+     4. Learn it after mastering prefix and monotonic stack.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S32_0["This is more advanced than basic prefix sum."]
+    S32_1["'It asks how much must be added to make subarray non..."]
+    S32_2["'Use structure over next greater elements and prefix..."]
+    S32_3["Learn it after mastering prefix and monotonic stack."]
+    S32_0 --> S32_1
+    S32_1 --> S32_2
+    S32_2 --> S32_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+array = 3 1 2
+to make full range non decreasing:
+1 becomes 3 add 2
+2 becomes 3 add 1
+total = 3
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D32_0["array equals 3 1 2"]
+    D32_1["to make full range non decreasing"]
+    D32_2["1 becomes 3 add 2"]
+    D32_3["2 becomes 3 add 1"]
+    D32_4["total equals 3"]
+    D32_0 --> D32_1
+    D32_1 --> D32_2
+    D32_2 --> D32_3
+    D32_3 --> D32_4
+```
+
+</details>
+
+### Practice Problem: [CSES Counting Coprime Pairs](https://cses.fi/problemset/task/2417)
+
+| Field | Details |
+|---|---|
+| Topic | Inclusion Exclusion |
+| Main concepts | mobius, inclusion exclusion, coprime counting |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use divisor counts and Mobius. |
+| Complexity | O(maxA log maxA) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Counting Coprime Pairs"] --> B["Topic Inclusion Exclusion"]
+A --> C["Concepts mobius, inclusion exclusion, coprime counting"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use divisor counts and Mobius."]
+A --> F["Complexity OmaxA log maxA"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+     1. Count how many numbers are divisible by each d.
+     2. Number of pairs with gcd exactly one can be counted using Mobius inversion.
+     3. This is advanced number theory.
+     4. Start by understanding divisor multiples and inclusion exclusion.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S33_0["Count how many numbers are divisible by each d."]
+    S33_1["'Number of pairs with gcd exactly one can be counted..."]
+    S33_2["This is advanced number theory."]
+    S33_3["'Start by understanding divisor multiples and inclus..."]
+    S33_0 --> S33_1
+    S33_1 --> S33_2
+    S33_2 --> S33_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+numbers = 2 3 4
+coprime pairs:
+2 and 3 yes
+2 and 4 no
+3 and 4 yes
+answer = 2
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D33_0["numbers equals 2 3 4"]
+    D33_1["coprime pairs"]
+    D33_2["2 and 3 yes"]
+    D33_3["2 and 4 no"]
+    D33_4["3 and 4 yes"]
+    D33_5["answer equals 2"]
+    D33_0 --> D33_1
+    D33_1 --> D33_2
+    D33_2 --> D33_3
+    D33_3 --> D33_4
+    D33_4 --> D33_5
+```
+
+</details>
+
+### Practice Problem: [CSES Nim Game I](https://cses.fi/problemset/task/1730)
+
+| Field | Details |
+|---|---|
+| Topic | Game Theory |
+| Main concepts | xor invariant, impartial games |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Xor all piles. |
+| Complexity | O(n) |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["CSES Nim Game I"] --> B["Topic Game Theory"]
+A --> C["Concepts xor invariant, impartial games"]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Xor all piles."]
+A --> F["Complexity On"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+     1. Compute xor of all pile sizes.
+     2. If xor is zero, current player loses with perfect play.
+     3. Otherwise current player wins.
+     4. This is a core game theory pattern.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S34_0["Compute xor of all pile sizes."]
+    S34_1["'If xor is zero, current player loses with perfect p..."]
+    S34_2["Otherwise current player wins."]
+    S34_3["This is a core game theory pattern."]
+    S34_0 --> S34_1
+    S34_1 --> S34_2
+    S34_2 --> S34_3
+```
+
+</details>
+
+#### Dry Run
+
+```text
+piles = 3 4 5
+xor = 3 xor 4 xor 5 = 2
+xor is non zero
+first player wins
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D34_0["piles equals 3 4 5"]
+    D34_1["xor equals 3 xor 4 xor 5 equals 2"]
+    D34_2["xor is non zero"]
+    D34_3["first player wins"]
+    D34_0 --> D34_1
+    D34_1 --> D34_2
+    D34_2 --> D34_3
+```
+
+</details>
+
+### Practice Problem: [Codeforces 1096F Inversion Expectation](https://codeforces.com/problemset/problem/1096/F)
+
+| Field | Details |
+|---|---|
+| Topic | Expected Value |
+| Main concepts | linearity of expectation, inversions, modular probability |
+| Goal | Convert the statement into a known math pattern |
+| Code hint | Use linearity of expectation. |
+| Complexity | Advanced |
+
+
+#### Mermaid Table Diagram
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+A["Codeforces 1096F Inversion Expectation"] --> B["Topic Expected Value"]
+A --> C["Concepts linearity of expectation, inversions, modul..."]
+A --> D["Goal Convert the statement into a known math pattern"]
+A --> E["Hint Use linearity of expectation."]
+A --> F["Complexity Advanced"]
+```
+
+</details>
+
+
+#### Approach Logic
+
+
+     1. Expected inversions can be calculated pair by pair.
+     2. For each pair, add probability that pair is inverted.
+     3. Known values contribute 0 or 1.
+     4. Unknown values contribute probability under remaining permutation.
+     5. This is advanced but very important for 1800 plus.
+
+
+
+#### Detailed Solution Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart TD
+    S35_0["Expected inversions can be calculated pair by pair."]
+    S35_1["For each pair, add probability that pair is inverted."]
+    S35_2["Known values contribute 0 or 1."]
+    S35_3["'Unknown values contribute probability under remaini..."]
+    S35_4["This is advanced but very important for 1800 plus."]
+    S35_0 --> S35_1
+    S35_1 --> S35_2
+    S35_2 --> S35_3
+    S35_3 --> S35_4
+```
+
+</details>
+
+#### Dry Run
+
+```text
+array = [2, unknown, 1]
+pair 2 and 1 is always inversion
+pairs with unknown depend on probability
+total expectation is sum of pair probabilities
+```
+
+#### Dry Run Flowchart
+
+<details>
+<summary>Mermaid Diagram</summary>
+
+```mermaid
+flowchart LR
+    D35_0["array equals 2, unknown, 1"]
+    D35_1["pair 2 and 1 is always inversion"]
+    D35_2["pairs with unknown depend on probability"]
+    D35_3["total expectation is sum of pair probabilities"]
+    D35_0 --> D35_1
+    D35_1 --> D35_2
+    D35_2 --> D35_3
+```
+
+</details>
+
+
+---
+
+## 19. Final Formula Sheet
+
+```text
+ceil(a / b) = (a + b - 1) / b
+ceil(a / b) = a / b + (a % b != 0)
+
+(a + b) mod M = ((a mod M) + (b mod M)) mod M
+(a - b) mod M = ((a mod M) - (b mod M) + M) mod M
+(a * b) mod M = ((a mod M) * (b mod M)) mod M
+
+x^n by binary exponentiation = O(log n)
+
+a^(-1) mod M = a^(M - 2) mod M, when M is prime
+
+gcd(a, b) = gcd(b, a mod b)
+lcm(a, b) = a / gcd(a, b) * b
+
+a_n arithmetic = a_1 + (n - 1)d
+S_n arithmetic = n(a_1 + a_n) / 2
+
+a_n geometric = a_1 * r^(n - 1)
+S_n geometric = a_1(r^n - 1) / (r - 1)
+
+1 + 2 + ... + n = n(n + 1) / 2
+1^2 + 2^2 + ... + n^2 = n(n + 1)(2n + 1) / 6
+1^3 + 2^3 + ... + n^3 = [n(n + 1) / 2]^2
+
+P(n, r) = n! / (n - r)!
+C(n, r) = n! / (r!(n - r)!)
+
+stars and bars:
+x1 + x2 + ... + xk = n
+ways = C(n + k - 1, k - 1)
+
+If n = p1^a1 * p2^a2 * ... * pk^ak:
+number_of_divisors = (a1 + 1)(a2 + 1)...(ak + 1)
+
+bits = floor(log2(n)) + 1
+digits = floor(log10(n)) + 1
+
+Distance = sqrt((x2 - x1)^2 + (y2 - y1)^2)
+Squared distance = (x2 - x1)^2 + (y2 - y1)^2
+Cross product = ax * by - ay * bx
+
+Expected value:
+E[X + Y] = E[X] + E[Y]
+
+Binary search on answer:
+find minimum x such that check(x) is true
+```
+
+
+---
+
+## 20. Practice Roadmap
+
+### Level 1: Foundation
+
+| Order | Topic | Problems |
+|---:|---|---|
+| 1 | Ceiling division and simple math | Codeforces 151A, Codeforces 919A |
+| 2 | Modulo and cycles | Codeforces 913A |
+| 3 | Prefix sum | CSES Static Range Sum Queries |
+| 4 | GCD and LCM | CSES Common Divisors |
+| 5 | Basic prime checking | CSES Counting Divisors |
+
+### Level 2: Core CP Math
+
+| Order | Topic | Problems |
+|---:|---|---|
+| 1 | Binary exponentiation | CSES Exponentiation |
+| 2 | Nested exponentiation | CSES Exponentiation II |
+| 3 | Modular inverse | CSES Binomial Coefficients |
+| 4 | Stars and bars | CSES Distributing Apples |
+| 5 | Prime factorization | Codeforces 546D |
+
+### Level 3: Candidate Master Direction
+
+| Order | Topic | Problems |
+|---:|---|---|
+| 1 | GCD transformation | Codeforces Row GCD |
+| 2 | Binary search answer | CSES Factory Machines |
+| 3 | Geometry cross product | CSES Point Location Test |
+| 4 | Shoelace formula | CSES Polygon Area |
+| 5 | Game theory xor | CSES Nim Game I |
+| 6 | Expected value | Codeforces 1096F |
+| 7 | Inclusion exclusion | CSES Counting Coprime Pairs |
+
+### Recommended Weekly Plan
+
+| Day | Work |
+|---|---|
+| Day 1 | Read one topic and implement helper from memory |
+| Day 2 | Solve two easy problems from that topic |
+| Day 3 | Solve one medium problem and write dry run |
+| Day 4 | Revisit wrong submissions and update notes |
+| Day 5 | Mix topic with previous topic |
+| Day 6 | Timed practice |
+| Day 7 | Review formulas and rebuild cheat sheet |
+
+### Final Mental Checklist Before Coding
+
+Ask these questions:
+
+1. Can I replace simulation with a formula?
+2. Is there a modulo cycle?
+3. Is this repeated multiplication?
+4. Can I use binary exponentiation?
+5. Is division under modulo actually modular inverse?
+6. Can a range query be answered by prefix sum?
+7. Is there a GCD or LCM hidden in the problem?
+8. Can I count total minus bad?
+9. Does order matter?
+10. Is the loop actually a known summation?
+11. Can I avoid overflow using `long long` or `__int128`?
+12. Can I divide before multiplying?
+13. Are there edge cases: 0, 1, negative, max constraints?
+14. Is there a monotonic check for binary search?
+15. Is there an invariant that never changes?
+
+
+---
+
+## 21. Compact C++ Template
+
+<details>
+<summary>C++ Code</summary>
 
 ```cpp
-long long countSubarraySumK(vector<int>& a, long long k) {
-    unordered_map<long long,long long> freq;
-    freq[0] = 1;
+#include <bits/stdc++.h>
+using namespace std;
 
-    long long pref = 0;
-    long long ans = 0;
+using ll = long long;
+const ll MOD = 1000000007LL;
 
-    for (int x : a) {
-        pref += x;
-        ans += freq[pref - k];
-        freq[pref]++;
+ll ceilDiv(ll a, ll b) {
+    return a / b + (a % b != 0);
+}
+
+ll norm(ll x, ll mod) {
+    x %= mod;
+    if (x < 0) x += mod;
+    return x;
+}
+
+ll modPow(ll base, ll exp, ll mod) {
+    ll res = 1 % mod;
+    base %= mod;
+    while (exp > 0) {
+        if (exp & 1) res = (__int128)res * base % mod;
+        base = (__int128)base * base % mod;
+        exp >>= 1;
     }
-
-    return ans;
+    return res;
 }
-```
 
-</details>
+ll modInversePrime(ll a, ll mod) {
+    return modPow(a, mod - 2, mod);
+}
 
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : prefix count
-Think about   : map frequency
-Main action   : count prefix minus x
-Core idea     : every old prefix creates subarray
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-meeting-rooms"></a>
-
-## 105. CM — CSES Movie Festival
-
-**Platform:** CSES  
-**Link:** [CSES Movie Festival](https://cses.fi/problemset/task/1629)  
-**Pattern:** `sort by end`  
-**Form:** `activity selection`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **activity selection**
-- Pattern: **sort by end**
-- Tactic: **take earliest finishing**
-- Core intuition: greedy maximizes remaining time
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort by end** because it keeps only the useful information needed for future operations.
-- **Main Trick:** take earliest finishing.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+ll gcdll(ll a, ll b) {
+    while (b) {
+        ll r = a % b;
+        a = b;
+        b = r;
     }
+    return a;
 }
-```
 
-</details>
+ll lcmll(ll a, ll b) {
+    return a / gcdll(a, b) * b;
+}
 
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : activity selection
-Think about   : sort by end
-Main action   : take earliest finishing
-Core idea     : greedy maximizes remaining time
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-tasks-and-deadlines"></a>
-
-## 106. CM — CSES Tasks and Deadlines
-
-**Platform:** CSES  
-**Link:** [CSES Tasks and Deadlines](https://cses.fi/problemset/task/1630)  
-**Pattern:** `sort by duration`  
-**Form:** `scheduling`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **scheduling**
-- Pattern: **sort by duration**
-- Tactic: **process shortest duration first?**
-- Core intuition: minimize accumulated finish effect
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort by duration** because it keeps only the useful information needed for future operations.
-- **Main Trick:** process shortest duration first?.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+bool isPrime(ll n) {
+    if (n < 2) return false;
+    for (ll d = 2; d * d <= n; d++) {
+        if (n % d == 0) return false;
     }
+    return true;
 }
-```
 
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : scheduling
-Think about   : sort by duration
-Main action   : process shortest duration first?
-Core idea     : minimize accumulated finish effect
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-squares-of-a-sorted-array"></a>
-
-## 107. CM — CSES Sum of Two Values
-
-**Platform:** CSES  
-**Link:** [CSES Sum of Two Values](https://cses.fi/problemset/task/1640)  
-**Pattern:** `sort pairs`  
-**Form:** `pair sum`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **pair sum**
-- Pattern: **sort pairs**
-- Tactic: **two pointers**
-- Core intuition: sorted sum moves predictably
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort pairs** because it keeps only the useful information needed for future operations.
-- **Main Trick:** two pointers.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+vector<pair<ll,int>> factorize(ll n) {
+    vector<pair<ll,int>> f;
+    for (ll d = 2; d * d <= n; d++) {
+        if (n % d == 0) {
+            int cnt = 0;
+            while (n % d == 0) {
+                n /= d;
+                cnt++;
+            }
+            f.push_back({d, cnt});
+        }
     }
+    if (n > 1) f.push_back({n, 1});
+    return f;
 }
-```
 
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : pair sum
-Think about   : sort pairs
-Main action   : two pointers
-Core idea     : sorted sum moves predictably
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-sum-of-three-values"></a>
-
-## 108. CM — CSES Sum of Three Values
-
-**Platform:** CSES  
-**Link:** [CSES Sum of Three Values](https://cses.fi/problemset/task/1641)  
-**Pattern:** `sort + two pointers`  
-**Form:** `triple sum`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort or initialize left/right"]
-    A1["Move pointers by condition"]
-    A0 --> A1
-    A2["Skip duplicates if needed"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Continue until pointers cross"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **triple sum**
-- Pattern: **sort + two pointers**
-- Tactic: **fix one**
-- Core intuition: remaining pair is two sum
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort + two pointers** because it keeps only the useful information needed for future operations.
-- **Main Trick:** fix one.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : triple sum
-Think about   : sort + two pointers
-Main action   : fix one
-Core idea     : remaining pair is two sum
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-binary-search"></a>
-
-## 109. CM — CSES Factory Machines
-
-**Platform:** CSES  
-**Link:** [CSES Factory Machines](https://cses.fi/problemset/task/1620)  
-**Pattern:** `binary search`  
-**Form:** `answer search`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort / use ordered structure"]
-    A1["Define target condition"]
-    A0 --> A1
-    A2["Use lower_bound / binary search"]
-    A1 --> A2
-    A3["Check candidate index"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **answer search**
-- Pattern: **binary search**
-- Tactic: **check products by time**
-- Core intuition: time feasibility monotonic
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **binary search** because it keeps only the useful information needed for future operations.
-- **Main Trick:** check products by time.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: binary search
-// Form: answer search
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: check products by time.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : answer search
-Think about   : binary search
-Main action   : check products by time
-Core idea     : time feasibility monotonic
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-subarray-sums-i"></a>
-
-## 110. CM — CSES Subarray Sums I
-
-**Platform:** CSES  
-**Link:** [CSES Subarray Sums I](https://cses.fi/problemset/task/1660)  
-**Pattern:** `two pointers`  
-**Form:** `positive window`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Sort or initialize left/right"]
-    A1["Move pointers by condition"]
-    A0 --> A1
-    A2["Skip duplicates if needed"]
-    A1 --> A2
-    A3["Update answer"]
-    A2 --> A3
-    A4["Continue until pointers cross"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **positive window**
-- Pattern: **two pointers**
-- Tactic: **monotonic sum**
-- Core intuition: positive values allow moving left
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two pointers** because it keeps only the useful information needed for future operations.
-- **Main Trick:** monotonic sum.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : positive window
-Think about   : two pointers
-Main action   : monotonic sum
-Core idea     : positive values allow moving left
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-next-greater-element-i"></a>
-
-## 111. CM — CSES Sliding Window Minimum
-
-**Platform:** CSES  
-**Link:** [CSES Sliding Window Minimum](https://cses.fi/problemset/task/3221)  
-**Pattern:** `monotonic deque`  
-**Form:** `window min`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Move window/index"]
-    A1["Remove expired front"]
-    A0 --> A1
-    A2["Remove worse back values"]
-    A1 --> A2
-    A3["Push current index"]
-    A2 --> A3
-    A4["Front gives answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **window min**
-- Pattern: **monotonic deque**
-- Tactic: **same as max reversed**
-- Core intuition: front is minimum candidate
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **monotonic deque** because it keeps only the useful information needed for future operations.
-- **Main Trick:** same as max reversed.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-vector<int> windowMax(vector<int>& a, int k) {
-    deque<int> dq;
-    vector<int> ans;
-
+vector<ll> buildPrefix(const vector<int>& a) {
+    vector<ll> pref(a.size() + 1, 0);
     for (int i = 0; i < (int)a.size(); i++) {
-        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
-        while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back();
-
-        dq.push_back(i);
-
-        if (i >= k - 1) ans.push_back(a[dq.front()]);
+        pref[i + 1] = pref[i] + a[i];
     }
-
-    return ans;
+    return pref;
 }
-```
 
-</details>
+ll rangeSum(const vector<ll>& pref, int l, int r) {
+    return pref[r + 1] - pref[l];
+}
 
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : window min
-Think about   : monotonic deque
-Main action   : same as max reversed
-Core idea     : front is minimum candidate
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="hard-sliding-window-median"></a>
-
-## 112. CM — CSES Sliding Cost
-
-**Platform:** CSES  
-**Link:** [CSES Sliding Cost](https://cses.fi/problemset/task/1077)  
-**Pattern:** `two multisets + sums`  
-**Form:** `median cost`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Insert/delete value"]
-    A1["Maintain sorted buckets/halves"]
-    A0 --> A1
-    A2["Rebalance if needed"]
-    A1 --> A2
-    A3["Read boundary value"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **median cost**
-- Pattern: **two multisets + sums**
-- Tactic: **maintain sums**
-- Core intuition: median minimizes absolute deviation
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **two multisets + sums** because it keeps only the useful information needed for future operations.
-- **Main Trick:** maintain sums.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-struct TwoHalves {
-    multiset<int> low, high;
-
-    void rebalance() {
-        while (low.size() > high.size() + 1) {
-            high.insert(*low.rbegin());
-            low.erase(prev(low.end()));
-        }
-
-        while (high.size() > low.size()) {
-            low.insert(*high.begin());
-            high.erase(high.begin());
-        }
-    }
-
-    void add(int x) {
-        if (low.empty() || x <= *low.rbegin()) low.insert(x);
-        else high.insert(x);
-
-        rebalance();
-    }
-
-    void remove(int x) {
-        auto it = low.find(x);
-
-        if (it != low.end()) low.erase(it);
-        else high.erase(high.find(x));
-
-        rebalance();
-    }
-
-    int median() {
-        return *low.rbegin();
-    }
+struct Point {
+    ll x, y;
 };
+
+ll cross(Point a, Point b, Point c) {
+    ll x1 = b.x - a.x;
+    ll y1 = b.y - a.y;
+    ll x2 = c.x - a.x;
+    ll y2 = c.y - a.y;
+    return x1 * y2 - y1 * x2;
+}
+
+ll dist2(Point a, Point b) {
+    ll dx = a.x - b.x;
+    ll dy = a.y - b.y;
+    return dx * dx + dy * dy;
+}
 ```
 
 </details>
 
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : median cost
-Think about   : two multisets + sums
-Main action   : maintain sums
-Core idea     : median minimizes absolute deviation
-```
-
-</details>
-
-[Back to index](#clickable-index)
 
 ---
 
-<a id="medium-insert-interval"></a>
+## 22. Java Helper Pack
 
-## 113. CM — CSES Restaurant Customers
+```java
+import java.io.*;
+import java.util.*;
 
-**Platform:** CSES  
-**Link:** [CSES Restaurant Customers](https://cses.fi/problemset/task/1619)  
-**Pattern:** `events sort`  
-**Form:** `active count`
+public class Main {
+static final long MOD = 1000000007L;
 
-### Mermaid Solution Flow
+static long modPow(long base, long exp, long mod) {
+long res = 1 % mod;
+base %= mod;
+while (exp > 0) {
+if ((exp & 1L) == 1L) res = (res * base) % mod;
+base = (base * base) % mod;
+exp >>= 1;
+        }
+return res;
+    }
 
-```mermaid
-flowchart TD
-    A0["Sort by useful order"]
-    A1["Scan greedily"]
-    A0 --> A1
-    A2["Choose valid candidate"]
-    A1 --> A2
-    A3["Update state"]
-    A2 --> A3
-    A4["Return optimized result"]
-    A3 --> A4
-```
+static long gcd(long a, long b) {
+while (b != 0) {
+long r = a % b;
+a = b;
+b = r;
+        }
+return a;
+    }
 
-<details>
-<summary>Hints</summary>
+static long lcm(long a, long b) {
+return a / gcd(a, b) * b;
+    }
 
-- Form: **active count**
-- Pattern: **events sort**
-- Tactic: **arrival +1 leave -1**
-- Core intuition: maximum active customers
-- First write brute force, then identify which repeated operation the STL structure removes.
+static long norm(long x, long mod) {
+x %= mod;
+if (x < 0) x += mod;
+return x;
+    }
 
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **events sort** because it keeps only the useful information needed for future operations.
-- **Main Trick:** arrival +1 leave -1.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+static long ceilDiv(long a, long b) {
+return a / b + (a % b != 0 ? 1 : 0);
     }
 }
 ```
 
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : active count
-Think about   : events sort
-Main action   : arrival +1 leave -1
-Core idea     : maximum active customers
-```
-
-</details>
-
-[Back to index](#clickable-index)
 
 ---
 
-<a id="hard-maximum-performance-of-a-team"></a>
-
-## 114. CM — CSES Concert Tickets
-
-**Platform:** CSES  
-**Link:** [CSES Concert Tickets](https://cses.fi/problemset/task/1091)  
-**Pattern:** `multiset`  
-**Form:** `sorted ticket allocation`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Insert/delete value"]
-    A1["Maintain sorted buckets/halves"]
-    A0 --> A1
-    A2["Rebalance if needed"]
-    A1 --> A2
-    A3["Read boundary value"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **sorted ticket allocation**
-- Pattern: **multiset**
-- Tactic: **upper_bound budget**
-- Core intuition: assign most expensive affordable ticket
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **multiset** because it keeps only the useful information needed for future operations.
-- **Main Trick:** upper_bound budget.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : sorted ticket allocation
-Think about   : multiset
-Main action   : upper_bound budget
-Core idea     : assign most expensive affordable ticket
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-reverse-pairs"></a>
-
-## 115. CM — CSES Nested Ranges Count
-
-**Platform:** CSES  
-**Link:** [CSES Nested Ranges Count](https://cses.fi/problemset/task/2169)  
-**Pattern:** `sort + Fenwick`  
-**Form:** `intervals contain count`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Convert to intervals/events"]
-    A1["Sort by time/start"]
-    A0 --> A1
-    A2["Scan in order"]
-    A1 --> A2
-    A3["Maintain active/merged state"]
-    A2 --> A3
-    A4["Update answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **intervals contain count**
-- Pattern: **sort + Fenwick**
-- Tactic: **compress right endpoints**
-- Core intuition: containment becomes rank query
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort + Fenwick** because it keeps only the useful information needed for future operations.
-- **Main Trick:** compress right endpoints.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : intervals contain count
-Think about   : sort + Fenwick
-Main action   : compress right endpoints
-Core idea     : containment becomes rank query
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-salary-queries"></a>
-
-## 116. CM — CSES Salary Queries
-
-**Platform:** CSES  
-**Link:** [CSES Salary Queries](https://cses.fi/problemset/task/1144)  
-**Pattern:** `compression + Fenwick`  
-**Form:** `dynamic range count`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Compress/index values"]
-    A1["Process in chosen order"]
-    A0 --> A1
-    A2["Query rank/count/kth"]
-    A1 --> A2
-    A3["Update structure"]
-    A2 --> A3
-    A4["Store answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **dynamic range count**
-- Pattern: **compression + Fenwick**
-- Tactic: **update old new salary**
-- Core intuition: query count in salary range
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **compression + Fenwick** because it keeps only the useful information needed for future operations.
-- **Main Trick:** update old new salary.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Depends on implementation; target should match constraints..
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: compression + Fenwick
-// Form: dynamic range count
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: update old new salary.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : dynamic range count
-Think about   : compression + Fenwick
-Main action   : update old new salary
-Core idea     : query count in salary range
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="medium-partition-equal-subset-sum"></a>
-
-## 117. CM — CSES Money Sums
-
-**Platform:** CSES  
-**Link:** [CSES Money Sums](https://cses.fi/problemset/task/1745)  
-**Pattern:** `bitset/vector DP`  
-**Form:** `possible sums`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **possible sums**
-- Pattern: **bitset/vector DP**
-- Tactic: **shift states**
-- Core intuition: every coin creates new sums
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **bitset/vector DP** because it keeps only the useful information needed for future operations.
-- **Main Trick:** shift states.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: bitset/vector DP
-// Form: possible sums
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: shift states.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : possible sums
-Think about   : bitset/vector DP
-Main action   : shift states
-Core idea     : every coin creates new sums
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-school-excursion"></a>
-
-## 118. CM — CSES School Excursion
-
-**Platform:** CSES  
-**Link:** [CSES School Excursion](https://cses.fi/problemset/task/1706)  
-**Pattern:** `DSU + bitset DP`  
-**Form:** `component sizes`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **component sizes**
-- Pattern: **DSU + bitset DP**
-- Tactic: **shift by component size**
-- Core intuition: choose connected group sizes
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **DSU + bitset DP** because it keeps only the useful information needed for future operations.
-- **Main Trick:** shift by component size.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: DSU + bitset DP
-// Form: component sizes
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: shift by component size.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : component sizes
-Think about   : DSU + bitset DP
-Main action   : shift by component size
-Core idea     : choose connected group sizes
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-list-removals"></a>
-
-## 119. CM — CSES List Removals
-
-**Platform:** CSES  
-**Link:** [CSES List Removals](https://cses.fi/problemset/task/1749)  
-**Pattern:** `PBDS/Fenwick`  
-**Form:** `kth alive removal`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Compress/index values"]
-    A1["Process in chosen order"]
-    A0 --> A1
-    A2["Query rank/count/kth"]
-    A1 --> A2
-    A3["Update structure"]
-    A2 --> A3
-    A4["Store answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **kth alive removal**
-- Pattern: **PBDS/Fenwick**
-- Tactic: **find kth alive index**
-- Core intuition: order structure simulates deletion
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **PBDS/Fenwick** because it keeps only the useful information needed for future operations.
-- **Main Trick:** find kth alive index.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-#include <ext/pb_ds/assoc_container.hpp>
-using namespace __gnu_pbds;
-
-template<class T>
-using ordered_set = tree<T, null_type, less<T>, rb_tree_tag,
-tree_order_statistics_node_update>;
-
-ordered_set<int> os;
-
-os.insert(10);
-os.insert(20);
-
-int countLess = os.order_of_key(20);
-int kth = *os.find_by_order(0);
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : kth alive removal
-Think about   : PBDS/Fenwick
-Main action   : find kth alive index
-Core idea     : order structure simulates deletion
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-josephus-problem-ii"></a>
-
-## 120. CM — CSES Josephus Problem II
-
-**Platform:** CSES  
-**Link:** [CSES Josephus Problem II](https://cses.fi/problemset/task/2163)  
-**Pattern:** `PBDS`  
-**Form:** `cyclic kth removal`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Compress/index values"]
-    A1["Process in chosen order"]
-    A0 --> A1
-    A2["Query rank/count/kth"]
-    A1 --> A2
-    A3["Update structure"]
-    A2 --> A3
-    A4["Store answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **cyclic kth removal**
-- Pattern: **PBDS**
-- Tactic: **find by order and erase**
-- Core intuition: dynamic circle needs kth alive
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **PBDS** because it keeps only the useful information needed for future operations.
-- **Main Trick:** find by order and erase.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-#include <ext/pb_ds/assoc_container.hpp>
-using namespace __gnu_pbds;
-
-template<class T>
-using ordered_set = tree<T, null_type, less<T>, rb_tree_tag,
-tree_order_statistics_node_update>;
-
-ordered_set<int> os;
-
-os.insert(10);
-os.insert(20);
-
-int countLess = os.order_of_key(20);
-int kth = *os.find_by_order(0);
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : cyclic kth removal
-Think about   : PBDS
-Main action   : find by order and erase
-Core idea     : dynamic circle needs kth alive
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="easy-cses-weird-algorithm"></a>
-
-## 121. CM — CSES Nested Ranges Check
-
-**Platform:** CSES  
-**Link:** [CSES Nested Ranges Check](https://cses.fi/problemset/task/2168)  
-**Pattern:** `sort + scan`  
-**Form:** `interval containment`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Convert to intervals/events"]
-    A1["Sort by time/start"]
-    A0 --> A1
-    A2["Scan in order"]
-    A1 --> A2
-    A3["Maintain active/merged state"]
-    A2 --> A3
-    A4["Update answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **interval containment**
-- Pattern: **sort + scan**
-- Tactic: **max right min right**
-- Core intuition: containment becomes ordered check
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **sort + scan** because it keeps only the useful information needed for future operations.
-- **Main Trick:** max right min right.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)`.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : interval containment
-Think about   : sort + scan
-Main action   : max right min right
-Core idea     : containment becomes ordered check
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-movie-festival-ii"></a>
-
-## 122. CM — CSES Movie Festival II
-
-**Platform:** CSES  
-**Link:** [CSES Movie Festival II](https://cses.fi/problemset/task/1632)  
-**Pattern:** `multiset endings`  
-**Form:** `k resources`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Insert/delete value"]
-    A1["Maintain sorted buckets/halves"]
-    A0 --> A1
-    A2["Rebalance if needed"]
-    A1 --> A2
-    A3["Read boundary value"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **k resources**
-- Pattern: **multiset endings**
-- Tactic: **assign latest possible watcher**
-- Core intuition: preserve earlier watchers
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **multiset endings** because it keeps only the useful information needed for future operations.
-- **Main Trick:** assign latest possible watcher.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: multiset endings
-// Form: k resources
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: assign latest possible watcher.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : k resources
-Think about   : multiset endings
-Main action   : assign latest possible watcher
-Core idea     : preserve earlier watchers
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-<a id="cm-cses-collecting-numbers-ii"></a>
-
-## 123. CM — CSES Collecting Numbers II
-
-**Platform:** CSES  
-**Link:** [CSES Collecting Numbers II](https://cses.fi/problemset/task/2217)  
-**Pattern:** `set of breaks`  
-**Form:** `permutation updates`
-
-### Mermaid Solution Flow
-
-```mermaid
-flowchart TD
-    A0["Read problem"]
-    A1["Identify repeated operation"]
-    A0 --> A1
-    A2["Choose STL pattern"]
-    A1 --> A2
-    A3["Maintain invariant"]
-    A2 --> A3
-    A4["Return answer"]
-    A3 --> A4
-```
-
-<details>
-<summary>Hints</summary>
-
-- Form: **permutation updates**
-- Pattern: **set of breaks**
-- Tactic: **update local neighbours**
-- Core intuition: swap changes only local rounds
-- First write brute force, then identify which repeated operation the STL structure removes.
-
-</details>
-
-<details>
-<summary>Approach</summary>
-
-- **Brute Force Thinking:** Try all possible choices/windows/pairs directly and observe what repeated operation becomes slow.
-- **What becomes slow?** Usually repeated searching, max/min finding, frequency lookup, or maintaining sorted order.
-- **Optimal Thinking:** Use **set of breaks** because it keeps only the useful information needed for future operations.
-- **Main Trick:** update local neighbours.
-- **Invariant:** The data structure always stores the currently useful/valid candidates.
-- **Time Complexity:** Usually `O(n log n)` or `O(log n)` per operation.
-
-</details>
-
-<details>
-<summary>Code / Template</summary>
-
-```cpp
-// Template for pattern: set of breaks
-// Form: permutation updates
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: update local neighbours.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
-```
-
-</details>
-
-<details>
-<summary>1-Minute Mental Map</summary>
-
-```text
-If you see    : permutation updates
-Think about   : set of breaks
-Main action   : update local neighbours
-Core idea     : swap changes only local rounds
-```
-
-</details>
-
-[Back to index](#clickable-index)
-
----
-
-
+END
