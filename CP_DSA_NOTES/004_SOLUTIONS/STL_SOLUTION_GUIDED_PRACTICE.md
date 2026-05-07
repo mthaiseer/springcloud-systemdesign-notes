@@ -1,8 +1,8 @@
 # STL Problems — Guided Practice Edition
 
-> Rendering-safe update: Mermaid diagrams were replaced with collapsible plain-text flow steps. Each Problem Detail now states what the problem asks, and each Solution Flow is generated from the actual C++ code order so the steps match the code.
+> Rendering-safe update: each Solution Flow is a collapsible Mermaid diagram using simple `flowchart TD` syntax, short quoted labels, and code-order steps to avoid rich-render errors.
 
-This version is cleaned for Markdown rendering and organized as guided practice: problem link, problem detail, progressive hints, approach, collapsible C++ code, clickable difficulty index, and repeated-pattern tables.
+This version is cleaned for Markdown rendering and organized as guided practice: problem link, problem detail, progressive hints, approach, collapsible Mermaid solution flow, collapsible C++ code, clickable difficulty index, and repeated-pattern tables.
 
 ## Clickable Index
 
@@ -208,13 +208,19 @@ This version is cleaned for Markdown rendering and organized as guided practice:
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Contains Duplicate** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_set<int> seen;`.
-3. Loop through the input using `for (int x : nums)`.
-4. Check the decision condition `if (seen.count(x)) return true;` and take the early/branch action shown in code.
-5. Update the code state with `seen.insert(x);`.
-6. Return exactly what the code computes: `return false;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Contains Duplicate using code order."]
+    S1["Set unordered_set less than int greater than seen;."]
+    S2["Loop for (int x : nums)."]
+    S3["Check if (seen.count(x)) return true; then follow that branch."]
+    S4["Set seen.insert(x);."]
+    S5["Return return false;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -309,12 +315,17 @@ Core idea     : duplicates become adjacent
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Merge Sorted Array** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int i = m - 1, j = n - 1, k = m + n - 1;`.
-3. Repeat while the code condition holds: `while (j >= 0)`.
-4. Check the decision condition `if (i >= 0 && nums1[i] > nums2[j]) nums1[k--] = nums1[i--];` and take the early/branch action shown in code.
-5. Run the fallback branch from the code.
+```mermaid
+flowchart TD
+    S0["Goal: solve Merge Sorted Array using code order."]
+    S1["Set int i = m - 1, j = n - 1, k = m + n - 1;."]
+    S2["While while (j greater than = 0)."]
+    S3["Check if (i greater than = 0 and and nums1(i) greater than nums2(j)) nums1(k--) = nums1(i--); then follow that branch."]
+    S4["Otherwise run the else branch"]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -408,11 +419,15 @@ Core idea     : largest final position is safe
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Move Zeroes** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int write = 0;`.
-3. Loop through the input using `for (int x : nums) if (x != 0) nums[write++] = x;`.
-4. Repeat while the code condition holds: `while (write < (int)nums.size()) nums[write++] = 0;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Move Zeroes using code order."]
+    S1["Set int write = 0;."]
+    S2["Loop for (int x : nums) if (x != 0) nums(write++) = x;."]
+    S3["While while (write less than (int)nums.size()) nums(write++) = 0;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
 ```
 
 </details>
@@ -504,13 +519,19 @@ Core idea     : keep order with one pass
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Remove Duplicates from Sorted Array** with the optimal code below, in the same order the code executes.
-2. Check the decision condition `if (nums.empty()) return 0;` and take the early/branch action shown in code.
-3. Update the code state with `int write = 1;`.
-4. Loop through the input using `for (int read = 1; read < (int)nums.size(); read++)`.
-5. Check the decision condition `if (nums[read] != nums[write - 1]) nums[write++] = nums[read];` and take the early/branch action shown in code.
-6. Return exactly what the code computes: `return write;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Remove Duplicates from Sorted Array using code order."]
+    S1["Check if (nums.empty()) return 0; then follow that branch."]
+    S2["Set int write = 1;."]
+    S3["Loop for (int read = 1; read less than (int)nums.size(); read++)."]
+    S4["Check if (nums(read) != nums(write - 1)) nums(write++) = nums(read); then follow that branch."]
+    S5["Return return write;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -605,14 +626,21 @@ Core idea     : sorted duplicates are grouped
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Valid Anagram** with the optimal code below, in the same order the code executes.
-2. Check the decision condition `if (s.size() != t.size()) return false;` and take the early/branch action shown in code.
-3. Update the code state with `array<int, 26> cnt{};`.
-4. Loop through the input using `for (char c : s) cnt[c - 'a']++;`.
-5. Loop through the input using `for (char c : t) cnt[c - 'a']--;`.
-6. Loop through the input using `for (int x : cnt) if (x != 0) return false;`.
-7. Return exactly what the code computes: `return true;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Valid Anagram using code order."]
+    S1["Check if (s.size() != t.size()) return false; then follow that branch."]
+    S2["Set array less than int, 26 greater than cnt();."]
+    S3["Loop for (char c : s) cnt(c - 'a')++;."]
+    S4["Loop for (char c : t) cnt(c - 'a')--;."]
+    S5["Loop for (int x : cnt) if (x != 0) return false;."]
+    S6["Return return true;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -707,15 +735,23 @@ Core idea     : same letters means same count vector
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Valid Palindrome** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int l = 0, r = (int)s.size() - 1;`.
-3. Repeat while the code condition holds: `while (l < r)`.
-4. Repeat while the code condition holds: `while (l < r && !isalnum((unsigned char)s[l])) l++;`.
-5. Repeat while the code condition holds: `while (l < r && !isalnum((unsigned char)s[r])) r--;`.
-6. Check the decision condition `if (tolower((unsigned char)s[l]) != tolower((unsigned char)s[r])) return false;` and take the early/branch action shown in code.
-7. Update the code state with `l++; r--;`.
-8. Return exactly what the code computes: `return true;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Valid Palindrome using code order."]
+    S1["Set int l = 0, r = (int)s.size() - 1;."]
+    S2["While while (l less than r)."]
+    S3["While while (l less than r and and !isalnum((unsigned char)s(l))) l++;."]
+    S4["While while (l less than r and and !isalnum((unsigned char)s(r))) r--;."]
+    S5["Check if (tolower((unsigned char)s(l)) != tolower((unsigned char)s(r))) return false; then follow that branch."]
+    S6["Set l++; r--;."]
+    S7["Return return true;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -812,13 +848,19 @@ Core idea     : compare mirrored valid chars
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Ransom Note** with the optimal code below, in the same order the code executes.
-2. Update the code state with `array<int, 26> cnt{};`.
-3. Loop through the input using `for (char c : magazine) cnt[c - 'a']++;`.
-4. Loop through the input using `for (char c : ransomNote)`.
-5. Check the decision condition `if (--cnt[c - 'a'] < 0) return false;` and take the early/branch action shown in code.
-6. Return exactly what the code computes: `return true;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Ransom Note using code order."]
+    S1["Set array less than int, 26 greater than cnt();."]
+    S2["Loop for (char c : magazine) cnt(c - 'a')++;."]
+    S3["Loop for (char c : ransomNote)."]
+    S4["Check if (--cnt(c - 'a') less than 0) return false; then follow that branch."]
+    S5["Return return true;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -913,15 +955,23 @@ Core idea     : magazine supplies letters
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Valid Parentheses** with the optimal code below, in the same order the code executes.
-2. Update the code state with `stack<char> st;`.
-3. Update the code state with `unordered_map<char, char> need = {{')','('}, {']','['}, {'}','{'}};`.
-4. Loop through the input using `for (char c : s)`.
-5. Check the decision condition `if (c == '(' || c == '[' || c == '{') st.push(c);` and take the early/branch action shown in code.
-6. Check the decision condition `if (st.empty() || st.top() != need[c]) return false;` and take the early/branch action shown in code.
-7. Update the code state with `st.pop();`.
-8. Return exactly what the code computes: `return st.empty();`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Valid Parentheses using code order."]
+    S1["Set stack less than char greater than st;."]
+    S2["Set unordered_map less than char, char greater than need = ((')','('), (')','('), (')','('));."]
+    S3["Loop for (char c : s)."]
+    S4["Check if (c == '(' or or c == '(' or or c == '(') st.push(c); then follow that branch."]
+    S5["Check if (st.empty() or or st.top() != need(c)) return false; then follow that branch."]
+    S6["Set st.pop();."]
+    S7["Return return st.empty();."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -1020,15 +1070,23 @@ Core idea     : latest open must close first
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Baseball Game** with the optimal code below, in the same order the code executes.
-2. Update the code state with `vector<int> scores;`.
-3. Loop through the input using `for (string op : operations)`.
-4. Check the decision condition `if (op == "+") scores.push_back(scores.back() + scores[scores.size() - 2]);` and take the early/branch action shown in code.
-5. If the previous branch failed, check `else if (op == "D") scores.push_back(2 * scores.back());`.
-6. If the previous branch failed, check `else if (op == "C") scores.pop_back();`.
-7. Run the fallback branch from the code.
-8. Return exactly what the code computes: `return accumulate(scores.begin(), scores.end(), 0);`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Baseball Game using code order."]
+    S1["Set vector less than int greater than scores;."]
+    S2["Loop for (string op : operations)."]
+    S3["Check if (op == '+') scores.push_back(scores.back() + scores(scores.size() - 2)); then follow that branch."]
+    S4["Else check else if (op == 'D') scores.push_back(2 * scores.back());."]
+    S5["Else check else if (op == 'C') scores.pop_back();."]
+    S6["Otherwise run the else branch"]
+    S7["Return return accumulate(scores.begin(), scores.end(), 0);."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -1125,13 +1183,19 @@ Core idea     : operations reference previous scores
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Remove All Adjacent Duplicates In String** with the optimal code below, in the same order the code executes.
-2. Update the code state with `string st;`.
-3. Loop through the input using `for (char c : s)`.
-4. Check the decision condition `if (!st.empty() && st.back() == c) st.pop_back();` and take the early/branch action shown in code.
-5. Run the fallback branch from the code.
-6. Return exactly what the code computes: `return st;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Remove All Adjacent Duplicates In String using code order."]
+    S1["Set string st;."]
+    S2["Loop for (char c : s)."]
+    S3["Check if (!st.empty() and and st.back() == c) st.pop_back(); then follow that branch."]
+    S4["Otherwise run the else branch"]
+    S5["Return return st;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -1226,13 +1290,19 @@ Core idea     : adjacent equal cancels latest
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Implement Queue using Stacks** with the optimal code below, in the same order the code executes.
-2. Update the code state with `stack<int> in, out;`.
-3. Check the decision condition `if (!out.empty()) return;` and take the early/branch action shown in code.
-4. Repeat while the code condition holds: `while (!in.empty())`.
-5. Update the code state with `out.push(in.top());`.
-6. Update the code state with `in.pop();`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Implement Queue using Stacks using code order."]
+    S1["Set stack less than int greater than in, out;."]
+    S2["Check if (!out.empty()) return; then follow that branch."]
+    S3["While while (!in.empty())."]
+    S4["Set out.push(in.top());."]
+    S5["Set in.pop();."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -1331,12 +1401,17 @@ Core idea     : reverse stack gives FIFO
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Number of Recent Calls** with the optimal code below, in the same order the code executes.
-2. Update the code state with `queue<int> q;`.
-3. Update the code state with `q.push(t);`.
-4. Repeat while the code condition holds: `while (!q.empty() && q.front() < t - 3000) q.pop();`.
-5. Return exactly what the code computes: `return q.size();`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Number of Recent Calls using code order."]
+    S1["Set queue less than int greater than q;."]
+    S2["Set q.push(t);."]
+    S3["While while (!q.empty() and and q.front() less than t - 3000) q.pop();."]
+    S4["Return return q.size();."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -1429,14 +1504,21 @@ Core idea     : queue holds valid recent calls
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Last Stone Weight** with the optimal code below, in the same order the code executes.
-2. Update the code state with `priority_queue<int> pq(stones.begin(), stones.end());`.
-3. Repeat while the code condition holds: `while (pq.size() > 1)`.
-4. Update the code state with `int a = pq.top(); pq.pop();`.
-5. Update the code state with `int b = pq.top(); pq.pop();`.
-6. Check the decision condition `if (a != b) pq.push(a - b);` and take the early/branch action shown in code.
-7. Return exactly what the code computes: `return pq.empty() ? 0 : pq.top();`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Last Stone Weight using code order."]
+    S1["Set priority_queue less than int greater than pq(stones.begin(), stones.end());."]
+    S2["While while (pq.size() greater than 1)."]
+    S3["Set int a = pq.top(); pq.pop();."]
+    S4["Set int b = pq.top(); pq.pop();."]
+    S5["Check if (a != b) pq.push(a - b); then follow that branch."]
+    S6["Return return pq.empty() ? 0 : pq.top();."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -1532,15 +1614,23 @@ Core idea     : only largest stones matter
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Kth Largest Element in a Stream** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int k;`.
-3. Update the code state with `priority_queue<int, vector<int>, greater<int>> pq;`.
-4. Update the code state with `KthLargest(int k, vector<int>& nums) : k(k)`.
-5. Loop through the input using `for (int x : nums) add(x);`.
-6. Update the code state with `pq.push(val);`.
-7. Check the decision condition `if ((int)pq.size() > k) pq.pop();` and take the early/branch action shown in code.
-8. Return exactly what the code computes: `return pq.top();`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Kth Largest Element in a Stream using code order."]
+    S1["Set int k;."]
+    S2["Set priority_queue less than int, vector less than int greater than , greater less than int greater than greater th..."]
+    S3["Set KthLargest(int k, vector less than int greater than and nums) : k(k)."]
+    S4["Loop for (int x : nums) add(x);."]
+    S5["Set pq.push(val);."]
+    S6["Check if ((int)pq.size() greater than k) pq.pop(); then follow that branch."]
+    S7["Return return pq.top();."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -1637,16 +1727,25 @@ Core idea     : heap stores top k
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Contains Duplicate III** with the optimal code below, in the same order the code executes.
-2. Update the code state with `set<long long> window;`.
-3. Loop through the input using `for (int i = 0; i < (int)nums.size(); i++)`.
-4. Update the code state with `long long x = nums[i];`.
-5. Update the code state with `auto it = window.lower_bound(x - valueDiff);`.
-6. Check the decision condition `if (it != window.end() && *it <= x + valueDiff) return true;` and take the early/branch action shown in code.
-7. Update the code state with `window.insert(x);`.
-8. Check the decision condition `if (i >= indexDiff) window.erase(nums[i - indexDiff]);` and take the early/branch action shown in code.
-9. Return exactly what the code computes: `return false;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Contains Duplicate III using code order."]
+    S1["Set set less than long long greater than window;."]
+    S2["Loop for (int i = 0; i less than (int)nums.size(); i++)."]
+    S3["Set long long x = nums(i);."]
+    S4["Set auto it = window.lower_bound(x - valueDiff);."]
+    S5["Check if (it != window.end() and and *it less than = x + valueDiff) return true; then follow that branch."]
+    S6["Set window.insert(x);."]
+    S7["Check if (i greater than = indexDiff) window.erase(nums(i - indexDiff)); then follow that branch."]
+    S8["Return return false;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -1744,14 +1843,21 @@ Core idea     : closest candidate is around lower bound
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Two Sum** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_map<int, int> pos;`.
-3. Loop through the input using `for (int i = 0; i < (int)nums.size(); i++)`.
-4. Update the code state with `int need = target - nums[i];`.
-5. Check the decision condition `if (pos.count(need)) return {pos[need], i};` and take the early/branch action shown in code.
-6. Update the code state with `pos[nums[i]] = i;`.
-7. Return exactly what the code computes: `return {};`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Two Sum using code order."]
+    S1["Set unordered_map less than int, int greater than pos;."]
+    S2["Loop for (int i = 0; i less than (int)nums.size(); i++)."]
+    S3["Set int need = target - nums(i);."]
+    S4["Check if (pos.count(need)) return (pos(need), i); then follow that branch."]
+    S5["Set pos(nums(i)) = i;."]
+    S6["Return return ();."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -1847,13 +1953,19 @@ Core idea     : target needs previous complement
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Majority Element** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int cand = 0, bal = 0;`.
-3. Loop through the input using `for (int x : nums)`.
-4. Check the decision condition `if (bal == 0) cand = x;` and take the early/branch action shown in code.
-5. Update the code state with `bal += (x == cand ? 1 : -1);`.
-6. Return exactly what the code computes: `return cand;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Majority Element using code order."]
+    S1["Set int cand = 0, bal = 0;."]
+    S2["Loop for (int x : nums)."]
+    S3["Check if (bal == 0) cand = x; then follow that branch."]
+    S4["Set bal += (x == cand ? 1 : -1);."]
+    S5["Return return cand;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -1948,12 +2060,17 @@ Core idea     : majority crosses n/2
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **First Unique Character in a String** with the optimal code below, in the same order the code executes.
-2. Update the code state with `array<int, 26> cnt{};`.
-3. Loop through the input using `for (char c : s) cnt[c - 'a']++;`.
-4. Loop through the input using `for (int i = 0; i < (int)s.size(); i++) if (cnt[s[i] - 'a'] == 1) return i;`.
-5. Return exactly what the code computes: `return -1;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve First Unique Character in a String using code order."]
+    S1["Set array less than int, 26 greater than cnt();."]
+    S2["Loop for (char c : s) cnt(c - 'a')++;."]
+    S3["Loop for (int i = 0; i less than (int)s.size(); i++) if (cnt(s(i) - 'a') == 1) return i;."]
+    S4["Return return -1;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -2046,12 +2163,17 @@ Core idea     : unique means count one
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Meeting Rooms** with the optimal code below, in the same order the code executes.
-2. Update the code state with `sort(intervals.begin(), intervals.end());`.
-3. Loop through the input using `for (int i = 1; i < (int)intervals.size(); i++)`.
-4. Check the decision condition `if (intervals[i][0] < intervals[i - 1][1]) return false;` and take the early/branch action shown in code.
-5. Return exactly what the code computes: `return true;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Meeting Rooms using code order."]
+    S1["Set sort(intervals.begin(), intervals.end());."]
+    S2["Loop for (int i = 1; i less than (int)intervals.size(); i++)."]
+    S3["Check if (intervals(i)(0) less than intervals(i - 1)(1)) return false; then follow that branch."]
+    S4["Return return true;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -2145,13 +2267,19 @@ Core idea     : overlap violates room
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Squares of a Sorted Array** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int l = 0, r = (int)nums.size() - 1, k = r;`.
-3. Repeat while the code condition holds: `while (l <= r)`.
-4. Check the decision condition `if (abs(nums[l]) > abs(nums[r])) ans[k--] = nums[l] * nums[l++];` and take the early/branch action shown in code.
-5. Run the fallback branch from the code.
-6. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Squares of a Sorted Array using code order."]
+    S1["Set int l = 0, r = (int)nums.size() - 1, k = r;."]
+    S2["While while (l less than = r)."]
+    S3["Check if (abs(nums(l)) greater than abs(nums(r))) ans(k--) = nums(l) * nums(l++); then follow that branch."]
+    S4["Otherwise run the else branch"]
+    S5["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -2247,11 +2375,15 @@ Core idea     : largest square at ends
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Intersection of Two Arrays** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_set<int> a(nums1.begin(), nums1.end()), ans;`.
-3. Loop through the input using `for (int x : nums2) if (a.count(x)) ans.insert(x);`.
-4. Return exactly what the code computes: `return vector<int>(ans.begin(), ans.end());`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Intersection of Two Arrays using code order."]
+    S1["Set unordered_set less than int greater than a(nums1.begin(), nums1.end()), ans;."]
+    S2["Loop for (int x : nums2) if (a.count(x)) ans.insert(x);."]
+    S3["Return return vector less than int greater than (ans.begin(), ans.end());."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
 ```
 
 </details>
@@ -2343,15 +2475,23 @@ Core idea     : sorted arrays reveal equal values
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Binary Search** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int l = 0, r = (int)nums.size() - 1;`.
-3. Repeat while the code condition holds: `while (l <= r)`.
-4. Update the code state with `int m = l + (r - l) / 2;`.
-5. Check the decision condition `if (nums[m] == target) return m;` and take the early/branch action shown in code.
-6. Check the decision condition `if (nums[m] < target) l = m + 1;` and take the early/branch action shown in code.
-7. Run the fallback branch from the code.
-8. Return exactly what the code computes: `return -1;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Binary Search using code order."]
+    S1["Set int l = 0, r = (int)nums.size() - 1;."]
+    S2["While while (l less than = r)."]
+    S3["Set int m = l + (r - l) / 2;."]
+    S4["Check if (nums(m) == target) return m; then follow that branch."]
+    S5["Check if (nums(m) less than target) l = m + 1; then follow that branch."]
+    S6["Otherwise run the else branch"]
+    S7["Return return -1;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -2448,9 +2588,11 @@ Core idea     : sorted halves eliminate
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Search Insert Position** with the optimal code below, in the same order the code executes.
-2. Return exactly what the code computes: `return lower_bound(nums.begin(), nums.end(), target) - nums.begin();`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Search Insert Position using code order."]
+    S1["Return return lower_bound(nums.begin(), nums.end(), target) - nums.begin();."]
+    S0 --> S1
 ```
 
 </details>
@@ -2540,17 +2682,27 @@ Core idea     : insert before first bigger/equal
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Next Greater Element I** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_map<int, int> nxt;`.
-3. Update the code state with `stack<int> st;`.
-4. Loop through the input using `for (int x : nums2)`.
-5. Repeat while the code condition holds: `while (!st.empty() && st.top() < x)`.
-6. Update the code state with `nxt[st.top()] = x;`.
-7. Update the code state with `st.pop();`.
-8. Update the code state with `st.push(x);`.
-9. Update the code state with `vector<int> ans;`.
-10. Loop through the input using `for (int x : nums1) ans.push_back(nxt.count(x) ? nxt[x] : -1);`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Next Greater Element I using code order."]
+    S1["Set unordered_map less than int, int greater than nxt;."]
+    S2["Set stack less than int greater than st;."]
+    S3["Loop for (int x : nums2)."]
+    S4["While while (!st.empty() and and st.top() less than x)."]
+    S5["Set nxt(st.top()) = x;."]
+    S6["Set st.pop();."]
+    S7["Set st.push(x);."]
+    S8["Set vector less than int greater than ans;."]
+    S9["Loop for (int x : nums1) ans.push_back(nxt.count(x) ? nxt(x) : -1);."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -2651,17 +2803,27 @@ Core idea     : decreasing stack waits for greater
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Weird Algorithm** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;`.
-4. Update the code state with `long long n;`.
-5. Update the code state with `cin >> n;`.
-6. Repeat while the code condition holds: `while (true)`.
-7. Update the code state with `cout << n << ' ';`.
-8. Check the decision condition `if (n == 1) break;` and take the early/branch action shown in code.
-9. Check the decision condition `if (n % 2 == 0) n /= 2;` and take the early/branch action shown in code.
-10. Run the fallback branch from the code.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Weird Algorithm using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;."]
+    S3["Set long long n;."]
+    S4["Set cin greater than greater than n;."]
+    S5["While while (true)."]
+    S6["Set cout less than less than n less than less than ' ';."]
+    S7["Check if (n == 1) break; then follow that branch."]
+    S8["Check if (n % 2 == 0) n /= 2; then follow that branch."]
+    S9["Otherwise run the else branch"]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -2761,13 +2923,19 @@ Core idea     : direct process
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Sort Colors** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int low = 0, mid = 0, high = (int)nums.size() - 1;`.
-3. Repeat while the code condition holds: `while (mid <= high)`.
-4. Check the decision condition `if (nums[mid] == 0) swap(nums[low++], nums[mid++]);` and take the early/branch action shown in code.
-5. If the previous branch failed, check `else if (nums[mid] == 1) mid++;`.
-6. Run the fallback branch from the code.
+```mermaid
+flowchart TD
+    S0["Goal: solve Sort Colors using code order."]
+    S1["Set int low = 0, mid = 0, high = (int)nums.size() - 1;."]
+    S2["While while (mid less than = high)."]
+    S3["Check if (nums(mid) == 0) swap(nums(low++), nums(mid++)); then follow that branch."]
+    S4["Else check else if (nums(mid) == 1) mid++;."]
+    S5["Otherwise run the else branch"]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -2862,15 +3030,23 @@ Core idea     : place each color region
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Next Permutation** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int i = (int)nums.size() - 2;`.
-3. Repeat while the code condition holds: `while (i >= 0 && nums[i] >= nums[i + 1]) i--;`.
-4. Check the decision condition `if (i >= 0)` and take the early/branch action shown in code.
-5. Update the code state with `int j = (int)nums.size() - 1;`.
-6. Repeat while the code condition holds: `while (nums[j] <= nums[i]) j--;`.
-7. Update the code state with `swap(nums[i], nums[j]);`.
-8. Update the code state with `reverse(nums.begin() + i + 1, nums.end());`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Next Permutation using code order."]
+    S1["Set int i = (int)nums.size() - 2;."]
+    S2["While while (i greater than = 0 and and nums(i) greater than = nums(i + 1)) i--;."]
+    S3["Check if (i greater than = 0) then follow that branch."]
+    S4["Set int j = (int)nums.size() - 1;."]
+    S5["While while (nums(j) less than = nums(i)) j--;."]
+    S6["Set swap(nums(i), nums(j));."]
+    S7["Set reverse(nums.begin() + i + 1, nums.end());."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -2967,14 +3143,21 @@ Core idea     : next lexicographic order changes suffix
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Merge Intervals** with the optimal code below, in the same order the code executes.
-2. Update the code state with `sort(intervals.begin(), intervals.end());`.
-3. Update the code state with `vector<vector<int>> ans;`.
-4. Loop through the input using `for (auto cur : intervals)`.
-5. Check the decision condition `if (ans.empty() || ans.back()[1] < cur[0]) ans.push_back(cur);` and take the early/branch action shown in code.
-6. Run the fallback branch from the code.
-7. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Merge Intervals using code order."]
+    S1["Set sort(intervals.begin(), intervals.end());."]
+    S2["Set vector less than vector less than int greater than greater than ans;."]
+    S3["Loop for (auto cur : intervals)."]
+    S4["Check if (ans.empty() or or ans.back()(1) less than cur(0)) ans.push_back(cur); then follow that branch."]
+    S5["Otherwise run the else branch"]
+    S6["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -3070,14 +3253,21 @@ Core idea     : overlap extends interval
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Product of Array Except Self** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int n = nums.size();`.
-3. Update the code state with `int pref = 1;`.
-4. Loop through the input using `for (int i = 0; i < n; i++) { ans[i] = pref; pref *= nums[i]; }`.
-5. Update the code state with `int suff = 1;`.
-6. Loop through the input using `for (int i = n - 1; i >= 0; i--) { ans[i] *= suff; suff *= nums[i]; }`.
-7. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Product of Array Except Self using code order."]
+    S1["Set int n = nums.size();."]
+    S2["Set int pref = 1;."]
+    S3["Loop for (int i = 0; i less than n; i++) ( ans(i) = pref; pref *= nums(i); )."]
+    S4["Set int suff = 1;."]
+    S5["Loop for (int i = n - 1; i greater than = 0; i--) ( ans(i) *= suff; suff *= nums(i); )."]
+    S6["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -3173,16 +3363,25 @@ Core idea     : answer is left product times right product
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Group Anagrams** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_map<string, vector<string>> mp;`.
-3. Loop through the input using `for (string s : strs)`.
-4. Update the code state with `string key = s;`.
-5. Update the code state with `sort(key.begin(), key.end());`.
-6. Update the code state with `mp[key].push_back(s);`.
-7. Update the code state with `vector<vector<string>> ans;`.
-8. Loop through the input using `for (auto& [k, v] : mp) ans.push_back(v);`.
-9. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Group Anagrams using code order."]
+    S1["Set unordered_map less than string, vector less than string greater than greater than mp;."]
+    S2["Loop for (string s : strs)."]
+    S3["Set string key = s;."]
+    S4["Set sort(key.begin(), key.end());."]
+    S5["Set mp(key).push_back(s);."]
+    S6["Set vector less than vector less than string greater than greater than ans;."]
+    S7["Loop for (auto and (k, v) : mp) ans.push_back(v);."]
+    S8["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -3280,14 +3479,21 @@ Core idea     : anagrams share canonical form
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Longest Substring Without Repeating Characters** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int ans = 0, left = 0;`.
-3. Loop through the input using `for (int right = 0; right < (int)s.size(); right++)`.
-4. Update the code state with `left = max(left, last[(unsigned char)s[right]] + 1);`.
-5. Update the code state with `last[(unsigned char)s[right]] = right;`.
-6. Update the code state with `ans = max(ans, right - left + 1);`.
-7. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Longest Substring Without Repeating Characters using code order."]
+    S1["Set int ans = 0, left = 0;."]
+    S2["Loop for (int right = 0; right less than (int)s.size(); right++)."]
+    S3["Set left = max(left, last((unsigned char)s(right)) + 1);."]
+    S4["Set last((unsigned char)s(right)) = right;."]
+    S5["Set ans = max(ans, right - left + 1);."]
+    S6["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -3384,16 +3590,25 @@ Core idea     : window invariant has unique chars
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Minimum Window Substring** with the optimal code below, in the same order the code executes.
-2. Loop through the input using `for (char c : t) need[c]++;`.
-3. Update the code state with `int missing = t.size(), left = 0, bestLen = INT_MAX, bestStart = 0;`.
-4. Loop through the input using `for (int right = 0; right < (int)s.size(); right++)`.
-5. Check the decision condition `if (need[s[right]]-- > 0) missing--;` and take the early/branch action shown in code.
-6. Repeat while the code condition holds: `while (missing == 0)`.
-7. Check the decision condition `if (right - left + 1 < bestLen) bestLen = right - left + 1, bestStart = left;` and take the early/branch action shown in code.
-8. Check the decision condition `if (++need[s[left++]] > 0) missing++;` and take the early/branch action shown in code.
-9. Return exactly what the code computes: `return bestLen == INT_MAX ? "" : s.substr(bestStart, bestLen);`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Minimum Window Substring using code order."]
+    S1["Loop for (char c : t) need(c)++;."]
+    S2["Set int missing = t.size(), left = 0, bestLen = INT_MAX, bestStart = 0;."]
+    S3["Loop for (int right = 0; right less than (int)s.size(); right++)."]
+    S4["Check if (need(s(right))-- greater than 0) missing--; then follow that branch."]
+    S5["While while (missing == 0)."]
+    S6["Check if (right - left + 1 less than bestLen) bestLen = right - left + 1, bestStart = left; then follow that branch."]
+    S7["Check if (++need(s(left++)) greater than 0) missing++; then follow that branch."]
+    S8["Return return bestLen == INT_MAX ? '' : s.substr(bestStart, bestLen);."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -3493,17 +3708,27 @@ Core idea     : smallest valid window after coverage
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Decode String** with the optimal code below, in the same order the code executes.
-2. Update the code state with `stack<int> counts;`.
-3. Update the code state with `stack<string> prev;`.
-4. Update the code state with `string cur;`.
-5. Update the code state with `int num = 0;`.
-6. Loop through the input using `for (char c : s)`.
-7. Check the decision condition `if (isdigit(c)) num = num * 10 + c - '0';` and take the early/branch action shown in code.
-8. If the previous branch failed, check `else if (c == '[') { counts.push(num); prev.push(cur); num = 0; cur.clear(); }`.
-9. If the previous branch failed, check `else if (c == ']') { string tmp = prev.top(); prev.pop(); int k = counts.top(); counts.pop(); while (k--) tmp += cur; cur = tmp; }`.
-10. Run the fallback branch from the code.
+```mermaid
+flowchart TD
+    S0["Goal: solve Decode String using code order."]
+    S1["Set stack less than int greater than counts;."]
+    S2["Set stack less than string greater than prev;."]
+    S3["Set string cur;."]
+    S4["Set int num = 0;."]
+    S5["Loop for (char c : s)."]
+    S6["Check if (isdigit(c)) num = num * 10 + c - '0'; then follow that branch."]
+    S7["Else check else if (c == '(') ( counts.push(num); prev.push(cur); num = 0; cur.clear(); )."]
+    S8["Else check else if (c == ')') ( string tmp = prev.top(); prev.pop(); int k = counts.top(); counts.pop(); while (k--..."]
+    S9["Otherwise run the else branch"]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -3603,9 +3828,11 @@ Core idea     : brackets nest last-in-first-out
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Min Stack** with the optimal code below, in the same order the code executes.
-2. Update the code state with `stack<pair<int,int>> st;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Min Stack using code order."]
+    S1["Set stack less than pair less than int,int greater than greater than st;."]
+    S0 --> S1
 ```
 
 </details>
@@ -3697,17 +3924,27 @@ Core idea     : min must rollback with pop
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Evaluate Reverse Polish Notation** with the optimal code below, in the same order the code executes.
-2. Update the code state with `stack<int> st;`.
-3. Loop through the input using `for (string t : tokens)`.
-4. Check the decision condition `if (t == "+" || t == "-" || t == "*" || t == "/")` and take the early/branch action shown in code.
-5. Update the code state with `int b = st.top(); st.pop(); int a = st.top(); st.pop();`.
-6. Check the decision condition `if (t == "+") st.push(a + b);` and take the early/branch action shown in code.
-7. If the previous branch failed, check `else if (t == "-") st.push(a - b);`.
-8. If the previous branch failed, check `else if (t == "*") st.push(a * b);`.
-9. Run the fallback branch from the code.
-10. Update the code state with `} else st.push(stoi(t));`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Evaluate Reverse Polish Notation using code order."]
+    S1["Set stack less than int greater than st;."]
+    S2["Loop for (string t : tokens)."]
+    S3["Check if (t == '+' or or t == '-' or or t == '*' or or t == '/') then follow that branch."]
+    S4["Set int b = st.top(); st.pop(); int a = st.top(); st.pop();."]
+    S5["Check if (t == '+') st.push(a + b); then follow that branch."]
+    S6["Else check else if (t == '-') st.push(a - b);."]
+    S7["Else check else if (t == '*') st.push(a * b);."]
+    S8["Otherwise run the else branch"]
+    S9["Set ) else st.push(stoi(t));."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -3807,16 +4044,25 @@ Core idea     : postfix puts operands before operator
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Daily Temperatures** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int n = temperatures.size();`.
-3. Update the code state with `stack<int> st;`.
-4. Loop through the input using `for (int i = 0; i < n; i++)`.
-5. Repeat while the code condition holds: `while (!st.empty() && temperatures[st.top()] < temperatures[i])`.
-6. Update the code state with `ans[st.top()] = i - st.top();`.
-7. Update the code state with `st.pop();`.
-8. Update the code state with `st.push(i);`.
-9. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Daily Temperatures using code order."]
+    S1["Set int n = temperatures.size();."]
+    S2["Set stack less than int greater than st;."]
+    S3["Loop for (int i = 0; i less than n; i++)."]
+    S4["While while (!st.empty() and and temperatures(st.top()) less than temperatures(i))."]
+    S5["Set ans(st.top()) = i - st.top();."]
+    S6["Set st.pop();."]
+    S7["Set st.push(i);."]
+    S8["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -3916,17 +4162,27 @@ Core idea     : warmer day resolves colder days
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Rotting Oranges** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int m = grid.size(), n = grid[0].size(), fresh = 0, minutes = 0;`.
-3. Update the code state with `queue<pair<int,int>> q;`.
-4. Loop through the input using `for (int i = 0; i < m; i++) for (int j = 0; j < n; j++)`.
-5. Check the decision condition `if (grid[i][j] == 2) q.push({i,j});` and take the early/branch action shown in code.
-6. Check the decision condition `if (grid[i][j] == 1) fresh++;` and take the early/branch action shown in code.
-7. Update the code state with `int dirs[5] = {1,0,-1,0,1};`.
-8. Repeat while the code condition holds: `while (!q.empty() && fresh > 0)`.
-9. Update the code state with `int sz = q.size(); minutes++;`.
-10. Repeat while the code condition holds: `while (sz--)`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Rotting Oranges using code order."]
+    S1["Set int m = grid.size(), n = grid(0).size(), fresh = 0, minutes = 0;."]
+    S2["Set queue less than pair less than int,int greater than greater than q;."]
+    S3["Loop for (int i = 0; i less than m; i++) for (int j = 0; j less than n; j++)."]
+    S4["Check if (grid(i)(j) == 2) q.push((i,j)); then follow that branch."]
+    S5["Check if (grid(i)(j) == 1) fresh++; then follow that branch."]
+    S6["Set int dirs(5) = (1,0,-1,0,1);."]
+    S7["While while (!q.empty() and and fresh greater than 0)."]
+    S8["Set int sz = q.size(); minutes++;."]
+    S9["While while (sz--)."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -4034,17 +4290,27 @@ Core idea     : infection spreads by layers
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Number of Islands** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int m = grid.size(), n = grid[0].size(), ans = 0;`.
-3. Update the code state with `int dirs[5] = {1,0,-1,0,1};`.
-4. Loop through the input using `for (int i = 0; i < m; i++) for (int j = 0; j < n; j++) if (grid[i][j] == '1')`.
-5. Update the code state with `ans++;`.
-6. Update the code state with `queue<pair<int,int>> q; q.push({i,j}); grid[i][j] = '0';`.
-7. Repeat while the code condition holds: `while (!q.empty())`.
-8. Update the code state with `auto [r,c] = q.front(); q.pop();`.
-9. Loop through the input using `for (int d=0; d<4; d++) { int nr=r+dirs[d], nc=c+dirs[d+1]; if (nr>=0&&nc>=0&&nr<m&&nc<n&&grid[nr][nc]=='1') { grid[nr][nc]='0'; q.push({nr,nc}); } }`.
-10. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Number of Islands using code order."]
+    S1["Set int m = grid.size(), n = grid(0).size(), ans = 0;."]
+    S2["Set int dirs(5) = (1,0,-1,0,1);."]
+    S3["Loop for (int i = 0; i less than m; i++) for (int j = 0; j less than n; j++) if (grid(i)(j) == '1')."]
+    S4["Set ans++;."]
+    S5["Set queue less than pair less than int,int greater than greater than q; q.push((i,j)); grid(i)(j) = '0';."]
+    S6["While while (!q.empty())."]
+    S7["Set auto (r,c) = q.front(); q.pop();."]
+    S8["Loop for (int d=0; d less than 4; d++) ( int nr=r+dirs(d), nc=c+dirs(d+1); if (nr greater than =0 and and nc greate..."]
+    S9["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -4144,17 +4410,27 @@ Core idea     : each BFS consumes one island
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Open the Lock** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_set<string> dead(deadends.begin(), deadends.end()), seen;`.
-3. Check the decision condition `if (dead.count("0000")) return -1;` and take the early/branch action shown in code.
-4. Update the code state with `queue<string> q; q.push("0000"); seen.insert("0000");`.
-5. Update the code state with `int steps = 0;`.
-6. Repeat while the code condition holds: `while (!q.empty())`.
-7. Update the code state with `int sz = q.size();`.
-8. Repeat while the code condition holds: `while (sz--)`.
-9. Update the code state with `string cur = q.front(); q.pop();`.
-10. Check the decision condition `if (cur == target) return steps;` and take the early/branch action shown in code.
+```mermaid
+flowchart TD
+    S0["Goal: solve Open the Lock using code order."]
+    S1["Set unordered_set less than string greater than dead(deadends.begin(), deadends.end()), seen;."]
+    S2["Check if (dead.count('0000')) return -1; then follow that branch."]
+    S3["Set queue less than string greater than q; q.push('0000'); seen.insert('0000');."]
+    S4["Set int steps = 0;."]
+    S5["While while (!q.empty())."]
+    S6["Set int sz = q.size();."]
+    S7["While while (sz--)."]
+    S8["Set string cur = q.front(); q.pop();."]
+    S9["Check if (cur == target) return steps; then follow that branch."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -4261,10 +4537,13 @@ Core idea     : shortest moves in unweighted state graph
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Kth Largest Element in an Array** with the optimal code below, in the same order the code executes.
-2. Update the code state with `nth_element(nums.begin(), nums.end() - k, nums.end());`.
-3. Return exactly what the code computes: `return nums[nums.size() - k];`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Kth Largest Element in an Array using code order."]
+    S1["Set nth_element(nums.begin(), nums.end() - k, nums.end());."]
+    S2["Return return nums(nums.size() - k);."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -4355,15 +4634,23 @@ Core idea     : kth is min of top k
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Top K Frequent Elements** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_map<int,int> freq;`.
-3. Loop through the input using `for (int x : nums) freq[x]++;`.
-4. Update the code state with `priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;`.
-5. Loop through the input using `for (auto [x,c] : freq) { pq.push({c,x}); if ((int)pq.size() > k) pq.pop(); }`.
-6. Update the code state with `vector<int> ans;`.
-7. Repeat while the code condition holds: `while (!pq.empty()) ans.push_back(pq.top().second), pq.pop();`.
-8. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Top K Frequent Elements using code order."]
+    S1["Set unordered_map less than int,int greater than freq;."]
+    S2["Loop for (int x : nums) freq(x)++;."]
+    S3["Set priority_queue less than pair less than int,int greater than , vector less than pair less than int,int greater..."]
+    S4["Loop for (auto (x,c) : freq) ( pq.push((c,x)); if ((int)pq.size() greater than k) pq.pop(); )."]
+    S5["Set vector less than int greater than ans;."]
+    S6["While while (!pq.empty()) ans.push_back(pq.top().second), pq.pop();."]
+    S7["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -4459,11 +4746,15 @@ Core idea     : frequency decides rank
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **K Closest Points to Origin** with the optimal code below, in the same order the code executes.
-2. Update the code state with `auto dist = [](const vector<int>& p){ return p[0]*p[0] + p[1]*p[1]; };`.
-3. Update the code state with `nth_element(points.begin(), points.begin() + k, points.end(), [&](auto& a, auto& b){ return dist(a) < dist(b); });`.
-4. Return exactly what the code computes: `return vector<vector<int>>(points.begin(), points.begin() + k);`.
+```mermaid
+flowchart TD
+    S0["Goal: solve K Closest Points to Origin using code order."]
+    S1["Set auto dist = ()(const vector less than int greater than and p)( return p(0)*p(0) + p(1)*p(1); );."]
+    S2["Set nth_element(points.begin(), points.begin() + k, points.end(), ( and )(auto and a, auto and b)( return dist(a) l..."]
+    S3["Return return vector less than vector less than int greater than greater than (points.begin(), points.begin() + k);."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
 ```
 
 </details>
@@ -4555,12 +4846,17 @@ Core idea     : no need sqrt
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Task Scheduler** with the optimal code below, in the same order the code executes.
-2. Loop through the input using `for (char c : tasks) cnt[c - 'A']++;`.
-3. Update the code state with `int mx = *max_element(cnt.begin(), cnt.end());`.
-4. Update the code state with `int same = count(cnt.begin(), cnt.end(), mx);`.
-5. Return exactly what the code computes: `return max((int)tasks.size(), (mx - 1) * (n + 1) + same);`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Task Scheduler using code order."]
+    S1["Loop for (char c : tasks) cnt(c - 'A')++;."]
+    S2["Set int mx = *max_element(cnt.begin(), cnt.end());."]
+    S3["Set int same = count(cnt.begin(), cnt.end(), mx);."]
+    S4["Return return max((int)tasks.size(), (mx - 1) * (n + 1) + same);."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -4654,14 +4950,21 @@ Core idea     : reduce future bottleneck
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **My Calendar I** with the optimal code below, in the same order the code executes.
-2. Update the code state with `set<pair<int,int>> booked;`.
-3. Update the code state with `auto it = booked.lower_bound({start, end});`.
-4. Check the decision condition `if (it != booked.end() && it->first < end) return false;` and take the early/branch action shown in code.
-5. Check the decision condition `if (it != booked.begin() && prev(it)->second > start) return false;` and take the early/branch action shown in code.
-6. Update the code state with `booked.insert({start, end});`.
-7. Return exactly what the code computes: `return true;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve My Calendar I using code order."]
+    S1["Set set less than pair less than int,int greater than greater than booked;."]
+    S2["Set auto it = booked.lower_bound((start, end));."]
+    S3["Check if (it != booked.end() and and it- greater than first less than end) return false; then follow that branch."]
+    S4["Check if (it != booked.begin() and and prev(it)- greater than second greater than start) return false; then follow..."]
+    S5["Set booked.insert((start, end));."]
+    S6["Return return true;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -4756,17 +5059,27 @@ Core idea     : only neighbours can overlap
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Exam Room** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int n;`.
-3. Update the code state with `set<int> seats;`.
-4. Update the code state with `ExamRoom(int n) : n(n) {}`.
-5. Check the decision condition `if (seats.empty()) { seats.insert(0); return 0; }` and take the early/branch action shown in code.
-6. Update the code state with `int best = 0, dist = *seats.begin();`.
-7. Update the code state with `int prevSeat = *seats.begin();`.
-8. Loop through the input using `for (int s : seats)`.
-9. Update the code state with `int d = (s - prevSeat) / 2;`.
-10. Check the decision condition `if (d > dist) dist = d, best = prevSeat + d;` and take the early/branch action shown in code.
+```mermaid
+flowchart TD
+    S0["Goal: solve Exam Room using code order."]
+    S1["Set int n;."]
+    S2["Set set less than int greater than seats;."]
+    S3["Set ExamRoom(int n) : n(n) ()."]
+    S4["Check if (seats.empty()) ( seats.insert(0); return 0; ) then follow that branch."]
+    S5["Set int best = 0, dist = *seats.begin();."]
+    S6["Set int prevSeat = *seats.begin();."]
+    S7["Loop for (int s : seats)."]
+    S8["Set int d = (s - prevSeat) / 2;."]
+    S9["Check if (d greater than dist) dist = d, best = prevSeat + d; then follow that branch."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -4870,12 +5183,17 @@ Core idea     : best seat depends on gaps
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Time Based Key-Value Store** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_map<string, vector<pair<int,string>>> mp;`.
-3. Update the code state with `auto& v = mp[key];`.
-4. Update the code state with `int i = upper_bound(v.begin(), v.end(), make_pair(timestamp, string("~"))) - v.begin() - 1;`.
-5. Return exactly what the code computes: `return i >= 0 ? v[i].second : "";`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Time Based Key-Value Store using code order."]
+    S1["Set unordered_map less than string, vector less than pair less than int,string greater than greater than greater th..."]
+    S2["Set auto and v = mp(key);."]
+    S3["Set int i = upper_bound(v.begin(), v.end(), make_pair(timestamp, string('~'))) - v.begin() - 1;."]
+    S4["Return return i greater than = 0 ? v(i).second : '';."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -4969,15 +5287,23 @@ Core idea     : latest previous value is answer
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Subarray Sum Equals K** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_map<int,int> freq{{0,1}};`.
-3. Update the code state with `int pref = 0, ans = 0;`.
-4. Loop through the input using `for (int x : nums)`.
-5. Update the code state with `pref += x;`.
-6. Update the code state with `ans += freq[pref - k];`.
-7. Update the code state with `freq[pref]++;`.
-8. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Subarray Sum Equals K using code order."]
+    S1["Set unordered_map less than int,int greater than freq((0,1));."]
+    S2["Set int pref = 0, ans = 0;."]
+    S3["Loop for (int x : nums)."]
+    S4["Set pref += x;."]
+    S5["Set ans += freq(pref - k);."]
+    S6["Set freq(pref)++;."]
+    S7["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -5074,15 +5400,23 @@ Core idea     : equal difference gives sum k
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Longest Consecutive Sequence** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_set<int> s(nums.begin(), nums.end());`.
-3. Update the code state with `int ans = 0;`.
-4. Loop through the input using `for (int x : s) if (!s.count(x - 1))`.
-5. Update the code state with `int y = x;`.
-6. Repeat while the code condition holds: `while (s.count(y)) y++;`.
-7. Update the code state with `ans = max(ans, y - x);`.
-8. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Longest Consecutive Sequence using code order."]
+    S1["Set unordered_set less than int greater than s(nums.begin(), nums.end());."]
+    S2["Set int ans = 0;."]
+    S3["Loop for (int x : s) if (!s.count(x - 1))."]
+    S4["Set int y = x;."]
+    S5["While while (s.count(y)) y++;."]
+    S6["Set ans = max(ans, y - x);."]
+    S7["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -5179,17 +5513,27 @@ Core idea     : each number processed once
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **LRU Cache** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int cap;`.
-3. Update the code state with `list<pair<int,int>> items;`.
-4. Update the code state with `unordered_map<int, list<pair<int,int>>::iterator> pos;`.
-5. Update the code state with `LRUCache(int capacity) : cap(capacity) {}`.
-6. Check the decision condition `if (!pos.count(key)) return -1;` and take the early/branch action shown in code.
-7. Update the code state with `items.splice(items.begin(), items, pos[key]);`.
-8. Return exactly what the code computes: `return pos[key]->second;`.
-9. Check the decision condition `if (pos.count(key)) { pos[key]->second = value; items.splice(items.begin(), items, pos[key]); return; }` and take the early/branch action shown in code.
-10. Check the decision condition `if ((int)items.size() == cap) { pos.erase(items.back().first); items.pop_back(); }` and take the early/branch action shown in code.
+```mermaid
+flowchart TD
+    S0["Goal: solve LRU Cache using code order."]
+    S1["Set int cap;."]
+    S2["Set list less than pair less than int,int greater than greater than items;."]
+    S3["Set unordered_map less than int, list less than pair less than int,int greater than greater than ::iterator greater..."]
+    S4["Set LRUCache(int capacity) : cap(capacity) ()."]
+    S5["Check if (!pos.count(key)) return -1; then follow that branch."]
+    S6["Set items.splice(items.begin(), items, pos(key));."]
+    S7["Return return pos(key)- greater than second;."]
+    S8["Check if (pos.count(key)) ( pos(key)- greater than second = value; items.splice(items.begin(), items, pos(key)); re..."]
+    S9["Check if ((int)items.size() == cap) ( pos.erase(items.back().first); items.pop_back(); ) then follow that branch."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -5290,14 +5634,21 @@ Core idea     : O(1) move to front
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Non-overlapping Intervals** with the optimal code below, in the same order the code executes.
-2. Update the code state with `sort(intervals.begin(), intervals.end(), [](auto& a, auto& b){ return a[1] < b[1]; });`.
-3. Update the code state with `int removed = 0, end = INT_MIN;`.
-4. Loop through the input using `for (auto& in : intervals)`.
-5. Check the decision condition `if (in[0] >= end) end = in[1];` and take the early/branch action shown in code.
-6. Run the fallback branch from the code.
-7. Return exactly what the code computes: `return removed;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Non-overlapping Intervals using code order."]
+    S1["Set sort(intervals.begin(), intervals.end(), ()(auto and a, auto and b)( return a(1) less than b(1); ));."]
+    S2["Set int removed = 0, end = INT_MIN;."]
+    S3["Loop for (auto and in : intervals)."]
+    S4["Check if (in(0) greater than = end) end = in(1); then follow that branch."]
+    S5["Otherwise run the else branch"]
+    S6["Return return removed;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -5393,13 +5744,19 @@ Core idea     : more space for future intervals
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Minimum Number of Arrows to Burst Balloons** with the optimal code below, in the same order the code executes.
-2. Update the code state with `sort(points.begin(), points.end(), [](auto& a, auto& b){ return a[1] < b[1]; });`.
-3. Update the code state with `long long arrow = LLONG_MIN;`.
-4. Update the code state with `int ans = 0;`.
-5. Loop through the input using `for (auto& p : points) if (p[0] > arrow) { ans++; arrow = p[1]; }`.
-6. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Minimum Number of Arrows to Burst Balloons using code order."]
+    S1["Set sort(points.begin(), points.end(), ()(auto and a, auto and b)( return a(1) less than b(1); ));."]
+    S2["Set long long arrow = LLONG_MIN;."]
+    S3["Set int ans = 0;."]
+    S4["Loop for (auto and p : points) if (p(0) greater than arrow) ( ans++; arrow = p(1); )."]
+    S5["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -5493,12 +5850,17 @@ Core idea     : one arrow covers all overlapping intervals
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Queue Reconstruction by Height** with the optimal code below, in the same order the code executes.
-2. Update the code state with `sort(people.begin(), people.end(), [](auto& a, auto& b){ return a[0] == b[0] ? a[1] < b[1] : a[0] > b[0]; });`.
-3. Update the code state with `vector<vector<int>> ans;`.
-4. Loop through the input using `for (auto& p : people) ans.insert(ans.begin() + p[1], p);`.
-5. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Queue Reconstruction by Height using code order."]
+    S1["Set sort(people.begin(), people.end(), ()(auto and a, auto and b)( return a(0) == b(0) ? a(1) less than b(1) : a(0)..."]
+    S2["Set vector less than vector less than int greater than greater than ans;."]
+    S3["Loop for (auto and p : people) ans.insert(ans.begin() + p(1), p);."]
+    S4["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -5591,15 +5953,23 @@ Core idea     : shorter people do not affect taller count
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Largest Number** with the optimal code below, in the same order the code executes.
-2. Update the code state with `vector<string> s;`.
-3. Loop through the input using `for (int x : nums) s.push_back(to_string(x));`.
-4. Update the code state with `sort(s.begin(), s.end(), [](const string& a, const string& b){ return a + b > b + a; });`.
-5. Check the decision condition `if (s[0] == "0") return "0";` and take the early/branch action shown in code.
-6. Update the code state with `string ans;`.
-7. Loop through the input using `for (auto& x : s) ans += x;`.
-8. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Largest Number using code order."]
+    S1["Set vector less than string greater than s;."]
+    S2["Loop for (int x : nums) s.push_back(to_string(x));."]
+    S3["Set sort(s.begin(), s.end(), ()(const string and a, const string and b)( return a + b greater than b + a; ));."]
+    S4["Check if (s(0) == '0') return '0'; then follow that branch."]
+    S5["Set string ans;."]
+    S6["Loop for (auto and x : s) ans += x;."]
+    S7["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -5695,17 +6065,27 @@ Core idea     : best concatenation order
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **3Sum** with the optimal code below, in the same order the code executes.
-2. Update the code state with `sort(nums.begin(), nums.end());`.
-3. Update the code state with `vector<vector<int>> ans;`.
-4. Update the code state with `int n = nums.size();`.
-5. Loop through the input using `for (int i = 0; i < n; i++)`.
-6. Check the decision condition `if (i && nums[i] == nums[i-1]) continue;` and take the early/branch action shown in code.
-7. Update the code state with `int l = i + 1, r = n - 1;`.
-8. Repeat while the code condition holds: `while (l < r)`.
-9. Update the code state with `long long sum = 1LL * nums[i] + nums[l] + nums[r];`.
-10. Check the decision condition `if (sum == 0) { ans.push_back({nums[i], nums[l], nums[r]}); l++; r--; while (l<r && nums[l]==nums[l-1]) l++; while (l<r && nums[r]==nums[r+1]) r--; }` and take the early/branch action shown in code.
+```mermaid
+flowchart TD
+    S0["Goal: solve 3Sum using code order."]
+    S1["Set sort(nums.begin(), nums.end());."]
+    S2["Set vector less than vector less than int greater than greater than ans;."]
+    S3["Set int n = nums.size();."]
+    S4["Loop for (int i = 0; i less than n; i++)."]
+    S5["Check if (i and and nums(i) == nums(i-1)) continue; then follow that branch."]
+    S6["Set int l = i + 1, r = n - 1;."]
+    S7["While while (l less than r)."]
+    S8["Set long long sum = 1LL * nums(i) + nums(l) + nums(r);."]
+    S9["Check if (sum == 0) ( ans.push_back((nums(i), nums(l), nums(r))); l++; r--; while (l less than r and and nums(l)==n..."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -5807,17 +6187,27 @@ Core idea     : fixing one reduces to two sum
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **4Sum** with the optimal code below, in the same order the code executes.
-2. Update the code state with `sort(nums.begin(), nums.end());`.
-3. Update the code state with `vector<vector<int>> ans;`.
-4. Update the code state with `int n = nums.size();`.
-5. Loop through the input using `for (int i=0;i<n;i++) { if (i && nums[i]==nums[i-1]) continue;`.
-6. Loop through the input using `for (int j=i+1;j<n;j++) { if (j>i+1 && nums[j]==nums[j-1]) continue;`.
-7. Update the code state with `int l=j+1,r=n-1;`.
-8. Repeat while the code condition holds: `while(l<r){ long long sum=1LL*nums[i]+nums[j]+nums[l]+nums[r];`.
-9. Check the decision condition `if(sum==target){ ans.push_back({nums[i],nums[j],nums[l],nums[r]}); l++; r--; while(l<r&&nums[l]==nums[l-1])l++; while(l<r&&nums[r]==nums[r+1])r--; }` and take the early/branch action shown in code.
-10. If the previous branch failed, check `else if(sum<target) l++; else r--; }`.
+```mermaid
+flowchart TD
+    S0["Goal: solve 4Sum using code order."]
+    S1["Set sort(nums.begin(), nums.end());."]
+    S2["Set vector less than vector less than int greater than greater than ans;."]
+    S3["Set int n = nums.size();."]
+    S4["Loop for (int i=0;i less than n;i++) ( if (i and and nums(i)==nums(i-1)) continue;."]
+    S5["Loop for (int j=i+1;j less than n;j++) ( if (j greater than i+1 and and nums(j)==nums(j-1)) continue;."]
+    S6["Set int l=j+1,r=n-1;."]
+    S7["While while(l less than r)( long long sum=1LL*nums(i)+nums(j)+nums(l)+nums(r);."]
+    S8["Check if(sum==target)( ans.push_back((nums(i),nums(j),nums(l),nums(r))); l++; r--; while(l less than r and and nums..."]
+    S9["Else check else if(sum less than target) l++; else r--; )."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -5917,14 +6307,21 @@ Core idea     : reduce dimension stepwise
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Find K Closest Elements** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int l = 0, r = arr.size() - k;`.
-3. Repeat while the code condition holds: `while (l < r)`.
-4. Update the code state with `int m = (l + r) / 2;`.
-5. Check the decision condition `if (x - arr[m] > arr[m + k] - x) l = m + 1;` and take the early/branch action shown in code.
-6. Run the fallback branch from the code.
-7. Return exactly what the code computes: `return vector<int>(arr.begin() + l, arr.begin() + l + k);`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Find K Closest Elements using code order."]
+    S1["Set int l = 0, r = arr.size() - k;."]
+    S2["While while (l less than r)."]
+    S3["Set int m = (l + r) / 2;."]
+    S4["Check if (x - arr(m) greater than arr(m + k) - x) l = m + 1; then follow that branch."]
+    S5["Otherwise run the else branch"]
+    S6["Return return vector less than int greater than (arr.begin() + l, arr.begin() + l + k);."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -6020,12 +6417,17 @@ Core idea     : answer is contiguous around x
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Find First and Last Position of Element in Sorted Array** with the optimal code below, in the same order the code executes.
-2. Update the code state with `auto l = lower_bound(nums.begin(), nums.end(), target);`.
-3. Update the code state with `auto r = upper_bound(nums.begin(), nums.end(), target);`.
-4. Check the decision condition `if (l == nums.end() || *l != target) return {-1, -1};` and take the early/branch action shown in code.
-5. Return exactly what the code computes: `return {(int)(l - nums.begin()), (int)(r - nums.begin() - 1)};`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Find First and Last Position of Element in Sorted Array using code order."]
+    S1["Set auto l = lower_bound(nums.begin(), nums.end(), target);."]
+    S2["Set auto r = upper_bound(nums.begin(), nums.end(), target);."]
+    S3["Check if (l == nums.end() or or *l != target) return (-1, -1); then follow that branch."]
+    S4["Return return ((int)(l - nums.begin()), (int)(r - nums.begin() - 1));."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -6118,16 +6520,25 @@ Core idea     : equal block is contiguous
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Search a 2D Matrix** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int m = matrix.size(), n = matrix[0].size();`.
-3. Update the code state with `int l = 0, r = m * n - 1;`.
-4. Repeat while the code condition holds: `while (l <= r)`.
-5. Update the code state with `int mid = l + (r-l)/2;`.
-6. Update the code state with `int x = matrix[mid / n][mid % n];`.
-7. Check the decision condition `if (x == target) return true;` and take the early/branch action shown in code.
-8. Check the decision condition `if (x < target) l = mid + 1; else r = mid - 1;` and take the early/branch action shown in code.
-9. Return exactly what the code computes: `return false;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Search a 2D Matrix using code order."]
+    S1["Set int m = matrix.size(), n = matrix(0).size();."]
+    S2["Set int l = 0, r = m * n - 1;."]
+    S3["While while (l less than = r)."]
+    S4["Set int mid = l + (r-l)/2;."]
+    S5["Set int x = matrix(mid / n)(mid % n);."]
+    S6["Check if (x == target) return true; then follow that branch."]
+    S7["Check if (x less than target) l = mid + 1; else r = mid - 1; then follow that branch."]
+    S8["Return return false;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -6225,14 +6636,21 @@ Core idea     : matrix acts like sorted array
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Successful Pairs of Spells and Potions** with the optimal code below, in the same order the code executes.
-2. Update the code state with `sort(potions.begin(), potions.end());`.
-3. Update the code state with `vector<int> ans;`.
-4. Loop through the input using `for (long long s : spells)`.
-5. Update the code state with `long long need = (success + s - 1) / s;`.
-6. Update the code state with `ans.push_back(potions.end() - lower_bound(potions.begin(), potions.end(), need));`.
-7. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Successful Pairs of Spells and Potions using code order."]
+    S1["Set sort(potions.begin(), potions.end());."]
+    S2["Set vector less than int greater than ans;."]
+    S3["Loop for (long long s : spells)."]
+    S4["Set long long need = (success + s - 1) / s;."]
+    S5["Set ans.push_back(potions.end() - lower_bound(potions.begin(), potions.end(), need));."]
+    S6["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -6328,13 +6746,19 @@ Core idea     : all later potions work
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Online Stock Span** with the optimal code below, in the same order the code executes.
-2. Update the code state with `stack<pair<int,int>> st;`.
-3. Update the code state with `int span = 1;`.
-4. Repeat while the code condition holds: `while (!st.empty() && st.top().first <= price) { span += st.top().second; st.pop(); }`.
-5. Update the code state with `st.push({price, span});`.
-6. Return exactly what the code computes: `return span;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Online Stock Span using code order."]
+    S1["Set stack less than pair less than int,int greater than greater than st;."]
+    S2["Set int span = 1;."]
+    S3["While while (!st.empty() and and st.top().first less than = price) ( span += st.top().second; st.pop(); )."]
+    S4["Set st.push((price, span));."]
+    S5["Return return span;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -6428,17 +6852,27 @@ Core idea     : merge weaker previous days
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Sum of Subarray Minimums** with the optimal code below, in the same order the code executes.
-2. Update the code state with `const int MOD = 1e9 + 7;`.
-3. Update the code state with `int n = arr.size();`.
-4. Update the code state with `stack<int> st;`.
-5. Loop through the input using `for (int i=0;i<n;i++){ while(!st.empty()&&arr[st.top()]>arr[i]) st.pop(); left[i]=st.empty()?i+1:i-st.top(); st.push(i); }`.
-6. Repeat while the code condition holds: `while(!st.empty()) st.pop();`.
-7. Loop through the input using `for (int i=n-1;i>=0;i--){ while(!st.empty()&&arr[st.top()]>=arr[i]) st.pop(); right[i]=st.empty()?n-i:st.top()-i; st.push(i); }`.
-8. Update the code state with `long long ans=0;`.
-9. Loop through the input using `for(int i=0;i<n;i++) ans=(ans+1LL*arr[i]*left[i]*right[i])%MOD;`.
-10. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Sum of Subarray Minimums using code order."]
+    S1["Set const int MOD = 1e9 + 7;."]
+    S2["Set int n = arr.size();."]
+    S3["Set stack less than int greater than st;."]
+    S4["Loop for (int i=0;i less than n;i++)( while(!st.empty() and and arr(st.top()) greater than arr(i)) st.pop(); left(i..."]
+    S5["While while(!st.empty()) st.pop();."]
+    S6["Loop for (int i=n-1;i greater than =0;i--)( while(!st.empty() and and arr(st.top()) greater than =arr(i)) st.pop();..."]
+    S7["Set long long ans=0;."]
+    S8["Loop for(int i=0;i less than n;i++) ans=(ans+1LL*arr(i)*left(i)*right(i))%MOD;."]
+    S9["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -6537,16 +6971,25 @@ Core idea     : each value contributes as minimum
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Sliding Window Maximum** with the optimal code below, in the same order the code executes.
-2. Update the code state with `deque<int> dq;`.
-3. Update the code state with `vector<int> ans;`.
-4. Loop through the input using `for (int i=0;i<(int)nums.size();i++)`.
-5. Repeat while the code condition holds: `while(!dq.empty() && dq.front() <= i-k) dq.pop_front();`.
-6. Repeat while the code condition holds: `while(!dq.empty() && nums[dq.back()] <= nums[i]) dq.pop_back();`.
-7. Update the code state with `dq.push_back(i);`.
-8. Check the decision condition `if (i >= k-1) ans.push_back(nums[dq.front()]);` and take the early/branch action shown in code.
-9. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Sliding Window Maximum using code order."]
+    S1["Set deque less than int greater than dq;."]
+    S2["Set vector less than int greater than ans;."]
+    S3["Loop for (int i=0;i less than (int)nums.size();i++)."]
+    S4["While while(!dq.empty() and and dq.front() less than = i-k) dq.pop_front();."]
+    S5["While while(!dq.empty() and and nums(dq.back()) less than = nums(i)) dq.pop_back();."]
+    S6["Set dq.push_back(i);."]
+    S7["Check if (i greater than = k-1) ans.push_back(nums(dq.front())); then follow that branch."]
+    S8["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -6644,17 +7087,27 @@ Core idea     : front always best
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit** with the optimal code below, in the same order the code executes.
-2. Update the code state with `deque<int> mn, mx;`.
-3. Update the code state with `int l = 0, ans = 0;`.
-4. Loop through the input using `for (int r=0;r<(int)nums.size();r++)`.
-5. Repeat while the code condition holds: `while(!mn.empty() && nums[mn.back()] >= nums[r]) mn.pop_back();`.
-6. Repeat while the code condition holds: `while(!mx.empty() && nums[mx.back()] <= nums[r]) mx.pop_back();`.
-7. Update the code state with `mn.push_back(r); mx.push_back(r);`.
-8. Repeat while the code condition holds: `while(nums[mx.front()] - nums[mn.front()] > limit)`.
-9. Check the decision condition `if (mn.front() == l) mn.pop_front();` and take the early/branch action shown in code.
-10. Check the decision condition `if (mx.front() == l) mx.pop_front();` and take the early/branch action shown in code.
+```mermaid
+flowchart TD
+    S0["Goal: solve Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit using code order."]
+    S1["Set deque less than int greater than mn, mx;."]
+    S2["Set int l = 0, ans = 0;."]
+    S3["Loop for (int r=0;r less than (int)nums.size();r++)."]
+    S4["While while(!mn.empty() and and nums(mn.back()) greater than = nums(r)) mn.pop_back();."]
+    S5["While while(!mx.empty() and and nums(mx.back()) less than = nums(r)) mx.pop_back();."]
+    S6["Set mn.push_back(r); mx.push_back(r);."]
+    S7["While while(nums(mx.front()) - nums(mn.front()) greater than limit)."]
+    S8["Check if (mn.front() == l) mn.pop_front(); then follow that branch."]
+    S9["Check if (mx.front() == l) mx.pop_front(); then follow that branch."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -6757,17 +7210,27 @@ Core idea     : valid window bounded by extremes
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Constrained Subsequence Sum** with the optimal code below, in the same order the code executes.
-2. Update the code state with `deque<int> dq;`.
-3. Update the code state with `int ans = nums[0];`.
-4. Loop through the input using `for (int i=0;i<(int)nums.size();i++)`.
-5. Check the decision condition `if (!dq.empty() && dq.front() < i-k) dq.pop_front();` and take the early/branch action shown in code.
-6. Update the code state with `dp[i] = nums[i] + (dq.empty() ? 0 : max(0, dp[dq.front()]));`.
-7. Repeat while the code condition holds: `while(!dq.empty() && dp[dq.back()] <= dp[i]) dq.pop_back();`.
-8. Update the code state with `dq.push_back(i);`.
-9. Update the code state with `ans = max(ans, dp[i]);`.
-10. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Constrained Subsequence Sum using code order."]
+    S1["Set deque less than int greater than dq;."]
+    S2["Set int ans = nums(0);."]
+    S3["Loop for (int i=0;i less than (int)nums.size();i++)."]
+    S4["Check if (!dq.empty() and and dq.front() less than i-k) dq.pop_front(); then follow that branch."]
+    S5["Set dp(i) = nums(i) + (dq.empty() ? 0 : max(0, dp(dq.front())));."]
+    S6["While while(!dq.empty() and and dp(dq.back()) less than = dp(i)) dq.pop_back();."]
+    S7["Set dq.push_back(i);."]
+    S8["Set ans = max(ans, dp(i));."]
+    S9["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -6867,15 +7330,23 @@ Core idea     : transition needs max previous
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Insert Interval** with the optimal code below, in the same order the code executes.
-2. Update the code state with `vector<vector<int>> ans;`.
-3. Update the code state with `int i = 0, n = intervals.size();`.
-4. Repeat while the code condition holds: `while (i<n && intervals[i][1] < newInterval[0]) ans.push_back(intervals[i++]);`.
-5. Repeat while the code condition holds: `while (i<n && intervals[i][0] <= newInterval[1]) { newInterval[0]=min(newInterval[0],intervals[i][0]); newInterval[1]=max(newInterval[1],intervals[i][1]); i++; }`.
-6. Update the code state with `ans.push_back(newInterval);`.
-7. Repeat while the code condition holds: `while (i<n) ans.push_back(intervals[i++]);`.
-8. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Insert Interval using code order."]
+    S1["Set vector less than vector less than int greater than greater than ans;."]
+    S2["Set int i = 0, n = intervals.size();."]
+    S3["While while (i less than n and and intervals(i)(1) less than newInterval(0)) ans.push_back(intervals(i++));."]
+    S4["While while (i less than n and and intervals(i)(0) less than = newInterval(1)) ( newInterval(0)=min(newInterval(0),..."]
+    S5["Set ans.push_back(newInterval);."]
+    S6["While while (i less than n) ans.push_back(intervals(i++));."]
+    S7["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -6971,14 +7442,21 @@ Core idea     : only overlap group changes
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Meeting Rooms II** with the optimal code below, in the same order the code executes.
-2. Update the code state with `sort(intervals.begin(), intervals.end());`.
-3. Update the code state with `priority_queue<int, vector<int>, greater<int>> ends;`.
-4. Loop through the input using `for (auto& in : intervals)`.
-5. Check the decision condition `if (!ends.empty() && ends.top() <= in[0]) ends.pop();` and take the early/branch action shown in code.
-6. Update the code state with `ends.push(in[1]);`.
-7. Return exactly what the code computes: `return ends.size();`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Meeting Rooms II using code order."]
+    S1["Set sort(intervals.begin(), intervals.end());."]
+    S2["Set priority_queue less than int, vector less than int greater than , greater less than int greater than greater th..."]
+    S3["Loop for (auto and in : intervals)."]
+    S4["Check if (!ends.empty() and and ends.top() less than = in(0)) ends.pop(); then follow that branch."]
+    S5["Set ends.push(in(1));."]
+    S6["Return return ends.size();."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -7074,13 +7552,19 @@ Core idea     : max simultaneous rooms needed
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Car Pooling** with the optimal code below, in the same order the code executes.
-2. Update the code state with `map<int,int> events;`.
-3. Loop through the input using `for (auto& t : trips) events[t[1]] += t[0], events[t[2]] -= t[0];`.
-4. Update the code state with `int cur = 0;`.
-5. Loop through the input using `for (auto [pos, delta] : events) { cur += delta; if (cur > capacity) return false; }`.
-6. Return exactly what the code computes: `return true;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Car Pooling using code order."]
+    S1["Set map less than int,int greater than events;."]
+    S2["Loop for (auto and t : trips) events(t(1)) += t(0), events(t(2)) -= t(0);."]
+    S3["Set int cur = 0;."]
+    S4["Loop for (auto (pos, delta) : events) ( cur += delta; if (cur greater than capacity) return false; )."]
+    S5["Return return true;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -7174,15 +7658,23 @@ Core idea     : active passengers must fit capacity
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Reverse Pairs** with the optimal code below, in the same order the code executes.
-2. Check the decision condition `if (r - l <= 1) return 0;` and take the early/branch action shown in code.
-3. Update the code state with `int m = (l+r)/2;`.
-4. Update the code state with `int ans = mergeSort(a,l,m) + mergeSort(a,m,r);`.
-5. Update the code state with `int j = m;`.
-6. Loop through the input using `for (int i=l;i<m;i++) { while(j<r && (long long)a[i] > 2LL*a[j]) j++; ans += j-m; }`.
-7. Update the code state with `inplace_merge(a.begin()+l, a.begin()+m, a.begin()+r);`.
-8. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Reverse Pairs using code order."]
+    S1["Check if (r - l less than = 1) return 0; then follow that branch."]
+    S2["Set int m = (l+r)/2;."]
+    S3["Set int ans = mergeSort(a,l,m) + mergeSort(a,m,r);."]
+    S4["Set int j = m;."]
+    S5["Loop for (int i=l;i less than m;i++) ( while(j less than r and and (long long)a(i) greater than 2LL*a(j)) j++; ans..."]
+    S6["Set inplace_merge(a.begin()+l, a.begin()+m, a.begin()+r);."]
+    S7["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -7279,13 +7771,19 @@ Core idea     : count previous bigger than twice
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Partition Equal Subset Sum** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int sum = accumulate(nums.begin(), nums.end(), 0);`.
-3. Check the decision condition `if (sum % 2) return false;` and take the early/branch action shown in code.
-4. Update the code state with `int target = sum / 2;`.
-5. Loop through the input using `for (int x : nums) for (int s = target; s >= x; s--) dp[s] |= dp[s-x];`.
-6. Return exactly what the code computes: `return dp[target];`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Partition Equal Subset Sum using code order."]
+    S1["Set int sum = accumulate(nums.begin(), nums.end(), 0);."]
+    S2["Check if (sum % 2) return false; then follow that branch."]
+    S3["Set int target = sum / 2;."]
+    S4["Loop for (int x : nums) for (int s = target; s greater than = x; s--) dp(s) or = dp(s-x);."]
+    S5["Return return dp(target);."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -7380,12 +7878,17 @@ Core idea     : possible sums move by x
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Last Stone Weight II** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int sum = accumulate(stones.begin(), stones.end(), 0), target = sum / 2;`.
-3. Loop through the input using `for (int x : stones) for (int s = target; s >= x; s--) dp[s] |= dp[s-x];`.
-4. Loop through the input using `for (int s = target; s >= 0; s--) if (dp[s]) return sum - 2*s;`.
-5. Return exactly what the code computes: `return 0;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Last Stone Weight II using code order."]
+    S1["Set int sum = accumulate(stones.begin(), stones.end(), 0), target = sum / 2;."]
+    S2["Loop for (int x : stones) for (int s = target; s greater than = x; s--) dp(s) or = dp(s-x);."]
+    S3["Loop for (int s = target; s greater than = 0; s--) if (dp(s)) return sum - 2*s;."]
+    S4["Return return 0;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -7481,14 +7984,21 @@ Core idea     : split stones into two groups
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **First Missing Positive** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int n = nums.size();`.
-3. Loop through the input using `for (int i=0;i<n;i++)`.
-4. Repeat while the code condition holds: `while (nums[i] >= 1 && nums[i] <= n && nums[nums[i]-1] != nums[i])`.
-5. Update the code state with `swap(nums[i], nums[nums[i]-1]);`.
-6. Loop through the input using `for (int i=0;i<n;i++) if (nums[i] != i+1) return i+1;`.
-7. Return exactly what the code computes: `return n+1;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve First Missing Positive using code order."]
+    S1["Set int n = nums.size();."]
+    S2["Loop for (int i=0;i less than n;i++)."]
+    S3["While while (nums(i) greater than = 1 and and nums(i) less than = n and and nums(nums(i)-1) != nums(i))."]
+    S4["Set swap(nums(i), nums(nums(i)-1));."]
+    S5["Loop for (int i=0;i less than n;i++) if (nums(i) != i+1) return i+1;."]
+    S6["Return return n+1;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -7585,13 +8095,19 @@ Core idea     : array index acts as hash
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Trapping Rain Water** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int l=0,r=height.size()-1,leftMax=0,rightMax=0,ans=0;`.
-3. Repeat while the code condition holds: `while(l<r)`.
-4. Check the decision condition `if(height[l] < height[r]) { leftMax=max(leftMax,height[l]); ans += leftMax-height[l]; l++; }` and take the early/branch action shown in code.
-5. Run the fallback branch from the code.
-6. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Trapping Rain Water using code order."]
+    S1["Set int l=0,r=height.size()-1,leftMax=0,rightMax=0,ans=0;."]
+    S2["While while(l less than r)."]
+    S3["Check if(height(l) less than height(r)) ( leftMax=max(leftMax,height(l)); ans += leftMax-height(l); l++; ) then fol..."]
+    S4["Otherwise run the else branch"]
+    S5["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -7686,17 +8202,27 @@ Core idea     : water depends on smaller wall
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Text Justification** with the optimal code below, in the same order the code executes.
-2. Update the code state with `vector<string> ans;`.
-3. Loop through the input using `for (int i=0;i<(int)words.size();)`.
-4. Update the code state with `int j=i, len=0;`.
-5. Repeat while the code condition holds: `while(j<(int)words.size() && len + (j-i) + (int)words[j].size() <= maxWidth) len += words[j++].size();`.
-6. Update the code state with `int gaps = j-i-1;`.
-7. Update the code state with `string line;`.
-8. Check the decision condition `if (j == (int)words.size() || gaps == 0)` and take the early/branch action shown in code.
-9. Loop through the input using `for(int k=i;k<j;k++){ if(k>i) line+=' '; line+=words[k]; }`.
-10. Update the code state with `line += string(maxWidth - line.size(), ' ');`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Text Justification using code order."]
+    S1["Set vector less than string greater than ans;."]
+    S2["Loop for (int i=0;i less than (int)words.size();)."]
+    S3["Set int j=i, len=0;."]
+    S4["While while(j less than (int)words.size() and and len + (j-i) + (int)words(j).size() less than = maxWidth) len += w..."]
+    S5["Set int gaps = j-i-1;."]
+    S6["Set string line;."]
+    S7["Check if (j == (int)words.size() or or gaps == 0) then follow that branch."]
+    S8["Loop for(int k=i;k less than j;k++)( if(k greater than i) line+=' '; line+=words(k); )."]
+    S9["Set line += string(maxWidth - line.size(), ' ');."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -7801,17 +8327,27 @@ Core idea     : each line is greedy group
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Substring with Concatenation of All Words** with the optimal code below, in the same order the code executes.
-2. Update the code state with `vector<int> ans;`.
-3. Update the code state with `int n=s.size(), m=words.size(), w=words[0].size();`.
-4. Update the code state with `unordered_map<string,int> need;`.
-5. Loop through the input using `for(auto& x:words) need[x]++;`.
-6. Loop through the input using `for(int off=0; off<w; off++)`.
-7. Update the code state with `unordered_map<string,int> have; int left=off, cnt=0;`.
-8. Loop through the input using `for(int right=off; right+w<=n; right+=w)`.
-9. Update the code state with `string cur=s.substr(right,w);`.
-10. Check the decision condition `if(!need.count(cur)) { have.clear(); cnt=0; left=right+w; continue; }` and take the early/branch action shown in code.
+```mermaid
+flowchart TD
+    S0["Goal: solve Substring with Concatenation of All Words using code order."]
+    S1["Set vector less than int greater than ans;."]
+    S2["Set int n=s.size(), m=words.size(), w=words(0).size();."]
+    S3["Set unordered_map less than string,int greater than need;."]
+    S4["Loop for(auto and x:words) need(x)++;."]
+    S5["Loop for(int off=0; off less than w; off++)."]
+    S6["Set unordered_map less than string,int greater than have; int left=off, cnt=0;."]
+    S7["Loop for(int right=off; right+w less than =n; right+=w)."]
+    S8["Set string cur=s.substr(right,w);."]
+    S9["Check if(!need.count(cur)) ( have.clear(); cnt=0; left=right+w; continue; ) then follow that branch."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -7915,16 +8451,25 @@ Core idea     : words align by length
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Basic Calculator** with the optimal code below, in the same order the code executes.
-2. Update the code state with `long long ans=0, num=0, sign=1;`.
-3. Update the code state with `stack<long long> st;`.
-4. Loop through the input using `for(char c:s)`.
-5. Check the decision condition `if(isdigit(c)) num = num*10 + c-'0';` and take the early/branch action shown in code.
-6. If the previous branch failed, check `else if(c=='+' || c=='-') { ans += sign*num; num=0; sign = c=='+' ? 1 : -1; }`.
-7. If the previous branch failed, check `else if(c=='(') { st.push(ans); st.push(sign); ans=0; sign=1; }`.
-8. If the previous branch failed, check `else if(c==')') { ans += sign*num; num=0; ans *= st.top(); st.pop(); ans += st.top(); st.pop(); }`.
-9. Return exactly what the code computes: `return ans + sign*num;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Basic Calculator using code order."]
+    S1["Set long long ans=0, num=0, sign=1;."]
+    S2["Set stack less than long long greater than st;."]
+    S3["Loop for(char c:s)."]
+    S4["Check if(isdigit(c)) num = num*10 + c-'0'; then follow that branch."]
+    S5["Else check else if(c=='+' or or c=='-') ( ans += sign*num; num=0; sign = c=='+' ? 1 : -1; )."]
+    S6["Else check else if(c=='(') ( st.push(ans); st.push(sign); ans=0; sign=1; )."]
+    S7["Else check else if(c==')') ( ans += sign*num; num=0; ans *= st.top(); st.pop(); ans += st.top(); st.pop(); )."]
+    S8["Return return ans + sign*num;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -8022,17 +8567,27 @@ Core idea     : parentheses change sign context
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Largest Rectangle in Histogram** with the optimal code below, in the same order the code executes.
-2. Update the code state with `heights.push_back(0);`.
-3. Update the code state with `stack<int> st;`.
-4. Update the code state with `int ans=0;`.
-5. Loop through the input using `for(int i=0;i<(int)heights.size();i++)`.
-6. Repeat while the code condition holds: `while(!st.empty() && heights[st.top()] > heights[i])`.
-7. Update the code state with `int h=heights[st.top()]; st.pop();`.
-8. Update the code state with `int left = st.empty() ? -1 : st.top();`.
-9. Update the code state with `ans=max(ans, h*(i-left-1));`.
-10. Update the code state with `st.push(i);`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Largest Rectangle in Histogram using code order."]
+    S1["Set heights.push_back(0);."]
+    S2["Set stack less than int greater than st;."]
+    S3["Set int ans=0;."]
+    S4["Loop for(int i=0;i less than (int)heights.size();i++)."]
+    S5["While while(!st.empty() and and heights(st.top()) greater than heights(i))."]
+    S6["Set int h=heights(st.top()); st.pop();."]
+    S7["Set int left = st.empty() ? -1 : st.top();."]
+    S8["Set ans=max(ans, h*(i-left-1));."]
+    S9["Set st.push(i);."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -8134,17 +8689,27 @@ Core idea     : popped bar finds maximal width
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Sliding Puzzle** with the optimal code below, in the same order the code executes.
-2. Update the code state with `string start, target="123450";`.
-3. Loop through the input using `for(auto& row:board) for(int x:row) start += char('0'+x);`.
-4. Update the code state with `vector<vector<int>> nb={{1,3},{0,2,4},{1,5},{0,4},{1,3,5},{2,4}};`.
-5. Update the code state with `queue<string> q; unordered_set<string> seen{start}; q.push(start);`.
-6. Loop through the input using `for(int step=0; !q.empty(); step++)`.
-7. Update the code state with `int sz=q.size();`.
-8. Repeat while the code condition holds: `while(sz--) { string cur=q.front(); q.pop(); if(cur==target) return step; int z=cur.find('0');`.
-9. Loop through the input using `for(int j:nb[z]) { string nxt=cur; swap(nxt[z],nxt[j]); if(!seen.count(nxt)) seen.insert(nxt), q.push(nxt); }`.
-10. Return exactly what the code computes: `return -1;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Sliding Puzzle using code order."]
+    S1["Set string start, target='123450';."]
+    S2["Loop for(auto and row:board) for(int x:row) start += char('0'+x);."]
+    S3["Set vector less than vector less than int greater than greater than nb=((1,3),(0,2,4),(1,5),(0,4),(1,3,5),(2,4));."]
+    S4["Set queue less than string greater than q; unordered_set less than string greater than seen(start); q.push(start);."]
+    S5["Loop for(int step=0; !q.empty(); step++)."]
+    S6["Set int sz=q.size();."]
+    S7["While while(sz--) ( string cur=q.front(); q.pop(); if(cur==target) return step; int z=cur.find('0');."]
+    S8["Loop for(int j:nb(z)) ( string nxt=cur; swap(nxt(z),nxt(j)); if(!seen.count(nxt)) seen.insert(nxt), q.push(nxt); )."]
+    S9["Return return -1;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -8244,14 +8809,21 @@ Core idea     : each move is one edge
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Find Median from Data Stream** with the optimal code below, in the same order the code executes.
-2. Update the code state with `priority_queue<int> low;`.
-3. Update the code state with `priority_queue<int, vector<int>, greater<int>> high;`.
-4. Update the code state with `low.push(num); high.push(low.top()); low.pop();`.
-5. Check the decision condition `if (high.size() > low.size()) { low.push(high.top()); high.pop(); }` and take the early/branch action shown in code.
-6. Check the decision condition `if (low.size() > high.size()) return low.top();` and take the early/branch action shown in code.
-7. Return exactly what the code computes: `return (low.top() + high.top()) / 2.0;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Find Median from Data Stream using code order."]
+    S1["Set priority_queue less than int greater than low;."]
+    S2["Set priority_queue less than int, vector less than int greater than , greater less than int greater than greater th..."]
+    S3["Set low.push(num); high.push(low.top()); low.pop();."]
+    S4["Check if (high.size() greater than low.size()) ( low.push(high.top()); high.pop(); ) then follow that branch."]
+    S5["Check if (low.size() greater than high.size()) return low.top(); then follow that branch."]
+    S6["Return return (low.top() + high.top()) / 2.0;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -8348,15 +8920,23 @@ Core idea     : median lies between halves
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Merge k Sorted Lists** with the optimal code below, in the same order the code executes.
-2. Update the code state with `ListNode* mergeKLists(vector<ListNode*>& lists)`.
-3. Update the code state with `auto cmp = [](ListNode* a, ListNode* b){ return a->val > b->val; };`.
-4. Update the code state with `priority_queue<ListNode*, vector<ListNode*>, decltype(cmp)> pq(cmp);`.
-5. Loop through the input using `for (auto node : lists) if (node) pq.push(node);`.
-6. Update the code state with `ListNode dummy, *tail = &dummy;`.
-7. Repeat while the code condition holds: `while(!pq.empty()) { auto node=pq.top(); pq.pop(); tail->next=node; tail=tail->next; if(node->next) pq.push(node->next); }`.
-8. Return exactly what the code computes: `return dummy.next;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Merge k Sorted Lists using code order."]
+    S1["Set ListNode* mergeKLists(vector less than ListNode* greater than and lists)."]
+    S2["Set auto cmp = ()(ListNode* a, ListNode* b)( return a- greater than val greater than b- greater than val; );."]
+    S3["Set priority_queue less than ListNode*, vector less than ListNode* greater than , decltype(cmp) greater than pq(cmp);."]
+    S4["Loop for (auto node : lists) if (node) pq.push(node);."]
+    S5["Set ListNode dummy, *tail = and dummy;."]
+    S6["While while(!pq.empty()) ( auto node=pq.top(); pq.pop(); tail- greater than next=node; tail=tail- greater than next..."]
+    S7["Return return dummy.next;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -8451,17 +9031,27 @@ Core idea     : smallest head is next answer
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **IPO** with the optimal code below, in the same order the code executes.
-2. Update the code state with `vector<pair<int,int>> projects;`.
-3. Loop through the input using `for(int i=0;i<(int)profits.size();i++) projects.push_back({capital[i], profits[i]});`.
-4. Update the code state with `sort(projects.begin(), projects.end());`.
-5. Update the code state with `priority_queue<int> pq;`.
-6. Update the code state with `int i=0;`.
-7. Repeat while the code condition holds: `while(k--)`.
-8. Repeat while the code condition holds: `while(i<(int)projects.size() && projects[i].first <= w) pq.push(projects[i++].second);`.
-9. Check the decision condition `if(pq.empty()) break;` and take the early/branch action shown in code.
-10. Update the code state with `w += pq.top(); pq.pop();`.
+```mermaid
+flowchart TD
+    S0["Goal: solve IPO using code order."]
+    S1["Set vector less than pair less than int,int greater than greater than projects;."]
+    S2["Loop for(int i=0;i less than (int)profits.size();i++) projects.push_back((capital(i), profits(i)));."]
+    S3["Set sort(projects.begin(), projects.end());."]
+    S4["Set priority_queue less than int greater than pq;."]
+    S5["Set int i=0;."]
+    S6["While while(k--)."]
+    S7["While while(i less than (int)projects.size() and and projects(i).first less than = w) pq.push(projects(i++).second);."]
+    S8["Check if(pq.empty()) break; then follow that branch."]
+    S9["Set w += pq.top(); pq.pop();."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -8561,13 +9151,19 @@ Core idea     : choose best available project
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **My Calendar III** with the optimal code below, in the same order the code executes.
-2. Update the code state with `map<int,int> diff;`.
-3. Update the code state with `diff[start]++; diff[end]--;`.
-4. Update the code state with `int cur=0, best=0;`.
-5. Loop through the input using `for(auto [t,d]:diff) best=max(best, cur += d);`.
-6. Return exactly what the code computes: `return best;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve My Calendar III using code order."]
+    S1["Set map less than int,int greater than diff;."]
+    S2["Set diff(start)++; diff(end)--;."]
+    S3["Set int cur=0, best=0;."]
+    S4["Loop for(auto (t,d):diff) best=max(best, cur += d);."]
+    S5["Return return best;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -8661,9 +9257,11 @@ Core idea     : maximum overlap is prefix of events
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **All O one Data Structure** with the optimal code below, in the same order the code executes.
-2. Update the code state with `unordered_map<string,int> cnt;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve All O one Data Structure using code order."]
+    S1["Set unordered_map less than string,int greater than cnt;."]
+    S0 --> S1
 ```
 
 </details>
@@ -8756,12 +9354,17 @@ Core idea     : O(1) min and max buckets
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Russian Doll Envelopes** with the optimal code below, in the same order the code executes.
-2. Update the code state with `sort(envelopes.begin(), envelopes.end(), [](auto& a, auto& b){ return a[0]==b[0] ? a[1]>b[1] : a[0]<b[0]; });`.
-3. Update the code state with `vector<int> lis;`.
-4. Loop through the input using `for(auto& e:envelopes) { auto it=lower_bound(lis.begin(), lis.end(), e[1]); if(it==lis.end()) lis.push_back(e[1]); else *it=e[1]; }`.
-5. Return exactly what the code computes: `return lis.size();`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Russian Doll Envelopes using code order."]
+    S1["Set sort(envelopes.begin(), envelopes.end(), ()(auto and a, auto and b)( return a(0)==b(0) ? a(1) greater than b(1)..."]
+    S2["Set vector less than int greater than lis;."]
+    S3["Loop for(auto and e:envelopes) ( auto it=lower_bound(lis.begin(), lis.end(), e(1)); if(it==lis.end()) lis.push_back..."]
+    S4["Return return lis.size();."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -8854,14 +9457,21 @@ Core idea     : avoid equal width nesting
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Maximum Profit in Job Scheduling** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int n=startTime.size(); vector<array<int,3>> jobs;`.
-3. Loop through the input using `for(int i=0;i<n;i++) jobs.push_back({endTime[i], startTime[i], profit[i]});`.
-4. Update the code state with `sort(jobs.begin(), jobs.end());`.
-5. Update the code state with `vector<int> ends{0}, dp{0};`.
-6. Loop through the input using `for(auto [e,s,p]:jobs){ int i=upper_bound(ends.begin(), ends.end(), s)-ends.begin()-1; int best=max(dp.back(), dp[i]+p); ends.push_back(e); dp.push_back(best); }`.
-7. Return exactly what the code computes: `return dp.back();`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Maximum Profit in Job Scheduling using code order."]
+    S1["Set int n=startTime.size(); vector less than array less than int,3 greater than greater than jobs;."]
+    S2["Loop for(int i=0;i less than n;i++) jobs.push_back((endTime(i), startTime(i), profit(i)));."]
+    S3["Set sort(jobs.begin(), jobs.end());."]
+    S4["Set vector less than int greater than ends(0), dp(0);."]
+    S5["Loop for(auto (e,s,p):jobs)( int i=upper_bound(ends.begin(), ends.end(), s)-ends.begin()-1; int best=max(dp.back(),..."]
+    S6["Return return dp.back();."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -8956,14 +9566,21 @@ Core idea     : choose job or skip
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Median of Two Sorted Arrays** with the optimal code below, in the same order the code executes.
-2. Check the decision condition `if (a.size() > b.size()) return findMedianSortedArrays(b, a);` and take the early/branch action shown in code.
-3. Update the code state with `int m=a.size(), n=b.size(), half=(m+n+1)/2, l=0, r=m;`.
-4. Repeat while the code condition holds: `while(l<=r){ int i=(l+r)/2, j=half-i; int Aleft=i? a[i-1]:INT_MIN, Aright=i<m?a[i]:INT_MAX; int Bleft=j?b[j-1]:INT_MIN, Bright=j<n?b[j]:INT_MAX;`.
-5. Check the decision condition `if(Aleft<=Bright && Bleft<=Aright) return (m+n)%2 ? max(Aleft,Bleft) : (max(Aleft,Bleft)+min(Aright,Bright))/2.0;` and take the early/branch action shown in code.
-6. Check the decision condition `if(Aleft>Bright) r=i-1; else l=i+1;` and take the early/branch action shown in code.
-7. Return exactly what the code computes: `return 0;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Median of Two Sorted Arrays using code order."]
+    S1["Check if (a.size() greater than b.size()) return findMedianSortedArrays(b, a); then follow that branch."]
+    S2["Set int m=a.size(), n=b.size(), half=(m+n+1)/2, l=0, r=m;."]
+    S3["While while(l less than =r)( int i=(l+r)/2, j=half-i; int Aleft=i? a(i-1):INT_MIN, Aright=i less than m?a(i):INT_MA..."]
+    S4["Check if(Aleft less than =Bright and and Bleft less than =Aright) return (m+n)%2 ? max(Aleft,Bleft) : (max(Aleft,Bl..."]
+    S5["Check if(Aleft greater than Bright) r=i-1; else l=i+1; then follow that branch."]
+    S6["Return return 0;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -9059,13 +9676,19 @@ Core idea     : left half must be <= right half
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Count of Smaller Numbers After Self** with the optimal code below, in the same order the code executes.
-2. Update the code state with `vector<int> bit;`.
-3. Update the code state with `vector<int> vals=nums; sort(vals.begin(), vals.end()); vals.erase(unique(vals.begin(), vals.end()), vals.end());`.
-4. Update the code state with `bit.assign(vals.size()+1,0); vector<int> ans(nums.size());`.
-5. Loop through the input using `for(int i=nums.size()-1;i>=0;i--){ int rank=lower_bound(vals.begin(), vals.end(), nums[i])-vals.begin()+1; ans[i]=sum(rank-1); add(rank,1); }`.
-6. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Count of Smaller Numbers After Self using code order."]
+    S1["Set vector less than int greater than bit;."]
+    S2["Set vector less than int greater than vals=nums; sort(vals.begin(), vals.end()); vals.erase(unique(vals.begin(), va..."]
+    S3["Set bit.assign(vals.size()+1,0); vector less than int greater than ans(nums.size());."]
+    S4["Loop for(int i=nums.size()-1;i greater than =0;i--)( int rank=lower_bound(vals.begin(), vals.end(), nums(i))-vals.b..."]
+    S5["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -9161,11 +9784,15 @@ Core idea     : count previously inserted smaller
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Maximal Rectangle** with the optimal code below, in the same order the code executes.
-2. Check the decision condition `if(matrix.empty()) return 0; int n=matrix[0].size(), ans=0; vector<int> h(n);` and take the early/branch action shown in code.
-3. Loop through the input using `for(auto& row:matrix){ for(int j=0;j<n;j++) h[j]=row[j]=='1'?h[j]+1:0; ans=max(ans,hist(h)); }`.
-4. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Maximal Rectangle using code order."]
+    S1["Check if(matrix.empty()) return 0; int n=matrix(0).size(), ans=0; vector less than int greater than h(n); then foll..."]
+    S2["Loop for(auto and row:matrix)( for(int j=0;j less than n;j++) h(j)=row(j)=='1'?h(j)+1:0; ans=max(ans,hist(h)); )."]
+    S3["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
 ```
 
 </details>
@@ -9258,13 +9885,19 @@ Core idea     : each row becomes histogram problem
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Shortest Subarray with Sum at Least K** with the optimal code below, in the same order the code executes.
-2. Update the code state with `int n=nums.size(), ans=n+1; vector<long long> pref(n+1);`.
-3. Loop through the input using `for(int i=0;i<n;i++) pref[i+1]=pref[i]+nums[i];`.
-4. Update the code state with `deque<int> dq;`.
-5. Loop through the input using `for(int i=0;i<=n;i++){ while(!dq.empty()&&pref[i]-pref[dq.front()]>=k){ ans=min(ans,i-dq.front()); dq.pop_front(); } while(!dq.empty()&&pref[dq.back()]>=pref[i]) dq.pop_back(); dq.push_back(i); }`.
-6. Return exactly what the code computes: `return ans==n+1?-1:ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Shortest Subarray with Sum at Least K using code order."]
+    S1["Set int n=nums.size(), ans=n+1; vector less than long long greater than pref(n+1);."]
+    S2["Loop for(int i=0;i less than n;i++) pref(i+1)=pref(i)+nums(i);."]
+    S3["Set deque less than int greater than dq;."]
+    S4["Loop for(int i=0;i less than =n;i++)( while(!dq.empty() and and pref(i)-pref(dq.front()) greater than =k)( ans=min(..."]
+    S5["Return return ans==n+1?-1:ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -9358,12 +9991,17 @@ Core idea     : smaller earlier prefix is better
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Sliding Window Median** with the optimal code below, in the same order the code executes.
-2. Update the code state with `multiset<int> lo, hi;`.
-3. Update the code state with `vector<double> ans;`.
-4. Loop through the input using `for(int i=0;i<(int)nums.size();i++){ add(nums[i]); if(i>=k) remove(nums[i-k]); if(i>=k-1) ans.push_back(k%2?*lo.rbegin():((long long)*lo.rbegin()+*hi.begin())/2.0); }`.
-5. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Sliding Window Median using code order."]
+    S1["Set multiset less than int greater than lo, hi;."]
+    S2["Set vector less than double greater than ans;."]
+    S3["Loop for(int i=0;i less than (int)nums.size();i++)( add(nums(i)); if(i greater than =k) remove(nums(i-k)); if(i gre..."]
+    S4["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
 ```
 
 </details>
@@ -9459,14 +10097,21 @@ Core idea     : median is boundary of halves
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Employee Free Time** with the optimal code below, in the same order the code executes.
-2. Update the code state with `vector<Interval> all;`.
-3. Loop through the input using `for (auto& emp : schedule) for (auto& in : emp) all.push_back(in);`.
-4. Update the code state with `sort(all.begin(), all.end(), [](Interval& a, Interval& b){ return a.start < b.start; });`.
-5. Update the code state with `vector<Interval> ans; int end = all[0].end;`.
-6. Loop through the input using `for (int i=1;i<(int)all.size();i++) { if (all[i].start > end) ans.push_back(Interval(end, all[i].start)); end = max(end, all[i].end); }`.
-7. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Employee Free Time using code order."]
+    S1["Set vector less than Interval greater than all;."]
+    S2["Loop for (auto and emp : schedule) for (auto and in : emp) all.push_back(in);."]
+    S3["Set sort(all.begin(), all.end(), ()(Interval and a, Interval and b)( return a.start less than b.start; ));."]
+    S4["Set vector less than Interval greater than ans; int end = all(0).end;."]
+    S5["Loop for (int i=1;i less than (int)all.size();i++) ( if (all(i).start greater than end) ans.push_back(Interval(end,..."]
+    S6["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -9561,14 +10206,21 @@ Core idea     : free time is complement of busy union
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Maximum Performance of a Team** with the optimal code below, in the same order the code executes.
-2. Update the code state with `const int MOD=1e9+7; vector<pair<int,int>> eng;`.
-3. Loop through the input using `for(int i=0;i<n;i++) eng.push_back({efficiency[i], speed[i]});`.
-4. Update the code state with `sort(eng.rbegin(), eng.rend());`.
-5. Update the code state with `priority_queue<int, vector<int>, greater<int>> pq; long long sum=0, ans=0;`.
-6. Loop through the input using `for(auto [e,s]:eng){ pq.push(s); sum+=s; if((int)pq.size()>k){ sum-=pq.top(); pq.pop(); } ans=max(ans,sum*e); }`.
-7. Return exactly what the code computes: `return ans%MOD;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Maximum Performance of a Team using code order."]
+    S1["Set const int MOD=1e9+7; vector less than pair less than int,int greater than greater than eng;."]
+    S2["Loop for(int i=0;i less than n;i++) eng.push_back((efficiency(i), speed(i)));."]
+    S3["Set sort(eng.rbegin(), eng.rend());."]
+    S4["Set priority_queue less than int, vector less than int greater than , greater less than int greater than greater th..."]
+    S5["Loop for(auto (e,s):eng)( pq.push(s); sum+=s; if((int)pq.size() greater than k)( sum-=pq.top(); pq.pop(); ) ans=max..."]
+    S6["Return return ans%MOD;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -9663,13 +10315,19 @@ Core idea     : efficiency fixed by sorted order
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **Create Sorted Array through Instructions** with the optimal code below, in the same order the code executes.
-2. Update the code state with `static const int MOD=1e9+7;`.
-3. Update the code state with `vector<int> bit;`.
-4. Update the code state with `int mx=*max_element(instructions.begin(), instructions.end()); bit.assign(mx+2,0); long long ans=0;`.
-5. Loop through the input using `for(int i=0;i<(int)instructions.size();i++){ int x=instructions[i]; int less=sum(x-1), greater=i-sum(x); ans=(ans+min(less,greater))%MOD; add(x,1); }`.
-6. Return exactly what the code computes: `return ans;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve Create Sorted Array through Instructions using code order."]
+    S1["Set static const int MOD=1e9+7;."]
+    S2["Set vector less than int greater than bit;."]
+    S3["Set int mx=*max_element(instructions.begin(), instructions.end()); bit.assign(mx+2,0); long long ans=0;."]
+    S4["Loop for(int i=0;i less than (int)instructions.size();i++)( int x=instructions(i); int less=sum(x-1), greater=i-sum..."]
+    S5["Return return ans;."]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -9767,10 +10425,13 @@ Core idea     : insertion cost from ranks
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Collecting Numbers** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Collecting Numbers using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -9857,10 +10518,13 @@ Core idea     : new round starts when position decreases
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Josephus Problem I** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Josephus Problem I using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -9947,10 +10611,13 @@ Core idea     : circular process needs efficient order
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES String Matching** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES String Matching using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -10037,10 +10704,13 @@ Core idea     : repeated pattern matching needs linear scan
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Nearest Smaller Values** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Nearest Smaller Values using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -10127,12 +10797,15 @@ Core idea     : remaining top is nearest smaller
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Labyrinth** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;`.
-4. Update the code state with `"<<path.size()<<"
-"<<path;return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Labyrinth using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;."]
+    S3["Set ' less than less than path.size() less than less than '"]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
 ```
 
 </details>
@@ -10220,12 +10893,15 @@ Core idea     : BFS gives shortest path
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Monsters** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;`.
-4. Update the code state with `"<<path.size()<<"
-"<<path;return 0;}for(int d=0;d<4;d++){int nr=r+dr[d],nc=c+dc[d];if(nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||ad[nr][nc]!=1e9)continue;if(ad[r][c]+1>=md[nr][nc])continue;ad[nr][nc]=ad[r][c]+1;par[nr][nc]=d;q.push({nr,nc});}}cout<<"NO";return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Monsters using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;."]
+    S3["Set ' less than less than path.size() less than less than '"]
+    S0 --> S1
+    S1 --> S2
+    S2 --> S3
 ```
 
 </details>
@@ -10313,10 +10989,13 @@ Core idea     : escape only if player arrives earlier
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Flight Discount** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std; using ll=long long; const ll INF=4e18;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Flight Discount using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std; using ll=long long; const ll INF=4e18;."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -10403,10 +11082,13 @@ Core idea     : heap picks shortest state
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Traffic Lights** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Traffic Lights using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -10493,10 +11175,13 @@ Core idea     : longest gap after each insertion
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Room Allocation** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Room Allocation using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -10583,10 +11268,13 @@ Core idea     : sorted endings choose available room
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Sliding Median** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;multiset<int> lo,hi;void reb(){while(lo.size()>hi.size()+1){hi.insert(*lo.rbegin());lo.erase(prev(lo.end()));}while(lo.size()<hi.size()){lo.insert(*hi.begin());hi.erase(hi.begin());}}void add(int x){if(lo.empty()||x<=*lo.rbegin())lo.insert(x);else hi.insert(x);reb();}void rem(int x){auto it=lo.find(x);if(it!=lo.end())lo.erase(it);else hi.erase(hi.find(x));reb();}int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<int>a(n);for(int&i:a)cin>>i;for(int i=0;i<n;i++){add(a[i]);if(i>=k)rem(a[i-k]);if(i>=k-1)cout<<*lo.rbegin()<<' ';}return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Sliding Median using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;multiset less than int greater than lo,hi;void reb()(while(lo.size() greater than hi.size()..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -10672,10 +11360,13 @@ Core idea     : median is max of lower half
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Sum of Four Values** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Sum of Four Values using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -10762,10 +11453,13 @@ Core idea     : two pairs form target
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Subarray Sums II** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;using ll=long long;`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Subarray Sums II using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;using ll=long long;."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -10852,10 +11546,13 @@ Core idea     : every old prefix creates subarray
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Movie Festival** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<pair<int,int>>a(n);for(auto&[l,r]:a)cin>>l>>r;sort(a.begin(),a.end(),[](auto&a,auto&b){return a.second<b.second;});int ans=0,end=0;for(auto [l,r]:a)if(l>=end)ans++,end=r;cout<<ans;return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Movie Festival using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin greater than greater than..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -10941,10 +11638,13 @@ Core idea     : greedy maximizes remaining time
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Tasks and Deadlines** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;using ll=long long;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<pair<ll,ll>>a(n);for(auto&[d,t]:a)cin>>d>>t;sort(a.begin(),a.end());ll time=0,ans=0;for(auto [d,t]:a){time+=d;ans+=t-time;}cout<<ans;return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Tasks and Deadlines using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;using ll=long long;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin greate..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11030,10 +11730,13 @@ Core idea     : minimize accumulated finish effect
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Sum of Two Values** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,x;cin>>n>>x;vector<pair<int,int>>a(n);for(int i=0;i<n;i++){cin>>a[i].first;a[i].second=i+1;}sort(a.begin(),a.end());int l=0,r=n-1;while(l<r){long long s=a[l].first+a[r].first;if(s==x){cout<<a[l].second<<' '<<a[r].second;return 0;}if(s<x)l++;else r--;}cout<<"IMPOSSIBLE";return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Sum of Two Values using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n,x;cin greater than greater th..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11119,10 +11822,13 @@ Core idea     : sorted sum moves predictably
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Sum of Three Values** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,x;cin>>n>>x;vector<pair<int,int>>a(n);for(int i=0;i<n;i++){cin>>a[i].first;a[i].second=i+1;}sort(a.begin(),a.end());for(int i=0;i<n;i++){int l=i+1,r=n-1;while(l<r){long long s=a[i].first+a[l].first+a[r].first;if(s==x){cout<<a[i].second<<' '<<a[l].second<<' '<<a[r].second;return 0;}if(s<x)l++;else r--;}}cout<<"IMPOSSIBLE";return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Sum of Three Values using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n,x;cin greater than greater th..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11208,10 +11914,13 @@ Core idea     : remaining pair is two sum
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Factory Machines** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;using ll=long long;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;ll t;cin>>n>>t;vector<ll>a(n);for(auto&x:a)cin>>x;ll l=0,r=1e18;while(l<r){ll m=(l+r)/2, made=0;for(ll x:a){made+=m/x;if(made>=t)break;}if(made>=t)r=m;else l=m+1;}cout<<l;return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Factory Machines using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;using ll=long long;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n;ll t;cin g..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11297,10 +12006,13 @@ Core idea     : time feasibility monotonic
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Subarray Sums I** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;using ll=long long;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;ll x;cin>>n>>x;vector<int>a(n);for(int&i:a)cin>>i;ll sum=0,ans=0;int l=0;for(int r=0;r<n;r++){sum+=a[r];while(sum>x)sum-=a[l++];if(sum==x)ans++;}cout<<ans;return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Subarray Sums I using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;using ll=long long;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n;ll x;cin g..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11386,10 +12098,13 @@ Core idea     : positive values allow moving left
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Sliding Window Minimum** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<int>a(n);for(int&i:a)cin>>i;deque<int>dq;for(int i=0;i<n;i++){while(!dq.empty()&&dq.front()<=i-k)dq.pop_front();while(!dq.empty()&&a[dq.back()]>=a[i])dq.pop_back();dq.push_back(i);if(i>=k-1)cout<<a[dq.front()]<<' ';}return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Sliding Window Minimum using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin greater than greater th..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11475,10 +12190,13 @@ Core idea     : front is minimum candidate
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Sliding Cost** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;using ll=long long;multiset<ll>lo,hi;ll slo=0,shi=0;void reb(){while(lo.size()>hi.size()+1){auto it=prev(lo.end());hi.insert(*it);shi+=*it;slo-=*it;lo.erase(it);}while(lo.size()<hi.size()){auto it=hi.begin();lo.insert(*it);slo+=*it;shi-=*it;hi.erase(it);}}void add(ll x){if(lo.empty()||x<=*lo.rbegin())lo.insert(x),slo+=x;else hi.insert(x),shi+=x;reb();}void rem(ll x){auto it=lo.find(x);if(it!=lo.end())slo-=x,lo.erase(it);else it=hi.find(x),shi-=x,hi.erase(it);reb();}int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<ll>a(n);for(auto&x:a)cin>>x;for(int i=0;i<n;i++){add(a[i]);if(i>=k)rem(a[i-k]);if(i>=k-1){ll med=*lo.rbegin();cout<<med*(ll)lo.size()-slo+shi-med*(ll)hi.size()<<' ';}}return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Sliding Cost using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;using ll=long long;multiset less than ll greater than lo,hi;ll slo=0,shi=0;void reb()(while..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11564,10 +12282,13 @@ Core idea     : median minimizes absolute deviation
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Restaurant Customers** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<pair<int,int>>e;for(int i=0,a,b;i<n;i++){cin>>a>>b;e.push_back({a,1});e.push_back({b,-1});}sort(e.begin(),e.end());int cur=0,ans=0;for(auto [t,d]:e)ans=max(ans,cur+=d);cout<<ans;return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Restaurant Customers using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin greater than greater than..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11653,12 +12374,13 @@ Core idea     : maximum active customers
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Concert Tickets** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;multiset<int>s;for(int i=0,x;i<n;i++){cin>>x;s.insert(x);}while(m--){int x;cin>>x;auto it=s.upper_bound(x);if(it==s.begin())cout<<-1<<"
-";else{--it;cout<<*it<<"
-";s.erase(it);}}return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Concert Tickets using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin greater than greater th..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11744,11 +12466,13 @@ Core idea     : assign most expensive affordable ticket
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Nested Ranges Count** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;struct R{int l,r,i;};int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<R>a(n);vector<int>vals;for(int i=0;i<n;i++){cin>>a[i].l>>a[i].r;a[i].i=i;vals.push_back(a[i].r);}sort(vals.begin(),vals.end());vals.erase(unique(vals.begin(),vals.end()),vals.end());vector<int>bit(n+2),contains(n),contained(n);auto add=[&](int i){for(;i<=n;i+=i&-i)bit[i]++;};auto sum=[&](int i){int s=0;for(;i;i-=i&-i)s+=bit[i];return s;};sort(a.begin(),a.end(),[](R&a,R&b){return a.l==b.l?a.r>b.r:a.l<b.l;});for(int i=n-1;i>=0;i--){int r=lower_bound(vals.begin(),vals.end(),a[i].r)-vals.begin()+1;contains[a[i].i]=sum(r);add(r);}fill(bit.begin(),bit.end(),0);for(int i=0;i<n;i++){int r=lower_bound(vals.begin(),vals.end(),a[i].r)-vals.begin()+1;contained[a[i].i]=i-sum(r-1);add(r);}for(int x:contains)cout<<x<<' ';cout<<"
-";for(int x:contained)cout<<x<<' ';return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Nested Ranges Count using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;struct R(int l,r,i;);int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin grea..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11834,11 +12558,13 @@ Core idea     : containment becomes rank query
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Salary Queries** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,q;cin>>n>>q;vector<int>a(n);vector<tuple<char,int,int>>qs;vector<int>vals;for(int&i:a){cin>>i;vals.push_back(i);}for(int i=0;i<q;i++){char c;int x,y;cin>>c>>x>>y;qs.push_back({c,x,y});if(c=='!')vals.push_back(y);else vals.push_back(x),vals.push_back(y);}sort(vals.begin(),vals.end());vals.erase(unique(vals.begin(),vals.end()),vals.end());vector<int>bit(vals.size()+2);auto id=[&](int x){return lower_bound(vals.begin(),vals.end(),x)-vals.begin()+1;};auto add=[&](int i,int v){for(;i<(int)bit.size();i+=i&-i)bit[i]+=v;};auto sum=[&](int i){int s=0;for(;i;i-=i&-i)s+=bit[i];return s;};for(int x:a)add(id(x),1);for(auto [c,x,y]:qs){if(c=='!'){--x;add(id(a[x]),-1);a[x]=y;add(id(a[x]),1);}else cout<<sum(upper_bound(vals.begin(),vals.end(),y)-vals.begin())-sum(lower_bound(vals.begin(),vals.end(),x)-vals.begin())<<"
-";}return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Salary Queries using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n,q;cin greater than greater th..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -11924,11 +12650,13 @@ Core idea     : query count in salary range
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Money Sums** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<int>a(n);int S=0;for(int&i:a){cin>>i;S+=i;}vector<char>dp(S+1);dp[0]=1;for(int x:a)for(int s=S;s>=x;s--)dp[s]|=dp[s-x];vector<int>ans;for(int s=1;s<=S;s++)if(dp[s])ans.push_back(s);cout<<ans.size()<<"
-";for(int x:ans)cout<<x<<' ';return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Money Sums using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin greater than greater than..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -12014,10 +12742,13 @@ Core idea     : every coin creates new sums
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES School Excursion** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;vector<int>p(n),sz(n,1);iota(p.begin(),p.end(),0);function<int(int)>find=[&](int x){return p[x]==x?x:p[x]=find(p[x]);};auto unite=[&](int a,int b){a=find(a);b=find(b);if(a!=b){p[b]=a;sz[a]+=sz[b];}};for(int i=0,a,b;i<m;i++){cin>>a>>b;unite(a-1,b-1);}vector<char>dp(n+1);dp[0]=1;for(int i=0;i<n;i++)if(find(i)==i)for(int s=n;s>=sz[i];s--)dp[s]|=dp[s-sz[i]];for(int s=1;s<=n;s++)cout<<(dp[s]?1:0);return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES School Excursion using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin greater than greater th..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -12103,10 +12834,13 @@ Core idea     : choose connected group sizes
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES List Removals** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<int>a(n+1),bit(n+1);for(int i=1;i<=n;i++){cin>>a[i];for(int j=i;j<=n;j+=j&-j)bit[j]++;}auto add=[&](int i,int v){for(;i<=n;i+=i&-i)bit[i]+=v;};auto kth=[&](int k){int idx=0;for(int b=1<<20;b;b>>=1){int ni=idx+b;if(ni<=n&&bit[ni]<k){idx=ni;k-=bit[ni];}}return idx+1;};for(int i=0,x;i<n;i++){cin>>x;int id=kth(x);cout<<a[id]<<' ';add(id,-1);}return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES List Removals using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin greater than greater than..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -12192,10 +12926,13 @@ Core idea     : order structure simulates deletion
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Josephus Problem II** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<int>bit(n+1);auto add=[&](int i,int v){for(;i<=n;i+=i&-i)bit[i]+=v;};auto kth=[&](int x){int idx=0;for(int b=1<<20;b;b>>=1){int ni=idx+b;if(ni<=n&&bit[ni]<x){idx=ni;x-=bit[ni];}}return idx+1;};for(int i=1;i<=n;i++)add(i,1);int pos=0,alive=n;while(alive){pos=(pos+k)%alive;int id=kth(pos+1);cout<<id<<' ';add(id,-1);alive--;}return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Josephus Problem II using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin greater than greater th..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -12281,11 +13018,13 @@ Core idea     : dynamic circle needs kth alive
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Nested Ranges Check** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;struct R{int l,r,i;};int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<R>a(n);for(int i=0;i<n;i++){cin>>a[i].l>>a[i].r;a[i].i=i;}sort(a.begin(),a.end(),[](R&a,R&b){return a.l==b.l?a.r>b.r:a.l<b.l;});vector<int>contains(n),contained(n);int maxR=0;for(auto &x:a){if(x.r<=maxR)contained[x.i]=1;maxR=max(maxR,x.r);}int minR=INT_MAX;for(int i=n-1;i>=0;i--){if(a[i].r>=minR)contains[a[i].i]=1;minR=min(minR,a[i].r);}for(int x:contains)cout<<x<<' ';cout<<"
-";for(int x:contained)cout<<x<<' ';return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Nested Ranges Check using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;struct R(int l,r,i;);int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin grea..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -12371,10 +13110,13 @@ Core idea     : containment becomes ordered check
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Movie Festival II** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<pair<int,int>>a(n);for(auto&[l,r]:a)cin>>l>>r;sort(a.begin(),a.end(),[](auto&a,auto&b){return a.second<b.second;});multiset<int>end;for(int i=0;i<k;i++)end.insert(0);int ans=0;for(auto [l,r]:a){auto it=end.upper_bound(l);if(it==end.begin())continue;--it;end.erase(it);end.insert(r);ans++;}cout<<ans;return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Movie Festival II using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin greater than greater th..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
@@ -12460,11 +13202,13 @@ Core idea     : preserve earlier watchers
 <details>
 <summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
-```text
-1. Goal: solve **CSES Collecting Numbers II** with the optimal code below, in the same order the code executes.
-2. Update the code state with `#include <bits/stdc++.h>`.
-3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;vector<int>a(n+1),pos(n+1);for(int i=1;i<=n;i++){cin>>a[i];pos[a[i]]=i;}auto bad=[&](int x){return x>=2&&pos[x]<pos[x-1];};int ans=1;for(int x=2;x<=n;x++)ans+=bad(x);while(m--){int i,j;cin>>i>>j;set<int>chk;for(int x:{a[i],a[i]+1,a[j],a[j]+1})if(x>=2&&x<=n)chk.insert(x);for(int x:chk)ans-=bad(x);swap(pos[a[i]],pos[a[j]]);swap(a[i],a[j]);for(int x:chk)ans+=bad(x);cout<<ans<<"
-";}return 0;}`.
+```mermaid
+flowchart TD
+    S0["Goal: solve CSES Collecting Numbers II using code order."]
+    S1["Set #include less than bits/stdc++.h greater than ."]
+    S2["Set using namespace std;int main()(ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin greater than greater th..."]
+    S0 --> S1
+    S1 --> S2
 ```
 
 </details>
