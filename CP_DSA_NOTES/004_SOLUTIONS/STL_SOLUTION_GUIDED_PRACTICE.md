@@ -1,6 +1,6 @@
 # STL Problems — Guided Practice Edition
 
-> Rendering-safe update: Mermaid rich diagrams were replaced with collapsible plain-text flow steps, so Markdown viewers do not show “Unable to render rich display”. Every C++ block remains inside a closed collapsible section.
+> Rendering-safe update: Mermaid diagrams were replaced with collapsible plain-text flow steps. Each Problem Detail now states what the problem asks, and each Solution Flow is generated from the actual C++ code order so the steps match the code.
 
 This version is cleaned for Markdown rendering and organized as guided practice: problem link, problem detail, progressive hints, approach, collapsible C++ code, clickable difficulty index, and repeated-pattern tables.
 
@@ -169,10 +169,15 @@ This version is cleaned for Markdown rendering and organized as guided practice:
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `duplicates` situation and applying `sort or set` instead of repeatedly doing slow work.
-- **Main move:** sort and compare neighbours.
-- **Core intuition:** duplicates become adjacent
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given an integer array, determine whether any value appears at least twice.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **duplicates**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort or set`.
+- **Code state to watch:** `containsDuplicate`, `x`, `seen`.
+- **Key move in the accepted solution:** sort and compare neighbours.
+- **Core intuition:** duplicates become adjacent.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -201,13 +206,15 @@ This version is cleaned for Markdown rendering and organized as guided practice:
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: sort and compare neighbours
-4. Return final answer
+1. Goal: solve **Contains Duplicate** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_set<int> seen;`.
+3. Loop through the input using `for (int x : nums)`.
+4. Check the decision condition `if (seen.count(x)) return true;` and take the early/branch action shown in code.
+5. Update the code state with `seen.insert(x);`.
+6. Return exactly what the code computes: `return false;`.
 ```
 
 </details>
@@ -263,10 +270,15 @@ Core idea     : duplicates become adjacent
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `merge arrays` situation and applying `two pointers` instead of repeatedly doing slow work.
-- **Main move:** fill from back.
-- **Core intuition:** largest final position is safe
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given two sorted arrays where the first has extra space, merge the second into the first in nondecreasing order in-place.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **merge arrays**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two pointers`.
+- **Code state to watch:** `m`, `n`, `i`.
+- **Key move in the accepted solution:** fill from back.
+- **Core intuition:** largest final position is safe.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -295,13 +307,14 @@ Core idea     : duplicates become adjacent
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: fill from back
-4. Return final answer
+1. Goal: solve **Merge Sorted Array** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int i = m - 1, j = n - 1, k = m + n - 1;`.
+3. Repeat while the code condition holds: `while (j >= 0)`.
+4. Check the decision condition `if (i >= 0 && nums1[i] > nums2[j]) nums1[k--] = nums1[i--];` and take the early/branch action shown in code.
+5. Run the fallback branch from the code.
 ```
 
 </details>
@@ -356,10 +369,15 @@ Core idea     : largest final position is safe
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `stable partition` situation and applying `write pointer` instead of repeatedly doing slow work.
-- **Main move:** overwrite nonzero.
-- **Core intuition:** keep order with one pass
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given an array, move all zeroes to the end while keeping the relative order of nonzero elements.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **stable partition**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `write pointer`.
+- **Code state to watch:** `write`, `x`.
+- **Key move in the accepted solution:** overwrite nonzero.
+- **Core intuition:** keep order with one pass.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -388,13 +406,13 @@ Core idea     : largest final position is safe
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize left and right pointers
-2. Compare current pointer values
-3. Move the pointer that cannot improve answer: overwrite nonzero
-4. Return final answer
+1. Goal: solve **Move Zeroes** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int write = 0;`.
+3. Loop through the input using `for (int x : nums) if (x != 0) nums[write++] = x;`.
+4. Repeat while the code condition holds: `while (write < (int)nums.size()) nums[write++] = 0;`.
 ```
 
 </details>
@@ -447,10 +465,15 @@ Core idea     : keep order with one pass
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `compact sorted array` situation and applying `slow-fast pointer` instead of repeatedly doing slow work.
-- **Main move:** write unique.
-- **Core intuition:** sorted duplicates are grouped
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given a sorted array, overwrite it so each value appears once and return the number of unique values.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **compact sorted array**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `slow-fast pointer`.
+- **Code state to watch:** `removeDuplicates`, `write`, `read`.
+- **Key move in the accepted solution:** write unique.
+- **Core intuition:** sorted duplicates are grouped.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -479,13 +502,15 @@ Core idea     : keep order with one pass
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: write unique
-4. Return final answer
+1. Goal: solve **Remove Duplicates from Sorted Array** with the optimal code below, in the same order the code executes.
+2. Check the decision condition `if (nums.empty()) return 0;` and take the early/branch action shown in code.
+3. Update the code state with `int write = 1;`.
+4. Loop through the input using `for (int read = 1; read < (int)nums.size(); read++)`.
+5. Check the decision condition `if (nums[read] != nums[write - 1]) nums[write++] = nums[read];` and take the early/branch action shown in code.
+6. Return exactly what the code computes: `return write;`.
 ```
 
 </details>
@@ -541,10 +566,15 @@ Core idea     : sorted duplicates are grouped
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `frequency` situation and applying `count array` instead of repeatedly doing slow work.
-- **Main move:** compare counts.
-- **Core intuition:** same letters means same count vector
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given two strings, decide whether they contain exactly the same characters with the same frequencies.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **frequency**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `count array`.
+- **Code state to watch:** `isAnagram`, `s`, `t`, `c`, `x`, `cnt`.
+- **Key move in the accepted solution:** compare counts.
+- **Core intuition:** same letters means same count vector.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -573,13 +603,16 @@ Core idea     : sorted duplicates are grouped
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: compare counts
-4. Store current state in map
+1. Goal: solve **Valid Anagram** with the optimal code below, in the same order the code executes.
+2. Check the decision condition `if (s.size() != t.size()) return false;` and take the early/branch action shown in code.
+3. Update the code state with `array<int, 26> cnt{};`.
+4. Loop through the input using `for (char c : s) cnt[c - 'a']++;`.
+5. Loop through the input using `for (char c : t) cnt[c - 'a']--;`.
+6. Loop through the input using `for (int x : cnt) if (x != 0) return false;`.
+7. Return exactly what the code computes: `return true;`.
 ```
 
 </details>
@@ -635,10 +668,15 @@ Core idea     : same letters means same count vector
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `palindrome` situation and applying `two pointers` instead of repeatedly doing slow work.
-- **Main move:** skip non-alnum.
-- **Core intuition:** compare mirrored valid chars
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given a string, ignore non-alphanumeric characters and case, then check whether it reads the same forward and backward.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **palindrome**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two pointers`.
+- **Code state to watch:** `isPalindrome`, `s`, `l`.
+- **Key move in the accepted solution:** skip non-alnum.
+- **Core intuition:** compare mirrored valid chars.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -667,13 +705,17 @@ Core idea     : same letters means same count vector
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize left and right pointers
-2. Compare current pointer values
-3. Move the pointer that cannot improve answer: skip non-alnum
-4. Return final answer
+1. Goal: solve **Valid Palindrome** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int l = 0, r = (int)s.size() - 1;`.
+3. Repeat while the code condition holds: `while (l < r)`.
+4. Repeat while the code condition holds: `while (l < r && !isalnum((unsigned char)s[l])) l++;`.
+5. Repeat while the code condition holds: `while (l < r && !isalnum((unsigned char)s[r])) r--;`.
+6. Check the decision condition `if (tolower((unsigned char)s[l]) != tolower((unsigned char)s[r])) return false;` and take the early/branch action shown in code.
+7. Update the code state with `l++; r--;`.
+8. Return exactly what the code computes: `return true;`.
 ```
 
 </details>
@@ -731,10 +773,15 @@ Core idea     : compare mirrored valid chars
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `frequency need` situation and applying `count chars` instead of repeatedly doing slow work.
-- **Main move:** decrement available.
-- **Core intuition:** magazine supplies letters
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given a ransom note string and a magazine string, decide whether the note can be built using available magazine letters once each.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **frequency need**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `count chars`.
+- **Code state to watch:** `canConstruct`, `ransomNote`, `magazine`, `c`, `cnt`.
+- **Key move in the accepted solution:** decrement available.
+- **Core intuition:** magazine supplies letters.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -763,13 +810,15 @@ Core idea     : compare mirrored valid chars
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: decrement available
-4. Store current state in map
+1. Goal: solve **Ransom Note** with the optimal code below, in the same order the code executes.
+2. Update the code state with `array<int, 26> cnt{};`.
+3. Loop through the input using `for (char c : magazine) cnt[c - 'a']++;`.
+4. Loop through the input using `for (char c : ransomNote)`.
+5. Check the decision condition `if (--cnt[c - 'a'] < 0) return false;` and take the early/branch action shown in code.
+6. Return exactly what the code computes: `return true;`.
 ```
 
 </details>
@@ -825,10 +874,15 @@ Core idea     : magazine supplies letters
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `bracket matching` situation and applying `stack` instead of repeatedly doing slow work.
-- **Main move:** push open pop close.
-- **Core intuition:** latest open must close first
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given a bracket string, decide whether every closing bracket matches the most recent unmatched opening bracket.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **bracket matching**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `stack`.
+- **Code state to watch:** `isValid`, `s`, `c`, `st`, `need`.
+- **Key move in the accepted solution:** push open pop close.
+- **Core intuition:** latest open must close first.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -857,13 +911,17 @@ Core idea     : magazine supplies letters
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: push open pop close
-4. Return final stack-derived answer
+1. Goal: solve **Valid Parentheses** with the optimal code below, in the same order the code executes.
+2. Update the code state with `stack<char> st;`.
+3. Update the code state with `unordered_map<char, char> need = {{')','('}, {']','['}, {'}','{'}};`.
+4. Loop through the input using `for (char c : s)`.
+5. Check the decision condition `if (c == '(' || c == '[' || c == '{') st.push(c);` and take the early/branch action shown in code.
+6. Check the decision condition `if (st.empty() || st.top() != need[c]) return false;` and take the early/branch action shown in code.
+7. Update the code state with `st.pop();`.
+8. Return exactly what the code computes: `return st.empty();`.
 ```
 
 </details>
@@ -923,10 +981,15 @@ Core idea     : latest open must close first
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `operation history` situation and applying `stack/vector` instead of repeatedly doing slow work.
-- **Main move:** store scores.
-- **Core intuition:** operations reference previous scores
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given a list of scoring operations, simulate the record and return the final score total.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **operation history**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `stack/vector`.
+- **Code state to watch:** `calPoints`, `op`, `scores`.
+- **Key move in the accepted solution:** store scores.
+- **Core intuition:** operations reference previous scores.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -955,13 +1018,17 @@ Core idea     : latest open must close first
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: store scores
-4. Return final stack-derived answer
+1. Goal: solve **Baseball Game** with the optimal code below, in the same order the code executes.
+2. Update the code state with `vector<int> scores;`.
+3. Loop through the input using `for (string op : operations)`.
+4. Check the decision condition `if (op == "+") scores.push_back(scores.back() + scores[scores.size() - 2]);` and take the early/branch action shown in code.
+5. If the previous branch failed, check `else if (op == "D") scores.push_back(2 * scores.back());`.
+6. If the previous branch failed, check `else if (op == "C") scores.pop_back();`.
+7. Run the fallback branch from the code.
+8. Return exactly what the code computes: `return accumulate(scores.begin(), scores.end(), 0);`.
 ```
 
 </details>
@@ -1019,10 +1086,15 @@ Core idea     : operations reference previous scores
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `cancellation` situation and applying `stack string` instead of repeatedly doing slow work.
-- **Main move:** pop equal top.
-- **Core intuition:** adjacent equal cancels latest
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given a string, repeatedly remove adjacent equal character pairs and return the final string.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **cancellation**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `stack string`.
+- **Code state to watch:** `removeDuplicates`, `s`, `st`, `c`.
+- **Key move in the accepted solution:** pop equal top.
+- **Core intuition:** adjacent equal cancels latest.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1051,13 +1123,15 @@ Core idea     : operations reference previous scores
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: pop equal top
-4. Return final stack-derived answer
+1. Goal: solve **Remove All Adjacent Duplicates In String** with the optimal code below, in the same order the code executes.
+2. Update the code state with `string st;`.
+3. Loop through the input using `for (char c : s)`.
+4. Check the decision condition `if (!st.empty() && st.back() == c) st.pop_back();` and take the early/branch action shown in code.
+5. Run the fallback branch from the code.
+6. Return exactly what the code computes: `return st;`.
 ```
 
 </details>
@@ -1113,10 +1187,15 @@ Core idea     : adjacent equal cancels latest
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `data structure design` situation and applying `two stacks` instead of repeatedly doing slow work.
-- **Main move:** move only when needed.
-- **Core intuition:** reverse stack gives FIFO
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Implement queue operations using only stack behavior while preserving FIFO order.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **data structure design**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two stacks`.
+- **Code state to watch:** `x`, `pop`, `peek`, `empty`, `in`.
+- **Key move in the accepted solution:** move only when needed.
+- **Core intuition:** reverse stack gives FIFO.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1145,13 +1224,15 @@ Core idea     : adjacent equal cancels latest
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: move only when needed
-4. Return final stack-derived answer
+1. Goal: solve **Implement Queue using Stacks** with the optimal code below, in the same order the code executes.
+2. Update the code state with `stack<int> in, out;`.
+3. Check the decision condition `if (!out.empty()) return;` and take the early/branch action shown in code.
+4. Repeat while the code condition holds: `while (!in.empty())`.
+5. Update the code state with `out.push(in.top());`.
+6. Update the code state with `in.pop();`.
 ```
 
 </details>
@@ -1211,10 +1292,15 @@ Core idea     : reverse stack gives FIFO
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `time window` situation and applying `queue` instead of repeatedly doing slow work.
-- **Main move:** pop old calls.
-- **Core intuition:** queue holds valid recent calls
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For each ping time, return how many pings occurred in the inclusive window [t-3000, t].
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **time window**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `queue`.
+- **Code state to watch:** `ping`, `t`, `q`.
+- **Key move in the accepted solution:** pop old calls.
+- **Core intuition:** queue holds valid recent calls.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1243,13 +1329,14 @@ Core idea     : reverse stack gives FIFO
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: pop old calls
-4. Return the requested result
+1. Goal: solve **Number of Recent Calls** with the optimal code below, in the same order the code executes.
+2. Update the code state with `queue<int> q;`.
+3. Update the code state with `q.push(t);`.
+4. Repeat while the code condition holds: `while (!q.empty() && q.front() < t - 3000) q.pop();`.
+5. Return exactly what the code computes: `return q.size();`.
 ```
 
 </details>
@@ -1303,10 +1390,15 @@ Core idea     : queue holds valid recent calls
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `repeated max` situation and applying `max heap` instead of repeatedly doing slow work.
-- **Main move:** smash two largest.
-- **Core intuition:** only largest stones matter
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Repeatedly smash the two heaviest stones and return the last remaining weight, or zero.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **repeated max**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `max heap`.
+- **Code state to watch:** `lastStoneWeight`, `a`, `b`, `pq`.
+- **Key move in the accepted solution:** smash two largest.
+- **Core intuition:** only largest stones matter.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1335,13 +1427,16 @@ Core idea     : queue holds valid recent calls
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: smash two largest
-4. Return accumulated result
+1. Goal: solve **Last Stone Weight** with the optimal code below, in the same order the code executes.
+2. Update the code state with `priority_queue<int> pq(stones.begin(), stones.end());`.
+3. Repeat while the code condition holds: `while (pq.size() > 1)`.
+4. Update the code state with `int a = pq.top(); pq.pop();`.
+5. Update the code state with `int b = pq.top(); pq.pop();`.
+6. Check the decision condition `if (a != b) pq.push(a - b);` and take the early/branch action shown in code.
+7. Return exactly what the code computes: `return pq.empty() ? 0 : pq.top();`.
 ```
 
 </details>
@@ -1398,10 +1493,15 @@ Core idea     : only largest stones matter
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `stream kth` situation and applying `min heap size k` instead of repeatedly doing slow work.
-- **Main move:** pop smaller extras.
-- **Core intuition:** heap stores top k
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Maintain a stream of numbers and return the kth largest value after each insertion.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **stream kth**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `min heap size k`.
+- **Code state to watch:** `k`, `x`, `add`, `val`, `pq`.
+- **Key move in the accepted solution:** pop smaller extras.
+- **Core intuition:** heap stores top k.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1430,13 +1530,17 @@ Core idea     : only largest stones matter
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: pop smaller extras
-4. Return accumulated result
+1. Goal: solve **Kth Largest Element in a Stream** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int k;`.
+3. Update the code state with `priority_queue<int, vector<int>, greater<int>> pq;`.
+4. Update the code state with `KthLargest(int k, vector<int>& nums) : k(k)`.
+5. Loop through the input using `for (int x : nums) add(x);`.
+6. Update the code state with `pq.push(val);`.
+7. Check the decision condition `if ((int)pq.size() > k) pq.pop();` and take the early/branch action shown in code.
+8. Return exactly what the code computes: `return pq.top();`.
 ```
 
 </details>
@@ -1494,10 +1598,15 @@ Core idea     : heap stores top k
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `nearby value` situation and applying `set window` instead of repeatedly doing slow work.
-- **Main move:** lower_bound x minus t.
-- **Core intuition:** closest candidate is around lower bound
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find whether two indices are close enough and their values differ by at most the allowed amount.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **nearby value**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `set window`.
+- **Code state to watch:** `containsNearbyAlmostDuplicate`, `indexDiff`, `valueDiff`, `i`, `x`, `window`.
+- **Key move in the accepted solution:** lower_bound x minus t.
+- **Core intuition:** closest candidate is around lower bound.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1526,13 +1635,18 @@ Core idea     : heap stores top k
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: lower_bound x minus t
-4. Return the requested result
+1. Goal: solve **Contains Duplicate III** with the optimal code below, in the same order the code executes.
+2. Update the code state with `set<long long> window;`.
+3. Loop through the input using `for (int i = 0; i < (int)nums.size(); i++)`.
+4. Update the code state with `long long x = nums[i];`.
+5. Update the code state with `auto it = window.lower_bound(x - valueDiff);`.
+6. Check the decision condition `if (it != window.end() && *it <= x + valueDiff) return true;` and take the early/branch action shown in code.
+7. Update the code state with `window.insert(x);`.
+8. Check the decision condition `if (i >= indexDiff) window.erase(nums[i - indexDiff]);` and take the early/branch action shown in code.
+9. Return exactly what the code computes: `return false;`.
 ```
 
 </details>
@@ -1591,10 +1705,15 @@ Core idea     : closest candidate is around lower bound
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `complement lookup` situation and applying `unordered_map` instead of repeatedly doing slow work.
-- **Main move:** store seen value index.
-- **Core intuition:** target needs previous complement
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find two indices whose values add up to the target.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **complement lookup**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `unordered_map`.
+- **Code state to watch:** `target`, `i`, `need`, `pos`.
+- **Key move in the accepted solution:** store seen value index.
+- **Core intuition:** target needs previous complement.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1623,13 +1742,16 @@ Core idea     : closest candidate is around lower bound
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: store seen value index
-4. Store current state in map
+1. Goal: solve **Two Sum** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_map<int, int> pos;`.
+3. Loop through the input using `for (int i = 0; i < (int)nums.size(); i++)`.
+4. Update the code state with `int need = target - nums[i];`.
+5. Check the decision condition `if (pos.count(need)) return {pos[need], i};` and take the early/branch action shown in code.
+6. Update the code state with `pos[nums[i]] = i;`.
+7. Return exactly what the code computes: `return {};`.
 ```
 
 </details>
@@ -1686,10 +1808,15 @@ Core idea     : target needs previous complement
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `frequency` situation and applying `map/count` instead of repeatedly doing slow work.
-- **Main move:** count occurrences.
-- **Core intuition:** majority crosses n/2
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the value that appears more than n/2 times in the array.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **frequency**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `map/count`.
+- **Code state to watch:** `majorityElement`, `cand`, `x`.
+- **Key move in the accepted solution:** count occurrences.
+- **Core intuition:** majority crosses n/2.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1718,13 +1845,15 @@ Core idea     : target needs previous complement
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: count occurrences
-4. Store current state in map
+1. Goal: solve **Majority Element** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int cand = 0, bal = 0;`.
+3. Loop through the input using `for (int x : nums)`.
+4. Check the decision condition `if (bal == 0) cand = x;` and take the early/branch action shown in code.
+5. Update the code state with `bal += (x == cand ? 1 : -1);`.
+6. Return exactly what the code computes: `return cand;`.
 ```
 
 </details>
@@ -1780,10 +1909,15 @@ Core idea     : majority crosses n/2
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `frequency` situation and applying `count array/map` instead of repeatedly doing slow work.
-- **Main move:** two passes.
-- **Core intuition:** unique means count one
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the index of the first character whose frequency is exactly one.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **frequency**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `count array/map`.
+- **Code state to watch:** `firstUniqChar`, `s`, `c`, `i`, `cnt`.
+- **Key move in the accepted solution:** two passes.
+- **Core intuition:** unique means count one.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1812,13 +1946,14 @@ Core idea     : majority crosses n/2
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: two passes
-4. Store current state in map
+1. Goal: solve **First Unique Character in a String** with the optimal code below, in the same order the code executes.
+2. Update the code state with `array<int, 26> cnt{};`.
+3. Loop through the input using `for (char c : s) cnt[c - 'a']++;`.
+4. Loop through the input using `for (int i = 0; i < (int)s.size(); i++) if (cnt[s[i] - 'a'] == 1) return i;`.
+5. Return exactly what the code computes: `return -1;`.
 ```
 
 </details>
@@ -1872,10 +2007,15 @@ Core idea     : unique means count one
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `intervals` situation and applying `sort by start` instead of repeatedly doing slow work.
-- **Main move:** compare previous end.
-- **Core intuition:** overlap violates room
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given meeting intervals, decide whether one person can attend all meetings without overlap.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **intervals**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort by start`.
+- **Code state to watch:** `canAttendMeetings`, `i`.
+- **Key move in the accepted solution:** compare previous end.
+- **Core intuition:** overlap violates room.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1904,13 +2044,14 @@ Core idea     : unique means count one
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: compare previous end
-4. Return final answer
+1. Goal: solve **Meeting Rooms** with the optimal code below, in the same order the code executes.
+2. Update the code state with `sort(intervals.begin(), intervals.end());`.
+3. Loop through the input using `for (int i = 1; i < (int)intervals.size(); i++)`.
+4. Check the decision condition `if (intervals[i][0] < intervals[i - 1][1]) return false;` and take the early/branch action shown in code.
+5. Return exactly what the code computes: `return true;`.
 ```
 
 </details>
@@ -1965,10 +2106,15 @@ Core idea     : overlap violates room
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `sorted transform` situation and applying `two pointers` instead of repeatedly doing slow work.
-- **Main move:** fill from back.
-- **Core intuition:** largest square at ends
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the squares of a sorted array in sorted order.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **sorted transform**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two pointers`.
+- **Code state to watch:** `l`, `sortedSquares`, `ans`.
+- **Key move in the accepted solution:** fill from back.
+- **Core intuition:** largest square at ends.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -1997,13 +2143,15 @@ Core idea     : overlap violates room
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: fill from back
-4. Return final answer
+1. Goal: solve **Squares of a Sorted Array** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int l = 0, r = (int)nums.size() - 1, k = r;`.
+3. Repeat while the code condition holds: `while (l <= r)`.
+4. Check the decision condition `if (abs(nums[l]) > abs(nums[r])) ans[k--] = nums[l] * nums[l++];` and take the early/branch action shown in code.
+5. Run the fallback branch from the code.
+6. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -2060,10 +2208,15 @@ Core idea     : largest square at ends
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `set operations` situation and applying `sort unique` instead of repeatedly doing slow work.
-- **Main move:** two pointers.
-- **Core intuition:** sorted arrays reveal equal values
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the unique values that appear in both arrays.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **set operations**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort unique`.
+- **Code state to watch:** `x`, `a`.
+- **Key move in the accepted solution:** two pointers.
+- **Core intuition:** sorted arrays reveal equal values.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -2092,13 +2245,13 @@ Core idea     : largest square at ends
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: two pointers
-4. Return final answer
+1. Goal: solve **Intersection of Two Arrays** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_set<int> a(nums1.begin(), nums1.end()), ans;`.
+3. Loop through the input using `for (int x : nums2) if (a.count(x)) ans.insert(x);`.
+4. Return exactly what the code computes: `return vector<int>(ans.begin(), ans.end());`.
 ```
 
 </details>
@@ -2151,10 +2304,15 @@ Core idea     : sorted arrays reveal equal values
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `sorted search` situation and applying `lower_bound` instead of repeatedly doing slow work.
-- **Main move:** compare mid.
-- **Core intuition:** sorted halves eliminate
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Search for a target in a sorted array and return its index, or -1 if missing.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **sorted search**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `lower_bound`.
+- **Code state to watch:** `search`, `target`, `l`, `m`.
+- **Key move in the accepted solution:** compare mid.
+- **Core intuition:** sorted halves eliminate.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -2183,13 +2341,17 @@ Core idea     : sorted arrays reveal equal values
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Set low and high search bounds
-2. Test middle candidate
-3. Discard impossible half: compare mid
-4. Return found index or boundary
+1. Goal: solve **Binary Search** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int l = 0, r = (int)nums.size() - 1;`.
+3. Repeat while the code condition holds: `while (l <= r)`.
+4. Update the code state with `int m = l + (r - l) / 2;`.
+5. Check the decision condition `if (nums[m] == target) return m;` and take the early/branch action shown in code.
+6. Check the decision condition `if (nums[m] < target) l = m + 1;` and take the early/branch action shown in code.
+7. Run the fallback branch from the code.
+8. Return exactly what the code computes: `return -1;`.
 ```
 
 </details>
@@ -2247,10 +2409,15 @@ Core idea     : sorted halves eliminate
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `insertion index` situation and applying `lower_bound` instead of repeatedly doing slow work.
-- **Main move:** first not less.
-- **Core intuition:** insert before first bigger/equal
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the index where target exists or should be inserted in sorted order.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **insertion index**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `lower_bound`.
+- **Code state to watch:** `searchInsert`, `target`.
+- **Key move in the accepted solution:** first not less.
+- **Core intuition:** insert before first bigger/equal.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -2279,13 +2446,11 @@ Core idea     : sorted halves eliminate
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Set low and high search bounds
-2. Test middle candidate
-3. Discard impossible half: first not less
-4. Return found index or boundary
+1. Goal: solve **Search Insert Position** with the optimal code below, in the same order the code executes.
+2. Return exactly what the code computes: `return lower_bound(nums.begin(), nums.end(), target) - nums.begin();`.
 ```
 
 </details>
@@ -2336,10 +2501,15 @@ Core idea     : insert before first bigger/equal
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `next greater` situation and applying `monotonic stack + map` instead of repeatedly doing slow work.
-- **Main move:** precompute next greater.
-- **Core intuition:** decreasing stack waits for greater
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For each requested value, find its next greater value in the second array.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **next greater**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `monotonic stack + map`.
+- **Code state to watch:** `x`, `nxt`, `st`, `ans`.
+- **Key move in the accepted solution:** precompute next greater.
+- **Core intuition:** decreasing stack waits for greater.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -2368,13 +2538,19 @@ Core idea     : insert before first bigger/equal
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: precompute next greater
-4. Return final stack-derived answer
+1. Goal: solve **Next Greater Element I** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_map<int, int> nxt;`.
+3. Update the code state with `stack<int> st;`.
+4. Loop through the input using `for (int x : nums2)`.
+5. Repeat while the code condition holds: `while (!st.empty() && st.top() < x)`.
+6. Update the code state with `nxt[st.top()] = x;`.
+7. Update the code state with `st.pop();`.
+8. Update the code state with `st.push(x);`.
+9. Update the code state with `vector<int> ans;`.
+10. Loop through the input using `for (int x : nums1) ans.push_back(nxt.count(x) ? nxt[x] : -1);`.
 ```
 
 </details>
@@ -2436,10 +2612,15 @@ Core idea     : decreasing stack waits for greater
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `simulation` situation and applying `vector output` instead of repeatedly doing slow work.
-- **Main move:** while loop.
-- **Core intuition:** direct process
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Starting from n, print the Collatz sequence until reaching 1.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **simulation**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `vector output`.
+- **Code state to watch:** `main`, `n`.
+- **Key move in the accepted solution:** while loop.
+- **Core intuition:** direct process.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -2468,13 +2649,19 @@ Core idea     : decreasing stack waits for greater
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: while loop
-4. Return the requested result
+1. Goal: solve **CSES Weird Algorithm** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;`.
+4. Update the code state with `long long n;`.
+5. Update the code state with `cin >> n;`.
+6. Repeat while the code condition holds: `while (true)`.
+7. Update the code state with `cout << n << ' ';`.
+8. Check the decision condition `if (n == 1) break;` and take the early/branch action shown in code.
+9. Check the decision condition `if (n % 2 == 0) n /= 2;` and take the early/branch action shown in code.
+10. Run the fallback branch from the code.
 ```
 
 </details>
@@ -2535,10 +2722,15 @@ Core idea     : direct process
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `3-way partition` situation and applying `Dutch flag` instead of repeatedly doing slow work.
-- **Main move:** low mid high.
-- **Core intuition:** place each color region
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Sort an array containing only 0, 1, and 2 in-place.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **3-way partition**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `Dutch flag`.
+- **Code state to watch:** `low`.
+- **Key move in the accepted solution:** low mid high.
+- **Core intuition:** place each color region.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -2567,13 +2759,15 @@ Core idea     : direct process
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: low mid high
-4. Return final answer
+1. Goal: solve **Sort Colors** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int low = 0, mid = 0, high = (int)nums.size() - 1;`.
+3. Repeat while the code condition holds: `while (mid <= high)`.
+4. Check the decision condition `if (nums[mid] == 0) swap(nums[low++], nums[mid++]);` and take the early/branch action shown in code.
+5. If the previous branch failed, check `else if (nums[mid] == 1) mid++;`.
+6. Run the fallback branch from the code.
 ```
 
 </details>
@@ -2629,10 +2823,15 @@ Core idea     : place each color region
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `permutation` situation and applying `STL algorithm logic` instead of repeatedly doing slow work.
-- **Main move:** pivot suffix reverse.
-- **Core intuition:** next lexicographic order changes suffix
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Transform the array into the next lexicographically greater permutation, or the smallest permutation if none exists.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **permutation**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `STL algorithm logic`.
+- **Code state to watch:** `i`, `j`.
+- **Key move in the accepted solution:** pivot suffix reverse.
+- **Core intuition:** next lexicographic order changes suffix.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -2661,13 +2860,17 @@ Core idea     : place each color region
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: pivot suffix reverse
-4. Return the requested result
+1. Goal: solve **Next Permutation** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int i = (int)nums.size() - 2;`.
+3. Repeat while the code condition holds: `while (i >= 0 && nums[i] >= nums[i + 1]) i--;`.
+4. Check the decision condition `if (i >= 0)` and take the early/branch action shown in code.
+5. Update the code state with `int j = (int)nums.size() - 1;`.
+6. Repeat while the code condition holds: `while (nums[j] <= nums[i]) j--;`.
+7. Update the code state with `swap(nums[i], nums[j]);`.
+8. Update the code state with `reverse(nums.begin() + i + 1, nums.end());`.
 ```
 
 </details>
@@ -2725,10 +2928,15 @@ Core idea     : next lexicographic order changes suffix
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `intervals` situation and applying `sort and merge` instead of repeatedly doing slow work.
-- **Main move:** compare start with current end.
-- **Core intuition:** overlap extends interval
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Merge all overlapping intervals and return the non-overlapping union.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **intervals**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort and merge`.
+- **Code state to watch:** `merge`, `ans`.
+- **Key move in the accepted solution:** compare start with current end.
+- **Core intuition:** overlap extends interval.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -2757,13 +2965,16 @@ Core idea     : next lexicographic order changes suffix
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: compare start with current end
-4. Return final answer
+1. Goal: solve **Merge Intervals** with the optimal code below, in the same order the code executes.
+2. Update the code state with `sort(intervals.begin(), intervals.end());`.
+3. Update the code state with `vector<vector<int>> ans;`.
+4. Loop through the input using `for (auto cur : intervals)`.
+5. Check the decision condition `if (ans.empty() || ans.back()[1] < cur[0]) ans.push_back(cur);` and take the early/branch action shown in code.
+6. Run the fallback branch from the code.
+7. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -2820,10 +3031,15 @@ Core idea     : overlap extends interval
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `array scan` situation and applying `prefix suffix` instead of repeatedly doing slow work.
-- **Main move:** two passes.
-- **Core intuition:** answer is left product times right product
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For every index, return the product of all other elements without using division.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **array scan**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `prefix suffix`.
+- **Code state to watch:** `n`, `pref`, `i`, `suff`, `productExceptSelf`, `ans`.
+- **Key move in the accepted solution:** two passes.
+- **Core intuition:** answer is left product times right product.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -2852,13 +3068,16 @@ Core idea     : overlap extends interval
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: two passes
-4. Store current state in map
+1. Goal: solve **Product of Array Except Self** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int n = nums.size();`.
+3. Update the code state with `int pref = 1;`.
+4. Loop through the input using `for (int i = 0; i < n; i++) { ans[i] = pref; pref *= nums[i]; }`.
+5. Update the code state with `int suff = 1;`.
+6. Loop through the input using `for (int i = n - 1; i >= 0; i--) { ans[i] *= suff; suff *= nums[i]; }`.
+7. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -2915,10 +3134,15 @@ Core idea     : answer is left product times right product
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `grouping` situation and applying `map by key` instead of repeatedly doing slow work.
-- **Main move:** sorted string as key.
-- **Core intuition:** anagrams share canonical form
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Group strings that are anagrams of each other.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **grouping**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `map by key`.
+- **Code state to watch:** `s`, `key`, `mp`, `ans`.
+- **Key move in the accepted solution:** sorted string as key.
+- **Core intuition:** anagrams share canonical form.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -2947,13 +3171,18 @@ Core idea     : answer is left product times right product
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: sorted string as key
-4. Store current state in map
+1. Goal: solve **Group Anagrams** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_map<string, vector<string>> mp;`.
+3. Loop through the input using `for (string s : strs)`.
+4. Update the code state with `string key = s;`.
+5. Update the code state with `sort(key.begin(), key.end());`.
+6. Update the code state with `mp[key].push_back(s);`.
+7. Update the code state with `vector<vector<string>> ans;`.
+8. Loop through the input using `for (auto& [k, v] : mp) ans.push_back(v);`.
+9. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -3012,10 +3241,15 @@ Core idea     : anagrams share canonical form
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `window` situation and applying `sliding set/map` instead of repeatedly doing slow work.
-- **Main move:** move left past duplicate.
-- **Core intuition:** window invariant has unique chars
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the maximum length substring with no repeated characters.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **window**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sliding set/map`.
+- **Code state to watch:** `lengthOfLongestSubstring`, `s`, `ans`, `right`, `last`.
+- **Key move in the accepted solution:** move left past duplicate.
+- **Core intuition:** window invariant has unique chars.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -3044,13 +3278,16 @@ Core idea     : anagrams share canonical form
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: move left past duplicate
-4. Store current state in map
+1. Goal: solve **Longest Substring Without Repeating Characters** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int ans = 0, left = 0;`.
+3. Loop through the input using `for (int right = 0; right < (int)s.size(); right++)`.
+4. Update the code state with `left = max(left, last[(unsigned char)s[right]] + 1);`.
+5. Update the code state with `last[(unsigned char)s[right]] = right;`.
+6. Update the code state with `ans = max(ans, right - left + 1);`.
+7. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -3108,10 +3345,15 @@ Core idea     : window invariant has unique chars
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `covering window` situation and applying `map counts` instead of repeatedly doing slow work.
-- **Main move:** expand then shrink.
-- **Core intuition:** smallest valid window after coverage
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the smallest substring of s that contains all characters required by t.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **covering window**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `map counts`.
+- **Code state to watch:** `minWindow`, `s`, `t`, `c`, `missing`, `right`.
+- **Key move in the accepted solution:** expand then shrink.
+- **Core intuition:** smallest valid window after coverage.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -3140,13 +3382,18 @@ Core idea     : window invariant has unique chars
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: expand then shrink
-4. Store current state in map
+1. Goal: solve **Minimum Window Substring** with the optimal code below, in the same order the code executes.
+2. Loop through the input using `for (char c : t) need[c]++;`.
+3. Update the code state with `int missing = t.size(), left = 0, bestLen = INT_MAX, bestStart = 0;`.
+4. Loop through the input using `for (int right = 0; right < (int)s.size(); right++)`.
+5. Check the decision condition `if (need[s[right]]-- > 0) missing--;` and take the early/branch action shown in code.
+6. Repeat while the code condition holds: `while (missing == 0)`.
+7. Check the decision condition `if (right - left + 1 < bestLen) bestLen = right - left + 1, bestStart = left;` and take the early/branch action shown in code.
+8. Check the decision condition `if (++need[s[left++]] > 0) missing++;` and take the early/branch action shown in code.
+9. Return exactly what the code computes: `return bestLen == INT_MAX ? "" : s.substr(bestStart, bestLen);`.
 ```
 
 </details>
@@ -3207,10 +3454,15 @@ Core idea     : smallest valid window after coverage
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `nested parsing` situation and applying `stack` instead of repeatedly doing slow work.
-- **Main move:** save previous state.
-- **Core intuition:** brackets nest last-in-first-out
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Decode nested repetition expressions such as k[encoded_string].
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **nested parsing**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `stack`.
+- **Code state to watch:** `decodeString`, `s`, `cur`, `num`, `c`, `tmp`.
+- **Key move in the accepted solution:** save previous state.
+- **Core intuition:** brackets nest last-in-first-out.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -3239,13 +3491,19 @@ Core idea     : smallest valid window after coverage
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: save previous state
-4. Return final stack-derived answer
+1. Goal: solve **Decode String** with the optimal code below, in the same order the code executes.
+2. Update the code state with `stack<int> counts;`.
+3. Update the code state with `stack<string> prev;`.
+4. Update the code state with `string cur;`.
+5. Update the code state with `int num = 0;`.
+6. Loop through the input using `for (char c : s)`.
+7. Check the decision condition `if (isdigit(c)) num = num * 10 + c - '0';` and take the early/branch action shown in code.
+8. If the previous branch failed, check `else if (c == '[') { counts.push(num); prev.push(cur); num = 0; cur.clear(); }`.
+9. If the previous branch failed, check `else if (c == ']') { string tmp = prev.top(); prev.pop(); int k = counts.top(); counts.pop(); while (k--) tmp += cur; cur = tmp; }`.
+10. Run the fallback branch from the code.
 ```
 
 </details>
@@ -3306,10 +3564,15 @@ Core idea     : brackets nest last-in-first-out
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `stack with min` situation and applying `auxiliary stack` instead of repeatedly doing slow work.
-- **Main move:** store current min.
-- **Core intuition:** min must rollback with pop
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Design a stack that can also return the minimum element in constant time.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **stack with min**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `auxiliary stack`.
+- **Code state to watch:** `val`, `top`, `getMin`, `st`.
+- **Key move in the accepted solution:** store current min.
+- **Core intuition:** min must rollback with pop.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -3338,13 +3601,11 @@ Core idea     : brackets nest last-in-first-out
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: store current min
-4. Return final stack-derived answer
+1. Goal: solve **Min Stack** with the optimal code below, in the same order the code executes.
+2. Update the code state with `stack<pair<int,int>> st;`.
 ```
 
 </details>
@@ -3397,10 +3658,15 @@ Core idea     : min must rollback with pop
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `expression eval` situation and applying `stack` instead of repeatedly doing slow work.
-- **Main move:** apply operator to top two.
-- **Core intuition:** postfix puts operands before operator
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Evaluate an arithmetic expression written in postfix notation.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **expression eval**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `stack`.
+- **Code state to watch:** `evalRPN`, `t`, `b`, `a`, `st`.
+- **Key move in the accepted solution:** apply operator to top two.
+- **Core intuition:** postfix puts operands before operator.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -3429,13 +3695,19 @@ Core idea     : min must rollback with pop
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: apply operator to top two
-4. Return final stack-derived answer
+1. Goal: solve **Evaluate Reverse Polish Notation** with the optimal code below, in the same order the code executes.
+2. Update the code state with `stack<int> st;`.
+3. Loop through the input using `for (string t : tokens)`.
+4. Check the decision condition `if (t == "+" || t == "-" || t == "*" || t == "/")` and take the early/branch action shown in code.
+5. Update the code state with `int b = st.top(); st.pop(); int a = st.top(); st.pop();`.
+6. Check the decision condition `if (t == "+") st.push(a + b);` and take the early/branch action shown in code.
+7. If the previous branch failed, check `else if (t == "-") st.push(a - b);`.
+8. If the previous branch failed, check `else if (t == "*") st.push(a * b);`.
+9. Run the fallback branch from the code.
+10. Update the code state with `} else st.push(stoi(t));`.
 ```
 
 </details>
@@ -3496,10 +3768,15 @@ Core idea     : postfix puts operands before operator
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `next greater` situation and applying `monotonic stack` instead of repeatedly doing slow work.
-- **Main move:** store indices.
-- **Core intuition:** warmer day resolves colder days
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For each day, return how many days until a warmer temperature.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **next greater**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `monotonic stack`.
+- **Code state to watch:** `n`, `i`, `dailyTemperatures`, `ans`, `st`.
+- **Key move in the accepted solution:** store indices.
+- **Core intuition:** warmer day resolves colder days.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -3528,13 +3805,18 @@ Core idea     : postfix puts operands before operator
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: store indices
-4. Return final stack-derived answer
+1. Goal: solve **Daily Temperatures** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int n = temperatures.size();`.
+3. Update the code state with `stack<int> st;`.
+4. Loop through the input using `for (int i = 0; i < n; i++)`.
+5. Repeat while the code condition holds: `while (!st.empty() && temperatures[st.top()] < temperatures[i])`.
+6. Update the code state with `ans[st.top()] = i - st.top();`.
+7. Update the code state with `st.pop();`.
+8. Update the code state with `st.push(i);`.
+9. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -3595,10 +3877,15 @@ Core idea     : warmer day resolves colder days
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `grid BFS` situation and applying `multi-source queue` instead of repeatedly doing slow work.
-- **Main move:** start all rotten.
-- **Core intuition:** infection spreads by layers
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Compute the minutes needed for rotten oranges to rot all reachable fresh oranges, or -1.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **grid BFS**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `multi-source queue`.
+- **Code state to watch:** `orangesRotting`, `m`, `i`, `j`, `dirs`, `sz`.
+- **Key move in the accepted solution:** start all rotten.
+- **Core intuition:** infection spreads by layers.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -3627,13 +3914,19 @@ Core idea     : warmer day resolves colder days
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: start all rotten
-4. Return the requested result
+1. Goal: solve **Rotting Oranges** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int m = grid.size(), n = grid[0].size(), fresh = 0, minutes = 0;`.
+3. Update the code state with `queue<pair<int,int>> q;`.
+4. Loop through the input using `for (int i = 0; i < m; i++) for (int j = 0; j < n; j++)`.
+5. Check the decision condition `if (grid[i][j] == 2) q.push({i,j});` and take the early/branch action shown in code.
+6. Check the decision condition `if (grid[i][j] == 1) fresh++;` and take the early/branch action shown in code.
+7. Update the code state with `int dirs[5] = {1,0,-1,0,1};`.
+8. Repeat while the code condition holds: `while (!q.empty() && fresh > 0)`.
+9. Update the code state with `int sz = q.size(); minutes++;`.
+10. Repeat while the code condition holds: `while (sz--)`.
 ```
 
 </details>
@@ -3702,10 +3995,15 @@ Core idea     : infection spreads by layers
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `flood fill` situation and applying `BFS/DFS queue` instead of repeatedly doing slow work.
-- **Main move:** mark visited.
-- **Core intuition:** each BFS consumes one island
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Count connected components of land cells in a grid.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **flood fill**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `BFS/DFS queue`.
+- **Code state to watch:** `numIslands`, `m`, `dirs`, `i`, `j`, `d`.
+- **Key move in the accepted solution:** mark visited.
+- **Core intuition:** each BFS consumes one island.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -3734,13 +4032,19 @@ Core idea     : infection spreads by layers
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push starting states into queue
-2. Process one BFS layer at a time
-3. Visit valid unvisited neighbors: mark visited
-4. Return distance/path when target found
+1. Goal: solve **Number of Islands** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int m = grid.size(), n = grid[0].size(), ans = 0;`.
+3. Update the code state with `int dirs[5] = {1,0,-1,0,1};`.
+4. Loop through the input using `for (int i = 0; i < m; i++) for (int j = 0; j < n; j++) if (grid[i][j] == '1')`.
+5. Update the code state with `ans++;`.
+6. Update the code state with `queue<pair<int,int>> q; q.push({i,j}); grid[i][j] = '0';`.
+7. Repeat while the code condition holds: `while (!q.empty())`.
+8. Update the code state with `auto [r,c] = q.front(); q.pop();`.
+9. Loop through the input using `for (int d=0; d<4; d++) { int nr=r+dirs[d], nc=c+dirs[d+1]; if (nr>=0&&nc>=0&&nr<m&&nc<n&&grid[nr][nc]=='1') { grid[nr][nc]='0'; q.push({nr,nc}); } }`.
+10. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -3801,10 +4105,15 @@ Core idea     : each BFS consumes one island
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `state BFS` situation and applying `queue states` instead of repeatedly doing slow work.
-- **Main move:** generate neighbours.
-- **Core intuition:** shortest moves in unweighted state graph
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the fewest wheel turns needed to reach the target lock combination while avoiding deadends.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **state BFS**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `queue states`.
+- **Code state to watch:** `openLock`, `target`, `steps`, `sz`, `cur`, `i`.
+- **Key move in the accepted solution:** generate neighbours.
+- **Core intuition:** shortest moves in unweighted state graph.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -3833,13 +4142,19 @@ Core idea     : each BFS consumes one island
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push starting states into queue
-2. Process one BFS layer at a time
-3. Visit valid unvisited neighbors: generate neighbours
-4. Return distance/path when target found
+1. Goal: solve **Open the Lock** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_set<string> dead(deadends.begin(), deadends.end()), seen;`.
+3. Check the decision condition `if (dead.count("0000")) return -1;` and take the early/branch action shown in code.
+4. Update the code state with `queue<string> q; q.push("0000"); seen.insert("0000");`.
+5. Update the code state with `int steps = 0;`.
+6. Repeat while the code condition holds: `while (!q.empty())`.
+7. Update the code state with `int sz = q.size();`.
+8. Repeat while the code condition holds: `while (sz--)`.
+9. Update the code state with `string cur = q.front(); q.pop();`.
+10. Check the decision condition `if (cur == target) return steps;` and take the early/branch action shown in code.
 ```
 
 </details>
@@ -3907,10 +4222,15 @@ Core idea     : shortest moves in unweighted state graph
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `kth largest` situation and applying `heap/quickselect` instead of repeatedly doing slow work.
-- **Main move:** keep k largest.
-- **Core intuition:** kth is min of top k
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the kth largest element from an unsorted array.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **kth largest**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `heap/quickselect`.
+- **Code state to watch:** `findKthLargest`, `k`.
+- **Key move in the accepted solution:** keep k largest.
+- **Core intuition:** kth is min of top k.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -3939,13 +4259,12 @@ Core idea     : shortest moves in unweighted state graph
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: keep k largest
-4. Return accumulated result
+1. Goal: solve **Kth Largest Element in an Array** with the optimal code below, in the same order the code executes.
+2. Update the code state with `nth_element(nums.begin(), nums.end() - k, nums.end());`.
+3. Return exactly what the code computes: `return nums[nums.size() - k];`.
 ```
 
 </details>
@@ -3997,10 +4316,15 @@ Core idea     : kth is min of top k
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `frequency top k` situation and applying `map + heap` instead of repeatedly doing slow work.
-- **Main move:** heap by count.
-- **Core intuition:** frequency decides rank
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the k values with highest frequency.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **frequency top k**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `map + heap`.
+- **Code state to watch:** `k`, `x`, `freq`, `pq`, `ans`.
+- **Key move in the accepted solution:** heap by count.
+- **Core intuition:** frequency decides rank.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4029,13 +4353,17 @@ Core idea     : kth is min of top k
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: heap by count
-4. Return accumulated result
+1. Goal: solve **Top K Frequent Elements** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_map<int,int> freq;`.
+3. Loop through the input using `for (int x : nums) freq[x]++;`.
+4. Update the code state with `priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;`.
+5. Loop through the input using `for (auto [x,c] : freq) { pq.push({c,x}); if ((int)pq.size() > k) pq.pop(); }`.
+6. Update the code state with `vector<int> ans;`.
+7. Repeat while the code condition holds: `while (!pq.empty()) ans.push_back(pq.top().second), pq.pop();`.
+8. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -4092,10 +4420,15 @@ Core idea     : frequency decides rank
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `top k by distance` situation and applying `heap` instead of repeatedly doing slow work.
-- **Main move:** compare squared distance.
-- **Core intuition:** no need sqrt
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the k points with smallest squared distance from the origin.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **top k by distance**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `heap`.
+- **Code state to watch:** `k`, `kClosest`.
+- **Key move in the accepted solution:** compare squared distance.
+- **Core intuition:** no need sqrt.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4124,13 +4457,13 @@ Core idea     : frequency decides rank
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: compare squared distance
-4. Return accumulated result
+1. Goal: solve **K Closest Points to Origin** with the optimal code below, in the same order the code executes.
+2. Update the code state with `auto dist = [](const vector<int>& p){ return p[0]*p[0] + p[1]*p[1]; };`.
+3. Update the code state with `nth_element(points.begin(), points.begin() + k, points.end(), [&](auto& a, auto& b){ return dist(a) < dist(b); });`.
+4. Return exactly what the code computes: `return vector<vector<int>>(points.begin(), points.begin() + k);`.
 ```
 
 </details>
@@ -4183,10 +4516,15 @@ Core idea     : no need sqrt
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `greedy scheduling` situation and applying `max heap + cooldown` instead of repeatedly doing slow work.
-- **Main move:** always use most frequent.
-- **Core intuition:** reduce future bottleneck
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the minimum intervals needed to execute tasks with cooldown constraints.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **greedy scheduling**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `max heap + cooldown`.
+- **Code state to watch:** `leastInterval`, `n`, `c`, `mx`, `same`, `cnt`.
+- **Key move in the accepted solution:** always use most frequent.
+- **Core intuition:** reduce future bottleneck.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4215,13 +4553,14 @@ Core idea     : no need sqrt
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: always use most frequent
-4. Return accumulated result
+1. Goal: solve **Task Scheduler** with the optimal code below, in the same order the code executes.
+2. Loop through the input using `for (char c : tasks) cnt[c - 'A']++;`.
+3. Update the code state with `int mx = *max_element(cnt.begin(), cnt.end());`.
+4. Update the code state with `int same = count(cnt.begin(), cnt.end(), mx);`.
+5. Return exactly what the code computes: `return max((int)tasks.size(), (mx - 1) * (n + 1) + same);`.
 ```
 
 </details>
@@ -4276,10 +4615,15 @@ Core idea     : reduce future bottleneck
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `interval booking` situation and applying `set ordered intervals` instead of repeatedly doing slow work.
-- **Main move:** check prev and next.
-- **Core intuition:** only neighbours can overlap
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Implement booking requests and reject any interval that overlaps an existing booking.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **interval booking**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `set ordered intervals`.
+- **Code state to watch:** `book`, `start`, `end`, `booked`.
+- **Key move in the accepted solution:** check prev and next.
+- **Core intuition:** only neighbours can overlap.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4308,13 +4652,16 @@ Core idea     : reduce future bottleneck
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: check prev and next
-4. Return final answer
+1. Goal: solve **My Calendar I** with the optimal code below, in the same order the code executes.
+2. Update the code state with `set<pair<int,int>> booked;`.
+3. Update the code state with `auto it = booked.lower_bound({start, end});`.
+4. Check the decision condition `if (it != booked.end() && it->first < end) return false;` and take the early/branch action shown in code.
+5. Check the decision condition `if (it != booked.begin() && prev(it)->second > start) return false;` and take the early/branch action shown in code.
+6. Update the code state with `booked.insert({start, end});`.
+7. Return exactly what the code computes: `return true;`.
 ```
 
 </details>
@@ -4370,10 +4717,15 @@ Core idea     : only neighbours can overlap
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `dynamic gaps` situation and applying `set` instead of repeatedly doing slow work.
-- **Main move:** maintain occupied seats.
-- **Core intuition:** best seat depends on gaps
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Seat students to maximize distance from the nearest occupied seat, and support leaving.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **dynamic gaps**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `set`.
+- **Code state to watch:** `n`, `seat`, `best`, `prevSeat`, `s`, `d`.
+- **Key move in the accepted solution:** maintain occupied seats.
+- **Core intuition:** best seat depends on gaps.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4402,13 +4754,19 @@ Core idea     : only neighbours can overlap
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: maintain occupied seats
-4. Return the requested result
+1. Goal: solve **Exam Room** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int n;`.
+3. Update the code state with `set<int> seats;`.
+4. Update the code state with `ExamRoom(int n) : n(n) {}`.
+5. Check the decision condition `if (seats.empty()) { seats.insert(0); return 0; }` and take the early/branch action shown in code.
+6. Update the code state with `int best = 0, dist = *seats.begin();`.
+7. Update the code state with `int prevSeat = *seats.begin();`.
+8. Loop through the input using `for (int s : seats)`.
+9. Update the code state with `int d = (s - prevSeat) / 2;`.
+10. Check the decision condition `if (d > dist) dist = d, best = prevSeat + d;` and take the early/branch action shown in code.
 ```
 
 </details>
@@ -4473,10 +4831,15 @@ Core idea     : best seat depends on gaps
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `ordered versions` situation and applying `map/vector` instead of repeatedly doing slow work.
-- **Main move:** upper_bound timestamp.
-- **Core intuition:** latest previous value is answer
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Store values by timestamp and retrieve the latest value at or before a query timestamp.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **ordered versions**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `map/vector`.
+- **Code state to watch:** `key`, `value`, `timestamp`, `get`, `i`, `mp`.
+- **Key move in the accepted solution:** upper_bound timestamp.
+- **Core intuition:** latest previous value is answer.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4505,13 +4868,14 @@ Core idea     : best seat depends on gaps
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: upper_bound timestamp
-4. Store current state in map
+1. Goal: solve **Time Based Key-Value Store** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_map<string, vector<pair<int,string>>> mp;`.
+3. Update the code state with `auto& v = mp[key];`.
+4. Update the code state with `int i = upper_bound(v.begin(), v.end(), make_pair(timestamp, string("~"))) - v.begin() - 1;`.
+5. Return exactly what the code computes: `return i >= 0 ? v[i].second : "";`.
 ```
 
 </details>
@@ -4566,10 +4930,15 @@ Core idea     : latest previous value is answer
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `prefix equality` situation and applying `map frequency` instead of repeatedly doing slow work.
-- **Main move:** count previous prefix.
-- **Core intuition:** equal difference gives sum k
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Count subarrays whose sum equals k.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **prefix equality**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `map frequency`.
+- **Code state to watch:** `subarraySum`, `k`, `pref`, `x`, `freq`.
+- **Key move in the accepted solution:** count previous prefix.
+- **Core intuition:** equal difference gives sum k.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4598,13 +4967,17 @@ Core idea     : latest previous value is answer
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: count previous prefix
-4. Store current state in map
+1. Goal: solve **Subarray Sum Equals K** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_map<int,int> freq{{0,1}};`.
+3. Update the code state with `int pref = 0, ans = 0;`.
+4. Loop through the input using `for (int x : nums)`.
+5. Update the code state with `pref += x;`.
+6. Update the code state with `ans += freq[pref - k];`.
+7. Update the code state with `freq[pref]++;`.
+8. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -4662,10 +5035,15 @@ Core idea     : equal difference gives sum k
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `set lookup` situation and applying `unordered_set` instead of repeatedly doing slow work.
-- **Main move:** start only at sequence beginning.
-- **Core intuition:** each number processed once
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the longest run of consecutive integer values in an unsorted array.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **set lookup**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `unordered_set`.
+- **Code state to watch:** `longestConsecutive`, `ans`, `x`, `y`, `s`.
+- **Key move in the accepted solution:** start only at sequence beginning.
+- **Core intuition:** each number processed once.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4694,13 +5072,17 @@ Core idea     : equal difference gives sum k
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: start only at sequence beginning
-4. Return the requested result
+1. Goal: solve **Longest Consecutive Sequence** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_set<int> s(nums.begin(), nums.end());`.
+3. Update the code state with `int ans = 0;`.
+4. Loop through the input using `for (int x : s) if (!s.count(x - 1))`.
+5. Update the code state with `int y = x;`.
+6. Repeat while the code condition holds: `while (s.count(y)) y++;`.
+7. Update the code state with `ans = max(ans, y - x);`.
+8. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -4758,10 +5140,15 @@ Core idea     : each number processed once
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `design` situation and applying `list + unordered_map` instead of repeatedly doing slow work.
-- **Main move:** map key to list iterator.
-- **Core intuition:** O(1) move to front
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Design a cache with O(1) get/put that evicts the least recently used key.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **design**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `list + unordered_map`.
+- **Code state to watch:** `cap`, `capacity`, `get`, `key`, `value`, `items`.
+- **Key move in the accepted solution:** map key to list iterator.
+- **Core intuition:** O(1) move to front.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4790,13 +5177,19 @@ Core idea     : each number processed once
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: map key to list iterator
-4. Store current state in map
+1. Goal: solve **LRU Cache** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int cap;`.
+3. Update the code state with `list<pair<int,int>> items;`.
+4. Update the code state with `unordered_map<int, list<pair<int,int>>::iterator> pos;`.
+5. Update the code state with `LRUCache(int capacity) : cap(capacity) {}`.
+6. Check the decision condition `if (!pos.count(key)) return -1;` and take the early/branch action shown in code.
+7. Update the code state with `items.splice(items.begin(), items, pos[key]);`.
+8. Return exactly what the code computes: `return pos[key]->second;`.
+9. Check the decision condition `if (pos.count(key)) { pos[key]->second = value; items.splice(items.begin(), items, pos[key]); return; }` and take the early/branch action shown in code.
+10. Check the decision condition `if ((int)items.size() == cap) { pos.erase(items.back().first); items.pop_back(); }` and take the early/branch action shown in code.
 ```
 
 </details>
@@ -4858,10 +5251,15 @@ Core idea     : O(1) move to front
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `interval removal` situation and applying `greedy sort by end` instead of repeatedly doing slow work.
-- **Main move:** keep earliest ending.
-- **Core intuition:** more space for future intervals
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Remove the fewest intervals so the remaining intervals do not overlap.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **interval removal**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `greedy sort by end`.
+- **Code state to watch:** `eraseOverlapIntervals`, `removed`.
+- **Key move in the accepted solution:** keep earliest ending.
+- **Core intuition:** more space for future intervals.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4890,13 +5288,16 @@ Core idea     : O(1) move to front
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: keep earliest ending
-4. Return final answer
+1. Goal: solve **Non-overlapping Intervals** with the optimal code below, in the same order the code executes.
+2. Update the code state with `sort(intervals.begin(), intervals.end(), [](auto& a, auto& b){ return a[1] < b[1]; });`.
+3. Update the code state with `int removed = 0, end = INT_MIN;`.
+4. Loop through the input using `for (auto& in : intervals)`.
+5. Check the decision condition `if (in[0] >= end) end = in[1];` and take the early/branch action shown in code.
+6. Run the fallback branch from the code.
+7. Return exactly what the code computes: `return removed;`.
 ```
 
 </details>
@@ -4953,10 +5354,15 @@ Core idea     : more space for future intervals
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `interval stabbing` situation and applying `sort by end` instead of repeatedly doing slow work.
-- **Main move:** shoot at end.
-- **Core intuition:** one arrow covers all overlapping intervals
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the minimum arrows needed so every interval balloon is hit.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **interval stabbing**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort by end`.
+- **Code state to watch:** `findMinArrowShots`, `arrow`, `ans`.
+- **Key move in the accepted solution:** shoot at end.
+- **Core intuition:** one arrow covers all overlapping intervals.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -4985,13 +5391,15 @@ Core idea     : more space for future intervals
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: shoot at end
-4. Return final answer
+1. Goal: solve **Minimum Number of Arrows to Burst Balloons** with the optimal code below, in the same order the code executes.
+2. Update the code state with `sort(points.begin(), points.end(), [](auto& a, auto& b){ return a[1] < b[1]; });`.
+3. Update the code state with `long long arrow = LLONG_MIN;`.
+4. Update the code state with `int ans = 0;`.
+5. Loop through the input using `for (auto& p : points) if (p[0] > arrow) { ans++; arrow = p[1]; }`.
+6. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -5046,10 +5454,15 @@ Core idea     : one arrow covers all overlapping intervals
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `custom sorting` situation and applying `sort + insert` instead of repeatedly doing slow work.
-- **Main move:** tall first.
-- **Core intuition:** shorter people do not affect taller count
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Reconstruct people ordered by height and the number of taller/equal people in front.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **custom sorting**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort + insert`.
+- **Code state to watch:** `b`, `ans`.
+- **Key move in the accepted solution:** tall first.
+- **Core intuition:** shorter people do not affect taller count.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -5078,13 +5491,14 @@ Core idea     : one arrow covers all overlapping intervals
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: tall first
-4. Return final answer
+1. Goal: solve **Queue Reconstruction by Height** with the optimal code below, in the same order the code executes.
+2. Update the code state with `sort(people.begin(), people.end(), [](auto& a, auto& b){ return a[0] == b[0] ? a[1] < b[1] : a[0] > b[0]; });`.
+3. Update the code state with `vector<vector<int>> ans;`.
+4. Loop through the input using `for (auto& p : people) ans.insert(ans.begin() + p[1], p);`.
+5. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -5138,10 +5552,15 @@ Core idea     : shorter people do not affect taller count
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `comparator` situation and applying `custom string sort` instead of repeatedly doing slow work.
-- **Main move:** compare ab vs ba.
-- **Core intuition:** best concatenation order
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Arrange nonnegative integers so their concatenation forms the largest possible number.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **comparator**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `custom string sort`.
+- **Code state to watch:** `largestNumber`, `x`, `ans`, `s`.
+- **Key move in the accepted solution:** compare ab vs ba.
+- **Core intuition:** best concatenation order.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -5170,13 +5589,17 @@ Core idea     : shorter people do not affect taller count
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: compare ab vs ba
-4. Return final answer
+1. Goal: solve **Largest Number** with the optimal code below, in the same order the code executes.
+2. Update the code state with `vector<string> s;`.
+3. Loop through the input using `for (int x : nums) s.push_back(to_string(x));`.
+4. Update the code state with `sort(s.begin(), s.end(), [](const string& a, const string& b){ return a + b > b + a; });`.
+5. Check the decision condition `if (s[0] == "0") return "0";` and take the early/branch action shown in code.
+6. Update the code state with `string ans;`.
+7. Loop through the input using `for (auto& x : s) ans += x;`.
+8. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -5233,10 +5656,15 @@ Core idea     : best concatenation order
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `sorted triples` situation and applying `sort + two pointers` instead of repeatedly doing slow work.
-- **Main move:** skip duplicates.
-- **Core intuition:** fixing one reduces to two sum
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return all unique triples that sum to zero.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **sorted triples**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort + two pointers`.
+- **Code state to watch:** `n`, `i`, `l`, `sum`, `threeSum`, `ans`.
+- **Key move in the accepted solution:** skip duplicates.
+- **Core intuition:** fixing one reduces to two sum.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -5265,13 +5693,19 @@ Core idea     : best concatenation order
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: skip duplicates
-4. Return final answer
+1. Goal: solve **3Sum** with the optimal code below, in the same order the code executes.
+2. Update the code state with `sort(nums.begin(), nums.end());`.
+3. Update the code state with `vector<vector<int>> ans;`.
+4. Update the code state with `int n = nums.size();`.
+5. Loop through the input using `for (int i = 0; i < n; i++)`.
+6. Check the decision condition `if (i && nums[i] == nums[i-1]) continue;` and take the early/branch action shown in code.
+7. Update the code state with `int l = i + 1, r = n - 1;`.
+8. Repeat while the code condition holds: `while (l < r)`.
+9. Update the code state with `long long sum = 1LL * nums[i] + nums[l] + nums[r];`.
+10. Check the decision condition `if (sum == 0) { ans.push_back({nums[i], nums[l], nums[r]}); l++; r--; while (l<r && nums[l]==nums[l-1]) l++; while (l<r && nums[r]==nums[r+1]) r--; }` and take the early/branch action shown in code.
 ```
 
 </details>
@@ -5334,10 +5768,15 @@ Core idea     : fixing one reduces to two sum
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `sorted quadruples` situation and applying `nested fix + two pointers` instead of repeatedly doing slow work.
-- **Main move:** skip duplicates.
-- **Core intuition:** reduce dimension stepwise
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return all unique quadruples that sum to the target.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **sorted quadruples**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `nested fix + two pointers`.
+- **Code state to watch:** `target`, `n`, `i`, `j`, `l`, `sum`.
+- **Key move in the accepted solution:** skip duplicates.
+- **Core intuition:** reduce dimension stepwise.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -5366,13 +5805,19 @@ Core idea     : fixing one reduces to two sum
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize left and right pointers
-2. Compare current pointer values
-3. Move the pointer that cannot improve answer: skip duplicates
-4. Return final answer
+1. Goal: solve **4Sum** with the optimal code below, in the same order the code executes.
+2. Update the code state with `sort(nums.begin(), nums.end());`.
+3. Update the code state with `vector<vector<int>> ans;`.
+4. Update the code state with `int n = nums.size();`.
+5. Loop through the input using `for (int i=0;i<n;i++) { if (i && nums[i]==nums[i-1]) continue;`.
+6. Loop through the input using `for (int j=i+1;j<n;j++) { if (j>i+1 && nums[j]==nums[j-1]) continue;`.
+7. Update the code state with `int l=j+1,r=n-1;`.
+8. Repeat while the code condition holds: `while(l<r){ long long sum=1LL*nums[i]+nums[j]+nums[l]+nums[r];`.
+9. Check the decision condition `if(sum==target){ ans.push_back({nums[i],nums[j],nums[l],nums[r]}); l++; r--; while(l<r&&nums[l]==nums[l-1])l++; while(l<r&&nums[r]==nums[r+1])r--; }` and take the early/branch action shown in code.
+10. If the previous branch failed, check `else if(sum<target) l++; else r--; }`.
 ```
 
 </details>
@@ -5433,10 +5878,15 @@ Core idea     : reduce dimension stepwise
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `sorted window` situation and applying `lower_bound or binary` instead of repeatedly doing slow work.
-- **Main move:** choose window.
-- **Core intuition:** answer is contiguous around x
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return k sorted elements closest to x in a sorted array.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **sorted window**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `lower_bound or binary`.
+- **Code state to watch:** `k`, `x`, `l`, `m`, `findClosestElements`.
+- **Key move in the accepted solution:** choose window.
+- **Core intuition:** answer is contiguous around x.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -5465,13 +5915,16 @@ Core idea     : reduce dimension stepwise
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Set low and high search bounds
-2. Test middle candidate
-3. Discard impossible half: choose window
-4. Return found index or boundary
+1. Goal: solve **Find K Closest Elements** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int l = 0, r = arr.size() - k;`.
+3. Repeat while the code condition holds: `while (l < r)`.
+4. Update the code state with `int m = (l + r) / 2;`.
+5. Check the decision condition `if (x - arr[m] > arr[m + k] - x) l = m + 1;` and take the early/branch action shown in code.
+6. Run the fallback branch from the code.
+7. Return exactly what the code computes: `return vector<int>(arr.begin() + l, arr.begin() + l + k);`.
 ```
 
 </details>
@@ -5528,10 +5981,15 @@ Core idea     : answer is contiguous around x
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `range equal` situation and applying `lower and upper bound` instead of repeatedly doing slow work.
-- **Main move:** endpoints.
-- **Core intuition:** equal block is contiguous
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the first and last index of target in a sorted array.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **range equal**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `lower and upper bound`.
+- **Code state to watch:** `target`, `searchRange`.
+- **Key move in the accepted solution:** endpoints.
+- **Core intuition:** equal block is contiguous.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -5560,13 +6018,14 @@ Core idea     : answer is contiguous around x
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: endpoints
-4. Return final answer
+1. Goal: solve **Find First and Last Position of Element in Sorted Array** with the optimal code below, in the same order the code executes.
+2. Update the code state with `auto l = lower_bound(nums.begin(), nums.end(), target);`.
+3. Update the code state with `auto r = upper_bound(nums.begin(), nums.end(), target);`.
+4. Check the decision condition `if (l == nums.end() || *l != target) return {-1, -1};` and take the early/branch action shown in code.
+5. Return exactly what the code computes: `return {(int)(l - nums.begin()), (int)(r - nums.begin() - 1)};`.
 ```
 
 </details>
@@ -5620,10 +6079,15 @@ Core idea     : equal block is contiguous
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `flattened search` situation and applying `binary search` instead of repeatedly doing slow work.
-- **Main move:** index mapping.
-- **Core intuition:** matrix acts like sorted array
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Treat the matrix as sorted and decide whether target exists.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **flattened search**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `binary search`.
+- **Code state to watch:** `searchMatrix`, `target`, `m`, `l`, `mid`, `x`.
+- **Key move in the accepted solution:** index mapping.
+- **Core intuition:** matrix acts like sorted array.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -5652,13 +6116,18 @@ Core idea     : equal block is contiguous
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Set low and high search bounds
-2. Test middle candidate
-3. Discard impossible half: index mapping
-4. Return found index or boundary
+1. Goal: solve **Search a 2D Matrix** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int m = matrix.size(), n = matrix[0].size();`.
+3. Update the code state with `int l = 0, r = m * n - 1;`.
+4. Repeat while the code condition holds: `while (l <= r)`.
+5. Update the code state with `int mid = l + (r-l)/2;`.
+6. Update the code state with `int x = matrix[mid / n][mid % n];`.
+7. Check the decision condition `if (x == target) return true;` and take the early/branch action shown in code.
+8. Check the decision condition `if (x < target) l = mid + 1; else r = mid - 1;` and take the early/branch action shown in code.
+9. Return exactly what the code computes: `return false;`.
 ```
 
 </details>
@@ -5717,10 +6186,15 @@ Core idea     : matrix acts like sorted array
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `count threshold` situation and applying `sort + lower_bound` instead of repeatedly doing slow work.
-- **Main move:** need ceil(success/spell).
-- **Core intuition:** all later potions work
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For each spell, count potions whose product with it reaches the success threshold.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **count threshold**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort + lower_bound`.
+- **Code state to watch:** `success`, `s`, `need`, `successfulPairs`, `ans`.
+- **Key move in the accepted solution:** need ceil(success/spell).
+- **Core intuition:** all later potions work.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -5749,13 +6223,16 @@ Core idea     : matrix acts like sorted array
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: need ceil(success/spell)
-4. Return final answer
+1. Goal: solve **Successful Pairs of Spells and Potions** with the optimal code below, in the same order the code executes.
+2. Update the code state with `sort(potions.begin(), potions.end());`.
+3. Update the code state with `vector<int> ans;`.
+4. Loop through the input using `for (long long s : spells)`.
+5. Update the code state with `long long need = (success + s - 1) / s;`.
+6. Update the code state with `ans.push_back(potions.end() - lower_bound(potions.begin(), potions.end(), need));`.
+7. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -5812,10 +6289,15 @@ Core idea     : all later potions work
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `previous greater` situation and applying `compressed stack` instead of repeatedly doing slow work.
-- **Main move:** store price and span.
-- **Core intuition:** merge weaker previous days
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For each price, return consecutive previous days with price less than or equal to today.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **previous greater**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `compressed stack`.
+- **Code state to watch:** `next`, `price`, `span`, `st`.
+- **Key move in the accepted solution:** store price and span.
+- **Core intuition:** merge weaker previous days.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -5844,13 +6326,15 @@ Core idea     : all later potions work
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: store price and span
-4. Return final stack-derived answer
+1. Goal: solve **Online Stock Span** with the optimal code below, in the same order the code executes.
+2. Update the code state with `stack<pair<int,int>> st;`.
+3. Update the code state with `int span = 1;`.
+4. Repeat while the code condition holds: `while (!st.empty() && st.top().first <= price) { span += st.top().second; st.pop(); }`.
+5. Update the code state with `st.push({price, span});`.
+6. Return exactly what the code computes: `return span;`.
 ```
 
 </details>
@@ -5905,10 +6389,15 @@ Core idea     : merge weaker previous days
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `contribution` situation and applying `prev/next smaller` instead of repeatedly doing slow work.
-- **Main move:** count span.
-- **Core intuition:** each value contributes as minimum
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Sum the minimum value of every subarray modulo the required value.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **contribution**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `prev/next smaller`.
+- **Code state to watch:** `sumSubarrayMins`, `MOD`, `n`, `i`, `ans`, `left`.
+- **Key move in the accepted solution:** count span.
+- **Core intuition:** each value contributes as minimum.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -5937,13 +6426,19 @@ Core idea     : merge weaker previous days
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: count span
-4. Return the requested result
+1. Goal: solve **Sum of Subarray Minimums** with the optimal code below, in the same order the code executes.
+2. Update the code state with `const int MOD = 1e9 + 7;`.
+3. Update the code state with `int n = arr.size();`.
+4. Update the code state with `stack<int> st;`.
+5. Loop through the input using `for (int i=0;i<n;i++){ while(!st.empty()&&arr[st.top()]>arr[i]) st.pop(); left[i]=st.empty()?i+1:i-st.top(); st.push(i); }`.
+6. Repeat while the code condition holds: `while(!st.empty()) st.pop();`.
+7. Loop through the input using `for (int i=n-1;i>=0;i--){ while(!st.empty()&&arr[st.top()]>=arr[i]) st.pop(); right[i]=st.empty()?n-i:st.top()-i; st.push(i); }`.
+8. Update the code state with `long long ans=0;`.
+9. Loop through the input using `for(int i=0;i<n;i++) ans=(ans+1LL*arr[i]*left[i]*right[i])%MOD;`.
+10. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -6003,10 +6498,15 @@ Core idea     : each value contributes as minimum
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `window max` situation and applying `monotonic deque` instead of repeatedly doing slow work.
-- **Main move:** remove weaker old values.
-- **Core intuition:** front always best
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the maximum value in every window of size k.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **window max**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `monotonic deque`.
+- **Code state to watch:** `k`, `i`, `dq`, `ans`.
+- **Key move in the accepted solution:** remove weaker old values.
+- **Core intuition:** front always best.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6035,13 +6535,18 @@ Core idea     : each value contributes as minimum
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: remove weaker old values
-4. Return the requested result
+1. Goal: solve **Sliding Window Maximum** with the optimal code below, in the same order the code executes.
+2. Update the code state with `deque<int> dq;`.
+3. Update the code state with `vector<int> ans;`.
+4. Loop through the input using `for (int i=0;i<(int)nums.size();i++)`.
+5. Repeat while the code condition holds: `while(!dq.empty() && dq.front() <= i-k) dq.pop_front();`.
+6. Repeat while the code condition holds: `while(!dq.empty() && nums[dq.back()] <= nums[i]) dq.pop_back();`.
+7. Update the code state with `dq.push_back(i);`.
+8. Check the decision condition `if (i >= k-1) ans.push_back(nums[dq.front()]);` and take the early/branch action shown in code.
+9. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -6100,10 +6605,15 @@ Core idea     : front always best
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `window min max` situation and applying `two deques` instead of repeatedly doing slow work.
-- **Main move:** maintain max-min.
-- **Core intuition:** valid window bounded by extremes
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the longest window whose max-min difference is at most the limit.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **window min max**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two deques`.
+- **Code state to watch:** `longestSubarray`, `limit`, `l`, `r`, `mn`.
+- **Key move in the accepted solution:** maintain max-min.
+- **Core intuition:** valid window bounded by extremes.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6132,13 +6642,19 @@ Core idea     : front always best
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: maintain max-min
-4. Return the requested result
+1. Goal: solve **Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit** with the optimal code below, in the same order the code executes.
+2. Update the code state with `deque<int> mn, mx;`.
+3. Update the code state with `int l = 0, ans = 0;`.
+4. Loop through the input using `for (int r=0;r<(int)nums.size();r++)`.
+5. Repeat while the code condition holds: `while(!mn.empty() && nums[mn.back()] >= nums[r]) mn.pop_back();`.
+6. Repeat while the code condition holds: `while(!mx.empty() && nums[mx.back()] <= nums[r]) mx.pop_back();`.
+7. Update the code state with `mn.push_back(r); mx.push_back(r);`.
+8. Repeat while the code condition holds: `while(nums[mx.front()] - nums[mn.front()] > limit)`.
+9. Check the decision condition `if (mn.front() == l) mn.pop_front();` and take the early/branch action shown in code.
+10. Check the decision condition `if (mx.front() == l) mx.pop_front();` and take the early/branch action shown in code.
 ```
 
 </details>
@@ -6202,10 +6718,15 @@ Core idea     : valid window bounded by extremes
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `DP window max` situation and applying `monotonic deque` instead of repeatedly doing slow work.
-- **Main move:** keep best dp in range.
-- **Core intuition:** transition needs max previous
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the best subsequence sum where chosen indices are at most k apart.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **DP window max**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `monotonic deque`.
+- **Code state to watch:** `constrainedSubsetSum`, `k`, `ans`, `i`, `dq`, `dp`.
+- **Key move in the accepted solution:** keep best dp in range.
+- **Core intuition:** transition needs max previous.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6234,13 +6755,19 @@ Core idea     : valid window bounded by extremes
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: keep best dp in range
-4. Return the requested result
+1. Goal: solve **Constrained Subsequence Sum** with the optimal code below, in the same order the code executes.
+2. Update the code state with `deque<int> dq;`.
+3. Update the code state with `int ans = nums[0];`.
+4. Loop through the input using `for (int i=0;i<(int)nums.size();i++)`.
+5. Check the decision condition `if (!dq.empty() && dq.front() < i-k) dq.pop_front();` and take the early/branch action shown in code.
+6. Update the code state with `dp[i] = nums[i] + (dq.empty() ? 0 : max(0, dp[dq.front()]));`.
+7. Repeat while the code condition holds: `while(!dq.empty() && dp[dq.back()] <= dp[i]) dq.pop_back();`.
+8. Update the code state with `dq.push_back(i);`.
+9. Update the code state with `ans = max(ans, dp[i]);`.
+10. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -6301,10 +6828,15 @@ Core idea     : transition needs max previous
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `insert merge` situation and applying `three phases` instead of repeatedly doing slow work.
-- **Main move:** before overlap after.
-- **Core intuition:** only overlap group changes
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Insert a new interval into sorted non-overlapping intervals and merge overlaps.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **insert merge**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `three phases`.
+- **Code state to watch:** `i`, `ans`.
+- **Key move in the accepted solution:** before overlap after.
+- **Core intuition:** only overlap group changes.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6333,13 +6865,17 @@ Core idea     : transition needs max previous
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: before overlap after
-4. Return final answer
+1. Goal: solve **Insert Interval** with the optimal code below, in the same order the code executes.
+2. Update the code state with `vector<vector<int>> ans;`.
+3. Update the code state with `int i = 0, n = intervals.size();`.
+4. Repeat while the code condition holds: `while (i<n && intervals[i][1] < newInterval[0]) ans.push_back(intervals[i++]);`.
+5. Repeat while the code condition holds: `while (i<n && intervals[i][0] <= newInterval[1]) { newInterval[0]=min(newInterval[0],intervals[i][0]); newInterval[1]=max(newInterval[1],intervals[i][1]); i++; }`.
+6. Update the code state with `ans.push_back(newInterval);`.
+7. Repeat while the code condition holds: `while (i<n) ans.push_back(intervals[i++]);`.
+8. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -6396,10 +6932,15 @@ Core idea     : only overlap group changes
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `room count` situation and applying `min heap or sweep` instead of repeatedly doing slow work.
-- **Main move:** active meetings.
-- **Core intuition:** max simultaneous rooms needed
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the minimum number of rooms required for all meetings.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **room count**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `min heap or sweep`.
+- **Code state to watch:** `minMeetingRooms`, `ends`.
+- **Key move in the accepted solution:** active meetings.
+- **Core intuition:** max simultaneous rooms needed.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6428,13 +6969,16 @@ Core idea     : only overlap group changes
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: active meetings
-4. Return accumulated result
+1. Goal: solve **Meeting Rooms II** with the optimal code below, in the same order the code executes.
+2. Update the code state with `sort(intervals.begin(), intervals.end());`.
+3. Update the code state with `priority_queue<int, vector<int>, greater<int>> ends;`.
+4. Loop through the input using `for (auto& in : intervals)`.
+5. Check the decision condition `if (!ends.empty() && ends.top() <= in[0]) ends.pop();` and take the early/branch action shown in code.
+6. Update the code state with `ends.push(in[1]);`.
+7. Return exactly what the code computes: `return ends.size();`.
 ```
 
 </details>
@@ -6491,10 +7035,15 @@ Core idea     : max simultaneous rooms needed
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `range events` situation and applying `sweep/difference` instead of repeatedly doing slow work.
-- **Main move:** passenger delta.
-- **Core intuition:** active passengers must fit capacity
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Decide whether passenger pickups/dropoffs ever exceed vehicle capacity.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **range events**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sweep/difference`.
+- **Code state to watch:** `carPooling`, `capacity`, `cur`, `events`.
+- **Key move in the accepted solution:** passenger delta.
+- **Core intuition:** active passengers must fit capacity.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6523,13 +7072,15 @@ Core idea     : max simultaneous rooms needed
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: passenger delta
-4. Return the requested result
+1. Goal: solve **Car Pooling** with the optimal code below, in the same order the code executes.
+2. Update the code state with `map<int,int> events;`.
+3. Loop through the input using `for (auto& t : trips) events[t[1]] += t[0], events[t[2]] -= t[0];`.
+4. Update the code state with `int cur = 0;`.
+5. Loop through the input using `for (auto [pos, delta] : events) { cur += delta; if (cur > capacity) return false; }`.
+6. Return exactly what the code computes: `return true;`.
 ```
 
 </details>
@@ -6584,10 +7135,15 @@ Core idea     : active passengers must fit capacity
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `pair count` situation and applying `merge/Fenwick` instead of repeatedly doing slow work.
-- **Main move:** compress values and doubled values.
-- **Core intuition:** count previous bigger than twice
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Count pairs i < j where nums[i] > 2 * nums[j].
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **pair count**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `merge/Fenwick`.
+- **Code state to watch:** `mergeSort`, `l`, `r`, `m`, `ans`, `j`.
+- **Key move in the accepted solution:** compress values and doubled values.
+- **Core intuition:** count previous bigger than twice.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6616,13 +7172,17 @@ Core idea     : active passengers must fit capacity
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Compress values if needed
-2. Query prefix/rank counts before update
-3. Add current value to Fenwick tree: compress values and doubled values
-4. Return accumulated count/cost
+1. Goal: solve **Reverse Pairs** with the optimal code below, in the same order the code executes.
+2. Check the decision condition `if (r - l <= 1) return 0;` and take the early/branch action shown in code.
+3. Update the code state with `int m = (l+r)/2;`.
+4. Update the code state with `int ans = mergeSort(a,l,m) + mergeSort(a,m,r);`.
+5. Update the code state with `int j = m;`.
+6. Loop through the input using `for (int i=l;i<m;i++) { while(j<r && (long long)a[i] > 2LL*a[j]) j++; ans += j-m; }`.
+7. Update the code state with `inplace_merge(a.begin()+l, a.begin()+m, a.begin()+r);`.
+8. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -6680,10 +7240,15 @@ Core idea     : count previous bigger than twice
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `subset sum` situation and applying `bitset DP` instead of repeatedly doing slow work.
-- **Main move:** shift by number.
-- **Core intuition:** possible sums move by x
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Decide whether the array can be partitioned into two subsets with equal sum.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **subset sum**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `bitset DP`.
+- **Code state to watch:** `canPartition`, `sum`, `target`, `x`, `s`, `dp`.
+- **Key move in the accepted solution:** shift by number.
+- **Core intuition:** possible sums move by x.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6712,13 +7277,15 @@ Core idea     : count previous bigger than twice
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize DP base state
-2. Process each item once
-3. Update reachable states or best value: shift by number
-4. Return target DP answer
+1. Goal: solve **Partition Equal Subset Sum** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int sum = accumulate(nums.begin(), nums.end(), 0);`.
+3. Check the decision condition `if (sum % 2) return false;` and take the early/branch action shown in code.
+4. Update the code state with `int target = sum / 2;`.
+5. Loop through the input using `for (int x : nums) for (int s = target; s >= x; s--) dp[s] |= dp[s-x];`.
+6. Return exactly what the code computes: `return dp[target];`.
 ```
 
 </details>
@@ -6774,10 +7341,15 @@ Core idea     : possible sums move by x
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `subset balance` situation and applying `bitset DP` instead of repeatedly doing slow work.
-- **Main move:** find closest half.
-- **Core intuition:** split stones into two groups
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Split stones into two groups so their weight difference is minimized.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **subset balance**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `bitset DP`.
+- **Code state to watch:** `lastStoneWeightII`, `sum`, `x`, `s`, `dp`.
+- **Key move in the accepted solution:** find closest half.
+- **Core intuition:** split stones into two groups.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6806,13 +7378,14 @@ Core idea     : possible sums move by x
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize DP base state
-2. Process each item once
-3. Update reachable states or best value: find closest half
-4. Return target DP answer
+1. Goal: solve **Last Stone Weight II** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int sum = accumulate(stones.begin(), stones.end(), 0), target = sum / 2;`.
+3. Loop through the input using `for (int x : stones) for (int s = target; s >= x; s--) dp[s] |= dp[s-x];`.
+4. Loop through the input using `for (int s = target; s >= 0; s--) if (dp[s]) return sum - 2*s;`.
+5. Return exactly what the code computes: `return 0;`.
 ```
 
 </details>
@@ -6869,10 +7442,15 @@ Core idea     : split stones into two groups
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `index placement` situation and applying `cyclic sort` instead of repeatedly doing slow work.
-- **Main move:** put x at x minus one.
-- **Core intuition:** array index acts as hash
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the smallest positive integer not present in the array using constant extra space.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **index placement**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `cyclic sort`.
+- **Code state to watch:** `firstMissingPositive`, `n`, `i`.
+- **Key move in the accepted solution:** put x at x minus one.
+- **Core intuition:** array index acts as hash.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6901,13 +7479,16 @@ Core idea     : split stones into two groups
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: put x at x minus one
-4. Return final answer
+1. Goal: solve **First Missing Positive** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int n = nums.size();`.
+3. Loop through the input using `for (int i=0;i<n;i++)`.
+4. Repeat while the code condition holds: `while (nums[i] >= 1 && nums[i] <= n && nums[nums[i]-1] != nums[i])`.
+5. Update the code state with `swap(nums[i], nums[nums[i]-1]);`.
+6. Loop through the input using `for (int i=0;i<n;i++) if (nums[i] != i+1) return i+1;`.
+7. Return exactly what the code computes: `return n+1;`.
 ```
 
 </details>
@@ -6965,10 +7546,15 @@ Core idea     : array index acts as hash
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `boundary arrays` situation and applying `two pointers or prefix max` instead of repeatedly doing slow work.
-- **Main move:** left max right max.
-- **Core intuition:** water depends on smaller wall
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Compute total water trapped between elevation bars.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **boundary arrays**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two pointers or prefix max`.
+- **Code state to watch:** `trap`, `l`.
+- **Key move in the accepted solution:** left max right max.
+- **Core intuition:** water depends on smaller wall.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -6997,13 +7583,15 @@ Core idea     : array index acts as hash
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize left and right pointers
-2. Compare current pointer values
-3. Move the pointer that cannot improve answer: left max right max
-4. Return final answer
+1. Goal: solve **Trapping Rain Water** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int l=0,r=height.size()-1,leftMax=0,rightMax=0,ans=0;`.
+3. Repeat while the code condition holds: `while(l<r)`.
+4. Check the decision condition `if(height[l] < height[r]) { leftMax=max(leftMax,height[l]); ans += leftMax-height[l]; l++; }` and take the early/branch action shown in code.
+5. Run the fallback branch from the code.
+6. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -7059,10 +7647,15 @@ Core idea     : water depends on smaller wall
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `formatting` situation and applying `vector group` instead of repeatedly doing slow work.
-- **Main move:** distribute spaces.
-- **Core intuition:** each line is greedy group
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Pack words into lines of fixed width and distribute spaces according to justification rules.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **formatting**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `vector group`.
+- **Code state to watch:** `maxWidth`, `i`, `j`, `gaps`, `line`, `k`.
+- **Key move in the accepted solution:** distribute spaces.
+- **Core intuition:** each line is greedy group.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -7091,13 +7684,19 @@ Core idea     : water depends on smaller wall
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: distribute spaces
-4. Return the requested result
+1. Goal: solve **Text Justification** with the optimal code below, in the same order the code executes.
+2. Update the code state with `vector<string> ans;`.
+3. Loop through the input using `for (int i=0;i<(int)words.size();)`.
+4. Update the code state with `int j=i, len=0;`.
+5. Repeat while the code condition holds: `while(j<(int)words.size() && len + (j-i) + (int)words[j].size() <= maxWidth) len += words[j++].size();`.
+6. Update the code state with `int gaps = j-i-1;`.
+7. Update the code state with `string line;`.
+8. Check the decision condition `if (j == (int)words.size() || gaps == 0)` and take the early/branch action shown in code.
+9. Loop through the input using `for(int k=i;k<j;k++){ if(k>i) line+=' '; line+=words[k]; }`.
+10. Update the code state with `line += string(maxWidth - line.size(), ' ');`.
 ```
 
 </details>
@@ -7163,10 +7762,15 @@ Core idea     : each line is greedy group
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `fixed word window` situation and applying `hash map` instead of repeatedly doing slow work.
-- **Main move:** scan by offset.
-- **Core intuition:** words align by length
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find all starting indices where a substring is a concatenation of every word exactly once.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **fixed word window**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `hash map`.
+- **Code state to watch:** `s`, `n`, `off`, `left`, `right`, `cur`.
+- **Key move in the accepted solution:** scan by offset.
+- **Core intuition:** words align by length.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -7195,13 +7799,19 @@ Core idea     : each line is greedy group
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: scan by offset
-4. Store current state in map
+1. Goal: solve **Substring with Concatenation of All Words** with the optimal code below, in the same order the code executes.
+2. Update the code state with `vector<int> ans;`.
+3. Update the code state with `int n=s.size(), m=words.size(), w=words[0].size();`.
+4. Update the code state with `unordered_map<string,int> need;`.
+5. Loop through the input using `for(auto& x:words) need[x]++;`.
+6. Loop through the input using `for(int off=0; off<w; off++)`.
+7. Update the code state with `unordered_map<string,int> have; int left=off, cnt=0;`.
+8. Loop through the input using `for(int right=off; right+w<=n; right+=w)`.
+9. Update the code state with `string cur=s.substr(right,w);`.
+10. Check the decision condition `if(!need.count(cur)) { have.clear(); cnt=0; left=right+w; continue; }` and take the early/branch action shown in code.
 ```
 
 </details>
@@ -7266,10 +7876,15 @@ Core idea     : words align by length
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `expression parsing` situation and applying `stack/sign` instead of repeatedly doing slow work.
-- **Main move:** push context at parenthesis.
-- **Core intuition:** parentheses change sign context
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Evaluate an expression with integers, plus/minus signs, spaces, and parentheses.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **expression parsing**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `stack/sign`.
+- **Code state to watch:** `calculate`, `s`, `ans`, `c`, `st`.
+- **Key move in the accepted solution:** push context at parenthesis.
+- **Core intuition:** parentheses change sign context.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -7298,13 +7913,18 @@ Core idea     : words align by length
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: push context at parenthesis
-4. Return final stack-derived answer
+1. Goal: solve **Basic Calculator** with the optimal code below, in the same order the code executes.
+2. Update the code state with `long long ans=0, num=0, sign=1;`.
+3. Update the code state with `stack<long long> st;`.
+4. Loop through the input using `for(char c:s)`.
+5. Check the decision condition `if(isdigit(c)) num = num*10 + c-'0';` and take the early/branch action shown in code.
+6. If the previous branch failed, check `else if(c=='+' || c=='-') { ans += sign*num; num=0; sign = c=='+' ? 1 : -1; }`.
+7. If the previous branch failed, check `else if(c=='(') { st.push(ans); st.push(sign); ans=0; sign=1; }`.
+8. If the previous branch failed, check `else if(c==')') { ans += sign*num; num=0; ans *= st.top(); st.pop(); ans += st.top(); st.pop(); }`.
+9. Return exactly what the code computes: `return ans + sign*num;`.
 ```
 
 </details>
@@ -7363,10 +7983,15 @@ Core idea     : parentheses change sign context
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `nearest smaller` situation and applying `monotonic stack` instead of repeatedly doing slow work.
-- **Main move:** pop when height drops.
-- **Core intuition:** popped bar finds maximal width
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the maximum rectangle area that can be formed in a histogram.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **nearest smaller**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `monotonic stack`.
+- **Code state to watch:** `largestRectangleArea`, `ans`, `i`, `h`, `left`, `st`.
+- **Key move in the accepted solution:** pop when height drops.
+- **Core intuition:** popped bar finds maximal width.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -7395,13 +8020,19 @@ Core idea     : parentheses change sign context
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: pop when height drops
-4. Return final stack-derived answer
+1. Goal: solve **Largest Rectangle in Histogram** with the optimal code below, in the same order the code executes.
+2. Update the code state with `heights.push_back(0);`.
+3. Update the code state with `stack<int> st;`.
+4. Update the code state with `int ans=0;`.
+5. Loop through the input using `for(int i=0;i<(int)heights.size();i++)`.
+6. Repeat while the code condition holds: `while(!st.empty() && heights[st.top()] > heights[i])`.
+7. Update the code state with `int h=heights[st.top()]; st.pop();`.
+8. Update the code state with `int left = st.empty() ? -1 : st.top();`.
+9. Update the code state with `ans=max(ans, h*(i-left-1));`.
+10. Update the code state with `st.push(i);`.
 ```
 
 </details>
@@ -7464,10 +8095,15 @@ Core idea     : popped bar finds maximal width
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `state BFS` situation and applying `queue + set` instead of repeatedly doing slow work.
-- **Main move:** encode board string.
-- **Core intuition:** each move is one edge
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the fewest moves to reach the solved board configuration.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **state BFS**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `queue + set`.
+- **Code state to watch:** `slidingPuzzle`, `start`, `x`, `step`, `sz`, `cur`.
+- **Key move in the accepted solution:** encode board string.
+- **Core intuition:** each move is one edge.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -7496,13 +8132,19 @@ Core idea     : popped bar finds maximal width
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push starting states into queue
-2. Process one BFS layer at a time
-3. Visit valid unvisited neighbors: encode board string
-4. Return distance/path when target found
+1. Goal: solve **Sliding Puzzle** with the optimal code below, in the same order the code executes.
+2. Update the code state with `string start, target="123450";`.
+3. Loop through the input using `for(auto& row:board) for(int x:row) start += char('0'+x);`.
+4. Update the code state with `vector<vector<int>> nb={{1,3},{0,2,4},{1,5},{0,4},{1,3,5},{2,4}};`.
+5. Update the code state with `queue<string> q; unordered_set<string> seen{start}; q.push(start);`.
+6. Loop through the input using `for(int step=0; !q.empty(); step++)`.
+7. Update the code state with `int sz=q.size();`.
+8. Repeat while the code condition holds: `while(sz--) { string cur=q.front(); q.pop(); if(cur==target) return step; int z=cur.find('0');`.
+9. Loop through the input using `for(int j:nb[z]) { string nxt=cur; swap(nxt[z],nxt[j]); if(!seen.count(nxt)) seen.insert(nxt), q.push(nxt); }`.
+10. Return exactly what the code computes: `return -1;`.
 ```
 
 </details>
@@ -7563,10 +8205,15 @@ Core idea     : each move is one edge
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `dynamic median` situation and applying `two heaps` instead of repeatedly doing slow work.
-- **Main move:** balance sizes.
-- **Core intuition:** median lies between halves
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Maintain inserted numbers and return the current median at any time.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **dynamic median**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two heaps`.
+- **Code state to watch:** `num`, `findMedian`, `low`, `high`.
+- **Key move in the accepted solution:** balance sizes.
+- **Core intuition:** median lies between halves.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -7595,13 +8242,16 @@ Core idea     : each move is one edge
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: balance sizes
-4. Return accumulated result
+1. Goal: solve **Find Median from Data Stream** with the optimal code below, in the same order the code executes.
+2. Update the code state with `priority_queue<int> low;`.
+3. Update the code state with `priority_queue<int, vector<int>, greater<int>> high;`.
+4. Update the code state with `low.push(num); high.push(low.top()); low.pop();`.
+5. Check the decision condition `if (high.size() > low.size()) { low.push(high.top()); high.pop(); }` and take the early/branch action shown in code.
+6. Check the decision condition `if (low.size() > high.size()) return low.top();` and take the early/branch action shown in code.
+7. Return exactly what the code computes: `return (low.top() + high.top()) / 2.0;`.
 ```
 
 </details>
@@ -7659,10 +8309,15 @@ Core idea     : median lies between halves
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `k-way merge` situation and applying `min heap` instead of repeatedly doing slow work.
-- **Main move:** push next from same list.
-- **Core intuition:** smallest head is next answer
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Merge k sorted linked lists into one sorted list.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **k-way merge**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `min heap`.
+- **Code state to watch:** `b`, `pq`.
+- **Key move in the accepted solution:** push next from same list.
+- **Core intuition:** smallest head is next answer.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -7691,13 +8346,17 @@ Core idea     : median lies between halves
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: push next from same list
-4. Return final answer
+1. Goal: solve **Merge k Sorted Lists** with the optimal code below, in the same order the code executes.
+2. Update the code state with `ListNode* mergeKLists(vector<ListNode*>& lists)`.
+3. Update the code state with `auto cmp = [](ListNode* a, ListNode* b){ return a->val > b->val; };`.
+4. Update the code state with `priority_queue<ListNode*, vector<ListNode*>, decltype(cmp)> pq(cmp);`.
+5. Loop through the input using `for (auto node : lists) if (node) pq.push(node);`.
+6. Update the code state with `ListNode dummy, *tail = &dummy;`.
+7. Repeat while the code condition holds: `while(!pq.empty()) { auto node=pq.top(); pq.pop(); tail->next=node; tail=tail->next; if(node->next) pq.push(node->next); }`.
+8. Return exactly what the code computes: `return dummy.next;`.
 ```
 
 </details>
@@ -7753,10 +8412,15 @@ Core idea     : smallest head is next answer
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `greedy selection` situation and applying `sort + max heap` instead of repeatedly doing slow work.
-- **Main move:** add affordable profits.
-- **Core intuition:** choose best available project
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Choose at most k projects you can afford to maximize final capital.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **greedy selection**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort + max heap`.
+- **Code state to watch:** `findMaximizedCapital`, `k`, `w`, `i`, `projects`, `pq`.
+- **Key move in the accepted solution:** add affordable profits.
+- **Core intuition:** choose best available project.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -7785,13 +8449,19 @@ Core idea     : smallest head is next answer
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: add affordable profits
-4. Return final answer
+1. Goal: solve **IPO** with the optimal code below, in the same order the code executes.
+2. Update the code state with `vector<pair<int,int>> projects;`.
+3. Loop through the input using `for(int i=0;i<(int)profits.size();i++) projects.push_back({capital[i], profits[i]});`.
+4. Update the code state with `sort(projects.begin(), projects.end());`.
+5. Update the code state with `priority_queue<int> pq;`.
+6. Update the code state with `int i=0;`.
+7. Repeat while the code condition holds: `while(k--)`.
+8. Repeat while the code condition holds: `while(i<(int)projects.size() && projects[i].first <= w) pq.push(projects[i++].second);`.
+9. Check the decision condition `if(pq.empty()) break;` and take the early/branch action shown in code.
+10. Update the code state with `w += pq.top(); pq.pop();`.
 ```
 
 </details>
@@ -7852,10 +8522,15 @@ Core idea     : choose best available project
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `sweep events` situation and applying `map ordered events` instead of repeatedly doing slow work.
-- **Main move:** active count scan.
-- **Core intuition:** maximum overlap is prefix of events
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** After each booking, return the maximum number of overlapping bookings so far.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **sweep events**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `map ordered events`.
+- **Code state to watch:** `book`, `start`, `end`, `cur`, `diff`.
+- **Key move in the accepted solution:** active count scan.
+- **Core intuition:** maximum overlap is prefix of events.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -7884,13 +8559,15 @@ Core idea     : choose best available project
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: active count scan
-4. Store current state in map
+1. Goal: solve **My Calendar III** with the optimal code below, in the same order the code executes.
+2. Update the code state with `map<int,int> diff;`.
+3. Update the code state with `diff[start]++; diff[end]--;`.
+4. Update the code state with `int cur=0, best=0;`.
+5. Loop through the input using `for(auto [t,d]:diff) best=max(best, cur += d);`.
+6. Return exactly what the code computes: `return best;`.
 ```
 
 </details>
@@ -7945,10 +8622,15 @@ Core idea     : maximum overlap is prefix of events
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `design counts` situation and applying `list + map` instead of repeatedly doing slow work.
-- **Main move:** buckets by frequency.
-- **Core intuition:** O(1) min and max buckets
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Design a data structure supporting inc, dec, getMaxKey, and getMinKey in O(1).
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **design counts**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `list + map`.
+- **Code state to watch:** `key`, `getMaxKey`, `ans`, `best`, `getMinKey`, `cnt`.
+- **Key move in the accepted solution:** buckets by frequency.
+- **Core intuition:** O(1) min and max buckets.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -7977,13 +8659,11 @@ Core idea     : maximum overlap is prefix of events
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: buckets by frequency
-4. Store current state in map
+1. Goal: solve **All O one Data Structure** with the optimal code below, in the same order the code executes.
+2. Update the code state with `unordered_map<string,int> cnt;`.
 ```
 
 </details>
@@ -8037,10 +8717,15 @@ Core idea     : O(1) min and max buckets
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `2D sorting` situation and applying `sort + LIS` instead of repeatedly doing slow work.
-- **Main move:** width asc height desc.
-- **Core intuition:** avoid equal width nesting
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the maximum number of envelopes that can be nested by width and height.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **2D sorting**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort + LIS`.
+- **Code state to watch:** `maxEnvelopes`, `lis`.
+- **Key move in the accepted solution:** width asc height desc.
+- **Core intuition:** avoid equal width nesting.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -8069,13 +8754,14 @@ Core idea     : O(1) min and max buckets
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: width asc height desc
-4. Return final answer
+1. Goal: solve **Russian Doll Envelopes** with the optimal code below, in the same order the code executes.
+2. Update the code state with `sort(envelopes.begin(), envelopes.end(), [](auto& a, auto& b){ return a[0]==b[0] ? a[1]>b[1] : a[0]<b[0]; });`.
+3. Update the code state with `vector<int> lis;`.
+4. Loop through the input using `for(auto& e:envelopes) { auto it=lower_bound(lis.begin(), lis.end(), e[1]); if(it==lis.end()) lis.push_back(e[1]); else *it=e[1]; }`.
+5. Return exactly what the code computes: `return lis.size();`.
 ```
 
 </details>
@@ -8129,10 +8815,15 @@ Core idea     : avoid equal width nesting
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `weighted intervals` situation and applying `sort + DP + binary search` instead of repeatedly doing slow work.
-- **Main move:** previous compatible job.
-- **Core intuition:** choose job or skip
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Choose non-overlapping jobs to maximize profit.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **weighted intervals**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort + DP + binary search`.
+- **Code state to watch:** `jobScheduling`, `n`, `i`, `best`, `jobs`, `ends`.
+- **Key move in the accepted solution:** previous compatible job.
+- **Core intuition:** choose job or skip.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -8161,13 +8852,16 @@ Core idea     : avoid equal width nesting
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize DP base state
-2. Process each item once
-3. Update reachable states or best value: previous compatible job
-4. Return target DP answer
+1. Goal: solve **Maximum Profit in Job Scheduling** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int n=startTime.size(); vector<array<int,3>> jobs;`.
+3. Loop through the input using `for(int i=0;i<n;i++) jobs.push_back({endTime[i], startTime[i], profit[i]});`.
+4. Update the code state with `sort(jobs.begin(), jobs.end());`.
+5. Update the code state with `vector<int> ends{0}, dp{0};`.
+6. Loop through the input using `for(auto [e,s,p]:jobs){ int i=upper_bound(ends.begin(), ends.end(), s)-ends.begin()-1; int best=max(dp.back(), dp[i]+p); ends.push_back(e); dp.push_back(best); }`.
+7. Return exactly what the code computes: `return dp.back();`.
 ```
 
 </details>
@@ -8223,10 +8917,15 @@ Core idea     : choose job or skip
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `partition` situation and applying `binary search` instead of repeatedly doing slow work.
-- **Main move:** partition smaller array.
-- **Core intuition:** left half must be <= right half
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the median of two sorted arrays in logarithmic time.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **partition**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `binary search`.
+- **Code state to watch:** `findMedianSortedArrays`, `m`, `i`, `Aleft`, `Bleft`, `b`.
+- **Key move in the accepted solution:** partition smaller array.
+- **Core intuition:** left half must be <= right half.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -8255,13 +8954,16 @@ Core idea     : choose job or skip
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: partition smaller array
-4. Return final answer
+1. Goal: solve **Median of Two Sorted Arrays** with the optimal code below, in the same order the code executes.
+2. Check the decision condition `if (a.size() > b.size()) return findMedianSortedArrays(b, a);` and take the early/branch action shown in code.
+3. Update the code state with `int m=a.size(), n=b.size(), half=(m+n+1)/2, l=0, r=m;`.
+4. Repeat while the code condition holds: `while(l<=r){ int i=(l+r)/2, j=half-i; int Aleft=i? a[i-1]:INT_MIN, Aright=i<m?a[i]:INT_MAX; int Bleft=j?b[j-1]:INT_MIN, Bright=j<n?b[j]:INT_MAX;`.
+5. Check the decision condition `if(Aleft<=Bright && Bleft<=Aright) return (m+n)%2 ? max(Aleft,Bleft) : (max(Aleft,Bleft)+min(Aright,Bright))/2.0;` and take the early/branch action shown in code.
+6. Check the decision condition `if(Aleft>Bright) r=i-1; else l=i+1;` and take the early/branch action shown in code.
+7. Return exactly what the code computes: `return 0;`.
 ```
 
 </details>
@@ -8318,10 +9020,15 @@ Core idea     : left half must be <= right half
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `order count` situation and applying `Fenwick/PBDS` instead of repeatedly doing slow work.
-- **Main move:** insert from right.
-- **Core intuition:** count previously inserted smaller
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For each index, count smaller values appearing to its right.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **order count**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `Fenwick/PBDS`.
+- **Code state to watch:** `i`, `v`, `sum`, `s`, `rank`, `bit`.
+- **Key move in the accepted solution:** insert from right.
+- **Core intuition:** count previously inserted smaller.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -8350,13 +9057,15 @@ Core idea     : left half must be <= right half
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Compress values if needed
-2. Query prefix/rank counts before update
-3. Add current value to Fenwick tree: insert from right
-4. Return accumulated count/cost
+1. Goal: solve **Count of Smaller Numbers After Self** with the optimal code below, in the same order the code executes.
+2. Update the code state with `vector<int> bit;`.
+3. Update the code state with `vector<int> vals=nums; sort(vals.begin(), vals.end()); vals.erase(unique(vals.begin(), vals.end()), vals.end());`.
+4. Update the code state with `bit.assign(vals.size()+1,0); vector<int> ans(nums.size());`.
+5. Loop through the input using `for(int i=nums.size()-1;i>=0;i--){ int rank=lower_bound(vals.begin(), vals.end(), nums[i])-vals.begin()+1; ans[i]=sum(rank-1); add(rank,1); }`.
+6. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -8413,10 +9122,15 @@ Core idea     : count previously inserted smaller
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `matrix histogram` situation and applying `stack per row` instead of repeatedly doing slow work.
-- **Main move:** heights build histogram.
-- **Core intuition:** each row becomes histogram problem
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the largest all-1 rectangle in a binary matrix.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **matrix histogram**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `stack per row`.
+- **Code state to watch:** `hist`, `ans`, `i`, `ht`, `l`, `maximalRectangle`.
+- **Key move in the accepted solution:** heights build histogram.
+- **Core intuition:** each row becomes histogram problem.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -8445,13 +9159,13 @@ Core idea     : count previously inserted smaller
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: heights build histogram
-4. Return final stack-derived answer
+1. Goal: solve **Maximal Rectangle** with the optimal code below, in the same order the code executes.
+2. Check the decision condition `if(matrix.empty()) return 0; int n=matrix[0].size(), ans=0; vector<int> h(n);` and take the early/branch action shown in code.
+3. Loop through the input using `for(auto& row:matrix){ for(int j=0;j<n;j++) h[j]=row[j]=='1'?h[j]+1:0; ans=max(ans,hist(h)); }`.
+4. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -8505,10 +9219,15 @@ Core idea     : each row becomes histogram problem
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `prefix deque` situation and applying `increasing prefix deque` instead of repeatedly doing slow work.
-- **Main move:** discard dominated prefixes.
-- **Core intuition:** smaller earlier prefix is better
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the minimum length non-empty subarray whose sum is at least k.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **prefix deque**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `increasing prefix deque`.
+- **Code state to watch:** `shortestSubarray`, `k`, `n`, `i`, `pref`, `dq`.
+- **Key move in the accepted solution:** discard dominated prefixes.
+- **Core intuition:** smaller earlier prefix is better.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -8537,13 +9256,15 @@ Core idea     : each row becomes histogram problem
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: discard dominated prefixes
-4. Store current state in map
+1. Goal: solve **Shortest Subarray with Sum at Least K** with the optimal code below, in the same order the code executes.
+2. Update the code state with `int n=nums.size(), ans=n+1; vector<long long> pref(n+1);`.
+3. Loop through the input using `for(int i=0;i<n;i++) pref[i+1]=pref[i]+nums[i];`.
+4. Update the code state with `deque<int> dq;`.
+5. Loop through the input using `for(int i=0;i<=n;i++){ while(!dq.empty()&&pref[i]-pref[dq.front()]>=k){ ans=min(ans,i-dq.front()); dq.pop_front(); } while(!dq.empty()&&pref[dq.back()]>=pref[i]) dq.pop_back(); dq.push_back(i); }`.
+6. Return exactly what the code computes: `return ans==n+1?-1:ans;`.
 ```
 
 </details>
@@ -8598,10 +9319,15 @@ Core idea     : smaller earlier prefix is better
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `dynamic median` situation and applying `two multisets/heaps` instead of repeatedly doing slow work.
-- **Main move:** insert erase balance.
-- **Core intuition:** median is boundary of halves
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Return the median of every window of size k.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **dynamic median**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two multisets/heaps`.
+- **Code state to watch:** `x`, `k`, `i`, `lo`, `ans`.
+- **Key move in the accepted solution:** insert erase balance.
+- **Core intuition:** median is boundary of halves.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -8630,13 +9356,14 @@ Core idea     : smaller earlier prefix is better
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: insert erase balance
-4. Return accumulated result
+1. Goal: solve **Sliding Window Median** with the optimal code below, in the same order the code executes.
+2. Update the code state with `multiset<int> lo, hi;`.
+3. Update the code state with `vector<double> ans;`.
+4. Loop through the input using `for(int i=0;i<(int)nums.size();i++){ add(nums[i]); if(i>=k) remove(nums[i-k]); if(i>=k-1) ans.push_back(k%2?*lo.rbegin():((long long)*lo.rbegin()+*hi.begin())/2.0); }`.
+5. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -8693,10 +9420,15 @@ Core idea     : median is boundary of halves
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `interval union` situation and applying `merge all` instead of repeatedly doing slow work.
-- **Main move:** gaps after merge.
-- **Core intuition:** free time is complement of busy union
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given employees' busy intervals, return common free intervals.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **interval union**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `merge all`.
+- **Code state to watch:** `end`, `i`, `all`, `ans`.
+- **Key move in the accepted solution:** gaps after merge.
+- **Core intuition:** free time is complement of busy union.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -8725,13 +9457,16 @@ Core idea     : median is boundary of halves
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: gaps after merge
-4. Return final answer
+1. Goal: solve **Employee Free Time** with the optimal code below, in the same order the code executes.
+2. Update the code state with `vector<Interval> all;`.
+3. Loop through the input using `for (auto& emp : schedule) for (auto& in : emp) all.push_back(in);`.
+4. Update the code state with `sort(all.begin(), all.end(), [](Interval& a, Interval& b){ return a.start < b.start; });`.
+5. Update the code state with `vector<Interval> ans; int end = all[0].end;`.
+6. Loop through the input using `for (int i=1;i<(int)all.size();i++) { if (all[i].start > end) ans.push_back(Interval(end, all[i].start)); end = max(end, all[i].end); }`.
+7. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -8787,10 +9522,15 @@ Core idea     : free time is complement of busy union
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `top k with sorted factor` situation and applying `min heap` instead of repeatedly doing slow work.
-- **Main move:** remove smallest speed.
-- **Core intuition:** efficiency fixed by sorted order
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Choose at most k workers maximizing sum(speed) times minimum efficiency.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **top k with sorted factor**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `min heap`.
+- **Code state to watch:** `maxPerformance`, `n`, `k`, `MOD`, `i`, `sum`.
+- **Key move in the accepted solution:** remove smallest speed.
+- **Core intuition:** efficiency fixed by sorted order.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -8819,13 +9559,16 @@ Core idea     : free time is complement of busy union
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: remove smallest speed
-4. Return accumulated result
+1. Goal: solve **Maximum Performance of a Team** with the optimal code below, in the same order the code executes.
+2. Update the code state with `const int MOD=1e9+7; vector<pair<int,int>> eng;`.
+3. Loop through the input using `for(int i=0;i<n;i++) eng.push_back({efficiency[i], speed[i]});`.
+4. Update the code state with `sort(eng.rbegin(), eng.rend());`.
+5. Update the code state with `priority_queue<int, vector<int>, greater<int>> pq; long long sum=0, ans=0;`.
+6. Loop through the input using `for(auto [e,s]:eng){ pq.push(s); sum+=s; if((int)pq.size()>k){ sum-=pq.top(); pq.pop(); } ans=max(ans,sum*e); }`.
+7. Return exactly what the code computes: `return ans%MOD;`.
 ```
 
 </details>
@@ -8881,10 +9624,15 @@ Core idea     : efficiency fixed by sorted order
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `dynamic rank count` situation and applying `Fenwick + compression` instead of repeatedly doing slow work.
-- **Main move:** count less and greater.
-- **Core intuition:** insertion cost from ranks
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Insert numbers one by one and sum the cheaper count of smaller or greater existing values.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **dynamic rank count**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `Fenwick + compression`.
+- **Code state to watch:** `MOD`, `i`, `v`, `sum`, `s`, `createSortedArray`.
+- **Key move in the accepted solution:** count less and greater.
+- **Core intuition:** insertion cost from ranks.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -8913,13 +9661,15 @@ Core idea     : efficiency fixed by sorted order
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Compress values if needed
-2. Query prefix/rank counts before update
-3. Add current value to Fenwick tree: count less and greater
-4. Return accumulated count/cost
+1. Goal: solve **Create Sorted Array through Instructions** with the optimal code below, in the same order the code executes.
+2. Update the code state with `static const int MOD=1e9+7;`.
+3. Update the code state with `vector<int> bit;`.
+4. Update the code state with `int mx=*max_element(instructions.begin(), instructions.end()); bit.assign(mx+2,0); long long ans=0;`.
+5. Loop through the input using `for(int i=0;i<(int)instructions.size();i++){ int x=instructions[i]; int less=sum(x-1), greater=i-sum(x); ans=(ans+min(less,greater))%MOD; add(x,1); }`.
+6. Return exactly what the code computes: `return ans;`.
 ```
 
 </details>
@@ -8978,10 +9728,15 @@ Core idea     : insertion cost from ranks
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `permutation order` situation and applying `positions array` instead of repeatedly doing slow work.
-- **Main move:** count breaks.
-- **Core intuition:** new round starts when position decreases
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given a permutation, count rounds needed to collect numbers from 1 to n in order.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **permutation order**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `positions array`.
+- **Code state to watch:** `main`, `n`, `i`, `ans`, `x`, `pos`.
+- **Key move in the accepted solution:** count breaks.
+- **Core intuition:** new round starts when position decreases.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9010,13 +9765,12 @@ Core idea     : insertion cost from ranks
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: count breaks
-4. Return the requested result
+1. Goal: solve **CSES Collecting Numbers** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;`.
 ```
 
 </details>
@@ -9064,10 +9818,15 @@ Core idea     : new round starts when position decreases
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `simulation` situation and applying `queue/vector` instead of repeatedly doing slow work.
-- **Main move:** rotate remove.
-- **Core intuition:** circular process needs efficient order
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Print the removal order when every second person is removed in a circle.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **simulation**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `queue/vector`.
+- **Code state to watch:** `main`, `n`, `i`, `q`.
+- **Key move in the accepted solution:** rotate remove.
+- **Core intuition:** circular process needs efficient order.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9096,13 +9855,12 @@ Core idea     : new round starts when position decreases
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: rotate remove
-4. Return the requested result
+1. Goal: solve **CSES Josephus Problem I** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;`.
 ```
 
 </details>
@@ -9150,10 +9908,15 @@ Core idea     : circular process needs efficient order
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `pattern search` situation and applying `string algorithm` instead of repeatedly doing slow work.
-- **Main move:** prefix/hash.
-- **Core intuition:** repeated pattern matching needs linear scan
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Count occurrences of a pattern inside a text.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **pattern search**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `string algorithm`.
+- **Code state to watch:** `main`, `s`, `t`, `i`, `j`, `ans`.
+- **Key move in the accepted solution:** prefix/hash.
+- **Core intuition:** repeated pattern matching needs linear scan.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9182,13 +9945,12 @@ Core idea     : circular process needs efficient order
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: prefix/hash
-4. Return the requested result
+1. Goal: solve **CSES String Matching** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;`.
 ```
 
 </details>
@@ -9236,10 +9998,15 @@ Core idea     : repeated pattern matching needs linear scan
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `nearest smaller` situation and applying `monotonic stack` instead of repeatedly doing slow work.
-- **Main move:** remove bigger candidates.
-- **Core intuition:** remaining top is nearest smaller
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For each element, output the nearest previous index with a smaller value, or zero.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **nearest smaller**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `monotonic stack`.
+- **Code state to watch:** `main`, `n`, `i`, `st`.
+- **Key move in the accepted solution:** remove bigger candidates.
+- **Core intuition:** remaining top is nearest smaller.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9268,13 +10035,12 @@ Core idea     : repeated pattern matching needs linear scan
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Read current item
-2. While stack top is resolved, pop or combine
-3. Push current item if still needed: remove bigger candidates
-4. Return final stack-derived answer
+1. Goal: solve **CSES Nearest Smaller Values** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;`.
 ```
 
 </details>
@@ -9322,10 +10088,15 @@ Core idea     : remaining top is nearest smaller
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `grid shortest path` situation and applying `BFS queue` instead of repeatedly doing slow work.
-- **Main move:** parent reconstruction.
-- **Core intuition:** BFS gives shortest path
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find whether a path exists from A to B in a grid and output one shortest path.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **grid shortest path**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `BFS queue`.
+- **Code state to watch:** `main`, `n`, `sr`, `i`, `j`, `dr`.
+- **Key move in the accepted solution:** parent reconstruction.
+- **Core intuition:** BFS gives shortest path.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9354,13 +10125,14 @@ Core idea     : remaining top is nearest smaller
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push starting states into queue
-2. Process one BFS layer at a time
-3. Visit valid unvisited neighbors: parent reconstruction
-4. Return distance/path when target found
+1. Goal: solve **CSES Labyrinth** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;`.
+4. Update the code state with `"<<path.size()<<"
+"<<path;return 0;}`.
 ```
 
 </details>
@@ -9409,10 +10181,15 @@ Core idea     : BFS gives shortest path
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `multi-source escape` situation and applying `BFS twice` instead of repeatedly doing slow work.
-- **Main move:** compare monster time.
-- **Core intuition:** escape only if player arrives earlier
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find whether the player can escape a grid before monsters reach the same cells.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **multi-source escape**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `BFS twice`.
+- **Code state to watch:** `main`, `n`, `sr`, `i`, `j`, `dr`.
+- **Key move in the accepted solution:** compare monster time.
+- **Core intuition:** escape only if player arrives earlier.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9441,13 +10218,14 @@ Core idea     : BFS gives shortest path
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push starting states into queue
-2. Process one BFS layer at a time
-3. Visit valid unvisited neighbors: compare monster time
-4. Return distance/path when target found
+1. Goal: solve **CSES Monsters** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;`.
+4. Update the code state with `"<<path.size()<<"
+"<<path;return 0;}for(int d=0;d<4;d++){int nr=r+dr[d],nc=c+dc[d];if(nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||ad[nr][nc]!=1e9)continue;if(ad[r][c]+1>=md[nr][nc])continue;ad[nr][nc]=ad[r][c]+1;par[nr][nc]=d;q.push({nr,nc});}}cout<<"NO";return 0;}`.
 ```
 
 </details>
@@ -9496,10 +10274,15 @@ Core idea     : escape only if player arrives earlier
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `shortest path state` situation and applying `priority queue` instead of repeatedly doing slow work.
-- **Main move:** Dijkstra with used coupon state.
-- **Core intuition:** heap picks shortest state
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the cheapest route from 1 to n when one flight can be taken at half price.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **shortest path state**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `priority queue`.
+- **Code state to watch:** `main`, `n`, `i`.
+- **Key move in the accepted solution:** Dijkstra with used coupon state.
+- **Core intuition:** heap picks shortest state.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9528,13 +10311,12 @@ Core idea     : escape only if player arrives earlier
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: Dijkstra with used coupon state
-4. Return accumulated result
+1. Goal: solve **CSES Flight Discount** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std; using ll=long long; const ll INF=4e18;`.
 ```
 
 </details>
@@ -9582,10 +10364,15 @@ Core idea     : heap picks shortest state
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `dynamic intervals` situation and applying `set + multiset` instead of repeatedly doing slow work.
-- **Main move:** split segment.
-- **Core intuition:** longest gap after each insertion
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** After each traffic light insertion, output the longest road segment length.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **dynamic intervals**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `set + multiset`.
+- **Code state to watch:** `main`, `x`, `p`, `pos`, `len`.
+- **Key move in the accepted solution:** split segment.
+- **Core intuition:** longest gap after each insertion.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9614,13 +10401,12 @@ Core idea     : heap picks shortest state
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: split segment
-4. Return the requested result
+1. Goal: solve **CSES Traffic Lights** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;`.
 ```
 
 </details>
@@ -9668,10 +10454,15 @@ Core idea     : longest gap after each insertion
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `interval resources` situation and applying `set/heap` instead of repeatedly doing slow work.
-- **Main move:** reuse earliest finishing room.
-- **Core intuition:** sorted endings choose available room
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Assign hotel rooms to intervals and output the minimum rooms plus each booking's room.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **interval resources**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `set/heap`.
+- **Code state to watch:** `main`, `n`, `i`, `rooms`, `x`, `a`.
+- **Key move in the accepted solution:** reuse earliest finishing room.
+- **Core intuition:** sorted endings choose available room.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9700,13 +10491,12 @@ Core idea     : longest gap after each insertion
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Push available candidate into heap
-2. Remove invalid or extra heap items
-3. Use heap top as best current choice: reuse earliest finishing room
-4. Return accumulated result
+1. Goal: solve **CSES Room Allocation** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;`.
 ```
 
 </details>
@@ -9754,10 +10544,15 @@ Core idea     : sorted endings choose available room
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `window median` situation and applying `two multisets` instead of repeatedly doing slow work.
-- **Main move:** balance halves.
-- **Core intuition:** median is max of lower half
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Output the median of every sliding window.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **window median**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two multisets`.
+- **Code state to watch:** `x`, `main`, `n`, `i`, `lo`.
+- **Key move in the accepted solution:** balance halves.
+- **Core intuition:** median is max of lower half.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9786,13 +10581,12 @@ Core idea     : sorted endings choose available room
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: balance halves
-4. Return the requested result
+1. Goal: solve **CSES Sliding Median** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;multiset<int> lo,hi;void reb(){while(lo.size()>hi.size()+1){hi.insert(*lo.rbegin());lo.erase(prev(lo.end()));}while(lo.size()<hi.size()){lo.insert(*hi.begin());hi.erase(hi.begin());}}void add(int x){if(lo.empty()||x<=*lo.rbegin())lo.insert(x);else hi.insert(x);reb();}void rem(int x){auto it=lo.find(x);if(it!=lo.end())lo.erase(it);else hi.erase(hi.find(x));reb();}int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<int>a(n);for(int&i:a)cin>>i;for(int i=0;i<n;i++){add(a[i]);if(i>=k)rem(a[i-k]);if(i>=k-1)cout<<*lo.rbegin()<<' ';}return 0;}`.
 ```
 
 </details>
@@ -9839,10 +10633,15 @@ Core idea     : median is max of lower half
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `pair sum lookup` situation and applying `map pairs` instead of repeatedly doing slow work.
-- **Main move:** store earlier pairs.
-- **Core intuition:** two pairs form target
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find four distinct indices whose values sum to x.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **pair sum lookup**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `map pairs`.
+- **Code state to watch:** `main`, `n`, `x`, `i`, `j`, `need`.
+- **Key move in the accepted solution:** store earlier pairs.
+- **Core intuition:** two pairs form target.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9871,13 +10670,12 @@ Core idea     : median is max of lower half
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: store earlier pairs
-4. Store current state in map
+1. Goal: solve **CSES Sum of Four Values** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;`.
 ```
 
 </details>
@@ -9925,10 +10723,15 @@ Core idea     : two pairs form target
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `prefix count` situation and applying `map frequency` instead of repeatedly doing slow work.
-- **Main move:** count prefix minus x.
-- **Core intuition:** every old prefix creates subarray
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Count subarrays with sum x when values may include any integers.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **prefix count**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `map frequency`.
+- **Code state to watch:** `main`, `n`, `i`, `cnt`.
+- **Key move in the accepted solution:** count prefix minus x.
+- **Core intuition:** every old prefix creates subarray.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -9957,13 +10760,12 @@ Core idea     : two pairs form target
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Scan current value
-2. Query needed key or count
-3. Update answer if condition matches: count prefix minus x
-4. Store current state in map
+1. Goal: solve **CSES Subarray Sums II** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;using ll=long long;`.
 ```
 
 </details>
@@ -10011,10 +10813,15 @@ Core idea     : every old prefix creates subarray
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `activity selection` situation and applying `sort by end` instead of repeatedly doing slow work.
-- **Main move:** take earliest finishing.
-- **Core intuition:** greedy maximizes remaining time
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Choose the maximum number of non-overlapping movies one viewer can watch.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **activity selection**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort by end`.
+- **Code state to watch:** `main`, `n`, `ans`.
+- **Key move in the accepted solution:** take earliest finishing.
+- **Core intuition:** greedy maximizes remaining time.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10043,13 +10850,12 @@ Core idea     : every old prefix creates subarray
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: take earliest finishing
-4. Return final answer
+1. Goal: solve **CSES Movie Festival** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<pair<int,int>>a(n);for(auto&[l,r]:a)cin>>l>>r;sort(a.begin(),a.end(),[](auto&a,auto&b){return a.second<b.second;});int ans=0,end=0;for(auto [l,r]:a)if(l>=end)ans++,end=r;cout<<ans;return 0;}`.
 ```
 
 </details>
@@ -10096,10 +10902,15 @@ Core idea     : greedy maximizes remaining time
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `scheduling` situation and applying `sort by duration` instead of repeatedly doing slow work.
-- **Main move:** process shortest duration first?.
-- **Core intuition:** minimize accumulated finish effect
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Order tasks to maximize total reward based on deadlines.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **scheduling**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort by duration`.
+- **Code state to watch:** `main`, `n`.
+- **Key move in the accepted solution:** process shortest duration first?.
+- **Core intuition:** minimize accumulated finish effect.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10128,13 +10939,12 @@ Core idea     : greedy maximizes remaining time
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: process shortest duration first?
-4. Return final answer
+1. Goal: solve **CSES Tasks and Deadlines** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;using ll=long long;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<pair<ll,ll>>a(n);for(auto&[d,t]:a)cin>>d>>t;sort(a.begin(),a.end());ll time=0,ans=0;for(auto [d,t]:a){time+=d;ans+=t-time;}cout<<ans;return 0;}`.
 ```
 
 </details>
@@ -10181,10 +10991,15 @@ Core idea     : minimize accumulated finish effect
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `pair sum` situation and applying `sort pairs` instead of repeatedly doing slow work.
-- **Main move:** two pointers.
-- **Core intuition:** sorted sum moves predictably
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find two distinct indices whose values sum to x.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **pair sum**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort pairs`.
+- **Code state to watch:** `main`, `n`, `i`, `l`, `s`.
+- **Key move in the accepted solution:** two pointers.
+- **Core intuition:** sorted sum moves predictably.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10213,13 +11028,12 @@ Core idea     : minimize accumulated finish effect
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: two pointers
-4. Return final answer
+1. Goal: solve **CSES Sum of Two Values** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,x;cin>>n>>x;vector<pair<int,int>>a(n);for(int i=0;i<n;i++){cin>>a[i].first;a[i].second=i+1;}sort(a.begin(),a.end());int l=0,r=n-1;while(l<r){long long s=a[l].first+a[r].first;if(s==x){cout<<a[l].second<<' '<<a[r].second;return 0;}if(s<x)l++;else r--;}cout<<"IMPOSSIBLE";return 0;}`.
 ```
 
 </details>
@@ -10266,10 +11080,15 @@ Core idea     : sorted sum moves predictably
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `triple sum` situation and applying `sort + two pointers` instead of repeatedly doing slow work.
-- **Main move:** fix one.
-- **Core intuition:** remaining pair is two sum
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find three distinct indices whose values sum to x.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **triple sum**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort + two pointers`.
+- **Code state to watch:** `main`, `n`, `i`, `l`, `s`.
+- **Key move in the accepted solution:** fix one.
+- **Core intuition:** remaining pair is two sum.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10298,13 +11117,12 @@ Core idea     : sorted sum moves predictably
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: fix one
-4. Return final answer
+1. Goal: solve **CSES Sum of Three Values** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,x;cin>>n>>x;vector<pair<int,int>>a(n);for(int i=0;i<n;i++){cin>>a[i].first;a[i].second=i+1;}sort(a.begin(),a.end());for(int i=0;i<n;i++){int l=i+1,r=n-1;while(l<r){long long s=a[i].first+a[l].first+a[r].first;if(s==x){cout<<a[i].second<<' '<<a[l].second<<' '<<a[r].second;return 0;}if(s<x)l++;else r--;}}cout<<"IMPOSSIBLE";return 0;}`.
 ```
 
 </details>
@@ -10351,10 +11169,15 @@ Core idea     : remaining pair is two sum
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `answer search` situation and applying `binary search` instead of repeatedly doing slow work.
-- **Main move:** check products by time.
-- **Core intuition:** time feasibility monotonic
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the minimum time needed for machines to produce at least t products.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **answer search**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `binary search`.
+- **Code state to watch:** `main`, `n`.
+- **Key move in the accepted solution:** check products by time.
+- **Core intuition:** time feasibility monotonic.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10383,13 +11206,12 @@ Core idea     : remaining pair is two sum
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Set low and high search bounds
-2. Test middle candidate
-3. Discard impossible half: check products by time
-4. Return found index or boundary
+1. Goal: solve **CSES Factory Machines** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;using ll=long long;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;ll t;cin>>n>>t;vector<ll>a(n);for(auto&x:a)cin>>x;ll l=0,r=1e18;while(l<r){ll m=(l+r)/2, made=0;for(ll x:a){made+=m/x;if(made>=t)break;}if(made>=t)r=m;else l=m+1;}cout<<l;return 0;}`.
 ```
 
 </details>
@@ -10436,10 +11258,15 @@ Core idea     : time feasibility monotonic
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `positive window` situation and applying `two pointers` instead of repeatedly doing slow work.
-- **Main move:** monotonic sum.
-- **Core intuition:** positive values allow moving left
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Count subarrays with sum x when all values are positive.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **positive window**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two pointers`.
+- **Code state to watch:** `main`, `n`, `l`, `r`.
+- **Key move in the accepted solution:** monotonic sum.
+- **Core intuition:** positive values allow moving left.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10468,13 +11295,12 @@ Core idea     : time feasibility monotonic
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize left and right pointers
-2. Compare current pointer values
-3. Move the pointer that cannot improve answer: monotonic sum
-4. Return final answer
+1. Goal: solve **CSES Subarray Sums I** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;using ll=long long;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;ll x;cin>>n>>x;vector<int>a(n);for(int&i:a)cin>>i;ll sum=0,ans=0;int l=0;for(int r=0;r<n;r++){sum+=a[r];while(sum>x)sum-=a[l++];if(sum==x)ans++;}cout<<ans;return 0;}`.
 ```
 
 </details>
@@ -10521,10 +11347,15 @@ Core idea     : positive values allow moving left
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `window min` situation and applying `monotonic deque` instead of repeatedly doing slow work.
-- **Main move:** same as max reversed.
-- **Core intuition:** front is minimum candidate
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Output the minimum of every sliding window.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **window min**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `monotonic deque`.
+- **Code state to watch:** `main`, `n`, `i`.
+- **Key move in the accepted solution:** same as max reversed.
+- **Core intuition:** front is minimum candidate.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10553,13 +11384,12 @@ Core idea     : positive values allow moving left
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: same as max reversed
-4. Return the requested result
+1. Goal: solve **CSES Sliding Window Minimum** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<int>a(n);for(int&i:a)cin>>i;deque<int>dq;for(int i=0;i<n;i++){while(!dq.empty()&&dq.front()<=i-k)dq.pop_front();while(!dq.empty()&&a[dq.back()]>=a[i])dq.pop_back();dq.push_back(i);if(i>=k-1)cout<<a[dq.front()]<<' ';}return 0;}`.
 ```
 
 </details>
@@ -10606,10 +11436,15 @@ Core idea     : front is minimum candidate
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `median cost` situation and applying `two multisets + sums` instead of repeatedly doing slow work.
-- **Main move:** maintain sums.
-- **Core intuition:** median minimizes absolute deviation
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Output the sum of absolute deviations from the median for every window.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **median cost**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `two multisets + sums`.
+- **Code state to watch:** `main`, `n`, `i`.
+- **Key move in the accepted solution:** maintain sums.
+- **Core intuition:** median minimizes absolute deviation.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10638,13 +11473,12 @@ Core idea     : front is minimum candidate
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: maintain sums
-4. Return the requested result
+1. Goal: solve **CSES Sliding Cost** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;using ll=long long;multiset<ll>lo,hi;ll slo=0,shi=0;void reb(){while(lo.size()>hi.size()+1){auto it=prev(lo.end());hi.insert(*it);shi+=*it;slo-=*it;lo.erase(it);}while(lo.size()<hi.size()){auto it=hi.begin();lo.insert(*it);slo+=*it;shi-=*it;hi.erase(it);}}void add(ll x){if(lo.empty()||x<=*lo.rbegin())lo.insert(x),slo+=x;else hi.insert(x),shi+=x;reb();}void rem(ll x){auto it=lo.find(x);if(it!=lo.end())slo-=x,lo.erase(it);else it=hi.find(x),shi-=x,hi.erase(it);reb();}int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<ll>a(n);for(auto&x:a)cin>>x;for(int i=0;i<n;i++){add(a[i]);if(i>=k)rem(a[i-k]);if(i>=k-1){ll med=*lo.rbegin();cout<<med*(ll)lo.size()-slo+shi-med*(ll)hi.size()<<' ';}}return 0;}`.
 ```
 
 </details>
@@ -10691,10 +11525,15 @@ Core idea     : median minimizes absolute deviation
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `active count` situation and applying `events sort` instead of repeatedly doing slow work.
-- **Main move:** arrival +1 leave -1.
-- **Core intuition:** maximum active customers
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Find the maximum number of customers simultaneously inside the restaurant.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **active count**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `events sort`.
+- **Code state to watch:** `main`, `n`, `i`, `cur`.
+- **Key move in the accepted solution:** arrival +1 leave -1.
+- **Core intuition:** maximum active customers.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10723,13 +11562,12 @@ Core idea     : median minimizes absolute deviation
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: arrival +1 leave -1
-4. Return final answer
+1. Goal: solve **CSES Restaurant Customers** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<pair<int,int>>e;for(int i=0,a,b;i<n;i++){cin>>a>>b;e.push_back({a,1});e.push_back({b,-1});}sort(e.begin(),e.end());int cur=0,ans=0;for(auto [t,d]:e)ans=max(ans,cur+=d);cout<<ans;return 0;}`.
 ```
 
 </details>
@@ -10776,10 +11614,15 @@ Core idea     : maximum active customers
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `sorted ticket allocation` situation and applying `multiset` instead of repeatedly doing slow work.
-- **Main move:** upper_bound budget.
-- **Core intuition:** assign most expensive affordable ticket
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For each customer, sell the most expensive ticket not exceeding their offer.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **sorted ticket allocation**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `multiset`.
+- **Code state to watch:** `main`, `n`, `i`, `x`.
+- **Key move in the accepted solution:** upper_bound budget.
+- **Core intuition:** assign most expensive affordable ticket.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10808,13 +11651,14 @@ Core idea     : maximum active customers
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: upper_bound budget
-4. Return the requested result
+1. Goal: solve **CSES Concert Tickets** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;multiset<int>s;for(int i=0,x;i<n;i++){cin>>x;s.insert(x);}while(m--){int x;cin>>x;auto it=s.upper_bound(x);if(it==s.begin())cout<<-1<<"
+";else{--it;cout<<*it<<"
+";s.erase(it);}}return 0;}`.
 ```
 
 </details>
@@ -10861,10 +11705,15 @@ Core idea     : assign most expensive affordable ticket
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `intervals contain count` situation and applying `sort + Fenwick` instead of repeatedly doing slow work.
-- **Main move:** compress right endpoints.
-- **Core intuition:** containment becomes rank query
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For each interval, count how many intervals it contains and how many contain it.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **intervals contain count**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort + Fenwick`.
+- **Code state to watch:** `l`, `main`, `n`, `i`, `s`, `r`.
+- **Key move in the accepted solution:** compress right endpoints.
+- **Core intuition:** containment becomes rank query.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10893,13 +11742,13 @@ Core idea     : assign most expensive affordable ticket
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Compress values if needed
-2. Query prefix/rank counts before update
-3. Add current value to Fenwick tree: compress right endpoints
-4. Return accumulated count/cost
+1. Goal: solve **CSES Nested Ranges Count** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;struct R{int l,r,i;};int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<R>a(n);vector<int>vals;for(int i=0;i<n;i++){cin>>a[i].l>>a[i].r;a[i].i=i;vals.push_back(a[i].r);}sort(vals.begin(),vals.end());vals.erase(unique(vals.begin(),vals.end()),vals.end());vector<int>bit(n+2),contains(n),contained(n);auto add=[&](int i){for(;i<=n;i+=i&-i)bit[i]++;};auto sum=[&](int i){int s=0;for(;i;i-=i&-i)s+=bit[i];return s;};sort(a.begin(),a.end(),[](R&a,R&b){return a.l==b.l?a.r>b.r:a.l<b.l;});for(int i=n-1;i>=0;i--){int r=lower_bound(vals.begin(),vals.end(),a[i].r)-vals.begin()+1;contains[a[i].i]=sum(r);add(r);}fill(bit.begin(),bit.end(),0);for(int i=0;i<n;i++){int r=lower_bound(vals.begin(),vals.end(),a[i].r)-vals.begin()+1;contained[a[i].i]=i-sum(r-1);add(r);}for(int x:contains)cout<<x<<' ';cout<<"
+";for(int x:contained)cout<<x<<' ';return 0;}`.
 ```
 
 </details>
@@ -10946,10 +11795,15 @@ Core idea     : containment becomes rank query
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `dynamic range count` situation and applying `compression + Fenwick` instead of repeatedly doing slow work.
-- **Main move:** update old new salary.
-- **Core intuition:** query count in salary range
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Support salary updates and count salaries inside query ranges.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **dynamic range count**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `compression + Fenwick`.
+- **Code state to watch:** `main`, `n`, `i`, `c`, `x`, `v`.
+- **Key move in the accepted solution:** update old new salary.
+- **Core intuition:** query count in salary range.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -10978,13 +11832,13 @@ Core idea     : containment becomes rank query
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Compress values if needed
-2. Query prefix/rank counts before update
-3. Add current value to Fenwick tree: update old new salary
-4. Return accumulated count/cost
+1. Goal: solve **CSES Salary Queries** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,q;cin>>n>>q;vector<int>a(n);vector<tuple<char,int,int>>qs;vector<int>vals;for(int&i:a){cin>>i;vals.push_back(i);}for(int i=0;i<q;i++){char c;int x,y;cin>>c>>x>>y;qs.push_back({c,x,y});if(c=='!')vals.push_back(y);else vals.push_back(x),vals.push_back(y);}sort(vals.begin(),vals.end());vals.erase(unique(vals.begin(),vals.end()),vals.end());vector<int>bit(vals.size()+2);auto id=[&](int x){return lower_bound(vals.begin(),vals.end(),x)-vals.begin()+1;};auto add=[&](int i,int v){for(;i<(int)bit.size();i+=i&-i)bit[i]+=v;};auto sum=[&](int i){int s=0;for(;i;i-=i&-i)s+=bit[i];return s;};for(int x:a)add(id(x),1);for(auto [c,x,y]:qs){if(c=='!'){--x;add(id(a[x]),-1);a[x]=y;add(id(a[x]),1);}else cout<<sum(upper_bound(vals.begin(),vals.end(),y)-vals.begin())-sum(lower_bound(vals.begin(),vals.end(),x)-vals.begin())<<"
+";}return 0;}`.
 ```
 
 </details>
@@ -11031,10 +11885,15 @@ Core idea     : query count in salary range
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `possible sums` situation and applying `bitset/vector DP` instead of repeatedly doing slow work.
-- **Main move:** shift states.
-- **Core intuition:** every coin creates new sums
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** List all distinct positive sums that can be formed from the coins.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **possible sums**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `bitset/vector DP`.
+- **Code state to watch:** `main`, `n`, `S`, `x`, `s`.
+- **Key move in the accepted solution:** shift states.
+- **Core intuition:** every coin creates new sums.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -11063,13 +11922,13 @@ Core idea     : query count in salary range
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize DP base state
-2. Process each item once
-3. Update reachable states or best value: shift states
-4. Return target DP answer
+1. Goal: solve **CSES Money Sums** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<int>a(n);int S=0;for(int&i:a){cin>>i;S+=i;}vector<char>dp(S+1);dp[0]=1;for(int x:a)for(int s=S;s>=x;s--)dp[s]|=dp[s-x];vector<int>ans;for(int s=1;s<=S;s++)if(dp[s])ans.push_back(s);cout<<ans.size()<<"
+";for(int x:ans)cout<<x<<' ';return 0;}`.
 ```
 
 </details>
@@ -11116,10 +11975,15 @@ Core idea     : every coin creates new sums
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `component sizes` situation and applying `DSU + bitset DP` instead of repeatedly doing slow work.
-- **Main move:** shift by component size.
-- **Core intuition:** choose connected group sizes
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Given friendship components, output possible group sizes for an excursion.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **component sizes**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `DSU + bitset DP`.
+- **Code state to watch:** `main`, `n`, `x`, `a`, `b`, `i`.
+- **Key move in the accepted solution:** shift by component size.
+- **Core intuition:** choose connected group sizes.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -11148,13 +12012,12 @@ Core idea     : every coin creates new sums
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize DP base state
-2. Process each item once
-3. Update reachable states or best value: shift by component size
-4. Return target DP answer
+1. Goal: solve **CSES School Excursion** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;vector<int>p(n),sz(n,1);iota(p.begin(),p.end(),0);function<int(int)>find=[&](int x){return p[x]==x?x:p[x]=find(p[x]);};auto unite=[&](int a,int b){a=find(a);b=find(b);if(a!=b){p[b]=a;sz[a]+=sz[b];}};for(int i=0,a,b;i<m;i++){cin>>a>>b;unite(a-1,b-1);}vector<char>dp(n+1);dp[0]=1;for(int i=0;i<n;i++)if(find(i)==i)for(int s=n;s>=sz[i];s--)dp[s]|=dp[s-sz[i]];for(int s=1;s<=n;s++)cout<<(dp[s]?1:0);return 0;}`.
 ```
 
 </details>
@@ -11201,10 +12064,15 @@ Core idea     : choose connected group sizes
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `kth alive removal` situation and applying `PBDS/Fenwick` instead of repeatedly doing slow work.
-- **Main move:** find kth alive index.
-- **Core intuition:** order structure simulates deletion
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Repeatedly remove and print the kth currently alive element.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **kth alive removal**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `PBDS/Fenwick`.
+- **Code state to watch:** `main`, `n`, `i`, `j`, `v`, `k`.
+- **Key move in the accepted solution:** find kth alive index.
+- **Core intuition:** order structure simulates deletion.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -11233,13 +12101,12 @@ Core idea     : choose connected group sizes
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Compress values if needed
-2. Query prefix/rank counts before update
-3. Add current value to Fenwick tree: find kth alive index
-4. Return accumulated count/cost
+1. Goal: solve **CSES List Removals** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<int>a(n+1),bit(n+1);for(int i=1;i<=n;i++){cin>>a[i];for(int j=i;j<=n;j+=j&-j)bit[j]++;}auto add=[&](int i,int v){for(;i<=n;i+=i&-i)bit[i]+=v;};auto kth=[&](int k){int idx=0;for(int b=1<<20;b;b>>=1){int ni=idx+b;if(ni<=n&&bit[ni]<k){idx=ni;k-=bit[ni];}}return idx+1;};for(int i=0,x;i<n;i++){cin>>x;int id=kth(x);cout<<a[id]<<' ';add(id,-1);}return 0;}`.
 ```
 
 </details>
@@ -11286,10 +12153,15 @@ Core idea     : order structure simulates deletion
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `cyclic kth removal` situation and applying `PBDS` instead of repeatedly doing slow work.
-- **Main move:** find by order and erase.
-- **Core intuition:** dynamic circle needs kth alive
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Print Josephus removal order for arbitrary step k.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **cyclic kth removal**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `PBDS`.
+- **Code state to watch:** `main`, `n`, `i`, `v`, `x`, `idx`.
+- **Key move in the accepted solution:** find by order and erase.
+- **Core intuition:** dynamic circle needs kth alive.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -11318,13 +12190,12 @@ Core idea     : order structure simulates deletion
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: find by order and erase
-4. Return the requested result
+1. Goal: solve **CSES Josephus Problem II** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<int>bit(n+1);auto add=[&](int i,int v){for(;i<=n;i+=i&-i)bit[i]+=v;};auto kth=[&](int x){int idx=0;for(int b=1<<20;b;b>>=1){int ni=idx+b;if(ni<=n&&bit[ni]<x){idx=ni;x-=bit[ni];}}return idx+1;};for(int i=1;i<=n;i++)add(i,1);int pos=0,alive=n;while(alive){pos=(pos+k)%alive;int id=kth(pos+1);cout<<id<<' ';add(id,-1);alive--;}return 0;}`.
 ```
 
 </details>
@@ -11371,10 +12242,15 @@ Core idea     : dynamic circle needs kth alive
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `interval containment` situation and applying `sort + scan` instead of repeatedly doing slow work.
-- **Main move:** max right min right.
-- **Core intuition:** containment becomes ordered check
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** For each interval, determine whether it contains another interval and whether another interval contains it.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **interval containment**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `sort + scan`.
+- **Code state to watch:** `l`, `main`, `n`, `i`, `maxR`, `minR`.
+- **Key move in the accepted solution:** max right min right.
+- **Core intuition:** containment becomes ordered check.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -11403,13 +12279,13 @@ Core idea     : dynamic circle needs kth alive
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Sort by the optimal key
-2. Scan once in sorted order
-3. Merge/select/update state greedily: max right min right
-4. Return final answer
+1. Goal: solve **CSES Nested Ranges Check** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;struct R{int l,r,i;};int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<R>a(n);for(int i=0;i<n;i++){cin>>a[i].l>>a[i].r;a[i].i=i;}sort(a.begin(),a.end(),[](R&a,R&b){return a.l==b.l?a.r>b.r:a.l<b.l;});vector<int>contains(n),contained(n);int maxR=0;for(auto &x:a){if(x.r<=maxR)contained[x.i]=1;maxR=max(maxR,x.r);}int minR=INT_MAX;for(int i=n-1;i>=0;i--){if(a[i].r>=minR)contains[a[i].i]=1;minR=min(minR,a[i].r);}for(int x:contains)cout<<x<<' ';cout<<"
+";for(int x:contained)cout<<x<<' ';return 0;}`.
 ```
 
 </details>
@@ -11456,10 +12332,15 @@ Core idea     : containment becomes ordered check
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `k resources` situation and applying `multiset endings` instead of repeatedly doing slow work.
-- **Main move:** assign latest possible watcher.
-- **Core intuition:** preserve earlier watchers
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** Choose the maximum movies watched by up to k viewers.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **k resources**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `multiset endings`.
+- **Code state to watch:** `main`, `n`, `i`, `ans`.
+- **Key move in the accepted solution:** assign latest possible watcher.
+- **Core intuition:** preserve earlier watchers.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -11488,13 +12369,12 @@ Core idea     : containment becomes ordered check
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: assign latest possible watcher
-4. Return the requested result
+1. Goal: solve **CSES Movie Festival II** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<pair<int,int>>a(n);for(auto&[l,r]:a)cin>>l>>r;sort(a.begin(),a.end(),[](auto&a,auto&b){return a.second<b.second;});multiset<int>end;for(int i=0;i<k;i++)end.insert(0);int ans=0;for(auto [l,r]:a){auto it=end.upper_bound(l);if(it==end.begin())continue;--it;end.erase(it);end.insert(r);ans++;}cout<<ans;return 0;}`.
 ```
 
 </details>
@@ -11541,10 +12421,15 @@ Core idea     : preserve earlier watchers
 
 ### Problem Detail
 
-- **What the problem is testing:** recognizing a `permutation updates` situation and applying `set of breaks` instead of repeatedly doing slow work.
-- **Main move:** update local neighbours.
-- **Core intuition:** swap changes only local rounds
-- **Practice goal:** before opening the code, identify the state you must maintain and when that state changes.
+- **What the problem asks:** After swaps in a permutation, update the number of collection rounds efficiently.
+- **Input you should focus on:** the values/structures described by the linked statement; classify them as **permutation updates**.
+- **Output you must produce:** the exact boolean, index, count, array/list, string, or data-structure response requested by the problem.
+- **Why brute force is weak:** repeatedly searching, comparing, or recomputing state can become too slow.
+- **Optimal pattern used here:** `set of breaks`.
+- **Code state to watch:** `main`, `n`, `i`, `x`, `ans`.
+- **Key move in the accepted solution:** update local neighbours.
+- **Core intuition:** swap changes only local rounds.
+- **Practice goal:** read the Solution Flow first, then verify each step against the C++ code line by line.
 
 ### Guided Practice
 
@@ -11573,13 +12458,13 @@ Core idea     : preserve earlier watchers
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — optimal code steps</summary>
+<summary>Solution Flow — step-by-step matching the optimal C++ code</summary>
 
 ```text
-1. Initialize the optimal data structure
-2. Process each input element/event once
-3. Maintain the section invariant: update local neighbours
-4. Return the requested result
+1. Goal: solve **CSES Collecting Numbers II** with the optimal code below, in the same order the code executes.
+2. Update the code state with `#include <bits/stdc++.h>`.
+3. Update the code state with `using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;vector<int>a(n+1),pos(n+1);for(int i=1;i<=n;i++){cin>>a[i];pos[a[i]]=i;}auto bad=[&](int x){return x>=2&&pos[x]<pos[x-1];};int ans=1;for(int x=2;x<=n;x++)ans+=bad(x);while(m--){int i,j;cin>>i>>j;set<int>chk;for(int x:{a[i],a[i]+1,a[j],a[j]+1})if(x>=2&&x<=n)chk.insert(x);for(int x:chk)ans-=bad(x);swap(pos[a[i]],pos[a[j]]);swap(a[i],a[j]);for(int x:chk)ans+=bad(x);cout<<ans<<"
+";}return 0;}`.
 ```
 
 </details>
