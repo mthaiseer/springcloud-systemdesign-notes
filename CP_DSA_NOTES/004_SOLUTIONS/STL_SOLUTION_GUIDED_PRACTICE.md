@@ -1,5 +1,7 @@
 # STL Problems — Guided Practice Edition
 
+> Rendering-safe update: all diagrams use simple Mermaid `flowchart TD` syntax with quoted labels, and every C++ block is inside a closed `<details>` section.
+
 This version is cleaned for Markdown rendering and organized as guided practice: problem link, problem detail, progressive hints, approach, collapsible C++ code, clickable difficulty index, and repeated-pattern tables.
 
 ## Clickable Index
@@ -200,26 +202,26 @@ This version is cleaned for Markdown rendering and organized as guided practice:
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: sort and compare neighbours"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-bool containsDuplicate(vector<int>& nums) {
-    unordered_set<int> seen;
-
-    for (int x : nums) {
-        if (seen.count(x)) return true;
-        seen.insert(x);
+class Solution {
+public:
+    bool containsDuplicate(vector<int>& nums) {
+        unordered_set<int> seen;
+        for (int x : nums) {
+            if (seen.count(x)) return true;
+            seen.insert(x);
+        }
+        return false;
     }
-
-    return false;
-}
+};
 ```
 
 </details>
@@ -289,30 +291,25 @@ Core idea     : duplicates become adjacent
 
 ```mermaid
 flowchart TD
-    A[Initialize left and right] --> B{Pointers valid?}
-    B -- Yes --> C[Compare / move useful pointer]
-    C --> D[Update answer or write position]
-    D --> B
-    B -- No --> E[Return answer]
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: fill from back"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
-    int i = m - 1;
-    int j = n - 1;
-    int k = m + n - 1;
-
-    while (j >= 0) {
-        if (i >= 0 && nums1[i] > nums2[j]) {
-            nums1[k--] = nums1[i--];
-        } else {
-            nums1[k--] = nums2[j--];
+class Solution {
+public:
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        int i = m - 1, j = n - 1, k = m + n - 1;
+        while (j >= 0) {
+            if (i >= 0 && nums1[i] > nums2[j]) nums1[k--] = nums1[i--];
+            else nums1[k--] = nums2[j--];
         }
     }
-}
+};
 ```
 
 </details>
@@ -382,25 +379,23 @@ Core idea     : largest final position is safe
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize left and right pointers"] --> B["Compare current pointer values"]
+    B --> C["Move the pointer that cannot improve answer: overwrite nonzero"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: write pointer
-// Form: stable partition
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: overwrite nonzero.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    void moveZeroes(vector<int>& nums) {
+        int write = 0;
+        for (int x : nums) if (x != 0) nums[write++] = x;
+        while (write < (int)nums.size()) nums[write++] = 0;
+    }
+};
 ```
 
 </details>
@@ -470,34 +465,26 @@ Core idea     : keep order with one pass
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: write unique"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {
+        if (nums.empty()) return 0;
+        int write = 1;
+        for (int read = 1; read < (int)nums.size(); read++) {
+            if (nums[read] != nums[write - 1]) nums[write++] = nums[read];
+        }
+        return write;
     }
-}
+};
 ```
 
 </details>
@@ -567,30 +554,26 @@ Core idea     : sorted duplicates are grouped
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: compare counts"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-bool isAnagram(string s, string t) {
-    if (s.size() != t.size()) return false;
-
-    array<int, 26> cnt{};
-
-    for (char c : s) cnt[c - 'a']++;
-    for (char c : t) cnt[c - 'a']--;
-
-    for (int x : cnt) {
-        if (x != 0) return false;
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        if (s.size() != t.size()) return false;
+        array<int, 26> cnt{};
+        for (char c : s) cnt[c - 'a']++;
+        for (char c : t) cnt[c - 'a']--;
+        for (int x : cnt) if (x != 0) return false;
+        return true;
     }
-
-    return true;
-}
+};
 ```
 
 </details>
@@ -660,35 +643,28 @@ Core idea     : same letters means same count vector
 
 ```mermaid
 flowchart TD
-    A[Initialize left and right] --> B{Pointers valid?}
-    B -- Yes --> C[Compare / move useful pointer]
-    C --> D[Update answer or write position]
-    D --> B
-    B -- No --> E[Return answer]
+    A["Initialize left and right pointers"] --> B["Compare current pointer values"]
+    B --> C["Move the pointer that cannot improve answer: skip non-alnum"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    bool isPalindrome(string s) {
+        int l = 0, r = (int)s.size() - 1;
+        while (l < r) {
+            while (l < r && !isalnum((unsigned char)s[l])) l++;
+            while (l < r && !isalnum((unsigned char)s[r])) r--;
+            if (tolower((unsigned char)s[l]) != tolower((unsigned char)s[r])) return false;
+            l++; r--;
+        }
+        return true;
     }
-}
+};
 ```
 
 </details>
@@ -758,26 +734,26 @@ Core idea     : compare mirrored valid chars
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: decrement available"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
+class Solution {
+public:
+    bool canConstruct(string ransomNote, string magazine) {
+        array<int, 26> cnt{};
+        for (char c : magazine) cnt[c - 'a']++;
+        for (char c : ransomNote) {
+            if (--cnt[c - 'a'] < 0) return false;
+        }
+        return true;
+    }
+};
 ```
 
 </details>
@@ -847,32 +823,30 @@ Core idea     : magazine supplies letters
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: push open pop close"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-bool isValid(string s) {
-    stack<char> st;
-    unordered_map<char,char> mp = {{')','('}, {']','['}, {'}','{'}};
-
-    for (char c : s) {
-        if (c == '(' || c == '[' || c == '{') {
-            st.push(c);
-        } else {
-            if (st.empty() || st.top() != mp[c]) return false;
-            st.pop();
+class Solution {
+public:
+    bool isValid(string s) {
+        stack<char> st;
+        unordered_map<char, char> need = {{')','('}, {']','['}, {'}','{'}};
+        for (char c : s) {
+            if (c == '(' || c == '[' || c == '{') st.push(c);
+            else {
+                if (st.empty() || st.top() != need[c]) return false;
+                st.pop();
+            }
         }
+        return st.empty();
     }
-
-    return st.empty();
-}
+};
 ```
 
 </details>
@@ -942,26 +916,28 @@ Core idea     : latest open must close first
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: store scores"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: stack/vector
-// Form: operation history
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: store scores.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int calPoints(vector<string>& operations) {
+        vector<int> scores;
+        for (string op : operations) {
+            if (op == "+") scores.push_back(scores.back() + scores[scores.size() - 2]);
+            else if (op == "D") scores.push_back(2 * scores.back());
+            else if (op == "C") scores.pop_back();
+            else scores.push_back(stoi(op));
+        }
+        return accumulate(scores.begin(), scores.end(), 0);
+    }
+};
 ```
 
 </details>
@@ -1031,26 +1007,26 @@ Core idea     : operations reference previous scores
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: pop equal top"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: stack string
-// Form: cancellation
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: pop equal top.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    string removeDuplicates(string s) {
+        string st;
+        for (char c : s) {
+            if (!st.empty() && st.back() == c) st.pop_back();
+            else st.push_back(c);
+        }
+        return st;
+    }
+};
 ```
 
 </details>
@@ -1120,26 +1096,30 @@ Core idea     : adjacent equal cancels latest
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: move only when needed"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: two stacks
-// Form: data structure design
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: move only when needed.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class MyQueue {
+    stack<int> in, out;
+    void moveIfNeeded() {
+        if (!out.empty()) return;
+        while (!in.empty()) {
+            out.push(in.top());
+            in.pop();
+        }
+    }
+public:
+    void push(int x) { in.push(x); }
+    int pop() { moveIfNeeded(); int x = out.top(); out.pop(); return x; }
+    int peek() { moveIfNeeded(); return out.top(); }
+    bool empty() { return in.empty() && out.empty(); }
+};
 ```
 
 </details>
@@ -1209,26 +1189,24 @@ Core idea     : reverse stack gives FIFO
 
 ```mermaid
 flowchart TD
-    A[Expand right side] --> B[Update window state]
-    B --> C{Window invalid?}
-    C -- Yes --> D[Shrink left side]
-    D --> C
-    C -- No --> E[Update answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: pop old calls"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: queue
-// Form: time window
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: pop old calls.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class RecentCounter {
+    queue<int> q;
+public:
+    int ping(int t) {
+        q.push(t);
+        while (!q.empty() && q.front() < t - 3000) q.pop();
+        return q.size();
+    }
+};
 ```
 
 </details>
@@ -1298,30 +1276,27 @@ Core idea     : queue holds valid recent calls
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: smash two largest"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+class Solution {
+public:
+    int lastStoneWeight(vector<int>& stones) {
+        priority_queue<int> pq(stones.begin(), stones.end());
+        while (pq.size() > 1) {
+            int a = pq.top(); pq.pop();
+            int b = pq.top(); pq.pop();
+            if (a != b) pq.push(a - b);
+        }
+        return pq.empty() ? 0 : pq.top();
+    }
+};
 ```
 
 </details>
@@ -1391,30 +1366,28 @@ Core idea     : only largest stones matter
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: pop smaller extras"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+class KthLargest {
+    int k;
+    priority_queue<int, vector<int>, greater<int>> pq;
+public:
+    KthLargest(int k, vector<int>& nums) : k(k) {
+        for (int x : nums) add(x);
+    }
+    int add(int val) {
+        pq.push(val);
+        if ((int)pq.size() > k) pq.pop();
+        return pq.top();
+    }
+};
 ```
 
 </details>
@@ -1484,26 +1457,29 @@ Core idea     : heap stores top k
 
 ```mermaid
 flowchart TD
-    A[Expand right side] --> B[Update window state]
-    B --> C{Window invalid?}
-    C -- Yes --> D[Shrink left side]
-    D --> C
-    C -- No --> E[Update answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: lower_bound x minus t"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: set window
-// Form: nearby value
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: lower_bound x minus t.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    bool containsNearbyAlmostDuplicate(vector<int>& nums, int indexDiff, int valueDiff) {
+        set<long long> window;
+        for (int i = 0; i < (int)nums.size(); i++) {
+            long long x = nums[i];
+            auto it = window.lower_bound(x - valueDiff);
+            if (it != window.end() && *it <= x + valueDiff) return true;
+            window.insert(x);
+            if (i >= indexDiff) window.erase(nums[i - indexDiff]);
+        }
+        return false;
+    }
+};
 ```
 
 </details>
@@ -1573,31 +1549,27 @@ Core idea     : closest candidate is around lower bound
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: store seen value index"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-vector<int> twoSum(vector<int>& nums, int target) {
-    unordered_map<int,int> pos;
-
-    for (int i = 0; i < (int)nums.size(); i++) {
-        int need = target - nums[i];
-
-        if (pos.count(need)) {
-            return {pos[need], i};
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int, int> pos;
+        for (int i = 0; i < (int)nums.size(); i++) {
+            int need = target - nums[i];
+            if (pos.count(need)) return {pos[need], i};
+            pos[nums[i]] = i;
         }
-
-        pos[nums[i]] = i;
+        return {};
     }
-
-    return {};
-}
+};
 ```
 
 </details>
@@ -1667,26 +1639,26 @@ Core idea     : target needs previous complement
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: count occurrences"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
+class Solution {
+public:
+    int majorityElement(vector<int>& nums) {
+        int cand = 0, bal = 0;
+        for (int x : nums) {
+            if (bal == 0) cand = x;
+            bal += (x == cand ? 1 : -1);
+        }
+        return cand;
+    }
+};
 ```
 
 </details>
@@ -1756,26 +1728,24 @@ Core idea     : majority crosses n/2
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: two passes"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
+class Solution {
+public:
+    int firstUniqChar(string s) {
+        array<int, 26> cnt{};
+        for (char c : s) cnt[c - 'a']++;
+        for (int i = 0; i < (int)s.size(); i++) if (cnt[s[i] - 'a'] == 1) return i;
+        return -1;
+    }
+};
 ```
 
 </details>
@@ -1845,36 +1815,25 @@ Core idea     : unique means count one
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: compare previous end"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
+class Solution {
+public:
+    bool canAttendMeetings(vector<vector<int>>& intervals) {
+        sort(intervals.begin(), intervals.end());
+        for (int i = 1; i < (int)intervals.size(); i++) {
+            if (intervals[i][0] < intervals[i - 1][1]) return false;
+        }
+        return true;
     }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+};
 ```
 
 </details>
@@ -1944,35 +1903,27 @@ Core idea     : overlap violates room
 
 ```mermaid
 flowchart TD
-    A[Initialize left and right] --> B{Pointers valid?}
-    B -- Yes --> C[Compare / move useful pointer]
-    C --> D[Update answer or write position]
-    D --> B
-    B -- No --> E[Return answer]
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: fill from back"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    vector<int> sortedSquares(vector<int>& nums) {
+        int l = 0, r = (int)nums.size() - 1, k = r;
+        vector<int> ans(nums.size());
+        while (l <= r) {
+            if (abs(nums[l]) > abs(nums[r])) ans[k--] = nums[l] * nums[l++];
+            else ans[k--] = nums[r] * nums[r--];
+        }
+        return ans;
     }
-}
+};
 ```
 
 </details>
@@ -2042,34 +1993,23 @@ Core idea     : largest square at ends
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: two pointers"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
+        unordered_set<int> a(nums1.begin(), nums1.end()), ans;
+        for (int x : nums2) if (a.count(x)) ans.insert(x);
+        return vector<int>(ans.begin(), ans.end());
     }
-}
+};
 ```
 
 </details>
@@ -2139,19 +2079,28 @@ Core idea     : sorted arrays reveal equal values
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Set low and high search bounds"] --> B["Test middle candidate"]
+    B --> C["Discard impossible half: compare mid"]
+    C --> D["Return found index or boundary"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int searchInsert(vector<int>& nums, int target) {
-    return lower_bound(nums.begin(), nums.end(), target) - nums.begin();
-}
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int l = 0, r = (int)nums.size() - 1;
+        while (l <= r) {
+            int m = l + (r - l) / 2;
+            if (nums[m] == target) return m;
+            if (nums[m] < target) l = m + 1;
+            else r = m - 1;
+        }
+        return -1;
+    }
+};
 ```
 
 </details>
@@ -2221,19 +2170,21 @@ Core idea     : sorted halves eliminate
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Set low and high search bounds"] --> B["Test middle candidate"]
+    B --> C["Discard impossible half: first not less"]
+    C --> D["Return found index or boundary"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int searchInsert(vector<int>& nums, int target) {
-    return lower_bound(nums.begin(), nums.end(), target) - nums.begin();
-}
+class Solution {
+public:
+    int searchInsert(vector<int>& nums, int target) {
+        return lower_bound(nums.begin(), nums.end(), target) - nums.begin();
+    }
+};
 ```
 
 </details>
@@ -2303,33 +2254,32 @@ Core idea     : insert before first bigger/equal
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: precompute next greater"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-vector<int> nextGreaterRight(vector<int>& a) {
-    int n = a.size();
-    vector<int> ans(n, -1);
-    stack<int> st;
-
-    for (int i = 0; i < n; i++) {
-        while (!st.empty() && a[st.top()] < a[i]) {
-            ans[st.top()] = a[i];
-            st.pop();
+class Solution {
+public:
+    vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
+        unordered_map<int, int> nxt;
+        stack<int> st;
+        for (int x : nums2) {
+            while (!st.empty() && st.top() < x) {
+                nxt[st.top()] = x;
+                st.pop();
+            }
+            st.push(x);
         }
-
-        st.push(i);
+        vector<int> ans;
+        for (int x : nums1) ans.push_back(nxt.count(x) ? nxt[x] : -1);
+        return ans;
     }
-
-    return ans;
-}
+};
 ```
 
 </details>
@@ -2399,24 +2349,28 @@ Core idea     : decreasing stack waits for greater
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: while loop"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: vector output
-// Form: simulation
+#include <bits/stdc++.h>
+using namespace std;
 
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: while loop.
-    // 3. Maintain invariant.
-    // 4. Return answer.
+int main() {
+    long long n;
+    cin >> n;
+    while (true) {
+        cout << n << ' ';
+        if (n == 1) break;
+        if (n % 2 == 0) n /= 2;
+        else n = 3 * n + 1;
+    }
+    return 0;
 }
 ```
 
@@ -2489,25 +2443,26 @@ Core idea     : direct process
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: low mid high"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: Dutch flag
-// Form: 3-way partition
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: low mid high.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        int low = 0, mid = 0, high = (int)nums.size() - 1;
+        while (mid <= high) {
+            if (nums[mid] == 0) swap(nums[low++], nums[mid++]);
+            else if (nums[mid] == 1) mid++;
+            else swap(nums[mid], nums[high--]);
+        }
+    }
+};
 ```
 
 </details>
@@ -2577,25 +2532,28 @@ Core idea     : place each color region
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: pivot suffix reverse"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: STL algorithm logic
-// Form: permutation
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: pivot suffix reverse.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    void nextPermutation(vector<int>& nums) {
+        int i = (int)nums.size() - 2;
+        while (i >= 0 && nums[i] >= nums[i + 1]) i--;
+        if (i >= 0) {
+            int j = (int)nums.size() - 1;
+            while (nums[j] <= nums[i]) j--;
+            swap(nums[i], nums[j]);
+        }
+        reverse(nums.begin() + i + 1, nums.end());
+    }
+};
 ```
 
 </details>
@@ -2665,31 +2623,27 @@ Core idea     : next lexicographic order changes suffix
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: compare start with current end"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-vector<vector<int>> merge(vector<vector<int>>& intervals) {
-    sort(intervals.begin(), intervals.end());
-
-    vector<vector<int>> ans;
-
-    for (auto cur : intervals) {
-        if (ans.empty() || ans.back()[1] < cur[0]) {
-            ans.push_back(cur);
-        } else {
-            ans.back()[1] = max(ans.back()[1], cur[1]);
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        sort(intervals.begin(), intervals.end());
+        vector<vector<int>> ans;
+        for (auto cur : intervals) {
+            if (ans.empty() || ans.back()[1] < cur[0]) ans.push_back(cur);
+            else ans.back()[1] = max(ans.back()[1], cur[1]);
         }
+        return ans;
     }
-
-    return ans;
-}
+};
 ```
 
 </details>
@@ -2759,25 +2713,27 @@ Core idea     : overlap extends interval
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: two passes"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: prefix suffix
-// Form: array scan
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: two passes.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    vector<int> productExceptSelf(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> ans(n, 1);
+        int pref = 1;
+        for (int i = 0; i < n; i++) { ans[i] = pref; pref *= nums[i]; }
+        int suff = 1;
+        for (int i = n - 1; i >= 0; i--) { ans[i] *= suff; suff *= nums[i]; }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -2847,26 +2803,29 @@ Core idea     : answer is left product times right product
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: sorted string as key"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        unordered_map<string, vector<string>> mp;
+        for (string s : strs) {
+            string key = s;
+            sort(key.begin(), key.end());
+            mp[key].push_back(s);
+        }
+        vector<vector<string>> ans;
+        for (auto& [k, v] : mp) ans.push_back(v);
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -2936,26 +2895,28 @@ Core idea     : anagrams share canonical form
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: move left past duplicate"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        vector<int> last(256, -1);
+        int ans = 0, left = 0;
+        for (int right = 0; right < (int)s.size(); right++) {
+            left = max(left, last[(unsigned char)s[right]] + 1);
+            last[(unsigned char)s[right]] = right;
+            ans = max(ans, right - left + 1);
+        }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -3025,26 +2986,31 @@ Core idea     : window invariant has unique chars
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: expand then shrink"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        vector<int> need(128, 0);
+        for (char c : t) need[c]++;
+        int missing = t.size(), left = 0, bestLen = INT_MAX, bestStart = 0;
+        for (int right = 0; right < (int)s.size(); right++) {
+            if (need[s[right]]-- > 0) missing--;
+            while (missing == 0) {
+                if (right - left + 1 < bestLen) bestLen = right - left + 1, bestStart = left;
+                if (++need[s[left++]] > 0) missing++;
+            }
+        }
+        return bestLen == INT_MAX ? "" : s.substr(bestStart, bestLen);
+    }
+};
 ```
 
 </details>
@@ -3114,26 +3080,31 @@ Core idea     : smallest valid window after coverage
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: save previous state"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: stack
-// Form: nested parsing
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: save previous state.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    string decodeString(string s) {
+        stack<int> counts;
+        stack<string> prev;
+        string cur;
+        int num = 0;
+        for (char c : s) {
+            if (isdigit(c)) num = num * 10 + c - '0';
+            else if (c == '[') { counts.push(num); prev.push(cur); num = 0; cur.clear(); }
+            else if (c == ']') { string tmp = prev.top(); prev.pop(); int k = counts.top(); counts.pop(); while (k--) tmp += cur; cur = tmp; }
+            else cur += c;
+        }
+        return cur;
+    }
+};
 ```
 
 </details>
@@ -3203,26 +3174,23 @@ Core idea     : brackets nest last-in-first-out
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: store current min"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: auxiliary stack
-// Form: stack with min
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: store current min.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class MinStack {
+    stack<pair<int,int>> st;
+public:
+    void push(int val) { st.push({val, st.empty() ? val : min(val, st.top().second)}); }
+    void pop() { st.pop(); }
+    int top() { return st.top().first; }
+    int getMin() { return st.top().second; }
+};
 ```
 
 </details>
@@ -3292,26 +3260,31 @@ Core idea     : min must rollback with pop
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: apply operator to top two"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: stack
-// Form: expression eval
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: apply operator to top two.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int evalRPN(vector<string>& tokens) {
+        stack<int> st;
+        for (string t : tokens) {
+            if (t == "+" || t == "-" || t == "*" || t == "/") {
+                int b = st.top(); st.pop(); int a = st.top(); st.pop();
+                if (t == "+") st.push(a + b);
+                else if (t == "-") st.push(a - b);
+                else if (t == "*") st.push(a * b);
+                else st.push(a / b);
+            } else st.push(stoi(t));
+        }
+        return st.top();
+    }
+};
 ```
 
 </details>
@@ -3381,34 +3354,31 @@ Core idea     : postfix puts operands before operator
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: store indices"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-vector<int> dailyTemperatures(vector<int>& t) {
-    int n = t.size();
-    vector<int> ans(n, 0);
-    stack<int> st;
-
-    for (int i = 0; i < n; i++) {
-        while (!st.empty() && t[i] > t[st.top()]) {
-            int j = st.top();
-            st.pop();
-            ans[j] = i - j;
+class Solution {
+public:
+    vector<int> dailyTemperatures(vector<int>& temperatures) {
+        int n = temperatures.size();
+        vector<int> ans(n);
+        stack<int> st;
+        for (int i = 0; i < n; i++) {
+            while (!st.empty() && temperatures[st.top()] < temperatures[i]) {
+                ans[st.top()] = i - st.top();
+                st.pop();
+            }
+            st.push(i);
         }
-
-        st.push(i);
+        return ans;
     }
-
-    return ans;
-}
+};
 ```
 
 </details>
@@ -3478,25 +3448,39 @@ Core idea     : warmer day resolves colder days
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: start all rotten"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: multi-source queue
-// Form: grid BFS
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: start all rotten.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int orangesRotting(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size(), fresh = 0, minutes = 0;
+        queue<pair<int,int>> q;
+        for (int i = 0; i < m; i++) for (int j = 0; j < n; j++) {
+            if (grid[i][j] == 2) q.push({i,j});
+            if (grid[i][j] == 1) fresh++;
+        }
+        int dirs[5] = {1,0,-1,0,1};
+        while (!q.empty() && fresh > 0) {
+            int sz = q.size(); minutes++;
+            while (sz--) {
+                auto [r,c] = q.front(); q.pop();
+                for (int d = 0; d < 4; d++) {
+                    int nr = r + dirs[d], nc = c + dirs[d+1];
+                    if (nr<0||nc<0||nr>=m||nc>=n||grid[nr][nc]!=1) continue;
+                    grid[nr][nc] = 2; fresh--; q.push({nr,nc});
+                }
+            }
+        }
+        return fresh ? -1 : minutes;
+    }
+};
 ```
 
 </details>
@@ -3566,25 +3550,31 @@ Core idea     : infection spreads by layers
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Push starting states into queue"] --> B["Process one BFS layer at a time"]
+    B --> C["Visit valid unvisited neighbors: mark visited"]
+    C --> D["Return distance/path when target found"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: BFS/DFS queue
-// Form: flood fill
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: mark visited.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int m = grid.size(), n = grid[0].size(), ans = 0;
+        int dirs[5] = {1,0,-1,0,1};
+        for (int i = 0; i < m; i++) for (int j = 0; j < n; j++) if (grid[i][j] == '1') {
+            ans++;
+            queue<pair<int,int>> q; q.push({i,j}); grid[i][j] = '0';
+            while (!q.empty()) {
+                auto [r,c] = q.front(); q.pop();
+                for (int d=0; d<4; d++) { int nr=r+dirs[d], nc=c+dirs[d+1]; if (nr>=0&&nc>=0&&nr<m&&nc<n&&grid[nr][nc]=='1') { grid[nr][nc]='0'; q.push({nr,nc}); } }
+            }
+        }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -3654,25 +3644,38 @@ Core idea     : each BFS consumes one island
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Push starting states into queue"] --> B["Process one BFS layer at a time"]
+    B --> C["Visit valid unvisited neighbors: generate neighbours"]
+    C --> D["Return distance/path when target found"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: queue states
-// Form: state BFS
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: generate neighbours.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int openLock(vector<string>& deadends, string target) {
+        unordered_set<string> dead(deadends.begin(), deadends.end()), seen;
+        if (dead.count("0000")) return -1;
+        queue<string> q; q.push("0000"); seen.insert("0000");
+        int steps = 0;
+        while (!q.empty()) {
+            int sz = q.size();
+            while (sz--) {
+                string cur = q.front(); q.pop();
+                if (cur == target) return steps;
+                for (int i=0;i<4;i++) for (int delta : {-1,1}) {
+                    string nxt = cur;
+                    nxt[i] = char('0' + (nxt[i]-'0' + delta + 10) % 10);
+                    if (!dead.count(nxt) && !seen.count(nxt)) seen.insert(nxt), q.push(nxt);
+                }
+            }
+            steps++;
+        }
+        return -1;
+    }
+};
 ```
 
 </details>
@@ -3742,30 +3745,22 @@ Core idea     : shortest moves in unweighted state graph
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: keep k largest"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        nth_element(nums.begin(), nums.end() - k, nums.end());
+        return nums[nums.size() - k];
+    }
+};
 ```
 
 </details>
@@ -3835,38 +3830,27 @@ Core idea     : kth is min of top k
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: heap by count"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-vector<int> topKFrequent(vector<int>& nums, int k) {
-    unordered_map<int,int> freq;
-    for (int x : nums) freq[x]++;
-
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
-
-    for (auto [x, c] : freq) {
-        pq.push({c, x});
-
-        if ((int)pq.size() > k) pq.pop();
+class Solution {
+public:
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        unordered_map<int,int> freq;
+        for (int x : nums) freq[x]++;
+        priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+        for (auto [x,c] : freq) { pq.push({c,x}); if ((int)pq.size() > k) pq.pop(); }
+        vector<int> ans;
+        while (!pq.empty()) ans.push_back(pq.top().second), pq.pop();
+        return ans;
     }
-
-    vector<int> ans;
-
-    while (!pq.empty()) {
-        ans.push_back(pq.top().second);
-        pq.pop();
-    }
-
-    return ans;
-}
+};
 ```
 
 </details>
@@ -3936,30 +3920,23 @@ Core idea     : frequency decides rank
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: compare squared distance"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+class Solution {
+public:
+    vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {
+        auto dist = [](const vector<int>& p){ return p[0]*p[0] + p[1]*p[1]; };
+        nth_element(points.begin(), points.begin() + k, points.end(), [&](auto& a, auto& b){ return dist(a) < dist(b); });
+        return vector<vector<int>>(points.begin(), points.begin() + k);
+    }
+};
 ```
 
 </details>
@@ -4029,30 +4006,25 @@ Core idea     : no need sqrt
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: always use most frequent"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+class Solution {
+public:
+    int leastInterval(vector<char>& tasks, int n) {
+        vector<int> cnt(26);
+        for (char c : tasks) cnt[c - 'A']++;
+        int mx = *max_element(cnt.begin(), cnt.end());
+        int same = count(cnt.begin(), cnt.end(), mx);
+        return max((int)tasks.size(), (mx - 1) * (n + 1) + same);
+    }
+};
 ```
 
 </details>
@@ -4122,36 +4094,26 @@ Core idea     : reduce future bottleneck
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: check prev and next"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
+class MyCalendar {
+    set<pair<int,int>> booked;
+public:
+    bool book(int start, int end) {
+        auto it = booked.lower_bound({start, end});
+        if (it != booked.end() && it->first < end) return false;
+        if (it != booked.begin() && prev(it)->second > start) return false;
+        booked.insert({start, end});
+        return true;
     }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+};
 ```
 
 </details>
@@ -4221,25 +4183,35 @@ Core idea     : only neighbours can overlap
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: maintain occupied seats"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: set
-// Form: dynamic gaps
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: maintain occupied seats.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class ExamRoom {
+    int n;
+    set<int> seats;
+public:
+    ExamRoom(int n) : n(n) {}
+    int seat() {
+        if (seats.empty()) { seats.insert(0); return 0; }
+        int best = 0, dist = *seats.begin();
+        int prevSeat = *seats.begin();
+        for (int s : seats) {
+            int d = (s - prevSeat) / 2;
+            if (d > dist) dist = d, best = prevSeat + d;
+            prevSeat = s;
+        }
+        if (n - 1 - *seats.rbegin() > dist) best = n - 1;
+        seats.insert(best);
+        return best;
+    }
+    void leave(int p) { seats.erase(p); }
+};
 ```
 
 </details>
@@ -4309,26 +4281,25 @@ Core idea     : best seat depends on gaps
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: upper_bound timestamp"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
+class TimeMap {
+    unordered_map<string, vector<pair<int,string>>> mp;
+public:
+    void set(string key, string value, int timestamp) { mp[key].push_back({timestamp, value}); }
+    string get(string key, int timestamp) {
+        auto& v = mp[key];
+        int i = upper_bound(v.begin(), v.end(), make_pair(timestamp, string("~"))) - v.begin() - 1;
+        return i >= 0 ? v[i].second : "";
+    }
+};
 ```
 
 </details>
@@ -4398,31 +4369,28 @@ Core idea     : latest previous value is answer
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: count previous prefix"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-long long countSubarraySumK(vector<int>& a, long long k) {
-    unordered_map<long long,long long> freq;
-    freq[0] = 1;
-
-    long long pref = 0;
-    long long ans = 0;
-
-    for (int x : a) {
-        pref += x;
-        ans += freq[pref - k];
-        freq[pref]++;
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        unordered_map<int,int> freq{{0,1}};
+        int pref = 0, ans = 0;
+        for (int x : nums) {
+            pref += x;
+            ans += freq[pref - k];
+            freq[pref]++;
+        }
+        return ans;
     }
-
-    return ans;
-}
+};
 ```
 
 </details>
@@ -4492,25 +4460,28 @@ Core idea     : equal difference gives sum k
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: start only at sequence beginning"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: unordered_set
-// Form: set lookup
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: start only at sequence beginning.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        unordered_set<int> s(nums.begin(), nums.end());
+        int ans = 0;
+        for (int x : s) if (!s.count(x - 1)) {
+            int y = x;
+            while (s.count(y)) y++;
+            ans = max(ans, y - x);
+        }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -4580,10 +4551,9 @@ Core idea     : each number processed once
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: map key to list iterator"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
@@ -4592,35 +4562,19 @@ flowchart TD
 ```cpp
 class LRUCache {
     int cap;
-    list<pair<int,int>> order;
-    unordered_map<int, list<pair<int,int>>::iterator> where;
-
+    list<pair<int,int>> items;
+    unordered_map<int, list<pair<int,int>>::iterator> pos;
 public:
     LRUCache(int capacity) : cap(capacity) {}
-
     int get(int key) {
-        if (!where.count(key)) return -1;
-
-        auto it = where[key];
-        int value = it->second;
-
-        order.erase(it);
-        order.push_front({key, value});
-        where[key] = order.begin();
-
-        return value;
+        if (!pos.count(key)) return -1;
+        items.splice(items.begin(), items, pos[key]);
+        return pos[key]->second;
     }
-
     void put(int key, int value) {
-        if (where.count(key)) {
-            order.erase(where[key]);
-        } else if ((int)order.size() == cap) {
-            where.erase(order.back().first);
-            order.pop_back();
-        }
-
-        order.push_front({key, value});
-        where[key] = order.begin();
+        if (pos.count(key)) { pos[key]->second = value; items.splice(items.begin(), items, pos[key]); return; }
+        if ((int)items.size() == cap) { pos.erase(items.back().first); items.pop_back(); }
+        items.push_front({key, value}); pos[key] = items.begin();
     }
 };
 ```
@@ -4692,36 +4646,27 @@ Core idea     : O(1) move to front
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: keep earliest ending"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
+class Solution {
+public:
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        sort(intervals.begin(), intervals.end(), [](auto& a, auto& b){ return a[1] < b[1]; });
+        int removed = 0, end = INT_MIN;
+        for (auto& in : intervals) {
+            if (in[0] >= end) end = in[1];
+            else removed++;
+        }
+        return removed;
     }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+};
 ```
 
 </details>
@@ -4791,36 +4736,25 @@ Core idea     : more space for future intervals
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: shoot at end"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
+class Solution {
+public:
+    int findMinArrowShots(vector<vector<int>>& points) {
+        sort(points.begin(), points.end(), [](auto& a, auto& b){ return a[1] < b[1]; });
+        long long arrow = LLONG_MIN;
+        int ans = 0;
+        for (auto& p : points) if (p[0] > arrow) { ans++; arrow = p[1]; }
+        return ans;
     }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+};
 ```
 
 </details>
@@ -4890,34 +4824,24 @@ Core idea     : one arrow covers all overlapping intervals
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: tall first"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+        sort(people.begin(), people.end(), [](auto& a, auto& b){ return a[0] == b[0] ? a[1] < b[1] : a[0] > b[0]; });
+        vector<vector<int>> ans;
+        for (auto& p : people) ans.insert(ans.begin() + p[1], p);
+        return ans;
     }
-}
+};
 ```
 
 </details>
@@ -4987,34 +4911,27 @@ Core idea     : shorter people do not affect taller count
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: compare ab vs ba"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    string largestNumber(vector<int>& nums) {
+        vector<string> s;
+        for (int x : nums) s.push_back(to_string(x));
+        sort(s.begin(), s.end(), [](const string& a, const string& b){ return a + b > b + a; });
+        if (s[0] == "0") return "0";
+        string ans;
+        for (auto& x : s) ans += x;
+        return ans;
     }
-}
+};
 ```
 
 </details>
@@ -5084,48 +5001,33 @@ Core idea     : best concatenation order
 
 ```mermaid
 flowchart TD
-    A[Initialize left and right] --> B{Pointers valid?}
-    B -- Yes --> C[Compare / move useful pointer]
-    C --> D[Update answer or write position]
-    D --> B
-    B -- No --> E[Return answer]
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: skip duplicates"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-vector<vector<int>> threeSum(vector<int>& nums) {
-    sort(nums.begin(), nums.end());
-
-    vector<vector<int>> ans;
-    int n = nums.size();
-
-    for (int i = 0; i < n; i++) {
-        if (i && nums[i] == nums[i - 1]) continue;
-
-        int l = i + 1, r = n - 1;
-
-        while (l < r) {
-            long long sum = 1LL * nums[i] + nums[l] + nums[r];
-
-            if (sum == 0) {
-                ans.push_back({nums[i], nums[l], nums[r]});
-                l++;
-                r--;
-
-                while (l < r && nums[l] == nums[l - 1]) l++;
-                while (l < r && nums[r] == nums[r + 1]) r--;
-            } else if (sum < 0) {
-                l++;
-            } else {
-                r--;
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> ans;
+        int n = nums.size();
+        for (int i = 0; i < n; i++) {
+            if (i && nums[i] == nums[i-1]) continue;
+            int l = i + 1, r = n - 1;
+            while (l < r) {
+                long long sum = 1LL * nums[i] + nums[l] + nums[r];
+                if (sum == 0) { ans.push_back({nums[i], nums[l], nums[r]}); l++; r--; while (l<r && nums[l]==nums[l-1]) l++; while (l<r && nums[r]==nums[r+1]) r--; }
+                else if (sum < 0) l++; else r--;
             }
         }
+        return ans;
     }
-
-    return ans;
-}
+};
 ```
 
 </details>
@@ -5195,35 +5097,31 @@ Core idea     : fixing one reduces to two sum
 
 ```mermaid
 flowchart TD
-    A[Initialize left and right] --> B{Pointers valid?}
-    B -- Yes --> C[Compare / move useful pointer]
-    C --> D[Update answer or write position]
-    D --> B
-    B -- No --> E[Return answer]
+    A["Initialize left and right pointers"] --> B["Compare current pointer values"]
+    B --> C["Move the pointer that cannot improve answer: skip duplicates"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> ans;
+        int n = nums.size();
+        for (int i=0;i<n;i++) { if (i && nums[i]==nums[i-1]) continue;
+            for (int j=i+1;j<n;j++) { if (j>i+1 && nums[j]==nums[j-1]) continue;
+                int l=j+1,r=n-1;
+                while(l<r){ long long sum=1LL*nums[i]+nums[j]+nums[l]+nums[r];
+                    if(sum==target){ ans.push_back({nums[i],nums[j],nums[l],nums[r]}); l++; r--; while(l<r&&nums[l]==nums[l-1])l++; while(l<r&&nums[r]==nums[r+1])r--; }
+                    else if(sum<target) l++; else r--; }
+            }}
+        return ans;
     }
-}
+};
 ```
 
 </details>
@@ -5293,34 +5191,27 @@ Core idea     : reduce dimension stepwise
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Set low and high search bounds"] --> B["Test middle candidate"]
+    B --> C["Discard impossible half: choose window"]
+    C --> D["Return found index or boundary"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    vector<int> findClosestElements(vector<int>& arr, int k, int x) {
+        int l = 0, r = arr.size() - k;
+        while (l < r) {
+            int m = (l + r) / 2;
+            if (x - arr[m] > arr[m + k] - x) l = m + 1;
+            else r = m;
+        }
+        return vector<int>(arr.begin() + l, arr.begin() + l + k);
     }
-}
+};
 ```
 
 </details>
@@ -5390,25 +5281,24 @@ Core idea     : answer is contiguous around x
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: endpoints"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: lower and upper bound
-// Form: range equal
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: endpoints.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        auto l = lower_bound(nums.begin(), nums.end(), target);
+        auto r = upper_bound(nums.begin(), nums.end(), target);
+        if (l == nums.end() || *l != target) return {-1, -1};
+        return {(int)(l - nums.begin()), (int)(r - nums.begin() - 1)};
+    }
+};
 ```
 
 </details>
@@ -5478,25 +5368,29 @@ Core idea     : equal block is contiguous
 
 ```mermaid
 flowchart TD
-    A[Define monotonic condition] --> B[Binary search / lower_bound]
-    B --> C[Check candidate]
-    C --> D[Return index/value]
+    A["Set low and high search bounds"] --> B["Test middle candidate"]
+    B --> C["Discard impossible half: index mapping"]
+    C --> D["Return found index or boundary"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
+class Solution {
+public:
+    bool searchMatrix(vector<vector<int>>& matrix, int target) {
+        int m = matrix.size(), n = matrix[0].size();
+        int l = 0, r = m * n - 1;
+        while (l <= r) {
+            int mid = l + (r-l)/2;
+            int x = matrix[mid / n][mid % n];
+            if (x == target) return true;
+            if (x < target) l = mid + 1; else r = mid - 1;
+        }
+        return false;
+    }
+};
 ```
 
 </details>
@@ -5566,34 +5460,27 @@ Core idea     : matrix acts like sorted array
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: need ceil(success/spell)"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    vector<int> successfulPairs(vector<int>& spells, vector<int>& potions, long long success) {
+        sort(potions.begin(), potions.end());
+        vector<int> ans;
+        for (long long s : spells) {
+            long long need = (success + s - 1) / s;
+            ans.push_back(potions.end() - lower_bound(potions.begin(), potions.end(), need));
+        }
+        return ans;
     }
-}
+};
 ```
 
 </details>
@@ -5663,26 +5550,25 @@ Core idea     : all later potions work
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: store price and span"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: compressed stack
-// Form: previous greater
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: store price and span.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class StockSpanner {
+    stack<pair<int,int>> st;
+public:
+    int next(int price) {
+        int span = 1;
+        while (!st.empty() && st.top().first <= price) { span += st.top().second; st.pop(); }
+        st.push({price, span});
+        return span;
+    }
+};
 ```
 
 </details>
@@ -5752,25 +5638,30 @@ Core idea     : merge weaker previous days
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: count span"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: prev/next smaller
-// Form: contribution
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: count span.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int sumSubarrayMins(vector<int>& arr) {
+        const int MOD = 1e9 + 7;
+        int n = arr.size();
+        vector<int> left(n), right(n);
+        stack<int> st;
+        for (int i=0;i<n;i++){ while(!st.empty()&&arr[st.top()]>arr[i]) st.pop(); left[i]=st.empty()?i+1:i-st.top(); st.push(i); }
+        while(!st.empty()) st.pop();
+        for (int i=n-1;i>=0;i--){ while(!st.empty()&&arr[st.top()]>=arr[i]) st.pop(); right[i]=st.empty()?n-i:st.top()-i; st.push(i); }
+        long long ans=0;
+        for(int i=0;i<n;i++) ans=(ans+1LL*arr[i]*left[i]*right[i])%MOD;
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -5840,32 +5731,29 @@ Core idea     : each value contributes as minimum
 
 ```mermaid
 flowchart TD
-    A[Expand right side] --> B[Update window state]
-    B --> C{Window invalid?}
-    C -- Yes --> D[Shrink left side]
-    D --> C
-    C -- No --> E[Update answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: remove weaker old values"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-    deque<int> dq;
-    vector<int> ans;
-
-    for (int i = 0; i < (int)nums.size(); i++) {
-        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
-        while (!dq.empty() && nums[dq.back()] <= nums[i]) dq.pop_back();
-
-        dq.push_back(i);
-
-        if (i >= k - 1) ans.push_back(nums[dq.front()]);
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        deque<int> dq;
+        vector<int> ans;
+        for (int i=0;i<(int)nums.size();i++) {
+            while(!dq.empty() && dq.front() <= i-k) dq.pop_front();
+            while(!dq.empty() && nums[dq.back()] <= nums[i]) dq.pop_back();
+            dq.push_back(i);
+            if (i >= k-1) ans.push_back(nums[dq.front()]);
+        }
+        return ans;
     }
-
-    return ans;
-}
+};
 ```
 
 </details>
@@ -5935,26 +5823,34 @@ Core idea     : front always best
 
 ```mermaid
 flowchart TD
-    A[Expand right side] --> B[Update window state]
-    B --> C{Window invalid?}
-    C -- Yes --> D[Shrink left side]
-    D --> C
-    C -- No --> E[Update answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: maintain max-min"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: two deques
-// Form: window min max
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: maintain max-min.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int longestSubarray(vector<int>& nums, int limit) {
+        deque<int> mn, mx;
+        int l = 0, ans = 0;
+        for (int r=0;r<(int)nums.size();r++) {
+            while(!mn.empty() && nums[mn.back()] >= nums[r]) mn.pop_back();
+            while(!mx.empty() && nums[mx.back()] <= nums[r]) mx.pop_back();
+            mn.push_back(r); mx.push_back(r);
+            while(nums[mx.front()] - nums[mn.front()] > limit) {
+                if (mn.front() == l) mn.pop_front();
+                if (mx.front() == l) mx.pop_front();
+                l++;
+            }
+            ans = max(ans, r-l+1);
+        }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -6024,32 +5920,31 @@ Core idea     : valid window bounded by extremes
 
 ```mermaid
 flowchart TD
-    A[Expand right side] --> B[Update window state]
-    B --> C{Window invalid?}
-    C -- Yes --> D[Shrink left side]
-    D --> C
-    C -- No --> E[Update answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: keep best dp in range"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-vector<int> windowMax(vector<int>& a, int k) {
-    deque<int> dq;
-    vector<int> ans;
-
-    for (int i = 0; i < (int)a.size(); i++) {
-        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
-        while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back();
-
-        dq.push_back(i);
-
-        if (i >= k - 1) ans.push_back(a[dq.front()]);
+class Solution {
+public:
+    int constrainedSubsetSum(vector<int>& nums, int k) {
+        deque<int> dq;
+        vector<int> dp(nums.size());
+        int ans = nums[0];
+        for (int i=0;i<(int)nums.size();i++) {
+            if (!dq.empty() && dq.front() < i-k) dq.pop_front();
+            dp[i] = nums[i] + (dq.empty() ? 0 : max(0, dp[dq.front()]));
+            while(!dq.empty() && dp[dq.back()] <= dp[i]) dq.pop_back();
+            dq.push_back(i);
+            ans = max(ans, dp[i]);
+        }
+        return ans;
     }
-
-    return ans;
-}
+};
 ```
 
 </details>
@@ -6119,25 +6014,27 @@ Core idea     : transition needs max previous
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: before overlap after"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: three phases
-// Form: insert merge
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: before overlap after.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+        vector<vector<int>> ans;
+        int i = 0, n = intervals.size();
+        while (i<n && intervals[i][1] < newInterval[0]) ans.push_back(intervals[i++]);
+        while (i<n && intervals[i][0] <= newInterval[1]) { newInterval[0]=min(newInterval[0],intervals[i][0]); newInterval[1]=max(newInterval[1],intervals[i][1]); i++; }
+        ans.push_back(newInterval);
+        while (i<n) ans.push_back(intervals[i++]);
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -6207,30 +6104,27 @@ Core idea     : only overlap group changes
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: active meetings"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+class Solution {
+public:
+    int minMeetingRooms(vector<vector<int>>& intervals) {
+        sort(intervals.begin(), intervals.end());
+        priority_queue<int, vector<int>, greater<int>> ends;
+        for (auto& in : intervals) {
+            if (!ends.empty() && ends.top() <= in[0]) ends.pop();
+            ends.push(in[1]);
+        }
+        return ends.size();
+    }
+};
 ```
 
 </details>
@@ -6300,36 +6194,25 @@ Core idea     : max simultaneous rooms needed
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: passenger delta"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
+class Solution {
+public:
+    bool carPooling(vector<vector<int>>& trips, int capacity) {
+        map<int,int> events;
+        for (auto& t : trips) events[t[1]] += t[0], events[t[2]] -= t[0];
+        int cur = 0;
+        for (auto [pos, delta] : events) { cur += delta; if (cur > capacity) return false; }
+        return true;
     }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+};
 ```
 
 </details>
@@ -6399,25 +6282,28 @@ Core idea     : active passengers must fit capacity
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
+    B --> C["Add current value to Fenwick tree: compress values and doubled values"]
+    C --> D["Return accumulated count/cost"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: merge/Fenwick
-// Form: pair count
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: compress values and doubled values.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+    int mergeSort(vector<int>& a, int l, int r) {
+        if (r - l <= 1) return 0;
+        int m = (l+r)/2;
+        int ans = mergeSort(a,l,m) + mergeSort(a,m,r);
+        int j = m;
+        for (int i=l;i<m;i++) { while(j<r && (long long)a[i] > 2LL*a[j]) j++; ans += j-m; }
+        inplace_merge(a.begin()+l, a.begin()+m, a.begin()+r);
+        return ans;
+    }
+public:
+    int reversePairs(vector<int>& nums) { return mergeSort(nums, 0, nums.size()); }
+};
 ```
 
 </details>
@@ -6487,25 +6373,26 @@ Core idea     : count previous bigger than twice
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize DP base state"] --> B["Process each item once"]
+    B --> C["Update reachable states or best value: shift by number"]
+    C --> D["Return target DP answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: bitset DP
-// Form: subset sum
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: shift by number.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum % 2) return false;
+        int target = sum / 2;
+        vector<char> dp(target + 1); dp[0] = true;
+        for (int x : nums) for (int s = target; s >= x; s--) dp[s] |= dp[s-x];
+        return dp[target];
+    }
+};
 ```
 
 </details>
@@ -6575,25 +6462,25 @@ Core idea     : possible sums move by x
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize DP base state"] --> B["Process each item once"]
+    B --> C["Update reachable states or best value: find closest half"]
+    C --> D["Return target DP answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: bitset DP
-// Form: subset balance
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: find closest half.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int lastStoneWeightII(vector<int>& stones) {
+        int sum = accumulate(stones.begin(), stones.end(), 0), target = sum / 2;
+        vector<char> dp(target + 1); dp[0] = true;
+        for (int x : stones) for (int s = target; s >= x; s--) dp[s] |= dp[s-x];
+        for (int s = target; s >= 0; s--) if (dp[s]) return sum - 2*s;
+        return 0;
+    }
+};
 ```
 
 </details>
@@ -6665,34 +6552,28 @@ Core idea     : split stones into two groups
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: put x at x minus one"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    int firstMissingPositive(vector<int>& nums) {
+        int n = nums.size();
+        for (int i=0;i<n;i++) {
+            while (nums[i] >= 1 && nums[i] <= n && nums[nums[i]-1] != nums[i]) {
+                swap(nums[i], nums[nums[i]-1]);
+            }
+        }
+        for (int i=0;i<n;i++) if (nums[i] != i+1) return i+1;
+        return n+1;
     }
-}
+};
 ```
 
 </details>
@@ -6762,35 +6643,26 @@ Core idea     : array index acts as hash
 
 ```mermaid
 flowchart TD
-    A[Initialize left and right] --> B{Pointers valid?}
-    B -- Yes --> C[Compare / move useful pointer]
-    C --> D[Update answer or write position]
-    D --> B
-    B -- No --> E[Return answer]
+    A["Initialize left and right pointers"] --> B["Compare current pointer values"]
+    B --> C["Move the pointer that cannot improve answer: left max right max"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        int l=0,r=height.size()-1,leftMax=0,rightMax=0,ans=0;
+        while(l<r){
+            if(height[l] < height[r]) { leftMax=max(leftMax,height[l]); ans += leftMax-height[l]; l++; }
+            else { rightMax=max(rightMax,height[r]); ans += rightMax-height[r]; r--; }
+        }
+        return ans;
     }
-}
+};
 ```
 
 </details>
@@ -6860,25 +6732,36 @@ Core idea     : water depends on smaller wall
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: distribute spaces"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: vector group
-// Form: formatting
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: distribute spaces.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    vector<string> fullJustify(vector<string>& words, int maxWidth) {
+        vector<string> ans;
+        for (int i=0;i<(int)words.size();) {
+            int j=i, len=0;
+            while(j<(int)words.size() && len + (j-i) + (int)words[j].size() <= maxWidth) len += words[j++].size();
+            int gaps = j-i-1;
+            string line;
+            if (j == (int)words.size() || gaps == 0) {
+                for(int k=i;k<j;k++){ if(k>i) line+=' '; line+=words[k]; }
+                line += string(maxWidth - line.size(), ' ');
+            } else {
+                int spaces = maxWidth - len, each = spaces / gaps, extra = spaces % gaps;
+                for(int k=i;k<j;k++){ line += words[k]; if(k<j-1) line += string(each + (k-i < extra), ' '); }
+            }
+            ans.push_back(line); i=j;
+        }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -6948,26 +6831,35 @@ Core idea     : each line is greedy group
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: scan by offset"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
+class Solution {
+public:
+    vector<int> findSubstring(string s, vector<string>& words) {
+        vector<int> ans;
+        int n=s.size(), m=words.size(), w=words[0].size();
+        unordered_map<string,int> need;
+        for(auto& x:words) need[x]++;
+        for(int off=0; off<w; off++) {
+            unordered_map<string,int> have; int left=off, cnt=0;
+            for(int right=off; right+w<=n; right+=w) {
+                string cur=s.substr(right,w);
+                if(!need.count(cur)) { have.clear(); cnt=0; left=right+w; continue; }
+                have[cur]++; cnt++;
+                while(have[cur] > need[cur]) { have[s.substr(left,w)]--; cnt--; left += w; }
+                if(cnt == m) ans.push_back(left);
+            }
+        }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -7037,26 +6929,29 @@ Core idea     : words align by length
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: push context at parenthesis"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: stack/sign
-// Form: expression parsing
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: push context at parenthesis.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int calculate(string s) {
+        long long ans=0, num=0, sign=1;
+        stack<long long> st;
+        for(char c:s){
+            if(isdigit(c)) num = num*10 + c-'0';
+            else if(c=='+' || c=='-') { ans += sign*num; num=0; sign = c=='+' ? 1 : -1; }
+            else if(c=='(') { st.push(ans); st.push(sign); ans=0; sign=1; }
+            else if(c==')') { ans += sign*num; num=0; ans *= st.top(); st.pop(); ans += st.top(); st.pop(); }
+        }
+        return ans + sign*num;
+    }
+};
 ```
 
 </details>
@@ -7126,40 +7021,33 @@ Core idea     : parentheses change sign context
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: pop when height drops"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int largestRectangleArea(vector<int>& h) {
-    stack<int> st;
-    int ans = 0;
-    int n = h.size();
-
-    for (int i = 0; i <= n; i++) {
-        int cur = (i == n ? 0 : h[i]);
-
-        while (!st.empty() && h[st.top()] > cur) {
-            int height = h[st.top()];
-            st.pop();
-
-            int left = st.empty() ? -1 : st.top();
-            int width = i - left - 1;
-
-            ans = max(ans, height * width);
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        heights.push_back(0);
+        stack<int> st;
+        int ans=0;
+        for(int i=0;i<(int)heights.size();i++) {
+            while(!st.empty() && heights[st.top()] > heights[i]) {
+                int h=heights[st.top()]; st.pop();
+                int left = st.empty() ? -1 : st.top();
+                ans=max(ans, h*(i-left-1));
+            }
+            st.push(i);
         }
-
-        st.push(i);
+        heights.pop_back();
+        return ans;
     }
-
-    return ans;
-}
+};
 ```
 
 </details>
@@ -7229,25 +7117,31 @@ Core idea     : popped bar finds maximal width
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Push starting states into queue"] --> B["Process one BFS layer at a time"]
+    B --> C["Visit valid unvisited neighbors: encode board string"]
+    C --> D["Return distance/path when target found"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: queue + set
-// Form: state BFS
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: encode board string.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int slidingPuzzle(vector<vector<int>>& board) {
+        string start, target="123450";
+        for(auto& row:board) for(int x:row) start += char('0'+x);
+        vector<vector<int>> nb={{1,3},{0,2,4},{1,5},{0,4},{1,3,5},{2,4}};
+        queue<string> q; unordered_set<string> seen{start}; q.push(start);
+        for(int step=0; !q.empty(); step++) {
+            int sz=q.size();
+            while(sz--) { string cur=q.front(); q.pop(); if(cur==target) return step; int z=cur.find('0');
+                for(int j:nb[z]) { string nxt=cur; swap(nxt[z],nxt[j]); if(!seen.count(nxt)) seen.insert(nxt), q.push(nxt); }
+            }
+        }
+        return -1;
+    }
+};
 ```
 
 </details>
@@ -7317,11 +7211,9 @@ Core idea     : each move is one edge
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: balance sizes"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
@@ -7331,29 +7223,14 @@ flowchart TD
 class MedianFinder {
     priority_queue<int> low;
     priority_queue<int, vector<int>, greater<int>> high;
-
 public:
     void addNum(int num) {
-        if (low.empty() || num <= low.top()) low.push(num);
-        else high.push(num);
-
-        if (low.size() > high.size() + 1) {
-            high.push(low.top());
-            low.pop();
-        }
-
-        if (high.size() > low.size()) {
-            low.push(high.top());
-            high.pop();
-        }
+        low.push(num); high.push(low.top()); low.pop();
+        if (high.size() > low.size()) { low.push(high.top()); high.pop(); }
     }
-
     double findMedian() {
-        if (low.size() == high.size()) {
-            return (low.top() + high.top()) / 2.0;
-        }
-
-        return low.top();
+        if (low.size() > high.size()) return low.top();
+        return (low.top() + high.top()) / 2.0;
     }
 };
 ```
@@ -7425,30 +7302,26 @@ Core idea     : median lies between halves
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: push next from same list"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        auto cmp = [](ListNode* a, ListNode* b){ return a->val > b->val; };
+        priority_queue<ListNode*, vector<ListNode*>, decltype(cmp)> pq(cmp);
+        for (auto node : lists) if (node) pq.push(node);
+        ListNode dummy, *tail = &dummy;
+        while(!pq.empty()) { auto node=pq.top(); pq.pop(); tail->next=node; tail=tail->next; if(node->next) pq.push(node->next); }
+        return dummy.next;
+    }
+};
 ```
 
 </details>
@@ -7518,30 +7391,31 @@ Core idea     : smallest head is next answer
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: add affordable profits"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+class Solution {
+public:
+    int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {
+        vector<pair<int,int>> projects;
+        for(int i=0;i<(int)profits.size();i++) projects.push_back({capital[i], profits[i]});
+        sort(projects.begin(), projects.end());
+        priority_queue<int> pq;
+        int i=0;
+        while(k--) {
+            while(i<(int)projects.size() && projects[i].first <= w) pq.push(projects[i++].second);
+            if(pq.empty()) break;
+            w += pq.top(); pq.pop();
+        }
+        return w;
+    }
+};
 ```
 
 </details>
@@ -7611,36 +7485,25 @@ Core idea     : choose best available project
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: active count scan"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
+class MyCalendarThree {
+    map<int,int> diff;
+public:
+    int book(int start, int end) {
+        diff[start]++; diff[end]--;
+        int cur=0, best=0;
+        for(auto [t,d]:diff) best=max(best, cur += d);
+        return best;
     }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+};
 ```
 
 </details>
@@ -7710,10 +7573,9 @@ Core idea     : maximum overlap is prefix of events
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: buckets by frequency"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
@@ -7721,53 +7583,14 @@ flowchart TD
 
 ```cpp
 class AllOne {
-    map<string,int> keyFreq;
-    map<int,set<string>> freqKeys;
-
-    void eraseFromFreq(const string& key, int f) {
-        freqKeys[f].erase(key);
-
-        if (freqKeys[f].empty()) {
-            freqKeys.erase(f);
-        }
-    }
-
+    unordered_map<string,int> cnt;
 public:
-    void inc(string key) {
-        int oldFreq = keyFreq[key];
-
-        if (oldFreq > 0) eraseFromFreq(key, oldFreq);
-
-        int newFreq = oldFreq + 1;
-        keyFreq[key] = newFreq;
-        freqKeys[newFreq].insert(key);
-    }
-
-    void dec(string key) {
-        int oldFreq = keyFreq[key];
-
-        eraseFromFreq(key, oldFreq);
-
-        int newFreq = oldFreq - 1;
-
-        if (newFreq == 0) {
-            keyFreq.erase(key);
-        } else {
-            keyFreq[key] = newFreq;
-            freqKeys[newFreq].insert(key);
-        }
-    }
-
-    string getMaxKey() {
-        if (freqKeys.empty()) return "";
-        return *freqKeys.rbegin()->second.rbegin();
-    }
-
-    string getMinKey() {
-        if (freqKeys.empty()) return "";
-        return *freqKeys.begin()->second.rbegin();
-    }
+    void inc(string key) { cnt[key]++; }
+    void dec(string key) { if (--cnt[key] == 0) cnt.erase(key); }
+    string getMaxKey() { string ans=""; int best=INT_MIN; for(auto& [k,v]:cnt) if(v>best) best=v, ans=k; return ans; }
+    string getMinKey() { string ans=""; int best=INT_MAX; for(auto& [k,v]:cnt) if(v<best) best=v, ans=k; return ans; }
 };
+// Note: This is simple and readable. For strict O(1), use bucket list + key iterators.
 ```
 
 </details>
@@ -7837,34 +7660,24 @@ Core idea     : O(1) min and max buckets
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: width asc height desc"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
+class Solution {
+public:
+    int maxEnvelopes(vector<vector<int>>& envelopes) {
+        sort(envelopes.begin(), envelopes.end(), [](auto& a, auto& b){ return a[0]==b[0] ? a[1]>b[1] : a[0]<b[0]; });
+        vector<int> lis;
+        for(auto& e:envelopes) { auto it=lower_bound(lis.begin(), lis.end(), e[1]); if(it==lis.end()) lis.push_back(e[1]); else *it=e[1]; }
+        return lis.size();
     }
-}
+};
 ```
 
 </details>
@@ -7934,36 +7747,26 @@ Core idea     : avoid equal width nesting
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Initialize DP base state"] --> B["Process each item once"]
+    B --> C["Update reachable states or best value: previous compatible job"]
+    C --> D["Return target DP answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
+class Solution {
+public:
+    int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+        int n=startTime.size(); vector<array<int,3>> jobs;
+        for(int i=0;i<n;i++) jobs.push_back({endTime[i], startTime[i], profit[i]});
+        sort(jobs.begin(), jobs.end());
+        vector<int> ends{0}, dp{0};
+        for(auto [e,s,p]:jobs){ int i=upper_bound(ends.begin(), ends.end(), s)-ends.begin()-1; int best=max(dp.back(), dp[i]+p); ends.push_back(e); dp.push_back(best); }
+        return dp.back();
     }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+};
 ```
 
 </details>
@@ -8033,24 +7836,27 @@ Core idea     : choose job or skip
 
 ```mermaid
 flowchart TD
-    A[Define monotonic condition] --> B[Binary search / lower_bound]
-    B --> C[Check candidate]
-    C --> D[Return index/value]
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: partition smaller array"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: binary search
-// Form: partition
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: partition smaller array.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& a, vector<int>& b) {
+        if (a.size() > b.size()) return findMedianSortedArrays(b, a);
+        int m=a.size(), n=b.size(), half=(m+n+1)/2, l=0, r=m;
+        while(l<=r){ int i=(l+r)/2, j=half-i; int Aleft=i? a[i-1]:INT_MIN, Aright=i<m?a[i]:INT_MAX; int Bleft=j?b[j-1]:INT_MIN, Bright=j<n?b[j]:INT_MAX;
+            if(Aleft<=Bright && Bleft<=Aright) return (m+n)%2 ? max(Aleft,Bleft) : (max(Aleft,Bleft)+min(Aright,Bright))/2.0;
+            if(Aleft>Bright) r=i-1; else l=i+1;
+        }
+        return 0;
+    }
+};
 ```
 
 </details>
@@ -8120,30 +7926,27 @@ Core idea     : left half must be <= right half
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
+    B --> C["Add current value to Fenwick tree: insert from right"]
+    C --> D["Return accumulated count/cost"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-#include <ext/pb_ds/assoc_container.hpp>
-using namespace __gnu_pbds;
-
-template<class T>
-using ordered_set = tree<T, null_type, less<T>, rb_tree_tag,
-tree_order_statistics_node_update>;
-
-ordered_set<int> os;
-
-os.insert(10);
-os.insert(20);
-
-int countLess = os.order_of_key(20);
-int kth = *os.find_by_order(0);
+class Solution {
+    vector<int> bit;
+    void add(int i,int v){ for(;i<(int)bit.size();i+=i&-i) bit[i]+=v; }
+    int sum(int i){ int s=0; for(;i>0;i-=i&-i) s+=bit[i]; return s; }
+public:
+    vector<int> countSmaller(vector<int>& nums) {
+        vector<int> vals=nums; sort(vals.begin(), vals.end()); vals.erase(unique(vals.begin(), vals.end()), vals.end());
+        bit.assign(vals.size()+1,0); vector<int> ans(nums.size());
+        for(int i=nums.size()-1;i>=0;i--){ int rank=lower_bound(vals.begin(), vals.end(), nums[i])-vals.begin()+1; ans[i]=sum(rank-1); add(rank,1); }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -8213,26 +8016,24 @@ Core idea     : count previously inserted smaller
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: heights build histogram"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: stack per row
-// Form: matrix histogram
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: heights build histogram.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+    int hist(vector<int>& h){ stack<int> st; h.push_back(0); int ans=0; for(int i=0;i<(int)h.size();i++){ while(!st.empty()&&h[st.top()]>h[i]){int ht=h[st.top()]; st.pop(); int l=st.empty()?-1:st.top(); ans=max(ans,ht*(i-l-1));} st.push(i);} h.pop_back(); return ans; }
+public:
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if(matrix.empty()) return 0; int n=matrix[0].size(), ans=0; vector<int> h(n);
+        for(auto& row:matrix){ for(int j=0;j<n;j++) h[j]=row[j]=='1'?h[j]+1:0; ans=max(ans,hist(h)); }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -8302,25 +8103,25 @@ Core idea     : each row becomes histogram problem
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: discard dominated prefixes"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: increasing prefix deque
-// Form: prefix deque
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: discard dominated prefixes.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+public:
+    int shortestSubarray(vector<int>& nums, int k) {
+        int n=nums.size(), ans=n+1; vector<long long> pref(n+1);
+        for(int i=0;i<n;i++) pref[i+1]=pref[i]+nums[i];
+        deque<int> dq;
+        for(int i=0;i<=n;i++){ while(!dq.empty()&&pref[i]-pref[dq.front()]>=k){ ans=min(ans,i-dq.front()); dq.pop_front(); } while(!dq.empty()&&pref[dq.back()]>=pref[i]) dq.pop_back(); dq.push_back(i); }
+        return ans==n+1?-1:ans;
+    }
+};
 ```
 
 </details>
@@ -8390,30 +8191,27 @@ Core idea     : smaller earlier prefix is better
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: insert erase balance"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+class Solution {
+    multiset<int> lo, hi;
+    void rebalance(){ while(lo.size()>hi.size()+1){ hi.insert(*lo.rbegin()); lo.erase(prev(lo.end())); } while(lo.size()<hi.size()){ lo.insert(*hi.begin()); hi.erase(hi.begin()); } }
+    void add(int x){ if(lo.empty()||x<=*lo.rbegin()) lo.insert(x); else hi.insert(x); rebalance(); }
+    void remove(int x){ auto it=lo.find(x); if(it!=lo.end()) lo.erase(it); else hi.erase(hi.find(x)); rebalance(); }
+public:
+    vector<double> medianSlidingWindow(vector<int>& nums, int k) {
+        vector<double> ans;
+        for(int i=0;i<(int)nums.size();i++){ add(nums[i]); if(i>=k) remove(nums[i-k]); if(i>=k-1) ans.push_back(k%2?*lo.rbegin():((long long)*lo.rbegin()+*hi.begin())/2.0); }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -8483,36 +8281,26 @@ Core idea     : median is boundary of halves
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: gaps after merge"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
+class Solution {
+public:
+    vector<Interval> employeeFreeTime(vector<vector<Interval>> schedule) {
+        vector<Interval> all;
+        for (auto& emp : schedule) for (auto& in : emp) all.push_back(in);
+        sort(all.begin(), all.end(), [](Interval& a, Interval& b){ return a.start < b.start; });
+        vector<Interval> ans; int end = all[0].end;
+        for (int i=1;i<(int)all.size();i++) { if (all[i].start > end) ans.push_back(Interval(end, all[i].start)); end = max(end, all[i].end); }
+        return ans;
     }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+};
 ```
 
 </details>
@@ -8582,30 +8370,26 @@ Core idea     : free time is complement of busy union
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: remove smallest speed"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+class Solution {
+public:
+    int maxPerformance(int n, vector<int>& speed, vector<int>& efficiency, int k) {
+        const int MOD=1e9+7; vector<pair<int,int>> eng;
+        for(int i=0;i<n;i++) eng.push_back({efficiency[i], speed[i]});
+        sort(eng.rbegin(), eng.rend());
+        priority_queue<int, vector<int>, greater<int>> pq; long long sum=0, ans=0;
+        for(auto [e,s]:eng){ pq.push(s); sum+=s; if((int)pq.size()>k){ sum-=pq.top(); pq.pop(); } ans=max(ans,sum*e); }
+        return ans%MOD;
+    }
+};
 ```
 
 </details>
@@ -8675,25 +8459,27 @@ Core idea     : efficiency fixed by sorted order
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
+    B --> C["Add current value to Fenwick tree: count less and greater"]
+    C --> D["Return accumulated count/cost"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: Fenwick + compression
-// Form: dynamic rank count
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: count less and greater.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+class Solution {
+    static const int MOD=1e9+7;
+    vector<int> bit;
+    void add(int i,int v){ for(;i<(int)bit.size();i+=i&-i) bit[i]+=v; }
+    int sum(int i){ int s=0; for(;i>0;i-=i&-i) s+=bit[i]; return s; }
+public:
+    int createSortedArray(vector<int>& instructions) {
+        int mx=*max_element(instructions.begin(), instructions.end()); bit.assign(mx+2,0); long long ans=0;
+        for(int i=0;i<(int)instructions.size();i++){ int x=instructions[i]; int less=sum(x-1), greater=i-sum(x); ans=(ans+min(less,greater))%MOD; add(x,1); }
+        return ans;
+    }
+};
 ```
 
 </details>
@@ -8765,25 +8551,18 @@ Core idea     : insertion cost from ranks
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: count breaks"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: positions array
-// Form: permutation order
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: count breaks.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<int> pos(n+1);for(int i=1,x;i<=n;i++){cin>>x;pos[x]=i;}int ans=1;for(int x=2;x<=n;x++) if(pos[x]<pos[x-1]) ans++;cout<<ans;return 0;}
 ```
 
 </details>
@@ -8853,25 +8632,18 @@ Core idea     : new round starts when position decreases
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: rotate remove"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: queue/vector
-// Form: simulation
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: rotate remove.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;queue<int> q;for(int i=1;i<=n;i++)q.push(i);while(!q.empty()){q.push(q.front());q.pop();cout<<q.front()<<' ';q.pop();}return 0;}
 ```
 
 </details>
@@ -8941,25 +8713,18 @@ Core idea     : circular process needs efficient order
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: prefix/hash"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: string algorithm
-// Form: pattern search
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: prefix/hash.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);string s,p;cin>>s>>p;string t=p+'#'+s;vector<int> pi(t.size());for(int i=1;i<(int)t.size();i++){int j=pi[i-1];while(j&&t[i]!=t[j])j=pi[j-1];if(t[i]==t[j])j++;pi[i]=j;}int ans=0;for(int x:pi) if(x==(int)p.size()) ans++;cout<<ans;return 0;}
 ```
 
 </details>
@@ -9029,33 +8794,18 @@ Core idea     : repeated pattern matching needs linear scan
 
 ```mermaid
 flowchart TD
-    A[Read current item] --> B{Can it resolve stack top?}
-    B -- Yes --> C[Pop / combine / record answer]
-    B -- No --> D[Keep current state]
-    C --> B
-    D --> E[Push current item if needed]
+    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
+    B --> C["Push current item if still needed: remove bigger candidates"]
+    C --> D["Return final stack-derived answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-vector<int> nextGreaterRight(vector<int>& a) {
-    int n = a.size();
-    vector<int> ans(n, -1);
-    stack<int> st;
-
-    for (int i = 0; i < n; i++) {
-        while (!st.empty() && a[st.top()] < a[i]) {
-            ans[st.top()] = a[i];
-            st.pop();
-        }
-
-        st.push(i);
-    }
-
-    return ans;
-}
+#include <bits/stdc++.h>
+using namespace std;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;stack<pair<int,int>> st;for(int i=1,x;i<=n;i++){cin>>x;while(!st.empty()&&st.top().first>=x)st.pop();cout<<(st.empty()?0:st.top().second)<<' ';st.push({x,i});}return 0;}
 ```
 
 </details>
@@ -9125,25 +8875,19 @@ Core idea     : remaining top is nearest smaller
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Push starting states into queue"] --> B["Process one BFS layer at a time"]
+    B --> C["Visit valid unvisited neighbors: parent reconstruction"]
+    C --> D["Return distance/path when target found"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: BFS queue
-// Form: grid shortest path
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: parent reconstruction.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;vector<string> g(n);for(auto& r:g)cin>>r;queue<pair<int,int>>q;vector<vector<int>> par(n,vector<int>(m,-1));int sr,sc,tr,tc;for(int i=0;i<n;i++)for(int j=0;j<m;j++){if(g[i][j]=='A')sr=i,sc=j;if(g[i][j]=='B')tr=i,tc=j;}q.push({sr,sc});par[sr][sc]=4;int dr[4]={1,0,-1,0},dc[4]={0,1,0,-1};string mv="DRUL";while(!q.empty()){auto [r,c]=q.front();q.pop();for(int d=0;d<4;d++){int nr=r+dr[d],nc=c+dc[d];if(nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||par[nr][nc]!=-1)continue;par[nr][nc]=d;q.push({nr,nc});}}if(par[tr][tc]==-1){cout<<"NO";return 0;}string path;for(int r=tr,c=tc;r!=sr||c!=sc;){int d=par[r][c];path+=mv[d];r-=dr[d];c-=dc[d];}reverse(path.begin(),path.end());cout<<"YES
+"<<path.size()<<"\n"<<path;return 0;}
 ```
 
 </details>
@@ -9213,25 +8957,19 @@ Core idea     : BFS gives shortest path
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Push starting states into queue"] --> B["Process one BFS layer at a time"]
+    B --> C["Visit valid unvisited neighbors: compare monster time"]
+    C --> D["Return distance/path when target found"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: BFS twice
-// Form: multi-source escape
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: compare monster time.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;vector<string>g(n);for(auto&r:g)cin>>r;queue<pair<int,int>>q;vector<vector<int>> md(n,vector<int>(m,1e9)),ad(n,vector<int>(m,1e9)),par(n,vector<int>(m,-1));int sr,sc;for(int i=0;i<n;i++)for(int j=0;j<m;j++){if(g[i][j]=='M'){q.push({i,j});md[i][j]=0;}if(g[i][j]=='A')sr=i,sc=j;}int dr[4]={1,0,-1,0},dc[4]={0,1,0,-1};string mv="DRUL";while(!q.empty()){auto [r,c]=q.front();q.pop();for(int d=0;d<4;d++){int nr=r+dr[d],nc=c+dc[d];if(nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||md[nr][nc]!=1e9)continue;md[nr][nc]=md[r][c]+1;q.push({nr,nc});}}q.push({sr,sc});ad[sr][sc]=0;while(!q.empty()){auto [r,c]=q.front();q.pop();if(r==0||c==0||r==n-1||c==m-1){string path;while(r!=sr||c!=sc){int d=par[r][c];path+=mv[d];r-=dr[d];c-=dc[d];}reverse(path.begin(),path.end());cout<<"YES
+"<<path.size()<<"\n"<<path;return 0;}for(int d=0;d<4;d++){int nr=r+dr[d],nc=c+dc[d];if(nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||ad[nr][nc]!=1e9)continue;if(ad[r][c]+1>=md[nr][nc])continue;ad[nr][nc]=ad[r][c]+1;par[nr][nc]=d;q.push({nr,nc});}}cout<<"NO";return 0;}
 ```
 
 </details>
@@ -9301,25 +9039,18 @@ Core idea     : escape only if player arrives earlier
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: Dijkstra with used coupon state"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: priority queue
-// Form: shortest path state
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: Dijkstra with used coupon state.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std; using ll=long long; const ll INF=4e18;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;vector<vector<pair<int,int>>>g(n+1);for(int i=0,a,b,c;i<m;i++){cin>>a>>b>>c;g[a].push_back({b,c});}vector<array<ll,2>>dist(n+1,{INF,INF});priority_queue<tuple<ll,int,int>,vector<tuple<ll,int,int>>,greater<>>pq;dist[1][0]=0;pq.push({0,1,0});while(!pq.empty()){auto [d,u,used]=pq.top();pq.pop();if(d!=dist[u][used])continue;for(auto [v,w]:g[u]){if(d+w<dist[v][used]){dist[v][used]=d+w;pq.push({dist[v][used],v,used});}if(!used&&d+w/2<dist[v][1]){dist[v][1]=d+w/2;pq.push({dist[v][1],v,1});}}}cout<<dist[n][1];return 0;}
 ```
 
 </details>
@@ -9389,36 +9120,18 @@ Core idea     : heap picks shortest state
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: split segment"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+#include <bits/stdc++.h>
+using namespace std;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int x,n;cin>>x>>n;set<int> pos{0,x};multiset<int> len{x};while(n--){int p;cin>>p;auto r=pos.upper_bound(p),l=prev(r);len.erase(len.find(*r-*l));len.insert(p-*l);len.insert(*r-p);pos.insert(p);cout<<*len.rbegin()<<' ';}return 0;}
 ```
 
 </details>
@@ -9488,30 +9201,18 @@ Core idea     : longest gap after each insertion
 
 ```mermaid
 flowchart TD
-    A[Read candidate] --> B[Push into heap]
-    B --> C{Heap has invalid/excess items?}
-    C -- Yes --> D[Pop heap top]
-    C -- No --> E[Use heap top as best candidate]
-    D --> C
+    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
+    B --> C["Use heap top as best current choice: reuse earliest finishing room"]
+    C --> D["Return accumulated result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Heap template: keep current best item.
-priority_queue<int> maxHeap;
-
-for (int x : values) {
-    maxHeap.push(x);
-}
-
-while (!maxHeap.empty()) {
-    int best = maxHeap.top();
-    maxHeap.pop();
-
-    // process best
-}
+#include <bits/stdc++.h>
+using namespace std;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<array<int,3>> a(n);for(int i=0;i<n;i++){cin>>a[i][0]>>a[i][1];a[i][2]=i;}sort(a.begin(),a.end());priority_queue<pair<int,int>,vector<pair<int,int>>,greater<>> pq;vector<int> ans(n);int rooms=0;for(auto [l,r,i]:a){if(!pq.empty()&&pq.top().first<l){auto [end,room]=pq.top();pq.pop();ans[i]=room;pq.push({r,room});}else{ans[i]=++rooms;pq.push({r,rooms});}}cout<<rooms<<"\n";for(int x:ans)cout<<x<<' ';return 0;}
 ```
 
 </details>
@@ -9581,52 +9282,17 @@ Core idea     : sorted endings choose available room
 
 ```mermaid
 flowchart TD
-    A[Expand right side] --> B[Update window state]
-    B --> C{Window invalid?}
-    C -- Yes --> D[Shrink left side]
-    D --> C
-    C -- No --> E[Update answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: balance halves"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-struct TwoHalves {
-    multiset<int> low, high;
-
-    void rebalance() {
-        while (low.size() > high.size() + 1) {
-            high.insert(*low.rbegin());
-            low.erase(prev(low.end()));
-        }
-
-        while (high.size() > low.size()) {
-            low.insert(*high.begin());
-            high.erase(high.begin());
-        }
-    }
-
-    void add(int x) {
-        if (low.empty() || x <= *low.rbegin()) low.insert(x);
-        else high.insert(x);
-
-        rebalance();
-    }
-
-    void remove(int x) {
-        auto it = low.find(x);
-
-        if (it != low.end()) low.erase(it);
-        else high.erase(high.find(x));
-
-        rebalance();
-    }
-
-    int median() {
-        return *low.rbegin();
-    }
-};
+#include <bits/stdc++.h>
+using namespace std;multiset<int> lo,hi;void reb(){while(lo.size()>hi.size()+1){hi.insert(*lo.rbegin());lo.erase(prev(lo.end()));}while(lo.size()<hi.size()){lo.insert(*hi.begin());hi.erase(hi.begin());}}void add(int x){if(lo.empty()||x<=*lo.rbegin())lo.insert(x);else hi.insert(x);reb();}void rem(int x){auto it=lo.find(x);if(it!=lo.end())lo.erase(it);else hi.erase(hi.find(x));reb();}int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<int>a(n);for(int&i:a)cin>>i;for(int i=0;i<n;i++){add(a[i]);if(i>=k)rem(a[i-k]);if(i>=k-1)cout<<*lo.rbegin()<<' ';}return 0;}
 ```
 
 </details>
@@ -9696,26 +9362,18 @@ Core idea     : median is max of lower half
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: store earlier pairs"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-unordered_map<int,int> freq;
-
-for (int x : a) {
-    freq[x]++;
-}
-
-// Example: iterate frequencies
-for (auto [value, count] : freq) {
-    // process value and count
-}
+#include <bits/stdc++.h>
+using namespace std;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;long long x;cin>>n>>x;vector<long long>a(n);for(auto&v:a)cin>>v;map<long long,pair<int,int>> mp;for(int i=0;i<n;i++){for(int j=i+1;j<n;j++){long long need=x-a[i]-a[j];if(mp.count(need)){auto [p,q]=mp[need];cout<<p+1<<' '<<q+1<<' '<<i+1<<' '<<j+1;return 0;}}for(int j=0;j<i;j++)mp[a[i]+a[j]]={j,i};}cout<<"IMPOSSIBLE";return 0;}
 ```
 
 </details>
@@ -9785,31 +9443,18 @@ Core idea     : two pairs form target
 
 ```mermaid
 flowchart TD
-    A[Scan item] --> B[Query needed value/state]
-    B --> C[Update answer]
-    C --> D[Store current value/state in map]
-    D --> A
+    A["Scan current value"] --> B["Query needed key or count"]
+    B --> C["Update answer if condition matches: count prefix minus x"]
+    C --> D["Store current state in map"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-long long countSubarraySumK(vector<int>& a, long long k) {
-    unordered_map<long long,long long> freq;
-    freq[0] = 1;
-
-    long long pref = 0;
-    long long ans = 0;
-
-    for (int x : a) {
-        pref += x;
-        ans += freq[pref - k];
-        freq[pref]++;
-    }
-
-    return ans;
-}
+#include <bits/stdc++.h>
+using namespace std;using ll=long long;
+int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;ll x;cin>>n>>x;map<ll,ll> cnt;cnt[0]=1;ll pref=0,ans=0;for(int i=0;i<n;i++){ll v;cin>>v;pref+=v;ans+=cnt[pref-x];cnt[pref]++;}cout<<ans;return 0;}
 ```
 
 </details>
@@ -9879,34 +9524,17 @@ Core idea     : every old prefix creates subarray
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: take earliest finishing"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<pair<int,int>>a(n);for(auto&[l,r]:a)cin>>l>>r;sort(a.begin(),a.end(),[](auto&a,auto&b){return a.second<b.second;});int ans=0,end=0;for(auto [l,r]:a)if(l>=end)ans++,end=r;cout<<ans;return 0;}
 ```
 
 </details>
@@ -9976,34 +9604,17 @@ Core idea     : greedy maximizes remaining time
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: process shortest duration first?"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
+#include <bits/stdc++.h>
+using namespace std;using ll=long long;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<pair<ll,ll>>a(n);for(auto&[d,t]:a)cin>>d>>t;sort(a.begin(),a.end());ll time=0,ans=0;for(auto [d,t]:a){time+=d;ans+=t-time;}cout<<ans;return 0;}
 ```
 
 </details>
@@ -10073,34 +9684,17 @@ Core idea     : minimize accumulated finish effect
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: two pointers"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,x;cin>>n>>x;vector<pair<int,int>>a(n);for(int i=0;i<n;i++){cin>>a[i].first;a[i].second=i+1;}sort(a.begin(),a.end());int l=0,r=n-1;while(l<r){long long s=a[l].first+a[r].first;if(s==x){cout<<a[l].second<<' '<<a[r].second;return 0;}if(s<x)l++;else r--;}cout<<"IMPOSSIBLE";return 0;}
 ```
 
 </details>
@@ -10170,35 +9764,17 @@ Core idea     : sorted sum moves predictably
 
 ```mermaid
 flowchart TD
-    A[Initialize left and right] --> B{Pointers valid?}
-    B -- Yes --> C[Compare / move useful pointer]
-    C --> D[Update answer or write position]
-    D --> B
-    B -- No --> E[Return answer]
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: fix one"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,x;cin>>n>>x;vector<pair<int,int>>a(n);for(int i=0;i<n;i++){cin>>a[i].first;a[i].second=i+1;}sort(a.begin(),a.end());for(int i=0;i<n;i++){int l=i+1,r=n-1;while(l<r){long long s=a[i].first+a[l].first+a[r].first;if(s==x){cout<<a[i].second<<' '<<a[l].second<<' '<<a[r].second;return 0;}if(s<x)l++;else r--;}}cout<<"IMPOSSIBLE";return 0;}
 ```
 
 </details>
@@ -10268,24 +9844,17 @@ Core idea     : remaining pair is two sum
 
 ```mermaid
 flowchart TD
-    A[Define monotonic condition] --> B[Binary search / lower_bound]
-    B --> C[Check candidate]
-    C --> D[Return index/value]
+    A["Set low and high search bounds"] --> B["Test middle candidate"]
+    B --> C["Discard impossible half: check products by time"]
+    C --> D["Return found index or boundary"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: binary search
-// Form: answer search
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: check products by time.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;using ll=long long;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;ll t;cin>>n>>t;vector<ll>a(n);for(auto&x:a)cin>>x;ll l=0,r=1e18;while(l<r){ll m=(l+r)/2, made=0;for(ll x:a){made+=m/x;if(made>=t)break;}if(made>=t)r=m;else l=m+1;}cout<<l;return 0;}
 ```
 
 </details>
@@ -10355,35 +9924,17 @@ Core idea     : time feasibility monotonic
 
 ```mermaid
 flowchart TD
-    A[Initialize left and right] --> B{Pointers valid?}
-    B -- Yes --> C[Compare / move useful pointer]
-    C --> D[Update answer or write position]
-    D --> B
-    B -- No --> E[Return answer]
+    A["Initialize left and right pointers"] --> B["Compare current pointer values"]
+    B --> C["Move the pointer that cannot improve answer: monotonic sum"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
+#include <bits/stdc++.h>
+using namespace std;using ll=long long;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;ll x;cin>>n>>x;vector<int>a(n);for(int&i:a)cin>>i;ll sum=0,ans=0;int l=0;for(int r=0;r<n;r++){sum+=a[r];while(sum>x)sum-=a[l++];if(sum==x)ans++;}cout<<ans;return 0;}
 ```
 
 </details>
@@ -10453,32 +10004,17 @@ Core idea     : positive values allow moving left
 
 ```mermaid
 flowchart TD
-    A[Expand right side] --> B[Update window state]
-    B --> C{Window invalid?}
-    C -- Yes --> D[Shrink left side]
-    D --> C
-    C -- No --> E[Update answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: same as max reversed"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-vector<int> windowMax(vector<int>& a, int k) {
-    deque<int> dq;
-    vector<int> ans;
-
-    for (int i = 0; i < (int)a.size(); i++) {
-        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
-        while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back();
-
-        dq.push_back(i);
-
-        if (i >= k - 1) ans.push_back(a[dq.front()]);
-    }
-
-    return ans;
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<int>a(n);for(int&i:a)cin>>i;deque<int>dq;for(int i=0;i<n;i++){while(!dq.empty()&&dq.front()<=i-k)dq.pop_front();while(!dq.empty()&&a[dq.back()]>=a[i])dq.pop_back();dq.push_back(i);if(i>=k-1)cout<<a[dq.front()]<<' ';}return 0;}
 ```
 
 </details>
@@ -10548,51 +10084,17 @@ Core idea     : front is minimum candidate
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: maintain sums"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-struct TwoHalves {
-    multiset<int> low, high;
-
-    void rebalance() {
-        while (low.size() > high.size() + 1) {
-            high.insert(*low.rbegin());
-            low.erase(prev(low.end()));
-        }
-
-        while (high.size() > low.size()) {
-            low.insert(*high.begin());
-            high.erase(high.begin());
-        }
-    }
-
-    void add(int x) {
-        if (low.empty() || x <= *low.rbegin()) low.insert(x);
-        else high.insert(x);
-
-        rebalance();
-    }
-
-    void remove(int x) {
-        auto it = low.find(x);
-
-        if (it != low.end()) low.erase(it);
-        else high.erase(high.find(x));
-
-        rebalance();
-    }
-
-    int median() {
-        return *low.rbegin();
-    }
-};
+#include <bits/stdc++.h>
+using namespace std;using ll=long long;multiset<ll>lo,hi;ll slo=0,shi=0;void reb(){while(lo.size()>hi.size()+1){auto it=prev(lo.end());hi.insert(*it);shi+=*it;slo-=*it;lo.erase(it);}while(lo.size()<hi.size()){auto it=hi.begin();lo.insert(*it);slo+=*it;shi-=*it;hi.erase(it);}}void add(ll x){if(lo.empty()||x<=*lo.rbegin())lo.insert(x),slo+=x;else hi.insert(x),shi+=x;reb();}void rem(ll x){auto it=lo.find(x);if(it!=lo.end())slo-=x,lo.erase(it);else it=hi.find(x),shi-=x,hi.erase(it);reb();}int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<ll>a(n);for(auto&x:a)cin>>x;for(int i=0;i<n;i++){add(a[i]);if(i>=k)rem(a[i-k]);if(i>=k-1){ll med=*lo.rbegin();cout<<med*(ll)lo.size()-slo+shi-med*(ll)hi.size()<<' ';}}return 0;}
 ```
 
 </details>
@@ -10662,34 +10164,17 @@ Core idea     : median minimizes absolute deviation
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: arrival +1 leave -1"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<pair<int,int>>e;for(int i=0,a,b;i<n;i++){cin>>a>>b;e.push_back({a,1});e.push_back({b,-1});}sort(e.begin(),e.end());int cur=0,ans=0;for(auto [t,d]:e)ans=max(ans,cur+=d);cout<<ans;return 0;}
 ```
 
 </details>
@@ -10759,34 +10244,17 @@ Core idea     : maximum active customers
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: upper_bound budget"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-sort(a.begin(), a.end());
-
-int l = 0;
-int r = (int)a.size() - 1;
-
-while (l < r) {
-    int sum = a[l] + a[r];
-
-    if (sum == target) {
-        // found
-        l++;
-        r--;
-    } else if (sum < target) {
-        l++;
-    } else {
-        r--;
-    }
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;multiset<int>s;for(int i=0,x;i<n;i++){cin>>x;s.insert(x);}while(m--){int x;cin>>x;auto it=s.upper_bound(x);if(it==s.begin())cout<<-1<<"\n";else{--it;cout<<*it<<"\n";s.erase(it);}}return 0;}
 ```
 
 </details>
@@ -10856,36 +10324,17 @@ Core idea     : assign most expensive affordable ticket
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
+    B --> C["Add current value to Fenwick tree: compress right endpoints"]
+    C --> D["Return accumulated count/cost"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+#include <bits/stdc++.h>
+using namespace std;struct R{int l,r,i;};int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<R>a(n);vector<int>vals;for(int i=0;i<n;i++){cin>>a[i].l>>a[i].r;a[i].i=i;vals.push_back(a[i].r);}sort(vals.begin(),vals.end());vals.erase(unique(vals.begin(),vals.end()),vals.end());vector<int>bit(n+2),contains(n),contained(n);auto add=[&](int i){for(;i<=n;i+=i&-i)bit[i]++;};auto sum=[&](int i){int s=0;for(;i;i-=i&-i)s+=bit[i];return s;};sort(a.begin(),a.end(),[](R&a,R&b){return a.l==b.l?a.r>b.r:a.l<b.l;});for(int i=n-1;i>=0;i--){int r=lower_bound(vals.begin(),vals.end(),a[i].r)-vals.begin()+1;contains[a[i].i]=sum(r);add(r);}fill(bit.begin(),bit.end(),0);for(int i=0;i<n;i++){int r=lower_bound(vals.begin(),vals.end(),a[i].r)-vals.begin()+1;contained[a[i].i]=i-sum(r-1);add(r);}for(int x:contains)cout<<x<<' ';cout<<"\n";for(int x:contained)cout<<x<<' ';return 0;}
 ```
 
 </details>
@@ -10955,25 +10404,17 @@ Core idea     : containment becomes rank query
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
+    B --> C["Add current value to Fenwick tree: update old new salary"]
+    C --> D["Return accumulated count/cost"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: compression + Fenwick
-// Form: dynamic range count
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: update old new salary.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,q;cin>>n>>q;vector<int>a(n);vector<tuple<char,int,int>>qs;vector<int>vals;for(int&i:a){cin>>i;vals.push_back(i);}for(int i=0;i<q;i++){char c;int x,y;cin>>c>>x>>y;qs.push_back({c,x,y});if(c=='!')vals.push_back(y);else vals.push_back(x),vals.push_back(y);}sort(vals.begin(),vals.end());vals.erase(unique(vals.begin(),vals.end()),vals.end());vector<int>bit(vals.size()+2);auto id=[&](int x){return lower_bound(vals.begin(),vals.end(),x)-vals.begin()+1;};auto add=[&](int i,int v){for(;i<(int)bit.size();i+=i&-i)bit[i]+=v;};auto sum=[&](int i){int s=0;for(;i;i-=i&-i)s+=bit[i];return s;};for(int x:a)add(id(x),1);for(auto [c,x,y]:qs){if(c=='!'){--x;add(id(a[x]),-1);a[x]=y;add(id(a[x]),1);}else cout<<sum(upper_bound(vals.begin(),vals.end(),y)-vals.begin())-sum(lower_bound(vals.begin(),vals.end(),x)-vals.begin())<<"\n";}return 0;}
 ```
 
 </details>
@@ -11043,25 +10484,17 @@ Core idea     : query count in salary range
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize DP base state"] --> B["Process each item once"]
+    B --> C["Update reachable states or best value: shift states"]
+    C --> D["Return target DP answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: bitset/vector DP
-// Form: possible sums
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: shift states.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<int>a(n);int S=0;for(int&i:a){cin>>i;S+=i;}vector<char>dp(S+1);dp[0]=1;for(int x:a)for(int s=S;s>=x;s--)dp[s]|=dp[s-x];vector<int>ans;for(int s=1;s<=S;s++)if(dp[s])ans.push_back(s);cout<<ans.size()<<"\n";for(int x:ans)cout<<x<<' ';return 0;}
 ```
 
 </details>
@@ -11131,25 +10564,17 @@ Core idea     : every coin creates new sums
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize DP base state"] --> B["Process each item once"]
+    B --> C["Update reachable states or best value: shift by component size"]
+    C --> D["Return target DP answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: DSU + bitset DP
-// Form: component sizes
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: shift by component size.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;vector<int>p(n),sz(n,1);iota(p.begin(),p.end(),0);function<int(int)>find=[&](int x){return p[x]==x?x:p[x]=find(p[x]);};auto unite=[&](int a,int b){a=find(a);b=find(b);if(a!=b){p[b]=a;sz[a]+=sz[b];}};for(int i=0,a,b;i<m;i++){cin>>a>>b;unite(a-1,b-1);}vector<char>dp(n+1);dp[0]=1;for(int i=0;i<n;i++)if(find(i)==i)for(int s=n;s>=sz[i];s--)dp[s]|=dp[s-sz[i]];for(int s=1;s<=n;s++)cout<<(dp[s]?1:0);return 0;}
 ```
 
 </details>
@@ -11219,30 +10644,17 @@ Core idea     : choose connected group sizes
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
+    B --> C["Add current value to Fenwick tree: find kth alive index"]
+    C --> D["Return accumulated count/cost"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-#include <ext/pb_ds/assoc_container.hpp>
-using namespace __gnu_pbds;
-
-template<class T>
-using ordered_set = tree<T, null_type, less<T>, rb_tree_tag,
-tree_order_statistics_node_update>;
-
-ordered_set<int> os;
-
-os.insert(10);
-os.insert(20);
-
-int countLess = os.order_of_key(20);
-int kth = *os.find_by_order(0);
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<int>a(n+1),bit(n+1);for(int i=1;i<=n;i++){cin>>a[i];for(int j=i;j<=n;j+=j&-j)bit[j]++;}auto add=[&](int i,int v){for(;i<=n;i+=i&-i)bit[i]+=v;};auto kth=[&](int k){int idx=0;for(int b=1<<20;b;b>>=1){int ni=idx+b;if(ni<=n&&bit[ni]<k){idx=ni;k-=bit[ni];}}return idx+1;};for(int i=0,x;i<n;i++){cin>>x;int id=kth(x);cout<<a[id]<<' ';add(id,-1);}return 0;}
 ```
 
 </details>
@@ -11312,30 +10724,17 @@ Core idea     : order structure simulates deletion
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: find by order and erase"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-#include <ext/pb_ds/assoc_container.hpp>
-using namespace __gnu_pbds;
-
-template<class T>
-using ordered_set = tree<T, null_type, less<T>, rb_tree_tag,
-tree_order_statistics_node_update>;
-
-ordered_set<int> os;
-
-os.insert(10);
-os.insert(20);
-
-int countLess = os.order_of_key(20);
-int kth = *os.find_by_order(0);
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<int>bit(n+1);auto add=[&](int i,int v){for(;i<=n;i+=i&-i)bit[i]+=v;};auto kth=[&](int x){int idx=0;for(int b=1<<20;b;b>>=1){int ni=idx+b;if(ni<=n&&bit[ni]<x){idx=ni;x-=bit[ni];}}return idx+1;};for(int i=1;i<=n;i++)add(i,1);int pos=0,alive=n;while(alive){pos=(pos+k)%alive;int id=kth(pos+1);cout<<id<<' ';add(id,-1);alive--;}return 0;}
 ```
 
 </details>
@@ -11405,36 +10804,17 @@ Core idea     : dynamic circle needs kth alive
 
 ```mermaid
 flowchart TD
-    A[Sort by useful key] --> B[Scan in sorted order]
-    B --> C[Maintain current best/state]
-    C --> D[Update answer]
-    D --> B
+    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
+    B --> C["Merge/select/update state greedily: max right min right"]
+    C --> D["Return final answer"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-int maxOverlap(vector<pair<int,int>>& intervals) {
-    vector<pair<int,int>> events;
-
-    for (auto [l, r] : intervals) {
-        events.push_back({l, +1});
-        events.push_back({r, -1});
-    }
-
-    sort(events.begin(), events.end());
-
-    int active = 0;
-    int best = 0;
-
-    for (auto [time, delta] : events) {
-        active += delta;
-        best = max(best, active);
-    }
-
-    return best;
-}
+#include <bits/stdc++.h>
+using namespace std;struct R{int l,r,i;};int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<R>a(n);for(int i=0;i<n;i++){cin>>a[i].l>>a[i].r;a[i].i=i;}sort(a.begin(),a.end(),[](R&a,R&b){return a.l==b.l?a.r>b.r:a.l<b.l;});vector<int>contains(n),contained(n);int maxR=0;for(auto &x:a){if(x.r<=maxR)contained[x.i]=1;maxR=max(maxR,x.r);}int minR=INT_MAX;for(int i=n-1;i>=0;i--){if(a[i].r>=minR)contains[a[i].i]=1;minR=min(minR,a[i].r);}for(int x:contains)cout<<x<<' ';cout<<"\n";for(int x:contained)cout<<x<<' ';return 0;}
 ```
 
 </details>
@@ -11504,25 +10884,17 @@ Core idea     : containment becomes ordered check
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: assign latest possible watcher"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: multiset endings
-// Form: k resources
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: assign latest possible watcher.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,k;cin>>n>>k;vector<pair<int,int>>a(n);for(auto&[l,r]:a)cin>>l>>r;sort(a.begin(),a.end(),[](auto&a,auto&b){return a.second<b.second;});multiset<int>end;for(int i=0;i<k;i++)end.insert(0);int ans=0;for(auto [l,r]:a){auto it=end.upper_bound(l);if(it==end.begin())continue;--it;end.erase(it);end.insert(r);ans++;}cout<<ans;return 0;}
 ```
 
 </details>
@@ -11592,25 +10964,17 @@ Core idea     : preserve earlier watchers
 
 ```mermaid
 flowchart TD
-    A[Read problem] --> B[Identify repeated operation]
-    B --> C[Choose useful STL/data structure]
-    C --> D[Maintain invariant]
-    D --> E[Return answer]
+    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
+    B --> C["Maintain the section invariant: update local neighbours"]
+    C --> D["Return the requested result"]
 ```
 
 <details>
 <summary>C++ Code</summary>
 
 ```cpp
-// Template for pattern: set of breaks
-// Form: permutation updates
-
-void solve() {
-    // 1. Identify repeated operation.
-    // 2. Use STL structure for: update local neighbours.
-    // 3. Maintain invariant.
-    // 4. Return answer.
-}
+#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n,m;cin>>n>>m;vector<int>a(n+1),pos(n+1);for(int i=1;i<=n;i++){cin>>a[i];pos[a[i]]=i;}auto bad=[&](int x){return x>=2&&pos[x]<pos[x-1];};int ans=1;for(int x=2;x<=n;x++)ans+=bad(x);while(m--){int i,j;cin>>i>>j;set<int>chk;for(int x:{a[i],a[i]+1,a[j],a[j]+1})if(x>=2&&x<=n)chk.insert(x);for(int x:chk)ans-=bad(x);swap(pos[a[i]],pos[a[j]]);swap(a[i],a[j]);for(int x:chk)ans+=bad(x);cout<<ans<<"\n";}return 0;}
 ```
 
 </details>
