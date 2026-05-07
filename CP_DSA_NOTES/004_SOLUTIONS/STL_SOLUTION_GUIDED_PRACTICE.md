@@ -1,6 +1,6 @@
 # STL Problems — Guided Practice Edition
 
-> Rendering-safe update: code blocks are formatted, and each Solution Flow is a collapsible Mermaid diagram with readable algorithm steps rather than raw C++ tokens.
+> Rendering-safe update: each Solution Flow is a collapsible Mermaid diagram that shows how the C++ code works step by step. The diagrams use short human labels, and the C++ code blocks are formatted for readability.
 
 This version is cleaned for Markdown rendering and organized as guided practice: problem link, problem detail, progressive hints, approach, collapsible C++ code, clickable difficulty index, and repeated-pattern tables.
 
@@ -201,19 +201,25 @@ This version is cleaned for Markdown rendering and organized as guided practice:
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create empty hash set seen"]
-    S1["Scan each number x"]
-    S2["If x is already in seen, return true"]
-    S3["Insert x into seen"]
-    S4["After scan, return false"]
+    S0["Start"]
+    S1["Initialize: unordered_set&lt;int&gt; seen"]
+    S2["Loop: int x : nums"]
+    S3["Decision: seen.count(x)"]
+    S4["If true: return true"]
+    S5["Update: seen.insert(x)"]
+    S6["Return: false"]
+    S7["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -301,21 +307,23 @@ Core idea     : duplicates become adjacent
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Set i=m-1, j=n-1, k=m+n-1"]
-    S1["While j is valid"]
-    S2["If nums1[i] is larger, write it at nums1[k]"]
-    S3["Otherwise write nums2[j] at nums1[k]"]
-    S4["Move used pointer and k left"]
-    S5["Stop when nums2 is fully merged"]
+    S0["Start"]
+    S1["Initialize: int i = m - 1, j = n - 1, k = m + n - 1"]
+    S2["Repeat while: j &gt;= 0"]
+    S3["Decision: i &gt;= 0 and nums1[i] &gt; nums2[j]"]
+    S4["If true: nums1[k--] = nums1[i--]"]
+    S5["Otherwise: nums1[k--] = nums2[j--]"]
+    S6["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -402,19 +410,23 @@ Core idea     : largest final position is safe
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Set write = 0"]
-    S1["Scan every value x"]
-    S2["If x is nonzero, place it at nums[write]"]
-    S3["Advance write after every nonzero"]
-    S4["Fill remaining positions with 0"]
+    S0["Start"]
+    S1["Initialize: int write = 0"]
+    S2["Loop: int x : nums"]
+    S3["Inside loop: if (x != 0) nums[write++] = x"]
+    S4["Repeat while: write &lt; (int)nums.size()"]
+    S5["Inside loop: nums[write++] = 0"]
+    S6["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -424,7 +436,7 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     void moveZeroes(vector<int>& nums) {
         int write = 0;
         for (int x : nums) if (x != 0) nums[write++] = x;
@@ -499,21 +511,27 @@ Core idea     : keep order with one pass
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["If nums is empty return 0"]
-    S1["Set write = 1"]
-    S2["Scan read from index 1"]
-    S3["If nums[read] is new, copy it to nums[write]"]
-    S4["Advance write for each unique value"]
-    S5["Return write"]
+    S0["Start"]
+    S1["Decision: nums.empty()"]
+    S2["If true: return 0"]
+    S3["Initialize: int write = 1"]
+    S4["Loop: int read = 1; read &lt; (int)nums.size(); read++"]
+    S5["Decision: nums[read] != nums[write - 1]"]
+    S6["If true: nums[write++] = nums[read]"]
+    S7["Return: write"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -601,21 +619,33 @@ Core idea     : sorted duplicates are grouped
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["If string lengths differ, return false"]
-    S1["Create count array cnt[26]"]
-    S2["Add counts from s"]
-    S3["Subtract counts from t"]
-    S4["If any count is nonzero, return false"]
-    S5["Return true"]
+    S0["Start"]
+    S1["Decision: s.size() != t.size()"]
+    S2["If true: return false"]
+    S3["Initialize: array&lt;int, 26&gt; cnt"]
+    S4["Loop: char c : s"]
+    S5["Inside loop: cnt[c - 'a']++"]
+    S6["Loop: char c : t"]
+    S7["Inside loop: cnt[c - 'a']--"]
+    S8["Loop: int x : cnt"]
+    S9["Inside loop: if (x != 0) return false"]
+    S10["Return: true"]
+    S11["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
 ```
 
 </details>
@@ -703,23 +733,35 @@ Core idea     : same letters means same count vector
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Set l at start and r at end"]
-    S1["Skip non-alphanumeric chars from left"]
-    S2["Skip non-alphanumeric chars from right"]
-    S3["Compare lowercase chars"]
-    S4["If different, return false"]
-    S5["Move both pointers inward"]
-    S6["Return true"]
+    S0["Start"]
+    S1["Initialize: int l = 0, r = (int)s.size() - 1"]
+    S2["Repeat while: l &lt; r"]
+    S3["Repeat while: l &lt; r and !isalnum((unsigned char)s[l])"]
+    S4["Inside loop: l++"]
+    S5["Repeat while: l &lt; r and !isalnum((unsigned char)s[r])"]
+    S6["Inside loop: r--"]
+    S7["Decision: tolower((unsigned char)s[l]) != tolower((unsigned char)s[r])"]
+    S8["If true: return false"]
+    S9["Update: l++"]
+    S10["Update: r--"]
+    S11["Return: true"]
+    S12["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
     S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
 ```
 
 </details>
@@ -809,19 +851,27 @@ Core idea     : compare mirrored valid chars
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Count all magazine letters"]
-    S1["Scan each ransom note letter"]
-    S2["Use one available letter by decrementing count"]
-    S3["If count becomes negative, return false"]
-    S4["Return true"]
+    S0["Start"]
+    S1["Initialize: array&lt;int, 26&gt; cnt"]
+    S2["Loop: char c : magazine"]
+    S3["Inside loop: cnt[c - 'a']++"]
+    S4["Loop: char c : ransomNote"]
+    S5["Decision: --cnt[c - 'a'] &lt; 0"]
+    S6["If true: return false"]
+    S7["Return: true"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -909,23 +959,37 @@ Core idea     : magazine supplies letters
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create stack for opening brackets"]
-    S1["Scan each character"]
-    S2["Push opening bracket"]
-    S3["For closing bracket, top must match"]
-    S4["If stack empty or mismatch, return false"]
-    S5["Pop matched opener"]
-    S6["Return stack.empty()"]
+    S0["Start"]
+    S1["Initialize: stack&lt;char&gt; st"]
+    S2["Initialize: unordered_map&lt;char, char&gt; need ="]
+    S3["Run: {')','('}"]
+    S4["Run: ']','['}"]
+    S5["Run: '}','{'}"]
+    S6["Loop: char c : s"]
+    S7["Decision: c == '(' or c == '[' or c == '{'"]
+    S8["If true: st.push(c)"]
+    S9["Decision: st.empty() or st.top() != need[c]"]
+    S10["If true: return false"]
+    S11["Update: st.pop()"]
+    S12["Return: st.empty()"]
+    S13["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
     S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
 ```
 
 </details>
@@ -1017,23 +1081,33 @@ Core idea     : latest open must close first
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create scores vector"]
-    S1["Scan each operation"]
-    S2["+ adds previous two scores"]
-    S3["D adds double previous score"]
-    S4["C removes previous score"]
-    S5["Number adds numeric score"]
-    S6["Return sum of scores"]
+    S0["Start"]
+    S1["Initialize: vector&lt;int&gt; scores"]
+    S2["Loop: string op : operations"]
+    S3["Decision: op == '+'"]
+    S4["If true: scores.push_back(scores.back() + scores[scores.size() - 2])"]
+    S5["Else if: op == 'D'"]
+    S6["If true: scores.push_back(2 * scores.back())"]
+    S7["Else if: op == 'C'"]
+    S8["If true: scores.pop_back()"]
+    S9["Otherwise: scores.push_back(stoi(op))"]
+    S10["Return: accumulate(scores.begin(), scores.end(), 0)"]
+    S11["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
     S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
 ```
 
 </details>
@@ -1123,19 +1197,23 @@ Core idea     : operations reference previous scores
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Use string st as stack"]
-    S1["Scan characters"]
-    S2["If top equals current char, pop top"]
-    S3["Otherwise push current char"]
-    S4["Return st"]
+    S0["Start"]
+    S1["Loop: char c : s"]
+    S2["Decision: !st.empty() and st.back() == c"]
+    S3["If true: st.pop_back()"]
+    S4["Otherwise: st.push_back(c)"]
+    S5["Return: st"]
+    S6["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -1223,21 +1301,39 @@ Core idea     : adjacent equal cancels latest
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Push values into input stack"]
-    S1["Before pop/peek, call moveIfNeeded"]
-    S2["If output stack is empty, move all input to output"]
-    S3["This reverses order into FIFO"]
-    S4["Pop or peek from output"]
-    S5["Empty means both stacks empty"]
+    S0["Start"]
+    S1["Initialize: stack&lt;int&gt; in, out"]
+    S2["Decision: !out.empty()"]
+    S3["If true: return"]
+    S4["Repeat while: !in.empty()"]
+    S5["Update: out.push(in.top())"]
+    S6["Update: in.pop()"]
+    S7["Update: in.push(x)"]
+    S8["Run: moveIfNeeded()"]
+    S9["Initialize: int x = out.top()"]
+    S10["Update: out.pop()"]
+    S11["Return: x"]
+    S12["Return: out.top()"]
+    S13["Return: in.empty() and out.empty()"]
+    S14["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
 ```
 
 </details>
@@ -1329,17 +1425,23 @@ Core idea     : reverse stack gives FIFO
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Push current time t into queue"]
-    S1["Remove times less than t-3000"]
-    S2["Queue now stores only valid recent pings"]
-    S3["Return queue size"]
+    S0["Start"]
+    S1["Initialize: queue&lt;int&gt; q"]
+    S2["Update: q.push(t)"]
+    S3["Repeat while: !q.empty() and q.front() &lt; t - 3000"]
+    S4["Inside loop: q.pop()"]
+    S5["Return: q.size()"]
+    S6["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -1425,19 +1527,29 @@ Core idea     : queue holds valid recent calls
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Build max heap of stones"]
-    S1["While at least two stones remain"]
-    S2["Pop two heaviest stones"]
-    S3["If different, push their difference"]
-    S4["Return remaining stone or 0"]
+    S0["Start"]
+    S1["Initialize: priority_queue&lt;int&gt; pq(stones.begin(), stones.end())"]
+    S2["Repeat while: pq.size() &gt; 1"]
+    S3["Initialize: int a = pq.top()"]
+    S4["Update: pq.pop()"]
+    S5["Initialize: int b = pq.top()"]
+    S6["Decision: a != b"]
+    S7["If true: pq.push(a - b)"]
+    S8["Return: pq.empty() ? 0 : pq.top()"]
+    S9["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -1526,21 +1638,27 @@ Core idea     : only largest stones matter
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Keep min heap of top k values"]
-    S1["Add initial numbers through add()"]
-    S2["Push new value into heap"]
-    S3["If heap size is greater than k, pop smallest"]
-    S4["Heap top is kth largest"]
-    S5["Return heap top"]
+    S0["Start"]
+    S1["Initialize: priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; pq"]
+    S2["Loop: int x : nums"]
+    S3["Inside loop: add(x)"]
+    S4["Update: pq.push(val)"]
+    S5["Decision: (int)pq.size() &gt; k"]
+    S6["If true: pq.pop()"]
+    S7["Return: pq.top()"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -1630,19 +1748,33 @@ Core idea     : heap stores top k
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create empty hash set seen"]
-    S1["Scan each number x"]
-    S2["If x is already in seen, return true"]
-    S3["Insert x into seen"]
-    S4["After scan, return false"]
+    S0["Start"]
+    S1["Initialize: set&lt;long long&gt; window"]
+    S2["Loop: int i = 0; i &lt; (int)nums.size(); i++"]
+    S3["Initialize: long long x = nums[i]"]
+    S4["Initialize: auto it = window.lower_bound(x - valueDiff)"]
+    S5["Decision: it != window.end() and *it &lt;= x + valueDiff"]
+    S6["If true: return true"]
+    S7["Update: window.insert(x)"]
+    S8["Decision: i &gt;= indexDiff"]
+    S9["If true: window.erase(nums[i - indexDiff])"]
+    S10["Return: false"]
+    S11["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
 ```
 
 </details>
@@ -1733,19 +1865,25 @@ Core idea     : closest candidate is around lower bound
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create value-to-index map"]
-    S1["Scan nums with index i"]
-    S2["Compute need = target - nums[i]"]
-    S3["If need exists, return stored index and i"]
-    S4["Store nums[i] - i"]
+    S0["Start"]
+    S1["Initialize: unordered_map&lt;int, int&gt; pos"]
+    S2["Loop: int i = 0; i &lt; (int)nums.size(); i++"]
+    S3["Initialize: int need = target - nums[i]"]
+    S4["Decision: pos.count(need)"]
+    S5["If true: return"]
+    S6["Update: pos[nums[i]] = i"]
+    S7["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -1834,19 +1972,25 @@ Core idea     : target needs previous complement
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Keep candidate and balance"]
-    S1["If balance is zero, choose new candidate"]
-    S2["Add one for same value else subtract one"]
-    S3["Final candidate is majority"]
-    S4["Return candidate"]
+    S0["Start"]
+    S1["Initialize: int cand = 0, bal = 0"]
+    S2["Loop: int x : nums"]
+    S3["Decision: bal == 0"]
+    S4["If true: cand = x"]
+    S5["Update: bal += (x == cand ? 1 : -1)"]
+    S6["Return: cand"]
+    S7["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -1934,17 +2078,25 @@ Core idea     : majority crosses n/2
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Count every character"]
-    S1["Scan string from left to right"]
-    S2["Return first index with count 1"]
-    S3["Return -1 if none"]
+    S0["Start"]
+    S1["Initialize: array&lt;int, 26&gt; cnt"]
+    S2["Loop: char c : s"]
+    S3["Inside loop: cnt[c - 'a']++"]
+    S4["Loop: int i = 0; i &lt; (int)s.size(); i++"]
+    S5["Inside loop: if (cnt[s[i] - 'a'] == 1) return i"]
+    S6["Return: -1"]
+    S7["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -2030,19 +2182,23 @@ Core idea     : unique means count one
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort intervals by start time"]
-    S1["Scan from second meeting"]
-    S2["If current start  previous end, overlap exists"]
-    S3["Return false on overlap"]
-    S4["Return true otherwise"]
+    S0["Start"]
+    S1["Run: sort(intervals.begin(), intervals.end())"]
+    S2["Loop: int i = 1; i &lt; (int)intervals.size(); i++"]
+    S3["Decision: intervals[i][0] &lt; intervals[i - 1][1]"]
+    S4["If true: return false"]
+    S5["Return: true"]
+    S6["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -2129,21 +2285,27 @@ Core idea     : overlap violates room
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Set l, r, and write index k"]
-    S1["Compare abs(nums[l]) and abs(nums[r])"]
-    S2["Place larger square at ans[k]"]
-    S3["Move chosen pointer inward"]
-    S4["Move k left"]
-    S5["Return ans"]
+    S0["Start"]
+    S1["Initialize: int l = 0, r = (int)nums.size() - 1, k = r"]
+    S2["Initialize: vector&lt;int&gt; ans(nums.size())"]
+    S3["Repeat while: l &lt;= r"]
+    S4["Decision: abs(nums[l]) &gt; abs(nums[r])"]
+    S5["If true: ans[k--] = nums[l] * nums[l++]"]
+    S6["Otherwise: ans[k--] = nums[r] * nums[r--]"]
+    S7["Return: ans"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -2232,19 +2394,21 @@ Core idea     : largest square at ends
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort both arrays"]
-    S1["Use two pointers"]
-    S2["When values match, add unique value"]
-    S3["Move pointer with smaller value"]
-    S4["Return answer"]
+    S0["Start"]
+    S1["Initialize: unordered_set&lt;int&gt; a(nums1.begin(), nums1.end()), ans"]
+    S2["Loop: int x : nums2"]
+    S3["Inside loop: if (a.count(x)) ans.insert(x)"]
+    S4["Return: vector&lt;int&gt;(ans.begin(), ans.end())"]
+    S5["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
 ```
 
 </details>
@@ -2254,7 +2418,7 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
         unordered_set<int> a(nums1.begin(), nums1.end()), ans;
         for (int x : nums2) if (a.count(x)) ans.insert(x);
@@ -2329,19 +2493,31 @@ Core idea     : sorted arrays reveal equal values
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Set search boundaries"]
-    S1["Find middle index"]
-    S2["If middle equals target, return index"]
-    S3["Move left or right boundary"]
-    S4["Return -1 if not found"]
+    S0["Start"]
+    S1["Initialize: int l = 0, r = (int)nums.size() - 1"]
+    S2["Repeat while: l &lt;= r"]
+    S3["Initialize: int m = l + (r - l) / 2"]
+    S4["Decision: nums[m] == target"]
+    S5["If true: return m"]
+    S6["Decision: nums[m] &lt; target"]
+    S7["If true: l = m + 1"]
+    S8["Otherwise: r = m - 1"]
+    S9["Return: -1"]
+    S10["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
 ```
 
 </details>
@@ -2431,13 +2607,13 @@ Core idea     : sorted halves eliminate
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Use lower_bound on nums"]
-    S1["Find first value = target"]
-    S2["Return its index"]
+    S0["Start"]
+    S1["Return: lower_bound(nums.begin(), nums.end(), target) - nums.begin()"]
+    S2["End"]
     S0 --> S1
     S1 --> S2
 ```
@@ -2449,7 +2625,7 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     int searchInsert(vector<int>& nums, int target) {
         return lower_bound(nums.begin(), nums.end(), target) - nums.begin();
     }
@@ -2522,19 +2698,35 @@ Core idea     : insert before first bigger/equal
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Build next-greater map from nums2"]
-    S1["Use decreasing stack"]
-    S2["When current value is greater, resolve stack top"]
-    S3["Push current value"]
-    S4["Answer nums1 from map or -1"]
+    S0["Start"]
+    S1["Initialize: unordered_map&lt;int, int&gt; nxt"]
+    S2["Initialize: stack&lt;int&gt; st"]
+    S3["Loop: int x : nums2"]
+    S4["Repeat while: !st.empty() and st.top() &lt; x"]
+    S5["Update: nxt[st.top()] = x"]
+    S6["Update: st.pop()"]
+    S7["Update: st.push(x)"]
+    S8["Initialize: vector&lt;int&gt; ans"]
+    S9["Loop: int x : nums1"]
+    S10["Inside loop: ans.push_back(nxt.count(x) ? nxt[x] : -1)"]
+    S11["Return: ans"]
+    S12["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
 ```
 
 </details>
@@ -2628,19 +2820,29 @@ Core idea     : decreasing stack waits for greater
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Read n"]
-    S1["Print n while n is not 1"]
-    S2["If n is even, divide by 2"]
-    S3["If n is odd, set n = 3n+1"]
-    S4["Print final 1"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Repeat while: true"]
+    S3["Output answer"]
+    S4["Decision: n == 1"]
+    S5["If true: break"]
+    S6["Decision: n % 2 == 0"]
+    S7["If true: n /= 2"]
+    S8["Otherwise: n = 3 * n + 1"]
+    S9["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -2733,21 +2935,27 @@ Core idea     : direct process
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Sort Colors"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: Dutch flag"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Initialize: int low = 0, mid = 0, high = (int)nums.size() - 1"]
+    S2["Repeat while: mid &lt;= high"]
+    S3["Decision: nums[mid] == 0"]
+    S4["If true: swap(nums[low++], nums[mid++])"]
+    S5["Else if: nums[mid] == 1"]
+    S6["If true: mid++"]
+    S7["Otherwise: swap(nums[mid], nums[high--])"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -2835,21 +3043,31 @@ Core idea     : place each color region
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Next Permutation"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: STL algorithm logic"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Initialize: int i = (int)nums.size() - 2"]
+    S2["Repeat while: i &gt;= 0 and nums[i] &gt;= nums[i + 1]"]
+    S3["Inside loop: i--"]
+    S4["Decision: i &gt;= 0"]
+    S5["Initialize: int j = (int)nums.size() - 1"]
+    S6["Repeat while: nums[j] &lt;= nums[i]"]
+    S7["Inside loop: j--"]
+    S8["Run: swap(nums[i], nums[j])"]
+    S9["Run: reverse(nums.begin() + i + 1, nums.end())"]
+    S10["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
 ```
 
 </details>
@@ -2939,19 +3157,27 @@ Core idea     : next lexicographic order changes suffix
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Run: sort(intervals.begin(), intervals.end())"]
+    S2["Initialize: vector&lt;vector&lt;int&gt;&gt; ans"]
+    S3["Loop: auto cur : intervals"]
+    S4["Decision: ans.empty() or ans.back()[1] &lt; cur[0]"]
+    S5["If true: ans.push_back(cur)"]
+    S6["Otherwise: ans.back()[1] = max(ans.back()[1], cur[1])"]
+    S7["Return: ans"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -3040,21 +3266,35 @@ Core idea     : overlap extends interval
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Product of Array Except Self"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: prefix suffix"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Initialize: int n = nums.size()"]
+    S2["Initialize: vector&lt;int&gt; ans(n, 1)"]
+    S3["Initialize: int pref = 1"]
+    S4["Loop: int i = 0; i &lt; n; i++"]
+    S5["Update: ans[i] = pref"]
+    S6["Update: pref *= nums[i]"]
+    S7["Initialize: int suff = 1"]
+    S8["Loop: int i = n - 1; i &gt;= 0; i--"]
+    S9["Update: ans[i] *= suff"]
+    S10["Update: suff *= nums[i]"]
+    S11["Return: ans"]
+    S12["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
 ```
 
 </details>
@@ -3143,21 +3383,31 @@ Core idea     : answer is left product times right product
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: unordered_map&lt;string, vector&lt;string&gt;&gt; mp"]
+    S2["Loop: string s : strs"]
+    S3["Initialize: string key = s"]
+    S4["Run: sort(key.begin(), key.end())"]
+    S5["Update: append value/result to container"]
+    S6["Initialize: vector&lt;vector&lt;string&gt;&gt; ans"]
+    S7["Loop: auto& [k, v] : mp"]
+    S8["Inside loop: ans.push_back(v)"]
+    S9["Return: ans"]
+    S10["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
 ```
 
 </details>
@@ -3248,21 +3498,27 @@ Core idea     : anagrams share canonical form
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Initialize: vector&lt;int&gt; last(256, -1)"]
+    S2["Initialize: int ans = 0, left = 0"]
+    S3["Loop: int right = 0; right &lt; (int)s.size(); right++"]
+    S4["Update: left = max(left, last[(unsigned char)s[right]] + 1)"]
+    S5["Update: last[(unsigned char)s[right]] = right"]
+    S6["Update: ans = max(ans, right - left + 1)"]
+    S7["Return: ans"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -3352,21 +3608,39 @@ Core idea     : window invariant has unique chars
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Initialize: vector&lt;int&gt; need(128, 0)"]
+    S2["Loop: char c : t"]
+    S3["Inside loop: need[c]++"]
+    S4["Initialize: int missing = t.size(), left = 0, bestLen = INT_MAX, bestStart = 0"]
+    S5["Loop: int right = 0; right &lt; (int)s.size(); right++"]
+    S6["Decision: need[s[right]]-- &gt; 0"]
+    S7["If true: missing--"]
+    S8["Repeat while: missing == 0"]
+    S9["Decision: right - left + 1 &lt; bestLen"]
+    S10["If true: bestLen = right - left + 1, bestStart = left"]
+    S11["Decision: ++need[s[left++]] &gt; 0"]
+    S12["If true: missing++"]
+    S13["Return: bestLen == INT_MAX ? '' : s.substr(bestStart, bestLen)"]
+    S14["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
 ```
 
 </details>
@@ -3459,21 +3733,43 @@ Core idea     : smallest valid window after coverage
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create stack for unresolved items"]
-    S1["Scan items in order"]
-    S2["Pop while stack top is resolved or invalid"]
-    S3["Use stack top to compute answer"]
-    S4["Push current item if useful later"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: stack&lt;int&gt; counts"]
+    S2["Initialize: stack&lt;string&gt; prev"]
+    S3["Initialize: int num = 0"]
+    S4["Loop: char c : s"]
+    S5["Decision: isdigit(c)"]
+    S6["If true: num = num * 10 + c - '0'"]
+    S7["Else if: c == '['"]
+    S8["Update: counts.push(num)"]
+    S9["Update: prev.push(cur)"]
+    S10["Update: num = 0"]
+    S11["Run: cur.clear()"]
+    S12["Else if: c == ']'"]
+    S13["Initialize: string tmp = prev.top()"]
+    S14["Update: prev.pop()"]
+    S15["Return: cur"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -3491,26 +3787,13 @@ public:
         int num = 0;
         for (char c : s) {
             if (isdigit(c)) num = num * 10 + c - '0';
-            else if (c == '[') {
-                counts.push(num);
-                prev.push(cur);
-                num = 0;
-                cur.clear();
-            }
-            else if (c == ']') {
-                string tmp = prev.top();
-                prev.pop();
-                int k = counts.top();
-                counts.pop();
-                while (k--) tmp += cur;
-                cur = tmp;
-            }
+            else if (c == '[') { counts.push(num); prev.push(cur); num = 0; cur.clear(); }
+            else if (c == ']') { string tmp = prev.top(); prev.pop(); int k = counts.top(); counts.pop(); while (k--) tmp += cur; cur = tmp; }
             else cur += c;
         }
         return cur;
     }
-}
-;
+};
 ```
 
 </details>
@@ -3579,21 +3862,25 @@ Core idea     : brackets nest last-in-first-out
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create stack for unresolved items"]
-    S1["Scan items in order"]
-    S2["Pop while stack top is resolved or invalid"]
-    S3["Use stack top to compute answer"]
-    S4["Push current item if useful later"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: stack&lt;pair&lt;int,int&gt;&gt; st"]
+    S2["Update: st.push("]
+    S3["Run: val, st.empty() ? val : min(val, st.top().second)}"]
+    S4["Update: st.pop()"]
+    S5["Return: st.top().first"]
+    S6["Return: st.top().second"]
+    S7["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -3604,12 +3891,21 @@ flowchart TD
 ```cpp
 class MinStack {
     stack<pair<int,int>> st;
-public:
-    void push(int val) { st.push({val, st.empty() ? val : min(val, st.top().second)}); }
-    void pop() { st.pop(); }
-    int top() { return st.top().first; }
-    int getMin() { return st.top().second; }
-};
+    public:
+    void push(int val) {
+        st.push({
+            val, st.empty() ? val : min(val, st.top().second)});
+        }
+        void pop() {
+            st.pop();
+        }
+        int top() {
+            return st.top().first;
+        }
+        int getMin() {
+            return st.top().second;
+        }
+    };
 ```
 
 </details>
@@ -3678,21 +3974,43 @@ Core idea     : min must rollback with pop
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create stack for unresolved items"]
-    S1["Scan items in order"]
-    S2["Pop while stack top is resolved or invalid"]
-    S3["Use stack top to compute answer"]
-    S4["Push current item if useful later"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: stack&lt;int&gt; st"]
+    S2["Loop: string t : tokens"]
+    S3["Decision: t == '+' or t == '-' or t == '*' or t == '/'"]
+    S4["Initialize: int b = st.top()"]
+    S5["Update: st.pop()"]
+    S6["Initialize: int a = st.top()"]
+    S7["Decision: t == '+'"]
+    S8["If true: st.push(a + b)"]
+    S9["Else if: t == '-'"]
+    S10["If true: st.push(a - b)"]
+    S11["Else if: t == '*'"]
+    S12["If true: st.push(a * b)"]
+    S13["Otherwise: st.push(a / b)"]
+    S14["Otherwise: st.push(stoi(t))"]
+    S15["Return: st.top()"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -3785,21 +4103,31 @@ Core idea     : postfix puts operands before operator
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create stack for unresolved items"]
-    S1["Scan items in order"]
-    S2["Pop while stack top is resolved or invalid"]
-    S3["Use stack top to compute answer"]
-    S4["Push current item if useful later"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: int n = temperatures.size()"]
+    S2["Initialize: vector&lt;int&gt; ans(n)"]
+    S3["Initialize: stack&lt;int&gt; st"]
+    S4["Loop: int i = 0; i &lt; n; i++"]
+    S5["Repeat while: !st.empty() and temperatures[st.top()] &lt; temperatures[i]"]
+    S6["Update: ans[st.top()] = i - st.top()"]
+    S7["Update: st.pop()"]
+    S8["Update: st.push(i)"]
+    S9["Return: ans"]
+    S10["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
 ```
 
 </details>
@@ -3892,21 +4220,43 @@ Core idea     : warmer day resolves colder days
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize queue with start state(s)"]
-    S1["Mark starting state(s) visited"]
-    S2["Pop one state from queue"]
-    S3["Try all valid next states"]
-    S4["Push unvisited states"]
-    S5["Return distance/path/count result"]
+    S0["Start"]
+    S1["Initialize: int m = grid.size(), n = grid[0].size(), fresh = 0, minutes = 0"]
+    S2["Initialize: queue&lt;pair&lt;int,int&gt;&gt; q"]
+    S3["Loop: int i = 0; i &lt; m; i++"]
+    S4["Inside loop: for (int j = 0; j &lt; n; j++)"]
+    S5["Decision: grid[i][j] == 2"]
+    S6["If true: q.push("]
+    S7["Decision: grid[i][j] == 1"]
+    S8["If true: fresh++"]
+    S9["Initialize: int dirs[5] ="]
+    S10["Run: 1,0,-1,0,1}"]
+    S11["Repeat while: !q.empty() and fresh &gt; 0"]
+    S12["Initialize: int sz = q.size()"]
+    S13["Update: minutes++"]
+    S14["Repeat while: sz--"]
+    S15["Return: fresh ? -1 : minutes"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -4007,21 +4357,43 @@ Core idea     : infection spreads by layers
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize queue with start state(s)"]
-    S1["Mark starting state(s) visited"]
-    S2["Pop one state from queue"]
-    S3["Try all valid next states"]
-    S4["Push unvisited states"]
-    S5["Return distance/path/count result"]
+    S0["Start"]
+    S1["Initialize: int m = grid.size(), n = grid[0].size(), ans = 0"]
+    S2["Initialize: int dirs[5] ="]
+    S3["Run: 1,0,-1,0,1}"]
+    S4["Loop: int i = 0; i &lt; m; i++"]
+    S5["Inside loop: for (int j = 0; j &lt; n; j++) if (grid[i][j] == '1')"]
+    S6["Update: ans++"]
+    S7["Initialize: queue&lt;pair&lt;int,int&gt;&gt; q"]
+    S8["Update: q.push("]
+    S9["Update: grid[i][j] = '0'"]
+    S10["Repeat while: !q.empty()"]
+    S11["Initialize: auto [r,c] = q.front()"]
+    S12["Update: q.pop()"]
+    S13["Loop: int d=0; d&lt;4; d++"]
+    S14["Initialize: int nr=r+dirs[d], nc=c+dirs[d+1]"]
+    S15["Return: ans"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -4031,18 +4403,16 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     int numIslands(vector<vector<char>>& grid) {
         int m = grid.size(), n = grid[0].size(), ans = 0;
         int dirs[5] = {
-            1,0,-1,0,1}
-            ;
+            1,0,-1,0,1};
             for (int i = 0; i < m; i++) for (int j = 0; j < n; j++) if (grid[i][j] == '1') {
                 ans++;
                 queue<pair<int,int>> q;
                 q.push({
-                    i,j}
-                    );
+                    i,j});
                     grid[i][j] = '0';
                     while (!q.empty()) {
                         auto [r,c] = q.front();
@@ -4052,16 +4422,13 @@ public:
                             if (nr>=0&&nc>=0&&nr<m&&nc<n&&grid[nr][nc]=='1') {
                                 grid[nr][nc]='0';
                                 q.push({
-                                    nr,nc}
-                                    );
-                                }
+                                    nr,nc});
+                                } }
                             }
                         }
+                        return ans;
                     }
-                    return ans;
-                }
-            }
-            ;
+                };
 ```
 
 </details>
@@ -4130,21 +4497,43 @@ Core idea     : each BFS consumes one island
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize queue with start state(s)"]
-    S1["Mark starting state(s) visited"]
-    S2["Pop one state from queue"]
-    S3["Try all valid next states"]
-    S4["Push unvisited states"]
-    S5["Return distance/path/count result"]
+    S0["Start"]
+    S1["Initialize: unordered_set&lt;string&gt; dead(deadends.begin(), deadends.end()), seen"]
+    S2["Decision: dead.count('0000')"]
+    S3["If true: return -1"]
+    S4["Initialize: queue&lt;string&gt; q"]
+    S5["Update: q.push('0000')"]
+    S6["Update: seen.insert('0000')"]
+    S7["Initialize: int steps = 0"]
+    S8["Repeat while: !q.empty()"]
+    S9["Initialize: int sz = q.size()"]
+    S10["Repeat while: sz--"]
+    S11["Initialize: string cur = q.front()"]
+    S12["Update: q.pop()"]
+    S13["Decision: cur == target"]
+    S14["If true: return steps"]
+    S15["Return: -1"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -4244,21 +4633,17 @@ Core idea     : shortest moves in unweighted state graph
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Run: nth_element(nums.begin(), nums.end() - k, nums.end())"]
+    S2["Return: nums[nums.size() - k]"]
+    S3["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
-    S3 --> S4
-    S4 --> S5
 ```
 
 </details>
@@ -4268,7 +4653,7 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     int findKthLargest(vector<int>& nums, int k) {
         nth_element(nums.begin(), nums.end() - k, nums.end());
         return nums[nums.size() - k];
@@ -4342,21 +4727,37 @@ Core idea     : kth is min of top k
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Initialize: unordered_map&lt;int,int&gt; freq"]
+    S2["Loop: int x : nums"]
+    S3["Inside loop: freq[x]++"]
+    S4["Initialize: priority_queue&lt;pair&lt;int,int&gt;, vector&lt;pair&lt;int,int&gt;&..."]
+    S5["Loop: auto [x,c] : freq"]
+    S6["Update: pq.push("]
+    S7["Decision: (int)pq.size() &gt; k"]
+    S8["If true: pq.pop()"]
+    S9["Initialize: vector&lt;int&gt; ans"]
+    S10["Repeat while: !pq.empty()"]
+    S11["Inside loop: ans.push_back(pq.top().second), pq.pop()"]
+    S12["Return: ans"]
+    S13["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
 ```
 
 </details>
@@ -4445,21 +4846,23 @@ Core idea     : frequency decides rank
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Initialize: auto dist = [](const vector&lt;int&gt;& p)"]
+    S2["Return: p[0]*p[0] + p[1]*p[1]"]
+    S3["Run: nth_element(points.begin(), points.begin() + k, points.end(), [&](auto& a, a..."]
+    S4["Return: dist(a) &lt; dist(b)"]
+    S5["Return: vector&lt;vector&lt;int&gt;&gt;(points.begin(), points.begin() + k)"]
+    S6["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -4469,13 +4872,16 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {
-        auto dist = [](const vector<int>& p){ return p[0]*p[0] + p[1]*p[1]; };
-        nth_element(points.begin(), points.begin() + k, points.end(), [&](auto& a, auto& b){ return dist(a) < dist(b); });
-        return vector<vector<int>>(points.begin(), points.begin() + k);
-    }
-};
+        auto dist = [](const vector<int>& p){
+            return p[0]*p[0] + p[1]*p[1];
+        };
+        nth_element(points.begin(), points.begin() + k, points.end(), [&](auto& a, auto& b){
+            return dist(a) < dist(b); });
+            return vector<vector<int>>(points.begin(), points.begin() + k);
+        }
+    };
 ```
 
 </details>
@@ -4544,21 +4950,25 @@ Core idea     : no need sqrt
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Initialize: vector&lt;int&gt; cnt(26)"]
+    S2["Loop: char c : tasks"]
+    S3["Inside loop: cnt[c - 'A']++"]
+    S4["Initialize: int mx = *max_element(cnt.begin(), cnt.end())"]
+    S5["Initialize: int same = count(cnt.begin(), cnt.end(), mx)"]
+    S6["Return: max((int)tasks.size(), (mx - 1) * (n + 1) + same)"]
+    S7["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -4645,19 +5055,27 @@ Core idea     : reduce future bottleneck
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Initialize: set&lt;pair&lt;int,int&gt;&gt; booked"]
+    S2["Initialize: auto it = booked.lower_bound("]
+    S3["Decision: it != booked.end() and it-&gt;first &lt; end"]
+    S4["If true: return false"]
+    S5["Decision: it != booked.begin() and prev(it)-&gt;second &gt; start"]
+    S6["Update: booked.insert("]
+    S7["Return: true"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -4745,21 +5163,43 @@ Core idea     : only neighbours can overlap
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: set&lt;int&gt; seats"]
+    S2["Decision: seats.empty()"]
+    S3["Update: seats.insert(0)"]
+    S4["Initialize: int best = 0, dist = *seats.begin()"]
+    S5["Initialize: int prevSeat = *seats.begin()"]
+    S6["Loop: int s : seats"]
+    S7["Initialize: int d = (s - prevSeat) / 2"]
+    S8["Decision: d &gt; dist"]
+    S9["If true: dist = d, best = prevSeat + d"]
+    S10["Update: prevSeat = s"]
+    S11["Decision: n - 1 - *seats.rbegin() &gt; dist"]
+    S12["If true: best = n - 1"]
+    S13["Update: seats.insert(best)"]
+    S14["Return: best"]
+    S15["Update: seats.erase(p)"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -4856,21 +5296,23 @@ Core idea     : best seat depends on gaps
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: unordered_map&lt;string, vector&lt;pair&lt;int,string&gt;&gt;&gt; mp"]
+    S2["Update: append value/result to container"]
+    S3["Update: auto& v = mp[key]"]
+    S4["Initialize: int i = upper_bound(v.begin(), v.end(), make_pair(timestamp, string('..."]
+    S5["Return: i &gt;= 0 ? v[i].second : ''"]
+    S6["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
 ```
 
 </details>
@@ -4957,21 +5399,27 @@ Core idea     : latest previous value is answer
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: unordered_map&lt;int,int&gt; freq"]
+    S2["Initialize: int pref = 0, ans = 0"]
+    S3["Loop: int x : nums"]
+    S4["Update: pref += x"]
+    S5["Update: ans += freq[pref - k]"]
+    S6["Update: freq[pref]++"]
+    S7["Return: ans"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -5061,21 +5509,31 @@ Core idea     : equal difference gives sum k
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: unordered_set&lt;int&gt; s(nums.begin(), nums.end())"]
+    S2["Initialize: int ans = 0"]
+    S3["Loop: int x : s"]
+    S4["Inside loop: if (!s.count(x - 1))"]
+    S5["Initialize: int y = x"]
+    S6["Repeat while: s.count(y)"]
+    S7["Inside loop: y++"]
+    S8["Update: ans = max(ans, y - x)"]
+    S9["Return: ans"]
+    S10["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
 ```
 
 </details>
@@ -5165,21 +5623,39 @@ Core idea     : each number processed once
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Run: list&lt;pair&lt;int,int&gt;&gt; items"]
+    S2["Initialize: unordered_map&lt;int, list&lt;pair&lt;int,int&gt;&gt;::iterator&gt; pos"]
+    S3["Decision: !pos.count(key)"]
+    S4["If true: return -1"]
+    S5["Run: items.splice(items.begin(), items, pos[key])"]
+    S6["Return: pos[key]-&gt;second"]
+    S7["Decision: pos.count(key)"]
+    S8["Update: pos[key]-&gt;second = value"]
+    S9["Decision: (int)items.size() == cap"]
+    S10["Update: pos.erase(items.back().first)"]
+    S11["Update: items.pop_back()"]
+    S12["Update: items.push_front("]
+    S13["Update: pos[key] = items.begin()"]
+    S14["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
 ```
 
 </details>
@@ -5273,19 +5749,29 @@ Core idea     : O(1) move to front
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Run: sort(intervals.begin(), intervals.end(), [](auto& a, auto& b)"]
+    S2["Return: a[1] &lt; b[1]; }"]
+    S3["Initialize: int removed = 0, end = INT_MIN"]
+    S4["Loop: auto& in : intervals"]
+    S5["Decision: in[0] &gt;= end"]
+    S6["If true: end = in[1]"]
+    S7["Otherwise: removed++"]
+    S8["Return: removed"]
+    S9["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -5374,19 +5860,31 @@ Core idea     : more space for future intervals
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Run: sort(points.begin(), points.end(), [](auto& a, auto& b)"]
+    S2["Return: a[1] &lt; b[1]; }"]
+    S3["Initialize: long long arrow = LLONG_MIN"]
+    S4["Initialize: int ans = 0"]
+    S5["Loop: auto& p : points"]
+    S6["Inside loop: if (p[0] &gt; arrow)"]
+    S7["Update: ans++"]
+    S8["Update: arrow = p[1]"]
+    S9["Return: ans"]
+    S10["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
 ```
 
 </details>
@@ -5473,19 +5971,25 @@ Core idea     : one arrow covers all overlapping intervals
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Run: sort(people.begin(), people.end(), [](auto& a, auto& b)"]
+    S2["Return: a[0] == b[0] ? a[1] &lt; b[1] : a[0] &gt; b[0]; }"]
+    S3["Initialize: vector&lt;vector&lt;int&gt;&gt; ans"]
+    S4["Loop: auto& p : people"]
+    S5["Inside loop: ans.insert(ans.begin() + p[1], p)"]
+    S6["Return: ans"]
+    S7["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -5571,19 +6075,33 @@ Core idea     : shorter people do not affect taller count
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Initialize: vector&lt;string&gt; s"]
+    S2["Loop: int x : nums"]
+    S3["Inside loop: s.push_back(to_string(x))"]
+    S4["Run: sort(s.begin(), s.end(), [](const string& a, const string& b)"]
+    S5["Return: a + b &gt; b + a; }"]
+    S6["Decision: s[0] == '0'"]
+    S7["If true: return '0'"]
+    S8["Loop: auto& x : s"]
+    S9["Inside loop: ans += x"]
+    S10["Return: ans"]
+    S11["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
 ```
 
 </details>
@@ -5672,19 +6190,43 @@ Core idea     : best concatenation order
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Run: sort(nums.begin(), nums.end())"]
+    S2["Initialize: vector&lt;vector&lt;int&gt;&gt; ans"]
+    S3["Initialize: int n = nums.size()"]
+    S4["Loop: int i = 0; i &lt; n; i++"]
+    S5["Decision: i and nums[i] == nums[i-1]"]
+    S6["If true: continue"]
+    S7["Initialize: int l = i + 1, r = n - 1"]
+    S8["Repeat while: l &lt; r"]
+    S9["Initialize: long long sum = 1LL * nums[i] + nums[l] + nums[r]"]
+    S10["Decision: sum == 0"]
+    S11["Update: append value/result to container"]
+    S12["Update: l++"]
+    S13["Update: r--"]
+    S14["Repeat while: l&lt;r and nums[l]==nums[l-1]"]
+    S15["Return: ans"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -5694,7 +6236,7 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     vector<vector<int>> threeSum(vector<int>& nums) {
         sort(nums.begin(), nums.end());
         vector<vector<int>> ans;
@@ -5706,8 +6248,7 @@ public:
                 long long sum = 1LL * nums[i] + nums[l] + nums[r];
                 if (sum == 0) {
                     ans.push_back({
-                        nums[i], nums[l], nums[r]}
-                        );
+                        nums[i], nums[l], nums[r]});
                         l++;
                         r--;
                         while (l<r && nums[l]==nums[l-1]) l++;
@@ -5719,8 +6260,7 @@ public:
             }
             return ans;
         }
-    }
-    ;
+    };
 ```
 
 </details>
@@ -5789,21 +6329,43 @@ Core idea     : fixing one reduces to two sum
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start 4Sum"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: nested fix + two pointers"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Run: sort(nums.begin(), nums.end())"]
+    S2["Initialize: vector&lt;vector&lt;int&gt;&gt; ans"]
+    S3["Initialize: int n = nums.size()"]
+    S4["Loop: int i=0;i&lt;n;i++"]
+    S5["Decision: i and nums[i]==nums[i-1]"]
+    S6["If true: continue"]
+    S7["Loop: int j=i+1;j&lt;n;j++"]
+    S8["Decision: j&gt;i+1 and nums[j]==nums[j-1]"]
+    S9["Initialize: int l=j+1,r=n-1"]
+    S10["Repeat while: l&lt;r"]
+    S11["Initialize: long long sum=1LL*nums[i]+nums[j]+nums[l]+nums[r]"]
+    S12["Decision: sum==target"]
+    S13["Update: append value/result to container"]
+    S14["Update: l++"]
+    S15["Return: ans"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -5813,36 +6375,33 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     vector<vector<int>> fourSum(vector<int>& nums, int target) {
         sort(nums.begin(), nums.end());
         vector<vector<int>> ans;
         int n = nums.size();
-        for (int i=0; i<n; i++) {
+        for (int i=0;i<n;i++) {
             if (i && nums[i]==nums[i-1]) continue;
-            for (int j=i+1; j<n; j++) {
+            for (int j=i+1;j<n;j++) {
                 if (j>i+1 && nums[j]==nums[j-1]) continue;
                 int l=j+1,r=n-1;
-                while (l<r) {
+                while(l<r){
                     long long sum=1LL*nums[i]+nums[j]+nums[l]+nums[r];
-                    if (sum==target) {
+                    if(sum==target){
                         ans.push_back({
-                            nums[i],nums[j],nums[l],nums[r]}
-                            );
+                            nums[i],nums[j],nums[l],nums[r]});
                             l++;
                             r--;
-                            while (l<r&&nums[l]==nums[l-1])l++;
-                            while (l<r&&nums[r]==nums[r+1])r--;
+                            while(l<r&&nums[l]==nums[l-1])l++;
+                            while(l<r&&nums[r]==nums[r+1])r--;
                         }
-                        else if (sum<target) l++;
+                        else if(sum<target) l++;
                         else r--;
                     }
-                }
+                }}
+                return ans;
             }
-            return ans;
-        }
-    }
-    ;
+        };
 ```
 
 </details>
@@ -5911,21 +6470,27 @@ Core idea     : reduce dimension stepwise
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Initialize: int l = 0, r = arr.size() - k"]
+    S2["Repeat while: l &lt; r"]
+    S3["Initialize: int m = (l + r) / 2"]
+    S4["Decision: x - arr[m] &gt; arr[m + k] - x"]
+    S5["If true: l = m + 1"]
+    S6["Otherwise: r = m"]
+    S7["Return: vector&lt;int&gt;(arr.begin() + l, arr.begin() + l + k)"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -6014,21 +6579,25 @@ Core idea     : answer is contiguous around x
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Find First and Last Position of Element in Sorted Array"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: lower and upper bound"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Initialize: auto l = lower_bound(nums.begin(), nums.end(), target)"]
+    S2["Initialize: auto r = upper_bound(nums.begin(), nums.end(), target)"]
+    S3["Decision: l == nums.end() or *l != target"]
+    S4["If true: return"]
+    S5["Run: -1, -1}"]
+    S6["Run: (int)(l - nums.begin()), (int)(r - nums.begin() - 1)}"]
+    S7["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -6114,19 +6683,35 @@ Core idea     : equal block is contiguous
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Define searchable condition"]
-    S1["Set binary search boundaries"]
-    S2["Check middle or lower_bound result"]
-    S3["Discard impossible half/range"]
-    S4["Return final index or count"]
+    S0["Start"]
+    S1["Initialize: int m = matrix.size(), n = matrix[0].size()"]
+    S2["Initialize: int l = 0, r = m * n - 1"]
+    S3["Repeat while: l &lt;= r"]
+    S4["Initialize: int mid = l + (r-l)/2"]
+    S5["Initialize: int x = matrix[mid / n][mid % n]"]
+    S6["Decision: x == target"]
+    S7["If true: return true"]
+    S8["Decision: x &lt; target"]
+    S9["If true: l = mid + 1"]
+    S10["Otherwise: r = mid - 1"]
+    S11["Return: false"]
+    S12["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
 ```
 
 </details>
@@ -6217,19 +6802,25 @@ Core idea     : matrix acts like sorted array
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Run: sort(potions.begin(), potions.end())"]
+    S2["Initialize: vector&lt;int&gt; ans"]
+    S3["Loop: long long s : spells"]
+    S4["Initialize: long long need = (success + s - 1) / s"]
+    S5["Update: append value/result to container"]
+    S6["Return: ans"]
+    S7["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -6318,21 +6909,27 @@ Core idea     : all later potions work
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create stack for unresolved items"]
-    S1["Scan items in order"]
-    S2["Pop while stack top is resolved or invalid"]
-    S3["Use stack top to compute answer"]
-    S4["Push current item if useful later"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: stack&lt;pair&lt;int,int&gt;&gt; st"]
+    S2["Initialize: int span = 1"]
+    S3["Repeat while: !st.empty() and st.top().first &lt;= price"]
+    S4["Update: span += st.top().second"]
+    S5["Update: st.pop()"]
+    S6["Update: st.push("]
+    S7["Return: span"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -6419,21 +7016,45 @@ Core idea     : merge weaker previous days
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Sum of Subarray Minimums"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: prev/next smaller"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Update: const int MOD = 1e9 + 7"]
+    S2["Initialize: int n = arr.size()"]
+    S3["Initialize: vector&lt;int&gt; left(n), right(n)"]
+    S4["Initialize: stack&lt;int&gt; st"]
+    S5["Loop: int i=0;i&lt;n;i++"]
+    S6["Repeat while: !st.empty()andarr[st.top()]&gt;arr[i]"]
+    S7["Inside loop: st.pop()"]
+    S8["Update: left[i]=st.empty()?i+1:i-st.top()"]
+    S9["Update: st.push(i)"]
+    S10["Repeat while: !st.empty()"]
+    S11["Loop: int i=n-1;i&gt;=0;i--"]
+    S12["Repeat while: !st.empty()andarr[st.top()]&gt;=arr[i]"]
+    S13["Update: right[i]=st.empty()?n-i:st.top()-i"]
+    S14["Initialize: long long ans=0"]
+    S15["Inside loop: ans=(ans+1LL*arr[i]*left[i]*right[i])%MOD"]
+    S16["Return: ans"]
+    S17["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
+    S16 --> S17
 ```
 
 </details>
@@ -6525,21 +7146,35 @@ Core idea     : each value contributes as minimum
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Initialize: deque&lt;int&gt; dq"]
+    S2["Initialize: vector&lt;int&gt; ans"]
+    S3["Loop: int i=0;i&lt;(int)nums.size();i++"]
+    S4["Repeat while: !dq.empty() and dq.front() &lt;= i-k"]
+    S5["Inside loop: dq.pop_front()"]
+    S6["Repeat while: !dq.empty() and nums[dq.back()] &lt;= nums[i]"]
+    S7["Inside loop: dq.pop_back()"]
+    S8["Update: append value/result to container"]
+    S9["Decision: i &gt;= k-1"]
+    S10["If true: ans.push_back(nums[dq.front()])"]
+    S11["Return: ans"]
+    S12["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
 ```
 
 </details>
@@ -6630,21 +7265,45 @@ Core idea     : front always best
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Initialize: deque&lt;int&gt; mn, mx"]
+    S2["Initialize: int l = 0, ans = 0"]
+    S3["Loop: int r=0;r&lt;(int)nums.size();r++"]
+    S4["Repeat while: !mn.empty() and nums[mn.back()] &gt;= nums[r]"]
+    S5["Inside loop: mn.pop_back()"]
+    S6["Repeat while: !mx.empty() and nums[mx.back()] &lt;= nums[r]"]
+    S7["Inside loop: mx.pop_back()"]
+    S8["Update: append value/result to container"]
+    S9["Repeat while: nums[mx.front()] - nums[mn.front()] &gt; limit"]
+    S10["Decision: mn.front() == l"]
+    S11["If true: mn.pop_front()"]
+    S12["Decision: mx.front() == l"]
+    S13["If true: mx.pop_front()"]
+    S14["Update: l++"]
+    S15["Update: ans = max(ans, r-l+1)"]
+    S16["Return: ans"]
+    S17["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
+    S16 --> S17
 ```
 
 </details>
@@ -6740,21 +7399,37 @@ Core idea     : valid window bounded by extremes
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Initialize: deque&lt;int&gt; dq"]
+    S2["Initialize: vector&lt;int&gt; dp(nums.size())"]
+    S3["Initialize: int ans = nums[0]"]
+    S4["Loop: int i=0;i&lt;(int)nums.size();i++"]
+    S5["Decision: !dq.empty() and dq.front() &lt; i-k"]
+    S6["If true: dq.pop_front()"]
+    S7["Update: dp[i] = nums[i] + (dq.empty() ? 0 : max(0, dp[dq.front()]))"]
+    S8["Repeat while: !dq.empty() and dp[dq.back()] &lt;= dp[i]"]
+    S9["Inside loop: dq.pop_back()"]
+    S10["Update: append value/result to container"]
+    S11["Update: ans = max(ans, dp[i])"]
+    S12["Return: ans"]
+    S13["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
 ```
 
 </details>
@@ -6847,21 +7522,35 @@ Core idea     : transition needs max previous
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Insert Interval"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: three phases"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Initialize: vector&lt;vector&lt;int&gt;&gt; ans"]
+    S2["Initialize: int i = 0, n = intervals.size()"]
+    S3["Repeat while: i&lt;n and intervals[i][1] &lt; newInterval[0]"]
+    S4["Inside loop: ans.push_back(intervals[i++])"]
+    S5["Repeat while: i&lt;n and intervals[i][0] &lt;= newInterval[1]"]
+    S6["Update: newInterval[0]=min(newInterval[0],intervals[i][0])"]
+    S7["Update: newInterval[1]=max(newInterval[1],intervals[i][1])"]
+    S8["Update: i++"]
+    S9["Update: append value/result to container"]
+    S10["Repeat while: i&lt;n"]
+    S11["Return: ans"]
+    S12["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
 ```
 
 </details>
@@ -6871,7 +7560,7 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
         vector<vector<int>> ans;
         int i = 0, n = intervals.size();
@@ -6885,8 +7574,7 @@ public:
         while (i<n) ans.push_back(intervals[i++]);
         return ans;
     }
-}
-;
+};
 ```
 
 </details>
@@ -6955,19 +7643,27 @@ Core idea     : only overlap group changes
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort intervals by start time"]
-    S1["Scan from second meeting"]
-    S2["If current start  previous end, overlap exists"]
-    S3["Return false on overlap"]
-    S4["Return true otherwise"]
+    S0["Start"]
+    S1["Run: sort(intervals.begin(), intervals.end())"]
+    S2["Initialize: priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; ends"]
+    S3["Loop: auto& in : intervals"]
+    S4["Decision: !ends.empty() and ends.top() &lt;= in[0]"]
+    S5["If true: ends.pop()"]
+    S6["Update: ends.push(in[1])"]
+    S7["Return: ends.size()"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -7056,19 +7752,31 @@ Core idea     : max simultaneous rooms needed
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Initialize: map&lt;int,int&gt; events"]
+    S2["Loop: auto& t : trips"]
+    S3["Inside loop: events[t[1]] += t[0], events[t[2]] -= t[0]"]
+    S4["Initialize: int cur = 0"]
+    S5["Loop: auto [pos, delta] : events"]
+    S6["Update: cur += delta"]
+    S7["Decision: cur &gt; capacity"]
+    S8["If true: return false"]
+    S9["Return: true"]
+    S10["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
 ```
 
 </details>
@@ -7155,21 +7863,37 @@ Core idea     : active passengers must fit capacity
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Reverse Pairs"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: merge/Fenwick"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Decision: r - l &lt;= 1"]
+    S2["If true: return 0"]
+    S3["Initialize: int m = (l+r)/2"]
+    S4["Initialize: int ans = mergeSort(a,l,m) + mergeSort(a,m,r)"]
+    S5["Initialize: int j = m"]
+    S6["Loop: int i=l;i&lt;m;i++"]
+    S7["Repeat while: j&lt;r and (long long)a[i] &gt; 2LL*a[j]"]
+    S8["Inside loop: j++"]
+    S9["Update: ans += j-m"]
+    S10["Run: inplace_merge(a.begin()+l, a.begin()+m, a.begin()+r)"]
+    S11["Return: ans"]
+    S12["Return: mergeSort(nums, 0, nums.size())"]
+    S13["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
 ```
 
 </details>
@@ -7259,21 +7983,31 @@ Core idea     : count previous bigger than twice
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: int sum = accumulate(nums.begin(), nums.end(), 0)"]
+    S2["Decision: sum % 2"]
+    S3["If true: return false"]
+    S4["Initialize: int target = sum / 2"]
+    S5["Initialize: vector&lt;char&gt; dp(target + 1)"]
+    S6["Update: dp[0] = true"]
+    S7["Loop: int x : nums"]
+    S8["Inside loop: for (int s = target; s &gt;= x; s--) dp[s] |= dp[s-x]"]
+    S9["Return: dp[target]"]
+    S10["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
 ```
 
 </details>
@@ -7361,19 +8095,27 @@ Core idea     : possible sums move by x
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Build max heap of stones"]
-    S1["While at least two stones remain"]
-    S2["Pop two heaviest stones"]
-    S3["If different, push their difference"]
-    S4["Return remaining stone or 0"]
+    S0["Start"]
+    S1["Initialize: int sum = accumulate(stones.begin(), stones.end(), 0), target = sum / 2"]
+    S2["Initialize: vector&lt;char&gt; dp(target + 1)"]
+    S3["Update: dp[0] = true"]
+    S4["Loop: int x : stones"]
+    S5["Inside loop: for (int s = target; s &gt;= x; s--) dp[s] |= dp[s-x]"]
+    S6["Loop: int s = target; s &gt;= 0; s--"]
+    S7["Inside loop: if (dp[s]) return sum - 2*s"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -7462,19 +8204,25 @@ Core idea     : split stones into two groups
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Initialize: int n = nums.size()"]
+    S2["Loop: int i=0;i&lt;n;i++"]
+    S3["Repeat while: nums[i] &gt;= 1 and nums[i] &lt;= n and nums[nums[i]-1] != nums[i]"]
+    S4["Run: swap(nums[i], nums[nums[i]-1])"]
+    S5["Inside loop: if (nums[i] != i+1) return i+1"]
+    S6["Return: n+1"]
+    S7["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
 ```
 
 </details>
@@ -7564,21 +8312,33 @@ Core idea     : array index acts as hash
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Trapping Rain Water"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: two pointers or prefix max"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Initialize: int l=0,r=height.size()-1,leftMax=0,rightMax=0,ans=0"]
+    S2["Repeat while: l&lt;r"]
+    S3["Decision: height[l] &lt; height[r]"]
+    S4["Update: leftMax=max(leftMax,height[l])"]
+    S5["Update: ans += leftMax-height[l]"]
+    S6["Update: l++"]
+    S7["Update: rightMax=max(rightMax,height[r])"]
+    S8["Update: ans += rightMax-height[r]"]
+    S9["Update: r--"]
+    S10["Return: ans"]
+    S11["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
 ```
 
 </details>
@@ -7666,21 +8426,43 @@ Core idea     : water depends on smaller wall
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Text Justification"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: vector group"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Initialize: vector&lt;string&gt; ans"]
+    S2["Loop: int i=0;i&lt;(int)words.size();"]
+    S3["Initialize: int j=i, len=0"]
+    S4["Repeat while: j&lt;(int)words.size() and len + (j-i) + (int)words[j].size() &lt;=..."]
+    S5["Inside loop: len += words[j++].size()"]
+    S6["Initialize: int gaps = j-i-1"]
+    S7["Decision: j == (int)words.size() or gaps == 0"]
+    S8["Loop: int k=i;k&lt;j;k++"]
+    S9["Decision: k&gt;i"]
+    S10["If true: line+=' '"]
+    S11["Update: line+=words[k]"]
+    S12["Update: line += string(maxWidth - line.size(), ' ')"]
+    S13["Initialize: int spaces = maxWidth - len, each = spaces / gaps, extra = spaces % gaps"]
+    S14["Update: line += words[k]"]
+    S15["Return: ans"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -7778,21 +8560,43 @@ Core idea     : each line is greedy group
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Initialize: vector&lt;int&gt; ans"]
+    S2["Initialize: int n=s.size(), m=words.size(), w=words[0].size()"]
+    S3["Initialize: unordered_map&lt;string,int&gt; need"]
+    S4["Loop: auto& x:words"]
+    S5["Inside loop: need[x]++"]
+    S6["Loop: int off=0; off&lt;w; off++"]
+    S7["Initialize: unordered_map&lt;string,int&gt; have"]
+    S8["Initialize: int left=off, cnt=0"]
+    S9["Loop: int right=off; right+w&lt;=n; right+=w"]
+    S10["Initialize: string cur=s.substr(right,w)"]
+    S11["Decision: !need.count(cur)"]
+    S12["Run: have.clear()"]
+    S13["Update: cnt=0"]
+    S14["Update: left=right+w"]
+    S15["Return: ans"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -7889,21 +8693,43 @@ Core idea     : words align by length
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create stack for unresolved items"]
-    S1["Scan items in order"]
-    S2["Pop while stack top is resolved or invalid"]
-    S3["Use stack top to compute answer"]
-    S4["Push current item if useful later"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: long long ans=0, num=0, sign=1"]
+    S2["Initialize: stack&lt;long long&gt; st"]
+    S3["Loop: char c:s"]
+    S4["Decision: isdigit(c)"]
+    S5["If true: num = num*10 + c-'0'"]
+    S6["Else if: c=='+' or c=='-'"]
+    S7["Update: ans += sign*num"]
+    S8["Update: num=0"]
+    S9["Update: sign = c=='+' ? 1 : -1"]
+    S10["Else if: c=='('"]
+    S11["Update: st.push(ans)"]
+    S12["Update: st.push(sign)"]
+    S13["Update: ans=0"]
+    S14["Update: sign=1"]
+    S15["Return: ans + sign*num"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -7994,21 +8820,37 @@ Core idea     : parentheses change sign context
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create stack for unresolved items"]
-    S1["Scan items in order"]
-    S2["Pop while stack top is resolved or invalid"]
-    S3["Use stack top to compute answer"]
-    S4["Push current item if useful later"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Update: append value/result to container"]
+    S2["Initialize: stack&lt;int&gt; st"]
+    S3["Initialize: int ans=0"]
+    S4["Loop: int i=0;i&lt;(int)heights.size();i++"]
+    S5["Repeat while: !st.empty() and heights[st.top()] &gt; heights[i]"]
+    S6["Initialize: int h=heights[st.top()]"]
+    S7["Update: st.pop()"]
+    S8["Initialize: int left = st.empty() ? -1 : st.top()"]
+    S9["Update: ans=max(ans, h*(i-left-1))"]
+    S10["Update: st.push(i)"]
+    S11["Update: heights.pop_back()"]
+    S12["Return: ans"]
+    S13["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
 ```
 
 </details>
@@ -8103,21 +8945,43 @@ Core idea     : popped bar finds maximal width
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize queue with start state(s)"]
-    S1["Mark starting state(s) visited"]
-    S2["Pop one state from queue"]
-    S3["Try all valid next states"]
-    S4["Push unvisited states"]
-    S5["Return distance/path/count result"]
+    S0["Start"]
+    S1["Initialize: string start, target='123450'"]
+    S2["Loop: auto& row:board"]
+    S3["Inside loop: for(int x:row) start += char('0'+x)"]
+    S4["Initialize: vector&lt;vector&lt;int&gt;&gt; nb="]
+    S5["Initialize: queue&lt;string&gt; q"]
+    S6["Initialize: unordered_set&lt;string&gt; seen"]
+    S7["Update: q.push(start)"]
+    S8["Loop: int step=0; !q.empty(); step++"]
+    S9["Initialize: int sz=q.size()"]
+    S10["Repeat while: sz--"]
+    S11["Initialize: string cur=q.front()"]
+    S12["Update: q.pop()"]
+    S13["Decision: cur==target"]
+    S14["If true: return step"]
+    S15["Return: -1"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -8210,21 +9074,35 @@ Core idea     : each move is one edge
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Initialize: priority_queue&lt;int&gt; low"]
+    S2["Initialize: priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; high"]
+    S3["Update: low.push(num)"]
+    S4["Update: high.push(low.top())"]
+    S5["Update: low.pop()"]
+    S6["Decision: high.size() &gt; low.size()"]
+    S7["Update: low.push(high.top())"]
+    S8["Update: high.pop()"]
+    S9["Decision: low.size() &gt; high.size()"]
+    S10["If true: return low.top()"]
+    S11["Return: (low.top() + high.top()) / 2.0"]
+    S12["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
 ```
 
 </details>
@@ -8314,21 +9192,43 @@ Core idea     : median lies between halves
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Run: ListNode* mergeKLists(vector&lt;ListNode*&gt;& lists)"]
+    S2["Initialize: auto cmp = [](ListNode* a, ListNode* b)"]
+    S3["Return: a-&gt;val &gt; b-&gt;val"]
+    S4["Initialize: priority_queue&lt;ListNode*, vector&lt;ListNode*&gt;, decltype(cmp)&g..."]
+    S5["Loop: auto node : lists"]
+    S6["Inside loop: if (node) pq.push(node)"]
+    S7["Update: ListNode dummy, *tail = &dummy"]
+    S8["Repeat while: !pq.empty()"]
+    S9["Initialize: auto node=pq.top()"]
+    S10["Update: pq.pop()"]
+    S11["Update: tail-&gt;next=node"]
+    S12["Update: tail=tail-&gt;next"]
+    S13["Decision: node-&gt;next"]
+    S14["If true: pq.push(node-&gt;next)"]
+    S15["Return: dummy.next"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -8416,21 +9316,41 @@ Core idea     : smallest head is next answer
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Initialize: vector&lt;pair&lt;int,int&gt;&gt; projects"]
+    S2["Loop: int i=0;i&lt;(int)profits.size();i++"]
+    S3["Inside loop: projects.push_back("]
+    S4["Run: sort(projects.begin(), projects.end())"]
+    S5["Initialize: priority_queue&lt;int&gt; pq"]
+    S6["Initialize: int i=0"]
+    S7["Repeat while: k--"]
+    S8["Repeat while: i&lt;(int)projects.size() and projects[i].first &lt;= w"]
+    S9["Inside loop: pq.push(projects[i++].second)"]
+    S10["Decision: pq.empty()"]
+    S11["If true: break"]
+    S12["Update: w += pq.top()"]
+    S13["Update: pq.pop()"]
+    S14["Return: w"]
+    S15["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
 ```
 
 </details>
@@ -8523,21 +9443,27 @@ Core idea     : choose best available project
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: map&lt;int,int&gt; diff"]
+    S2["Update: diff[start]++"]
+    S3["Update: diff[end]--"]
+    S4["Initialize: int cur=0, best=0"]
+    S5["Loop: auto [t,d]:diff"]
+    S6["Inside loop: best=max(best, cur += d)"]
+    S7["Return: best"]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -8624,21 +9550,37 @@ Core idea     : maximum overlap is prefix of events
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: unordered_map&lt;string,int&gt; cnt"]
+    S2["Update: cnt[key]++"]
+    S3["Decision: --cnt[key] == 0"]
+    S4["If true: cnt.erase(key)"]
+    S5["Initialize: string ans=''"]
+    S6["Initialize: int best=INT_MIN"]
+    S7["Loop: auto& [k,v]:cnt"]
+    S8["Inside loop: if(v&gt;best) best=v, ans=k"]
+    S9["Return: ans"]
+    S10["Initialize: int best=INT_MAX"]
+    S11["Inside loop: if(v&lt;best) best=v, ans=k"]
+    S12["Run: // Note: This is simple and readable. For strict O(1), use bucket list + key..."]
+    S13["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
 ```
 
 </details>
@@ -8724,19 +9666,31 @@ Core idea     : O(1) min and max buckets
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Run: sort(envelopes.begin(), envelopes.end(), [](auto& a, auto& b)"]
+    S2["Return: a[0]==b[0] ? a[1]&gt;b[1] : a[0]&lt;b[0]; }"]
+    S3["Initialize: vector&lt;int&gt; lis"]
+    S4["Loop: auto& e:envelopes"]
+    S5["Initialize: auto it=lower_bound(lis.begin(), lis.end(), e[1])"]
+    S6["Decision: it==lis.end()"]
+    S7["If true: lis.push_back(e[1])"]
+    S8["Otherwise: *it=e[1]"]
+    S9["Return: lis.size()"]
+    S10["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
 ```
 
 </details>
@@ -8822,19 +9776,35 @@ Core idea     : avoid equal width nesting
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Initialize: int n=startTime.size()"]
+    S2["Initialize: vector&lt;array&lt;int,3&gt;&gt; jobs"]
+    S3["Loop: int i=0;i&lt;n;i++"]
+    S4["Inside loop: jobs.push_back("]
+    S5["Run: sort(jobs.begin(), jobs.end())"]
+    S6["Initialize: vector&lt;int&gt; ends"]
+    S7["Loop: auto [e,s,p]:jobs"]
+    S8["Initialize: int i=upper_bound(ends.begin(), ends.end(), s)-ends.begin()-1"]
+    S9["Initialize: int best=max(dp.back(), dp[i]+p)"]
+    S10["Update: append value/result to container"]
+    S11["Return: dp.back()"]
+    S12["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
 ```
 
 </details>
@@ -8844,27 +9814,25 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
         int n=startTime.size();
         vector<array<int,3>> jobs;
-        for (int i=0; i<n; i++) jobs.push_back({ endTime[i], startTime[i], profit[i]} );
-        sort(jobs.begin(), jobs.end());
-        vector<int> ends{
-            0}
-            , dp{
-                0}
-                ;
-                for (auto [e,s,p]:jobs) {
-                    int i=upper_bound(ends.begin(), ends.end(), s)-ends.begin()-1;
-                    int best=max(dp.back(), dp[i]+p);
-                    ends.push_back(e);
-                    dp.push_back(best);
+        for(int i=0;i<n;i++) jobs.push_back({
+            endTime[i], startTime[i], profit[i]});
+            sort(jobs.begin(), jobs.end());
+            vector<int> ends{
+                0}, dp{
+                    0};
+                    for(auto [e,s,p]:jobs){
+                        int i=upper_bound(ends.begin(), ends.end(), s)-ends.begin()-1;
+                        int best=max(dp.back(), dp[i]+p);
+                        ends.push_back(e);
+                        dp.push_back(best);
+                    }
+                    return dp.back();
                 }
-                return dp.back();
-            }
-        }
-        ;
+            };
 ```
 
 </details>
@@ -8933,19 +9901,33 @@ Core idea     : choose job or skip
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Define searchable condition"]
-    S1["Set binary search boundaries"]
-    S2["Check middle or lower_bound result"]
-    S3["Discard impossible half/range"]
-    S4["Return final index or count"]
+    S0["Start"]
+    S1["Decision: a.size() &gt; b.size()"]
+    S2["If true: return findMedianSortedArrays(b, a)"]
+    S3["Initialize: int m=a.size(), n=b.size(), half=(m+n+1)/2, l=0, r=m"]
+    S4["Repeat while: l &lt;= r"]
+    S5["Initialize: int i=(l+r)/2, j=half-i"]
+    S6["Initialize: int Aleft=i? a[i-1]:INT_MIN, Aright=i&lt;m?a[i]:INT_MAX"]
+    S7["Initialize: int Bleft=j?b[j-1]:INT_MIN, Bright=j&lt;n?b[j]:INT_MAX"]
+    S8["Decision: Aleft&gt;Bright"]
+    S9["If true: r=i-1"]
+    S10["Otherwise: l=i+1"]
+    S11["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
 ```
 
 </details>
@@ -8959,18 +9941,13 @@ public:
     double findMedianSortedArrays(vector<int>& a, vector<int>& b) {
         if (a.size() > b.size()) return findMedianSortedArrays(b, a);
         int m=a.size(), n=b.size(), half=(m+n+1)/2, l=0, r=m;
-        while (l<=r) {
-            int i=(l+r)/2, j=half-i;
-            int Aleft=i? a[i-1]:INT_MIN, Aright=i<m?a[i]:INT_MAX;
-            int Bleft=j?b[j-1]:INT_MIN, Bright=j<n?b[j]:INT_MAX;
-            if (Aleft<=Bright && Bleft<=Aright) return (m+n)%2 ? max(Aleft,Bleft) : (max(Aleft,Bleft)+min(Aright,Bright))/2.0;
-            if (Aleft>Bright) r=i-1;
-            else l=i+1;
+        while (l <= r) { int i=(l+r)/2, j=half-i; int Aleft=i? a[i-1]:INT_MIN, Aright=i<m?a[i]:INT_MAX; int Bleft=j?b[j-1]:INT_MIN, Bright=j<n?b[j]:INT_MAX;
+            if(Aleft<=Bright && Bleft<=Aright) return (m+n)%2 ? max(Aleft,Bleft) : (max(Aleft,Bleft)+min(Aright,Bright))/2.0;
+            if(Aleft>Bright) r=i-1; else l=i+1;
         }
         return 0;
     }
-}
-;
+};
 ```
 
 </details>
@@ -9039,21 +10016,43 @@ Core idea     : left half must be <= right half
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Count of Smaller Numbers After Self"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: Fenwick/PBDS"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Initialize: vector&lt;int&gt; bit"]
+    S2["Loop: ;i&lt;(int)bit.size();i+=i&-i"]
+    S3["Inside loop: bit[i]+=v"]
+    S4["Initialize: int s=0"]
+    S5["Loop: ;i&gt;0;i-=i&-i"]
+    S6["Inside loop: s+=bit[i]"]
+    S7["Return: s"]
+    S8["Initialize: vector&lt;int&gt; vals=nums"]
+    S9["Run: sort(vals.begin(), vals.end())"]
+    S10["Update: vals.erase(unique(vals.begin(), vals.end()), vals.end())"]
+    S11["Run: bit.assign(vals.size()+1,0)"]
+    S12["Initialize: vector&lt;int&gt; ans(nums.size())"]
+    S13["Loop: int i=nums.size()-1;i&gt;=0;i--"]
+    S14["Initialize: int rank=lower_bound(vals.begin(), vals.end(), nums[i])-vals.begin()+1"]
+    S15["Return: ans"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -9064,30 +10063,16 @@ flowchart TD
 ```cpp
 class Solution {
     vector<int> bit;
-    void add(int i,int v) {
-        for (; i<(int)bit.size(); i+=i&-i) bit[i]+=v;
-    }
-    int sum(int i) {
-        int s=0;
-        for (; i>0; i-=i&-i) s+=bit[i];
-        return s;
-    }
+    void add(int i,int v){ for(;i<(int)bit.size();i+=i&-i) bit[i]+=v; }
+    int sum(int i){ int s=0; for(;i>0;i-=i&-i) s+=bit[i]; return s; }
 public:
     vector<int> countSmaller(vector<int>& nums) {
-        vector<int> vals=nums;
-        sort(vals.begin(), vals.end());
-        vals.erase(unique(vals.begin(), vals.end()), vals.end());
-        bit.assign(vals.size()+1,0);
-        vector<int> ans(nums.size());
-        for (int i=nums.size()-1; i>=0; i--) {
-            int rank=lower_bound(vals.begin(), vals.end(), nums[i])-vals.begin()+1;
-            ans[i]=sum(rank-1);
-            add(rank,1);
-        }
+        vector<int> vals=nums; sort(vals.begin(), vals.end()); vals.erase(unique(vals.begin(), vals.end()), vals.end());
+        bit.assign(vals.size()+1,0); vector<int> ans(nums.size());
+        for(int i=nums.size()-1;i>=0;i--){ int rank=lower_bound(vals.begin(), vals.end(), nums[i])-vals.begin()+1; ans[i]=sum(rank-1); add(rank,1); }
         return ans;
     }
-}
-;
+};
 ```
 
 </details>
@@ -9156,21 +10141,41 @@ Core idea     : count previously inserted smaller
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create stack for unresolved items"]
-    S1["Scan items in order"]
-    S2["Pop while stack top is resolved or invalid"]
-    S3["Use stack top to compute answer"]
-    S4["Push current item if useful later"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Initialize: stack&lt;int&gt; st"]
+    S2["Update: append value/result to container"]
+    S3["Initialize: int ans=0"]
+    S4["Loop: int i=0;i&lt;(int)h.size();i++"]
+    S5["Repeat while: !st.empty()andh[st.top()]&gt;h[i]"]
+    S6["Initialize: int ht=h[st.top()]"]
+    S7["Update: st.pop()"]
+    S8["Initialize: int l=st.empty()?-1:st.top()"]
+    S9["Update: ans=max(ans,ht*(i-l-1))"]
+    S10["Update: st.push(i)"]
+    S11["Update: h.pop_back()"]
+    S12["Return: ans"]
+    S13["Decision: matrix.empty()"]
+    S14["If true: return 0"]
+    S15["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
 ```
 
 </details>
@@ -9180,35 +10185,32 @@ flowchart TD
 
 ```cpp
 class Solution {
-    int hist(vector<int>& h) {
+    int hist(vector<int>& h){
         stack<int> st;
         h.push_back(0);
         int ans=0;
-        for (int i=0; i<(int)h.size(); i++) {
-            while (!st.empty()&&h[st.top()]>h[i]) {
+        for(int i=0;i<(int)h.size();i++){
+            while(!st.empty()&&h[st.top()]>h[i]){
                 int ht=h[st.top()];
                 st.pop();
                 int l=st.empty()?-1:st.top();
                 ans=max(ans,ht*(i-l-1));
-            }
-            st.push(i);
-        }
-        h.pop_back();
+            } st.push(i);
+        } h.pop_back();
         return ans;
     }
-public:
+    public:
     int maximalRectangle(vector<vector<char>>& matrix) {
-        if (matrix.empty()) return 0;
+        if(matrix.empty()) return 0;
         int n=matrix[0].size(), ans=0;
         vector<int> h(n);
-        for (auto& row:matrix) {
-            for (int j=0; j<n; j++) h[j]=row[j]=='1'?h[j]+1:0;
+        for(auto& row:matrix){
+            for(int j=0;j<n;j++) h[j]=row[j]=='1'?h[j]+1:0;
             ans=max(ans,hist(h));
         }
         return ans;
     }
-}
-;
+};
 ```
 
 </details>
@@ -9277,21 +10279,39 @@ Core idea     : each row becomes histogram problem
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Initialize: int n=nums.size(), ans=n+1"]
+    S2["Initialize: vector&lt;long long&gt; pref(n+1)"]
+    S3["Loop: int i=0;i&lt;n;i++"]
+    S4["Inside loop: pref[i+1]=pref[i]+nums[i]"]
+    S5["Initialize: deque&lt;int&gt; dq"]
+    S6["Loop: int i=0;i&lt;=n;i++"]
+    S7["Repeat while: !dq.empty()andpref[i]-pref[dq.front()]&gt;=k"]
+    S8["Update: ans=min(ans,i-dq.front())"]
+    S9["Update: dq.pop_front()"]
+    S10["Repeat while: !dq.empty()andpref[dq.back()]&gt;=pref[i]"]
+    S11["Inside loop: dq.pop_back()"]
+    S12["Update: append value/result to container"]
+    S13["Return: ans==n+1?-1:ans"]
+    S14["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
 ```
 
 </details>
@@ -9301,24 +10321,22 @@ flowchart TD
 
 ```cpp
 class Solution {
-public:
+    public:
     int shortestSubarray(vector<int>& nums, int k) {
         int n=nums.size(), ans=n+1;
         vector<long long> pref(n+1);
-        for (int i=0; i<n; i++) pref[i+1]=pref[i]+nums[i];
+        for(int i=0;i<n;i++) pref[i+1]=pref[i]+nums[i];
         deque<int> dq;
-        for (int i=0; i<=n; i++) {
-            while (!dq.empty()&&pref[i]-pref[dq.front()]>=k) {
+        for(int i=0;i<=n;i++){
+            while(!dq.empty()&&pref[i]-pref[dq.front()]>=k){
                 ans=min(ans,i-dq.front());
                 dq.pop_front();
-            }
-            while (!dq.empty()&&pref[dq.back()]>=pref[i]) dq.pop_back();
+            } while(!dq.empty()&&pref[dq.back()]>=pref[i]) dq.pop_back();
             dq.push_back(i);
         }
         return ans==n+1?-1:ans;
     }
-}
-;
+};
 ```
 
 </details>
@@ -9387,21 +10405,43 @@ Core idea     : smaller earlier prefix is better
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Initialize: multiset&lt;int&gt; lo, hi"]
+    S2["Repeat while: lo.size()&gt;hi.size()+1"]
+    S3["Update: hi.insert(*lo.rbegin())"]
+    S4["Update: lo.erase(prev(lo.end()))"]
+    S5["Repeat while: lo.size()&lt;hi.size()"]
+    S6["Update: lo.insert(*hi.begin())"]
+    S7["Update: hi.erase(hi.begin())"]
+    S8["Decision: lo.empty()orx&lt;=*lo.rbegin()"]
+    S9["If true: lo.insert(x)"]
+    S10["Otherwise: hi.insert(x)"]
+    S11["Run: rebalance()"]
+    S12["Initialize: auto it=lo.find(x)"]
+    S13["Decision: it!=lo.end()"]
+    S14["If true: lo.erase(it)"]
+    S15["Return: ans"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -9412,39 +10452,36 @@ flowchart TD
 ```cpp
 class Solution {
     multiset<int> lo, hi;
-    void rebalance() {
-        while (lo.size()>hi.size()+1) {
+    void rebalance(){
+        while(lo.size()>hi.size()+1){
             hi.insert(*lo.rbegin());
             lo.erase(prev(lo.end()));
-        }
-        while (lo.size()<hi.size()) {
+        } while(lo.size()<hi.size()){
             lo.insert(*hi.begin());
             hi.erase(hi.begin());
+        } }
+        void add(int x){
+            if(lo.empty()||x<=*lo.rbegin()) lo.insert(x);
+            else hi.insert(x);
+            rebalance();
         }
-    }
-    void add(int x) {
-        if (lo.empty()||x<=*lo.rbegin()) lo.insert(x);
-        else hi.insert(x);
-        rebalance();
-    }
-    void remove(int x) {
-        auto it=lo.find(x);
-        if (it!=lo.end()) lo.erase(it);
-        else hi.erase(hi.find(x));
-        rebalance();
-    }
-public:
-    vector<double> medianSlidingWindow(vector<int>& nums, int k) {
-        vector<double> ans;
-        for (int i=0; i<(int)nums.size(); i++) {
-            add(nums[i]);
-            if (i>=k) remove(nums[i-k]);
-            if (i>=k-1) ans.push_back(k%2?*lo.rbegin():((long long)*lo.rbegin()+*hi.begin())/2.0);
+        void remove(int x){
+            auto it=lo.find(x);
+            if(it!=lo.end()) lo.erase(it);
+            else hi.erase(hi.find(x));
+            rebalance();
         }
-        return ans;
-    }
-}
-;
+        public:
+        vector<double> medianSlidingWindow(vector<int>& nums, int k) {
+            vector<double> ans;
+            for(int i=0;i<(int)nums.size();i++){
+                add(nums[i]);
+                if(i>=k) remove(nums[i-k]);
+                if(i>=k-1) ans.push_back(k%2?*lo.rbegin():((long long)*lo.rbegin()+*hi.begin())/2.0);
+            }
+            return ans;
+        }
+    };
 ```
 
 </details>
@@ -9513,19 +10550,37 @@ Core idea     : median is boundary of halves
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Initialize: vector&lt;Interval&gt; all"]
+    S2["Loop: auto& emp : schedule"]
+    S3["Inside loop: for (auto& in : emp) all.push_back(in)"]
+    S4["Run: sort(all.begin(), all.end(), [](Interval& a, Interval& b)"]
+    S5["Return: a.start &lt; b.start; }"]
+    S6["Initialize: vector&lt;Interval&gt; ans"]
+    S7["Initialize: int end = all[0].end"]
+    S8["Loop: int i=1;i&lt;(int)all.size();i++"]
+    S9["Decision: all[i].start &gt; end"]
+    S10["If true: ans.push_back(Interval(end, all[i].start))"]
+    S11["Update: end = max(end, all[i].end)"]
+    S12["Return: ans"]
+    S13["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
 ```
 
 </details>
@@ -9539,20 +10594,12 @@ public:
     vector<Interval> employeeFreeTime(vector<vector<Interval>> schedule) {
         vector<Interval> all;
         for (auto& emp : schedule) for (auto& in : emp) all.push_back(in);
-        sort(all.begin(), all.end(), [](Interval& a, Interval& b) {
-            return a.start < b.start;
-        }
-        );
-        vector<Interval> ans;
-        int end = all[0].end;
-        for (int i=1; i<(int)all.size(); i++) {
-            if (all[i].start > end) ans.push_back(Interval(end, all[i].start));
-            end = max(end, all[i].end);
-        }
+        sort(all.begin(), all.end(), [](Interval& a, Interval& b){ return a.start < b.start; });
+        vector<Interval> ans; int end = all[0].end;
+        for (int i=1;i<(int)all.size();i++) { if (all[i].start > end) ans.push_back(Interval(end, all[i].start)); end = max(end, all[i].end); }
         return ans;
     }
-}
-;
+};
 ```
 
 </details>
@@ -9621,21 +10668,43 @@ Core idea     : free time is complement of busy union
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Update: const int MOD=1e9+7"]
+    S2["Initialize: vector&lt;pair&lt;int,int&gt;&gt; eng"]
+    S3["Loop: int i=0;i&lt;n;i++"]
+    S4["Inside loop: eng.push_back("]
+    S5["Run: sort(eng.rbegin(), eng.rend())"]
+    S6["Initialize: priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; pq"]
+    S7["Initialize: long long sum=0, ans=0"]
+    S8["Loop: auto [e,s]:eng"]
+    S9["Update: pq.push(s)"]
+    S10["Update: sum+=s"]
+    S11["Decision: (int)pq.size()&gt;k"]
+    S12["Update: sum-=pq.top()"]
+    S13["Update: pq.pop()"]
+    S14["Update: ans=max(ans,sum*e)"]
+    S15["Return: ans%MOD"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -9723,21 +10792,43 @@ Core idea     : efficiency fixed by sorted order
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start Create Sorted Array through Instructions"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: Fenwick + compression"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Update: static const int MOD=1e9+7"]
+    S2["Initialize: vector&lt;int&gt; bit"]
+    S3["Loop: ;i&lt;(int)bit.size();i+=i&-i"]
+    S4["Inside loop: bit[i]+=v"]
+    S5["Initialize: int s=0"]
+    S6["Loop: ;i&gt;0;i-=i&-i"]
+    S7["Inside loop: s+=bit[i]"]
+    S8["Return: s"]
+    S9["Initialize: int mx=*max_element(instructions.begin(), instructions.end())"]
+    S10["Run: bit.assign(mx+2,0)"]
+    S11["Initialize: long long ans=0"]
+    S12["Loop: int i = 0; i &lt; (int)instructions.size(); i++"]
+    S13["Initialize: int x=instructions[i]"]
+    S14["Initialize: int less=sum(x-1), greater=i-sum(x)"]
+    S15["Return: ans"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -9749,29 +10840,15 @@ flowchart TD
 class Solution {
     static const int MOD=1e9+7;
     vector<int> bit;
-    void add(int i,int v) {
-        for (; i<(int)bit.size(); i+=i&-i) bit[i]+=v;
-    }
-    int sum(int i) {
-        int s=0;
-        for (; i>0; i-=i&-i) s+=bit[i];
-        return s;
-    }
+    void add(int i,int v){ for(;i<(int)bit.size();i+=i&-i) bit[i]+=v; }
+    int sum(int i){ int s=0; for(;i>0;i-=i&-i) s+=bit[i]; return s; }
 public:
     int createSortedArray(vector<int>& instructions) {
-        int mx=*max_element(instructions.begin(), instructions.end());
-        bit.assign(mx+2,0);
-        long long ans=0;
-        for (int i=0; i<(int)instructions.size(); i++) {
-            int x=instructions[i];
-            int less=sum(x-1), greater=i-sum(x);
-            ans=(ans+min(less,greater))%MOD;
-            add(x,1);
-        }
+        int mx=*max_element(instructions.begin(), instructions.end()); bit.assign(mx+2,0); long long ans=0;
+        for (int i = 0; i < (int)instructions.size(); i++) { int x=instructions[i]; int less=sum(x-1), greater=i-sum(x); ans=(ans+min(less,greater))%MOD; add(x,1); }
         return ans;
     }
-}
-;
+};
 ```
 
 </details>
@@ -9842,21 +10919,29 @@ Core idea     : insertion cost from ranks
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start CSES Collecting Numbers"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: positions array"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;int&gt; pos(n+1)"]
+    S3["Loop: int i=1,x;i&lt;=n;i++"]
+    S4["Update: pos[x]=i"]
+    S5["Initialize: int ans=1"]
+    S6["Loop: int x=2;x&lt;=n;x++"]
+    S7["Inside loop: if(pos[x]&lt;pos[x-1]) ans++"]
+    S8["Output answer"]
+    S9["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -9867,19 +10952,18 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     vector<int> pos(n+1);
-    for (int i=1,x; i<=n; i++) {
-        cin>>x;
+    for(int i=1,x;i<=n;i++){
+        cin >> x;
         pos[x]=i;
-    }
-    int ans=1;
-    for (int x=2; x<=n; x++) if (pos[x]<pos[x-1]) ans++;
-    cout<<ans;
+    }int ans=1;
+    for(int x=2;x<=n;x++) if(pos[x]<pos[x-1]) ans++;
+    cout << ans;
     return 0;
 }
 ```
@@ -9950,21 +11034,29 @@ Core idea     : new round starts when position decreases
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Read n"]
-    S1["Push 1..n into queue"]
-    S2["While queue is not empty"]
-    S3["Move first person to back"]
-    S4["Print and remove next person"]
-    S5["Repeat until queue is empty"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: queue&lt;int&gt; q"]
+    S3["Loop: int i = 1; i &lt;= n; i++"]
+    S4["Inside loop: q.push(i)"]
+    S5["Repeat while: !q.empty()"]
+    S6["Update: q.push(q.front())"]
+    S7["Update: q.pop()"]
+    S8["Output answer"]
+    S9["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
 ```
 
 </details>
@@ -9975,17 +11067,17 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     queue<int> q;
-    for (int i=1; i<=n; i++)q.push(i);
-    while (!q.empty()) {
+    for (int i = 1; i <= n; i++)q.push(i);
+    while (!q.empty()){
         q.push(q.front());
         q.pop();
-        cout<<q.front()<<' ';
+        cout << q.front() << ' ';
         q.pop();
     }
     return 0;
@@ -10058,21 +11150,41 @@ Core idea     : circular process needs efficient order
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start CSES String Matching"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: string algorithm"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: string t=p+'#'+s"]
+    S3["Initialize: vector&lt;int&gt; pi(t.size())"]
+    S4["Loop: int i=1;i&lt;(int)t.size();i++"]
+    S5["Initialize: int j=pi[i-1]"]
+    S6["Repeat while: jandt[i]!=t[j]"]
+    S7["Inside loop: j=pi[j-1]"]
+    S8["Decision: t[i]==t[j]"]
+    S9["If true: j++"]
+    S10["Update: pi[i]=j"]
+    S11["Initialize: int ans=0"]
+    S12["Loop: int x:pi"]
+    S13["Inside loop: if(x==(int)p.size()) ans++"]
+    S14["Output answer"]
+    S15["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
 ```
 
 </details>
@@ -10083,22 +11195,21 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     string s,p;
-    cin>>s>>p;
+    cin >> s>>p;
     string t=p+'#'+s;
     vector<int> pi(t.size());
-    for (int i=1; i<(int)t.size(); i++) {
+    for(int i=1;i<(int)t.size();i++){
         int j=pi[i-1];
-        while (j&&t[i]!=t[j])j=pi[j-1];
-        if (t[i]==t[j])j++;
+        while(j&&t[i]!=t[j])j=pi[j-1];
+        if(t[i]==t[j])j++;
         pi[i]=j;
-    }
-    int ans=0;
-    for (int x:pi) if (x==(int)p.size()) ans++;
-    cout<<ans;
+    }int ans=0;
+    for(int x:pi) if(x==(int)p.size()) ans++;
+    cout << ans;
     return 0;
 }
 ```
@@ -10169,21 +11280,27 @@ Core idea     : repeated pattern matching needs linear scan
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create stack for unresolved items"]
-    S1["Scan items in order"]
-    S2["Pop while stack top is resolved or invalid"]
-    S3["Use stack top to compute answer"]
-    S4["Push current item if useful later"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: stack&lt;pair&lt;int,int&gt;&gt; st"]
+    S3["Loop: int i=1,x;i&lt;=n;i++"]
+    S4["Repeat while: !st.empty()andst.top().first&gt;=x"]
+    S5["Inside loop: st.pop()"]
+    S6["Output answer"]
+    S7["Update: st.push("]
+    S8["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
 ```
 
 </details>
@@ -10194,21 +11311,20 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     stack<pair<int,int>> st;
-    for (int i=1,x; i<=n; i++) {
-        cin>>x;
-        while (!st.empty()&&st.top().first>=x)st.pop();
-        cout<<(st.empty()?0:st.top().second)<<' ';
+    for(int i=1,x;i<=n;i++){
+        cin >> x;
+        while(!st.empty()&&st.top().first>=x)st.pop();
+        cout << (st.empty()?0:st.top().second) << ' ';
         st.push({
-            x,i}
-            );
+            x,i});
         }
-        return 0;
+    return 0;
     }
 ```
 
@@ -10278,21 +11394,43 @@ Core idea     : remaining top is nearest smaller
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize queue with start state(s)"]
-    S1["Mark starting state(s) visited"]
-    S2["Pop one state from queue"]
-    S3["Try all valid next states"]
-    S4["Push unvisited states"]
-    S5["Return distance/path/count result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;string&gt; g(n)"]
+    S3["Loop: auto& r:g"]
+    S4["Inside loop: cin &gt;&gt; r"]
+    S5["Initialize: queue&lt;pair&lt;int,int&gt;&gt;q"]
+    S6["Initialize: vector&lt;vector&lt;int&gt;&gt; par(n,vector&lt;int&gt;(m,-1))"]
+    S7["Loop: int i=0;i&lt;n;i++"]
+    S8["Inside loop: for(int j=0;j&lt;m;j++)"]
+    S9["Decision: g[i][j]=='A'"]
+    S10["If true: sr=i,sc=j"]
+    S11["Decision: g[i][j]=='B'"]
+    S12["If true: tr=i,tc=j"]
+    S13["Update: q.push("]
+    S14["Update: par[sr][sc]=4"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -10303,58 +11441,49 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,m;
-    cin>>n>>m;
+    cin >> n>>m;
     vector<string> g(n);
-    for (auto& r:g)cin>>r;
+    for(auto& r:g)cin >> r;
     queue<pair<int,int>>q;
     vector<vector<int>> par(n,vector<int>(m,-1));
     int sr,sc,tr,tc;
-    for (int i=0; i<n; i++)for (int j=0; j<m; j++) {
-        if (g[i][j]=='A')sr=i,sc=j;
-        if (g[i][j]=='B')tr=i,tc=j;
-    }
-    q.push({
-        sr,sc}
-        );
+    for(int i=0;i<n;i++)for(int j=0;j<m;j++){
+        if(g[i][j]=='A')sr=i,sc=j;
+        if(g[i][j]=='B')tr=i,tc=j;
+    }q.push({
+        sr,sc});
         par[sr][sc]=4;
         int dr[4]={
-            1,0,-1,0}
-            ,dc[4]={
-                0,1,0,-1}
-                ;
+            1,0,-1,0},dc[4]={
+                0,1,0,-1};
                 string mv="DRUL";
-                while (!q.empty()) {
+                while (!q.empty()){
                     auto [r,c]=q.front();
                     q.pop();
-                    for (int d=0; d<4; d++) {
+                    for(int d=0;d<4;d++){
                         int nr=r+dr[d],nc=c+dc[d];
-                        if (nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||par[nr][nc]!=-1)continue;
+                        if(nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||par[nr][nc]!=-1)continue;
                         par[nr][nc]=d;
                         q.push({
-                            nr,nc}
-                            );
-                        }
-                    }
-                    if (par[tr][tc]==-1) {
-                        cout<<"NO";
+                            nr,nc});
+                        }}if(par[tr][tc]==-1){
+                            cout << "NO";
+                            return 0;
+                        }string path;
+                        for(int r=tr,c=tc;r!=sr||c!=sc;){
+                            int d=par[r][c];
+                            path+=mv[d];
+                            r-=dr[d];
+                            c-=dc[d];
+                        }reverse(path.begin(),path.end());
+                        cout << "YES
+                        "<<path.size() << "\n"<<path;
                         return 0;
                     }
-                    string path;
-                    for (int r=tr,c=tc; r!=sr||c!=sc; ) {
-                        int d=par[r][c];
-                        path+=mv[d];
-                        r-=dr[d];
-                        c-=dc[d];
-                    }
-                    reverse(path.begin(),path.end());
-                    cout<<"YES
-                    "<<path.size()<<"\n"<<path;
-                    return 0;
-                }
 ```
 
 </details>
@@ -10423,21 +11552,43 @@ Core idea     : BFS gives shortest path
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize queue with start state(s)"]
-    S1["Mark starting state(s) visited"]
-    S2["Pop one state from queue"]
-    S3["Try all valid next states"]
-    S4["Push unvisited states"]
-    S5["Return distance/path/count result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;string&gt;g(n)"]
+    S3["Loop: auto&r:g"]
+    S4["Inside loop: cin &gt;&gt; r"]
+    S5["Initialize: queue&lt;pair&lt;int,int&gt;&gt;q"]
+    S6["Initialize: vector&lt;vector&lt;int&gt;&gt; md(n,vector&lt;int&gt;(m,1e9)),ad(n,v..."]
+    S7["Loop: int i=0;i&lt;n;i++"]
+    S8["Inside loop: for(int j=0;j&lt;m;j++)"]
+    S9["Decision: g[i][j]=='M'"]
+    S10["Update: q.push("]
+    S11["Update: md[i][j]=0"]
+    S12["Decision: g[i][j]=='A'"]
+    S13["If true: sr=i,sc=j"]
+    S14["Initialize: int dr[4]="]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -10448,77 +11599,63 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,m;
-    cin>>n>>m;
+    cin >> n>>m;
     vector<string>g(n);
-    for (auto&r:g)cin>>r;
+    for(auto&r:g)cin >> r;
     queue<pair<int,int>>q;
     vector<vector<int>> md(n,vector<int>(m,1e9)),ad(n,vector<int>(m,1e9)),par(n,vector<int>(m,-1));
     int sr,sc;
-    for (int i=0; i<n; i++)for (int j=0; j<m; j++) {
-        if (g[i][j]=='M') {
+    for(int i=0;i<n;i++)for(int j=0;j<m;j++){
+        if(g[i][j]=='M'){
             q.push({
-                i,j}
-                );
+                i,j});
                 md[i][j]=0;
-            }
-            if (g[i][j]=='A')sr=i,sc=j;
-        }
-        int dr[4]={
-            1,0,-1,0}
-            ,dc[4]={
-                0,1,0,-1}
-                ;
+            }if(g[i][j]=='A')sr=i,sc=j;
+        }int dr[4]={
+            1,0,-1,0},dc[4]={
+                0,1,0,-1};
                 string mv="DRUL";
-                while (!q.empty()) {
+                while (!q.empty()){
                     auto [r,c]=q.front();
                     q.pop();
-                    for (int d=0; d<4; d++) {
+                    for(int d=0;d<4;d++){
                         int nr=r+dr[d],nc=c+dc[d];
-                        if (nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||md[nr][nc]!=1e9)continue;
+                        if(nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||md[nr][nc]!=1e9)continue;
                         md[nr][nc]=md[r][c]+1;
                         q.push({
-                            nr,nc}
-                            );
-                        }
-                    }
-                    q.push({
-                        sr,sc}
-                        );
-                        ad[sr][sc]=0;
-                        while (!q.empty()) {
-                            auto [r,c]=q.front();
-                            q.pop();
-                            if (r==0||c==0||r==n-1||c==m-1) {
-                                string path;
-                                while (r!=sr||c!=sc) {
-                                    int d=par[r][c];
-                                    path+=mv[d];
-                                    r-=dr[d];
-                                    c-=dc[d];
+                            nr,nc});
+                        }}q.push({
+                            sr,sc});
+                            ad[sr][sc]=0;
+                            while (!q.empty()){
+                                auto [r,c]=q.front();
+                                q.pop();
+                                if(r==0||c==0||r==n-1||c==m-1){
+                                    string path;
+                                    while(r!=sr||c!=sc){
+                                        int d=par[r][c];
+                                        path+=mv[d];
+                                        r-=dr[d];
+                                        c-=dc[d];
+                                    }reverse(path.begin(),path.end());
+                                    cout << "YES
+                                    "<<path.size() << "\n"<<path;
+                                    return 0;
+                                }for(int d=0;d<4;d++){
+                                    int nr=r+dr[d],nc=c+dc[d];
+                                    if(nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||ad[nr][nc]!=1e9)continue;
+                                    if(ad[r][c]+1>=md[nr][nc])continue;
+                                    ad[nr][nc]=ad[r][c]+1;
+                                    par[nr][nc]=d;
+                                    q.push({
+                                        nr,nc});
+                                    }}cout << "NO";
+                                    return 0;
                                 }
-                                reverse(path.begin(),path.end());
-                                cout<<"YES
-                                "<<path.size()<<"\n"<<path;
-                                return 0;
-                            }
-                            for (int d=0; d<4; d++) {
-                                int nr=r+dr[d],nc=c+dc[d];
-                                if (nr<0||nc<0||nr>=n||nc>=m||g[nr][nc]=='#'||ad[nr][nc]!=1e9)continue;
-                                if (ad[r][c]+1>=md[nr][nc])continue;
-                                ad[nr][nc]=ad[r][c]+1;
-                                par[nr][nc]=d;
-                                q.push({
-                                    nr,nc}
-                                    );
-                                }
-                            }
-                            cout<<"NO";
-                            return 0;
-                        }
 ```
 
 </details>
@@ -10587,21 +11724,43 @@ Core idea     : escape only if player arrives earlier
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Update: using ll=long long"]
+    S2["Update: const ll INF=4e18"]
+    S3["Read input"]
+    S4["Initialize: vector&lt;vector&lt;pair&lt;int,int&gt;&gt;&gt;g(n+1)"]
+    S5["Loop: int i=0,a,b,c;i&lt;m;i++"]
+    S6["Update: append value/result to container"]
+    S7["Initialize: vector&lt;array&lt;ll,2&gt;&gt;dist(n+1,"]
+    S8["Initialize: priority_queue&lt;tuple&lt;ll,int,int&gt;,vector&lt;tuple&lt;ll,int,i..."]
+    S9["Update: dist[1][0]=0"]
+    S10["Update: pq.push("]
+    S11["Repeat while: !pq.empty()"]
+    S12["Initialize: auto [d,u,used]=pq.top()"]
+    S13["Update: pq.pop()"]
+    S14["Decision: d!=dist[u][used]"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -10614,48 +11773,38 @@ flowchart TD
 using namespace std;
 using ll=long long;
 const ll INF=4e18;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,m;
-    cin>>n>>m;
+    cin >> n>>m;
     vector<vector<pair<int,int>>>g(n+1);
-    for (int i=0,a,b,c; i<m; i++) {
-        cin>>a>>b>>c;
+    for(int i=0,a,b,c;i<m;i++){
+        cin >> a>>b>>c;
         g[a].push_back({
-            b,c}
-            );
-        }
-        vector<array<ll,2>>dist(n+1,{
-            INF,INF}
-            );
+            b,c});
+        }vector<array<ll,2>>dist(n+1,{
+            INF,INF});
             priority_queue<tuple<ll,int,int>,vector<tuple<ll,int,int>>,greater<>>pq;
             dist[1][0]=0;
             pq.push({
-                0,1,0}
-                );
-                while (!pq.empty()) {
+                0,1,0});
+                while(!pq.empty()){
                     auto [d,u,used]=pq.top();
                     pq.pop();
-                    if (d!=dist[u][used])continue;
-                    for (auto [v,w]:g[u]) {
-                        if (d+w<dist[v][used]) {
+                    if(d!=dist[u][used])continue;
+                    for(auto [v,w]:g[u]){
+                        if(d+w<dist[v][used]){
                             dist[v][used]=d+w;
                             pq.push({
-                                dist[v][used],v,used}
-                                );
-                            }
-                            if (!used&&d+w/2<dist[v][1]) {
+                                dist[v][used],v,used});
+                            }if(!used&&d+w/2<dist[v][1]){
                                 dist[v][1]=d+w/2;
                                 pq.push({
-                                    dist[v][1],v,1}
-                                    );
-                                }
+                                    dist[v][1],v,1});
+                                }}}cout << dist[n][1];
+                                return 0;
                             }
-                        }
-                        cout<<dist[n][1];
-                        return 0;
-                    }
 ```
 
 </details>
@@ -10724,19 +11873,33 @@ Core idea     : heap picks shortest state
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: set&lt;int&gt; pos"]
+    S3["Initialize: multiset&lt;int&gt; len"]
+    S4["Repeat while: n--"]
+    S5["Initialize: auto r=pos.upper_bound(p),l=prev(r)"]
+    S6["Update: len.erase(len.find(*r-*l))"]
+    S7["Update: len.insert(p-*l)"]
+    S8["Update: len.insert(*r-p)"]
+    S9["Update: pos.insert(p)"]
+    S10["Output answer"]
+    S11["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
 ```
 
 </details>
@@ -10747,28 +11910,26 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int x,n;
-    cin>>x>>n;
+    cin >> x>>n;
     set<int> pos{
-        0,x}
-        ;
+        0,x};
         multiset<int> len{
-            x}
-            ;
-            while (n--) {
+            x};
+            while(n--){
                 int p;
-                cin>>p;
+                cin >> p;
                 auto r=pos.upper_bound(p),l=prev(r);
                 len.erase(len.find(*r-*l));
                 len.insert(p-*l);
                 len.insert(*r-p);
                 pos.insert(p);
-                cout<<*len.rbegin()<<' ';
+                cout << *len.rbegin() << ' ';
             }
-            return 0;
+    return 0;
         }
 ```
 
@@ -10838,21 +11999,43 @@ Core idea     : longest gap after each insertion
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;array&lt;int,3&gt;&gt; a(n)"]
+    S3["Loop: int i=0;i&lt;n;i++"]
+    S4["Update: a[i][2]=i"]
+    S5["Run: sort(a.begin(),a.end())"]
+    S6["Initialize: priority_queue&lt;pair&lt;int,int&gt;,vector&lt;pair&lt;int,int&gt;&g..."]
+    S7["Initialize: vector&lt;int&gt; ans(n)"]
+    S8["Initialize: int rooms=0"]
+    S9["Loop: auto [l,r,i]:a"]
+    S10["Decision: !pq.empty()andpq.top().first&lt;l"]
+    S11["Initialize: auto [end,room]=pq.top()"]
+    S12["Update: pq.pop()"]
+    S13["Update: ans[i]=room"]
+    S14["Update: pq.push("]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -10863,40 +12046,34 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     vector<array<int,3>> a(n);
-    for (int i=0; i<n; i++) {
-        cin>>a[i][0]>>a[i][1];
+    for(int i=0;i<n;i++){
+        cin >> a[i][0]>>a[i][1];
         a[i][2]=i;
-    }
-    sort(a.begin(),a.end());
+    }sort(a.begin(),a.end());
     priority_queue<pair<int,int>,vector<pair<int,int>>,greater<>> pq;
     vector<int> ans(n);
     int rooms=0;
-    for (auto [l,r,i]:a) {
-        if (!pq.empty()&&pq.top().first<l) {
+    for(auto [l,r,i]:a){
+        if(!pq.empty()&&pq.top().first<l){
             auto [end,room]=pq.top();
             pq.pop();
             ans[i]=room;
             pq.push({
-                r,room}
-                );
-            }
-            else{
+                r,room});
+            }else{
                 ans[i]=++rooms;
                 pq.push({
-                    r,rooms}
-                    );
-                }
+                    r,rooms});
+                }}cout << rooms << "\n";
+                for(int x:ans)cout << x << ' ';
+                return 0;
             }
-            cout<<rooms<<"\n";
-            for (int x:ans)cout<<x<<' ';
-            return 0;
-        }
 ```
 
 </details>
@@ -10965,21 +12142,41 @@ Core idea     : sorted endings choose available room
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Initialize: multiset&lt;int&gt; lo,hi"]
+    S2["Repeat while: lo.size()&gt;hi.size()+1"]
+    S3["Update: hi.insert(*lo.rbegin())"]
+    S4["Update: lo.erase(prev(lo.end()))"]
+    S5["Repeat while: lo.size()&lt;hi.size()"]
+    S6["Update: lo.insert(*hi.begin())"]
+    S7["Update: hi.erase(hi.begin())"]
+    S8["Decision: lo.empty()orx&lt;=*lo.rbegin()"]
+    S9["If true: lo.insert(x)"]
+    S10["Otherwise: hi.insert(x)"]
+    S11["Run: reb()"]
+    S12["Initialize: auto it=lo.find(x)"]
+    S13["Decision: it!=lo.end()"]
+    S14["If true: lo.erase(it)"]
+    S15["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
 ```
 
 </details>
@@ -10991,41 +12188,36 @@ flowchart TD
 #include <bits/stdc++.h>
 using namespace std;
 multiset<int> lo,hi;
-void reb() {
-    while (lo.size()>hi.size()+1) {
+void reb(){
+    while(lo.size()>hi.size()+1){
         hi.insert(*lo.rbegin());
         lo.erase(prev(lo.end()));
-    }
-    while (lo.size()<hi.size()) {
+    }while(lo.size()<hi.size()){
         lo.insert(*hi.begin());
         hi.erase(hi.begin());
-    }
-}
-void add(int x) {
-    if (lo.empty()||x<=*lo.rbegin())lo.insert(x);
-    else hi.insert(x);
-    reb();
-}
-void rem(int x) {
-    auto it=lo.find(x);
-    if (it!=lo.end())lo.erase(it);
-    else hi.erase(hi.find(x));
-    reb();
-}
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    int n,k;
-    cin>>n>>k;
-    vector<int>a(n);
-    for (int&i:a)cin>>i;
-    for (int i=0; i<n; i++) {
-        add(a[i]);
-        if (i>=k)rem(a[i-k]);
-        if (i>=k-1)cout<<*lo.rbegin()<<' ';
-    }
+    }}void add(int x){
+        if(lo.empty()||x<=*lo.rbegin())lo.insert(x);
+        else hi.insert(x);
+        reb();
+    }void rem(int x){
+        auto it=lo.find(x);
+        if(it!=lo.end())lo.erase(it);
+        else hi.erase(hi.find(x));
+        reb();
+    }int main(){
+        ios::sync_with_stdio(false);
+        cin.tie(nullptr);
+        int n,k;
+        cin >> n>>k;
+        vector<int>a(n);
+        for(int&i:a)cin >> i;
+        for(int i=0;i<n;i++){
+            add(a[i]);
+            if(i>=k)rem(a[i-k]);
+            if(i>=k-1)cout << *lo.rbegin() << ' ';
+        }
     return 0;
-}
+    }
 ```
 
 </details>
@@ -11094,21 +12286,39 @@ Core idea     : median is max of lower half
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;long long&gt;a(n)"]
+    S3["Loop: auto&v:a"]
+    S4["Inside loop: cin &gt;&gt; v"]
+    S5["Initialize: map&lt;long long,pair&lt;int,int&gt;&gt; mp"]
+    S6["Loop: int i=0;i&lt;n;i++"]
+    S7["Loop: int j=i+1;j&lt;n;j++"]
+    S8["Initialize: long long need=x-a[i]-a[j]"]
+    S9["Decision: mp.count(need)"]
+    S10["Initialize: auto [p,q]=mp[need]"]
+    S11["Output answer"]
+    S12["Loop: int j=0;j&lt;i;j++"]
+    S13["Inside loop: mp[a[i]+a[j]]="]
+    S14["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
 ```
 
 </details>
@@ -11119,31 +12329,27 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
     long long x;
-    cin>>n>>x;
+    cin >> n>>x;
     vector<long long>a(n);
-    for (auto&v:a)cin>>v;
+    for(auto&v:a)cin >> v;
     map<long long,pair<int,int>> mp;
-    for (int i=0; i<n; i++) {
-        for (int j=i+1; j<n; j++) {
+    for(int i=0;i<n;i++){
+        for(int j=i+1;j<n;j++){
             long long need=x-a[i]-a[j];
-            if (mp.count(need)) {
+            if(mp.count(need)){
                 auto [p,q]=mp[need];
-                cout<<p+1<<' '<<q+1<<' '<<i+1<<' '<<j+1;
+                cout << p+1 << ' '<<q+1 << ' '<<i+1 << ' '<<j+1;
                 return 0;
-            }
+            }}for(int j=0;j<i;j++)mp[a[i]+a[j]]={
+                j,i};
+            }cout << "IMPOSSIBLE";
+            return 0;
         }
-        for (int j=0; j<i; j++)mp[a[i]+a[j]]={
-            j,i}
-            ;
-        }
-        cout<<"IMPOSSIBLE";
-        return 0;
-    }
 ```
 
 </details>
@@ -11212,21 +12418,33 @@ Core idea     : two pairs form target
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Update: using ll=long long"]
+    S2["Read input"]
+    S3["Initialize: map&lt;ll,ll&gt; cnt"]
+    S4["Update: cnt[0]=1"]
+    S5["Update: ll pref=0,ans=0"]
+    S6["Loop: int i=0;i&lt;n;i++"]
+    S7["Update: pref+=v"]
+    S8["Update: ans+=cnt[pref-x]"]
+    S9["Update: cnt[pref]++"]
+    S10["Output answer"]
+    S11["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
 ```
 
 </details>
@@ -11238,23 +12456,22 @@ flowchart TD
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
     ll x;
-    cin>>n>>x;
+    cin >> n>>x;
     map<ll,ll> cnt;
     cnt[0]=1;
     ll pref=0,ans=0;
-    for (int i=0; i<n; i++) {
+    for(int i=0;i<n;i++){
         ll v;
-        cin>>v;
+        cin >> v;
         pref+=v;
         ans+=cnt[pref-x];
         cnt[pref]++;
-    }
-    cout<<ans;
+    }cout << ans;
     return 0;
 }
 ```
@@ -11325,19 +12542,33 @@ Core idea     : every old prefix creates subarray
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;pair&lt;int,int&gt;&gt;a(n)"]
+    S3["Loop: auto&[l,r]:a"]
+    S4["Inside loop: cin &gt;&gt; l&gt;&gt;r"]
+    S5["Run: sort(a.begin(),a.end(),[](auto&a,auto&b)"]
+    S6["Return: a.second&lt;b.second"]
+    S7["Initialize: int ans=0,end=0"]
+    S8["Loop: auto [l,r]:a"]
+    S9["Inside loop: if(l&gt;=end)ans++,end=r"]
+    S10["Output answer"]
+    S11["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
 ```
 
 </details>
@@ -11348,22 +12579,20 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     vector<pair<int,int>>a(n);
-    for (auto&[l,r]:a)cin>>l>>r;
-    sort(a.begin(),a.end(),[](auto&a,auto&b) {
-        return a.second<b.second;
+    for(auto&[l,r]:a)cin >> l>>r;
+    sort(a.begin(),a.end(),[](auto&a,auto&b){
+        return a.second<b.second;});
+        int ans=0,end=0;
+        for(auto [l,r]:a)if(l>=end)ans++,end=r;
+        cout << ans;
+        return 0;
     }
-    );
-    int ans=0,end=0;
-    for (auto [l,r]:a)if (l>=end)ans++,end=r;
-    cout<<ans;
-    return 0;
-}
 ```
 
 </details>
@@ -11432,19 +12661,35 @@ Core idea     : greedy maximizes remaining time
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Update: using ll=long long"]
+    S2["Read input"]
+    S3["Initialize: vector&lt;pair&lt;ll,ll&gt;&gt;a(n)"]
+    S4["Loop: auto&[d,t]:a"]
+    S5["Inside loop: cin &gt;&gt; d&gt;&gt;t"]
+    S6["Run: sort(a.begin(),a.end())"]
+    S7["Update: ll time=0,ans=0"]
+    S8["Loop: auto [d,t]:a"]
+    S9["Update: time+=d"]
+    S10["Update: ans+=t-time"]
+    S11["Output answer"]
+    S12["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
 ```
 
 </details>
@@ -11456,20 +12701,19 @@ flowchart TD
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     vector<pair<ll,ll>>a(n);
-    for (auto&[d,t]:a)cin>>d>>t;
+    for(auto&[d,t]:a)cin >> d>>t;
     sort(a.begin(),a.end());
     ll time=0,ans=0;
-    for (auto [d,t]:a) {
+    for(auto [d,t]:a){
         time+=d;
         ans+=t-time;
-    }
-    cout<<ans;
+    }cout << ans;
     return 0;
 }
 ```
@@ -11540,19 +12784,39 @@ Core idea     : minimize accumulated finish effect
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;pair&lt;int,int&gt;&gt;a(n)"]
+    S3["Loop: int i=0;i&lt;n;i++"]
+    S4["Update: a[i].second=i+1"]
+    S5["Run: sort(a.begin(),a.end())"]
+    S6["Initialize: int l=0,r=n-1"]
+    S7["Repeat while: l&lt;r"]
+    S8["Initialize: long long s=a[l].first+a[r].first"]
+    S9["Decision: s==x"]
+    S10["Output answer"]
+    S11["Decision: s&lt;x"]
+    S12["If true: l++"]
+    S13["Otherwise: r--"]
+    S14["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
 ```
 
 </details>
@@ -11563,28 +12827,25 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,x;
-    cin>>n>>x;
+    cin >> n>>x;
     vector<pair<int,int>>a(n);
-    for (int i=0; i<n; i++) {
-        cin>>a[i].first;
+    for(int i=0;i<n;i++){
+        cin >> a[i].first;
         a[i].second=i+1;
-    }
-    sort(a.begin(),a.end());
+    }sort(a.begin(),a.end());
     int l=0,r=n-1;
-    while (l<r) {
+    while(l<r){
         long long s=a[l].first+a[r].first;
-        if (s==x) {
-            cout<<a[l].second<<' '<<a[r].second;
+        if(s==x){
+            cout << a[l].second << ' '<<a[r].second;
             return 0;
-        }
-        if (s<x)l++;
+        }if(s<x)l++;
         else r--;
-    }
-    cout<<"IMPOSSIBLE";
+    }cout << "IMPOSSIBLE";
     return 0;
 }
 ```
@@ -11655,19 +12916,39 @@ Core idea     : sorted sum moves predictably
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;pair&lt;int,int&gt;&gt;a(n)"]
+    S3["Loop: int i=0;i&lt;n;i++"]
+    S4["Update: a[i].second=i+1"]
+    S5["Run: sort(a.begin(),a.end())"]
+    S6["Initialize: int l=i+1,r=n-1"]
+    S7["Repeat while: l&lt;r"]
+    S8["Initialize: long long s=a[i].first+a[l].first+a[r].first"]
+    S9["Decision: s==x"]
+    S10["Output answer"]
+    S11["Decision: s&lt;x"]
+    S12["If true: l++"]
+    S13["Otherwise: r--"]
+    S14["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
 ```
 
 </details>
@@ -11678,32 +12959,28 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,x;
-    cin>>n>>x;
+    cin >> n>>x;
     vector<pair<int,int>>a(n);
-    for (int i=0; i<n; i++) {
-        cin>>a[i].first;
+    for(int i=0;i<n;i++){
+        cin >> a[i].first;
         a[i].second=i+1;
-    }
-    sort(a.begin(),a.end());
-    for (int i=0; i<n; i++) {
+    }sort(a.begin(),a.end());
+    for(int i=0;i<n;i++){
         int l=i+1,r=n-1;
-        while (l<r) {
+        while(l<r){
             long long s=a[i].first+a[l].first+a[r].first;
-            if (s==x) {
-                cout<<a[i].second<<' '<<a[l].second<<' '<<a[r].second;
+            if(s==x){
+                cout << a[i].second << ' '<<a[l].second << ' '<<a[r].second;
                 return 0;
-            }
-            if (s<x)l++;
+            }if(s<x)l++;
             else r--;
-        }
+        }}cout << "IMPOSSIBLE";
+        return 0;
     }
-    cout<<"IMPOSSIBLE";
-    return 0;
-}
 ```
 
 </details>
@@ -11772,19 +13049,43 @@ Core idea     : remaining pair is two sum
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Define searchable condition"]
-    S1["Set binary search boundaries"]
-    S2["Check middle or lower_bound result"]
-    S3["Discard impossible half/range"]
-    S4["Return final index or count"]
+    S0["Start"]
+    S1["Update: using ll=long long"]
+    S2["Read input"]
+    S3["Initialize: vector&lt;ll&gt;a(n)"]
+    S4["Loop: auto&x:a"]
+    S5["Inside loop: cin &gt;&gt; x"]
+    S6["Update: ll l=0,r=1e18"]
+    S7["Repeat while: l&lt;r"]
+    S8["Update: ll m=(l+r)/2, made=0"]
+    S9["Loop: ll x:a"]
+    S10["Update: made+=m/x"]
+    S11["Decision: made&gt;=t"]
+    S12["If true: break"]
+    S13["If true: r=m"]
+    S14["Otherwise: l=m+1"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -11796,25 +13097,23 @@ flowchart TD
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
     ll t;
-    cin>>n>>t;
+    cin >> n>>t;
     vector<ll>a(n);
-    for (auto&x:a)cin>>x;
+    for(auto&x:a)cin >> x;
     ll l=0,r=1e18;
-    while (l<r) {
+    while(l<r){
         ll m=(l+r)/2, made=0;
-        for (ll x:a) {
+        for(ll x:a){
             made+=m/x;
-            if (made>=t)break;
-        }
-        if (made>=t)r=m;
+            if(made>=t)break;
+        }if(made>=t)r=m;
         else l=m+1;
-    }
-    cout<<l;
+    }cout << l;
     return 0;
 }
 ```
@@ -11885,21 +13184,41 @@ Core idea     : time feasibility monotonic
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Update: using ll=long long"]
+    S2["Read input"]
+    S3["Initialize: vector&lt;int&gt;a(n)"]
+    S4["Loop: int&i:a"]
+    S5["Inside loop: cin &gt;&gt; i"]
+    S6["Update: ll sum=0,ans=0"]
+    S7["Initialize: int l=0"]
+    S8["Loop: int r=0;r&lt;n;r++"]
+    S9["Update: sum+=a[r]"]
+    S10["Repeat while: sum&gt;x"]
+    S11["Inside loop: sum-=a[l++]"]
+    S12["Decision: sum==x"]
+    S13["If true: ans++"]
+    S14["Output answer"]
+    S15["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
 ```
 
 </details>
@@ -11911,22 +13230,21 @@ flowchart TD
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
     ll x;
-    cin>>n>>x;
+    cin >> n>>x;
     vector<int>a(n);
-    for (int&i:a)cin>>i;
+    for(int&i:a)cin >> i;
     ll sum=0,ans=0;
     int l=0;
-    for (int r=0; r<n; r++) {
+    for(int r=0;r<n;r++){
         sum+=a[r];
-        while (sum>x)sum-=a[l++];
-        if (sum==x)ans++;
-    }
-    cout<<ans;
+        while(sum>x)sum-=a[l++];
+        if(sum==x)ans++;
+    }cout << ans;
     return 0;
 }
 ```
@@ -11997,21 +13315,39 @@ Core idea     : positive values allow moving left
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Initialize window state"]
-    S1["Expand right side"]
-    S2["Remove elements that make window invalid"]
-    S3["Maintain monotonic/order invariant"]
-    S4["Update answer for current window"]
-    S5["Return best answer"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;int&gt;a(n)"]
+    S3["Loop: int&i:a"]
+    S4["Inside loop: cin &gt;&gt; i"]
+    S5["Initialize: deque&lt;int&gt;dq"]
+    S6["Loop: int i=0;i&lt;n;i++"]
+    S7["Repeat while: !dq.empty()anddq.front()&lt;=i-k"]
+    S8["Inside loop: dq.pop_front()"]
+    S9["Repeat while: !dq.empty()anda[dq.back()]&gt;=a[i]"]
+    S10["Inside loop: dq.pop_back()"]
+    S11["Update: append value/result to container"]
+    S12["Decision: i&gt;=k-1"]
+    S13["If true: cout &lt;&lt; a[dq.front()] &lt;&lt; ' '"]
+    S14["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
 ```
 
 </details>
@@ -12022,19 +13358,19 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,k;
-    cin>>n>>k;
+    cin >> n>>k;
     vector<int>a(n);
-    for (int&i:a)cin>>i;
+    for(int&i:a)cin >> i;
     deque<int>dq;
-    for (int i=0; i<n; i++) {
-        while (!dq.empty()&&dq.front()<=i-k)dq.pop_front();
-        while (!dq.empty()&&a[dq.back()]>=a[i])dq.pop_back();
+    for(int i=0;i<n;i++){
+        while(!dq.empty()&&dq.front()<=i-k)dq.pop_front();
+        while(!dq.empty()&&a[dq.back()]>=a[i])dq.pop_back();
         dq.push_back(i);
-        if (i>=k-1)cout<<a[dq.front()]<<' ';
+        if(i>=k-1)cout << a[dq.front()] << ' ';
     }
     return 0;
 }
@@ -12106,21 +13442,43 @@ Core idea     : front is minimum candidate
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Update: using ll=long long"]
+    S2["Initialize: multiset&lt;ll&gt;lo,hi"]
+    S3["Update: ll slo=0,shi=0"]
+    S4["Repeat while: lo.size()&gt;hi.size()+1"]
+    S5["Initialize: auto it=prev(lo.end())"]
+    S6["Update: hi.insert(*it)"]
+    S7["Update: shi+=*it"]
+    S8["Update: slo-=*it"]
+    S9["Update: lo.erase(it)"]
+    S10["Repeat while: lo.size()&lt;hi.size()"]
+    S11["Initialize: auto it=hi.begin()"]
+    S12["Update: lo.insert(*it)"]
+    S13["Update: slo+=*it"]
+    S14["Update: shi-=*it"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -12134,50 +13492,44 @@ using namespace std;
 using ll=long long;
 multiset<ll>lo,hi;
 ll slo=0,shi=0;
-void reb() {
-    while (lo.size()>hi.size()+1) {
+void reb(){
+    while(lo.size()>hi.size()+1){
         auto it=prev(lo.end());
         hi.insert(*it);
         shi+=*it;
         slo-=*it;
         lo.erase(it);
-    }
-    while (lo.size()<hi.size()) {
+    }while(lo.size()<hi.size()){
         auto it=hi.begin();
         lo.insert(*it);
         slo+=*it;
         shi-=*it;
         hi.erase(it);
-    }
-}
-void add(ll x) {
-    if (lo.empty()||x<=*lo.rbegin())lo.insert(x),slo+=x;
-    else hi.insert(x),shi+=x;
-    reb();
-}
-void rem(ll x) {
-    auto it=lo.find(x);
-    if (it!=lo.end())slo-=x,lo.erase(it);
-    else it=hi.find(x),shi-=x,hi.erase(it);
-    reb();
-}
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    int n,k;
-    cin>>n>>k;
-    vector<ll>a(n);
-    for (auto&x:a)cin>>x;
-    for (int i=0; i<n; i++) {
-        add(a[i]);
-        if (i>=k)rem(a[i-k]);
-        if (i>=k-1) {
-            ll med=*lo.rbegin();
-            cout<<med*(ll)lo.size()-slo+shi-med*(ll)hi.size()<<' ';
-        }
-    }
+    }}void add(ll x){
+        if(lo.empty()||x<=*lo.rbegin())lo.insert(x),slo+=x;
+        else hi.insert(x),shi+=x;
+        reb();
+    }void rem(ll x){
+        auto it=lo.find(x);
+        if(it!=lo.end())slo-=x,lo.erase(it);
+        else it=hi.find(x),shi-=x,hi.erase(it);
+        reb();
+    }int main(){
+        ios::sync_with_stdio(false);
+        cin.tie(nullptr);
+        int n,k;
+        cin >> n>>k;
+        vector<ll>a(n);
+        for(auto&x:a)cin >> x;
+        for(int i=0;i<n;i++){
+            add(a[i]);
+            if(i>=k)rem(a[i-k]);
+            if(i>=k-1){
+                ll med=*lo.rbegin();
+                cout << med*(ll)lo.size()-slo+shi-med*(ll)hi.size() << ' ';
+            }}
     return 0;
-}
+        }
 ```
 
 </details>
@@ -12246,19 +13598,33 @@ Core idea     : median minimizes absolute deviation
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;pair&lt;int,int&gt;&gt;e"]
+    S3["Loop: int i=0,a,b;i&lt;n;i++"]
+    S4["Update: append value/result to container"]
+    S5["Run: b,-1}"]
+    S6["Run: sort(e.begin(),e.end())"]
+    S7["Initialize: int cur=0,ans=0"]
+    S8["Loop: auto [t,d]:e"]
+    S9["Inside loop: ans=max(ans,cur+=d)"]
+    S10["Output answer"]
+    S11["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
 ```
 
 </details>
@@ -12269,25 +13635,22 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     vector<pair<int,int>>e;
-    for (int i=0,a,b; i<n; i++) {
-        cin>>a>>b;
+    for(int i=0,a,b;i<n;i++){
+        cin >> a>>b;
         e.push_back({
-            a,1}
-            );
+            a,1});
             e.push_back({
-                b,-1}
-                );
-            }
-            sort(e.begin(),e.end());
+                b,-1});
+            }sort(e.begin(),e.end());
             int cur=0,ans=0;
-            for (auto [t,d]:e)ans=max(ans,cur+=d);
-            cout<<ans;
+            for(auto [t,d]:e)ans=max(ans,cur+=d);
+            cout << ans;
             return 0;
         }
 ```
@@ -12358,21 +13721,36 @@ Core idea     : maximum active customers
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: multiset&lt;int&gt;s"]
+    S3["Loop: int i=0,x;i&lt;n;i++"]
+    S4["Update: s.insert(x)"]
+    S5["Repeat while: m--"]
+    S6["Initialize: auto it=s.upper_bound(x)"]
+    S7["Decision: it==s.begin()"]
+    S8["If true: cout &lt;&lt; -1 &lt;&lt; '
+'"]
+    S9["Update: --it"]
+    S10["Output answer"]
+    S11["Update: s.erase(it)"]
+    S12["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
 ```
 
 </details>
@@ -12383,29 +13761,27 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,m;
-    cin>>n>>m;
+    cin >> n>>m;
     multiset<int>s;
-    for (int i=0,x; i<n; i++) {
-        cin>>x;
+    for(int i=0,x;i<n;i++){
+        cin >> x;
         s.insert(x);
-    }
-    while (m--) {
+    }while(m--){
         int x;
-        cin>>x;
+        cin >> x;
         auto it=s.upper_bound(x);
-        if (it==s.begin())cout<<-1<<"\n";
+        if(it==s.begin())cout << -1 << "\n";
         else{
             --it;
-            cout<<*it<<"\n";
+            cout << *it << "\n";
             s.erase(it);
-        }
-    }
+        }}
     return 0;
-}
+    }
 ```
 
 </details>
@@ -12474,19 +13850,43 @@ Core idea     : assign most expensive affordable ticket
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;R&gt;a(n)"]
+    S3["Initialize: vector&lt;int&gt;vals"]
+    S4["Loop: int i=0;i&lt;n;i++"]
+    S5["Update: a[i].i=i"]
+    S6["Update: append value/result to container"]
+    S7["Run: sort(vals.begin(),vals.end())"]
+    S8["Update: vals.erase(unique(vals.begin(),vals.end()),vals.end())"]
+    S9["Initialize: vector&lt;int&gt;bit(n+2),contains(n),contained(n)"]
+    S10["Initialize: auto add=[&](int i)"]
+    S11["Loop: ;i&lt;=n;i+=i&-i"]
+    S12["Inside loop: bit[i]++"]
+    S13["Initialize: auto sum=[&](int i)"]
+    S14["Initialize: int s=0"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -12499,53 +13899,45 @@ flowchart TD
 using namespace std;
 struct R{
     int l,r,i;
-}
-;
-int main() {
+};
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     vector<R>a(n);
     vector<int>vals;
-    for (int i=0; i<n; i++) {
-        cin>>a[i].l>>a[i].r;
+    for(int i=0;i<n;i++){
+        cin >> a[i].l>>a[i].r;
         a[i].i=i;
         vals.push_back(a[i].r);
-    }
-    sort(vals.begin(),vals.end());
+    }sort(vals.begin(),vals.end());
     vals.erase(unique(vals.begin(),vals.end()),vals.end());
     vector<int>bit(n+2),contains(n),contained(n);
-    auto add=[&](int i) {
-        for (; i<=n; i+=i&-i)bit[i]++;
-    }
-    ;
-    auto sum=[&](int i) {
+    auto add=[&](int i){
+        for(;i<=n;i+=i&-i)bit[i]++;
+    };
+    auto sum=[&](int i){
         int s=0;
-        for (; i; i-=i&-i)s+=bit[i];
+        for(;i;i-=i&-i)s+=bit[i];
         return s;
+    };
+    sort(a.begin(),a.end(),[](R&a,R&b){
+        return a.l==b.l?a.r>b.r:a.l<b.l;});
+        for(int i=n-1;i>=0;i--){
+            int r=lower_bound(vals.begin(),vals.end(),a[i].r)-vals.begin()+1;
+            contains[a[i].i]=sum(r);
+            add(r);
+        }fill(bit.begin(),bit.end(),0);
+        for(int i=0;i<n;i++){
+            int r=lower_bound(vals.begin(),vals.end(),a[i].r)-vals.begin()+1;
+            contained[a[i].i]=i-sum(r-1);
+            add(r);
+        }for(int x:contains)cout << x << ' ';
+        cout << "\n";
+        for(int x:contained)cout << x << ' ';
+        return 0;
     }
-    ;
-    sort(a.begin(),a.end(),[](R&a,R&b) {
-        return a.l==b.l?a.r>b.r:a.l<b.l;
-    }
-    );
-    for (int i=n-1; i>=0; i--) {
-        int r=lower_bound(vals.begin(),vals.end(),a[i].r)-vals.begin()+1;
-        contains[a[i].i]=sum(r);
-        add(r);
-    }
-    fill(bit.begin(),bit.end(),0);
-    for (int i=0; i<n; i++) {
-        int r=lower_bound(vals.begin(),vals.end(),a[i].r)-vals.begin()+1;
-        contained[a[i].i]=i-sum(r-1);
-        add(r);
-    }
-    for (int x:contains)cout<<x<<' ';
-    cout<<"\n";
-    for (int x:contained)cout<<x<<' ';
-    return 0;
-}
 ```
 
 </details>
@@ -12614,21 +14006,43 @@ Core idea     : containment becomes rank query
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Start CSES Salary Queries"]
-    S1["Initialize required state"]
-    S2["Process input in order"]
-    S3["Apply pattern: compression + Fenwick"]
-    S4["Update answer/state"]
-    S5["Return result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;int&gt;a(n)"]
+    S3["Initialize: vector&lt;tuple&lt;char,int,int&gt;&gt;qs"]
+    S4["Initialize: vector&lt;int&gt;vals"]
+    S5["Loop: int&i:a"]
+    S6["Update: append value/result to container"]
+    S7["Loop: int i=0;i&lt;q;i++"]
+    S8["Decision: c=='!'"]
+    S9["If true: vals.push_back(y)"]
+    S10["Otherwise: vals.push_back(x),vals.push_back(y)"]
+    S11["Run: sort(vals.begin(),vals.end())"]
+    S12["Update: vals.erase(unique(vals.begin(),vals.end()),vals.end())"]
+    S13["Initialize: vector&lt;int&gt;bit(vals.size()+2)"]
+    S14["Initialize: auto id=[&](int x)"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -12639,56 +14053,53 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,q;
-    cin>>n>>q;
+    cin >> n>>q;
     vector<int>a(n);
     vector<tuple<char,int,int>>qs;
     vector<int>vals;
-    for (int&i:a) {
-        cin>>i;
+    for(int&i:a){
+        cin >> i;
         vals.push_back(i);
-    }
-    for (int i=0; i<q; i++) {
+    }for(int i=0;i<q;i++){
         char c;
         int x,y;
-        cin>>c>>x>>y;
+        cin >> c>>x>>y;
         qs.push_back({
-            c,x,y}
-            );
-            if (c=='!')vals.push_back(y);
+            c,x,y});
+            if(c=='!')vals.push_back(y);
             else vals.push_back(x),vals.push_back(y);
-        }
-        sort(vals.begin(),vals.end());
+        }sort(vals.begin(),vals.end());
         vals.erase(unique(vals.begin(),vals.end()),vals.end());
         vector<int>bit(vals.size()+2);
-        auto id=[&](int x) {
+        auto id=[&](int x){
             return lower_bound(vals.begin(),vals.end(),x)-vals.begin()+1;
-        }
-        ;
-        auto add=[&](int i,int v) {
-            for (; i<(int)bit.size(); i+=i&-i)bit[i]+=v;
-        }
-        ;
-        auto sum=[&](int i) {
+        };
+        auto add=[&](int i,int v){
+            for(;i<(int)bit.size();i+=i&-i)bit[i]+=v;
+        };
+        auto sum=[&](int i){
             int s=0;
-            for (; i; i-=i&-i)s+=bit[i];
+            for(;i;i-=i&-i)s+=bit[i];
             return s;
-        }
-        ;
-        for (int x:a)add(id(x),1);
-        for (auto [c,x,y]:qs) {
-            if (c=='!') {
+        };
+        for(int x:a)add(id(x),1);
+        for(auto [c,x,y]:qs){
+            if(c=='!'){
                 --x;
                 add(id(a[x]),-1);
                 a[x]=y;
                 add(id(a[x]),1);
+            }else {
+                int right = upper_bound(vals.begin(), vals.end(), y) - vals.begin();
+                int left = lower_bound(vals.begin(), vals.end(), x) - vals.begin();
+                cout << sum(right) - sum(left) << "\n";
             }
-            else cout<<sum(upper_bound(vals.begin(),vals.end(),y)-vals.begin())-sum(lower_bound(vals.begin(),vals.end(),x)-vals.begin())<<"\n";
         }
-        return 0;
+    return 0;
     }
 ```
 
@@ -12758,21 +14169,43 @@ Core idea     : query count in salary range
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;int&gt;a(n)"]
+    S3["Initialize: int S=0"]
+    S4["Loop: int&i:a"]
+    S5["Update: S+=i"]
+    S6["Initialize: vector&lt;char&gt;dp(S+1)"]
+    S7["Update: dp[0]=1"]
+    S8["Loop: int x:a"]
+    S9["Inside loop: for(int s=S;s&gt;=x;s--)dp[s]|=dp[s-x]"]
+    S10["Initialize: vector&lt;int&gt;ans"]
+    S11["Loop: int s=1;s&lt;=S;s++"]
+    S12["Inside loop: if(dp[s])ans.push_back(s)"]
+    S13["Output answer"]
+    S14["Loop: int x:ans"]
+    S15["Inside loop: cout &lt;&lt; x &lt;&lt; ' '"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -12783,24 +14216,23 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     vector<int>a(n);
     int S=0;
-    for (int&i:a) {
-        cin>>i;
+    for(int&i:a){
+        cin >> i;
         S+=i;
-    }
-    vector<char>dp(S+1);
+    }vector<char>dp(S+1);
     dp[0]=1;
-    for (int x:a)for (int s=S; s>=x; s--)dp[s]|=dp[s-x];
+    for(int x:a)for(int s=S;s>=x;s--)dp[s]|=dp[s-x];
     vector<int>ans;
-    for (int s=1; s<=S; s++)if (dp[s])ans.push_back(s);
-    cout<<ans.size()<<"\n";
-    for (int x:ans)cout<<x<<' ';
+    for(int s=1;s<=S;s++)if(dp[s])ans.push_back(s);
+    cout << ans.size() << "\n";
+    for(int x:ans)cout << x << ' ';
     return 0;
 }
 ```
@@ -12871,21 +14303,41 @@ Core idea     : every coin creates new sums
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;int&gt;p(n),sz(n,1)"]
+    S3["Run: iota(p.begin(),p.end(),0)"]
+    S4["Update: function&lt;int(int)&gt;find=[&](int x)"]
+    S5["Return: p[x]==x?x:p[x]=find(p[x])"]
+    S6["Initialize: auto unite=[&](int a,int b)"]
+    S7["Update: a=find(a)"]
+    S8["Update: b=find(b)"]
+    S9["Decision: a!=b"]
+    S10["Update: p[b]=a"]
+    S11["Update: sz[a]+=sz[b]"]
+    S12["Loop: int i=0,a,b;i&lt;m;i++"]
+    S13["Run: unite(a-1,b-1)"]
+    S14["Initialize: vector&lt;char&gt;dp(n+1)"]
+    S15["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
 ```
 
 </details>
@@ -12896,36 +14348,32 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,m;
-    cin>>n>>m;
+    cin >> n>>m;
     vector<int>p(n),sz(n,1);
     iota(p.begin(),p.end(),0);
-    function<int(int)>find=[&](int x) {
+    function<int(int)>find=[&](int x){
         return p[x]==x?x:p[x]=find(p[x]);
-    }
-    ;
-    auto unite=[&](int a,int b) {
+    };
+    auto unite=[&](int a,int b){
         a=find(a);
         b=find(b);
-        if (a!=b) {
+        if(a!=b){
             p[b]=a;
             sz[a]+=sz[b];
-        }
+        }};
+        for(int i=0,a,b;i<m;i++){
+            cin >> a>>b;
+            unite(a-1,b-1);
+        }vector<char>dp(n+1);
+        dp[0]=1;
+        for(int i=0;i<n;i++)if(find(i)==i)for(int s=n;s>=sz[i];s--)dp[s]|=dp[s-sz[i]];
+        for(int s=1;s<=n;s++)cout << (dp[s]?1:0);
+        return 0;
     }
-    ;
-    for (int i=0,a,b; i<m; i++) {
-        cin>>a>>b;
-        unite(a-1,b-1);
-    }
-    vector<char>dp(n+1);
-    dp[0]=1;
-    for (int i=0; i<n; i++)if (find(i)==i)for (int s=n; s>=sz[i]; s--)dp[s]|=dp[s-sz[i]];
-    for (int s=1; s<=n; s++)cout<<(dp[s]?1:0);
-    return 0;
-}
 ```
 
 </details>
@@ -12994,21 +14442,43 @@ Core idea     : choose connected group sizes
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create heap for candidate items"]
-    S1["Push available candidates"]
-    S2["Pop invalid or extra candidates"]
-    S3["Use heap top as best current choice"]
-    S4["Update answer/state"]
-    S5["Return final result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;int&gt;a(n+1),bit(n+1)"]
+    S3["Loop: int i = 1; i &lt;= n; i++"]
+    S4["Loop: int j=i;j&lt;=n;j+=j&-j"]
+    S5["Inside loop: bit[j]++"]
+    S6["Initialize: auto add=[&](int i,int v)"]
+    S7["Loop: ;i&lt;=n;i+=i&-i"]
+    S8["Inside loop: bit[i]+=v"]
+    S9["Initialize: auto kth=[&](int k)"]
+    S10["Initialize: int idx=0"]
+    S11["Loop: int b=1&lt;&lt;20;b;b&gt;&gt;=1"]
+    S12["Initialize: int ni=idx+b"]
+    S13["Decision: ni&lt;=nandbit[ni]&lt;k"]
+    S14["Update: idx=ni"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -13019,40 +14489,35 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     vector<int>a(n+1),bit(n+1);
-    for (int i=1; i<=n; i++) {
-        cin>>a[i];
-        for (int j=i; j<=n; j+=j&-j)bit[j]++;
-    }
-    auto add=[&](int i,int v) {
-        for (; i<=n; i+=i&-i)bit[i]+=v;
-    }
-    ;
-    auto kth=[&](int k) {
+    for (int i = 1; i <= n; i++){
+        cin >> a[i];
+        for(int j=i;j<=n;j+=j&-j)bit[j]++;
+    }auto add=[&](int i,int v){
+        for(;i<=n;i+=i&-i)bit[i]+=v;
+    };
+    auto kth=[&](int k){
         int idx=0;
-        for (int b=1<<20; b; b>>=1) {
+        for(int b=1<<20;b;b>>=1){
             int ni=idx+b;
-            if (ni<=n&&bit[ni]<k) {
+            if(ni<=n&&bit[ni]<k){
                 idx=ni;
                 k-=bit[ni];
-            }
+            }}return idx+1;
+        };
+        for(int i=0,x;i<n;i++){
+            cin >> x;
+            int id=kth(x);
+            cout << a[id] << ' ';
+            add(id,-1);
         }
-        return idx+1;
-    }
-    ;
-    for (int i=0,x; i<n; i++) {
-        cin>>x;
-        int id=kth(x);
-        cout<<a[id]<<' ';
-        add(id,-1);
-    }
     return 0;
-}
+    }
 ```
 
 </details>
@@ -13121,21 +14586,43 @@ Core idea     : order structure simulates deletion
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Read n"]
-    S1["Push 1..n into queue"]
-    S2["While queue is not empty"]
-    S3["Move first person to back"]
-    S4["Print and remove next person"]
-    S5["Repeat until queue is empty"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;int&gt;bit(n+1)"]
+    S3["Initialize: auto add=[&](int i,int v)"]
+    S4["Loop: ;i&lt;=n;i+=i&-i"]
+    S5["Inside loop: bit[i]+=v"]
+    S6["Initialize: auto kth=[&](int x)"]
+    S7["Initialize: int idx=0"]
+    S8["Loop: int b=1&lt;&lt;20;b;b&gt;&gt;=1"]
+    S9["Initialize: int ni=idx+b"]
+    S10["Decision: ni&lt;=nandbit[ni]&lt;x"]
+    S11["Update: idx=ni"]
+    S12["Update: x-=bit[ni]"]
+    S13["Return: idx+1"]
+    S14["Loop: int i = 1; i &lt;= n; i++"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -13146,39 +14633,35 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,k;
-    cin>>n>>k;
+    cin >> n>>k;
     vector<int>bit(n+1);
-    auto add=[&](int i,int v) {
-        for (; i<=n; i+=i&-i)bit[i]+=v;
-    }
-    ;
-    auto kth=[&](int x) {
+    auto add=[&](int i,int v){
+        for(;i<=n;i+=i&-i)bit[i]+=v;
+    };
+    auto kth=[&](int x){
         int idx=0;
-        for (int b=1<<20; b; b>>=1) {
+        for(int b=1<<20;b;b>>=1){
             int ni=idx+b;
-            if (ni<=n&&bit[ni]<x) {
+            if(ni<=n&&bit[ni]<x){
                 idx=ni;
                 x-=bit[ni];
-            }
+            }}return idx+1;
+        };
+        for (int i = 1; i <= n; i++)add(i,1);
+        int pos=0,alive=n;
+        while(alive){
+            pos=(pos+k)%alive;
+            int id=kth(pos+1);
+            cout << id << ' ';
+            add(id,-1);
+            alive--;
         }
-        return idx+1;
-    }
-    ;
-    for (int i=1; i<=n; i++)add(i,1);
-    int pos=0,alive=n;
-    while (alive) {
-        pos=(pos+k)%alive;
-        int id=kth(pos+1);
-        cout<<id<<' ';
-        add(id,-1);
-        alive--;
-    }
     return 0;
-}
+    }
 ```
 
 </details>
@@ -13247,19 +14730,43 @@ Core idea     : dynamic circle needs kth alive
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Sort by the key needed for the greedy scan"]
-    S1["Scan sorted items once"]
-    S2["Merge, select, or count active items"]
-    S3["Update current state and answer"]
-    S4["Return final result"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;R&gt;a(n)"]
+    S3["Loop: int i=0;i&lt;n;i++"]
+    S4["Update: a[i].i=i"]
+    S5["Run: sort(a.begin(),a.end(),[](R&a,R&b)"]
+    S6["Return: a.l==b.l?a.r&gt;b.r:a.l&lt;b.l"]
+    S7["Initialize: vector&lt;int&gt;contains(n),contained(n)"]
+    S8["Initialize: int maxR=0"]
+    S9["Loop: auto &x:a"]
+    S10["Decision: x.r&lt;=maxR"]
+    S11["If true: contained[x.i]=1"]
+    S12["Update: maxR=max(maxR,x.r)"]
+    S13["Initialize: int minR=INT_MAX"]
+    S14["Loop: int i=n-1;i&gt;=0;i--"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -13272,38 +14779,32 @@ flowchart TD
 using namespace std;
 struct R{
     int l,r,i;
-}
-;
-int main() {
+};
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n;
-    cin>>n;
+    cin >> n;
     vector<R>a(n);
-    for (int i=0; i<n; i++) {
-        cin>>a[i].l>>a[i].r;
+    for(int i=0;i<n;i++){
+        cin >> a[i].l>>a[i].r;
         a[i].i=i;
+    }sort(a.begin(),a.end(),[](R&a,R&b){
+        return a.l==b.l?a.r>b.r:a.l<b.l;});
+        vector<int>contains(n),contained(n);
+        int maxR=0;
+        for(auto &x:a){
+            if(x.r<=maxR)contained[x.i]=1;
+            maxR=max(maxR,x.r);
+        }int minR=INT_MAX;
+        for(int i=n-1;i>=0;i--){
+            if(a[i].r>=minR)contains[a[i].i]=1;
+            minR=min(minR,a[i].r);
+        }for(int x:contains)cout << x << ' ';
+        cout << "\n";
+        for(int x:contained)cout << x << ' ';
+        return 0;
     }
-    sort(a.begin(),a.end(),[](R&a,R&b) {
-        return a.l==b.l?a.r>b.r:a.l<b.l;
-    }
-    );
-    vector<int>contains(n),contained(n);
-    int maxR=0;
-    for (auto &x:a) {
-        if (x.r<=maxR)contained[x.i]=1;
-        maxR=max(maxR,x.r);
-    }
-    int minR=INT_MAX;
-    for (int i=n-1; i>=0; i--) {
-        if (a[i].r>=minR)contains[a[i].i]=1;
-        minR=min(minR,a[i].r);
-    }
-    for (int x:contains)cout<<x<<' ';
-    cout<<"\n";
-    for (int x:contained)cout<<x<<' ';
-    return 0;
-}
 ```
 
 </details>
@@ -13372,21 +14873,43 @@ Core idea     : containment becomes ordered check
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;pair&lt;int,int&gt;&gt;a(n)"]
+    S3["Loop: auto&[l,r]:a"]
+    S4["Inside loop: cin &gt;&gt; l&gt;&gt;r"]
+    S5["Run: sort(a.begin(),a.end(),[](auto&a,auto&b)"]
+    S6["Return: a.second&lt;b.second"]
+    S7["Initialize: multiset&lt;int&gt;end"]
+    S8["Loop: int i=0;i&lt;k;i++"]
+    S9["Inside loop: end.insert(0)"]
+    S10["Initialize: int ans=0"]
+    S11["Loop: auto [l,r]:a"]
+    S12["Initialize: auto it=end.upper_bound(l)"]
+    S13["Decision: it==end.begin()"]
+    S14["If true: continue"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -13397,31 +14920,28 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,k;
-    cin>>n>>k;
+    cin >> n>>k;
     vector<pair<int,int>>a(n);
-    for (auto&[l,r]:a)cin>>l>>r;
-    sort(a.begin(),a.end(),[](auto&a,auto&b) {
-        return a.second<b.second;
+    for(auto&[l,r]:a)cin >> l>>r;
+    sort(a.begin(),a.end(),[](auto&a,auto&b){
+        return a.second<b.second;});
+        multiset<int>end;
+        for(int i=0;i<k;i++)end.insert(0);
+        int ans=0;
+        for(auto [l,r]:a){
+            auto it=end.upper_bound(l);
+            if(it==end.begin())continue;
+            --it;
+            end.erase(it);
+            end.insert(r);
+            ans++;
+        }cout << ans;
+        return 0;
     }
-    );
-    multiset<int>end;
-    for (int i=0; i<k; i++)end.insert(0);
-    int ans=0;
-    for (auto [l,r]:a) {
-        auto it=end.upper_bound(l);
-        if (it==end.begin())continue;
-        --it;
-        end.erase(it);
-        end.insert(r);
-        ans++;
-    }
-    cout<<ans;
-    return 0;
-}
 ```
 
 </details>
@@ -13490,21 +15010,43 @@ Core idea     : preserve earlier watchers
 ### Solution Flow
 
 <details>
-<summary>Solution Flow — visual optimal steps</summary>
+<summary>Solution Flow — how the code works</summary>
 
 ```mermaid
 flowchart TD
-    S0["Create map/set/count structure"]
-    S1["Scan each input item"]
-    S2["Query needed value or class"]
-    S3["Update answer when condition matches"]
-    S4["Store/update current state"]
-    S5["Return final answer"]
+    S0["Start"]
+    S1["Read input"]
+    S2["Initialize: vector&lt;int&gt;a(n+1),pos(n+1)"]
+    S3["Loop: int i = 1; i &lt;= n; i++"]
+    S4["Update: pos[a[i]]=i"]
+    S5["Initialize: auto bad=[&](int x)"]
+    S6["Return: x&gt;=2andpos[x]&lt;pos[x-1]"]
+    S7["Initialize: int ans=1"]
+    S8["Loop: int x=2;x&lt;=n;x++"]
+    S9["Inside loop: ans+=bad(x)"]
+    S10["Repeat while: m--"]
+    S11["Initialize: set&lt;int&gt;chk"]
+    S12["Run: a[i],a[i]+1,a[j],a[j]+1}"]
+    S13["Update: )if(x&gt;=2andx&lt;=n)chk.insert(x)"]
+    S14["Loop: int x:chk"]
+    S15["Output answer"]
+    S16["End"]
     S0 --> S1
     S1 --> S2
     S2 --> S3
     S3 --> S4
     S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S7 --> S8
+    S8 --> S9
+    S9 --> S10
+    S10 --> S11
+    S11 --> S12
+    S12 --> S13
+    S13 --> S14
+    S14 --> S15
+    S15 --> S16
 ```
 
 </details>
@@ -13515,35 +15057,34 @@ flowchart TD
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main() {
+int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int n,m;
-    cin>>n>>m;
+    cin >> n>>m;
     vector<int>a(n+1),pos(n+1);
-    for (int i=1; i<=n; i++) {
-        cin>>a[i];
+    for (int i = 1; i <= n; i++){
+        cin >> a[i];
         pos[a[i]]=i;
-    }
-    auto bad=[&](int x) {
+    }auto bad=[&](int x){
         return x>=2&&pos[x]<pos[x-1];
-    }
-    ;
+    };
     int ans=1;
-    for (int x=2; x<=n; x++)ans+=bad(x);
-    while (m--) {
+    for(int x=2;x<=n;x++)ans+=bad(x);
+    while(m--){
         int i,j;
-        cin>>i>>j;
+        cin >> i>>j;
         set<int>chk;
-        for (int x:{ a[i],a[i]+1,a[j],a[j]+1} )if (x>=2&&x<=n)chk.insert(x);
-        for (int x:chk)ans-=bad(x);
-        swap(pos[a[i]],pos[a[j]]);
-        swap(a[i],a[j]);
-        for (int x:chk)ans+=bad(x);
-        cout<<ans<<"\n";
-    }
+        for(int x:{
+            a[i],a[i]+1,a[j],a[j]+1})if(x>=2&&x<=n)chk.insert(x);
+            for(int x:chk)ans-=bad(x);
+            swap(pos[a[i]],pos[a[j]]);
+            swap(a[i],a[j]);
+            for(int x:chk)ans+=bad(x);
+            cout << ans << "\n";
+        }
     return 0;
-}
+    }
 ```
 
 </details>
