@@ -2030,8 +2030,8 @@ npm audit
 flowchart TD
     User["Users"] --> CDN["CDN"]
     CDN --> StaticApp["Static React Assets"]
-    StaticApp --> API Gateway["API Gateway"]
-    API Gateway --> Backend["Backend Services"]
+    StaticApp --> APIGateway["API Gateway"]
+    APIGateway --> Backend["Backend Services"]
     Backend --> Cache[("Redis")]
     Backend --> DB[("Database")]
     StaticApp --> Monitoring["Frontend Monitoring"]
