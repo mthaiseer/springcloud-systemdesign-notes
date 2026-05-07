@@ -2861,3 +2861,1331 @@ Advanced Caching
 Design Systems
 Frontend Observability
 ```
+
+
+---
+
+# React Core Features Explained Diagrammatically
+
+This section explains React features one by one with:
+
+```text
+What it is
+Why it exists
+How it works
+Diagram
+Code example
+Common mistake
+```
+
+---
+
+## 54. React Component
+
+### What
+
+A component is a reusable UI function.
+
+### Why
+
+Instead of writing one huge page, React lets you split UI into small reusable parts.
+
+### How it works
+
+A component receives input, called props, and returns UI.
+
+```mermaid
+flowchart TD
+    Props["Props Input"] --> Component["React Component"]
+    Component --> JSX["Returns JSX"]
+    JSX --> UI["Rendered UI"]
+```
+
+### Example
+
+```tsx
+type WelcomeProps = {
+  name: string;
+};
+
+export function Welcome({ name }: WelcomeProps) {
+  return <h1>Hello {name}</h1>;
+}
+```
+
+### Common mistake
+
+Do not put too much business logic inside UI components.
+
+---
+
+## 55. Props
+
+### What
+
+Props are data passed from parent component to child component.
+
+### Why
+
+Props make components reusable and configurable.
+
+### How it works
+
+```mermaid
+flowchart TD
+    Parent["Parent Component"] -->|passes props| Child["Child Component"]
+    Child --> UI["Render using props"]
+```
+
+### Example
+
+```tsx
+type UserCardProps = {
+  name: string;
+  email: string;
+};
+
+function UserCard({ name, email }: UserCardProps) {
+  return (
+    <div>
+      <h2>{name}</h2>
+      <p>{email}</p>
+    </div>
+  );
+}
+
+export function UsersPage() {
+  return <UserCard name="Amit" email="amit@example.com" />;
+}
+```
+
+### Common mistake
+
+Do not mutate props.
+
+Wrong:
+
+```tsx
+props.name = "New Name";
+```
+
+Correct:
+
+```tsx
+const displayName = props.name.toUpperCase();
+```
+
+---
+
+## 56. State and useState
+
+### What
+
+`useState` stores data that can change over time inside a component.
+
+### Why
+
+Without state, UI cannot update dynamically.
+
+Examples:
+
+```text
+Counter value
+Input value
+Modal open or closed
+Selected tab
+Search text
+```
+
+### How it works
+
+```mermaid
+flowchart TD
+    InitialState["Initial State"] --> Render["Component Renders"]
+    Render --> UserAction["User Action"]
+    UserAction --> SetState["setState Called"]
+    SetState --> NewState["React Stores New State"]
+    NewState --> ReRender["Component Re-renders"]
+    ReRender --> UpdatedUI["Updated UI"]
+```
+
+### Example
+
+```tsx
+import { useState } from "react";
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+
+  function increment() {
+    setCount(count + 1);
+  }
+
+  return (
+    <button onClick={increment}>
+      Count: {count}
+    </button>
+  );
+}
+```
+
+### Mental model
+
+```text
+state change -> re-render -> updated UI
+```
+
+### Common mistake
+
+State updates are not immediately visible in the same line.
+
+```tsx
+setCount(count + 1);
+console.log(count); // old value
+```
+
+Use functional update when new state depends on old state:
+
+```tsx
+setCount((previousCount) => previousCount + 1);
+```
+
+---
+
+## 57. Multiple State Updates
+
+### What
+
+React can batch multiple state updates.
+
+### Why
+
+Batching improves performance by reducing unnecessary renders.
+
+### How it works
+
+```mermaid
+flowchart TD
+    Click["Button Click"] --> UpdateOne["setState 1"]
+    Click --> UpdateTwo["setState 2"]
+    Click --> UpdateThree["setState 3"]
+
+    UpdateOne --> Batch["React Batches Updates"]
+    UpdateTwo --> Batch
+    UpdateThree --> Batch
+
+    Batch --> SingleRender["One Re-render"]
+```
+
+### Example
+
+```tsx
+function handleClick() {
+  setFirstName("John");
+  setLastName("Doe");
+  setAge(30);
+}
+```
+
+React may combine these updates into one render.
+
+---
+
+## 58. Derived State
+
+### What
+
+Derived state is data calculated from existing state or props.
+
+### Why
+
+You should avoid storing duplicate state.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    State["Original State"] --> Calculation["Calculate Derived Value"]
+    Calculation --> UI["Render UI"]
+```
+
+### Bad example
+
+```tsx
+const [items, setItems] = useState(["A", "B"]);
+const [count, setCount] = useState(2);
+```
+
+### Good example
+
+```tsx
+const [items, setItems] = useState(["A", "B"]);
+const count = items.length;
+```
+
+### Rule
+
+If something can be calculated during render, do not store it in state.
+
+---
+
+## 59. Events
+
+### What
+
+Events handle user actions.
+
+### Why
+
+Apps need to respond to clicks, typing, submitting forms, hovering, and keyboard actions.
+
+### How it works
+
+```mermaid
+flowchart LR
+    User["User"] --> Action["Click or Type"]
+    Action --> EventHandler["Event Handler"]
+    EventHandler --> StateUpdate["Update State"]
+    StateUpdate --> UI["UI Changes"]
+```
+
+### Example
+
+```tsx
+export function SearchInput() {
+  const [search, setSearch] = useState("");
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setSearch(event.target.value);
+  }
+
+  return <input value={search} onChange={handleChange} />;
+}
+```
+
+---
+
+## 60. Conditional Rendering
+
+### What
+
+Conditional rendering shows different UI based on conditions.
+
+### Why
+
+Applications need different UI for loading, error, empty, and success states.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    Start["Component Render"] --> LoadingCheck{"Is Loading?"}
+    LoadingCheck -->|Yes| LoadingUI["Show Loading UI"]
+    LoadingCheck -->|No| ErrorCheck{"Has Error?"}
+    ErrorCheck -->|Yes| ErrorUI["Show Error UI"]
+    ErrorCheck -->|No| DataCheck{"Has Data?"}
+    DataCheck -->|No| EmptyUI["Show Empty UI"]
+    DataCheck -->|Yes| SuccessUI["Show Data UI"]
+```
+
+### Example
+
+```tsx
+function ProjectsPage() {
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (isError) {
+    return <p>Something went wrong.</p>;
+  }
+
+  if (projects.length === 0) {
+    return <p>No projects found.</p>;
+  }
+
+  return <ProjectList projects={projects} />;
+}
+```
+
+---
+
+## 61. Lists and Keys
+
+### What
+
+Lists render multiple items using `map`.
+
+Keys help React identify each item.
+
+### Why
+
+React needs stable keys to update lists efficiently.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    Array["Array of Data"] --> Map["map function"]
+    Map --> Elements["React Elements"]
+    Elements --> Keys["Stable Keys"]
+    Keys --> EfficientUpdate["Efficient UI Update"]
+```
+
+### Example
+
+```tsx
+type Project = {
+  id: string;
+  name: string;
+};
+
+function ProjectList({ projects }: { projects: Project[] }) {
+  return (
+    <ul>
+      {projects.map((project) => (
+        <li key={project.id}>{project.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Common mistake
+
+Avoid this for dynamic lists:
+
+```tsx
+<li key={index}>{project.name}</li>
+```
+
+Use IDs instead.
+
+---
+
+## 62. useEffect
+
+### What
+
+`useEffect` runs side effects after render.
+
+### Why
+
+Rendering should be pure, but apps need side effects.
+
+Examples:
+
+```text
+API calls
+Subscriptions
+Timers
+Local storage
+Event listeners
+WebSocket connections
+```
+
+### How it works
+
+```mermaid
+flowchart TD
+    Render["Component Render"] --> Paint["Browser Paint"]
+    Paint --> Effect["useEffect Runs"]
+    Effect --> SideEffect["Run Side Effect"]
+    SideEffect --> CleanupCheck{"Need Cleanup?"}
+    CleanupCheck -->|Yes| Cleanup["Cleanup on unmount or dependency change"]
+    CleanupCheck -->|No| Done["Done"]
+```
+
+### Example
+
+```tsx
+import { useEffect, useState } from "react";
+
+export function PageTitle() {
+  const [title, setTitle] = useState("Dashboard");
+
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+
+  return (
+    <input
+      value={title}
+      onChange={(event) => setTitle(event.target.value)}
+    />
+  );
+}
+```
+
+### Dependency array
+
+```tsx
+useEffect(() => {
+  console.log("Runs after every render");
+});
+
+useEffect(() => {
+  console.log("Runs only once after mount");
+}, []);
+
+useEffect(() => {
+  console.log("Runs when userId changes");
+}, [userId]);
+```
+
+### Common mistake
+
+Do not put everything in `useEffect`.
+
+If you can calculate it during render, calculate it during render.
+
+---
+
+## 63. useEffect Cleanup
+
+### What
+
+Cleanup removes side effects when component unmounts or dependencies change.
+
+### Why
+
+Prevents memory leaks and duplicate subscriptions.
+
+### Diagram
+
+```mermaid
+sequenceDiagram
+    participant Component
+    participant Effect
+    participant Browser
+
+    Component->>Effect: Mount
+    Effect->>Browser: Add event listener
+    Component->>Effect: Unmount
+    Effect->>Browser: Remove event listener
+```
+
+### Example
+
+```tsx
+useEffect(() => {
+  function handleResize() {
+    console.log(window.innerWidth);
+  }
+
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
+```
+
+---
+
+## 64. useRef
+
+### What
+
+`useRef` stores a mutable value that does not cause re-render.
+
+### Why
+
+Use it for:
+
+```text
+DOM access
+Previous value
+Timer ID
+Mutable value that should not trigger UI updates
+```
+
+### Diagram
+
+```mermaid
+flowchart TD
+    Component["Component"] --> Ref["useRef Object"]
+    Ref --> Current["ref.current"]
+    Current --> NoRender["Changing ref does not re-render"]
+```
+
+### DOM Example
+
+```tsx
+import { useRef } from "react";
+
+export function FocusInput() {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function focusInput() {
+    inputRef.current?.focus();
+  }
+
+  return (
+    <>
+      <input ref={inputRef} />
+      <button onClick={focusInput}>Focus</button>
+    </>
+  );
+}
+```
+
+### Common mistake
+
+Do not use `useRef` for values that should update the UI.
+
+Use `useState` for UI updates.
+
+---
+
+## 65. useMemo
+
+### What
+
+`useMemo` caches expensive calculated values.
+
+### Why
+
+Avoid recalculating expensive values on every render.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    Render["Render"] --> DependencyCheck{"Dependencies Changed?"}
+    DependencyCheck -->|Yes| Calculate["Calculate New Value"]
+    DependencyCheck -->|No| Cached["Return Cached Value"]
+    Calculate --> Store["Store in Cache"]
+    Store --> Return["Return Value"]
+    Cached --> Return
+```
+
+### Example
+
+```tsx
+import { useMemo } from "react";
+
+function ProductList({ products, search }: Props) {
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) =>
+      product.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [products, search]);
+
+  return <List products={filteredProducts} />;
+}
+```
+
+### Common mistake
+
+Do not use `useMemo` everywhere.
+
+Use it when:
+
+```text
+Calculation is expensive
+Large list filtering
+Preventing unnecessary child renders
+```
+
+---
+
+## 66. useCallback
+
+### What
+
+`useCallback` caches a function reference.
+
+### Why
+
+Useful when passing functions to memoized child components.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    Render["Parent Render"] --> DependencyCheck{"Dependencies Changed?"}
+    DependencyCheck -->|Yes| NewFunction["Create New Function"]
+    DependencyCheck -->|No| OldFunction["Reuse Old Function"]
+    NewFunction --> Child["Pass to Child"]
+    OldFunction --> Child
+```
+
+### Example
+
+```tsx
+import { useCallback } from "react";
+
+function Parent() {
+  const handleSave = useCallback(() => {
+    console.log("Saved");
+  }, []);
+
+  return <SaveButton onSave={handleSave} />;
+}
+```
+
+### Common mistake
+
+Do not use `useCallback` unless function identity matters.
+
+---
+
+## 67. React.memo
+
+### What
+
+`React.memo` prevents child re-render when props have not changed.
+
+### Why
+
+Useful for expensive child components.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    ParentRender["Parent Re-renders"] --> PropsCheck{"Child Props Changed?"}
+    PropsCheck -->|Yes| ChildRender["Child Re-renders"]
+    PropsCheck -->|No| Skip["Skip Child Render"]
+```
+
+### Example
+
+```tsx
+import { memo } from "react";
+
+type UserCardProps = {
+  name: string;
+};
+
+export const UserCard = memo(function UserCard({ name }: UserCardProps) {
+  return <p>{name}</p>;
+});
+```
+
+### Common mistake
+
+`React.memo` does not help if props are always new objects or functions.
+
+---
+
+## 68. useContext
+
+### What
+
+`useContext` reads shared data from a Context Provider.
+
+### Why
+
+Avoid prop drilling when many components need the same data.
+
+Examples:
+
+```text
+Theme
+Logged-in user
+Language
+Feature flags
+```
+
+### Diagram
+
+```mermaid
+flowchart TD
+    Provider["Context Provider"] --> ComponentA["Navbar"]
+    Provider --> ComponentB["Sidebar"]
+    Provider --> ComponentC["Dashboard"]
+    ComponentA --> SharedData["Read Shared Data"]
+    ComponentB --> SharedData
+    ComponentC --> SharedData
+```
+
+### Example
+
+```tsx
+import { createContext, useContext } from "react";
+
+type AuthContextValue = {
+  userName: string;
+};
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function useAuth() {
+  const value = useContext(AuthContext);
+
+  if (!value) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+
+  return value;
+}
+```
+
+### Common mistake
+
+Do not put frequently changing large state in Context because it can cause many re-renders.
+
+---
+
+## 69. useReducer
+
+### What
+
+`useReducer` manages complex state transitions.
+
+### Why
+
+Use it when state logic becomes too complex for multiple `useState` calls.
+
+### Diagram
+
+```mermaid
+flowchart LR
+    UI["UI Event"] --> Dispatch["dispatch action"]
+    Dispatch --> Reducer["Reducer Function"]
+    Reducer --> NewState["New State"]
+    NewState --> Render["Re-render UI"]
+```
+
+### Example
+
+```tsx
+import { useReducer } from "react";
+
+type State = {
+  count: number;
+};
+
+type Action =
+  | { type: "increment" }
+  | { type: "decrement" };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + 1 };
+    case "decrement":
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+
+export function CounterReducer() {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+
+  return (
+    <>
+      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+      <span>{state.count}</span>
+      <button onClick={() => dispatch({ type: "increment" })}>+</button>
+    </>
+  );
+}
+```
+
+---
+
+## 70. Controlled Components
+
+### What
+
+A controlled component is an input controlled by React state.
+
+### Why
+
+Useful for validation, dynamic forms, and predictable form behavior.
+
+### Diagram
+
+```mermaid
+flowchart LR
+    Input["Input Field"] --> OnChange["onChange"]
+    OnChange --> State["React State"]
+    State --> ValueProp["value prop"]
+    ValueProp --> Input
+```
+
+### Example
+
+```tsx
+import { useState } from "react";
+
+export function ControlledInput() {
+  const [email, setEmail] = useState("");
+
+  return (
+    <input
+      value={email}
+      onChange={(event) => setEmail(event.target.value)}
+    />
+  );
+}
+```
+
+---
+
+## 71. Uncontrolled Components
+
+### What
+
+An uncontrolled component stores its own value in the DOM.
+
+### Why
+
+Useful for simple forms or file inputs.
+
+### Diagram
+
+```mermaid
+flowchart LR
+    DOM["DOM Input"] --> Ref["useRef"]
+    Ref --> ReadValue["Read value when needed"]
+```
+
+### Example
+
+```tsx
+import { useRef } from "react";
+
+export function UncontrolledInput() {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function handleSubmit() {
+    console.log(inputRef.current?.value);
+  }
+
+  return (
+    <>
+      <input ref={inputRef} />
+      <button onClick={handleSubmit}>Submit</button>
+    </>
+  );
+}
+```
+
+---
+
+## 72. Custom Hooks
+
+### What
+
+A custom hook is a function that reuses hook logic.
+
+### Why
+
+Avoid duplicate logic across components.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    ComponentA["Component A"] --> CustomHook["Custom Hook"]
+    ComponentB["Component B"] --> CustomHook
+    CustomHook --> SharedLogic["Reusable Logic"]
+```
+
+### Example
+
+```tsx
+import { useEffect, useState } from "react";
+
+export function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    function handleOnline() {
+      setIsOnline(true);
+    }
+
+    function handleOffline() {
+      setIsOnline(false);
+    }
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  return isOnline;
+}
+```
+
+Usage:
+
+```tsx
+const isOnline = useOnlineStatus();
+```
+
+---
+
+## 73. React Router
+
+### What
+
+React Router shows different components for different URLs.
+
+### Why
+
+Single Page Applications need navigation without full page reloads.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    URL["Browser URL"] --> Router["React Router"]
+    Router --> MatchRoute["Match Route"]
+    MatchRoute --> PageComponent["Render Page Component"]
+```
+
+### Example
+
+```tsx
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <DashboardPage />,
+  },
+  {
+    path: "/projects",
+    element: <ProjectsPage />,
+  },
+]);
+```
+
+---
+
+## 74. Outlet
+
+### What
+
+`Outlet` is where child routes render inside a layout.
+
+### Why
+
+Useful for shared layout like navbar, sidebar, and footer.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    Layout["App Layout"] --> Header["Header"]
+    Layout --> Sidebar["Sidebar"]
+    Layout --> Outlet["Outlet"]
+    Outlet --> ChildPage["Child Page"]
+```
+
+### Example
+
+```tsx
+import { Outlet } from "react-router-dom";
+
+export function AppLayout() {
+  return (
+    <div>
+      <header>Header</header>
+      <aside>Sidebar</aside>
+      <main>
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+```
+
+---
+
+## 75. TanStack Query useQuery
+
+### What
+
+`useQuery` fetches and caches server data.
+
+### Why
+
+It manages:
+
+```text
+Loading
+Error
+Success
+Caching
+Refetching
+Retries
+Synchronization
+```
+
+### Diagram
+
+```mermaid
+flowchart TD
+    Component["Component"] --> UseQuery["useQuery"]
+    UseQuery --> CacheCheck{"Cache exists?"}
+    CacheCheck -->|Yes| CachedData["Return cached data"]
+    CacheCheck -->|No| FetchAPI["Fetch from API"]
+    FetchAPI --> StoreCache["Store in cache"]
+    StoreCache --> ReturnData["Return data"]
+```
+
+### Example
+
+```tsx
+function useProjects() {
+  return useQuery({
+    queryKey: ["projects"],
+    queryFn: getProjects,
+  });
+}
+```
+
+---
+
+## 76. TanStack Query useMutation
+
+### What
+
+`useMutation` changes server data.
+
+### Why
+
+Used for create, update, delete operations.
+
+### Diagram
+
+```mermaid
+sequenceDiagram
+    participant Component
+    participant Mutation
+    participant API
+    participant Cache
+
+    Component->>Mutation: mutate input
+    Mutation->>API: POST or PUT or DELETE
+    API-->>Mutation: Success
+    Mutation->>Cache: Invalidate related queries
+    Cache-->>Component: Refetch updated data
+```
+
+### Example
+
+```tsx
+function useCreateProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createProject,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+}
+```
+
+---
+
+## 77. Error Boundary
+
+### What
+
+Error Boundary catches render-time errors in child components.
+
+### Why
+
+Prevents full app white screen.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    Child["Child Component"] --> Error["Throws Error"]
+    Error --> Boundary["Error Boundary"]
+    Boundary --> Fallback["Show Fallback UI"]
+```
+
+### Example
+
+```tsx
+class ErrorBoundary extends Component<Props, State> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <p>Something went wrong.</p>;
+    }
+
+    return this.props.children;
+  }
+}
+```
+
+---
+
+## 78. Suspense and Lazy Loading
+
+### What
+
+`lazy` loads components only when needed.
+
+`Suspense` shows fallback UI while loading.
+
+### Why
+
+Reduces initial bundle size.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    RouteOpen["User Opens Route"] --> LazyImport["Lazy Import Component"]
+    LazyImport --> Loading["Suspense Fallback"]
+    Loading --> Loaded["Component Loaded"]
+    Loaded --> Render["Render Page"]
+```
+
+### Example
+
+```tsx
+const ProjectsPage = lazy(() => import("./ProjectsPage"));
+
+function App() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <ProjectsPage />
+    </Suspense>
+  );
+}
+```
+
+---
+
+## 79. Prop Drilling
+
+### What
+
+Prop drilling means passing props through many layers.
+
+### Why it becomes a problem
+
+Intermediate components receive props they do not use.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    App["App"] --> Layout["Layout"]
+    Layout --> Sidebar["Sidebar"]
+    Sidebar --> Menu["Menu"]
+    Menu --> UserName["UserName"]
+```
+
+### Solution options
+
+```text
+Context
+Zustand
+Redux Toolkit
+Component composition
+```
+
+---
+
+## 80. Zustand Store
+
+### What
+
+Zustand is a small global state library.
+
+### Why
+
+Useful for shared UI state without complex Redux boilerplate.
+
+### Diagram
+
+```mermaid
+flowchart TD
+    Store["Zustand Store"] --> Navbar["Navbar"]
+    Store --> Sidebar["Sidebar"]
+    Store --> Dashboard["Dashboard"]
+```
+
+### Example
+
+```tsx
+import { create } from "zustand";
+
+type ThemeStore = {
+  theme: "light" | "dark";
+  toggleTheme: () => void;
+};
+
+export const useThemeStore = create<ThemeStore>((set) => ({
+  theme: "light",
+  toggleTheme: () =>
+    set((state) => ({
+      theme: state.theme === "light" ? "dark" : "light",
+    })),
+}));
+```
+
+---
+
+## 81. React Feature Selection Guide
+
+```mermaid
+flowchart TD
+    Need["What do you need?"] --> UIChange["UI changes?"]
+    UIChange -->|Yes| UseState["useState"]
+
+    Need --> SideEffect["Side effect?"]
+    SideEffect -->|Yes| UseEffect["useEffect"]
+
+    Need --> DOMAccess["DOM access?"]
+    DOMAccess -->|Yes| UseRef["useRef"]
+
+    Need --> ExpensiveCalc["Expensive calculation?"]
+    ExpensiveCalc -->|Yes| UseMemo["useMemo"]
+
+    Need --> StableFunction["Stable function reference?"]
+    StableFunction -->|Yes| UseCallback["useCallback"]
+
+    Need --> SharedData["Shared data across tree?"]
+    SharedData -->|Yes| UseContext["useContext or Zustand"]
+
+    Need --> ServerData["Server data?"]
+    ServerData -->|Yes| ReactQuery["TanStack Query"]
+```
+
+---
+
+## 82. React Hooks Quick Table
+
+| Feature | What It Does | Use When |
+|---|---|---|
+| `useState` | Stores changing UI data | Counter, input, modal |
+| `useEffect` | Runs side effects | API side effects, event listeners |
+| `useRef` | Stores mutable value without re-render | DOM access, timer ID |
+| `useMemo` | Caches calculated value | Expensive filtering or sorting |
+| `useCallback` | Caches function reference | Memoized child components |
+| `useContext` | Reads shared context | Theme, auth user, language |
+| `useReducer` | Handles complex state transitions | Multi-step forms, complex state |
+| Custom Hook | Reuses hook logic | Debounce, online status, auth |
+
+---
+
+## 83. Most Important Interview Explanation
+
+Say this:
+
+```text
+React state changes trigger re-rendering. During rendering, React creates a new virtual UI representation, compares it with the previous one, and commits the minimum DOM updates. Hooks like useState manage local UI state, useEffect handles side effects after render, useRef stores mutable values without re-rendering, and useMemo/useCallback optimize expensive values and stable references. For production apps, server data should usually be handled by TanStack Query because it manages caching, loading, errors, retries, and refetching.
+```
