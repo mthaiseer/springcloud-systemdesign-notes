@@ -1,6 +1,6 @@
 # STL Problems — Guided Practice Edition
 
-> Rendering-safe update: all diagrams use simple Mermaid `flowchart TD` syntax with quoted labels, and every C++ block is inside a closed `<details>` section.
+> Rendering-safe update: Mermaid rich diagrams were replaced with collapsible plain-text flow steps, so Markdown viewers do not show “Unable to render rich display”. Every C++ block remains inside a closed collapsible section.
 
 This version is cleaned for Markdown rendering and organized as guided practice: problem link, problem detail, progressive hints, approach, collapsible C++ code, clickable difficulty index, and repeated-pattern tables.
 
@@ -200,12 +200,17 @@ This version is cleaned for Markdown rendering and organized as guided practice:
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: sort and compare neighbours"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: sort and compare neighbours
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -289,12 +294,17 @@ Core idea     : duplicates become adjacent
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: fill from back"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: fill from back
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -377,12 +387,17 @@ Core idea     : largest final position is safe
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize left and right pointers"] --> B["Compare current pointer values"]
-    B --> C["Move the pointer that cannot improve answer: overwrite nonzero"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize left and right pointers
+2. Compare current pointer values
+3. Move the pointer that cannot improve answer: overwrite nonzero
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -463,12 +478,17 @@ Core idea     : keep order with one pass
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: write unique"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: write unique
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -552,12 +572,17 @@ Core idea     : sorted duplicates are grouped
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: compare counts"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: compare counts
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -641,12 +666,17 @@ Core idea     : same letters means same count vector
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize left and right pointers"] --> B["Compare current pointer values"]
-    B --> C["Move the pointer that cannot improve answer: skip non-alnum"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize left and right pointers
+2. Compare current pointer values
+3. Move the pointer that cannot improve answer: skip non-alnum
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -732,12 +762,17 @@ Core idea     : compare mirrored valid chars
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: decrement available"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: decrement available
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -821,12 +856,17 @@ Core idea     : magazine supplies letters
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: push open pop close"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: push open pop close
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -914,12 +954,17 @@ Core idea     : latest open must close first
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: store scores"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: store scores
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1005,12 +1050,17 @@ Core idea     : operations reference previous scores
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: pop equal top"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: pop equal top
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1094,12 +1144,17 @@ Core idea     : adjacent equal cancels latest
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: move only when needed"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: move only when needed
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1187,12 +1242,17 @@ Core idea     : reverse stack gives FIFO
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: pop old calls"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: pop old calls
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1274,12 +1334,17 @@ Core idea     : queue holds valid recent calls
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: smash two largest"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: smash two largest
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1364,12 +1429,17 @@ Core idea     : only largest stones matter
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: pop smaller extras"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: pop smaller extras
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1455,12 +1525,17 @@ Core idea     : heap stores top k
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: lower_bound x minus t"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: lower_bound x minus t
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1547,12 +1622,17 @@ Core idea     : closest candidate is around lower bound
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: store seen value index"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: store seen value index
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1637,12 +1717,17 @@ Core idea     : target needs previous complement
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: count occurrences"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: count occurrences
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1726,12 +1811,17 @@ Core idea     : majority crosses n/2
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: two passes"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: two passes
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1813,12 +1903,17 @@ Core idea     : unique means count one
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: compare previous end"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: compare previous end
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1901,12 +1996,17 @@ Core idea     : overlap violates room
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: fill from back"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: fill from back
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -1991,12 +2091,17 @@ Core idea     : largest square at ends
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: two pointers"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: two pointers
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2077,12 +2182,17 @@ Core idea     : sorted arrays reveal equal values
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Set low and high search bounds"] --> B["Test middle candidate"]
-    B --> C["Discard impossible half: compare mid"]
-    C --> D["Return found index or boundary"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Set low and high search bounds
+2. Test middle candidate
+3. Discard impossible half: compare mid
+4. Return found index or boundary
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2168,12 +2278,17 @@ Core idea     : sorted halves eliminate
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Set low and high search bounds"] --> B["Test middle candidate"]
-    B --> C["Discard impossible half: first not less"]
-    C --> D["Return found index or boundary"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Set low and high search bounds
+2. Test middle candidate
+3. Discard impossible half: first not less
+4. Return found index or boundary
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2252,12 +2367,17 @@ Core idea     : insert before first bigger/equal
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: precompute next greater"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: precompute next greater
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2347,12 +2467,17 @@ Core idea     : decreasing stack waits for greater
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: while loop"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: while loop
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2441,12 +2566,17 @@ Core idea     : direct process
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: low mid high"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: low mid high
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2530,12 +2660,17 @@ Core idea     : place each color region
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: pivot suffix reverse"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: pivot suffix reverse
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2621,12 +2756,17 @@ Core idea     : next lexicographic order changes suffix
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: compare start with current end"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: compare start with current end
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2711,12 +2851,17 @@ Core idea     : overlap extends interval
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: two passes"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: two passes
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2801,12 +2946,17 @@ Core idea     : answer is left product times right product
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: sorted string as key"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: sorted string as key
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2893,12 +3043,17 @@ Core idea     : anagrams share canonical form
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: move left past duplicate"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: move left past duplicate
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -2984,12 +3139,17 @@ Core idea     : window invariant has unique chars
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: expand then shrink"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: expand then shrink
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -3078,12 +3238,17 @@ Core idea     : smallest valid window after coverage
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: save previous state"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: save previous state
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -3172,12 +3337,17 @@ Core idea     : brackets nest last-in-first-out
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: store current min"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: store current min
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -3258,12 +3428,17 @@ Core idea     : min must rollback with pop
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: apply operator to top two"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: apply operator to top two
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -3352,12 +3527,17 @@ Core idea     : postfix puts operands before operator
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: store indices"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: store indices
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -3446,12 +3626,17 @@ Core idea     : warmer day resolves colder days
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: start all rotten"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: start all rotten
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -3548,12 +3733,17 @@ Core idea     : infection spreads by layers
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push starting states into queue"] --> B["Process one BFS layer at a time"]
-    B --> C["Visit valid unvisited neighbors: mark visited"]
-    C --> D["Return distance/path when target found"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push starting states into queue
+2. Process one BFS layer at a time
+3. Visit valid unvisited neighbors: mark visited
+4. Return distance/path when target found
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -3642,12 +3832,17 @@ Core idea     : each BFS consumes one island
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push starting states into queue"] --> B["Process one BFS layer at a time"]
-    B --> C["Visit valid unvisited neighbors: generate neighbours"]
-    C --> D["Return distance/path when target found"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push starting states into queue
+2. Process one BFS layer at a time
+3. Visit valid unvisited neighbors: generate neighbours
+4. Return distance/path when target found
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -3743,12 +3938,17 @@ Core idea     : shortest moves in unweighted state graph
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: keep k largest"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: keep k largest
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -3828,12 +4028,17 @@ Core idea     : kth is min of top k
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: heap by count"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: heap by count
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -3918,12 +4123,17 @@ Core idea     : frequency decides rank
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: compare squared distance"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: compare squared distance
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4004,12 +4214,17 @@ Core idea     : no need sqrt
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: always use most frequent"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: always use most frequent
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4092,12 +4307,17 @@ Core idea     : reduce future bottleneck
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: check prev and next"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: check prev and next
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4181,12 +4401,17 @@ Core idea     : only neighbours can overlap
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: maintain occupied seats"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: maintain occupied seats
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4279,12 +4504,17 @@ Core idea     : best seat depends on gaps
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: upper_bound timestamp"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: upper_bound timestamp
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4367,12 +4597,17 @@ Core idea     : latest previous value is answer
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: count previous prefix"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: count previous prefix
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4458,12 +4693,17 @@ Core idea     : equal difference gives sum k
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: start only at sequence beginning"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: start only at sequence beginning
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4549,12 +4789,17 @@ Core idea     : each number processed once
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: map key to list iterator"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: map key to list iterator
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4644,12 +4889,17 @@ Core idea     : O(1) move to front
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: keep earliest ending"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: keep earliest ending
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4734,12 +4984,17 @@ Core idea     : more space for future intervals
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: shoot at end"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: shoot at end
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4822,12 +5077,17 @@ Core idea     : one arrow covers all overlapping intervals
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: tall first"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: tall first
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4909,12 +5169,17 @@ Core idea     : shorter people do not affect taller count
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: compare ab vs ba"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: compare ab vs ba
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -4999,12 +5264,17 @@ Core idea     : best concatenation order
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: skip duplicates"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: skip duplicates
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -5095,12 +5365,17 @@ Core idea     : fixing one reduces to two sum
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize left and right pointers"] --> B["Compare current pointer values"]
-    B --> C["Move the pointer that cannot improve answer: skip duplicates"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize left and right pointers
+2. Compare current pointer values
+3. Move the pointer that cannot improve answer: skip duplicates
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -5189,12 +5464,17 @@ Core idea     : reduce dimension stepwise
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Set low and high search bounds"] --> B["Test middle candidate"]
-    B --> C["Discard impossible half: choose window"]
-    C --> D["Return found index or boundary"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Set low and high search bounds
+2. Test middle candidate
+3. Discard impossible half: choose window
+4. Return found index or boundary
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -5279,12 +5559,17 @@ Core idea     : answer is contiguous around x
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: endpoints"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: endpoints
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -5366,12 +5651,17 @@ Core idea     : equal block is contiguous
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Set low and high search bounds"] --> B["Test middle candidate"]
-    B --> C["Discard impossible half: index mapping"]
-    C --> D["Return found index or boundary"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Set low and high search bounds
+2. Test middle candidate
+3. Discard impossible half: index mapping
+4. Return found index or boundary
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -5458,12 +5748,17 @@ Core idea     : matrix acts like sorted array
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: need ceil(success/spell)"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: need ceil(success/spell)
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -5548,12 +5843,17 @@ Core idea     : all later potions work
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: store price and span"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: store price and span
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -5636,12 +5936,17 @@ Core idea     : merge weaker previous days
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: count span"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: count span
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -5729,12 +6034,17 @@ Core idea     : each value contributes as minimum
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: remove weaker old values"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: remove weaker old values
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -5821,12 +6131,17 @@ Core idea     : front always best
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: maintain max-min"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: maintain max-min
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -5918,12 +6233,17 @@ Core idea     : valid window bounded by extremes
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: keep best dp in range"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: keep best dp in range
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6012,12 +6332,17 @@ Core idea     : transition needs max previous
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: before overlap after"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: before overlap after
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6102,12 +6427,17 @@ Core idea     : only overlap group changes
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: active meetings"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: active meetings
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6192,12 +6522,17 @@ Core idea     : max simultaneous rooms needed
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: passenger delta"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: passenger delta
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6280,12 +6615,17 @@ Core idea     : active passengers must fit capacity
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
-    B --> C["Add current value to Fenwick tree: compress values and doubled values"]
-    C --> D["Return accumulated count/cost"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Compress values if needed
+2. Query prefix/rank counts before update
+3. Add current value to Fenwick tree: compress values and doubled values
+4. Return accumulated count/cost
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6371,12 +6711,17 @@ Core idea     : count previous bigger than twice
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize DP base state"] --> B["Process each item once"]
-    B --> C["Update reachable states or best value: shift by number"]
-    C --> D["Return target DP answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize DP base state
+2. Process each item once
+3. Update reachable states or best value: shift by number
+4. Return target DP answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6460,12 +6805,17 @@ Core idea     : possible sums move by x
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize DP base state"] --> B["Process each item once"]
-    B --> C["Update reachable states or best value: find closest half"]
-    C --> D["Return target DP answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize DP base state
+2. Process each item once
+3. Update reachable states or best value: find closest half
+4. Return target DP answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6550,12 +6900,17 @@ Core idea     : split stones into two groups
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: put x at x minus one"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: put x at x minus one
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6641,12 +6996,17 @@ Core idea     : array index acts as hash
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize left and right pointers"] --> B["Compare current pointer values"]
-    B --> C["Move the pointer that cannot improve answer: left max right max"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize left and right pointers
+2. Compare current pointer values
+3. Move the pointer that cannot improve answer: left max right max
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6730,12 +7090,17 @@ Core idea     : water depends on smaller wall
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: distribute spaces"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: distribute spaces
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6829,12 +7194,17 @@ Core idea     : each line is greedy group
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: scan by offset"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: scan by offset
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -6927,12 +7297,17 @@ Core idea     : words align by length
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: push context at parenthesis"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: push context at parenthesis
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7019,12 +7394,17 @@ Core idea     : parentheses change sign context
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: pop when height drops"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: pop when height drops
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7115,12 +7495,17 @@ Core idea     : popped bar finds maximal width
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push starting states into queue"] --> B["Process one BFS layer at a time"]
-    B --> C["Visit valid unvisited neighbors: encode board string"]
-    C --> D["Return distance/path when target found"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push starting states into queue
+2. Process one BFS layer at a time
+3. Visit valid unvisited neighbors: encode board string
+4. Return distance/path when target found
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7209,12 +7594,17 @@ Core idea     : each move is one edge
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: balance sizes"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: balance sizes
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7300,12 +7690,17 @@ Core idea     : median lies between halves
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: push next from same list"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: push next from same list
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7389,12 +7784,17 @@ Core idea     : smallest head is next answer
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: add affordable profits"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: add affordable profits
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7483,12 +7883,17 @@ Core idea     : choose best available project
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: active count scan"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: active count scan
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7571,12 +7976,17 @@ Core idea     : maximum overlap is prefix of events
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: buckets by frequency"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: buckets by frequency
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7658,12 +8068,17 @@ Core idea     : O(1) min and max buckets
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: width asc height desc"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: width asc height desc
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7745,12 +8160,17 @@ Core idea     : avoid equal width nesting
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize DP base state"] --> B["Process each item once"]
-    B --> C["Update reachable states or best value: previous compatible job"]
-    C --> D["Return target DP answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize DP base state
+2. Process each item once
+3. Update reachable states or best value: previous compatible job
+4. Return target DP answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7834,12 +8254,17 @@ Core idea     : choose job or skip
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: partition smaller array"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: partition smaller array
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -7924,12 +8349,17 @@ Core idea     : left half must be <= right half
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
-    B --> C["Add current value to Fenwick tree: insert from right"]
-    C --> D["Return accumulated count/cost"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Compress values if needed
+2. Query prefix/rank counts before update
+3. Add current value to Fenwick tree: insert from right
+4. Return accumulated count/cost
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8014,12 +8444,17 @@ Core idea     : count previously inserted smaller
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: heights build histogram"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: heights build histogram
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8101,12 +8536,17 @@ Core idea     : each row becomes histogram problem
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: discard dominated prefixes"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: discard dominated prefixes
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8189,12 +8629,17 @@ Core idea     : smaller earlier prefix is better
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: insert erase balance"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: insert erase balance
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8279,12 +8724,17 @@ Core idea     : median is boundary of halves
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: gaps after merge"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: gaps after merge
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8368,12 +8818,17 @@ Core idea     : free time is complement of busy union
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: remove smallest speed"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: remove smallest speed
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8457,12 +8912,17 @@ Core idea     : efficiency fixed by sorted order
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
-    B --> C["Add current value to Fenwick tree: count less and greater"]
-    C --> D["Return accumulated count/cost"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Compress values if needed
+2. Query prefix/rank counts before update
+3. Add current value to Fenwick tree: count less and greater
+4. Return accumulated count/cost
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8549,12 +9009,17 @@ Core idea     : insertion cost from ranks
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: count breaks"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: count breaks
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8630,12 +9095,17 @@ Core idea     : new round starts when position decreases
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: rotate remove"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: rotate remove
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8711,12 +9181,17 @@ Core idea     : circular process needs efficient order
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: prefix/hash"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: prefix/hash
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8792,12 +9267,17 @@ Core idea     : repeated pattern matching needs linear scan
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Read current item"] --> B["While stack top is resolved, pop or combine"]
-    B --> C["Push current item if still needed: remove bigger candidates"]
-    C --> D["Return final stack-derived answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Read current item
+2. While stack top is resolved, pop or combine
+3. Push current item if still needed: remove bigger candidates
+4. Return final stack-derived answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8873,12 +9353,17 @@ Core idea     : remaining top is nearest smaller
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push starting states into queue"] --> B["Process one BFS layer at a time"]
-    B --> C["Visit valid unvisited neighbors: parent reconstruction"]
-    C --> D["Return distance/path when target found"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push starting states into queue
+2. Process one BFS layer at a time
+3. Visit valid unvisited neighbors: parent reconstruction
+4. Return distance/path when target found
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -8955,12 +9440,17 @@ Core idea     : BFS gives shortest path
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push starting states into queue"] --> B["Process one BFS layer at a time"]
-    B --> C["Visit valid unvisited neighbors: compare monster time"]
-    C --> D["Return distance/path when target found"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push starting states into queue
+2. Process one BFS layer at a time
+3. Visit valid unvisited neighbors: compare monster time
+4. Return distance/path when target found
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9037,12 +9527,17 @@ Core idea     : escape only if player arrives earlier
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: Dijkstra with used coupon state"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: Dijkstra with used coupon state
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9118,12 +9613,17 @@ Core idea     : heap picks shortest state
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: split segment"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: split segment
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9199,12 +9699,17 @@ Core idea     : longest gap after each insertion
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Push available candidate into heap"] --> B["Remove invalid or extra heap items"]
-    B --> C["Use heap top as best current choice: reuse earliest finishing room"]
-    C --> D["Return accumulated result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Push available candidate into heap
+2. Remove invalid or extra heap items
+3. Use heap top as best current choice: reuse earliest finishing room
+4. Return accumulated result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9280,12 +9785,17 @@ Core idea     : sorted endings choose available room
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: balance halves"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: balance halves
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9360,12 +9870,17 @@ Core idea     : median is max of lower half
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: store earlier pairs"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: store earlier pairs
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9441,12 +9956,17 @@ Core idea     : two pairs form target
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Scan current value"] --> B["Query needed key or count"]
-    B --> C["Update answer if condition matches: count prefix minus x"]
-    C --> D["Store current state in map"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Scan current value
+2. Query needed key or count
+3. Update answer if condition matches: count prefix minus x
+4. Store current state in map
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9522,12 +10042,17 @@ Core idea     : every old prefix creates subarray
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: take earliest finishing"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: take earliest finishing
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9602,12 +10127,17 @@ Core idea     : greedy maximizes remaining time
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: process shortest duration first?"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: process shortest duration first?
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9682,12 +10212,17 @@ Core idea     : minimize accumulated finish effect
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: two pointers"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: two pointers
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9762,12 +10297,17 @@ Core idea     : sorted sum moves predictably
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: fix one"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: fix one
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9842,12 +10382,17 @@ Core idea     : remaining pair is two sum
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Set low and high search bounds"] --> B["Test middle candidate"]
-    B --> C["Discard impossible half: check products by time"]
-    C --> D["Return found index or boundary"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Set low and high search bounds
+2. Test middle candidate
+3. Discard impossible half: check products by time
+4. Return found index or boundary
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -9922,12 +10467,17 @@ Core idea     : time feasibility monotonic
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize left and right pointers"] --> B["Compare current pointer values"]
-    B --> C["Move the pointer that cannot improve answer: monotonic sum"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize left and right pointers
+2. Compare current pointer values
+3. Move the pointer that cannot improve answer: monotonic sum
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10002,12 +10552,17 @@ Core idea     : positive values allow moving left
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: same as max reversed"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: same as max reversed
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10082,12 +10637,17 @@ Core idea     : front is minimum candidate
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: maintain sums"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: maintain sums
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10162,12 +10722,17 @@ Core idea     : median minimizes absolute deviation
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: arrival +1 leave -1"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: arrival +1 leave -1
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10242,12 +10807,17 @@ Core idea     : maximum active customers
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: upper_bound budget"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: upper_bound budget
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10322,12 +10892,17 @@ Core idea     : assign most expensive affordable ticket
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
-    B --> C["Add current value to Fenwick tree: compress right endpoints"]
-    C --> D["Return accumulated count/cost"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Compress values if needed
+2. Query prefix/rank counts before update
+3. Add current value to Fenwick tree: compress right endpoints
+4. Return accumulated count/cost
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10402,12 +10977,17 @@ Core idea     : containment becomes rank query
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
-    B --> C["Add current value to Fenwick tree: update old new salary"]
-    C --> D["Return accumulated count/cost"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Compress values if needed
+2. Query prefix/rank counts before update
+3. Add current value to Fenwick tree: update old new salary
+4. Return accumulated count/cost
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10482,12 +11062,17 @@ Core idea     : query count in salary range
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize DP base state"] --> B["Process each item once"]
-    B --> C["Update reachable states or best value: shift states"]
-    C --> D["Return target DP answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize DP base state
+2. Process each item once
+3. Update reachable states or best value: shift states
+4. Return target DP answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10562,12 +11147,17 @@ Core idea     : every coin creates new sums
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize DP base state"] --> B["Process each item once"]
-    B --> C["Update reachable states or best value: shift by component size"]
-    C --> D["Return target DP answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize DP base state
+2. Process each item once
+3. Update reachable states or best value: shift by component size
+4. Return target DP answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10642,12 +11232,17 @@ Core idea     : choose connected group sizes
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Compress values if needed"] --> B["Query prefix/rank counts before update"]
-    B --> C["Add current value to Fenwick tree: find kth alive index"]
-    C --> D["Return accumulated count/cost"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Compress values if needed
+2. Query prefix/rank counts before update
+3. Add current value to Fenwick tree: find kth alive index
+4. Return accumulated count/cost
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10722,12 +11317,17 @@ Core idea     : order structure simulates deletion
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: find by order and erase"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: find by order and erase
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10802,12 +11402,17 @@ Core idea     : dynamic circle needs kth alive
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Sort by the optimal key"] --> B["Scan once in sorted order"]
-    B --> C["Merge/select/update state greedily: max right min right"]
-    C --> D["Return final answer"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Sort by the optimal key
+2. Scan once in sorted order
+3. Merge/select/update state greedily: max right min right
+4. Return final answer
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10882,12 +11487,17 @@ Core idea     : containment becomes ordered check
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: assign latest possible watcher"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: assign latest possible watcher
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
@@ -10962,12 +11572,17 @@ Core idea     : preserve earlier watchers
 
 ### Solution Flow
 
-```mermaid
-flowchart TD
-    A["Initialize the optimal data structure"] --> B["Process each input element/event once"]
-    B --> C["Maintain the section invariant: update local neighbours"]
-    C --> D["Return the requested result"]
+<details>
+<summary>Solution Flow — optimal code steps</summary>
+
+```text
+1. Initialize the optimal data structure
+2. Process each input element/event once
+3. Maintain the section invariant: update local neighbours
+4. Return the requested result
 ```
+
+</details>
 
 <details>
 <summary>C++ Code</summary>
