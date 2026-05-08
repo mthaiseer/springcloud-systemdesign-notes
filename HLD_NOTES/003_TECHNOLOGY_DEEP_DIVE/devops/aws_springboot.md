@@ -2516,3 +2516,741 @@ Application Code
 ```
 
 When you can explain each request from browser to database and back, including logs, metrics, failures, retries, scaling, and security, you are production-ready.
+
+
+---
+
+# 32. API Testing Walkthrough
+
+This section explains how to test the application locally, inside Docker, on ECS, and on EKS.
+
+It also covers:
+
+- cURL testing
+- Postman workflow
+- JWT testing
+- Health check validation
+- Redis cache validation
+- SQS verification
+- CloudWatch log inspection
+- Load balancer troubleshooting
+- Integration testing
+- Swagger/OpenAPI
+- End-to-end flow debugging
+
+---
+
+## 32.1 Local Testing Architecture
+
+```mermaid
+flowchart TD
+    CLIENT[Client]
+    GATEWAY[Gateway Service]
+    ORDER[Order Service]
+    PRODUCT[Product Service]
+    POSTGRES[(PostgreSQL)]
+    REDIS[(Redis)]
+    SQS[(SQS Queue)]
+    WORKER[Notification Worker]
+
+    CLIENT --> GATEWAY
+    GATEWAY --> ORDER
+    GATEWAY --> PRODUCT
+    ORDER --> POSTGRES
+    ORDER --> REDIS
+    ORDER --> SQS
+    SQS --> WORKER
+```
+
+---
+
+# 32.2 Start Local Environment
+
+## Start Containers
+
+```bash
+docker compose up --build
+```
+
+## Verify Containers
+
+```bash
+docker ps
+```
+
+Expected:
+
+| Container | Port |
+|---|---|
+| order-service | 8081 |
+| postgres | 5432 |
+| redis | 6379 |
+| localstack | 4566 |
+
+---
+
+# 32.3 Test Health Endpoints
+
+## Overall Health
+
+```bash
+curl http://localhost:8081/actuator/health
+```
+
+Expected:
+
+```json
+{
+  "status": "UP"
+}
+```
+
+## Readiness Probe
+
+```bash
+curl http://localhost:8081/actuator/health/readiness
+```
+
+## Liveness Probe
+
+```bash
+curl http://localhost:8081/actuator/health/liveness
+```
+
+## Metrics
+
+```bash
+curl http://localhost:8081/actuator/metrics
+```
+
+---
+
+# 32.4 Create Order API
+
+## Request Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant OrderService
+    participant PostgreSQL
+    participant SQS
+    participant Worker
+
+    Client->>Gateway: POST /orders
+    Gateway->>OrderService: Forward request
+    OrderService->>PostgreSQL: Save order
+    OrderService->>SQS: Publish event
+    SQS->>Worker: Deliver event
+    Worker->>Worker: Process notification
+```
+
+## Create Order Request
+
+```bash
+curl -X POST http://localhost:8081/orders \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: abc123" \
+  -d '{
+    "customerId": "customer-1",
+    "totalAmount": 199.99
+  }'
+```
+
+## Expected Response
+
+```json
+{
+  "id": "7f4b4d2f-0c93-4f3c-b4e4-2b9c8a4f6d12",
+  "customerId": "customer-1",
+  "status": "CREATED",
+  "totalAmount": 199.99,
+  "createdAt": "2026-05-08T10:00:00Z"
+}
+```
+
+---
+
+# 32.5 Get Order API
+
+## Fetch Order By ID
+
+```bash
+curl http://localhost:8081/orders/7f4b4d2f-0c93-4f3c-b4e4-2b9c8a4f6d12
+```
+
+Expected:
+
+```json
+{
+  "id": "7f4b4d2f-0c93-4f3c-b4e4-2b9c8a4f6d12",
+  "customerId": "customer-1",
+  "status": "CREATED",
+  "totalAmount": 199.99
+}
+```
+
+---
+
+# 32.6 Product API Testing
+
+## Get Product
+
+```bash
+curl http://localhost:8082/products/101
+```
+
+Expected:
+
+```json
+{
+  "id": "101",
+  "name": "Laptop",
+  "price": 999.99
+}
+```
+
+---
+
+# 32.7 Swagger/OpenAPI Setup
+
+## Add Dependency
+
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.6.0</version>
+</dependency>
+```
+
+## Swagger URLs
+
+| Endpoint | Purpose |
+|---|---|
+| `/swagger-ui.html` | Swagger UI |
+| `/v3/api-docs` | OpenAPI JSON |
+
+## Access Swagger
+
+```bash
+http://localhost:8081/swagger-ui.html
+```
+
+---
+
+# 32.8 Postman Testing Workflow
+
+## Collection Structure
+
+```text
+Spring Cloud AWS Demo
+  -> Health APIs
+  -> Orders APIs
+  -> Product APIs
+  -> Auth APIs
+```
+
+## Recommended Environment Variables
+
+| Variable | Value |
+|---|---|
+| baseUrl | http://localhost:8081 |
+| authToken | JWT token |
+| orderId | dynamic order id |
+
+## Example Request
+
+Method:
+
+```text
+POST
+```
+
+URL:
+
+```text
+{{baseUrl}}/orders
+```
+
+Headers:
+
+```text
+Content-Type: application/json
+Idempotency-Key: test-123
+Authorization: Bearer {{authToken}}
+```
+
+Body:
+
+```json
+{
+  "customerId": "customer-1",
+  "totalAmount": 99.99
+}
+```
+
+---
+
+# 32.9 JWT Authentication Testing
+
+## Request Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant AuthServer
+    participant OrderService
+
+    Client->>AuthServer: Login
+    AuthServer-->>Client: JWT Token
+    Client->>Gateway: Authorization Bearer JWT
+    Gateway->>OrderService: Forward authenticated request
+```
+
+## Example JWT Request
+
+```bash
+curl -X POST http://localhost:8081/orders \
+  -H "Authorization: Bearer eyJhbGciOi..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerId":"customer-1",
+    "totalAmount":50
+  }'
+```
+
+## Common JWT Errors
+
+| Error | Meaning |
+|---|---|
+| 401 Unauthorized | Missing or invalid token |
+| 403 Forbidden | Token valid but insufficient permission |
+| Invalid signature | Wrong signing key |
+| Token expired | Expired JWT |
+
+---
+
+# 32.10 Redis Cache Testing
+
+## Verify Redis Keys
+
+```bash
+docker exec -it redis redis-cli
+```
+
+Inside Redis CLI:
+
+```bash
+keys *
+```
+
+Expected:
+
+```text
+products::101
+```
+
+## Verify Cache Hit
+
+First request:
+
+```bash
+curl http://localhost:8082/products/101
+```
+
+Second request should hit Redis instead of database.
+
+## Cache Flow
+
+```mermaid
+flowchart TD
+    REQ[Request Product]
+    REDIS{Cache Exists?}
+    DB[Database]
+    STORE[Store In Cache]
+    RETURN[Return Product]
+
+    REQ --> REDIS
+    REDIS -->|Yes| RETURN
+    REDIS -->|No| DB
+    DB --> STORE
+    STORE --> RETURN
+```
+
+---
+
+# 32.11 PostgreSQL Verification
+
+## Connect To PostgreSQL
+
+```bash
+docker exec -it postgres psql -U app -d appdb
+```
+
+## Check Orders
+
+```sql
+SELECT * FROM orders;
+```
+
+Expected:
+
+```text
+id | customer_id | status | total_amount
+```
+
+---
+
+# 32.12 SQS Queue Verification
+
+## List Queues
+
+```bash
+aws --endpoint-url=http://localhost:4566 sqs list-queues
+```
+
+## Receive Messages
+
+```bash
+aws --endpoint-url=http://localhost:4566 sqs receive-message \
+  --queue-url http://localhost:4566/000000000000/order-created-queue
+```
+
+Expected message:
+
+```json
+{
+  "Messages": [
+    {
+      "Body": "{...order-created-event...}"
+    }
+  ]
+}
+```
+
+---
+
+# 32.13 CloudWatch Log Testing
+
+## ECS Logs
+
+```bash
+aws logs tail /ecs/order-service --follow
+```
+
+## Search Errors
+
+```bash
+aws logs filter-log-events \
+  --log-group-name /ecs/order-service \
+  --filter-pattern ERROR
+```
+
+## Expected Structured Logs
+
+```json
+{
+  "time":"2026-05-08T10:00:00",
+  "level":"INFO",
+  "traceId":"abc123",
+  "message":"Order created successfully"
+}
+```
+
+---
+
+# 32.14 ECS Endpoint Testing
+
+## Get ALB DNS
+
+```bash
+aws elbv2 describe-load-balancers
+```
+
+Expected:
+
+```text
+spring-cloud-alb-123.eu-central-1.elb.amazonaws.com
+```
+
+## Test Endpoint
+
+```bash
+curl http://spring-cloud-alb-123.eu-central-1.elb.amazonaws.com/orders
+```
+
+---
+
+# 32.15 ECS Health Troubleshooting
+
+## Common Failure Flow
+
+```mermaid
+flowchart TD
+    ECS[ECS Task]
+    HEALTH[Health Check]
+    FAIL[Marked Unhealthy]
+    STOP[Task Stopped]
+    NEW[New Task Started]
+
+    ECS --> HEALTH
+    HEALTH --> FAIL
+    FAIL --> STOP
+    STOP --> NEW
+```
+
+## Troubleshooting Checklist
+
+| Problem | Check |
+|---|---|
+| Task restarting | Health endpoint |
+| 502 Bad Gateway | ALB target health |
+| Cannot connect DB | Security groups |
+| Timeout | CPU/memory limits |
+| No logs | Task execution role |
+| CrashLoop | Container logs |
+
+## Check Target Group Health
+
+```bash
+aws elbv2 describe-target-health \
+  --target-group-arn TARGET_GROUP_ARN
+```
+
+---
+
+# 32.16 Kubernetes Endpoint Testing
+
+## Get Ingress
+
+```bash
+kubectl get ingress
+```
+
+Expected:
+
+```text
+ADDRESS: abc123.eu-central-1.elb.amazonaws.com
+```
+
+## Test API
+
+```bash
+curl http://abc123.eu-central-1.elb.amazonaws.com/orders
+```
+
+## Port Forward For Debugging
+
+```bash
+kubectl port-forward svc/order-service 8080:80
+```
+
+Then:
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+---
+
+# 32.17 Kubernetes Pod Debugging
+
+## View Pods
+
+```bash
+kubectl get pods
+```
+
+## Describe Pod
+
+```bash
+kubectl describe pod POD_NAME
+```
+
+## Check Logs
+
+```bash
+kubectl logs POD_NAME
+```
+
+## Exec Into Pod
+
+```bash
+kubectl exec -it POD_NAME -- sh
+```
+
+## Check Environment Variables
+
+```bash
+printenv
+```
+
+---
+
+# 32.18 Integration Testing With Testcontainers
+
+## Dependency
+
+```xml
+<dependency>
+    <groupId>org.testcontainers</groupId>
+    <artifactId>postgresql</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+## Integration Test
+
+```java
+@SpringBootTest
+@Testcontainers
+class OrderIntegrationTest {
+
+    @Container
+    static PostgreSQLContainer<?> postgres =
+            new PostgreSQLContainer<>("postgres:16");
+
+    @Test
+    void shouldCreateOrder() {
+        // integration test
+    }
+}
+```
+
+---
+
+# 32.19 End-To-End Testing Flow
+
+```mermaid
+flowchart LR
+    CLIENT[Client]
+    GATEWAY[Gateway]
+    ORDER[Order Service]
+    DB[(PostgreSQL)]
+    SQS[(SQS)]
+    WORKER[Notification Worker]
+    LOGS[CloudWatch]
+
+    CLIENT --> GATEWAY
+    GATEWAY --> ORDER
+    ORDER --> DB
+    ORDER --> SQS
+    SQS --> WORKER
+    ORDER --> LOGS
+    WORKER --> LOGS
+```
+
+## Full End-To-End Checklist
+
+| Step | Verification |
+|---|---|
+| API request works | 201 response |
+| Row inserted | PostgreSQL query |
+| Cache populated | Redis key exists |
+| Event published | SQS message exists |
+| Worker processed | Worker logs |
+| Metrics visible | Actuator metrics |
+| Logs visible | CloudWatch logs |
+| ALB healthy | Target group healthy |
+
+---
+
+# 32.20 Failure Scenario Testing
+
+## Database Down
+
+Stop PostgreSQL:
+
+```bash
+docker stop postgres
+```
+
+Expected:
+
+- Readiness becomes DOWN
+- ECS/K8s stops routing traffic
+- Logs contain DB connection errors
+
+## Redis Down
+
+```bash
+docker stop redis
+```
+
+Expected:
+
+- App still works
+- Cache misses occur
+- Response latency increases
+
+## Worker Failure
+
+Stop worker container:
+
+```bash
+docker stop notification-worker
+```
+
+Expected:
+
+- Messages remain in SQS
+- Queue depth increases
+
+---
+
+# 32.21 Load Testing APIs
+
+## Run k6
+
+```bash
+k6 run load-test.js
+```
+
+## Metrics To Observe
+
+| Metric | Goal |
+|---|---|
+| p95 latency | < 500ms |
+| Error rate | < 1% |
+| CPU | < 75% |
+| Memory | < 80% |
+| Queue lag | Stable |
+
+---
+
+# 32.22 Production API Testing Checklist
+
+## Functional
+
+- [ ] Create order
+- [ ] Get order
+- [ ] Product lookup
+- [ ] JWT auth works
+- [ ] Validation errors work
+
+## Reliability
+
+- [ ] Retry works
+- [ ] Timeout works
+- [ ] Circuit breaker works
+- [ ] Idempotency works
+
+## Infrastructure
+
+- [ ] ECS task healthy
+- [ ] Kubernetes pod healthy
+- [ ] ALB healthy
+- [ ] CloudWatch logs visible
+- [ ] RDS connectivity works
+- [ ] Redis connectivity works
+- [ ] SQS processing works
+
+## Security
+
+- [ ] HTTPS enabled
+- [ ] JWT validated
+- [ ] Secrets not exposed
+- [ ] Actuator secured
