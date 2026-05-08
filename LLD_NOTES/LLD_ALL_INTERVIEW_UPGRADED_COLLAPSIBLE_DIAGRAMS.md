@@ -2,6 +2,9 @@
 
 A visual-first Low-Level Design reference for common interview problems.
 
+> **Render-safe note:** Mermaid diagrams are wrapped inside collapsed `<details>` blocks. Open only the diagram you need. This reduces heavy rendering and helps avoid repeated **Unable to render rich display** issues in Markdown viewers.
+
+
 **Upgraded version:** every problem now has an Interview Upgrade Pack with requirement definition, render-safe Mermaid flows, entity fields and methods, pattern rationale, relationship-building steps, class-diagram evolution, runnable main-method demos, and short improvement notes.
 
 
@@ -75,6 +78,9 @@ This version includes:
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 1</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -83,6 +89,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -116,6 +124,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 2</summary>
+
 ```mermaid
 classDiagram
   class TicTacToeGame {
@@ -127,7 +138,12 @@ classDiagram
   TicTacToeGame --> Board : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 3</summary>
 
 ```mermaid
 classDiagram
@@ -156,6 +172,8 @@ classDiagram
   TicTacToeGame --> Player : collaborates
   TicTacToeGame --> WinningStrategy : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -186,6 +204,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `WinningStrategy` | Defines win-checking behavior. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 4</summary>
 
 ```mermaid
 classDiagram
@@ -241,6 +262,8 @@ classDiagram
   TicTacToeGame "1" --> "2" Player : uses
   TicTacToeGame "1" --> "*" WinningStrategy : uses
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -513,6 +536,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 5</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -521,6 +547,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -554,6 +582,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 6</summary>
+
 ```mermaid
 classDiagram
   class ChessGame {
@@ -565,7 +596,12 @@ classDiagram
   ChessGame --> Board : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 7</summary>
 
 ```mermaid
 classDiagram
@@ -594,6 +630,8 @@ classDiagram
   ChessGame --> Piece : collaborates
   ChessGame --> Move : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -624,6 +662,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `Move` | Represents a source-to-target move. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 8</summary>
 
 ```mermaid
 classDiagram
@@ -687,6 +728,8 @@ classDiagram
   Cell "0..1" --> "1" Piece : holds
   ChessGame "1" --> "2" Player : uses
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -964,6 +1007,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 9</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -972,6 +1018,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -999,6 +1047,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 10</summary>
+
 ```mermaid
 classDiagram
   class LRUCache {
@@ -1010,7 +1061,12 @@ classDiagram
   LRUCache --> Node : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 11</summary>
 
 ```mermaid
 classDiagram
@@ -1027,8 +1083,9 @@ classDiagram
   }
 
   LRUCache --> Node : owns_or_uses
-
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -1057,6 +1114,9 @@ The original final diagram in this section remains the target design. Use Step 1
 
 ### 4. System Visualization Diagram
 
+<details>
+<summary>📌 Open Class diagram 12</summary>
+
 ```mermaid
 classDiagram
   class LRUCache {
@@ -1084,6 +1144,8 @@ classDiagram
   LRUCache "1" --> "0..capacity" Node : stores
   Node "1" --> "0..2" Node : links
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -1240,6 +1302,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 13</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -1248,6 +1313,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -1275,6 +1342,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 14</summary>
+
 ```mermaid
 classDiagram
   class AutocompleteSystem {
@@ -1286,7 +1356,12 @@ classDiagram
   AutocompleteSystem --> TrieNode : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 15</summary>
 
 ```mermaid
 classDiagram
@@ -1303,8 +1378,9 @@ classDiagram
   }
 
   AutocompleteSystem --> TrieNode : owns_or_uses
-
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -1333,6 +1409,9 @@ The original final diagram in this section remains the target design. Use Step 1
 
 ### 4. System Visualization Diagram
 
+<details>
+<summary>📌 Open Class diagram 16</summary>
+
 ```mermaid
 classDiagram
   class AutocompleteSystem {
@@ -1356,6 +1435,8 @@ classDiagram
   AutocompleteSystem "1" --> "1" TrieNode : root
   TrieNode "1" --> "0..26" TrieNode : children
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -1488,6 +1569,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 17</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -1496,6 +1580,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -1529,6 +1615,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 18</summary>
+
 ```mermaid
 classDiagram
   class ATM {
@@ -1540,7 +1629,12 @@ classDiagram
   ATM --> ATMState : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 19</summary>
 
 ```mermaid
 classDiagram
@@ -1569,6 +1663,8 @@ classDiagram
   ATM --> BankService : collaborates
   ATM --> Card : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -1599,6 +1695,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `Card` | Represents customer card/account. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 20</summary>
 
 ```mermaid
 classDiagram
@@ -1653,6 +1752,8 @@ classDiagram
   ATM "1" --> "1" CashDispenser : has
   ATM "1" --> "1" BankService : uses
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -1889,6 +1990,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 21</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -1897,6 +2001,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -1928,6 +2034,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 22</summary>
+
 ```mermaid
 classDiagram
   class ElevatorSystem {
@@ -1939,7 +2048,12 @@ classDiagram
   ElevatorSystem --> Dispatcher : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 23</summary>
 
 ```mermaid
 classDiagram
@@ -1964,6 +2078,8 @@ classDiagram
   ElevatorSystem --> Elevator : collaborates
   ElevatorSystem --> Request : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -1993,6 +2109,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `Request` | Represents pickup and destination. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 24</summary>
 
 ```mermaid
 classDiagram
@@ -2030,6 +2149,8 @@ classDiagram
   ElevatorSystem "1" --> "1" Dispatcher : uses
   Elevator "1" --> "*" Request : queues
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -2210,6 +2331,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 25</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -2218,6 +2342,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -2251,6 +2377,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 26</summary>
+
 ```mermaid
 classDiagram
   class ParkingLot {
@@ -2262,7 +2391,12 @@ classDiagram
   ParkingLot --> ParkingFloor : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 27</summary>
 
 ```mermaid
 classDiagram
@@ -2291,6 +2425,8 @@ classDiagram
   ParkingLot --> Vehicle : collaborates
   ParkingLot --> ParkingTicket : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -2321,6 +2457,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `ParkingTicket` | Tracks vehicle, spot, and time. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 28</summary>
 
 ```mermaid
 classDiagram
@@ -2386,6 +2525,8 @@ classDiagram
   ParkingTicket "1" --> "1" Vehicle : references
   ParkingTicket "1" --> "1" ParkingSpot : references
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -2658,6 +2799,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 29</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -2666,6 +2810,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -2697,6 +2843,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 30</summary>
+
 ```mermaid
 classDiagram
   class InventoryService {
@@ -2708,7 +2857,12 @@ classDiagram
   InventoryService --> Warehouse : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 31</summary>
 
 ```mermaid
 classDiagram
@@ -2733,6 +2887,8 @@ classDiagram
   InventoryService --> InventoryItem : collaborates
   InventoryService --> Product : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -2762,6 +2918,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `Product` | Product identity and metadata. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 32</summary>
 
 ```mermaid
 classDiagram
@@ -2804,6 +2963,8 @@ classDiagram
   Warehouse "1" --> "*" InventoryItem : contains
   InventoryItem "1" --> "1" Product : references
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -3035,6 +3196,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 33</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -3043,6 +3207,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -3076,6 +3242,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 34</summary>
+
 ```mermaid
 classDiagram
   class SocialNetworkService {
@@ -3087,7 +3256,12 @@ classDiagram
   SocialNetworkService --> User : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 35</summary>
 
 ```mermaid
 classDiagram
@@ -3116,6 +3290,8 @@ classDiagram
   SocialNetworkService --> Comment : collaborates
   SocialNetworkService --> FeedService : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -3146,6 +3322,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `FeedService` | Builds feed for a user. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 36</summary>
 
 ```mermaid
 classDiagram
@@ -3192,6 +3371,8 @@ classDiagram
   Post "1" --> "*" Comment : contains
   User "*" --> "*" User : follows
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -3367,6 +3548,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 37</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -3375,6 +3559,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -3408,6 +3594,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 38</summary>
+
 ```mermaid
 classDiagram
   class MusicService {
@@ -3419,7 +3608,12 @@ classDiagram
   MusicService --> Song : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 39</summary>
 
 ```mermaid
 classDiagram
@@ -3448,6 +3642,8 @@ classDiagram
   MusicService --> Player : collaborates
   MusicService --> PlayQueue : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -3478,6 +3674,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `PlayQueue` | Upcoming songs. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 40</summary>
 
 ```mermaid
 classDiagram
@@ -3527,6 +3726,8 @@ classDiagram
   Playlist "1" --> "*" Song : contains
   Player "1" --> "1" PlayQueue : uses
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -3710,6 +3911,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 41</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -3718,6 +3922,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -3749,6 +3955,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 42</summary>
+
 ```mermaid
 classDiagram
   class Broker {
@@ -3760,7 +3969,12 @@ classDiagram
   Broker --> Topic : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 43</summary>
 
 ```mermaid
 classDiagram
@@ -3785,6 +3999,8 @@ classDiagram
   Broker --> Subscriber : collaborates
   Broker --> Message : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -3814,6 +4030,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `Message` | Payload plus metadata. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 44</summary>
 
 ```mermaid
 classDiagram
@@ -3849,6 +4068,8 @@ classDiagram
   Topic "1" --> "*" Subscriber : notifies
   Topic "1" --> "*" Message : receives
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -4003,6 +4224,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 45</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -4011,6 +4235,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -4042,6 +4268,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 46</summary>
+
 ```mermaid
 classDiagram
   class ChatService {
@@ -4053,7 +4282,12 @@ classDiagram
   ChatService --> Conversation : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 47</summary>
 
 ```mermaid
 classDiagram
@@ -4078,6 +4312,8 @@ classDiagram
   ChatService --> Message : collaborates
   ChatService --> User : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -4107,6 +4343,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `User` | Chat participant. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 48</summary>
 
 ```mermaid
 classDiagram
@@ -4150,6 +4389,8 @@ classDiagram
   Conversation "1" --> "2..*" User : members
   Conversation "1" --> "*" Message : contains
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -4322,6 +4563,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 49</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -4330,6 +4574,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -4361,6 +4607,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 50</summary>
+
 ```mermaid
 classDiagram
   class PaymentGateway {
@@ -4372,7 +4621,12 @@ classDiagram
   PaymentGateway --> Payment : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 51</summary>
 
 ```mermaid
 classDiagram
@@ -4397,6 +4651,8 @@ classDiagram
   PaymentGateway --> PaymentMethod : collaborates
   PaymentGateway --> PaymentProcessor : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -4426,6 +4682,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `PaymentProcessor` | Processor abstraction. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 52</summary>
 
 ```mermaid
 classDiagram
@@ -4467,6 +4726,8 @@ classDiagram
   Payment "1" --> "1" PaymentMethod : uses
   PaymentGateway "1" --> "1" PaymentProcessor : delegates
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -4633,6 +4894,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 53</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -4641,6 +4905,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -4674,6 +4940,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 54</summary>
+
 ```mermaid
 classDiagram
   class SplitwiseService {
@@ -4685,7 +4954,12 @@ classDiagram
   SplitwiseService --> Group : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 55</summary>
 
 ```mermaid
 classDiagram
@@ -4714,6 +4988,8 @@ classDiagram
   SplitwiseService --> SplitStrategy : collaborates
   SplitwiseService --> BalanceSheet : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -4744,6 +5020,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `BalanceSheet` | Tracks user-to-user balances. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 56</summary>
 
 ```mermaid
 classDiagram
@@ -4794,6 +5073,8 @@ classDiagram
   Expense "1" --> "1" SplitStrategy : uses
   SplitwiseService "1" --> "1" BalanceSheet : updates
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -4988,6 +5269,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 57</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -4996,6 +5280,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -5030,6 +5316,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 58</summary>
+
 ```mermaid
 classDiagram
   class EcommerceService {
@@ -5041,7 +5330,12 @@ classDiagram
   EcommerceService --> Product : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 59</summary>
 
 ```mermaid
 classDiagram
@@ -5070,6 +5364,8 @@ classDiagram
   EcommerceService --> Inventory : collaborates
   EcommerceService --> Order : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -5101,6 +5397,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `Payment` | Payment execution. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 60</summary>
 
 ```mermaid
 classDiagram
@@ -5153,6 +5452,8 @@ classDiagram
   Order "1" --> "1" Payment : requires
   EcommerceService "1" --> "1" Inventory : uses
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -5390,6 +5691,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 61</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -5398,6 +5702,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -5432,6 +5738,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 62</summary>
+
 ```mermaid
 classDiagram
   class RideService {
@@ -5443,7 +5752,12 @@ classDiagram
   RideService --> Rider : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 63</summary>
 
 ```mermaid
 classDiagram
@@ -5472,6 +5786,8 @@ classDiagram
   RideService --> Ride : collaborates
   RideService --> MatchingStrategy : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -5503,6 +5819,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `FareStrategy` | Fare calculation algorithm. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 64</summary>
 
 ```mermaid
 classDiagram
@@ -5558,6 +5877,8 @@ classDiagram
   RideService "1" --> "1" MatchingStrategy : uses
   RideService "1" --> "1" FareStrategy : uses
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -5779,6 +6100,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 65</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -5787,6 +6111,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -5816,6 +6142,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 66</summary>
+
 ```mermaid
 classDiagram
   class UrlShortenerService {
@@ -5827,7 +6156,12 @@ classDiagram
   UrlShortenerService --> UrlMapping : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 67</summary>
 
 ```mermaid
 classDiagram
@@ -5848,6 +6182,8 @@ classDiagram
   UrlShortenerService --> UrlMapping : owns_or_uses
   UrlShortenerService --> CodeGenerator : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -5876,6 +6212,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `CodeGenerator` | Short-code generation strategy. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 68</summary>
 
 ```mermaid
 classDiagram
@@ -5908,6 +6247,8 @@ classDiagram
   UrlShortenerService "1" --> "*" UrlMapping : stores
   UrlShortenerService "1" --> "1" CodeGenerator : uses
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -6055,6 +6396,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 69</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -6063,6 +6407,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -6094,6 +6440,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 70</summary>
+
 ```mermaid
 classDiagram
   class RateLimiterService {
@@ -6105,7 +6454,12 @@ classDiagram
   RateLimiterService --> RateLimiter : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 71</summary>
 
 ```mermaid
 classDiagram
@@ -6130,6 +6484,8 @@ classDiagram
   RateLimiterService --> TokenBucketRateLimiter : collaborates
   RateLimiterService --> Bucket : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -6160,6 +6516,9 @@ The original final diagram in this section remains the target design. Use Step 1
 
 ### 4. System Visualization Diagram
 
+<details>
+<summary>📌 Open Class diagram 72</summary>
+
 ```mermaid
 classDiagram
   class RateLimiterService {
@@ -6189,6 +6548,8 @@ classDiagram
   RateLimiterService "1" --> "1" RateLimiter : uses
   TokenBucketRateLimiter "1" --> "*" Bucket : per client
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
@@ -6340,6 +6701,9 @@ class Main {
 
 #### B. Requirement Flow Visualization
 
+<details>
+<summary>📌 Open Flow diagram 73</summary>
+
 ```mermaid
 flowchart LR
   A[Input Request] --> B[Validate Rules]
@@ -6348,6 +6712,8 @@ flowchart LR
   D --> E[Return Result]
   E --> F[Handle Edge Cases]
 ```
+
+</details>
 
 #### C. Entities From Simple to Complete
 
@@ -6379,6 +6745,9 @@ flowchart LR
 
 **Step 1: Start with the main context and one core entity.**
 
+<details>
+<summary>📌 Open Class diagram 74</summary>
+
 ```mermaid
 classDiagram
   class Repository {
@@ -6390,7 +6759,12 @@ classDiagram
   Repository --> Commit : uses
 ```
 
+</details>
+
 **Step 2: Add state, validation, and collaborating entities.**
+
+<details>
+<summary>📌 Open Class diagram 75</summary>
 
 ```mermaid
 classDiagram
@@ -6415,6 +6789,8 @@ classDiagram
   Repository --> Blob : collaborates
   Repository --> Branch : collaborates
 ```
+
+</details>
 
 **Step 3: Use the final class diagram below as the complete interview answer.**
 
@@ -6444,6 +6820,9 @@ The original final diagram in this section remains the target design. Use Step 1
 | `Branch` | Named pointer to a commit. |
 
 ### 4. System Visualization Diagram
+
+<details>
+<summary>📌 Open Class diagram 76</summary>
 
 ```mermaid
 classDiagram
@@ -6482,6 +6861,8 @@ classDiagram
   Branch "1" --> "1" Commit : head
   Commit "1" --> "*" Blob : snapshot
 ```
+
+</details>
 
 ### 5. Relationships and Cardinality
 
