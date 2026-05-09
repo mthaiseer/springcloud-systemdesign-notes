@@ -16,6 +16,7 @@ This guide focuses on interval range queries in C++ STL:
 
 - [1. Mental Model](#1-mental-model)
 - [2. lower_bound and upper_bound](#2-lower_bound-and-upper_bound)
+- [2A. set pair lower_bound and upper_bound](#2a-set-pair-lower_bound-and-upper_bound)
 - [3. Problem 1 Static Intervals Check Point Coverage](#3-problem-1-static-intervals-check-point-coverage)
 - [4. Problem 2 Dynamic Insert Delete Check Point Coverage](#4-problem-2-dynamic-insert-delete-check-point-coverage)
 - [5. Problem 3 Maintain Merged Intervals](#5-problem-3-maintain-merged-intervals)
@@ -136,6 +137,149 @@ count of values <= x = upper_bound(x) index
 count of values > x  = n - upper_bound(x) index
 count of values >= x = n - lower_bound(x) index
 ```
+
+---
+
+
+## 2A. set pair lower_bound and upper_bound
+
+`set<pair<int,int>>` is sorted lexicographically.
+
+That means:
+
+```text
+First compare first value.
+If first value is same, compare second value.
+```
+
+Example:
+
+```cpp
+set<pair<int,int>> s = {
+    {1, 5},
+    {3, 7},
+    {10, 12}
+};
+```
+
+Sorted order:
+
+```text
+(1,5), (3,7), (10,12)
+```
+
+### Pair comparison rule
+
+```text
+(a,b) < (c,d)
+
+true if:
+    a < c
+
+or if:
+    a == c and b < d
+```
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Compare pairs a b and c d"] --> B{"a less than c"}
+    B --> C["First pair is smaller"]
+    B --> D{"a greater than c"}
+    D --> E["First pair is bigger"]
+    D --> F["First values equal"]
+    F --> G{"b less than d"}
+    G --> H["First pair is smaller"]
+    G --> I["First pair is bigger or equal"]
+```
+
+### lower_bound with pair
+
+```cpp
+auto it = s.lower_bound({x, INT_MIN});
+```
+
+Meaning:
+
+```text
+Find first interval whose pair is >= (x, minus infinity)
+```
+
+Because second value is very small, this gives:
+
+```text
+first interval with start >= x
+```
+
+Example:
+
+```text
+s = (1,5), (3,7), (10,12)
+x = 4
+
+lower_bound({4, INT_MIN}) -> (10,12)
+```
+
+Because `(3,7)` is smaller than `(4, -inf)` due to `3 < 4`.
+
+### upper_bound with pair
+
+```cpp
+auto it = s.upper_bound({x, INT_MAX});
+```
+
+Meaning:
+
+```text
+Find first interval whose pair is > (x, plus infinity)
+```
+
+Because second value is very large, this gives:
+
+```text
+first interval with start > x
+```
+
+Example:
+
+```text
+s = (1,5), (3,7), (10,12)
+x = 4
+
+upper_bound({4, INT_MAX}) -> (10,12)
+```
+
+For checking point coverage:
+
+```cpp
+auto it = s.upper_bound({x, INT_MAX});
+if (it == s.begin()) return false;
+--it;
+return it->second >= x;
+```
+
+This finds the interval with the largest start `<= x`.
+
+### Mermaid Dry Run
+
+```mermaid
+flowchart TD
+    A["Stored intervals 1 5 and 3 7 and 10 12"] --> B["Query x equals 4"]
+    B --> C["upper_bound pair 4 INF gives 10 12"]
+    C --> D["Move one step back"]
+    D --> E["Candidate is 3 7"]
+    E --> F["Check 7 greater equal 4"]
+    F --> G["Point is covered"]
+```
+
+### Table Dry Run
+
+| Query | STL call | Returned iterator | After moving back | Meaning |
+|---|---|---|---|---|
+| `x = 4` | `upper_bound({4, INF})` | `(10,12)` | `(3,7)` | largest start `<= 4` |
+| `x = 1` | `upper_bound({1, INF})` | `(3,7)` | `(1,5)` | largest start `<= 1` |
+| `x = 0` | `upper_bound({0, INF})` | `(1,5)` | cannot move back | no interval starts before `0` |
 
 ---
 
@@ -450,6 +594,271 @@ insert [1, 5]
 insert [3, 8]
 stored becomes [1, 8]
 ```
+
+
+### set<pair<int,int>> Range Update Version
+
+This version uses:
+
+```cpp
+set<pair<int,int>> ranges;
+```
+
+Each pair means:
+
+```text
+{start, end}
+```
+
+The set always stores disjoint merged intervals.
+
+Example:
+
+```text
+[1,5], [10,15]
+```
+
+Stored as:
+
+```text
+(1,5), (10,15)
+```
+
+### Main Operations
+
+| Operation | Meaning |
+|---|---|
+| `addRange(l,r)` | insert and merge overlapping intervals |
+| `removeRange(l,r)` | delete range from existing intervals |
+| `queryPoint(x)` | check if point is covered |
+| `queryRange(l,r)` | check if full interval is covered |
+
+### Mermaid Flow for addRange
+
+```mermaid
+flowchart TD
+    A["Add range l r"] --> B["Find first interval with start not less than l"]
+    B --> C["Check previous interval also"]
+    C --> D{"Current interval overlaps or touches"}
+    D --> E["Expand l and r"]
+    E --> F["Erase old interval"]
+    F --> D
+    D --> G["Insert merged interval l r"]
+```
+
+### Mermaid Flow for removeRange
+
+```mermaid
+flowchart TD
+    A["Remove range l r"] --> B["Find first possible affected interval"]
+    B --> C{"Interval intersects remove range"}
+    C --> D["Erase affected interval"]
+    D --> E{"Left part remains"}
+    E --> F["Add left part"]
+    E --> G{"Right part remains"}
+    F --> G
+    G --> H["Add right part"]
+    H --> C
+    C --> I["Done"]
+```
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct RangeModuleSet {
+    set<pair<int,int>> ranges;
+
+    void addRange(int l, int r) {
+        if (l > r) swap(l, r);
+
+        auto it = ranges.lower_bound({l, INT_MIN});
+
+        if (it != ranges.begin()) {
+            auto prevIt = prev(it);
+
+            if (prevIt->second + 1 >= l) {
+                it = prevIt;
+            }
+        }
+
+        while (it != ranges.end() && it->first <= r + 1) {
+            l = min(l, it->first);
+            r = max(r, it->second);
+            it = ranges.erase(it);
+        }
+
+        ranges.insert({l, r});
+    }
+
+    void removeRange(int l, int r) {
+        if (l > r) swap(l, r);
+
+        auto it = ranges.lower_bound({l, INT_MIN});
+
+        if (it != ranges.begin()) {
+            --it;
+        }
+
+        vector<pair<int,int>> addBack;
+
+        while (it != ranges.end()) {
+            int a = it->first;
+            int b = it->second;
+
+            if (b < l) {
+                ++it;
+                continue;
+            }
+
+            if (a > r) break;
+
+            it = ranges.erase(it);
+
+            if (a < l) {
+                addBack.push_back({a, l - 1});
+            }
+
+            if (r < b) {
+                addBack.push_back({r + 1, b});
+            }
+        }
+
+        for (auto p : addBack) {
+            ranges.insert(p);
+        }
+    }
+
+    bool queryPoint(int x) {
+        auto it = ranges.upper_bound({x, INT_MAX});
+
+        if (it == ranges.begin()) return false;
+
+        --it;
+
+        return it->second >= x;
+    }
+
+    bool queryRange(int l, int r) {
+        if (l > r) swap(l, r);
+
+        auto it = ranges.upper_bound({l, INT_MAX});
+
+        if (it == ranges.begin()) return false;
+
+        --it;
+
+        return it->second >= r;
+    }
+
+    void print() {
+        for (auto [l, r] : ranges) {
+            cout << "[" << l << "," << r << "] ";
+        }
+        cout << "\n";
+    }
+};
+
+int main() {
+    RangeModuleSet rm;
+
+    rm.addRange(1, 5);
+    rm.addRange(10, 15);
+    rm.addRange(4, 12);
+
+    rm.print(); // [1,15]
+
+    cout << rm.queryPoint(8) << "\n";    // 1
+    cout << rm.queryPoint(20) << "\n";   // 0
+    cout << rm.queryRange(3, 14) << "\n"; // 1
+
+    rm.removeRange(5, 10);
+
+    rm.print(); // [1,4] [11,15]
+
+    cout << rm.queryRange(3, 14) << "\n"; // 0
+}
+```
+
+### Dry Run addRange
+
+Operations:
+
+```text
+add [1,5]
+add [10,15]
+add [4,12]
+```
+
+Before adding `[4,12]`:
+
+```text
+(1,5), (10,15)
+```
+
+Step by step:
+
+| Step | Action | Result |
+|---|---|---|
+| 1 | `lower_bound({4, -INF})` | points to `(10,15)` |
+| 2 | check previous | previous is `(1,5)` |
+| 3 | `(1,5)` overlaps `[4,12]` | merge to `[1,12]` |
+| 4 | `(10,15)` overlaps `[1,12]` | merge to `[1,15]` |
+| 5 | insert final | `(1,15)` |
+
+### Mermaid Dry Run addRange
+
+```mermaid
+flowchart TD
+    A["Current set 1 5 and 10 15"] --> B["Add 4 12"]
+    B --> C["lower_bound 4 minusINF gives 10 15"]
+    C --> D["Previous interval is 1 5"]
+    D --> E["1 5 overlaps 4 12"]
+    E --> F["Merge to 1 12"]
+    F --> G["10 15 overlaps 1 12"]
+    G --> H["Merge to 1 15"]
+    H --> I["Final set has 1 15"]
+```
+
+### Dry Run removeRange
+
+Current:
+
+```text
+(1,15)
+```
+
+Remove:
+
+```text
+[5,10]
+```
+
+Step by step:
+
+| Step | Action | Result |
+|---|---|---|
+| 1 | affected interval is `(1,15)` | erase it |
+| 2 | left part remains | `(1,4)` |
+| 3 | right part remains | `(11,15)` |
+| 4 | insert parts back | `(1,4), (11,15)` |
+
+### Mermaid Dry Run removeRange
+
+```mermaid
+flowchart TD
+    A["Current set has 1 15"] --> B["Remove 5 10"]
+    B --> C["Erase affected interval 1 15"]
+    C --> D["Left part remains 1 4"]
+    C --> E["Right part remains 11 15"]
+    D --> F["Insert remaining parts"]
+    E --> F
+    F --> G["Final set 1 4 and 11 15"]
+```
+
+---
 
 ### Why Merged Intervals Help
 
@@ -1559,7 +1968,7 @@ queryRange(l,r)
 Use:
 
 ```text
-map start to end
+set<pair<int,int>> merged intervals
 ```
 
 Goal:
