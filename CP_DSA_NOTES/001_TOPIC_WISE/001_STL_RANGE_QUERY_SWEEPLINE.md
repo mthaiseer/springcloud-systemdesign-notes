@@ -54,13 +54,13 @@ x <= l and r <= y
 
 ```mermaid
 flowchart TD
-    A["Interval query"] --> B{"Query type"}
-    B --> C["Point x covered"]
-    B --> D["Interval x y covered by stored interval"]
-    B --> E["Stored interval inside x y"]
-    C --> F["Need l less equal x and x less equal r"]
-    D --> G["Need l less equal x and y less equal r"]
-    E --> H["Need x less equal l and r less equal y"]
+    N1["Interval query"] --> N2["Query type"]
+    N3["Step"] --> N4["Point x covered"]
+    N3["Step"] --> N5["Interval x y covered by stored interval"]
+    N3["Step"] --> N6["Stored interval inside x y"]
+    N3["Step"] --> N7["Need l less equal x and x less equal r"]
+    N3["Step"] --> N8["Need l less equal x and y less equal r"]
+    N3["Step"] --> N9["Need x less equal l and r less equal y"]
 ```
 
 ---
@@ -110,13 +110,13 @@ upper_bound(3) -> index 3
 
 ```mermaid
 flowchart TD
-    A["Sorted values 1 3 3 5 8"] --> B["x equals 3"]
-    B --> C["lower bound"]
-    C --> D["first value greater or equal 3"]
-    D --> E["index 1"]
-    B --> F["upper bound"]
-    F --> G["first value greater than 3"]
-    G --> H["index 3"]
+    N1["Sorted values 1 3 3 5 8"] --> N2["x equals 3"]
+    N3["Step"] --> N4["lower bound"]
+    N3["Step"] --> N5["first value greater or equal 3"]
+    N3["Step"] --> N6["index 1"]
+    N3["Step"] --> N7["upper bound"]
+    N3["Step"] --> N8["first value greater than 3"]
+    N3["Step"] --> N9["index 3"]
 ```
 
 ### Dry Run Table
@@ -186,14 +186,14 @@ or if:
 
 ```mermaid
 flowchart TD
-    A["Compare pairs a b and c d"] --> B{"a less than c"}
-    B --> C["First pair is smaller"]
-    B --> D{"a greater than c"}
-    D --> E["First pair is bigger"]
-    D --> F["First values equal"]
-    F --> G{"b less than d"}
-    G --> H["First pair is smaller"]
-    G --> I["First pair is bigger or equal"]
+    N1["Compare pairs a b and c d"] --> N2["a less than c"]
+    N3["Step"] --> N4["First pair is smaller"]
+    N3["Step"] --> N5["a greater than c"]
+    N3["Step"] --> N6["First pair is bigger"]
+    N3["Step"] --> N7["First values equal"]
+    N3["Step"] --> N8["b less than d"]
+    N3["Step"] --> N4["First pair is smaller"]
+    N3["Step"] --> N9["First pair is bigger or equal"]
 ```
 
 ### lower_bound with pair
@@ -267,12 +267,12 @@ This finds the interval with the largest start `<= x`.
 
 ```mermaid
 flowchart TD
-    A["Stored intervals 1 5 and 3 7 and 10 12"] --> B["Query x equals 4"]
-    B --> C["upper_bound pair 4 INF gives 10 12"]
-    C --> D["Move one step back"]
-    D --> E["Candidate is 3 7"]
-    E --> F["Check 7 greater equal 4"]
-    F --> G["Point is covered"]
+    N1["Stored intervals 1 5 and 3 7 and 10 12"] --> N2["Query x equals 4"]
+    N3["Step"] --> N4["upper_bound pair 4 INF gives 10 12"]
+    N3["Step"] --> N5["Move one step back"]
+    N3["Step"] --> N6["Candidate is 3 7"]
+    N3["Step"] --> N7["Check 7 greater equal 4"]
+    N3["Step"] --> N8["Point is covered"]
 ```
 
 ### Table Dry Run
@@ -322,15 +322,15 @@ If `active > 0`, point is covered.
 
 ```mermaid
 flowchart TD
-    A["Build arrays starts and ends"] --> B["Sort starts"]
-    B --> C["Sort ends"]
-    C --> D["Query point x"]
-    D --> E["started equals count of start less equal x"]
-    E --> F["endedBefore equals count of end less than x"]
-    F --> G["active equals started minus endedBefore"]
-    G --> H{"active greater than zero"}
-    H --> I["Covered"]
-    H --> J["Not covered"]
+    N1["Build arrays starts and ends"] --> N2["Sort starts"]
+    N3["Step"] --> N4["Sort ends"]
+    N3["Step"] --> N5["Query point x"]
+    N3["Step"] --> N6["started equals count of start less equal x"]
+    N3["Step"] --> N7["endedBefore equals count of end less than x"]
+    N3["Step"] --> N8["active equals started minus endedBefore"]
+    N3["Step"] --> N9["active greater than zero"]
+    N3["Step"] --> N10["Covered"]
+    N3["Step"] --> N11["Not covered"]
 ```
 
 ### C++ Code
@@ -399,15 +399,15 @@ answer = covered
 
 ```mermaid
 flowchart TD
-    A["x equals 4"] --> B["starts are 1 3 10"]
-    B --> C["upper_bound 4 points to 10"]
-    C --> D["started equals 2"]
-    A --> E["ends are 5 7 12"]
-    E --> F["lower_bound 4 points to 5"]
-    F --> G["endedBefore equals 0"]
-    D --> H["active equals 2 minus 0"]
-    G --> H
-    H --> I["covered"]
+    N1["x equals 4"] --> N2["starts are 1 3 10"]
+    N3["Step"] --> N4["upper_bound 4 points to 10"]
+    N3["Step"] --> N5["started equals 2"]
+    N3["Step"] --> N6["ends are 5 7 12"]
+    N3["Step"] --> N7["lower_bound 4 points to 5"]
+    N3["Step"] --> N8["endedBefore equals 0"]
+    N3["Step"] --> N9["active equals 2 minus 0"]
+    N3["Step"] --> N3["Step"]
+    N3["Step"] --> N10["covered"]
 ```
 
 ### Complexity
@@ -457,23 +457,23 @@ Important: `distance` on `multiset` is `O(n)`, so this version is good for learn
 
 ```mermaid
 flowchart TD
-    A["Operation"] --> B{"Type"}
-    B --> C["Insert interval"]
-    C --> D["Add l to starts"]
-    D --> E["Add r to ends"]
-    E --> F["Add pair l r to intervals"]
-    B --> G["Delete interval"]
-    G --> H["Find pair l r"]
-    H --> I{"Exists"}
-    I --> J["Erase one l one r and pair"]
-    I --> K["Ignore"]
-    B --> L["Check point x"]
-    L --> M["Count starts less equal x"]
-    M --> N["Count ends less than x"]
-    N --> O["active equals difference"]
-    O --> P{"active positive"}
-    P --> Q["Covered"]
-    P --> R["Not covered"]
+    N1["Operation"] --> N2["Type"]
+    N3["Step"] --> N4["Insert interval"]
+    N3["Step"] --> N5["Add l to starts"]
+    N3["Step"] --> N6["Add r to ends"]
+    N3["Step"] --> N7["Add pair l r to intervals"]
+    N3["Step"] --> N8["Delete interval"]
+    N3["Step"] --> N9["Find pair l r"]
+    N3["Step"] --> N10["Exists"]
+    N3["Step"] --> N11["Erase one l one r and pair"]
+    N3["Step"] --> N12["Ignore"]
+    N3["Step"] --> N13["Check point x"]
+    N3["Step"] --> N14["Count starts less equal x"]
+    N3["Step"] --> N15["Count ends less than x"]
+    N3["Step"] --> N16["active equals difference"]
+    N3["Step"] --> N17["active positive"]
+    N3["Step"] --> N18["Covered"]
+    N3["Step"] --> N19["Not covered"]
 ```
 
 ### C++ Code
@@ -560,17 +560,17 @@ check x = 2
 
 ```mermaid
 flowchart TD
-    A["After inserts starts 1 3 10 ends 5 7 12"] --> B["Query x equals 4"]
-    B --> C["starts upper_bound 4 gives position before 10"]
-    C --> D["started equals 2"]
-    B --> E["ends lower_bound 4 gives position at 5"]
-    E --> F["endedBefore equals 0"]
-    D --> G["active equals 2"]
-    F --> G
-    G --> H["covered"]
-    H --> I["delete interval 1 5"]
-    I --> J["starts become 3 10 and ends become 7 12"]
-    J --> K["query x equals 2 gives active zero"]
+    N1["After inserts starts 1 3 10 ends 5 7 12"] --> N2["Query x equals 4"]
+    N3["Step"] --> N4["starts upper_bound 4 gives position before 10"]
+    N3["Step"] --> N5["started equals 2"]
+    N3["Step"] --> N6["ends lower_bound 4 gives position at 5"]
+    N3["Step"] --> N7["endedBefore equals 0"]
+    N3["Step"] --> N8["active equals 2"]
+    N3["Step"] --> N3["Step"]
+    N3["Step"] --> N9["covered"]
+    N3["Step"] --> N10["delete interval 1 5"]
+    N3["Step"] --> N11["starts become 3 10 and ends become 7 12"]
+    N3["Step"] --> N12["query x equals 2 gives active zero"]
 ```
 
 ---
@@ -639,29 +639,29 @@ Stored as:
 
 ```mermaid
 flowchart TD
-    A["Add range l r"] --> B["Find first interval with start not less than l"]
-    B --> C["Check previous interval also"]
-    C --> D{"Current interval overlaps or touches"}
-    D --> E["Expand l and r"]
-    E --> F["Erase old interval"]
-    F --> D
-    D --> G["Insert merged interval l r"]
+    N1["Add range l r"] --> N2["Find first interval with start not less than l"]
+    N3["Step"] --> N4["Check previous interval also"]
+    N3["Step"] --> N5["Current interval overlaps or touches"]
+    N3["Step"] --> N6["Expand l and r"]
+    N3["Step"] --> N7["Erase old interval"]
+    N3["Step"] --> N3["Step"]
+    N3["Step"] --> N8["Insert merged interval l r"]
 ```
 
 ### Mermaid Flow for removeRange
 
 ```mermaid
 flowchart TD
-    A["Remove range l r"] --> B["Find first possible affected interval"]
-    B --> C{"Interval intersects remove range"}
-    C --> D["Erase affected interval"]
-    D --> E{"Left part remains"}
-    E --> F["Add left part"]
-    E --> G{"Right part remains"}
-    F --> G
-    G --> H["Add right part"]
-    H --> C
-    C --> I["Done"]
+    N1["Remove range l r"] --> N2["Find first possible affected interval"]
+    N3["Step"] --> N4["Interval intersects remove range"]
+    N3["Step"] --> N5["Erase affected interval"]
+    N3["Step"] --> N6["Left part remains"]
+    N3["Step"] --> N7["Add left part"]
+    N3["Step"] --> N8["Right part remains"]
+    N3["Step"] --> N3["Step"]
+    N3["Step"] --> N9["Add right part"]
+    N3["Step"] --> N3["Step"]
+    N3["Step"] --> N10["Done"]
 ```
 
 ### C++ Code
@@ -814,14 +814,14 @@ Step by step:
 
 ```mermaid
 flowchart TD
-    A["Current set 1 5 and 10 15"] --> B["Add 4 12"]
-    B --> C["lower_bound 4 minusINF gives 10 15"]
-    C --> D["Previous interval is 1 5"]
-    D --> E["1 5 overlaps 4 12"]
-    E --> F["Merge to 1 12"]
-    F --> G["10 15 overlaps 1 12"]
-    G --> H["Merge to 1 15"]
-    H --> I["Final set has 1 15"]
+    N1["Current set 1 5 and 10 15"] --> N2["Add 4 12"]
+    N3["Step"] --> N4["lower_bound 4 minusINF gives 10 15"]
+    N3["Step"] --> N5["Previous interval is 1 5"]
+    N3["Step"] --> N6["1 5 overlaps 4 12"]
+    N3["Step"] --> N7["Merge to 1 12"]
+    N3["Step"] --> N8["10 15 overlaps 1 12"]
+    N3["Step"] --> N9["Merge to 1 15"]
+    N3["Step"] --> N10["Final set has 1 15"]
 ```
 
 ### Dry Run removeRange
@@ -851,13 +851,13 @@ Step by step:
 
 ```mermaid
 flowchart TD
-    A["Current set has 1 15"] --> B["Remove 5 10"]
-    B --> C["Erase affected interval 1 15"]
-    C --> D["Left part remains 1 4"]
-    C --> E["Right part remains 11 15"]
-    D --> F["Insert remaining parts"]
-    E --> F
-    F --> G["Final set 1 4 and 11 15"]
+    N1["Current set has 1 15"] --> N2["Remove 5 10"]
+    N3["Step"] --> N4["Erase affected interval 1 15"]
+    N3["Step"] --> N5["Left part remains 1 4"]
+    N3["Step"] --> N6["Right part remains 11 15"]
+    N3["Step"] --> N7["Insert remaining parts"]
+    N3["Step"] --> N3["Step"]
+    N3["Step"] --> N8["Final set 1 4 and 11 15"]
 ```
 
 ---
@@ -875,18 +875,18 @@ Check whether its end >= x
 
 ```mermaid
 flowchart TD
-    A["Insert l r"] --> B["Find first interval with start greater or equal l"]
-    B --> C["Check previous interval also"]
-    C --> D{"Overlap or touch"}
-    D --> E["Merge interval"]
-    E --> F["Erase old interval"]
-    F --> D
-    D --> G["Insert final merged interval"]
-    H["Query point x"] --> I["Find first start greater than x"]
-    I --> J["Move one step back"]
-    J --> K{"end greater equal x"}
-    K --> L["Covered"]
-    K --> M["Not covered"]
+    N1["Insert l r"] --> N2["Find first interval with start greater or equal l"]
+    N3["Step"] --> N4["Check previous interval also"]
+    N3["Step"] --> N5["Overlap or touch"]
+    N3["Step"] --> N6["Merge interval"]
+    N3["Step"] --> N7["Erase old interval"]
+    N3["Step"] --> N3["Step"]
+    N3["Step"] --> N8["Insert final merged interval"]
+    N9["Query point x"] --> N10["Find first start greater than x"]
+    N3["Step"] --> N11["Move one step back"]
+    N3["Step"] --> N12["end greater equal x"]
+    N3["Step"] --> N13["Covered"]
+    N3["Step"] --> N14["Not covered"]
 ```
 
 ### C++ Code
@@ -1018,12 +1018,12 @@ Final:
 
 ```mermaid
 flowchart TD
-    A["Current intervals 1 5 and 10 15"] --> B["Insert 4 12"]
-    B --> C["Overlap with 1 5"]
-    C --> D["Merge to 1 12"]
-    D --> E["Overlap with 10 15"]
-    E --> F["Merge to 1 15"]
-    F --> G["Final interval is 1 15"]
+    N1["Current intervals 1 5 and 10 15"] --> N2["Insert 4 12"]
+    N3["Step"] --> N4["Overlap with 1 5"]
+    N3["Step"] --> N5["Merge to 1 12"]
+    N3["Step"] --> N6["Overlap with 10 15"]
+    N3["Step"] --> N7["Merge to 1 15"]
+    N3["Step"] --> N8["Final interval is 1 15"]
 ```
 
 ### Dry Run Delete
@@ -1050,11 +1050,11 @@ Result:
 
 ```mermaid
 flowchart TD
-    A["Current interval 1 15"] --> B["Delete 5 10"]
-    B --> C["Left remaining part 1 4"]
-    B --> D["Right remaining part 11 15"]
-    C --> E["Final intervals"]
-    D --> E
+    N1["Current interval 1 15"] --> N2["Delete 5 10"]
+    N3["Step"] --> N4["Left remaining part 1 4"]
+    N3["Step"] --> N5["Right remaining part 11 15"]
+    N3["Step"] --> N6["Final intervals"]
+    N3["Step"] --> N3["Step"]
 ```
 
 ---
@@ -1111,11 +1111,11 @@ r2 < l1
 
 ```mermaid
 flowchart TD
-    A["Two intervals A and B"] --> B{"r1 less than l2"}
-    B --> C["A is completely before B"]
-    B --> D{"r2 less than l1"}
-    D --> E["B is completely before A"]
-    D --> F["Intervals overlap"]
+    N1["Two intervals A and B"] --> N2["r1 less than l2"]
+    N3["Step"] --> N4["A is completely before B"]
+    N3["Step"] --> N5["r2 less than l1"]
+    N3["Step"] --> N6["B is completely before A"]
+    N3["Step"] --> N7["Intervals overlap"]
 ```
 
 ---
@@ -1145,12 +1145,12 @@ New interval is `[l, r]`.
 
 ```mermaid
 flowchart TD
-    A["Existing interval 10 20"] --> B["New 1 5 no overlap before"]
-    A --> C["New 5 12 overlaps left"]
-    A --> D["New 12 15 inside existing"]
-    A --> E["New 5 25 covers existing"]
-    A --> F["New 18 25 overlaps right"]
-    A --> G["New 25 30 no overlap after"]
+    N1["Existing interval 10 20"] --> N2["New 1 5 no overlap before"]
+    N3["Step"] --> N4["New 5 12 overlaps left"]
+    N3["Step"] --> N5["New 12 15 inside existing"]
+    N3["Step"] --> N6["New 5 25 covers existing"]
+    N3["Step"] --> N7["New 18 25 overlaps right"]
+    N3["Step"] --> N8["New 25 30 no overlap after"]
 ```
 
 ---
@@ -1207,11 +1207,11 @@ if (oldEnd + 1 >= newStart)
 
 ```mermaid
 flowchart TD
-    A["Old interval 1 5"] --> B["New interval 6 10"]
-    B --> C{"Strict overlap oldEnd >= newStart"}
-    C --> D["false"]
-    B --> E{"Touch merge oldEnd + 1 >= newStart"}
-    E --> F["true merge to 1 10"]
+    N1["Old interval 1 5"] --> N2["New interval 6 10"]
+    N3["Step"] --> N4["Strict overlap oldEnd greater equal newStart"]
+    N3["Step"] --> N5["false"]
+    N3["Step"] --> N6["Touch merge oldEnd plus 1 greater equal newStart"]
+    N3["Step"] --> N7["true merge to 1 10"]
 ```
 
 ---
@@ -1254,11 +1254,11 @@ So we must check `prev(it)`.
 
 ```mermaid
 flowchart TD
-    A["Set has 1 5, 10 15, 20 30"] --> B["Add 12 22"]
-    B --> C["lower_bound 12 minusINF points to 20 30"]
-    C --> D["Check previous interval 10 15"]
-    D --> E["10 15 overlaps 12 22"]
-    E --> F["Start merging from 10 15"]
+    N1["Set has 1 5, 10 15, 20 30"] --> N2["Add 12 22"]
+    N3["Step"] --> N4["lower_bound 12 minusINF points to 20 30"]
+    N3["Step"] --> N5["Check previous interval 10 15"]
+    N3["Step"] --> N6["10 15 overlaps 12 22"]
+    N3["Step"] --> N7["Start merging from 10 15"]
 ```
 
 ### Dry Run
@@ -1300,15 +1300,15 @@ answer = [1,5], [10,30]
 
 ```mermaid
 flowchart TD
-    A["Add interval l r"] --> B["Find lower_bound l minusINF"]
-    B --> C["Check previous interval"]
-    C --> D{"Previous overlaps or touches"}
-    D --> E["Move iterator to previous"]
-    D --> F["Keep iterator"]
-    E --> G["Merge all while start <= r + 1"]
-    F --> G
-    G --> H["Erase overlapped intervals"]
-    H --> I["Insert final merged l r"]
+    N1["Add interval l r"] --> N2["Find lower_bound l minusINF"]
+    N3["Step"] --> N4["Check previous interval"]
+    N3["Step"] --> N5["Previous overlaps or touches"]
+    N3["Step"] --> N6["Move iterator to previous"]
+    N3["Step"] --> N7["Keep iterator"]
+    N3["Step"] --> N8["Merge all while start less equal r plus 1"]
+    N3["Step"] --> N3["Step"]
+    N3["Step"] --> N9["Erase overlapped intervals"]
+    N3["Step"] --> N10["Insert final merged l r"]
 ```
 
 #### C++ Code
@@ -1408,18 +1408,18 @@ Existing interval `[a,b]`, remove `[l,r]`.
 
 ```mermaid
 flowchart TD
-    A["Existing interval a b"] --> B["Remove l r"]
-    B --> C{"b less than l"}
-    C --> D["No overlap skip"]
-    C --> E{"a greater than r"}
-    E --> F["No more affected intervals stop"]
-    E --> G["Overlap exists erase interval"]
-    G --> H{"a less than l"}
-    H --> I["Keep left part a to l minus 1"]
-    H --> J{"r less than b"}
-    I --> J
-    J --> K["Keep right part r plus 1 to b"]
-    J --> L["Done"]
+    N1["Existing interval a b"] --> N2["Remove l r"]
+    N3["Step"] --> N4["b less than l"]
+    N3["Step"] --> N5["No overlap skip"]
+    N3["Step"] --> N6["a greater than r"]
+    N3["Step"] --> N7["No more affected intervals stop"]
+    N3["Step"] --> N8["Overlap exists erase interval"]
+    N3["Step"] --> N9["a less than l"]
+    N3["Step"] --> N10["Keep left part a to l minus 1"]
+    N3["Step"] --> N11["r less than b"]
+    N3["Step"] --> N3["Step"]
+    N3["Step"] --> N12["Keep right part r plus 1 to b"]
+    N3["Step"] --> N13["Done"]
 ```
 
 #### C++ Code
@@ -1538,14 +1538,14 @@ Only two candidates can overlap:
 
 ```mermaid
 flowchart TD
-    A["Query l r"] --> B["Find lower_bound l minusINF"]
-    B --> C["Check current candidate"]
-    C --> D{"current start <= r"}
-    D --> E["Overlap found"]
-    D --> F["Check previous candidate"]
-    F --> G{"previous end >= l"}
-    G --> H["Overlap found"]
-    G --> I["No overlap"]
+    N1["Query l r"] --> N2["Find lower_bound l minusINF"]
+    N3["Step"] --> N4["Check current candidate"]
+    N3["Step"] --> N5["current start less equal r"]
+    N3["Step"] --> N6["Overlap found"]
+    N3["Step"] --> N7["Check previous candidate"]
+    N3["Step"] --> N8["previous end greater equal l"]
+    N3["Step"] --> N6["Overlap found"]
+    N3["Step"] --> N9["No overlap"]
 ```
 
 #### C++ Code
@@ -1657,13 +1657,13 @@ So `[10,20)` and `[20,30)` do not overlap.
 
 ```mermaid
 flowchart TD
-    A["Book interval l r"] --> B["Find first interval with start >= l"]
-    B --> C{"current start < r"}
-    C --> D["Overlap reject"]
-    C --> E["Check previous"]
-    E --> F{"previous end > l"}
-    F --> G["Overlap reject"]
-    F --> H["Insert interval accept"]
+    N1["Book interval l r"] --> N2["Find first interval with start greater equal l"]
+    N3["Step"] --> N4["current start less than r"]
+    N3["Step"] --> N5["Overlap reject"]
+    N3["Step"] --> N6["Check previous"]
+    N3["Step"] --> N7["previous end greater than l"]
+    N3["Step"] --> N5["Overlap reject"]
+    N3["Step"] --> N8["Insert interval accept"]
 ```
 
 #### C++ Code
@@ -1753,14 +1753,14 @@ Then check whether r >= y
 
 ```mermaid
 flowchart TD
-    A["Query interval x y"] --> B["Find first start greater than x"]
-    B --> C{"At beginning"}
-    C --> D["No interval starts before x"]
-    C --> E["Move one step back"]
-    E --> F["Candidate has largest start less equal x"]
-    F --> G{"candidate end greater equal y"}
-    G --> H["Fully covered"]
-    G --> I["Not fully covered"]
+    N1["Query interval x y"] --> N2["Find first start greater than x"]
+    N3["Step"] --> N4["At beginning"]
+    N3["Step"] --> N5["No interval starts before x"]
+    N3["Step"] --> N6["Move one step back"]
+    N3["Step"] --> N7["Candidate has largest start less equal x"]
+    N3["Step"] --> N8["candidate end greater equal y"]
+    N3["Step"] --> N9["Fully covered"]
+    N3["Step"] --> N10["Not fully covered"]
 ```
 
 ### C++ Code
@@ -1827,11 +1827,11 @@ Answer yes
 
 ```mermaid
 flowchart TD
-    A["Stored 1 10 and 20 30"] --> B["Query 3 7"]
-    B --> C["upper_bound 3 gives start 20"]
-    C --> D["Move back to interval 1 10"]
-    D --> E["Check end 10 greater equal 7"]
-    E --> F["fully covered"]
+    N1["Stored 1 10 and 20 30"] --> N2["Query 3 7"]
+    N3["Step"] --> N4["upper_bound 3 gives start 20"]
+    N3["Step"] --> N5["Move back to interval 1 10"]
+    N3["Step"] --> N6["Check end 10 greater equal 7"]
+    N3["Step"] --> N7["fully covered"]
 ```
 
 ---
@@ -1896,12 +1896,12 @@ For this guide, we intentionally keep it simple and use only STL `set<pair<int,i
 
 ```mermaid
 flowchart TD
-    A["Query x y"] --> B["Find first interval with start at least x"]
-    B --> C{"Candidate exists"}
-    C --> D["No interval inside"]
-    C --> E["Check candidate end less equal y"]
-    E --> F["Inside interval exists"]
-    E --> G["No by simple check"]
+    N1["Query x y"] --> N2["Find first interval with start at least x"]
+    N3["Step"] --> N4["Candidate exists"]
+    N3["Step"] --> N5["No interval inside"]
+    N3["Step"] --> N6["Check candidate end less equal y"]
+    N3["Step"] --> N7["Inside interval exists"]
+    N3["Step"] --> N8["No by simple check"]
 ```
 
 ### C++ Code
@@ -1972,10 +1972,10 @@ Answer yes
 
 ```mermaid
 flowchart TD
-    A["Stored intervals 1 10 and 4 6 and 8 20"] --> B["Query 3 7"]
-    B --> C["lower_bound pair 3 minusINF gives 4 6"]
-    C --> D["Check end 6 less equal 7"]
-    D --> E["Inside interval exists"]
+    N1["Stored intervals 1 10 and 4 6 and 8 20"] --> N2["Query 3 7"]
+    N3["Step"] --> N4["lower_bound pair 3 minusINF gives 4 6"]
+    N3["Step"] --> N5["Check end 6 less equal 7"]
+    N3["Step"] --> N6["Inside interval exists"]
 ```
 
 ---
@@ -2006,11 +2006,11 @@ Then scan from left to right.
 
 ```mermaid
 flowchart TD
-    A["Intervals"] --> B["Convert to start and end events"]
-    B --> C["Sort events by coordinate"]
-    C --> D["Scan left to right"]
-    D --> E["Update active count"]
-    E --> F["Answer based on active"]
+    N1["Intervals"] --> N2["Convert to start and end events"]
+    N3["Step"] --> N4["Sort events by coordinate"]
+    N3["Step"] --> N5["Scan left to right"]
+    N3["Step"] --> N6["Update active count"]
+    N3["Step"] --> N7["Answer based on active"]
 ```
 
 ---
@@ -2061,11 +2061,11 @@ Answer:
 
 ```mermaid
 flowchart TD
-    A["Interval 1 5 gives plus at 1 minus at 6"] --> B["Interval 2 6 gives plus at 2 minus at 7"]
-    B --> C["Interval 4 8 gives plus at 4 minus at 9"]
-    C --> D["Scan sorted events"]
-    D --> E["active becomes 1 then 2 then 3"]
-    E --> F["maximum overlap is 3"]
+    N1["Interval 1 5 gives plus at 1 minus at 6"] --> N2["Interval 2 6 gives plus at 2 minus at 7"]
+    N3["Step"] --> N4["Interval 4 8 gives plus at 4 minus at 9"]
+    N3["Step"] --> N5["Scan sorted events"]
+    N3["Step"] --> N6["active becomes 1 then 2 then 3"]
+    N3["Step"] --> N7["maximum overlap is 3"]
 ```
 
 ### C++ Code
@@ -2142,13 +2142,13 @@ Between two consecutive event coordinates, active count is constant.
 
 ```mermaid
 flowchart TD
-    A["Create events"] --> B["Sort event coordinates"]
-    B --> C["Scan coordinate segments"]
-    C --> D{"active greater than zero"}
-    D --> E["Add segment length"]
-    D --> F["Add nothing"]
-    E --> G["Apply current event delta"]
-    F --> G
+    N1["Create events"] --> N2["Sort event coordinates"]
+    N3["Step"] --> N4["Scan coordinate segments"]
+    N3["Step"] --> N5["active greater than zero"]
+    N3["Step"] --> N6["Add segment length"]
+    N3["Step"] --> N7["Add nothing"]
+    N3["Step"] --> N8["Apply current event delta"]
+    N3["Step"] --> N3["Step"]
 ```
 
 ### C++ Code
@@ -2259,13 +2259,13 @@ For closed integer intervals `[l, r]`, process `end + 1`.
 
 ```mermaid
 flowchart TD
-    A["Create interval events"] --> B["Create query events"]
-    B --> C["Sort all events by coordinate"]
-    C --> D["Scan from left to right"]
-    D --> E{"Event type"}
-    E --> F["Add active"]
-    E --> G["Store answer"]
-    E --> H["Remove active"]
+    N1["Create interval events"] --> N2["Create query events"]
+    N3["Step"] --> N4["Sort all events by coordinate"]
+    N3["Step"] --> N5["Scan from left to right"]
+    N3["Step"] --> N6["Event type"]
+    N3["Step"] --> N7["Add active"]
+    N3["Step"] --> N8["Store answer"]
+    N3["Step"] --> N9["Remove active"]
 ```
 
 ### C++ Code
@@ -2548,19 +2548,19 @@ sweep line with active segments
 
 ```mermaid
 flowchart TD
-    A["Interval problem"] --> B{"Static or dynamic"}
-    B --> C["Static"]
-    B --> D["Dynamic"]
-    C --> E{"Point query"}
-    E --> F["Sort starts and ends"]
-    E --> G["Sweep line offline"]
-    C --> H{"Overlap count"}
-    H --> I["Sweep line"]
-    D --> J{"Need merge"}
-    J --> K["map start to end"]
-    J --> L["multiset starts and ends"]
-    D --> M{"Need interval inside query"}
-    M --> N["set pair lower_bound simple version"]
+    N1["Interval problem"] --> N2["Static or dynamic"]
+    N3["Step"] --> N4["Static"]
+    N3["Step"] --> N5["Dynamic"]
+    N3["Step"] --> N6["Point query"]
+    N3["Step"] --> N7["Sort starts and ends"]
+    N3["Step"] --> N8["Sweep line offline"]
+    N3["Step"] --> N9["Overlap count"]
+    N3["Step"] --> N10["Sweep line"]
+    N3["Step"] --> N11["Need merge"]
+    N3["Step"] --> N12["map start to end"]
+    N3["Step"] --> N13["multiset starts and ends"]
+    N3["Step"] --> N14["Need interval inside query"]
+    N3["Step"] --> N15["set pair lower_bound simple version"]
 ```
 
 ### One Minute Revision
@@ -2623,11 +2623,11 @@ answer = started - endedBefore
 
 ```mermaid
 flowchart TD
-    A["Build starts and ends"] --> B["Sort both arrays"]
-    B --> C["For each query x"]
-    C --> D["started equals upper_bound starts x"]
-    D --> E["endedBefore equals lower_bound ends x"]
-    E --> F["answer equals started minus endedBefore"]
+    N1["Build starts and ends"] --> N2["Sort both arrays"]
+    N3["Step"] --> N4["For each query x"]
+    N3["Step"] --> N5["started equals upper_bound starts x"]
+    N3["Step"] --> N6["endedBefore equals lower_bound ends x"]
+    N3["Step"] --> N7["answer equals started minus endedBefore"]
 ```
 
 ### C++ Code
@@ -2702,11 +2702,11 @@ count x
 
 ```mermaid
 flowchart TD
-    A["Operation"] --> B{"add remove count"}
-    B --> C["Add l to starts and r to ends"]
-    B --> D["Remove one l and one r"]
-    B --> E["Count active at x"]
-    E --> F["starts upper_bound x minus ends lower_bound x"]
+    N1["Operation"] --> N2["add remove count"]
+    N3["Step"] --> N4["Add l to starts and r to ends"]
+    N3["Step"] --> N5["Remove one l and one r"]
+    N3["Step"] --> N6["Count active at x"]
+    N3["Step"] --> N7["starts upper_bound x minus ends lower_bound x"]
 ```
 
 ### C++ Code
@@ -2796,13 +2796,13 @@ This is the most important interval-set template.
 
 ```mermaid
 flowchart TD
-    A["addRange"] --> B["Find first possible overlap"]
-    B --> C["Merge all overlapping intervals"]
-    C --> D["Insert one final interval"]
-    E["removeRange"] --> F["Find affected intervals"]
-    F --> G["Erase and split left right parts"]
-    H["queryRange"] --> I["Find interval with largest start less equal l"]
-    I --> J["Check end greater equal r"]
+    N1["addRange"] --> N2["Find first possible overlap"]
+    N3["Step"] --> N4["Merge all overlapping intervals"]
+    N3["Step"] --> N5["Insert one final interval"]
+    N6["removeRange"] --> N7["Find affected intervals"]
+    N3["Step"] --> N8["Erase and split left right parts"]
+    N9["queryRange"] --> N10["Find interval with largest start less equal l"]
+    N3["Step"] --> N11["Check end greater equal r"]
 ```
 
 ### C++ Code
