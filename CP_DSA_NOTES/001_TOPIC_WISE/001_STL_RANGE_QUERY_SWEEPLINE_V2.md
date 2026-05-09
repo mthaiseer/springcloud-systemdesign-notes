@@ -3176,3 +3176,148 @@ sorted unique:
 | Dynamic range add point query | Fenwick tree |
 | Huge sparse coordinates | coordinate compression |
 
+
+
+---
+
+## 12. Practice Links By Technique
+
+### Static Point Coverage
+
+| Problem | Platform | Link |
+|---|---|---|
+| Points and Segments | CSES | https://cses.fi/problemset/task/1144/ |
+| Restaurant Customers | CSES | https://cses.fi/problemset/task/1619/ |
+| Number of Flowers in Full Bloom | LeetCode | https://leetcode.com/problems/number-of-flowers-in-full-bloom/ |
+| Count Integers in Intervals | LeetCode | https://leetcode.com/problems/count-integers-in-intervals/ |
+
+---
+
+### Dynamic Interval Insert Delete Query
+
+| Problem | Platform | Link |
+|---|---|---|
+| Range Module | LeetCode | https://leetcode.com/problems/range-module/ |
+| Count Integers in Intervals | LeetCode | https://leetcode.com/problems/count-integers-in-intervals/ |
+| Falling Squares | LeetCode | https://leetcode.com/problems/falling-squares/ |
+
+---
+
+### Merged Intervals
+
+| Problem | Platform | Link |
+|---|---|---|
+| Merge Intervals | LeetCode | https://leetcode.com/problems/merge-intervals/ |
+| Insert Interval | LeetCode | https://leetcode.com/problems/insert-interval/ |
+| Non Overlapping Intervals | LeetCode | https://leetcode.com/problems/non-overlapping-intervals/ |
+| Data Stream as Disjoint Intervals | LeetCode | https://leetcode.com/problems/data-stream-as-disjoint-intervals/ |
+
+---
+
+### Sweep Line
+
+| Problem | Platform | Link |
+|---|---|---|
+| Meeting Rooms II | LeetCode | https://leetcode.com/problems/meeting-rooms-ii/ |
+| My Calendar III | LeetCode | https://leetcode.com/problems/my-calendar-iii/ |
+| Skyline Problem | LeetCode | https://leetcode.com/problems/the-skyline-problem/ |
+| Car Pooling | LeetCode | https://leetcode.com/problems/car-pooling/ |
+| Brightest Position on Street | LeetCode | https://leetcode.com/problems/brightest-position-on-street/ |
+
+---
+
+### Difference Array
+
+| Problem | Platform | Link |
+|---|---|---|
+| Range Addition | LeetCode | https://leetcode.com/problems/range-addition/ |
+| Corporate Flight Bookings | LeetCode | https://leetcode.com/problems/corporate-flight-bookings/ |
+| Shifting Letters II | LeetCode | https://leetcode.com/problems/shifting-letters-ii/ |
+
+---
+
+### Fenwick Tree
+
+| Problem | Platform | Link |
+|---|---|---|
+| Dynamic Range Sum Queries | CSES | https://cses.fi/problemset/task/1648/ |
+| Range Update Queries | CSES | https://cses.fi/problemset/task/1651/ |
+| Count of Smaller Numbers After Self | LeetCode | https://leetcode.com/problems/count-of-smaller-numbers-after-self/ |
+| Reverse Pairs | LeetCode | https://leetcode.com/problems/reverse-pairs/ |
+
+---
+
+### Segment Tree With Coordinate Compression
+
+| Problem | Platform | Link |
+|---|---|---|
+| Falling Squares | LeetCode | https://leetcode.com/problems/falling-squares/ |
+| Amount of New Area Painted Each Day | LeetCode | https://leetcode.com/problems/amount-of-new-area-painted-each-day/ |
+| Rectangle Area II | LeetCode | https://leetcode.com/problems/rectangle-area-ii/ |
+| Posters | SPOJ | https://www.spoj.com/problems/POSTERS/ |
+
+---
+
+### Offline Queries
+
+| Problem | Platform | Link |
+|---|---|---|
+| Distinct Values Queries | CSES | https://cses.fi/problemset/task/1734/ |
+| Static Range Sum Queries | CSES | https://cses.fi/problemset/task/1646/ |
+| K Query | SPOJ | https://www.spoj.com/problems/KQUERY/ |
+
+---
+
+### Coordinate Compression
+
+| Problem | Platform | Link |
+|---|---|---|
+| Falling Squares | LeetCode | https://leetcode.com/problems/falling-squares/ |
+| Rectangle Area II | LeetCode | https://leetcode.com/problems/rectangle-area-ii/ |
+| My Calendar III | LeetCode | https://leetcode.com/problems/my-calendar-iii/ |
+
+---
+
+## 13. Recommended Solving Order
+
+### Beginner
+
+1. Merge Intervals
+2. Insert Interval
+3. Meeting Rooms II
+4. Range Addition
+5. Corporate Flight Bookings
+
+### Intermediate
+
+6. Range Module
+7. My Calendar III
+8. Car Pooling
+9. Number of Flowers in Full Bloom
+10. Dynamic Range Sum Queries
+
+### Advanced
+
+11. Falling Squares
+12. Rectangle Area II
+13. Skyline Problem
+14. Posters SPOJ
+15. Amount of New Area Painted Each Day
+
+---
+
+## 14. Pattern Recognition Cheat Sheet
+
+| If Problem Says | Think |
+|---|---|
+| many range add updates | difference array |
+| dynamic point query after range update | Fenwick |
+| merge overlapping ranges | sort + merge |
+| online interval add remove | `set<pair<int,int>>` |
+| count active intervals | sweep line |
+| maximum overlap | sweep line |
+| query full interval covered | merged intervals |
+| huge coordinates sparse | coordinate compression |
+| interval inside another interval | segment tree over starts |
+| offline sorted queries | sweep line / Fenwick |
+
