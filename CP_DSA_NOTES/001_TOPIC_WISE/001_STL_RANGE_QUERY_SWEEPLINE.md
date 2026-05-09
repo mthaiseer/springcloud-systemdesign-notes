@@ -20,6 +20,7 @@ This guide focuses on interval range queries in C++ STL:
 - [3. Problem 1 Static Intervals Check Point Coverage](#3-problem-1-static-intervals-check-point-coverage)
 - [4. Problem 2 Dynamic Insert Delete Check Point Coverage](#4-problem-2-dynamic-insert-delete-check-point-coverage)
 - [5. Problem 3 Maintain Merged Intervals](#5-problem-3-maintain-merged-intervals)
+- [5A. Overlap Scenarios With set pair](#5a-overlap-scenarios-with-set-pair)
 - [6. Problem 4 Check Whether Interval x y Is Fully Covered](#6-problem-4-check-whether-interval-x-y-is-fully-covered)
 - [7. Problem 5 Check Whether Any Stored Interval Is Inside x y](#7-problem-5-check-whether-any-stored-interval-is-inside-x-y)
 - [8. Sweep Line Technique](#8-sweep-line-technique)
@@ -1057,6 +1058,675 @@ flowchart TD
 ```
 
 ---
+
+
+---
+
+## 5A. Overlap Scenarios With set pair
+
+This section explains all common overlap cases using only:
+
+```cpp
+set<pair<int,int>>
+```
+
+Each interval is:
+
+```text
+[start, end]
+```
+
+The set is sorted by start first, then end.
+
+---
+
+### 5A.1 Basic Overlap Formula
+
+Two intervals:
+
+```text
+A = [l1, r1]
+B = [l2, r2]
+```
+
+They overlap when:
+
+```text
+max(l1, l2) <= min(r1, r2)
+```
+
+They do not overlap when:
+
+```text
+r1 < l2
+```
+
+or:
+
+```text
+r2 < l1
+```
+
+### Mermaid Diagram
+
+```mermaid
+flowchart TD
+    A["Two intervals A and B"] --> B{"r1 less than l2"}
+    B --> C["A is completely before B"]
+    B --> D{"r2 less than l1"}
+    D --> E["B is completely before A"]
+    D --> F["Intervals overlap"]
+```
+
+---
+
+### 5A.2 Overlap Cases
+
+Assume existing interval is:
+
+```text
+[10, 20]
+```
+
+New interval is `[l, r]`.
+
+| Case | New interval | Result |
+|---|---|---|
+| completely before | `[1, 5]` | no overlap |
+| touches left | `[5, 9]` | no overlap if strict, merge if touching allowed |
+| overlaps left | `[5, 12]` | merge to `[5,20]` |
+| inside existing | `[12, 15]` | merge remains `[10,20]` |
+| covers existing | `[5, 25]` | merge to `[5,25]` |
+| overlaps right | `[18, 25]` | merge to `[10,25]` |
+| touches right | `[21, 25]` | no overlap if strict, merge if touching allowed |
+| completely after | `[25, 30]` | no overlap |
+
+### Mermaid Diagram
+
+```mermaid
+flowchart TD
+    A["Existing interval 10 20"] --> B["New 1 5 no overlap before"]
+    A --> C["New 5 12 overlaps left"]
+    A --> D["New 12 15 inside existing"]
+    A --> E["New 5 25 covers existing"]
+    A --> F["New 18 25 overlaps right"]
+    A --> G["New 25 30 no overlap after"]
+```
+
+---
+
+### 5A.3 Strict Overlap vs Touching Merge
+
+Strict overlap:
+
+```text
+[1,5] and [6,10]
+```
+
+Do not overlap because:
+
+```text
+5 < 6
+```
+
+Touching merge version:
+
+```text
+[1,5] and [6,10]
+```
+
+Can be merged into:
+
+```text
+[1,10]
+```
+
+Because:
+
+```text
+5 + 1 >= 6
+```
+
+Use this when intervals are integer ranges and adjacent ranges should become one range.
+
+### Code Rule
+
+Strict overlap:
+
+```cpp
+if (oldEnd >= newStart)
+```
+
+Touching merge:
+
+```cpp
+if (oldEnd + 1 >= newStart)
+```
+
+### Mermaid Diagram
+
+```mermaid
+flowchart TD
+    A["Old interval 1 5"] --> B["New interval 6 10"]
+    B --> C{"Strict overlap oldEnd >= newStart"}
+    C --> D["false"]
+    B --> E{"Touch merge oldEnd + 1 >= newStart"}
+    E --> F["true merge to 1 10"]
+```
+
+---
+
+### 5A.4 How set pair Finds Overlap Candidate
+
+Suppose current intervals are:
+
+```text
+[1,5], [10,15], [20,30]
+```
+
+New interval:
+
+```text
+[12,22]
+```
+
+Call:
+
+```cpp
+auto it = ranges.lower_bound({12, INT_MIN});
+```
+
+This points to:
+
+```text
+[20,30]
+```
+
+But previous interval may also overlap:
+
+```text
+[10,15]
+```
+
+So we must check `prev(it)`.
+
+### Mermaid Diagram
+
+```mermaid
+flowchart TD
+    A["Set has 1 5, 10 15, 20 30"] --> B["Add 12 22"]
+    B --> C["lower_bound 12 minusINF points to 20 30"]
+    C --> D["Check previous interval 10 15"]
+    D --> E["10 15 overlaps 12 22"]
+    E --> F["Start merging from 10 15"]
+```
+
+### Dry Run
+
+```text
+ranges = [1,5], [10,15], [20,30]
+add [12,22]
+
+lower_bound({12, -INF}) -> [20,30]
+previous is [10,15]
+
+[10,15] overlaps [12,22]
+merge -> [10,22]
+
+[20,30] overlaps [10,22]
+merge -> [10,30]
+
+final ranges = [1,5], [10,30]
+```
+
+---
+
+### 5A.5 Sample Problem 1: Insert Interval And Merge Overlaps
+
+#### Problem
+
+Given existing non-overlapping sorted intervals in a `set<pair<int,int>>`, insert a new interval and merge all overlaps.
+
+#### Example
+
+```text
+ranges = [1,5], [10,15], [20,30]
+add [12,22]
+
+answer = [1,5], [10,30]
+```
+
+#### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Add interval l r"] --> B["Find lower_bound l minusINF"]
+    B --> C["Check previous interval"]
+    C --> D{"Previous overlaps or touches"}
+    D --> E["Move iterator to previous"]
+    D --> F["Keep iterator"]
+    E --> G["Merge all while start <= r + 1"]
+    F --> G
+    G --> H["Erase overlapped intervals"]
+    H --> I["Insert final merged l r"]
+```
+
+#### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct InsertMergeSet {
+    set<pair<int,int>> ranges;
+
+    void addRange(int l, int r) {
+        if (l > r) swap(l, r);
+
+        auto it = ranges.lower_bound({l, INT_MIN});
+
+        if (it != ranges.begin()) {
+            auto p = prev(it);
+
+            // use p->second >= l for strict overlap
+            // use p->second + 1 >= l to also merge touching intervals
+            if (p->second + 1 >= l) {
+                it = p;
+            }
+        }
+
+        while (it != ranges.end() && it->first <= r + 1) {
+            l = min(l, it->first);
+            r = max(r, it->second);
+            it = ranges.erase(it);
+        }
+
+        ranges.insert({l, r});
+    }
+
+    void print() {
+        for (auto [l, r] : ranges) {
+            cout << "[" << l << "," << r << "] ";
+        }
+        cout << "\n";
+    }
+};
+
+int main() {
+    InsertMergeSet ds;
+
+    ds.ranges.insert({1, 5});
+    ds.ranges.insert({10, 15});
+    ds.ranges.insert({20, 30});
+
+    ds.addRange(12, 22);
+
+    ds.print(); // [1,5] [10,30]
+}
+```
+
+#### Dry Run
+
+| Step | Action | Result |
+|---|---|---|
+| 1 | `lower_bound({12, -INF})` | points to `[20,30]` |
+| 2 | check previous | `[10,15]` |
+| 3 | `[10,15]` overlaps `[12,22]` | merge to `[10,22]` |
+| 4 | `[20,30]` overlaps `[10,22]` | merge to `[10,30]` |
+| 5 | insert final | `[1,5], [10,30]` |
+
+---
+
+### 5A.6 Sample Problem 2: Remove Interval And Split Overlaps
+
+#### Problem
+
+Given disjoint intervals, remove `[l, r]`.
+
+#### Example
+
+```text
+ranges = [1,10], [15,20]
+remove [4,17]
+
+answer = [1,3], [18,20]
+```
+
+#### Overlap Scenarios During Delete
+
+Existing interval `[a,b]`, remove `[l,r]`.
+
+| Case | Condition | Action |
+|---|---|---|
+| no overlap before | `b < l` | skip |
+| no overlap after | `a > r` | stop |
+| left part remains | `a < l` | add `[a, l-1]` |
+| right part remains | `r < b` | add `[r+1, b]` |
+| fully deleted | `l <= a and b <= r` | add nothing |
+
+#### Mermaid Diagram
+
+```mermaid
+flowchart TD
+    A["Existing interval a b"] --> B["Remove l r"]
+    B --> C{"b less than l"}
+    C --> D["No overlap skip"]
+    C --> E{"a greater than r"}
+    E --> F["No more affected intervals stop"]
+    E --> G["Overlap exists erase interval"]
+    G --> H{"a less than l"}
+    H --> I["Keep left part a to l minus 1"]
+    H --> J{"r less than b"}
+    I --> J
+    J --> K["Keep right part r plus 1 to b"]
+    J --> L["Done"]
+```
+
+#### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct RemoveSplitSet {
+    set<pair<int,int>> ranges;
+
+    void removeRange(int l, int r) {
+        if (l > r) swap(l, r);
+
+        auto it = ranges.lower_bound({l, INT_MIN});
+
+        if (it != ranges.begin()) {
+            --it;
+        }
+
+        vector<pair<int,int>> addBack;
+
+        while (it != ranges.end()) {
+            int a = it->first;
+            int b = it->second;
+
+            if (b < l) {
+                ++it;
+                continue;
+            }
+
+            if (a > r) break;
+
+            it = ranges.erase(it);
+
+            if (a < l) {
+                addBack.push_back({a, l - 1});
+            }
+
+            if (r < b) {
+                addBack.push_back({r + 1, b});
+            }
+        }
+
+        for (auto p : addBack) {
+            ranges.insert(p);
+        }
+    }
+
+    void print() {
+        for (auto [l, r] : ranges) {
+            cout << "[" << l << "," << r << "] ";
+        }
+        cout << "\n";
+    }
+};
+
+int main() {
+    RemoveSplitSet ds;
+
+    ds.ranges.insert({1, 10});
+    ds.ranges.insert({15, 20});
+
+    ds.removeRange(4, 17);
+
+    ds.print(); // [1,3] [18,20]
+}
+```
+
+#### Dry Run
+
+```text
+ranges = [1,10], [15,20]
+remove [4,17]
+```
+
+| Affected interval | Action |
+|---|---|
+| `[1,10]` | remove middle/right part, keep `[1,3]` |
+| `[15,20]` | remove left part, keep `[18,20]` |
+
+Final:
+
+```text
+[1,3], [18,20]
+```
+
+---
+
+### 5A.7 Sample Problem 3: Check Whether New Interval Overlaps Existing Interval
+
+#### Problem
+
+Given disjoint intervals in `set<pair<int,int>>`, check if a new interval `[l,r]` overlaps any existing interval.
+
+#### Example
+
+```text
+ranges = [1,5], [10,15], [20,30]
+query [6,9]  -> false
+query [6,10] -> true
+query [16,19] -> false
+query [16,21] -> true
+```
+
+#### Idea
+
+Only two candidates can overlap:
+
+```text
+1. first interval with start >= l
+2. previous interval before it
+```
+
+#### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Query l r"] --> B["Find lower_bound l minusINF"]
+    B --> C["Check current candidate"]
+    C --> D{"current start <= r"}
+    D --> E["Overlap found"]
+    D --> F["Check previous candidate"]
+    F --> G{"previous end >= l"}
+    G --> H["Overlap found"]
+    G --> I["No overlap"]
+```
+
+#### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct OverlapChecker {
+    set<pair<int,int>> ranges;
+
+    bool overlapsAny(int l, int r) {
+        if (l > r) swap(l, r);
+
+        auto it = ranges.lower_bound({l, INT_MIN});
+
+        // Candidate 1: first interval with start >= l
+        if (it != ranges.end() && it->first <= r) {
+            return true;
+        }
+
+        // Candidate 2: previous interval with start < l
+        if (it != ranges.begin()) {
+            auto p = prev(it);
+            if (p->second >= l) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
+
+int main() {
+    OverlapChecker ds;
+
+    ds.ranges.insert({1, 5});
+    ds.ranges.insert({10, 15});
+    ds.ranges.insert({20, 30});
+
+    cout << ds.overlapsAny(6, 9) << "\n";   // 0
+    cout << ds.overlapsAny(6, 10) << "\n";  // 1
+    cout << ds.overlapsAny(16, 19) << "\n"; // 0
+    cout << ds.overlapsAny(16, 21) << "\n"; // 1
+}
+```
+
+#### Dry Run
+
+Query:
+
+```text
+[16,21]
+```
+
+```text
+lower_bound({16, -INF}) -> [20,30]
+
+current start 20 <= query end 21
+overlap found
+```
+
+Query:
+
+```text
+[6,9]
+```
+
+```text
+lower_bound({6, -INF}) -> [10,15]
+
+current start 10 <= query end 9 false
+
+previous interval [1,5]
+previous end 5 >= query start 6 false
+
+no overlap
+```
+
+---
+
+### 5A.8 Sample Problem 4: Insert Only If No Overlap
+
+#### Problem
+
+Maintain a set of non-overlapping intervals. Insert `[l,r]` only if it does not overlap any existing interval.
+
+This is useful for calendar booking style problems.
+
+#### Example
+
+```text
+book [10,20] -> true
+book [15,25] -> false
+book [20,30] -> true if half-open intervals
+```
+
+For closed intervals, `[10,20]` and `[20,30]` overlap at `20`.
+
+This code uses half-open logic:
+
+```text
+[start, end)
+```
+
+So `[10,20)` and `[20,30)` do not overlap.
+
+#### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Book interval l r"] --> B["Find first interval with start >= l"]
+    B --> C{"current start < r"}
+    C --> D["Overlap reject"]
+    C --> E["Check previous"]
+    E --> F{"previous end > l"}
+    F --> G["Overlap reject"]
+    F --> H["Insert interval accept"]
+```
+
+#### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class MyCalendarSimple {
+private:
+    set<pair<int,int>> booked;
+
+public:
+    bool book(int start, int end) {
+        auto it = booked.lower_bound({start, INT_MIN});
+
+        // Next interval starts before this one ends.
+        if (it != booked.end() && it->first < end) {
+            return false;
+        }
+
+        // Previous interval ends after this one starts.
+        if (it != booked.begin()) {
+            auto p = prev(it);
+            if (p->second > start) {
+                return false;
+            }
+        }
+
+        booked.insert({start, end});
+        return true;
+    }
+};
+
+int main() {
+    MyCalendarSimple cal;
+
+    cout << cal.book(10, 20) << "\n"; // 1
+    cout << cal.book(15, 25) << "\n"; // 0
+    cout << cal.book(20, 30) << "\n"; // 1
+}
+```
+
+#### Dry Run
+
+```text
+book [10,20)
+set empty -> insert
+
+book [15,25)
+lower_bound gives end
+previous is [10,20)
+20 > 15 -> overlap reject
+
+book [20,30)
+lower_bound gives end
+previous is [10,20)
+20 > 20 false
+insert
+```
+
+---
+
 
 ## 6. Problem 4 Check Whether Interval x y Is Fully Covered
 
