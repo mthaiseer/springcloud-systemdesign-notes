@@ -1,3 +1,1197 @@
+# Monotonic Stack Phase-Wise Practice Guide
+
+## Clickable Index
+
+- [How to Use This](#how-to-use-this)
+- [Phase 1 — Recognition Problems](#phase-1--recognition-problems)
+  - [1. Next Greater Element](#1-next-greater-element)
+  - [2. Daily Temperatures](#2-daily-temperatures)
+  - [3. Final Prices With a Special Discount](#3-final-prices-with-a-special-discount)
+  - [4. Stock Span](#4-stock-span)
+- [Phase 2 — Boundary / Range Thinking](#phase-2--boundary--range-thinking)
+  - [5. Largest Rectangle in Histogram](#5-largest-rectangle-in-histogram)
+  - [6. Maximal Rectangle](#6-maximal-rectangle)
+  - [7. Height of Soldiers / Maximum of Minimum for Every Window Size](#7-height-of-soldiers--maximum-of-minimum-for-every-window-size)
+- [Phase 3 — Contribution Thinking](#phase-3--contribution-thinking)
+  - [8. Sum of Subarray Minimums](#8-sum-of-subarray-minimums)
+  - [9. Maximum Subarray Min-Product](#9-maximum-subarray-min-product)
+- [Phase 4 — Greedy + Monotonic Stack](#phase-4--greedy--monotonic-stack)
+  - [10. Remove K Digits](#10-remove-k-digits)
+  - [11. Remove Duplicate Letters](#11-remove-duplicate-letters)
+- [Phase 5 — Advanced / Hidden Monotonic Stack](#phase-5--advanced--hidden-monotonic-stack)
+  - [12. Trapping Rain Water](#12-trapping-rain-water)
+  - [13. Maximum Width Ramp](#13-maximum-width-ramp)
+  - [14. Number of Visible People in a Queue](#14-number-of-visible-people-in-a-queue)
+  - [15. Steps to Make Array Non-Decreasing](#15-steps-to-make-array-non-decreasing)
+- [Final Phase Summary](#final-phase-summary)
+- [Master Rule](#master-rule)
+- [Final Checklist Before Coding](#final-checklist-before-coding)
+
+---
+
+## How to Use This
+
+```text
+Phase 1 -> learn stack direction and pop condition
+Phase 2 -> learn boundary/range thinking
+Phase 3 -> learn contribution thinking
+Phase 4 -> learn greedy + stack
+Phase 5 -> learn advanced hidden stack forms
+```
+
+---
+
+# Phase 1 — Recognition Problems
+
+Goal:
+
+```text
+Recognize when current element resolves previous unresolved elements.
+```
+
+Core question:
+
+```text
+What is the stack waiting for?
+```
+
+---
+
+## 1. Next Greater Element
+
+### Problem Idea
+
+For every element, find the first greater element on the right.
+
+Example:
+
+```text
+nums = [2, 1, 5, 3]
+ans  = [5, 5, -1, -1]
+```
+
+### Pattern
+
+```text
+Stack type: decreasing stack
+Pop when : current > stack top
+Meaning  : current is next greater for popped elements
+```
+
+### Thinking
+
+```text
+Small values are waiting for a bigger value.
+When bigger value comes, it resolves them.
+```
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> nextGreater(vector<int>& nums) {
+    int n = nums.size();
+    vector<int> ans(n, -1);
+    stack<int> st; // store indices
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && nums[i] > nums[st.top()]) {
+            ans[st.top()] = nums[i];
+            st.pop();
+        }
+        st.push(i);
+    }
+
+    return ans;
+}
+```
+
+---
+
+## 2. Daily Temperatures
+
+### Problem Idea
+
+For each day, find how many days until a warmer temperature.
+
+Example:
+
+```text
+temp = [73, 74, 75, 71, 69, 72, 76, 73]
+ans  = [1, 1, 4, 2, 1, 1, 0, 0]
+```
+
+### Pattern
+
+```text
+Stack type: decreasing stack
+Pop when : current temperature > stack top temperature
+Meaning  : warmer day found
+```
+
+### Thinking
+
+Same as Next Greater Element, but answer is distance:
+
+```text
+answer[index] = currentIndex - oldIndex
+```
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> dailyTemperatures(vector<int>& temp) {
+    int n = temp.size();
+    vector<int> ans(n, 0);
+    stack<int> st; // unresolved indices
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && temp[i] > temp[st.top()]) {
+            int j = st.top();
+            st.pop();
+            ans[j] = i - j;
+        }
+        st.push(i);
+    }
+
+    return ans;
+}
+```
+
+---
+
+## 3. Final Prices With a Special Discount
+
+### Problem Idea
+
+For each price, subtract the first smaller or equal price on the right.
+
+Example:
+
+```text
+prices = [8, 4, 6, 2, 3]
+ans    = [4, 2, 4, 2, 3]
+```
+
+Because:
+
+```text
+8 gets discount 4
+4 gets discount 2
+6 gets discount 2
+2 gets no discount
+3 gets no discount
+```
+
+### Pattern
+
+```text
+Stack type: increasing stack
+Pop when : current <= stack top
+Meaning  : current is next smaller/equal discount
+```
+
+### Thinking
+
+Each price waits for a smaller or equal price after it.
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> finalPrices(vector<int>& prices) {
+    int n = prices.size();
+    vector<int> ans = prices;
+    stack<int> st; // indices waiting for discount
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && prices[i] <= prices[st.top()]) {
+            ans[st.top()] = prices[st.top()] - prices[i];
+            st.pop();
+        }
+        st.push(i);
+    }
+
+    return ans;
+}
+```
+
+---
+
+## 4. Stock Span
+
+### Problem Idea
+
+For each day, find how many consecutive days before it had price less than or equal to current price.
+
+Example:
+
+```text
+prices = [100, 80, 60, 70, 60, 75, 85]
+ans    = [1,   1,  1,  2,  1,  4,  6]
+```
+
+### Pattern
+
+```text
+Stack type: decreasing stack
+Pop when : stack top price <= current price
+Meaning  : current price absorbs smaller/equal previous prices
+```
+
+### Thinking
+
+Find previous greater element.
+
+```text
+span = currentIndex - previousGreaterIndex
+```
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> stockSpan(vector<int>& prices) {
+    int n = prices.size();
+    vector<int> ans(n);
+    stack<int> st; // indices of previous greater prices
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && prices[st.top()] <= prices[i]) {
+            st.pop();
+        }
+
+        int previousGreater = st.empty() ? -1 : st.top();
+        ans[i] = i - previousGreater;
+
+        st.push(i);
+    }
+
+    return ans;
+}
+```
+
+---
+
+# Phase 2 — Boundary / Range Thinking
+
+Goal:
+
+```text
+For each element, find the maximum range where it remains useful/minimum/maximum.
+```
+
+Core question:
+
+```text
+How far can this element expand before being blocked?
+```
+
+---
+
+## 5. Largest Rectangle in Histogram
+
+### Problem Idea
+
+Find the largest rectangle inside histogram bars.
+
+Example:
+
+```text
+heights = [2, 1, 5, 6, 2, 3]
+answer = 10
+```
+
+### Pattern
+
+```text
+Stack type: increasing stack
+Pop when : current height < stack top height
+Meaning  : current is right smaller boundary
+```
+
+### Thinking
+
+Each bar wants to be the minimum height of a rectangle.
+
+For every bar:
+
+```text
+width = nextSmallerIndex - previousSmallerIndex - 1
+area  = height * width
+```
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int largestRectangleArea(vector<int>& h) {
+    int n = h.size();
+    stack<int> st; // indices
+    long long ans = 0;
+
+    for (int i = 0; i <= n; i++) {
+        int curr = (i == n ? 0 : h[i]); // sentinel 0
+
+        while (!st.empty() && h[st.top()] > curr) {
+            int height = h[st.top()];
+            st.pop();
+
+            int right = i;
+            int left = st.empty() ? -1 : st.top();
+            int width = right - left - 1;
+
+            ans = max(ans, 1LL * height * width);
+        }
+
+        st.push(i);
+    }
+
+    return (int)ans;
+}
+```
+
+---
+
+## 6. Maximal Rectangle
+
+### Problem Idea
+
+Given a binary matrix, find the largest rectangle containing only `1`s.
+
+Example:
+
+```text
+1 0 1 0 0
+1 0 1 1 1
+1 1 1 1 1
+1 0 0 1 0
+
+answer = 6
+```
+
+### Pattern
+
+```text
+Convert each row into histogram.
+Then apply Largest Rectangle in Histogram.
+```
+
+### Thinking
+
+For each row:
+
+```text
+if matrix[r][c] == '1': height[c]++
+else height[c] = 0
+```
+
+Then solve histogram for that height array.
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int largestRectangleArea(vector<int>& h) {
+    int n = h.size();
+    stack<int> st;
+    int ans = 0;
+
+    for (int i = 0; i <= n; i++) {
+        int curr = (i == n ? 0 : h[i]);
+
+        while (!st.empty() && h[st.top()] > curr) {
+            int height = h[st.top()];
+            st.pop();
+
+            int left = st.empty() ? -1 : st.top();
+            int width = i - left - 1;
+
+            ans = max(ans, height * width);
+        }
+
+        st.push(i);
+    }
+
+    return ans;
+}
+
+int maximalRectangle(vector<vector<char>>& matrix) {
+    if (matrix.empty()) return 0;
+
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+    vector<int> height(cols, 0);
+    int ans = 0;
+
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if (matrix[r][c] == '1') height[c]++;
+            else height[c] = 0;
+        }
+
+        ans = max(ans, largestRectangleArea(height));
+    }
+
+    return ans;
+}
+```
+
+---
+
+## 7. Height of Soldiers / Maximum of Minimum for Every Window Size
+
+### Problem Idea
+
+For every window size `x`, find the maximum among all window minimums.
+
+Example:
+
+```text
+H = [10, 20, 30, 50, 10, 70, 30]
+```
+
+For each window size:
+
+```text
+size 1 -> max of minimums among all windows of size 1
+size 2 -> max of minimums among all windows of size 2
+...
+```
+
+### Pattern
+
+```text
+Same as histogram range boundary.
+For each element, find the largest window where it is minimum.
+```
+
+### Thinking
+
+For each `H[i]`:
+
+```text
+left  = previous smaller index
+right = next smaller index
+length = right - left - 1
+
+ans[length] = max(ans[length], H[i])
+```
+
+Then fill missing values from right to left:
+
+```text
+ans[i] = max(ans[i], ans[i + 1])
+```
+
+Why?
+
+If a height can be minimum for a bigger window, it can also be candidate for smaller window.
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> maxOfMinimums(vector<int>& a) {
+    int n = a.size();
+    vector<int> left(n), right(n);
+    stack<int> st;
+
+    // previous smaller
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && a[st.top()] >= a[i]) {
+            st.pop();
+        }
+        left[i] = st.empty() ? -1 : st.top();
+        st.push(i);
+    }
+
+    while (!st.empty()) st.pop();
+
+    // next smaller
+    for (int i = n - 1; i >= 0; i--) {
+        while (!st.empty() && a[st.top()] >= a[i]) {
+            st.pop();
+        }
+        right[i] = st.empty() ? n : st.top();
+        st.push(i);
+    }
+
+    vector<int> ans(n + 1, 0);
+
+    for (int i = 0; i < n; i++) {
+        int len = right[i] - left[i] - 1;
+        ans[len] = max(ans[len], a[i]);
+    }
+
+    for (int len = n - 1; len >= 1; len--) {
+        ans[len] = max(ans[len], ans[len + 1]);
+    }
+
+    vector<int> result;
+    for (int len = 1; len <= n; len++) {
+        result.push_back(ans[len]);
+    }
+
+    return result;
+}
+```
+
+---
+
+# Phase 3 — Contribution Thinking
+
+Goal:
+
+```text
+Instead of finding answer for every subarray, count how much each element contributes.
+```
+
+Core question:
+
+```text
+For how many subarrays is this element the minimum/maximum?
+```
+
+---
+
+## 8. Sum of Subarray Minimums
+
+### Problem Idea
+
+Find sum of minimum value of every subarray.
+
+Example:
+
+```text
+arr = [3, 1, 2, 4]
+answer = 17
+```
+
+### Pattern
+
+```text
+Previous smaller + next smaller/equal
+Contribution = value * leftChoices * rightChoices
+```
+
+### Thinking
+
+For each element `arr[i]`:
+
+```text
+leftChoices  = number of choices to extend left
+rightChoices = number of choices to extend right
+contribution = arr[i] * leftChoices * rightChoices
+```
+
+Tie handling:
+
+```text
+previous strictly smaller -> pop >=
+next smaller or equal     -> pop >
+```
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int sumSubarrayMins(vector<int>& arr) {
+    const int MOD = 1e9 + 7;
+    int n = arr.size();
+    vector<int> left(n), right(n);
+    stack<int> st;
+
+    // previous strictly smaller distance
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && arr[st.top()] >= arr[i]) {
+            st.pop();
+        }
+        left[i] = st.empty() ? i + 1 : i - st.top();
+        st.push(i);
+    }
+
+    while (!st.empty()) st.pop();
+
+    // next smaller or equal distance
+    for (int i = n - 1; i >= 0; i--) {
+        while (!st.empty() && arr[st.top()] > arr[i]) {
+            st.pop();
+        }
+        right[i] = st.empty() ? n - i : st.top() - i;
+        st.push(i);
+    }
+
+    long long ans = 0;
+    for (int i = 0; i < n; i++) {
+        ans = (ans + 1LL * arr[i] * left[i] * right[i]) % MOD;
+    }
+
+    return ans;
+}
+```
+
+---
+
+## 9. Maximum Subarray Min-Product
+
+### Problem Idea
+
+For every subarray:
+
+```text
+min(subarray) * sum(subarray)
+```
+
+Return maximum value.
+
+Example:
+
+```text
+nums = [1, 2, 3, 2]
+answer = 14
+```
+
+Subarray `[2,3,2]`:
+
+```text
+minimum = 2
+sum = 7
+product = 14
+```
+
+### Pattern
+
+```text
+Histogram boundary + prefix sum
+```
+
+### Thinking
+
+For each element as minimum:
+
+```text
+find max range where nums[i] is minimum
+range sum using prefix sum
+candidate = nums[i] * rangeSum
+```
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int maxSumMinProduct(vector<int>& nums) {
+    const int MOD = 1e9 + 7;
+    int n = nums.size();
+
+    vector<long long> pref(n + 1, 0);
+    for (int i = 0; i < n; i++) {
+        pref[i + 1] = pref[i] + nums[i];
+    }
+
+    stack<int> st;
+    long long ans = 0;
+
+    for (int i = 0; i <= n; i++) {
+        long long curr = (i == n ? 0 : nums[i]);
+
+        while (!st.empty() && nums[st.top()] > curr) {
+            int idx = st.top();
+            st.pop();
+
+            int left = st.empty() ? -1 : st.top();
+            int right = i;
+
+            long long rangeSum = pref[right] - pref[left + 1];
+            ans = max(ans, rangeSum * nums[idx]);
+        }
+
+        st.push(i);
+    }
+
+    return ans % MOD;
+}
+```
+
+---
+
+# Phase 4 — Greedy + Monotonic Stack
+
+Goal:
+
+```text
+Use stack to remove bad previous decisions when a better current option appears.
+```
+
+Core question:
+
+```text
+Can current element improve answer by removing previous elements?
+```
+
+---
+
+## 10. Remove K Digits
+
+### Problem Idea
+
+Remove `k` digits to make the smallest possible number.
+
+Example:
+
+```text
+num = "1432219", k = 3
+answer = "1219"
+```
+
+### Pattern
+
+```text
+Stack type: increasing stack
+Pop when : previous digit > current digit and k > 0
+Meaning  : remove bad larger previous digit
+```
+
+### Thinking
+
+A bigger digit before a smaller digit makes the number larger.
+
+So remove it if allowed.
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+string removeKdigits(string num, int k) {
+    string st;
+
+    for (char c : num) {
+        while (!st.empty() && k > 0 && st.back() > c) {
+            st.pop_back();
+            k--;
+        }
+        st.push_back(c);
+    }
+
+    while (k > 0 && !st.empty()) {
+        st.pop_back();
+        k--;
+    }
+
+    int i = 0;
+    while (i < (int)st.size() && st[i] == '0') i++;
+
+    string ans = st.substr(i);
+    return ans.empty() ? "0" : ans;
+}
+```
+
+---
+
+## 11. Remove Duplicate Letters
+
+### Problem Idea
+
+Remove duplicate letters so every letter appears once and result is lexicographically smallest.
+
+Example:
+
+```text
+s = "cbacdcbc"
+answer = "acdb"
+```
+
+### Pattern
+
+```text
+Stack type: increasing lexicographic stack
+Pop when : stack top > current char AND stack top appears later
+Meaning  : remove bad bigger char safely
+```
+
+### Thinking
+
+You can remove a previous bigger character only if it appears again later.
+
+Need:
+
+```text
+frequency count
+visited array
+stack string
+```
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+string removeDuplicateLetters(string s) {
+    vector<int> freq(26, 0), used(26, 0);
+
+    for (char c : s) freq[c - 'a']++;
+
+    string st;
+
+    for (char c : s) {
+        int id = c - 'a';
+        freq[id]--;
+
+        if (used[id]) continue;
+
+        while (!st.empty() && st.back() > c && freq[st.back() - 'a'] > 0) {
+            used[st.back() - 'a'] = 0;
+            st.pop_back();
+        }
+
+        st.push_back(c);
+        used[id] = 1;
+    }
+
+    return st;
+}
+```
+
+---
+
+# Phase 5 — Advanced / Hidden Monotonic Stack
+
+Goal:
+
+```text
+Solve problems where monotonic stack is not obvious from statement.
+```
+
+Core question:
+
+```text
+Who blocks whom?
+Who removes whom?
+Who becomes useless?
+```
+
+---
+
+## 12. Trapping Rain Water
+
+### Problem Idea
+
+Given heights, calculate trapped rain water.
+
+Example:
+
+```text
+height = [0,1,0,2,1,0,1,3,2,1,2,1]
+answer = 6
+```
+
+### Pattern
+
+```text
+Stack type: decreasing stack
+Pop when : current height > stack top height
+Meaning  : current is right wall
+```
+
+### Thinking
+
+When current bar is higher, it may form a container with a previous left wall.
+
+```text
+water = width * boundedHeight
+boundedHeight = min(leftWall, rightWall) - bottom
+```
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int trap(vector<int>& height) {
+    int n = height.size();
+    stack<int> st;
+    int water = 0;
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && height[i] > height[st.top()]) {
+            int bottom = st.top();
+            st.pop();
+
+            if (st.empty()) break;
+
+            int left = st.top();
+            int width = i - left - 1;
+            int boundedHeight = min(height[left], height[i]) - height[bottom];
+
+            water += width * boundedHeight;
+        }
+
+        st.push(i);
+    }
+
+    return water;
+}
+```
+
+---
+
+## 13. Maximum Width Ramp
+
+### Problem Idea
+
+Find maximum `j - i` such that:
+
+```text
+i < j and nums[i] <= nums[j]
+```
+
+Example:
+
+```text
+nums = [6, 0, 8, 2, 1, 5]
+answer = 4
+```
+
+Ramp:
+
+```text
+i = 1, nums[i] = 0
+j = 5, nums[j] = 5
+width = 4
+```
+
+### Pattern
+
+```text
+Build decreasing stack of candidate left indices.
+Scan from right and resolve candidates.
+```
+
+### Thinking
+
+Only keep useful left candidates.
+
+If a previous value is smaller, bigger previous values are not useful as left boundary.
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int maxWidthRamp(vector<int>& nums) {
+    int n = nums.size();
+    stack<int> st;
+
+    // candidate left indices with decreasing values
+    for (int i = 0; i < n; i++) {
+        if (st.empty() || nums[i] < nums[st.top()]) {
+            st.push(i);
+        }
+    }
+
+    int ans = 0;
+
+    // scan from right to maximize width
+    for (int j = n - 1; j >= 0; j--) {
+        while (!st.empty() && nums[st.top()] <= nums[j]) {
+            ans = max(ans, j - st.top());
+            st.pop();
+        }
+    }
+
+    return ans;
+}
+```
+
+---
+
+## 14. Number of Visible People in a Queue
+
+### Problem Idea
+
+Each person can see people to the right until a taller or equal person blocks the view.
+
+Example:
+
+```text
+heights = [10, 6, 8, 5, 11, 9]
+answer  = [3, 1, 2, 1, 1, 0]
+```
+
+### Pattern
+
+```text
+Stack type: decreasing stack from right to left
+Pop when : current height > stack top
+Meaning  : current can see popped shorter people
+```
+
+### Thinking
+
+From right to left:
+
+```text
+Pop all shorter people: current can see them.
+If one taller/equal remains: current can also see that blocker.
+```
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> canSeePersonsCount(vector<int>& heights) {
+    int n = heights.size();
+    vector<int> ans(n, 0);
+    stack<int> st; // heights to the right
+
+    for (int i = n - 1; i >= 0; i--) {
+        while (!st.empty() && heights[i] > st.top()) {
+            ans[i]++;
+            st.pop();
+        }
+
+        if (!st.empty()) ans[i]++; // sees first taller/equal blocker
+
+        st.push(heights[i]);
+    }
+
+    return ans;
+}
+```
+
+---
+
+## 15. Steps to Make Array Non-Decreasing
+
+### Problem Idea
+
+In one step, remove every element `nums[i]` where:
+
+```text
+nums[i - 1] > nums[i]
+```
+
+Return number of steps until array becomes non-decreasing.
+
+Example:
+
+```text
+nums = [5, 3, 4, 4, 7, 3, 6, 11, 8, 5, 11]
+answer = 3
+```
+
+### Pattern
+
+```text
+Monotonic stack + DP state
+```
+
+### Thinking
+
+Each element may die after some number of rounds.
+
+Stack stores:
+
+```text
+(value, stepsToDie)
+```
+
+When current is greater/equal, it removes smaller/equal previous dependencies.
+
+### Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int totalSteps(vector<int>& nums) {
+    int ans = 0;
+    stack<pair<int,int>> st; // {value, steps needed to remove}
+
+    for (int x : nums) {
+        int steps = 0;
+
+        while (!st.empty() && x >= st.top().first) {
+            steps = max(steps, st.top().second);
+            st.pop();
+        }
+
+        if (st.empty()) {
+            steps = 0;
+        } else {
+            steps += 1;
+        }
+
+        ans = max(ans, steps);
+        st.push({x, steps});
+    }
+
+    return ans;
+}
+```
+
+---
+
+# Final Phase Summary
+
+| Phase   | Goal                    | Problems                                                                         |
+| ------- | ----------------------- | -------------------------------------------------------------------------------- |
+| Phase 1 | Recognize pop condition | Next Greater, Daily Temperatures, Final Prices, Stock Span                       |
+| Phase 2 | Boundary/range thinking | Histogram, Maximal Rectangle, Height of Soldiers                                 |
+| Phase 3 | Contribution thinking   | Sum of Subarray Minimums, Max Subarray Min Product                               |
+| Phase 4 | Greedy stack            | Remove K Digits, Remove Duplicate Letters                                        |
+| Phase 5 | Hidden stack            | Trapping Rain Water, Maximum Width Ramp, Visible People, Steps to Non-decreasing |
+
+---
+
+# Master Rule
+
+```text
+If current element makes previous elements useless,
+monotonic stack is probably the pattern.
+```
+
+# Final Checklist Before Coding
+
+```text
+1. Stack stores index or value?
+2. Increasing or decreasing?
+3. Pop condition?
+4. What to calculate when popping?
+5. What remains after popping?
+6. Need tie handling: <, <=, >, >= ?
+```
+
+---
+
+# Original Monotonic Stack Problem Playbook
+
 # Monotonic Stack Problem Playbook
 
 ## Clickable Index
