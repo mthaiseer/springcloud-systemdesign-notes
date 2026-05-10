@@ -107,6 +107,39 @@ vector<int> nextGreater(vector<int>& nums) {
     return ans;
 }
 ```
+### Dry Run After Code
+
+```text
+nums = [2, 1, 5, 3]
+ans  = [-1, -1, -1, -1]
+stack stores indices, values are decreasing from bottom to top
+
+i = 0, nums[i] = 2
+stack = []
+push 0
+stack = [0:2]
+ans = [-1, -1, -1, -1]
+
+i = 1, nums[i] = 1
+1 > 2? no
+push 1
+stack = [0:2, 1:1]
+ans = [-1, -1, -1, -1]
+
+i = 2, nums[i] = 5
+5 > 1 -> pop index 1 -> ans[1] = 5
+5 > 2 -> pop index 0 -> ans[0] = 5
+push 2
+stack = [2:5]
+ans = [5, 5, -1, -1]
+
+i = 3, nums[i] = 3
+3 > 5? no
+push 3
+stack = [2:5, 3:3]
+ans = [5, 5, -1, -1]
+```
+
 
 ---
 
@@ -162,6 +195,51 @@ vector<int> dailyTemperatures(vector<int>& temp) {
     return ans;
 }
 ```
+### Dry Run After Code
+
+```text
+temp = [73, 74, 75, 71, 69, 72, 76, 73]
+ans  = [0, 0, 0, 0, 0, 0, 0, 0]
+stack stores unresolved day indices
+
+i = 0, 73 -> push 0
+stack = [0:73]
+
+i = 1, 74
+74 > 73 -> pop 0 -> ans[0] = 1 - 0 = 1
+push 1
+stack = [1:74]
+ans = [1,0,0,0,0,0,0,0]
+
+i = 2, 75
+75 > 74 -> pop 1 -> ans[1] = 2 - 1 = 1
+push 2
+stack = [2:75]
+ans = [1,1,0,0,0,0,0,0]
+
+i = 3, 71 -> push 3
+stack = [2:75, 3:71]
+
+i = 4, 69 -> push 4
+stack = [2:75, 3:71, 4:69]
+
+i = 5, 72
+72 > 69 -> pop 4 -> ans[4] = 1
+72 > 71 -> pop 3 -> ans[3] = 2
+72 > 75? no -> push 5
+stack = [2:75, 5:72]
+ans = [1,1,0,2,1,0,0,0]
+
+i = 6, 76
+76 > 72 -> pop 5 -> ans[5] = 1
+76 > 75 -> pop 2 -> ans[2] = 4
+push 6
+ans = [1,1,4,2,1,1,0,0]
+
+i = 7, 73 -> no pop -> push 7
+final ans = [1,1,4,2,1,1,0,0]
+```
+
 
 ---
 
@@ -222,6 +300,40 @@ vector<int> finalPrices(vector<int>& prices) {
     return ans;
 }
 ```
+### Dry Run After Code
+
+```text
+prices = [8, 4, 6, 2, 3]
+ans    = [8, 4, 6, 2, 3]
+stack stores indices waiting for discount
+
+i = 0, price = 8
+push 0
+stack = [0:8]
+
+i = 1, price = 4
+4 <= 8 -> pop 0 -> ans[0] = 8 - 4 = 4
+push 1
+stack = [1:4]
+ans = [4,4,6,2,3]
+
+i = 2, price = 6
+6 <= 4? no
+push 2
+stack = [1:4, 2:6]
+
+i = 3, price = 2
+2 <= 6 -> pop 2 -> ans[2] = 6 - 2 = 4
+2 <= 4 -> pop 1 -> ans[1] = 4 - 2 = 2
+push 3
+stack = [3:2]
+ans = [4,2,4,2,3]
+
+i = 4, price = 3
+3 <= 2? no -> push 4
+final ans = [4,2,4,2,3]
+```
+
 
 ---
 
@@ -279,6 +391,52 @@ vector<int> stockSpan(vector<int>& prices) {
     return ans;
 }
 ```
+### Dry Run After Code
+
+```text
+prices = [100, 80, 60, 70, 60, 75, 85]
+stack keeps previous greater blockers
+
+i = 0, price = 100
+prevGreater = -1 -> span = 1
+stack = [0:100]
+ans = [1]
+
+i = 1, price = 80
+80 >= 100? no
+prevGreater = 0 -> span = 1
+stack = [0:100, 1:80]
+
+i = 2, price = 60
+60 >= 80? no
+prevGreater = 1 -> span = 1
+stack = [0:100, 1:80, 2:60]
+
+i = 3, price = 70
+70 >= 60 -> pop 2
+70 >= 80? no
+prevGreater = 1 -> span = 3 - 1 = 2
+stack = [0:100, 1:80, 3:70]
+
+i = 4, price = 60
+prevGreater = 3 -> span = 1
+stack = [0:100, 1:80, 3:70, 4:60]
+
+i = 5, price = 75
+75 >= 60 -> pop 4
+75 >= 70 -> pop 3
+75 >= 80? no
+prevGreater = 1 -> span = 5 - 1 = 4
+stack = [0:100, 1:80, 5:75]
+
+i = 6, price = 85
+85 >= 75 -> pop 5
+85 >= 80 -> pop 1
+85 >= 100? no
+prevGreater = 0 -> span = 6
+final ans = [1,1,1,2,1,4,6]
+```
+
 
 ---
 
@@ -361,6 +519,42 @@ int largestRectangleArea(vector<int>& h) {
     return (int)ans;
 }
 ```
+### Dry Run After Code
+
+```text
+heights = [2, 1, 5, 6, 2, 3]
+scan with sentinel 0 at i = 6
+stack stores increasing heights by index
+
+i = 0, curr = 2 -> push 0 -> stack [0:2]
+
+i = 1, curr = 1
+1 < 2 -> pop 0
+height = 2, right = 1, left = -1, width = 1, area = 2
+ans = 2
+push 1 -> stack [1:1]
+
+i = 2, curr = 5 -> push 2 -> stack [1:1, 2:5]
+i = 3, curr = 6 -> push 3 -> stack [1:1, 2:5, 3:6]
+
+i = 4, curr = 2
+2 < 6 -> pop 3
+height = 6, right = 4, left = 2, width = 1, area = 6
+ans = 6
+2 < 5 -> pop 2
+height = 5, right = 4, left = 1, width = 2, area = 10
+ans = 10
+push 4 -> stack [1:1, 4:2]
+
+i = 5, curr = 3 -> push 5 -> stack [1:1, 4:2, 5:3]
+
+i = 6, curr = 0
+pop 5 -> area = 3 * 1 = 3
+pop 4 -> area = 2 * 4 = 8
+pop 1 -> area = 1 * 6 = 6
+final ans = 10
+```
+
 
 ---
 
@@ -449,6 +643,40 @@ int maximalRectangle(vector<vector<char>>& matrix) {
     return ans;
 }
 ```
+### Dry Run After Code
+
+```text
+matrix:
+1 0 1 0 0
+1 0 1 1 1
+1 1 1 1 1
+1 0 0 1 0
+
+Start height = [0,0,0,0,0]
+
+row 0 = [1,0,1,0,0]
+height = [1,0,1,0,0]
+largest histogram area = 1
+ans = 1
+
+row 1 = [1,0,1,1,1]
+height = [2,0,2,1,1]
+largest histogram area = 3
+ans = 3
+
+row 2 = [1,1,1,1,1]
+height = [3,1,3,2,2]
+largest histogram area = 6
+ans = 6
+
+row 3 = [1,0,0,1,0]
+height = [4,0,0,3,0]
+largest histogram area = 4
+ans remains 6
+
+final answer = 6
+```
+
 
 ---
 
@@ -551,6 +779,38 @@ vector<int> maxOfMinimums(vector<int>& a) {
     return result;
 }
 ```
+### Dry Run After Code
+
+```text
+a = [10, 20, 30, 50, 10, 70, 30]
+
+previous smaller left indices:
+left = [-1, 0, 1, 2, -1, 4, 4]
+
+next smaller right indices:
+right = [7, 4, 4, 4, 7, 6, 7]
+
+For each i, len = right[i] - left[i] - 1:
+i=0, value=10, len=7 -> ans[7] = 10
+i=1, value=20, len=3 -> ans[3] = 20
+i=2, value=30, len=2 -> ans[2] = 30
+i=3, value=50, len=1 -> ans[1] = 50
+i=4, value=10, len=7 -> ans[7] = 10
+i=5, value=70, len=1 -> ans[1] = 70
+i=6, value=30, len=2 -> ans[2] = 30
+
+before fill:
+ans by len = [70, 30, 20, 0, 0, 0, 10]
+
+fill right to left:
+len 6 -> max(0,10)=10
+len 5 -> 10
+len 4 -> 10
+len 3 -> max(20,10)=20
+
+final result = [70, 30, 20, 10, 10, 10, 10]
+```
+
 
 ---
 
@@ -647,6 +907,34 @@ int sumSubarrayMins(vector<int>& arr) {
     return ans;
 }
 ```
+### Dry Run After Code
+
+```text
+arr = [3, 1, 2, 4]
+
+left distance using previous strictly smaller:
+i=0, 3 -> left[0]=1
+i=1, 1 -> pop 3 -> left[1]=2
+i=2, 2 -> previous smaller is 1 -> left[2]=1
+i=3, 4 -> previous smaller is 2 -> left[3]=1
+left = [1,2,1,1]
+
+right distance using next smaller/equal:
+i=3, 4 -> right[3]=1
+i=2, 2 -> pop 4 -> right[2]=2
+i=1, 1 -> pop 2 -> right[1]=3
+i=0, 3 -> next smaller/equal is 1 -> right[0]=1
+right = [1,3,2,1]
+
+contribution:
+3 * 1 * 1 = 3
+1 * 2 * 3 = 6
+2 * 1 * 2 = 4
+4 * 1 * 1 = 4
+
+answer = 3 + 6 + 4 + 4 = 17
+```
+
 
 ---
 
@@ -731,6 +1019,46 @@ int maxSumMinProduct(vector<int>& nums) {
     return ans % MOD;
 }
 ```
+### Dry Run After Code
+
+```text
+nums = [1, 2, 3, 2]
+prefix = [0, 1, 3, 6, 8]
+
+Use increasing stack. When current is smaller, finalize popped value as minimum.
+
+i = 0, curr = 1 -> push 0 -> stack [0:1]
+i = 1, curr = 2 -> push 1 -> stack [0:1, 1:2]
+i = 2, curr = 3 -> push 2 -> stack [0:1, 1:2, 2:3]
+
+i = 3, curr = 2
+2 < 3 -> pop index 2
+left = 1, right = 3
+rangeSum = prefix[3] - prefix[2] = 6 - 3 = 3
+product = 3 * nums[2] = 3 * 3 = 9
+ans = 9
+push 3 -> stack [0:1, 1:2, 3:2]
+
+i = 4, sentinel curr = 0
+pop index 3 value 2
+left = 1, right = 4
+rangeSum = prefix[4] - prefix[2] = 8 - 3 = 5
+product = 5 * 2 = 10
+ans = 10
+
+pop index 1 value 2
+left = 0, right = 4
+rangeSum = prefix[4] - prefix[1] = 8 - 1 = 7
+product = 7 * 2 = 14
+ans = 14
+
+pop index 0 value 1
+rangeSum = prefix[4] - prefix[0] = 8
+product = 8 * 1 = 8
+
+final answer = 14
+```
+
 
 ---
 
@@ -806,6 +1134,24 @@ string removeKdigits(string num, int k) {
     return ans.empty() ? "0" : ans;
 }
 ```
+### Dry Run After Code
+
+```text
+num = "1432219", k = 3
+stack string keeps digits increasing
+
+read 1 -> stack = "1", k = 3
+read 4 -> 1 > 4? no -> stack = "14", k = 3
+read 3 -> 4 > 3 -> pop 4 -> stack = "1", k = 2 -> push 3 -> "13"
+read 2 -> 3 > 2 -> pop 3 -> stack = "1", k = 1 -> push 2 -> "12"
+read 2 -> 2 > 2? no -> push -> "122"
+read 1 -> 2 > 1 -> pop last 2 -> stack = "12", k = 0 -> push 1 -> "121"
+read 9 -> k = 0, push -> "1219"
+
+remove leading zeros: none
+answer = "1219"
+```
+
 
 ---
 
@@ -873,6 +1219,44 @@ string removeDuplicateLetters(string s) {
     return st;
 }
 ```
+### Dry Run After Code
+
+```text
+s = "cbacdcbc"
+initial freq: c=4, b=2, a=1, d=1
+stack = ""
+
+read c: freq[c]=3, used[c]=false -> push c
+stack = "c"
+
+read b: freq[b]=1
+c > b and c appears later -> pop c
+push b
+stack = "b"
+
+read a: freq[a]=0
+b > a and b appears later -> pop b
+push a
+stack = "a"
+
+read c: freq[c]=2 -> push c
+stack = "ac"
+
+read d: freq[d]=0 -> c > d? no -> push d
+stack = "acd"
+
+read c: already used -> skip
+stack = "acd"
+
+read b: freq[b]=0
+d > b but d does not appear later -> cannot pop d
+push b
+stack = "acdb"
+
+read c: already used -> skip
+answer = "acdb"
+```
+
 
 ---
 
@@ -955,6 +1339,34 @@ int trap(vector<int>& height) {
     return water;
 }
 ```
+### Dry Run After Code
+
+```text
+Use small example: height = [2, 0, 2]
+stack stores indices of decreasing bars
+
+i = 0, height = 2
+stack empty -> push 0
+stack = [0:2], water = 0
+
+i = 1, height = 0
+0 > 2? no -> push 1
+stack = [0:2, 1:0], water = 0
+
+i = 2, height = 2
+2 > 0 -> pop bottom index 1
+left wall index = 0
+right wall index = 2
+width = 2 - 0 - 1 = 1
+boundedHeight = min(2,2) - 0 = 2
+water += 1 * 2 = 2
+
+2 > height[0]? no because equal
+push 2
+stack = [0:2, 2:2]
+final water = 2
+```
+
 
 ---
 
@@ -1026,6 +1438,32 @@ int maxWidthRamp(vector<int>& nums) {
     return ans;
 }
 ```
+### Dry Run After Code
+
+```text
+nums = [6, 0, 8, 2, 1, 5]
+
+Build decreasing candidate-left stack:
+i=0, 6 -> push 0 -> [0:6]
+i=1, 0 -> 0 < 6 -> push 1 -> [0:6, 1:0]
+i=2, 8 -> not smaller -> skip
+i=3, 2 -> not smaller than 0 -> skip
+i=4, 1 -> skip
+i=5, 5 -> skip
+
+Scan from right:
+j=5, nums[j]=5
+nums[1]=0 <= 5 -> width = 5 - 1 = 4, ans = 4, pop 1
+nums[0]=6 <= 5? no
+
+j=4, nums[j]=1 -> 6 <= 1? no
+j=3, nums[j]=2 -> 6 <= 2? no
+j=2, nums[j]=8
+nums[0]=6 <= 8 -> width = 2 - 0 = 2, ans remains 4, pop 0
+
+stack empty -> final answer = 4
+```
+
 
 ---
 
@@ -1084,6 +1522,47 @@ vector<int> canSeePersonsCount(vector<int>& heights) {
     return ans;
 }
 ```
+### Dry Run After Code
+
+```text
+heights = [10, 6, 8, 5, 11, 9]
+scan right to left
+stack stores visible blockers to the right
+
+i = 5, h = 9
+stack empty -> ans[5] = 0 -> push 9
+stack = [9]
+
+i = 4, h = 11
+11 > 9 -> see 9, pop, ans[4] = 1
+stack empty -> push 11
+stack = [11]
+
+i = 3, h = 5
+5 > 11? no
+sees blocker 11 -> ans[3] = 1
+push 5 -> stack = [11,5]
+
+i = 2, h = 8
+8 > 5 -> see 5, pop, ans[2] = 1
+8 > 11? no
+sees blocker 11 -> ans[2] = 2
+push 8 -> stack = [11,8]
+
+i = 1, h = 6
+6 > 8? no
+sees blocker 8 -> ans[1] = 1
+push 6 -> stack = [11,8,6]
+
+i = 0, h = 10
+10 > 6 -> see 6, pop, ans[0] = 1
+10 > 8 -> see 8, pop, ans[0] = 2
+10 > 11? no
+sees blocker 11 -> ans[0] = 3
+
+final ans = [3,1,2,1,1,0]
+```
+
 
 ---
 
@@ -1155,6 +1634,59 @@ int totalSteps(vector<int>& nums) {
     return ans;
 }
 ```
+### Dry Run After Code
+
+```text
+nums = [5, 3, 4, 4, 7, 3, 6, 11, 8, 5, 11]
+stack stores {value, stepsToDie}
+
+x = 5
+stack empty -> steps = 0
+push {5,0}, ans = 0
+
+x = 3
+3 >= 5? no
+left bigger exists, so steps = 1
+push {3,1}, ans = 1
+
+x = 4
+4 >= 3 -> steps = max(0,1)=1, pop {3,1}
+4 >= 5? no
+left bigger exists -> steps = 1 + 1 = 2
+push {4,2}, ans = 2
+
+x = 4
+4 >= 4 -> steps = max(0,2)=2, pop {4,2}
+4 >= 5? no
+left bigger exists -> steps = 2 + 1 = 3
+push {4,3}, ans = 3
+
+x = 7
+7 >= 4 -> steps = 3, pop
+7 >= 5 -> steps = 3, pop
+stack empty -> steps = 0
+push {7,0}, ans = 3
+
+x = 3
+3 >= 7? no -> steps = 1
+push {3,1}, ans = 3
+
+x = 6
+6 >= 3 -> steps = 1, pop
+6 >= 7? no -> steps = 2
+push {6,2}, ans = 3
+
+x = 11
+pop {6,2}, pop {7,0}, stack empty -> steps = 0
+push {11,0}, ans = 3
+
+x = 8 -> blocked by 11 -> steps = 1
+x = 5 -> blocked by 8 -> steps = 1
+x = 11 -> pops 5 and 8, blocked by 11 -> steps = 2
+
+final answer = 3
+```
+
 
 ---
 
