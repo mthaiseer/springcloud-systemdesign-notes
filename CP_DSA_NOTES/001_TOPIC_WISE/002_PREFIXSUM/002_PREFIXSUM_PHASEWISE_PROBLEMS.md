@@ -1,4 +1,4 @@
-# Prefix Sum Phase-Wise Problem Practice Guide
+# Prefix Sum Phase-Wise Problem Practice Guide — ALL Dry Runs in Array Diagram Style
 
 > Goal: Learn prefix sum from beginner to advanced by solving problems phase by phase.
 >
@@ -9,7 +9,7 @@
 > - Pattern recognition
 > - Result
 > - C++ code
-> - Step-by-step dry run
+> - Step-by-step dry run using array / matrix diagrams exactly like: index line, array line, pointer `^`, state before, action, state after, answer/result
 
 ---
 
@@ -178,26 +178,58 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Array Diagram
 
 ```text
 nums = [1, 2, 3, 4]
+Goal: convert nums[i] into sum from 0..i
 
-Start:
-[1, 2, 3, 4]
+Initial:
+index:   0   1   2   3
+nums :  [1,  2,  3,  4]
 
-i = 1:
-nums[1] = nums[1] + nums[0]
-        = 2 + 1 = 3
-[1, 3, 3, 4]
+Previous prefix is always stored at nums[i - 1]
+```
 
-i = 2:
-nums[2] = 3 + 3 = 6
-[1, 3, 6, 4]
+```text
+i = 1, current = nums[1] = 2
+index:   0   1   2   3
+nums :  [1,  2,  3,  4]
+             ^
 
-i = 3:
-nums[3] = 4 + 6 = 10
-[1, 3, 6, 10]
+before      : nums[1] = 2
+previous sum: nums[0] = 1
+action      : nums[1] = nums[1] + nums[0]
+calculation : 2 + 1 = 3
+after       : [1, 3, 3, 4]
+```
+
+```text
+i = 2, current = nums[2] = 3
+index:   0   1   2   3
+nums :  [1,  3,  3,  4]
+                 ^
+
+before      : nums[2] = 3
+previous sum: nums[1] = 3
+action      : nums[2] = nums[2] + nums[1]
+calculation : 3 + 3 = 6
+after       : [1, 3, 6, 4]
+```
+
+```text
+i = 3, current = nums[3] = 4
+index:   0   1   2   3
+nums :  [1,  3,  6,  4]
+                     ^
+
+before      : nums[3] = 4
+previous sum: nums[2] = 6
+action      : nums[3] = nums[3] + nums[2]
+calculation : 4 + 6 = 10
+after       : [1, 3, 6, 10]
+
+Final answer: [1, 3, 6, 10]
 ```
 
 ---
@@ -276,30 +308,72 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Prefix Array Diagram
 
 ```text
 nums = [-2, 0, 3, -5, 2, -1]
+pref stores sum of first i elements.
 
-Build pref:
-pref[0] = 0
-pref[1] = -2
-pref[2] = -2
-pref[3] = 1
-pref[4] = -4
-pref[5] = -2
-pref[6] = -3
+index nums:   0    1   2    3   4    5
+nums      :  [-2,  0,  3,  -5,  2,  -1]
 
+index pref:   0    1    2   3    4    5    6
+pref      :  [0,  -2,  -2,  1,  -4,  -2,  -3]
+```
+
+```text
+Build prefix step by step:
+
+i = 1 uses nums[0] = -2
+pref[1] = pref[0] + nums[0] = 0 + (-2) = -2
+pref = [0, -2]
+
+i = 2 uses nums[1] = 0
+pref[2] = pref[1] + nums[1] = -2 + 0 = -2
+pref = [0, -2, -2]
+
+i = 3 uses nums[2] = 3
+pref[3] = -2 + 3 = 1
+pref = [0, -2, -2, 1]
+
+i = 4 uses nums[3] = -5
+pref[4] = 1 - 5 = -4
+pref = [0, -2, -2, 1, -4]
+
+i = 5 uses nums[4] = 2
+pref[5] = -4 + 2 = -2
+pref = [0, -2, -2, 1, -4, -2]
+
+i = 6 uses nums[5] = -1
+pref[6] = -2 - 1 = -3
 pref = [0, -2, -2, 1, -4, -2, -3]
+```
 
-Query sumRange(0, 2):
-pref[3] - pref[0] = 1 - 0 = 1
+```text
+Query 1: sumRange(0, 2)
+index nums:   0    1   2    3   4    5
+nums      :  [-2,  0,  3,  -5,  2,  -1]
+             ^---------^
 
-Query sumRange(2, 5):
-pref[6] - pref[2] = -3 - (-2) = -1
+formula    : pref[right + 1] - pref[left]
+calculation: pref[3] - pref[0] = 1 - 0 = 1
+answer     : 1
+```
 
-Query sumRange(0, 5):
-pref[6] - pref[0] = -3 - 0 = -3
+```text
+Query 2: sumRange(2, 5)
+index nums:   0    1   2    3   4    5
+nums      :  [-2,  0,  3,  -5,  2,  -1]
+                     ^----------------^
+
+calculation: pref[6] - pref[2] = -3 - (-2) = -1
+answer     : -1
+```
+
+```text
+Query 3: sumRange(0, 5)
+calculation: pref[6] - pref[0] = -3 - 0 = -3
+answer     : -3
 ```
 
 ---
@@ -371,33 +445,73 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Array Diagram
 
 ```text
 nums = [1, 7, 3, 6, 5, 6]
 total = 28
-
 left = 0
 
-i = 0, nums[i] = 1
-right = 28 - 0 - 1 = 27
-left != right
-left = 1
+At each i:
+right = total - left - nums[i]
+if left == right, i is pivot.
+```
 
-i = 1, nums[i] = 7
-right = 28 - 1 - 7 = 20
-left != right
-left = 8
+```text
+i = 0, current = 1
+index:   0   1   2   3   4   5
+nums :  [1,  7,  3,  6,  5,  6]
+         ^
 
-i = 2, nums[i] = 3
-right = 28 - 8 - 3 = 17
-left != right
-left = 11
+left before : 0
+right       : 28 - 0 - 1 = 27
+condition   : left == right? 0 == 27 no
+action      : left += nums[0]
+left after  : 1
+```
 
-i = 3, nums[i] = 6
-right = 28 - 11 - 6 = 11
-left == right
-answer = 3
+```text
+i = 1, current = 7
+index:   0   1   2   3   4   5
+nums :  [1,  7,  3,  6,  5,  6]
+             ^
+
+left before : 1
+right       : 28 - 1 - 7 = 20
+condition   : 1 == 20? no
+action      : left += 7
+left after  : 8
+```
+
+```text
+i = 2, current = 3
+index:   0   1   2   3   4   5
+nums :  [1,  7,  3,  6,  5,  6]
+                 ^
+
+left before : 8
+right       : 28 - 8 - 3 = 17
+condition   : 8 == 17? no
+action      : left += 3
+left after  : 11
+```
+
+```text
+i = 3, current = 6
+index:   0   1   2   3   4   5
+nums :  [1,  7,  3,  6,  5,  6]
+                     ^
+
+left before : 11
+right       : 28 - 11 - 6 = 11
+condition   : 11 == 11? yes
+action      : return 3
+
+Visual:
+[1, 7, 3, 6, 5, 6]
+ ^------^  |  ^---^
+ left=11   |  right=11
+          pivot
 ```
 
 ---
@@ -465,27 +579,52 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Window Diagram
 
 ```text
 nums = [1, 12, -5, -6, 50, 3]
 k = 4
 
-pref = [0, 1, 13, 8, 2, 52, 55]
+index:   0    1    2    3    4   5
+nums :  [1,  12,  -5,  -6,  50,  3]
+pref :  [0,   1,  13,   8,   2, 52, 55]
+```
 
-Window [0..3]:
-sum = pref[4] - pref[0] = 2 - 0 = 2
-best = 2
+```text
+Window start i = 0, window [0..3]
+index:   0    1    2    3    4   5
+nums :  [1,  12,  -5,  -6,  50,  3]
+         ^--------------^
 
-Window [1..4]:
-sum = pref[5] - pref[1] = 52 - 1 = 51
-best = 51
+sum calculation: pref[4] - pref[0] = 2 - 0 = 2
+best before    : -infinity
+best after     : 2
+```
 
-Window [2..5]:
-sum = pref[6] - pref[2] = 55 - 13 = 42
-best = 51
+```text
+Window start i = 1, window [1..4]
+index:   0    1    2    3    4   5
+nums :  [1,  12,  -5,  -6,  50,  3]
+              ^---------------^
 
-answer = 51 / 4 = 12.75
+sum calculation: pref[5] - pref[1] = 52 - 1 = 51
+best before    : 2
+best after     : 51
+```
+
+```text
+Window start i = 2, window [2..5]
+index:   0    1    2    3    4   5
+nums :  [1,  12,  -5,  -6,  50,  3]
+                   ^---------------^
+
+sum calculation: pref[6] - pref[2] = 55 - 13 = 42
+best before    : 51
+best after     : 51
+
+Final:
+best sum = 51
+average  = 51 / 4 = 12.75
 ```
 
 ---
@@ -580,36 +719,71 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Prefix HashMap Diagram
 
 ```text
 nums = [1, 1, 1], k = 2
+freq stores old prefix sums.
+
+Initial:
 freq = {0:1}
 pref = 0, ans = 0
+```
 
-i = 0, x = 1
-pref = 1
-need = pref - k = -1
-freq[-1] not found
-freq[1]++
-freq = {0:1, 1:1}
-ans = 0
+```text
+i = 0, current = 1
+index:   0   1   2
+nums :  [1,  1,  1]
+         ^
 
-i = 1, x = 1
-pref = 2
-need = 0
-freq[0] = 1
-ans += 1 => ans = 1
-freq[2]++
+pref before : 0
+pref after  : 0 + 1 = 1
+need        : pref - k = 1 - 2 = -1
+condition   : freq[-1] exists? no
+action      : freq[1]++
+freq after  : {0:1, 1:1}
+ans         : 0
+```
 
-i = 2, x = 1
-pref = 3
-need = 1
-freq[1] = 1
-ans += 1 => ans = 2
-freq[3]++
+```text
+i = 1, current = 1
+index:   0   1   2
+nums :  [1,  1,  1]
+             ^
 
-answer = 2
+pref before : 1
+pref after  : 2
+need        : 2 - 2 = 0
+condition   : freq[0] = 1 found
+action      : ans += 1, freq[2]++
+freq after  : {0:1, 1:1, 2:1}
+ans         : 1
+
+Visual:
+[1, 1, 1]
+ ^--^
+ sum = 2
+```
+
+```text
+i = 2, current = 1
+index:   0   1   2
+nums :  [1,  1,  1]
+                 ^
+
+pref before : 2
+pref after  : 3
+need        : 3 - 2 = 1
+condition   : freq[1] = 1 found
+action      : ans += 1, freq[3]++
+ans         : 2
+
+Visual:
+[1, 1, 1]
+     ^--^
+     sum = 2
+
+Final answer = 2
 ```
 
 ---
@@ -680,42 +854,81 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Prefix Earliest Index Diagram
 
 ```text
 nums = [1, -1, 5, -2, 3], k = 3
+first stores earliest index of each prefix sum.
+
+Initial:
 first = {0:-1}
 pref = 0, ans = 0
+```
 
-i = 0, x = 1
-pref = 1
-need = -2 not found
-store first[1] = 0
+```text
+i = 0, current = 1
+index:   0    1   2    3   4
+nums :  [1,  -1,  5,  -2,  3]
+         ^
 
-i = 1, x = -1
-pref = 0
-need = -3 not found
-first[0] already exists, keep earliest index -1
+pref after : 1
+need       : 1 - 3 = -2
+condition  : first[-2] found? no
+action     : store first[1] = 0
+first      : {0:-1, 1:0}
+ans        : 0
+```
 
-i = 2, x = 5
-pref = 5
-need = 2 not found
-store first[5] = 2
+```text
+i = 1, current = -1
+index:   0    1   2    3   4
+nums :  [1,  -1,  5,  -2,  3]
+              ^
 
-i = 3, x = -2
-pref = 3
-need = 0 found at -1
-length = 3 - (-1) = 4
-ans = 4
-store first[3] = 3
+pref after : 0
+need       : -3 not found
+action     : first[0] already exists, keep earliest -1
+ans        : 0
+```
 
-i = 4, x = 3
-pref = 6
-need = 3 found at 3
-length = 1
-ans remains 4
+```text
+i = 2, current = 5
+index:   0    1   2    3   4
+nums :  [1,  -1,  5,  -2,  3]
+                   ^
 
-answer = 4
+pref after : 5
+need       : 2 not found
+action     : store first[5] = 2
+ans        : 0
+```
+
+```text
+i = 3, current = -2
+index:   0    1   2    3   4
+nums :  [1,  -1,  5,  -2,  3]
+                         ^
+
+pref after : 3
+need       : 0
+condition  : first[0] = -1 found
+length     : i - first[0] = 3 - (-1) = 4
+action     : ans = 4, store first[3] = 3
+
+Visual:
+[1, -1, 5, -2, 3]
+ ^-----------^
+ sum = 3, length = 4
+```
+
+```text
+i = 4, current = 3
+pref after : 6
+need       : 3 found at index 3
+length     : 4 - 3 = 1
+ans remains: 4
+
+Final answer = 4
 ```
 
 ---
@@ -783,44 +996,89 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Binary Prefix Diagram
 
 ```text
 nums = [1, 0, 1, 0, 1], goal = 2
+freq stores count of previous prefix sums.
+
+Initial:
 freq = {0:1}
 pref = 0, ans = 0
+```
 
-i = 0, x = 1
-pref = 1
-need = -1, freq = 0
-ans = 0
-freq[1] = 1
+```text
+i = 0, current = 1
+index:   0   1   2   3   4
+nums :  [1,  0,  1,  0,  1]
+         ^
 
-i = 1, x = 0
-pref = 1
-need = -1, freq = 0
-ans = 0
-freq[1] = 2
+pref after : 1
+need       : 1 - 2 = -1
+freq[need] : 0
+ans        : 0
+action     : freq[1] = 1
+```
 
-i = 2, x = 1
-pref = 2
-need = 0, freq[0] = 1
-ans = 1
-freq[2] = 1
+```text
+i = 1, current = 0
+index:   0   1   2   3   4
+nums :  [1,  0,  1,  0,  1]
+             ^
 
-i = 3, x = 0
-pref = 2
-need = 0, freq[0] = 1
-ans = 2
-freq[2] = 2
+pref after : 1
+need       : -1
+freq[need] : 0
+ans        : 0
+action     : freq[1] = 2
+```
 
-i = 4, x = 1
-pref = 3
-need = 1, freq[1] = 2
-ans = 4
-freq[3] = 1
+```text
+i = 2, current = 1
+index:   0   1   2   3   4
+nums :  [1,  0,  1,  0,  1]
+                 ^
 
-answer = 4
+pref after : 2
+need       : 0
+freq[0]    : 1
+action     : ans += 1, freq[2] = 1
+ans        : 1
+
+Visual valid subarray:
+[1, 0, 1, 0, 1]
+ ^------^
+ sum = 2
+```
+
+```text
+i = 3, current = 0
+pref after : 2
+need       : 0
+freq[0]    : 1
+ans        : 2
+freq[2]    : 2
+
+Visual new valid subarray:
+[1, 0, 1, 0, 1]
+ ^---------^
+ sum = 2
+```
+
+```text
+i = 4, current = 1
+pref after : 3
+need       : 1
+freq[1]    : 2
+ans        : 2 + 2 = 4
+freq[3]    : 1
+
+Two new valid subarrays end at i = 4:
+[1, 0, 1, 0, 1]
+     ^------^
+        ^---^
+
+Final answer = 4
 ```
 
 ---
@@ -906,47 +1164,80 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Modulo Bucket Diagram
 
 ```text
 nums = [4, 5, 0, -2, -3, 1], k = 5
-freq = [1,0,0,0,0]
+freq[rem] stores how many previous prefix sums had this remainder.
+
+Initial:
+freq = [1, 0, 0, 0, 0]
 pref = 0, ans = 0
+```
 
-i = 0, x = 4
-pref = 4
-ans += freq[4] = 0
-freq[4] = 1
+```text
+i = 0, current = 4
+index:   0   1   2    3    4   5
+nums :  [4,  5,  0,  -2,  -3,  1]
+         ^
 
-i = 1, x = 5
-pref = (4 + 5) % 5 = 4
-ans += freq[4] = 1
-freq[4] = 2
+pref remainder: (0 + 4) % 5 = 4
+same rem count: freq[4] = 0
+ans           : 0
+action        : freq[4]++
+freq          : [1,0,0,0,1]
+```
 
-i = 2, x = 0
-pref = 4
-ans += freq[4] = 2
-ans = 3
-freq[4] = 3
+```text
+i = 1, current = 5
+index:   0   1   2    3    4   5
+nums :  [4,  5,  0,  -2,  -3,  1]
+             ^
 
-i = 3, x = -2
-pref = 2
-ans += freq[2] = 0
-freq[2] = 1
+pref remainder: (4 + 5) % 5 = 4
+same rem count: freq[4] = 1
+action        : ans += 1, freq[4]++
+ans           : 1
 
-i = 4, x = -3
-pref = -1 % 5 = -1, fix to 4
-ans += freq[4] = 3
-ans = 6
-freq[4] = 4
+Visual:
+prefix remainder repeated 4 -> subarray between them divisible by 5
+```
 
-i = 5, x = 1
-pref = 0
-ans += freq[0] = 1
-ans = 7
-freq[0] = 2
+```text
+i = 2, current = 0
+pref remainder: 4
+same rem count: freq[4] = 2
+action        : ans += 2
+ans           : 3
+freq[4]       : 3
+```
 
-answer = 7
+```text
+i = 3, current = -2
+pref remainder: (4 - 2) % 5 = 2
+same rem count: freq[2] = 0
+ans           : 3
+freq[2]       : 1
+```
+
+```text
+i = 4, current = -3
+raw remainder : (2 - 3) % 5 = -1
+fixed rem     : -1 + 5 = 4
+same rem count: freq[4] = 3
+action        : ans += 3
+ans           : 6
+freq[4]       : 4
+```
+
+```text
+i = 5, current = 1
+pref remainder: (4 + 1) % 5 = 0
+same rem count: freq[0] = 1
+action        : ans += 1
+ans           : 7
+
+Final answer = 7
 ```
 
 ---
@@ -1014,26 +1305,57 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Remainder Earliest Index Diagram
 
 ```text
 nums = [23, 2, 4, 6, 7], k = 6
+first stores earliest index for each remainder.
+Need same remainder with distance >= 2.
+
+Initial:
 first = {0:-1}
 pref = 0
+```
 
-i = 0, x = 23
-pref = 23 % 6 = 5
-first[5] = 0
+```text
+i = 0, current = 23
+index:   0    1   2   3   4
+nums :  [23,  2,  4,  6,  7]
+         ^
 
-i = 1, x = 2
-pref = (5 + 2) % 6 = 1
-first[1] = 1
+pref rem : (0 + 23) % 6 = 5
+seen?    : no
+action   : first[5] = 0
+first    : {0:-1, 5:0}
+```
 
-i = 2, x = 4
-pref = (1 + 4) % 6 = 5
-5 already seen at index 0
-length = 2 - 0 = 2
-length >= 2, return true
+```text
+i = 1, current = 2
+index:   0    1   2   3   4
+nums :  [23,  2,  4,  6,  7]
+              ^
+
+pref rem : (5 + 2) % 6 = 1
+seen?    : no
+action   : first[1] = 1
+```
+
+```text
+i = 2, current = 4
+index:   0    1   2   3   4
+nums :  [23,  2,  4,  6,  7]
+                  ^
+
+pref rem : (1 + 4) % 6 = 5
+seen?    : yes, first[5] = 0
+length   : 2 - 0 = 2
+condition: length >= 2? yes
+action   : return true
+
+Visual:
+[23, 2, 4, 6, 7]
+      ^--^
+      sum = 6, multiple of 6
 ```
 
 ---
@@ -1108,47 +1430,78 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Remainder Removal Diagram
 
 ```text
 nums = [3, 1, 4, 2], p = 6
 total = 10
-need = 10 % 6 = 4
+need = total % p = 4
 
-Need to remove subarray with sum % 6 = 4
+We need to remove shortest subarray whose sum % 6 = 4.
+last stores latest index of each prefix remainder.
 
+Initial:
 last = {0:-1}
 pref = 0, ans = 4
+```
 
-i = 0, x = 3
-pref = 3
-target = (3 - 4 + 6) % 6 = 5
-not found
-last[3] = 0
+```text
+i = 0, current = 3
+index:   0   1   2   3
+nums :  [3,  1,  4,  2]
+         ^
 
-i = 1, x = 1
-pref = 4
-target = (4 - 4 + 6) % 6 = 0
-last[0] = -1
-length = 1 - (-1) = 2
-ans = 2
-last[4] = 1
+pref rem : 3
+target   : (pref - need + p) % p = (3 - 4 + 6) % 6 = 5
+found?   : no
+action   : last[3] = 0
+ans      : 4
+```
 
-i = 2, x = 4
-pref = 2
-target = (2 - 4 + 6) % 6 = 4
-last[4] = 1
-length = 2 - 1 = 1
-ans = 1
-last[2] = 2
+```text
+i = 1, current = 1
+index:   0   1   2   3
+nums :  [3,  1,  4,  2]
+             ^
 
-i = 3, x = 2
-pref = 4
-target = 0
-length = 3 - (-1) = 4
-ans remains 1
+pref rem : 4
+target   : (4 - 4 + 6) % 6 = 0
+found?   : last[0] = -1
+length   : 1 - (-1) = 2
+action   : ans = 2, last[4] = 1
 
-answer = 1
+Visual removable candidate:
+[3, 1, 4, 2]
+ ^--^
+ sum = 4, length = 2
+```
+
+```text
+i = 2, current = 4
+index:   0   1   2   3
+nums :  [3,  1,  4,  2]
+                 ^
+
+pref rem : (4 + 4) % 6 = 2
+target   : (2 - 4 + 6) % 6 = 4
+found?   : last[4] = 1
+length   : 2 - 1 = 1
+action   : ans = 1, last[2] = 2
+
+Visual best removable candidate:
+[3, 1, 4, 2]
+         ^
+ remove [4], length = 1
+```
+
+```text
+i = 3, current = 2
+pref rem : 4
+target   : 0
+length   : 3 - (-1) = 4
+ans stays: 1
+
+Final answer = 1
 ```
 
 ---
@@ -1233,32 +1586,56 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Balance Array Diagram
 
 ```text
 nums = [0, 1, 0]
-0 -> -1, 1 -> +1
+convert: 0 -> -1, 1 -> +1
+Need longest subarray with balance repeated.
 
 first = {0:-1}
 balance = 0, ans = 0
+```
 
-i = 0, nums[0] = 0
-balance = -1
-first[-1] = 0
+```text
+i = 0, current = 0 => -1
+index:   0   1   2
+nums :  [0,  1,  0]
+         ^
 
-i = 1, nums[1] = 1
-balance = 0
-0 seen at -1
-length = 1 - (-1) = 2
-ans = 2
+balance before: 0
+balance after : -1
+seen?         : no
+action        : first[-1] = 0
+ans           : 0
+```
 
-i = 2, nums[2] = 0
-balance = -1
--1 seen at 0
-length = 2 - 0 = 2
-ans = 2
+```text
+i = 1, current = 1 => +1
+index:   0   1   2
+nums :  [0,  1,  0]
+             ^
 
-answer = 2
+balance before: -1
+balance after : 0
+seen?         : yes, first[0] = -1
+length        : 1 - (-1) = 2
+action        : ans = 2
+
+Visual:
+[0, 1, 0]
+ ^--^
+equal 0 and 1
+```
+
+```text
+i = 2, current = 0 => -1
+balance after : -1
+seen?         : yes, first[-1] = 0
+length        : 2 - 0 = 2
+ans           : 2
+
+Final answer = 2
 ```
 
 ---
@@ -1326,43 +1703,78 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Odd Count Prefix Diagram
 
 ```text
 nums = [1, 1, 2, 1, 1], k = 3
 odd version = [1, 1, 0, 1, 1]
+freq stores previous oddCount values.
 
 freq = {0:1}
 oddCount = 0, ans = 0
+```
 
-i = 0, x = 1
-oddCount = 1
-need = -2 -> 0
-freq[1] = 1
+```text
+i = 0, current = 1 odd
+index:   0   1   2   3   4
+nums :  [1,  1,  2,  1,  1]
+         ^
 
-i = 1, x = 1
-oddCount = 2
-need = -1 -> 0
-freq[2] = 1
+oddCount after: 1
+need          : 1 - 3 = -2
+freq[need]    : 0
+ans           : 0
+action        : freq[1] = 1
+```
 
-i = 2, x = 2
-oddCount = 2
-need = -1 -> 0
-freq[2] = 2
+```text
+i = 1, current = 1 odd
+oddCount after: 2
+need          : -1
+ans           : 0
+freq[2]       : 1
+```
 
-i = 3, x = 1
-oddCount = 3
-need = 0 -> freq[0] = 1
-ans = 1
-freq[3] = 1
+```text
+i = 2, current = 2 even
+oddCount after: 2
+need          : -1
+ans           : 0
+freq[2]       : 2
+```
 
-i = 4, x = 1
-oddCount = 4
-need = 1 -> freq[1] = 1
-ans = 2
-freq[4] = 1
+```text
+i = 3, current = 1 odd
+index:   0   1   2   3   4
+nums :  [1,  1,  2,  1,  1]
+                     ^
 
-answer = 2
+oddCount after: 3
+need          : 0
+freq[0]       : 1
+action        : ans += 1
+ans           : 1
+
+Visual valid subarray:
+[1, 1, 2, 1, 1]
+ ^---------^
+ exactly 3 odds
+```
+
+```text
+i = 4, current = 1 odd
+oddCount after: 4
+need          : 1
+freq[1]       : 1
+action        : ans += 1
+ans           : 2
+
+Visual valid subarray:
+[1, 1, 2, 1, 1]
+     ^---------^
+ exactly 3 odds
+
+Final answer = 2
 ```
 
 ---
@@ -1432,42 +1844,81 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Score Balance Diagram
 
 ```text
 hours = [9, 9, 6, 0, 6, 6, 9]
-converted = [+1, +1, -1, -1, -1, -1, +1]
+convert: >8 => +1, <=8 => -1
+values = [+1, +1, -1, -1, -1, -1, +1]
+Need longest subarray with score > 0.
 
-score = 0, ans = 0
+score = 0, ans = 0, first = {}
+```
 
-i = 0: score = 1
-score > 0, ans = 1
+```text
+i = 0, hours[0] = 9 => +1
+index :   0   1   2   3   4   5   6
+hours :  [9,  9,  6,  0,  6,  6,  9]
+          ^
 
-i = 1: score = 2
-score > 0, ans = 2
+score after : 1
+condition   : score > 0 yes
+action      : ans = i + 1 = 1
+```
 
-i = 2: score = 1
-score > 0, ans = 3
+```text
+i = 1, hours[1] = 9 => +1
+score after : 2
+score > 0   : yes
+ans         : 2
+```
 
-i = 3: score = 0
-store first[0] = 3
-need score - 1 = -1 not found
+```text
+i = 2, hours[2] = 6 => -1
+score after : 1
+score > 0   : yes
+ans         : 3
 
-i = 4: score = -1
-store first[-1] = 4
-need -2 not found
+Visual:
+[9, 9, 6, 0, 6, 6, 9]
+ ^-----^
+ +1 +1 -1 = +1, valid length 3
+```
 
-i = 5: score = -2
-store first[-2] = 5
-need -3 not found
+```text
+i = 3, hours[3] = 0 => -1
+score after : 0
+score > 0   : no
+store       : first[0] = 3
+need        : score - 1 = -1 not found
+ans         : 3
+```
 
-i = 6: score = -1
-first[-1] already exists
-need -2 found at index 5
-length = 6 - 5 = 1
-ans remains 3
+```text
+i = 4, hours[4] = 6 => -1
+score after : -1
+store       : first[-1] = 4
+need        : -2 not found
+ans         : 3
+```
 
-answer = 3
+```text
+i = 5, hours[5] = 6 => -1
+score after : -2
+store       : first[-2] = 5
+need        : -3 not found
+ans         : 3
+```
+
+```text
+i = 6, hours[6] = 9 => +1
+score after : -1
+first[-1] already exists at 4
+need        : -2 found at 5
+candidate   : 6 - 5 = 1
+ans remains : 3
+
+Final answer = 3
 ```
 
 ---
@@ -1561,35 +2012,68 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Difference Array Diagram
 
 ```text
 n = 5
+updates = [[1,3,2], [2,4,3], [0,2,-2]]
+
+diff has one extra slot to stop effect at r + 1.
 diff = [0, 0, 0, 0, 0, 0]
+```
 
-Update [1,3,2]:
-diff[1] += 2
-diff[4] -= 2
-diff = [0, 2, 0, 0, -2, 0]
+```text
+Update 1: add +2 on [1..3]
+index:   0   1   2   3   4   5
+ diff:  [0,  0,  0,  0,  0,  0]
+             ^-------^   stop
 
-Update [2,4,3]:
-diff[2] += 3
-diff[5] -= 3
-diff = [0, 2, 3, 0, -2, -3]
+action      : diff[1] += 2, diff[4] -= 2
+diff after  : [0, 2, 0, 0, -2, 0]
+```
 
-Update [0,2,-2]:
-diff[0] += -2
-diff[3] -= -2 => diff[3] += 2
-diff = [-2, 2, 3, 2, -2, -3]
+```text
+Update 2: add +3 on [2..4]
+index:   0   1   2   3   4   5
+ diff:  [0,  2,  0,  0, -2,  0]
+                 ^-------^   stop
 
-Prefix:
-i = 0: cur = -2, ans[0] = -2
-i = 1: cur = 0,  ans[1] = 0
-i = 2: cur = 3,  ans[2] = 3
-i = 3: cur = 5,  ans[3] = 5
-i = 4: cur = 3,  ans[4] = 3
+action      : diff[2] += 3, diff[5] -= 3
+diff after  : [0, 2, 3, 0, -2, -3]
+```
 
-answer = [-2, 0, 3, 5, 3]
+```text
+Update 3: add -2 on [0..2]
+index:   0   1   2   3   4   5
+ diff:  [0,  2,  3,  0, -2, -3]
+         ^-------^   stop
+
+action      : diff[0] += -2, diff[3] -= -2
+diff after  : [-2, 2, 3, 2, -2, -3]
+```
+
+```text
+Build final array by prefix over diff:
+
+index:       0   1   2   3   4
+diff used:  -2   2   3   2  -2
+
+cur before i=0: 0
+cur += diff[0] = -2 -> ans[0] = -2
+
+cur before i=1: -2
+cur += diff[1] = 0 -> ans[1] = 0
+
+cur before i=2: 0
+cur += diff[2] = 3 -> ans[2] = 3
+
+cur before i=3: 3
+cur += diff[3] = 5 -> ans[3] = 5
+
+cur before i=4: 5
+cur += diff[4] = 3 -> ans[4] = 3
+
+Final answer = [-2, 0, 3, 5, 3]
 ```
 
 ---
@@ -1667,38 +2151,47 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Flight Difference Diagram
 
 ```text
-n = 5
-diff = [0,0,0,0,0,0]
+bookings = [[1,2,10], [2,3,20], [2,5,25]], n = 5
+Flights are 1-indexed in input, convert to 0-indexed.
 
-Booking [1,2,10]:
-0-index range [0,1]
-diff[0] += 10
-diff[2] -= 10
-diff = [10,0,-10,0,0,0]
+diff = [0, 0, 0, 0, 0, 0]
+```
 
-Booking [2,3,20]:
-0-index range [1,2]
-diff[1] += 20
-diff[3] -= 20
-diff = [10,20,-10,-20,0,0]
+```text
+Booking [1,2,10] => 0-index range [0..1]
+flight index:  0   1   2   3   4   5
+ diff      :  [0,  0,  0,  0,  0,  0]
+              ^---^ stop
 
-Booking [2,5,25]:
-0-index range [1,4]
-diff[1] += 25
-diff[5] -= 25
-diff = [10,45,-10,-20,0,-25]
+action     : diff[0] += 10, diff[2] -= 10
+diff after : [10, 0, -10, 0, 0, 0]
+```
 
-Prefix:
-flight 1: 10
-flight 2: 55
-flight 3: 45
-flight 4: 25
-flight 5: 25
+```text
+Booking [2,3,20] => range [1..2]
+action     : diff[1] += 20, diff[3] -= 20
+diff after : [10, 20, -10, -20, 0, 0]
+```
 
-answer = [10,55,45,25,25]
+```text
+Booking [2,5,25] => range [1..4]
+action     : diff[1] += 25, diff[5] -= 25
+diff after : [10, 45, -10, -20, 0, -25]
+```
+
+```text
+Prefix reconstruction:
+
+flight 1, i=0: cur = 0 + 10 = 10  -> ans[0] = 10
+flight 2, i=1: cur = 10 + 45 = 55 -> ans[1] = 55
+flight 3, i=2: cur = 55 - 10 = 45 -> ans[2] = 45
+flight 4, i=3: cur = 45 - 20 = 25 -> ans[3] = 25
+flight 5, i=4: cur = 25 + 0 = 25  -> ans[4] = 25
+
+Final answer = [10, 55, 45, 25, 25]
 ```
 
 ---
@@ -1770,27 +2263,55 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Timeline Difference Diagram
 
 ```text
-capacity = 4
-trips = [[2,1,5], [3,3,7]]
+trips = [[2,1,5], [3,3,7]], capacity = 4
+trip format = [passengers, from, to]
+Passenger effect starts at from and stops at to.
+```
 
-Trip [2,1,5]:
-diff[1] += 2
-diff[5] -= 2
+```text
+Trip 1: [2,1,5]
+timeline:  0   1   2   3   4   5   6   7
+           .   +2          active       -2
 
-Trip [3,3,7]:
-diff[3] += 3
-diff[7] -= 3
+action: diff[1] += 2, diff[5] -= 2
+```
 
-Timeline:
-position 1: cur = 2
-position 2: cur = 2
-position 3: cur = 5
+```text
+Trip 2: [3,3,7]
+timeline:  0   1   2   3   4   5   6   7
+                       +3          active -3
 
-cur = 5 > capacity 4
-return false
+action: diff[3] += 3, diff[7] -= 3
+```
+
+```text
+Scan timeline with current passengers:
+
+position 0:
+cur = 0
+cur <= 4 ok
+
+position 1:
+cur = 0 + 2 = 2
+cur <= 4 ok
+
+position 2:
+cur = 2
+cur <= 4 ok
+
+position 3:
+cur = 2 + 3 = 5
+condition: cur > capacity? 5 > 4 yes
+action   : return false
+
+Visual overlap:
+position: 1   2   3   4   5   6
+trip1   : +---+---+---+---)
+trip2   :         +---+---+---+---)
+                    overlap = 2 + 3 = 5 > 4
 ```
 
 ---
@@ -1898,30 +2419,56 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Matrix Rectangle Diagram
 
 ```text
+matrix:
+row\col   0  1  2  3  4
+0        [3, 0, 1, 4, 2]
+1        [5, 6, 3, 2, 1]
+2        [1, 2, 0, 1, 5]
+3        [4, 1, 0, 1, 7]
+4        [1, 0, 3, 0, 5]
+
 Query: sumRegion(2,1,4,3)
 Rows 2..4, Cols 1..3
+```
 
-Cells:
-row 2: 2,0,1 => 3
-row 3: 1,0,1 => 2
-row 4: 0,3,0 => 3
+```text
+Highlight rectangle:
+row\col   0  1  2  3  4
+0         3  0  1  4  2
+1         5  6  3  2  1
+2         1 [2  0  1] 5
+3         4 [1  0  1] 7
+4         1 [0  3  0] 5
 
-Total = 3 + 2 + 3 = 8
+Manual sum:
+row 2: 2 + 0 + 1 = 3
+row 3: 1 + 0 + 1 = 2
+row 4: 0 + 3 + 0 = 3
+total = 8
+```
 
-Using prefix:
+```text
+Using 1-indexed prefix:
+answer = pref[row2 + 1][col2 + 1]
+       - pref[row1][col2 + 1]
+       - pref[row2 + 1][col1]
+       + pref[row1][col1]
+
 answer = pref[5][4]
        - pref[2][4]
        - pref[5][1]
        + pref[2][1]
 
 Meaning:
-Take big area up to bottom-right.
-Remove rows above.
-Remove columns left.
-Add back overlap.
+1. Take big rectangle from (0,0) to (4,3)
+2. Remove rows above row 2
+3. Remove columns left of col 1
+4. Add back overlap removed twice
+
+Final answer = 8
 ```
 
 ---
@@ -2019,35 +2566,62 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Matrix Block Diagram
 
 ```text
-mat =
-1 2 3
-4 5 6
-7 8 9
+mat:
+row\col  0  1  2
+0       [1, 2, 3]
+1       [4, 5, 6]
+2       [7, 8, 9]
 
 k = 1
+For every cell (i,j), take rectangle:
+rows [i-k .. i+k], cols [j-k .. j+k], clipped inside matrix.
+```
 
-For cell (0,0):
+```text
+Cell (0,0):
 r1 = max(0, 0-1) = 0
 c1 = max(0, 0-1) = 0
 r2 = min(2, 0+1) = 1
 c2 = min(2, 0+1) = 1
 
-Rectangle:
-1 2
-4 5
+Selected block:
+[1, 2]
+[4, 5]
 
-sum = 12
+sum = 1 + 2 + 4 + 5 = 12
 ans[0][0] = 12
+```
 
-For cell (1,1):
+```text
+Cell (0,1):
+r1 = 0, c1 = 0, r2 = 1, c2 = 2
+
+Selected block:
+[1, 2, 3]
+[4, 5, 6]
+
+sum = 21
+ans[0][1] = 21
+```
+
+```text
+Cell (1,1):
 r1 = 0, c1 = 0, r2 = 2, c2 = 2
-whole matrix sum = 45
-ans[1][1] = 45
 
-Final:
+Selected block:
+[1, 2, 3]
+[4, 5, 6]
+[7, 8, 9]
+
+sum = 45
+ans[1][1] = 45
+```
+
+```text
+Final answer:
 12 21 16
 27 45 33
 24 39 28
@@ -2159,21 +2733,53 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Candidate Square Diagram
 
 ```text
-Try larger squares first.
+grid:
+row\col  0  1  2  3  4
+0       [7, 1, 4, 5, 6]
+1       [2, 5, 1, 6, 4]
+2       [1, 5, 4, 3, 2]
+3       [1, 2, 7, 3, 4]
 
-For a candidate 3x3 square:
-Check all row sums using row prefix.
-Check all column sums using column prefix.
-Check two diagonal sums manually.
+Try larger square sizes first.
+```
 
-If all are equal:
-return 3.
+```text
+Candidate len = 3
+Assume candidate starts at (1,1):
 
-For given example, one valid 3x3 magic square exists.
-answer = 3
+selected 3x3:
+[5, 1, 6]
+[5, 4, 3]
+[2, 7, 3]
+
+Check target row sum from first row:
+target = 5 + 1 + 6 = 12
+```
+
+```text
+Row checks:
+row 1: 5 + 1 + 6 = 12 ok
+row 2: 5 + 4 + 3 = 12 ok
+row 3: 2 + 7 + 3 = 12 ok
+```
+
+```text
+Column checks:
+col 1: 5 + 5 + 2 = 12 ok
+col 2: 1 + 4 + 7 = 12 ok
+col 3: 6 + 3 + 3 = 12 ok
+```
+
+```text
+Diagonal checks:
+main diagonal     : 5 + 4 + 3 = 12 ok
+opposite diagonal : 6 + 4 + 2 = 12 ok
+
+All rows, columns, diagonals match.
+return 3
 ```
 
 ---
@@ -2263,41 +2869,78 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Prefix Deque Diagram
 
 ```text
-nums = [2, -1, 2]
-k = 3
-
+nums = [2, -1, 2], k = 3
 pref = [0, 2, 1, 3]
 
-dq stores prefix indices in increasing prefix value.
+dq stores prefix indices.
+Invariant: pref values in dq are increasing.
+```
 
-Start dq = []
-
+```text
 i = 0, pref[0] = 0
-push 0
-dq = [0]
+index pref:  0   1   2   3
+pref     : [0,  2,  1,  3]
+          ^
 
+dq before : []
+front check: none
+back check : none
+action     : push 0
+dq after   : [0:0]
+ans        : INF
+```
+
+```text
 i = 1, pref[1] = 2
-pref[1] - pref[0] = 2 < 3
-push 1
-dq = [0,1]
+index pref:  0   1   2   3
+pref     : [0,  2,  1,  3]
+              ^
 
+dq before : [0:0]
+front check: pref[1] - pref[0] = 2 - 0 = 2 < 3
+back check : pref[1] <= pref[0]? 2 <= 0 no
+action     : push 1
+dq after   : [0:0, 1:2]
+ans        : INF
+```
+
+```text
 i = 2, pref[2] = 1
-pref[2] - pref[0] = 1 < 3
-pref[2] <= pref[1], pop 1
-push 2
-dq = [0,2]
+index pref:  0   1   2   3
+pref     : [0,  2,  1,  3]
+                  ^
 
+dq before : [0:0, 1:2]
+front check: pref[2] - pref[0] = 1 < 3
+back check : pref[2] <= pref[1]? 1 <= 2 yes -> pop 1
+action     : push 2
+dq after   : [0:0, 2:1]
+ans        : INF
+
+Why pop 1?
+pref[2] is smaller and later than pref[1], so index 1 is never better.
+```
+
+```text
 i = 3, pref[3] = 3
-pref[3] - pref[0] = 3 >= 3
-ans = 3 - 0 = 3
-pop front 0
-pref[3] - pref[2] = 2 < 3
-push 3
+index pref:  0   1   2   3
+pref     : [0,  2,  1,  3]
+                      ^
 
-answer = 3
+dq before : [0:0, 2:1]
+front check: pref[3] - pref[0] = 3 - 0 = 3 >= 3
+candidate  : length = 3 - 0 = 3
+ans        : 3
+pop front  : remove 0
+
+next front : pref[3] - pref[2] = 3 - 1 = 2 < 3
+action     : push 3
+dq after   : [2:1, 3:3]
+
+Final answer = 3
 ```
 
 ---
@@ -2390,29 +3033,139 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Array Diagram
 
 ```text
 nums = [-2, 5, -1]
 lower = -2, upper = 2
 
-prefix sums:
-sums = [0, -2, 3, 2]
+Build prefix sums first:
+index:   0    1    2    3
+pref :  [0,  -2,   3,   2]
 
-Need count pairs (i, j), i < j:
-lower <= sums[j] - sums[i] <= upper
+Rule:
+subarray sum from nums[i..j-1] = pref[j] - pref[i]
+Need: -2 <= pref[j] - pref[i] <= 2
+```
 
-Pairs:
-i=0, j=1: -2 - 0 = -2 valid
-i=0, j=2: 3 - 0 = 3 invalid
-i=0, j=3: 2 - 0 = 2 valid
-i=1, j=2: 3 - (-2) = 5 invalid
-i=1, j=3: 2 - (-2) = 4 invalid
-i=2, j=3: 2 - 3 = -1 valid
+```text
+i = 0, pref[i] = 0
+index:   0    1    2    3
+pref :  [0,  -2,   3,   2]
+         ^
+         i
 
-count = 3
+count before: 0
+```
 
-Merge sort does this efficiently by keeping prefix sums sorted in each half.
+```text
+j = 1, pref[j] = -2
+index:   0    1    2    3
+pref :  [0,  -2,   3,   2]
+         ^    ^
+         i    j
+
+condition   : -2 <= pref[1] - pref[0] <= 2
+calculation : -2 - 0 = -2
+result      : valid
+range       : nums[0..0] = [-2]
+action      : count++
+count after : 1
+```
+
+```text
+j = 2, pref[j] = 3
+index:   0    1    2    3
+pref :  [0,  -2,   3,   2]
+         ^         ^
+         i         j
+
+condition   : -2 <= pref[2] - pref[0] <= 2
+calculation : 3 - 0 = 3
+result      : invalid
+count after : 1
+```
+
+```text
+j = 3, pref[j] = 2
+index:   0    1    2    3
+pref :  [0,  -2,   3,   2]
+         ^              ^
+         i              j
+
+condition   : -2 <= pref[3] - pref[0] <= 2
+calculation : 2 - 0 = 2
+result      : valid
+range       : nums[0..2] = [-2, 5, -1]
+action      : count++
+count after : 2
+```
+
+```text
+i = 1, pref[i] = -2
+index:   0    1    2    3
+pref :  [0,  -2,   3,   2]
+              ^
+              i
+
+count before: 2
+```
+
+```text
+j = 2
+index:   0    1    2    3
+pref :  [0,  -2,   3,   2]
+              ^    ^
+              i    j
+
+calculation : pref[2] - pref[1] = 3 - (-2) = 5
+result      : invalid
+count after : 2
+```
+
+```text
+j = 3
+index:   0    1    2    3
+pref :  [0,  -2,   3,   2]
+              ^         ^
+              i         j
+
+calculation : pref[3] - pref[1] = 2 - (-2) = 4
+result      : invalid
+count after : 2
+```
+
+```text
+i = 2, pref[i] = 3
+index:   0    1    2    3
+pref :  [0,  -2,   3,   2]
+                   ^
+                   i
+
+j = 3
+index:   0    1    2    3
+pref :  [0,  -2,   3,   2]
+                   ^    ^
+                   i    j
+
+calculation : pref[3] - pref[2] = 2 - 3 = -1
+result      : valid
+range       : nums[2..2] = [-1]
+action      : count++
+count after : 3
+```
+
+```text
+Final valid ranges:
+nums[0..0] = [-2]
+nums[0..2] = [-2, 5, -1]
+nums[2..2] = [-1]
+
+Final answer = 3
+
+Merge sort optimization:
+The real code avoids checking all pairs.
+It keeps prefix sums sorted in each half and counts valid j positions using two pointers.
 ```
 
 ---
@@ -2488,45 +3241,83 @@ int main() {
 }
 ```
 
-## Dry Run
+## Dry Run — Bitmask Prefix Diagram
 
 ```text
 word = "aba"
+Only letters a..j are considered.
+mask bit = 1 means that character count is odd.
+Wonderful substring means at most one odd bit.
 
-mask tracks odd/even count parity.
-0 bit means even count.
-1 bit means odd count.
-
+Initial:
+mask = 0000000000
 freq[0] = 1
-mask = 0, ans = 0
+ans = 0
+```
 
-char 'a':
-mask = 001
-same mask count = freq[001] = 0
+```text
+i = 0, char = 'a'
+word:  a   b   a
+       ^
+
+bit toggled : a-bit
+mask before : 0000000000
+mask after  : 0000000001
+
+same mask count: freq[0000000001] = 0
 one odd allowed:
-mask ^ a = 000, freq[000] = 1
-ans = 1
-freq[001] = 1
+  toggle a -> 0000000000, freq = 1
+  other toggles -> 0
 
-char 'b':
-mask = 011
-same mask count = freq[011] = 0
+action     : ans += 1
+freq update: freq[0000000001]++
+ans        : 1
+
+Visual valid substring:
+"a"
+```
+
+```text
+i = 1, char = 'b'
+word:  a   b   a
+           ^
+
+mask before : 0000000001
+mask after  : 0000000011
+
+same mask count: 0
 one odd allowed:
-mask ^ a = 010 -> 0
-mask ^ b = 001 -> freq[001] = 1
-ans = 2
-freq[011] = 1
+  toggle a -> 0000000010, freq = 0
+  toggle b -> 0000000001, freq = 1
 
-char 'a':
-mask = 010
-same mask count = freq[010] = 0
+action     : ans += 1
+freq update: freq[0000000011]++
+ans        : 2
+
+Visual valid substring:
+"b"
+```
+
+```text
+i = 2, char = 'a'
+word:  a   b   a
+               ^
+
+mask before : 0000000011
+mask after  : 0000000010
+
+same mask count: freq[0000000010] = 0
 one odd allowed:
-mask ^ a = 011 -> freq[011] = 1
-mask ^ b = 000 -> freq[000] = 1
-ans = 4
-freq[010] = 1
+  toggle a -> 0000000011, freq = 1  => substring "a"
+  toggle b -> 0000000000, freq = 1  => substring "aba"
 
-answer = 4
+action     : ans += 2
+freq update: freq[0000000010]++
+ans        : 4
+
+Final wonderful substrings:
+"a", "b", "a", "aba"
+Final answer = 4
 ```
 
 ---
