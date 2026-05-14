@@ -1,128 +1,94 @@
-# Binary Search Complete CP + FAANG Notes
+# Binary Search Phase-Wise CP + DSA Handbook
 
-> Built from your uploaded Binary Search PDFs and your existing `003_BINARY_SEARCH.md` reference.
+> Built from the uploaded Binary Search handwritten PDFs and the existing binary-search markdown note.
 >
-> Goal: convert every binary-search problem into:
+> Goal:
 >
 > ```text
-> search space + monotonic check + first true / last true template
+> Read problem -> define search space -> design monotone check -> choose first true / last true -> code fast.
 > ```
 
 ---
 
 # Clickable Index
 
-## 0. Master Mental Map
-- [0.1 One-Minute Binary Search Map](#01-one-minute-binary-search-map)
-- [0.2 Binary Search Forms](#02-binary-search-forms)
-- [0.3 First True vs Last True](#03-first-true-vs-last-true)
-- [0.4 How to Design Check Function](#04-how-to-design-check-function)
-- [0.5 CP / FAANG Recognition Signals](#05-cp--faang-recognition-signals)
+## 0. Mental Map
+- [0.1 Binary Search Master Map](#01-binary-search-master-map)
+- [0.2 First True vs Last True](#02-first-true-vs-last-true)
+- [0.3 How to Think About `check(mid)`](#03-how-to-think-about-checkmid)
+- [0.4 CP / DSA Recognition Signals](#04-cp--dsa-recognition-signals)
 
-## Phase 1 — Foundation
-- [1. Binary Search on 0/1 Monotone Array](#1-binary-search-on-01-monotone-array)
-- [2. Lower Bound — First Element Greater or Equal X](#2-lower-bound--first-element-greater-or-equal-x)
-- [3. Upper Bound — First Element Greater Than X](#3-upper-bound--first-element-greater-than-x)
+## Phase 1 — Binary Search Foundation
+- [1. First 1 in a Monotone Binary Array](#1-first-1-in-a-monotone-binary-array)
+- [2. Lower Bound — First Element `>= x`](#2-lower-bound--first-element--x)
+- [3. Upper Bound — First Element `> x`](#3-upper-bound--first-element--x)
 
 ## Phase 2 — Classic Index Binary Search
 - [4. Search Insert Position](#4-search-insert-position)
 - [5. Rotation Count in Rotated Sorted Array](#5-rotation-count-in-rotated-sorted-array)
-- [6. Peak Element in Bitonic Array](#6-peak-element-in-bitonic-array)
+- [6. Peak Element / Bitonic Peak](#6-peak-element--bitonic-peak)
 
 ## Phase 3 — Binary Search on Answer
 - [7. Painter Partition / Split Array Largest Sum](#7-painter-partition--split-array-largest-sum)
 - [8. Factory Machines](#8-factory-machines)
 - [9. Aggressive Cows — Maximize Minimum Distance](#9-aggressive-cows--maximize-minimum-distance)
-- [10. Minimize Maximum Neighbor Distance After Adding K Points](#10-minimize-maximum-neighbor-distance-after-adding-k-points)
+- [10. Minimize Maximum Gap After Adding K Points](#10-minimize-maximum-gap-after-adding-k-points)
 
-## Phase 4 — Kth / Counting Problems
-- [11. Kth Smallest Pair Sum from Two Arrays](#11-kth-smallest-pair-sum-from-two-arrays)
+## Phase 4 — Kth / Counting / Generated Values
+- [11. Kth Pair Sum from Two Arrays](#11-kth-pair-sum-from-two-arrays)
 - [12. Kth Smallest in Multiplication Table](#12-kth-smallest-in-multiplication-table)
-- [13. Kth Element in Generated Matrix A[i] + B[j]](#13-kth-element-in-generated-matrix-aij--bj)
 
 ## Phase 5 — Binary Search on Every Start
-- [14. Largest Subarray of Ones After At Most K Flips](#14-largest-subarray-of-ones-after-at-most-k-flips)
-- [15. Count Subarrays with At Most K Zeros](#15-count-subarrays-with-at-most-k-zeros)
-- [16. Count Subarrays with At Most K Distinct Elements](#16-count-subarrays-with-at-most-k-distinct-elements)
+- [13. Largest Ones After At Most K Flips](#13-largest-ones-after-at-most-k-flips)
+- [14. Count Subarrays with At Most K Zeros](#14-count-subarrays-with-at-most-k-zeros)
+- [15. Count Subarrays with At Most K Distinct Elements](#15-count-subarrays-with-at-most-k-distinct-elements)
 
 ## Phase 6 — Real Domain Binary Search
-- [17. Binary Search on Real Domain](#17-binary-search-on-real-domain)
+- [16. Square Root / Real Binary Search](#16-square-root--real-binary-search)
 
 ## Phase 7 — Ternary Search
-- [18. Ternary Search Foundation](#18-ternary-search-foundation)
-- [19. Freefall Problem](#19-freefall-problem)
+- [17. Ternary Search Foundation](#17-ternary-search-foundation)
+- [18. Freefall Problem](#18-freefall-problem)
 
 ## Phase 8 — Drill Problems
-- [20. Sum of Cubes](#20-sum-of-cubes)
+- [19. Sum of Cubes](#19-sum-of-cubes)
 
 ## Final Revision
 - [Binary Search Decision Table](#binary-search-decision-table)
-- [Must-Solve Order](#must-solve-order)
+- [Must-Solve Phase Order](#must-solve-phase-order)
 - [Template Library](#template-library)
 - [Common Mistakes](#common-mistakes)
 
 ---
 
-# 0. Master Mental Map
+# 0. Mental Map
 
-## 0.1 One-Minute Binary Search Map
-
-```text
-Read problem
-   |
-   v
-Can I guess the answer?
-   |
-   +-- YES --> Binary Search on Answer
-   |              |
-   |              v
-   |          Can I write check(mid)?
-   |              |
-   |              v
-   |          Is check monotonic?
-   |              |
-   |              v
-   |          Use first true / last true
-   |
-   +-- NO --> Is array sorted / monotonic?
-                  |
-                  +-- YES --> Classic binary search / lower_bound / upper_bound
-                  |
-                  +-- NO --> Is function valley/hill shaped?
-                                |
-                                +-- YES --> Ternary search
-                                +-- NO  --> Try greedy / DP / prefix / two pointers
-```
-
----
-
-## 0.2 Binary Search Forms
+## 0.1 Binary Search Master Map
 
 ```text
 Binary Search
 │
-├── Classic index search
+├── Classic Index Search
 │   ├── lower_bound
 │   ├── upper_bound
 │   ├── rotated array
-│   └── peak finding
+│   └── peak / bitonic
 │
 ├── Binary Search on Answer
 │   ├── minimize maximum
 │   ├── maximize minimum
 │   ├── minimum time
 │   ├── kth smallest
-│   ├── contribution counting
-│   └── 2D implicit matrix
+│   └── generated implicit values
 │
 ├── Binary Search on Every Start
-│   ├── fixed start
-│   ├── farthest valid end
-│   └── count valid subarrays
+│   ├── fix start
+│   ├── find farthest valid end
+│   └── count all valid subarrays
 │
 ├── Real Domain Binary Search
-│   ├── precision
-│   └── floating answers
+│   ├── decimal precision
+│   └── EPS / fixed iterations
 │
 └── Ternary Search
     ├── hill shaped function
@@ -131,84 +97,62 @@ Binary Search
 
 ---
 
-## 0.3 First True vs Last True
+## 0.2 First True vs Last True
 
 ### First True
 
-Use when predicate looks like:
+Use when:
 
 ```text
 N N N N Y Y Y Y
         ^
-        first true
+        answer
 ```
 
-```cpp
-long long firstTrue(long long lo, long long hi) {
-    long long ans = hi + 1;
+Example:
 
-    while (lo <= hi) {
-        long long mid = lo + (hi - lo) / 2;
-
-        if (check(mid)) {
-            ans = mid;
-            hi = mid - 1;
-        } else {
-            lo = mid + 1;
-        }
-    }
-
-    return ans;
-}
+```text
+minimum time
+minimum maximum
+first index >= x
 ```
 
 ### Last True
 
-Use when predicate looks like:
+Use when:
 
 ```text
 Y Y Y Y N N N N
       ^
-      last true
+      answer
 ```
 
-```cpp
-long long lastTrue(long long lo, long long hi) {
-    long long ans = lo - 1;
+Example:
 
-    while (lo <= hi) {
-        long long mid = lo + (hi - lo) / 2;
-
-        if (check(mid)) {
-            ans = mid;
-            lo = mid + 1;
-        } else {
-            hi = mid - 1;
-        }
-    }
-
-    return ans;
-}
+```text
+maximum minimum distance
+maximum valid length
+last possible value
 ```
 
 ---
 
-## 0.4 How to Design Check Function
+## 0.3 How to Think About `check(mid)`
 
-Your notes repeatedly stress this rule:
+Your handwritten notes emphasize:
 
 ```text
-Do NOT write check(mid) asking:
+Do not ask:
 "Is mid exactly the answer?"
 
-Write check(mid) asking:
-"Is answer <= mid?"
-"Can we do it within mid?"
-"Can we place with distance at least mid?"
+Ask:
+"Can answer be <= mid?"
+"Can work be completed in mid time?"
+"Can distance mid be achieved?"
 "Are at least k values <= mid?"
 ```
 
-Good check creates a monotone space:
+A good `check(mid)` creates monotonicity:
 
 ```text
 NO NO NO YES YES YES
@@ -222,34 +166,32 @@ YES YES YES NO NO NO
 
 ---
 
-## 0.5 CP / FAANG Recognition Signals
+## 0.4 CP / DSA Recognition Signals
 
-| Problem phrase | Pattern |
+| Problem wording | Pattern |
 |---|---|
-| first index satisfying condition | first true |
-| last index satisfying condition | last true |
-| first element >= x | lower bound |
-| first element > x | upper bound |
-| minimize maximum | binary search on answer |
-| maximize minimum | binary search on answer |
-| minimum time | binary search on answer |
-| kth smallest | count <= mid |
-| cannot generate all pairs | count instead of build |
-| fixed window length possible? | binary search length |
-| for every start find farthest end | BS on every start |
-| answer needs precision | real-domain binary search |
-| function decreases then increases | ternary search |
-| multiplication overflow | divide and check |
+| first index satisfying condition | First true |
+| first element >= x | Lower bound |
+| first element > x | Upper bound |
+| minimize maximum | Binary search on answer |
+| maximize minimum | Binary search on answer |
+| minimum time | Binary search on answer |
+| kth smallest | Count <= mid |
+| cannot generate all values | Count instead of generate |
+| fixed start, farthest end | Binary search on every start |
+| decimal precision | Real-domain binary search |
+| function decreases then increases | Ternary search |
+| multiplication overflow risk | Divide-and-check |
 
 ---
 
-# Phase 1 — Foundation
+# Phase 1 — Binary Search Foundation
 
-## 1. Binary Search on 0/1 Monotone Array
+## 1. First 1 in a Monotone Binary Array
 
 ### Problem Statement
 
-Given a binary monotone array containing zeros followed by ones, find the first index where value is `1`.
+Given a monotone binary array where all `0`s come before all `1`s, find the first index containing `1`.
 
 ### Input
 
@@ -263,15 +205,9 @@ arr = [0, 0, 0, 0, 0, 0, 1, 1, 1]
 6
 ```
 
-### Pattern
-
-```text
-First true in monotone 0/1 array.
-```
-
 ### Why This Pattern Works
 
-The array has a clean split:
+The array has a clean boundary:
 
 ```text
 0 0 0 0 0 0 1 1 1
@@ -279,8 +215,8 @@ The array has a clean split:
             first 1
 ```
 
-If `arr[mid] == 1`, answer may be at `mid` or left side.  
-If `arr[mid] == 0`, answer must be on right side.
+If `arr[mid] == 1`, answer may be at `mid` or left.  
+If `arr[mid] == 0`, answer must be on the right.
 
 ### C++ Code
 
@@ -334,11 +270,8 @@ arr:   [0 0 0 0 0 0 1 1 1]
 
 arr[4] = 0
 
-condition:
-arr[mid] == 1 ? no
-
 action:
-answer is on right
+0 means first 1 is on the right
 lo = mid + 1 = 5
 ```
 
@@ -367,30 +300,31 @@ lo = 5, hi = 5
 mid = 5
 
 arr[5] = 0
-lo = 6
 
-Stop: lo = 6, hi = 5
+action:
+lo = 6
+```
+
+```text
+Stop:
+lo = 6, hi = 5
+
 answer = 6
 ```
 
-### Attractive Note
+### Mental Note
 
 ```text
-Binary search is not about sorted values only.
-It is about finding the boundary between two zones.
+Binary search finds the boundary between two zones.
 ```
 
 ---
 
-## 2. Lower Bound — First Element Greater or Equal X
+## 2. Lower Bound — First Element `>= x`
 
 ### Problem Statement
 
-Given sorted array and value `x`, find the first index `i` such that:
-
-```text
-arr[i] >= x
-```
+Given sorted array and value `x`, return the first index where `arr[i] >= x`.
 
 ### Input
 
@@ -405,24 +339,18 @@ x = 11
 5
 ```
 
-### Pattern
-
-```text
-lower_bound = first true where arr[i] >= x
-```
-
 ### Why This Pattern Works
 
-Convert the array into check array:
+Convert to check array:
 
 ```text
-arr[i] >= 11
+check(i) = arr[i] >= x
 
 arr   = [2, 3, 3, 7, 9, 11, 11, 17, 19]
 check = [0, 0, 0, 0, 0,  1,  1,  1,  1]
 ```
 
-Now it becomes first true.
+This is first true.
 
 ### C++ Code
 
@@ -465,58 +393,64 @@ x = 11
 
 index:  0  1  2  3  4   5   6   7   8
 arr:   [2, 3, 3, 7, 9, 11, 11, 17, 19]
-check: [0, 0, 0, 0, 0,  1,  1,  1,  1]
 ```
 
 ```text
 Step 1
+
 lo = 0, hi = 8
 mid = 4
+
 arr[4] = 9
+
 9 >= 11 ? no
+
+action:
 lo = 5
 ```
 
 ```text
 Step 2
+
 lo = 5, hi = 8
 mid = 6
+
 arr[6] = 11
+
 11 >= 11 ? yes
+
+action:
 ans = 6
 hi = 5
 ```
 
 ```text
 Step 3
+
 lo = 5, hi = 5
 mid = 5
+
 arr[5] = 11
+
 11 >= 11 ? yes
+
+action:
 ans = 5
 hi = 4
-
-Stop: answer = 5
 ```
 
-### Attractive Note
-
 ```text
-lower_bound is just first true with:
-check(i) = arr[i] >= x
+Stop:
+answer = 5
 ```
 
 ---
 
-## 3. Upper Bound — First Element Greater Than X
+## 3. Upper Bound — First Element `> x`
 
 ### Problem Statement
 
-Find first index `i` such that:
-
-```text
-arr[i] > x
-```
+Given sorted array and value `x`, return the first index where `arr[i] > x`.
 
 ### Input
 
@@ -529,12 +463,6 @@ x = 11
 
 ```text
 7
-```
-
-### Pattern
-
-```text
-upper_bound = first true where arr[i] > x
 ```
 
 ### C++ Code
@@ -561,15 +489,19 @@ int upperBoundManual(vector<int>& arr, int x) {
 
     return ans;
 }
+
+int main() {
+    vector<int> arr = {2,3,3,7,9,11,11,17,19};
+    int x = 11;
+
+    cout << upperBoundManual(arr, x) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
 
 ```text
-arr = [2, 3, 3, 7, 9, 11, 11, 17, 19]
-x = 11
-
-check = arr[i] > 11
+check(i) = arr[i] > 11
 
 index:  0  1  2  3  4   5   6   7   8
 arr:   [2, 3, 3, 7, 9, 11, 11, 17, 19]
@@ -577,10 +509,40 @@ check: [0, 0, 0, 0, 0,  0,  0,  1,  1]
 ```
 
 ```text
-Step 1: mid = 4, arr[4] = 9, 9 > 11? no  -> lo = 5
-Step 2: mid = 6, arr[6] = 11, 11 > 11? no -> lo = 7
-Step 3: mid = 7, arr[7] = 17, 17 > 11? yes -> ans = 7, hi = 6
+Step 1
 
+lo = 0, hi = 8
+mid = 4
+arr[4] = 9
+
+9 > 11 ? no
+lo = 5
+```
+
+```text
+Step 2
+
+lo = 5, hi = 8
+mid = 6
+arr[6] = 11
+
+11 > 11 ? no
+lo = 7
+```
+
+```text
+Step 3
+
+lo = 7, hi = 8
+mid = 7
+arr[7] = 17
+
+17 > 11 ? yes
+ans = 7
+hi = 6
+```
+
+```text
 answer = 7
 ```
 
@@ -592,7 +554,7 @@ answer = 7
 
 ### Problem Statement
 
-Given sorted array and target, return index if found. If not found, return where it should be inserted.
+Given sorted array and target, return its index if found. Otherwise return the index where it should be inserted.
 
 ### Input
 
@@ -611,14 +573,6 @@ target = 5
 
 ```text
 lower_bound(target)
-```
-
-### Why This Pattern Works
-
-Insert position is the first index where:
-
-```text
-nums[i] >= target
 ```
 
 ### C++ Code
@@ -644,6 +598,13 @@ int searchInsert(vector<int>& nums, int target) {
 
     return ans;
 }
+
+int main() {
+    vector<int> nums = {1,3,5,6};
+    int target = 5;
+
+    cout << searchInsert(nums, target) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -658,22 +619,30 @@ nums:   [1,  3,  5,  6]
 
 ```text
 Step 1
+
 lo = 0, hi = 3
 mid = 1
+
 nums[1] = 3
+
 3 >= 5 ? no
 lo = 2
 ```
 
 ```text
 Step 2
+
 lo = 2, hi = 3
 mid = 2
+
 nums[2] = 5
+
 5 >= 5 ? yes
 ans = 2
 hi = 1
+```
 
+```text
 answer = 2
 ```
 
@@ -685,7 +654,7 @@ answer = 2
 
 Given a rotated sorted array with distinct elements, find how many times it was rotated.
 
-Rotation count = index of the minimum element.
+Rotation count = index of minimum element.
 
 ### Input
 
@@ -699,21 +668,20 @@ arr = [8, 1, 2, 3, 5]
 1
 ```
 
-### Pattern
-
-```text
-Find minimum in rotated sorted array.
-```
-
 ### Why This Pattern Works
 
-In a rotated sorted array:
+If:
 
 ```text
-if arr[mid] > arr[hi]
-    minimum is on right side
-else
-    minimum is at mid or left side
+arr[mid] > arr[hi]
+```
+
+then minimum is on the right side.
+
+Otherwise:
+
+```text
+minimum is at mid or on the left side.
 ```
 
 ### C++ Code
@@ -738,6 +706,11 @@ int rotationCount(vector<int>& arr) {
 
     return lo;
 }
+
+int main() {
+    vector<int> arr = {8,1,2,3,5};
+    cout << rotationCount(arr) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -751,40 +724,57 @@ arr:   [8, 1, 2, 3, 5]
 
 ```text
 Step 1
+
 lo = 0, hi = 4
 mid = 2
-arr[mid] = 2, arr[hi] = 5
+
+arr[mid] = 2
+arr[hi]  = 5
+
 2 > 5 ? no
 hi = mid = 2
 ```
 
 ```text
 Step 2
+
 lo = 0, hi = 2
 mid = 1
-arr[mid] = 1, arr[hi] = 2
+
+arr[mid] = 1
+arr[hi]  = 2
+
 1 > 2 ? no
 hi = mid = 1
 ```
 
 ```text
 Step 3
+
 lo = 0, hi = 1
 mid = 0
-arr[mid] = 8, arr[hi] = 1
+
+arr[mid] = 8
+arr[hi]  = 1
+
 8 > 1 ? yes
 lo = mid + 1 = 1
+```
+
+```text
+Stop:
+lo = hi = 1
 
 answer = 1
 ```
 
 ---
 
-## 6. Peak Element in Bitonic Array
+## 6. Peak Element / Bitonic Peak
 
 ### Problem Statement
 
-Given a bitonic array that first increases then decreases, find the peak index.
+Given a bitonic array that increases then decreases, find the peak index.
 
 ### Input
 
@@ -798,22 +788,14 @@ arr = [1, 3, 5, 9, 7, 5]
 3
 ```
 
-### Pattern
-
-```text
-Binary search on slope.
-```
-
 ### Why This Pattern Works
 
-At any `mid`:
+Look at slope:
 
 ```text
 if arr[mid] > arr[mid + 1]
-    we are on decreasing slope
     peak is at mid or left
 else
-    we are on increasing slope
     peak is right
 ```
 
@@ -839,6 +821,11 @@ int findPeak(vector<int>& arr) {
 
     return lo;
 }
+
+int main() {
+    vector<int> arr = {1,3,5,9,7,5};
+    cout << findPeak(arr) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -852,32 +839,48 @@ arr:   [1, 3, 5, 9, 7, 5]
 
 ```text
 Step 1
+
 lo = 0, hi = 5
 mid = 2
-arr[2] = 5, arr[3] = 9
+
+arr[2] = 5
+arr[3] = 9
+
 5 > 9 ? no
+
 we are climbing
-lo = 3
+lo = mid + 1 = 3
 ```
 
 ```text
 Step 2
+
 lo = 3, hi = 5
 mid = 4
-arr[4] = 7, arr[5] = 5
+
+arr[4] = 7
+arr[5] = 5
+
 7 > 5 ? yes
-peak at mid or left
-hi = 4
+
+we are descending
+hi = mid = 4
 ```
 
 ```text
 Step 3
+
 lo = 3, hi = 4
 mid = 3
-arr[3] = 9, arr[4] = 7
+
+arr[3] = 9
+arr[4] = 7
+
 9 > 7 ? yes
 hi = 3
+```
 
+```text
 answer = 3
 ```
 
@@ -889,7 +892,7 @@ answer = 3
 
 ### Problem Statement
 
-Given an array of wall lengths and `k` painters. Each painter paints a contiguous block. Minimize the maximum work assigned to any painter.
+Given array `arr` and `k`, split array into `k` contiguous parts. Minimize the largest part sum.
 
 ### Input
 
@@ -904,28 +907,20 @@ k = 3
 11
 ```
 
-### Pattern
-
-```text
-Binary search on answer: minimize maximum.
-```
-
 ### Why This Pattern Works
 
-If we can paint all walls with maximum time `T`, then we can also paint with any time larger than `T`.
-
-Monotone space:
+If maximum allowed sum `T` works, any larger value also works.
 
 ```text
-T:       8  9  10  11  12  13 ...
-check:   N  N   N   Y   Y   Y
+T:      8  9  10  11  12 ...
+check:  N  N   N   Y   Y
 ```
 
-### Search Range
+### Search Space
 
 ```text
-lo = max(arr) = 8
-hi = sum(arr) = 30
+lo = max(arr)
+hi = sum(arr)
 ```
 
 ### C++ Code
@@ -934,25 +929,23 @@ hi = sum(arr) = 30
 #include <bits/stdc++.h>
 using namespace std;
 
-bool canPaint(vector<int>& arr, int k, long long limit) {
-    int painters = 1;
+bool canSplit(vector<int>& arr, int k, long long limit) {
+    int parts = 1;
     long long current = 0;
 
     for (int x : arr) {
-        if (x > limit) return false;
-
         if (current + x <= limit) {
             current += x;
         } else {
-            painters++;
+            parts++;
             current = x;
         }
     }
 
-    return painters <= k;
+    return parts <= k;
 }
 
-long long painterPartition(vector<int>& arr, int k) {
+long long splitArrayLargestSum(vector<int>& arr, int k) {
     long long lo = 0, hi = 0;
 
     for (int x : arr) {
@@ -965,7 +958,7 @@ long long painterPartition(vector<int>& arr, int k) {
     while (lo <= hi) {
         long long mid = lo + (hi - lo) / 2;
 
-        if (canPaint(arr, k, mid)) {
+        if (canSplit(arr, k, mid)) {
             ans = mid;
             hi = mid - 1;
         } else {
@@ -975,6 +968,13 @@ long long painterPartition(vector<int>& arr, int k) {
 
     return ans;
 }
+
+int main() {
+    vector<int> arr = {2,7,1,8,3,4,5};
+    int k = 3;
+
+    cout << splitArrayLargestSum(arr, k) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -983,43 +983,44 @@ long long painterPartition(vector<int>& arr, int k) {
 arr = [2, 7, 1, 8, 3, 4, 5]
 k = 3
 
-lo = max(arr) = 8
-hi = sum(arr) = 30
+lo = 8
+hi = 30
 ```
 
 ```text
 Try mid = 19
 
-Painter 1:
-2 + 7 + 1 + 8 = 18
-next 3 would make 21 > 19
+arr: [2, 7, 1, 8, 3, 4, 5]
 
-Painter 2:
+Part 1:
+2 + 7 + 1 + 8 = 18
+next 3 makes 21 > 19
+
+Part 2:
 3 + 4 + 5 = 12
 
-painters needed = 2 <= 3
+parts = 2 <= 3
 
 check(19) = true
 ans = 19
-try smaller
 hi = 18
 ```
 
 ```text
 Try mid = 13
 
-Painter 1:
+Part 1:
 2 + 7 + 1 = 10
-next 8 would make 18 > 13
+next 8 makes 18 > 13
 
-Painter 2:
+Part 2:
 8 + 3 = 11
-next 4 would make 15 > 13
+next 4 makes 15 > 13
 
-Painter 3:
+Part 3:
 4 + 5 = 9
 
-painters needed = 3 <= 3
+parts = 3
 
 check(13) = true
 ans = 13
@@ -1029,21 +1030,19 @@ hi = 12
 ```text
 Try mid = 10
 
-Painter 1:
+Part 1:
 2 + 7 + 1 = 10
 
-Painter 2:
+Part 2:
 8
-next 3 would make 11 > 10
 
-Painter 3:
+Part 3:
 3 + 4 = 7
-next 5 would make 12 > 10
 
-Painter 4:
+Part 4:
 5
 
-painters needed = 4 > 3
+parts = 4 > 3
 
 check(10) = false
 lo = 11
@@ -1052,31 +1051,23 @@ lo = 11
 ```text
 Try mid = 11
 
-Painter 1:
+Part 1:
 2 + 7 + 1 = 10
 
-Painter 2:
+Part 2:
 8 + 3 = 11
 
-Painter 3:
+Part 3:
 4 + 5 = 9
 
-painters needed = 3
+parts = 3
+
 check(11) = true
 ans = 11
-hi = 10
-
-answer = 11
 ```
 
-### Attractive Note
-
 ```text
-Optimization:
-minimize the maximum
-
-Decision:
-Can maximum be <= mid?
+answer = 11
 ```
 
 ---
@@ -1100,21 +1091,15 @@ target = 10
 12
 ```
 
-### Pattern
-
-```text
-Binary search on answer: minimum time.
-```
-
 ### Why This Pattern Works
-
-If we can make `target` products in time `T`, then any time greater than `T` also works.
 
 For time `T`:
 
 ```text
 products = sum(T / machine[i])
 ```
+
+If `T` works, all larger times also work.
 
 ### C++ Code
 
@@ -1134,8 +1119,9 @@ bool canMake(vector<long long>& machines, long long target, long long time) {
 }
 
 long long minTime(vector<long long>& machines, long long target) {
-    long long lo = 0;
     long long fastest = *min_element(machines.begin(), machines.end());
+
+    long long lo = 0;
     long long hi = fastest * target;
     long long ans = hi;
 
@@ -1152,6 +1138,13 @@ long long minTime(vector<long long>& machines, long long target) {
 
     return ans;
 }
+
+int main() {
+    vector<long long> machines = {2,3,7};
+    long long target = 10;
+
+    cout << minTime(machines, target) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -1161,51 +1154,46 @@ machines = [2, 3, 7]
 target = 10
 
 lo = 0
-hi = fastest * target = 2 * 10 = 20
+hi = 2 * 10 = 20
 ```
 
 ```text
 Try mid = 10
 
-machine 2 makes 10/2 = 5
-machine 3 makes 10/3 = 3
-machine 7 makes 10/7 = 1
+machine 2: 10 / 2 = 5
+machine 3: 10 / 3 = 3
+machine 7: 10 / 7 = 1
 
-total = 5 + 3 + 1 = 9
+total = 9
 
 9 >= 10 ? no
-
-time too small
 lo = 11
 ```
 
 ```text
 Try mid = 15
 
-machine 2 makes 7
-machine 3 makes 5
-machine 7 makes 2
+machine 2: 15 / 2 = 7
+machine 3: 15 / 3 = 5
+machine 7: 15 / 7 = 2
 
 total = 14
 
 14 >= 10 ? yes
-
 ans = 15
-try smaller
 hi = 14
 ```
 
 ```text
 Try mid = 12
 
-machine 2 makes 6
-machine 3 makes 4
-machine 7 makes 1
+machine 2: 6
+machine 3: 4
+machine 7: 1
 
 total = 11
 
 11 >= 10 ? yes
-
 ans = 12
 hi = 11
 ```
@@ -1213,16 +1201,17 @@ hi = 11
 ```text
 Try mid = 11
 
-machine 2 makes 5
-machine 3 makes 3
-machine 7 makes 1
+machine 2: 5
+machine 3: 3
+machine 7: 1
 
 total = 9
 
 9 >= 10 ? no
-
 lo = 12
+```
 
+```text
 answer = 12
 ```
 
@@ -1232,7 +1221,7 @@ answer = 12
 
 ### Problem Statement
 
-Given stall positions and `k` cows, place cows to maximize the minimum distance between any two cows.
+Given sorted/unsorted stall positions and `k` cows, maximize the minimum distance between any two cows.
 
 ### Input
 
@@ -1247,21 +1236,13 @@ k = 3
 3
 ```
 
-### Pattern
-
-```text
-Binary search on answer: maximize minimum.
-```
-
 ### Why This Pattern Works
 
-If distance `d` is possible, then any smaller distance is also possible.
-
-Monotone space:
+If distance `d` is possible, smaller distances are also possible.
 
 ```text
-distance: 1 2 3 4 5 ...
-check:    Y Y Y N N ...
+d:      1 2 3 4 5
+check:  Y Y Y N N
 ```
 
 Use last true.
@@ -1306,6 +1287,13 @@ long long aggressiveCows(vector<long long>& pos, int k) {
 
     return ans;
 }
+
+int main() {
+    vector<long long> pos = {1,2,4,8,9};
+    int k = 3;
+
+    cout << aggressiveCows(pos, k) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -1313,69 +1301,59 @@ long long aggressiveCows(vector<long long>& pos, int k) {
 ```text
 positions = [1, 2, 4, 8, 9]
 k = 3
-
-lo = 0
-hi = 8
 ```
 
 ```text
 Try distance = 4
 
-place first cow at 1
+place cow at 1
 
-positions:
-[1, 2, 4, 8, 9]
- ^
-
-next possible position must be >= 1 + 4 = 5
-place at 8
-
-[1, 2, 4, 8, 9]
-          ^
+next must be >= 5
+place cow at 8
 
 next must be >= 12
 not possible
 
 placed = 2 < 3
+
 check(4) = false
-hi = 3
 ```
 
 ```text
 Try distance = 2
 
 place at 1
-next >= 3, place at 4
-next >= 6, place at 8
+next >= 3 -> place at 4
+next >= 6 -> place at 8
 
 placed = 3
+
 check(2) = true
-ans = 2
-lo = 3
 ```
 
 ```text
 Try distance = 3
 
 place at 1
-next >= 4, place at 4
-next >= 7, place at 8
+next >= 4 -> place at 4
+next >= 7 -> place at 8
 
 placed = 3
-check(3) = true
-ans = 3
-lo = 4
 
+check(3) = true
+```
+
+```text
 answer = 3
 ```
 
 ---
 
-## 10. Minimize Maximum Neighbor Distance After Adding K Points
+## 10. Minimize Maximum Gap After Adding K Points
 
 ### Problem Statement
 
-Given sorted points on a number line. You can add at most `k` extra points. Minimize the maximum distance between neighboring points.
+Given sorted positions. Add at most `k` extra points to minimize the maximum adjacent gap.
 
 ### Input
 
@@ -1390,29 +1368,17 @@ k = 2
 25
 ```
 
-### Pattern
-
-```text
-Binary search on answer: minimize maximum gap.
-```
-
 ### Why This Pattern Works
 
-Guess maximum allowed gap `x`.
+Guess allowed maximum gap `x`.
 
-For a gap `d`, points needed:
+For a gap `d`, extra points needed:
 
 ```text
 ceil(d / x) - 1
 ```
 
-Safe integer form:
-
-```text
-(d + x - 1) / x - 1
-```
-
-If total needed `<= k`, gap `x` is possible.
+If total needed `<= k`, then `x` works.
 
 ### C++ Code
 
@@ -1460,6 +1426,13 @@ long long minimizeMaxGap(vector<long long>& pos, long long k) {
 
     return ans;
 }
+
+int main() {
+    vector<long long> pos = {0,50,100};
+    long long k = 2;
+
+    cout << minimizeMaxGap(pos, k) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -1469,62 +1442,56 @@ positions = [0, 50, 100]
 k = 2
 
 gaps:
-0 to 50   = 50
-50 to 100 = 50
+50 and 50
 ```
 
 ```text
 Try x = 25
 
-For gap 50:
+gap 50:
 ceil(50 / 25) - 1 = 2 - 1 = 1
 
-Two gaps:
+two gaps:
 need = 1 + 1 = 2
 
 need <= k
-check(25) = true
+
+x = 25 works
 ```
 
 ```text
 Try x = 24
 
-For gap 50:
+gap 50:
 ceil(50 / 24) - 1 = 3 - 1 = 2
 
-Two gaps:
+two gaps:
 need = 2 + 2 = 4
 
 4 > 2
-check(24) = false
+
+x = 24 fails
 ```
 
 ```text
 answer = 25
 ```
 
-### Attractive Note
-
-```text
-Never greedily split the current largest gap blindly.
-Binary search the final maximum gap.
-```
-
 ---
 
-# Phase 4 — Kth / Counting Problems
+# Phase 4 — Kth / Counting / Generated Values
 
-## 11. Kth Smallest Pair Sum from Two Arrays
+## 11. Kth Pair Sum from Two Arrays
 
 ### Problem Statement
 
-Given arrays `A` and `B`, define array `C` containing all values:
+Given arrays `A` and `B`, all pair sums are generated:
 
 ```text
-C[i][j] = A[i] + B[j]
+C = A[i] + B[j]
 ```
 
-Find kth smallest value in `C` without building it.
+Find kth smallest pair sum without building all pairs.
 
 ### Input
 
@@ -1540,23 +1507,13 @@ k = 6
 7
 ```
 
-### Pattern
-
-```text
-Binary search on answer + count <= mid.
-```
-
 ### Why This Pattern Works
 
-If at least `k` pair sums are `<= x`, then kth smallest is `<= x`.
+Guess value `x`.
 
-For each `A[i]`:
+Count how many pairs have sum `<= x`.
 
-```text
-B[j] <= x - A[i]
-```
-
-Use `upper_bound`.
+If count `>= k`, kth value is `<= x`.
 
 ### C++ Code
 
@@ -1597,6 +1554,14 @@ long long kthPairSum(vector<long long> A, vector<long long> B, long long k) {
 
     return ans;
 }
+
+int main() {
+    vector<long long> A = {1,2,3};
+    vector<long long> B = {4,5,6};
+    long long k = 6;
+
+    cout << kthPairSum(A, B, k) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -1604,51 +1569,59 @@ long long kthPairSum(vector<long long> A, vector<long long> B, long long k) {
 ```text
 A = [1, 2, 3]
 B = [4, 5, 6]
-k = 6
 
-All pair sums:
-1+4=5, 1+5=6, 1+6=7
-2+4=6, 2+5=7, 2+6=8
-3+4=7, 3+5=8, 3+6=9
+All sums:
+5, 6, 7
+6, 7, 8
+7, 8, 9
 
 Sorted:
 [5, 6, 6, 7, 7, 7, 8, 8, 9]
 
-6th smallest = 7
+k = 6
+answer = 7
 ```
 
 ```text
-Try x = 7
+Check x = 7
 
 For A[0] = 1:
 need B <= 7 - 1 = 6
-B = [4,5,6] => 3 values
+B values: 4,5,6 -> 3
 
 For A[1] = 2:
 need B <= 5
-B = [4,5,6] => 2 values
+B values: 4,5 -> 2
 
 For A[2] = 3:
 need B <= 4
-B = [4,5,6] => 1 value
+B values: 4 -> 1
 
-total count = 3 + 2 + 1 = 6
+total = 3 + 2 + 1 = 6
 
 count >= k
-7 can be answer
+x works
 ```
 
 ```text
-Try x = 6
+Check x = 6
 
-For A[0] = 1: B <= 5 => 2
-For A[1] = 2: B <= 4 => 1
-For A[2] = 3: B <= 3 => 0
+A[0] = 1:
+B <= 5 -> 2
+
+A[1] = 2:
+B <= 4 -> 1
+
+A[2] = 3:
+B <= 3 -> 0
 
 total = 3
-3 < 6
-6 too small
 
+3 < 6
+x too small
+```
+
+```text
 answer = 7
 ```
 
@@ -1658,7 +1631,7 @@ answer = 7
 
 ### Problem Statement
 
-Given `n x m` multiplication table, find kth smallest value.
+Given an `n x m` multiplication table, find kth smallest value.
 
 ### Input
 
@@ -1674,19 +1647,14 @@ k = 7
 4
 ```
 
-### Pattern
-
-```text
-Implicit 2D matrix + binary search on answer + count <= mid.
-```
-
 ### Why This Pattern Works
 
-For guessed `x`, count values in multiplication table `<= x`.
+For guessed value `x`, count how many table values are `<= x`.
 
 In row `i`:
 
 ```text
+i, 2i, 3i, ...
 count = min(m, x / i)
 ```
 
@@ -1724,14 +1692,17 @@ long long kthInMultiplicationTable(long long n, long long m, long long k) {
 
     return ans;
 }
+
+int main() {
+    cout << kthInMultiplicationTable(3, 5, 7) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
 
 ```text
-n = 3, m = 5
+3 x 5 table:
 
-table:
 1  2  3  4  5
 2  4  6  8 10
 3  6  9 12 15
@@ -1744,7 +1715,7 @@ answer = 4
 ```
 
 ```text
-Try x = 5
+Check x = 5
 
 row 1:
 min(5, 5/1) = 5
@@ -1758,104 +1729,44 @@ min(5, 5/3) = 1
 count = 8
 
 8 >= 7
-x = 5 works
-try smaller
+x works
 ```
 
 ```text
-Try x = 3
+Check x = 3
 
 row 1: 3
 row 2: 1
 row 3: 1
 
 count = 5
+
 5 < 7
-x = 3 too small
+x too small
 ```
 
 ```text
-Try x = 4
+Check x = 4
 
 row 1: 4
 row 2: 2
 row 3: 1
 
 count = 7
-7 >= 7
+
+x works
 answer = 4
-```
-
----
-
-## 13. Kth Element in Generated Matrix A[i] + B[j]
-
-This is same idea as kth pair sum but explained in matrix form.
-
-### Problem Statement
-
-Given:
-
-```text
-A = [1,2,3]
-B = [4,5,6]
-```
-
-Generate matrix:
-
-```text
-5 6 7
-6 7 8
-7 8 9
-```
-
-Find kth smallest.
-
-### Input
-
-```text
-k = 6
-```
-
-### Output
-
-```text
-7
-```
-
-### Mental Model
-
-```text
-Do not generate n*m matrix.
-Guess value x.
-Count how many generated values <= x.
-```
-
-### Step-by-Step Dry Run
-
-```text
-x = 7
-
-matrix:
-5 6 7   -> 3 values <= 7
-6 7 8   -> 2 values <= 7
-7 8 9   -> 1 value  <= 7
-
-total = 6
-k = 6
-
-x = 7 is valid
 ```
 
 ---
 
 # Phase 5 — Binary Search on Every Start
 
-## 14. Largest Subarray of Ones After At Most K Flips
+## 13. Largest Ones After At Most K Flips
 
 ### Problem Statement
 
-Given a binary array and `k`, flip at most `k` zeros. Find maximum length subarray containing only ones after flips.
+Given binary array and `k`, flip at most `k` zeros. Find maximum length subarray containing all ones after flips.
 
 ### Input
 
@@ -1870,21 +1781,13 @@ k = 2
 6
 ```
 
-### Pattern
-
-```text
-Binary search on length + prefix zeros.
-```
-
 ### Why This Pattern Works
 
-If length `x` is possible, smaller lengths are also possible.
+Guess length `len`.
 
-Check:
+Check whether any window of length `len` has zeros `<= k`.
 
-```text
-Does there exist any window of length x with zeros <= k?
-```
+If length `len` works, all smaller lengths also work.
 
 ### C++ Code
 
@@ -1928,6 +1831,13 @@ int maxOnesBS(vector<int>& arr, int k) {
 
     return ans;
 }
+
+int main() {
+    vector<int> arr = {1,1,1,0,1,0,0,1,1};
+    int k = 2;
+
+    cout << maxOnesBS(arr, k) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -1935,9 +1845,6 @@ int maxOnesBS(vector<int>& arr, int k) {
 ```text
 arr = [1,1,1,0,1,0,0,1,1]
 k = 2
-
-index:  0 1 2 3 4 5 6 7 8
-arr:   [1 1 1 0 1 0 0 1 1]
 ```
 
 ```text
@@ -1946,9 +1853,10 @@ Try len = 6
 window 0..5:
 [1,1,1,0,1,0]
 zeros = 2
-valid
 
-So len = 6 is possible.
+valid because zeros <= k
+
+len = 6 works
 ```
 
 ```text
@@ -1968,13 +1876,16 @@ zeros = 3
 
 No valid window.
 
-len = 7 not possible.
+len = 7 fails
+```
+
+```text
 answer = 6
 ```
 
 ---
 
-## 15. Count Subarrays with At Most K Zeros
+## 14. Count Subarrays with At Most K Zeros
 
 ### Problem Statement
 
@@ -1993,21 +1904,15 @@ k = 1
 4
 ```
 
-### Pattern
-
-```text
-Binary search on every start.
-```
-
 ### Why This Pattern Works
 
-For fixed start `st`, valid end positions are monotone:
+For each start index, valid end indices are monotone:
 
 ```text
-Y Y Y N N N
+Y Y Y N N
 ```
 
-Find farthest valid end.
+Find farthest valid end using binary search.
 
 ### C++ Code
 
@@ -2017,6 +1922,7 @@ using namespace std;
 
 long long countAtMostKZeros(vector<int>& arr, int k) {
     int n = arr.size();
+
     vector<int> pref(n + 1, 0);
 
     for (int i = 0; i < n; i++) {
@@ -2032,6 +1938,7 @@ long long countAtMostKZeros(vector<int>& arr, int k) {
 
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
+
             int zeros = pref[mid + 1] - pref[st];
 
             if (zeros <= k) {
@@ -2047,6 +1954,13 @@ long long countAtMostKZeros(vector<int>& arr, int k) {
 
     return count;
 }
+
+int main() {
+    vector<int> arr = {1,0,0};
+    int k = 1;
+
+    cout << countAtMostKZeros(arr, k) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -2054,48 +1968,47 @@ long long countAtMostKZeros(vector<int>& arr, int k) {
 ```text
 arr = [1, 0, 0]
 k = 1
-
-index:  0 1 2
-arr:   [1 0 0]
 ```
 
 ```text
-Start st = 0
+start = 0
 
-end = 0 -> [1]     zeros = 0 valid
-end = 1 -> [1,0]   zeros = 1 valid
-end = 2 -> [1,0,0] zeros = 2 invalid
+subarrays:
+[1]       zeros = 0 valid
+[1,0]     zeros = 1 valid
+[1,0,0]   zeros = 2 invalid
 
-valid ends = 0,1
-count += 2
+valid count = 2
 ```
 
 ```text
-Start st = 1
+start = 1
 
-end = 1 -> [0]   zeros = 1 valid
-end = 2 -> [0,0] zeros = 2 invalid
+[0]     zeros = 1 valid
+[0,0]   zeros = 2 invalid
 
-count += 1
+valid count = 1
 ```
 
 ```text
-Start st = 2
+start = 2
 
-end = 2 -> [0] zeros = 1 valid
+[0] zeros = 1 valid
 
-count += 1
+valid count = 1
+```
 
+```text
 total = 2 + 1 + 1 = 4
 ```
 
 ---
 
-## 16. Count Subarrays with At Most K Distinct Elements
+## 15. Count Subarrays with At Most K Distinct Elements
 
 ### Problem Statement
 
-Given an array, count subarrays having at most `k` distinct elements.
+Count subarrays with at most `k` distinct elements.
 
 ### Input
 
@@ -2110,11 +2023,14 @@ k = 2
 12
 ```
 
-### Pattern
+### Why This Pattern Works
+
+This is same family as at most `k` zeros.
+
+For counting, sliding window is better than binary search, but the monotone idea is:
 
 ```text
-Same monotone idea as at most K zeros.
-Better solved by sliding window.
+for fixed start, valid end positions form a prefix
 ```
 
 ### C++ Code
@@ -2146,6 +2062,13 @@ long long countAtMostKDistinct(vector<int>& arr, int k) {
 
     return ans;
 }
+
+int main() {
+    vector<int> arr = {1,2,1,2,3};
+    int k = 2;
+
+    cout << countAtMostKDistinct(arr, k) << "\n";
+}
 ```
 
 ### Step-by-Step Dry Run
@@ -2153,64 +2076,64 @@ long long countAtMostKDistinct(vector<int>& arr, int k) {
 ```text
 arr = [1,2,1,2,3]
 k = 2
-
-window maintains at most 2 distinct values
 ```
 
 ```text
-r = 0, value = 1
+r = 0
 
-window: [1]
+window = [1]
 distinct = {1}
 
-valid subarrays ending at r:
+subarrays ending here:
 [1]
 
-add = 1
+add 1
 ans = 1
 ```
 
 ```text
-r = 1, value = 2
+r = 1
 
-window: [1,2]
+window = [1,2]
 distinct = {1,2}
 
-valid ending at r:
+subarrays ending here:
 [2]
 [1,2]
 
-add = 2
+add 2
 ans = 3
 ```
 
 ```text
-r = 2, value = 1
+r = 2
 
-window: [1,2,1]
+window = [1,2,1]
 distinct = {1,2}
 
-valid ending at r:
+subarrays ending here:
 [1]
 [2,1]
 [1,2,1]
 
-add = 3
+add 3
 ans = 6
 ```
 
 ```text
-r = 3, value = 2
+r = 3
 
-window: [1,2,1,2]
+window = [1,2,1,2]
 distinct = {1,2}
 
-add = 4
+add 4
 ans = 10
 ```
 
 ```text
-r = 4, value = 3
+r = 4
+
+add 3
 
 window before shrink:
 [1,2,1,2,3]
@@ -2219,16 +2142,15 @@ distinct = {1,2,3}
 shrink:
 remove 1 -> still {1,2,3}
 remove 2 -> still {1,2,3}
-remove 1 -> {2,3}
+remove 1 -> now {2,3}
 
-window becomes:
-[2,3]
+window = [2,3]
 
-valid ending at r:
+subarrays ending here:
 [3]
 [2,3]
 
-add = 2
+add 2
 ans = 12
 ```
 
@@ -2236,52 +2158,57 @@ ans = 12
 
 # Phase 6 — Real Domain Binary Search
 
-## 17. Binary Search on Real Domain
+## 16. Square Root / Real Binary Search
 
 ### Problem Statement
 
-Find answer with decimal precision.
+Find square root of `2` with decimal precision.
 
-### Pattern
+### Input
 
 ```text
-Real domain binary search.
+x = 2
 ```
 
-### Difference from Integer Binary Search
+### Output
 
-Integer:
-
-```cpp
-lo = mid + 1;
-hi = mid - 1;
+```text
+1.414213562...
 ```
 
-Real:
+### Why This Pattern Works
+
+We search in real numbers.
+
+For real domain:
 
 ```cpp
 lo = mid;
 hi = mid;
 ```
 
-because there is no next real number.
+not:
 
-### C++ EPS Version
+```cpp
+lo = mid + 1;
+hi = mid - 1;
+```
+
+### C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-bool check(long double x) {
-    return x * x >= 2;
+bool check(long double mid) {
+    return mid * mid >= 2.0;
 }
 
-long double sqrt2() {
+int main() {
     long double lo = 0;
     long double hi = 2;
-    long double EPS = 1e-12;
 
-    while (fabsl(hi - lo) > EPS) {
+    for (int it = 0; it < 100; it++) {
         long double mid = (lo + hi) / 2;
 
         if (check(mid)) {
@@ -2291,86 +2218,64 @@ long double sqrt2() {
         }
     }
 
-    return (lo + hi) / 2;
-}
-```
-
-### Fixed Iteration Version
-
-```cpp
-long double realBS(long double lo, long double hi) {
-    for (int it = 0; it < 100; it++) {
-        long double mid = (lo + hi) / 2;
-
-        if (check(mid)) hi = mid;
-        else lo = mid;
-    }
-
-    return (lo + hi) / 2;
+    cout << fixed << setprecision(15) << (lo + hi) / 2 << "\n";
 }
 ```
 
 ### Step-by-Step Dry Run
 
 ```text
-Goal:
-find sqrt(2)
-
-check(x):
-x*x >= 2
-
 lo = 0
 hi = 2
 ```
 
 ```text
 Step 1
-mid = 1.0
-1.0 * 1.0 = 1 < 2
-check = false
-lo = mid = 1.0
+
+mid = 1
+
+1 * 1 >= 2 ? no
+lo = mid = 1
 ```
 
 ```text
 Step 2
-lo = 1.0, hi = 2.0
+
+lo = 1, hi = 2
 mid = 1.5
+
 1.5 * 1.5 = 2.25 >= 2
-check = true
+
 hi = mid = 1.5
 ```
 
 ```text
 Step 3
-lo = 1.0, hi = 1.5
+
+lo = 1, hi = 1.5
 mid = 1.25
-1.25 * 1.25 = 1.5625 < 2
+
+1.25^2 = 1.5625 < 2
+
 lo = 1.25
 ```
 
 ```text
 After many iterations:
-answer ≈ 1.41421356237
-```
-
-### Attractive Note
-
-```text
-In real binary search, never do mid + 1 or mid - 1.
-Move boundary to mid.
+answer ≈ 1.414213562
 ```
 
 ---
 
 # Phase 7 — Ternary Search
 
-## 18. Ternary Search Foundation
+## 17. Ternary Search Foundation
 
 ### Problem Statement
 
 Find minimum or maximum of a unimodal function.
 
-Unimodal means:
+A unimodal function is:
 
 ```text
 decreasing then increasing
@@ -2382,26 +2287,24 @@ or:
 increasing then decreasing
 ```
 
-### Pattern
-
-```text
-Ternary search on hill/valley shaped function.
-```
-
 ### Why This Pattern Works
 
-Split range into three parts using `m1` and `m2`.
+Ternary search splits space using two midpoints:
+
+```text
+lo ----- m1 ----- m2 ----- hi
+```
 
 For minimum:
 
 ```text
 if f(m1) < f(m2)
-    minimum is on left/middle
+    minimum is not strictly right of m2
 else
-    minimum is on middle/right
+    minimum is not strictly left of m1
 ```
 
-### C++ Code — Real Domain
+### C++ Code
 
 ```cpp
 long double ternarySearch(long double lo, long double hi) {
@@ -2420,7 +2323,7 @@ long double ternarySearch(long double lo, long double hi) {
 }
 ```
 
-### C++ Code — Integer Domain
+### Integer Version
 
 ```cpp
 long long integerTernary(long long lo, long long hi) {
@@ -2448,67 +2351,45 @@ long long integerTernary(long long lo, long long hi) {
 ### Step-by-Step Dry Run
 
 ```text
-Suppose f(x) is valley shaped.
+Function is valley shaped.
 
-lo ---------------------------- hi
+lo ----------------------------- hi
         m1              m2
 ```
 
 ```text
-Case 1:
+If f(m1) < f(m2):
 
-f(m1) < f(m2)
+left side is better
+discard right part
 
-The value is smaller near m1.
-Minimum cannot be strictly right of m2.
-
-Action:
 hi = m2
 ```
 
 ```text
-Case 2:
+If f(m1) > f(m2):
 
-f(m1) > f(m2)
+right side is better
+discard left part
 
-The value is smaller near m2.
-Minimum cannot be strictly left of m1.
-
-Action:
 lo = m1
 ```
 
 ---
 
-## 19. Freefall Problem
+## 18. Freefall Problem
 
 ### Problem Statement
 
-A person can increase gravity `g` by 1 operation. Each operation costs `B` time. Falling time becomes:
+You can increase gravity using operations. Each operation costs `B` time.
+
+If you do `x` operations:
 
 ```text
-A / sqrt(g)
+total time = B*x + A / sqrt(x + 1)
 ```
 
-Initially:
-
-```text
-g = 1
-```
-
-If we do `x` operations:
-
-```text
-g = x + 1
-```
-
-Total time:
-
-```text
-f(x) = B*x + A / sqrt(x + 1)
-```
-
-Minimize `f(x)`.
+Minimize total time.
 
 ### Input
 
@@ -2520,25 +2401,19 @@ B = 1
 ### Output
 
 ```text
-approximately 7.7735
-```
-
-### Pattern
-
-```text
-Unimodal function → ternary search / binary on slope.
+7.773502691...
 ```
 
 ### Why This Pattern Works
 
-The function has two competing parts:
+The function has two parts:
 
 ```text
 B*x increases
 A/sqrt(x+1) decreases
 ```
 
-So the total first decreases, then increases.
+So total first decreases, then increases: valley shape.
 
 ### C++ Code
 
@@ -2599,43 +2474,35 @@ f(0) = 0 + 10/sqrt(1) = 10
 ```text
 x = 1:
 f(1) = 1 + 10/sqrt(2)
-     ≈ 1 + 7.071
-     = 8.071
+     ≈ 8.071
 ```
 
 ```text
 x = 2:
 f(2) = 2 + 10/sqrt(3)
-     ≈ 2 + 5.773
-     = 7.773
+     ≈ 7.773
 ```
 
 ```text
 x = 3:
 f(3) = 3 + 10/sqrt(4)
-     = 3 + 5
      = 8
-
-Minimum near x = 2
-answer ≈ 7.773
 ```
 
-### Attractive Note
-
 ```text
-If one term increases and another term decreases,
-total often becomes valley shaped.
+Minimum near x = 2
+answer ≈ 7.773
 ```
 
 ---
 
 # Phase 8 — Drill Problems
 
-## 20. Sum of Cubes
+## 19. Sum of Cubes
 
 ### Problem Statement
 
-Given `x`, check whether:
+Given `x`, check if:
 
 ```text
 x = a^3 + b^3
@@ -2661,30 +2528,22 @@ Because:
 2^3 + 3^3 = 8 + 27 = 35
 ```
 
-### Pattern
-
-```text
-Iterate a + binary search cube root of remaining.
-```
-
 ### Why This Pattern Works
 
-Constraint:
+Since:
 
 ```text
 x <= 1e12
 cube root <= 1e4
 ```
 
-So iterate `a` up to `1e4`.
-
-For each `a`:
+Iterate `a`, then check whether:
 
 ```text
-remaining = x - a^3
+x - a^3
 ```
 
-Check if `remaining` is a perfect cube using binary search.
+is a perfect cube.
 
 ### C++ Code
 
@@ -2702,7 +2561,6 @@ ll cubeRootFloor(ll x) {
     while (lo <= hi) {
         ll mid = lo + (hi - lo) / 2;
 
-        // avoid mid * mid * mid overflow
         if (mid <= x / mid / mid) {
             ans = mid;
             lo = mid + 1;
@@ -2747,19 +2605,20 @@ x = 35
 ```
 
 ```text
-Try a = 1:
+Try a = 1
+
 a^3 = 1
 remaining = 35 - 1 = 34
 
-Is 34 perfect cube?
 cubeRootFloor(34) = 3
-3^3 = 27 != 34
+3^3 = 27
 
+27 != 34
 not valid
 ```
 
 ```text
-Try a = 2:
+Try a = 2
 
 a^3 = 8
 remaining = 35 - 8 = 27
@@ -2767,7 +2626,8 @@ remaining = 35 - 8 = 27
 cubeRootFloor(27) = 3
 3^3 = 27
 
-valid:
+valid
+
 2^3 + 3^3 = 35
 
 answer = YES
@@ -2775,13 +2635,13 @@ answer = YES
 
 ### Overflow Note
 
-Do not write blindly:
+Avoid:
 
 ```cpp
 mid * mid * mid <= x
 ```
 
-For large numbers, use:
+Use:
 
 ```cpp
 mid <= x / mid / mid
@@ -2791,30 +2651,30 @@ mid <= x / mid / mid
 
 # Binary Search Decision Table
 
-| Situation | Search Type |
+| Problem Signal | Use |
 |---|---|
-| sorted array index | classic binary search |
-| first value satisfying condition | first true |
-| last value satisfying condition | last true |
+| sorted array | classic binary search |
+| first valid index | first true |
+| last valid index | last true |
 | first `>= x` | lower bound |
 | first `> x` | upper bound |
 | minimize maximum | first true on answer |
 | maximize minimum | last true on answer |
 | minimum time | first true on answer |
 | kth smallest | count `<= mid` |
-| generated matrix | count instead of build |
-| every start index | farthest valid end |
-| real answer | real-domain binary search |
-| valley/hill function | ternary search |
-| multiplication may overflow | divide and check |
+| generated matrix / pairs | count instead of generate |
+| fixed start, farthest end | binary search on every start |
+| decimal answer | real binary search |
+| valley / hill function | ternary search |
+| multiplication overflow | divide-and-check |
 
 ---
 
-# Must-Solve Order
+# Must-Solve Phase Order
 
 ```text
 Phase 1:
-1. First One in Binary Array
+1. First 1 in Binary Array
 2. Lower Bound
 3. Upper Bound
 
@@ -2831,23 +2691,22 @@ Phase 3:
 
 Phase 4:
 11. Kth Pair Sum
-12. Kth Multiplication Table
-13. Kth Generated Matrix
+12. Kth Smallest in Multiplication Table
 
 Phase 5:
-14. Max Ones After K Flips
-15. Count At Most K Zeros
-16. Count At Most K Distinct
+13. Largest Ones After K Flips
+14. Count At Most K Zeros
+15. Count At Most K Distinct
 
 Phase 6:
-17. Real Domain Binary Search
+16. Real Domain Binary Search
 
 Phase 7:
-18. Ternary Search
-19. Freefall
+17. Ternary Search
+18. Freefall
 
 Phase 8:
-20. Sum of Cubes
+19. Sum of Cubes
 ```
 
 ---
@@ -2918,16 +2777,14 @@ long double realBS(long double lo, long double hi) {
 
 # Common Mistakes
 
-## Mistake 1 — Repeating Same Search Space
+## 1. Repeating Same Search Space
 
-Wrong:
+Wrong for integer domain:
 
 ```cpp
 lo = mid;
 hi = mid;
 ```
-
-for integer binary search.
 
 Correct:
 
@@ -2936,15 +2793,9 @@ lo = mid + 1;
 hi = mid - 1;
 ```
 
-Exception:
-
-```text
-Real-domain binary search uses lo = mid or hi = mid.
-```
-
 ---
 
-## Mistake 2 — Wrong Mid Formula
+## 2. Wrong Mid Formula
 
 Risky:
 
@@ -2960,25 +2811,25 @@ mid = lo + (hi - lo) / 2;
 
 ---
 
-## Mistake 3 — Bad Check Function
+## 3. Bad Check Function
 
 Bad:
 
 ```text
-check(mid) = is mid exactly answer?
+Is mid exactly the answer?
 ```
 
 Good:
 
 ```text
-check(mid) = can answer be <= mid?
-check(mid) = can distance mid be achieved?
-check(mid) = are there at least k values <= mid?
+Can answer be <= mid?
+Can distance mid be achieved?
+Are there at least k values <= mid?
 ```
 
 ---
 
-## Mistake 4 — Overflow
+## 4. Overflow
 
 Wrong:
 
@@ -2994,7 +2845,7 @@ mid <= x / mid / mid
 
 ---
 
-## Mistake 5 — Wrong Bounds
+## 5. Wrong Bounds
 
 Examples:
 
@@ -3024,11 +2875,11 @@ hi = largest possible sum
 Binary search is not about arrays.
 Binary search is about monotonic decisions.
 
-Step 1: What is the answer?
-Step 2: Can I guess it?
-Step 3: Can I check the guess?
-Step 4: Is check monotonic?
-Step 5: First true or last true?
+1. What is the answer?
+2. Can I guess it?
+3. Can I check it?
+4. Is the check monotonic?
+5. First true or last true?
 ```
 
 ---
