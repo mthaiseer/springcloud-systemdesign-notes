@@ -2,6 +2,9 @@
 
 > Built from your uploaded `006_RECURSION_BACKTRACKING.md` and PDF notes: AlgoMonster backtracking patterns, Recursion-1, Recursion-2, and K-Knights notes.
 
+> Updated with Mermaid Tree Dry Run sections inspired by `000_BACKTRACKING_PATTERNS.md` for better branch-style recursion visualization.
+
+
 This is a **phase-wise CP + FAANG style master guide** with:
 
 - Clickable index
@@ -312,34 +315,41 @@ fact(5)
                     └── 1
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Mermaid Tree Dry Run
 
 ```mermaid
 flowchart TD
-    S1["Call=1<br/>n=5<br/>Action=call fact(4)<br/>Return=pending"]
-    S2["Call=2<br/>n=4<br/>Action=call fact(3)<br/>Return=pending"]
-    S1 --> S2
-    S3["Call=3<br/>n=3<br/>Action=call fact(2)<br/>Return=pending"]
-    S2 --> S3
-    S4["Call=4<br/>n=2<br/>Action=call fact(1)<br/>Return=pending"]
-    S3 --> S4
-    S5["Call=5<br/>n=1<br/>Action=call fact(0)<br/>Return=pending"]
-    S4 --> S5
-    S6["Call=6<br/>n=0<br/>Action=base case<br/>Return=1"]
-    S5 --> S6
-    S7["Call=unwind<br/>n=1<br/>Action=1 1<br/>Return=1"]
-    S6 --> S7
-    S8["Call=unwind<br/>n=2<br/>Action=2 1<br/>Return=2"]
-    S7 --> S8
-    S9["Call=unwind<br/>n=3<br/>Action=3 2<br/>Return=6"]
-    S8 --> S9
-    S10["Call=unwind<br/>n=4<br/>Action=4 6<br/>Return=24"]
-    S9 --> S10
-    S11["Call=unwind<br/>n=5<br/>Action=5 24<br/>Return=120"]
-    S10 --> S11
+    A["fact(5)"] --> B["5 × fact(4)"]
+    B --> C["4 × fact(3)"]
+    C --> D["3 × fact(2)"]
+    D --> E["2 × fact(1)"]
+    E --> F["1 × fact(0)"]
+    F --> G["base case = 1"]
+
+    G --> H["return 1"]
+    H --> I["return 2"]
+    I --> J["return 6"]
+    J --> K["return 24"]
+    K --> L["return 120"]
 ```
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
+```text
+fact(5)
+→ 5 × fact(4)
+→ 4 × fact(3)
+→ 3 × fact(2)
+→ 2 × fact(1)
+→ 1 × fact(0)
+→ base case = 1
+
+Unwind:
+1
+2
+6
+24
+120
+```
+
 ## Mental Model
 
 > Simple recursion is not about choices. It is about reducing the problem until base case.
@@ -436,24 +446,17 @@ int main() {
 }
 ```
 
-## Dry Run Table For `fib(5)` With Memo — Mermaid Recursion Tree
+## Dry Run Table For `fib(5)` With Memo
 
-```mermaid
-flowchart TD
-    S1["State=fib(0)<br/>First time?=yes<br/>Computed from=base<br/>Value=0"]
-    S2["State=fib(1)<br/>First time?=yes<br/>Computed from=base<br/>Value=1"]
-    S1 --> S2
-    S3["State=fib(2)<br/>First time?=yes<br/>Computed from=fib(1)+fib(0)<br/>Value=1"]
-    S2 --> S3
-    S4["State=fib(3)<br/>First time?=yes<br/>Computed from=fib(2)+fib(1)<br/>Value=2"]
-    S3 --> S4
-    S5["State=fib(4)<br/>First time?=yes<br/>Computed from=fib(3)+fib(2)<br/>Value=3"]
-    S4 --> S5
-    S6["State=fib(5)<br/>First time?=yes<br/>Computed from=fib(4)+fib(3)<br/>Value=5"]
-    S5 --> S6
-```
+| State | First time? | Computed from | Value |
+|---:|---|---|---:|
+| fib(0) | yes | base | 0 |
+| fib(1) | yes | base | 1 |
+| fib(2) | yes | fib(1)+fib(0) | 1 |
+| fib(3) | yes | fib(2)+fib(1) | 2 |
+| fib(4) | yes | fib(3)+fib(2) | 3 |
+| fib(5) | yes | fib(4)+fib(3) | 5 |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > If the recursion tree has repeated states, add memoization.
@@ -559,30 +562,20 @@ int main() {
 └── ')' -> (1,-1,")") INVALID
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["Step=1<br/>i=0<br/>depth=0<br/>path=empty<br/>Decision=start"]
-    S2["Step=2<br/>i=1<br/>depth=1<br/>path=(<br/>Decision=valid"]
-    S1 --> S2
-    S3["Step=3<br/>i=2<br/>depth=2<br/>path=((<br/>Decision=valid"]
-    S2 --> S3
-    S4["Step=4<br/>i=3<br/>depth=3<br/>path=(((<br/>Decision=prune: depth > k"]
-    S3 --> S4
-    S5["Step=5<br/>i=3<br/>depth=1<br/>path=(()<br/>Decision=valid"]
-    S4 --> S5
-    S6["Step=6<br/>i=4<br/>depth=0<br/>path=(())<br/>Decision=save"]
-    S5 --> S6
-    S7["Step=7<br/>i=2<br/>depth=0<br/>path=()<br/>Decision=valid"]
-    S6 --> S7
-    S8["Step=8<br/>i=3<br/>depth=1<br/>path=()(<br/>Decision=valid"]
-    S7 --> S8
-    S9["Step=9<br/>i=4<br/>depth=0<br/>path=()()<br/>Decision=save"]
-    S8 --> S9
-```
+| Step | i | depth | path | Decision |
+|---:|---:|---:|---|---|
+| 1 | 0 | 0 | empty | start |
+| 2 | 1 | 1 | `(` | valid |
+| 3 | 2 | 2 | `((` | valid |
+| 4 | 3 | 3 | `(((` | prune: depth > k |
+| 5 | 3 | 1 | `(()` | valid |
+| 6 | 4 | 0 | `(())` | save |
+| 7 | 2 | 0 | `()` | valid |
+| 8 | 3 | 1 | `()(` | valid |
+| 9 | 4 | 0 | `()()` | save |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > Depth is the number of currently open brackets. It can never become negative and cannot exceed k.
@@ -682,26 +675,18 @@ hanoi(3, A, B, C)
         ├── move A -> C
 ```
 
-## Move Dry Run For `n = 3` — Mermaid Recursion Tree
+## Move Dry Run For `n = 3`
 
-```mermaid
-flowchart TD
-    S1["Move=1<br/>Disk=1<br/>From=A<br/>To=C"]
-    S2["Move=2<br/>Disk=2<br/>From=A<br/>To=B"]
-    S1 --> S2
-    S3["Move=3<br/>Disk=1<br/>From=C<br/>To=B"]
-    S2 --> S3
-    S4["Move=4<br/>Disk=3<br/>From=A<br/>To=C"]
-    S3 --> S4
-    S5["Move=5<br/>Disk=1<br/>From=B<br/>To=A"]
-    S4 --> S5
-    S6["Move=6<br/>Disk=2<br/>From=B<br/>To=C"]
-    S5 --> S6
-    S7["Move=7<br/>Disk=1<br/>From=A<br/>To=C"]
-    S6 --> S7
-```
+| Move | Disk | From | To |
+|---:|---:|---|---|
+| 1 | 1 | A | C |
+| 2 | 2 | A | B |
+| 3 | 1 | C | B |
+| 4 | 3 | A | C |
+| 5 | 1 | B | A |
+| 6 | 2 | B | C |
+| 7 | 1 | A | C |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Complexity
 
 ```text
@@ -809,24 +794,17 @@ level 0: ""
     └── choose b -> level 2: "bb" save
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["Step=1<br/>level/path size=0<br/>path before=empty<br/>choice=a<br/>path after=a<br/>action=recurse"]
-    S2["Step=2<br/>level/path size=1<br/>path before=a<br/>choice=a<br/>path after=aa<br/>action=save"]
-    S1 --> S2
-    S3["Step=3<br/>level/path size=1<br/>path before=a<br/>choice=b<br/>path after=ab<br/>action=save"]
-    S2 --> S3
-    S4["Step=4<br/>level/path size=0<br/>path before=empty<br/>choice=b<br/>path after=b<br/>action=recurse"]
-    S3 --> S4
-    S5["Step=5<br/>level/path size=1<br/>path before=b<br/>choice=a<br/>path after=ba<br/>action=save"]
-    S4 --> S5
-    S6["Step=6<br/>level/path size=1<br/>path before=b<br/>choice=b<br/>path after=bb<br/>action=save"]
-    S5 --> S6
-```
+| Step | level/path size | path before | choice | path after | action |
+|---:|---:|---|---|---|---|
+| 1 | 0 | empty | a | a | recurse |
+| 2 | 1 | a | a | aa | save |
+| 3 | 1 | a | b | ab | save |
+| 4 | 0 | empty | b | b | recurse |
+| 5 | 1 | b | a | ba | save |
+| 6 | 1 | b | b | bb | save |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > One level fills one position. Choices are the characters allowed at that position.
@@ -937,28 +915,19 @@ level 0 digit 2 choices: a,b,c
     └── f -> cf
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["Step=1<br/>level=0<br/>digit=2<br/>choices=abc<br/>path before=empty<br/>choose=a<br/>path after=a"]
-    S2["Step=2<br/>level=1<br/>digit=3<br/>choices=def<br/>path before=a<br/>choose=d<br/>path after=ad save"]
-    S1 --> S2
-    S3["Step=3<br/>level=1<br/>digit=3<br/>choices=def<br/>path before=a<br/>choose=e<br/>path after=ae save"]
-    S2 --> S3
-    S4["Step=4<br/>level=1<br/>digit=3<br/>choices=def<br/>path before=a<br/>choose=f<br/>path after=af save"]
-    S3 --> S4
-    S5["Step=5<br/>level=0<br/>digit=2<br/>choices=abc<br/>path before=empty<br/>choose=b<br/>path after=b"]
-    S4 --> S5
-    S6["Step=6<br/>level=1<br/>digit=3<br/>choices=def<br/>path before=b<br/>choose=d/e/f<br/>path after=bd/be/bf"]
-    S5 --> S6
-    S7["Step=7<br/>level=0<br/>digit=2<br/>choices=abc<br/>path before=empty<br/>choose=c<br/>path after=c"]
-    S6 --> S7
-    S8["Step=8<br/>level=1<br/>digit=3<br/>choices=def<br/>path before=c<br/>choose=d/e/f<br/>path after=cd/ce/cf"]
-    S7 --> S8
-```
+| Step | level | digit | choices | path before | choose | path after |
+|---:|---:|---:|---|---|---|---|
+| 1 | 0 | 2 | abc | empty | a | a |
+| 2 | 1 | 3 | def | a | d | ad save |
+| 3 | 1 | 3 | def | a | e | ae save |
+| 4 | 1 | 3 | def | a | f | af save |
+| 5 | 0 | 2 | abc | empty | b | b |
+| 6 | 1 | 3 | def | b | d/e/f | bd/be/bf |
+| 7 | 0 | 2 | abc | empty | c | c |
+| 8 | 1 | 3 | def | c | d/e/f | cd/ce/cf |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > One digit equals one level. Letters mapped to that digit are choices.
@@ -1059,30 +1028,20 @@ i=0 path=[]
     └── take 2 -> i=2 path=[1,2] save
 ```
 
-## Index-by-Index Dry Run For `[1,2,3]` — Mermaid Recursion Tree
+## Index-by-Index Dry Run For `[1,2,3]`
 
-```mermaid
-flowchart TD
-    S1["i=0<br/>nums[i]=1<br/>Decision=skip<br/>Path after decision=[]"]
-    S2["i=1<br/>nums[i]=2<br/>Decision=skip<br/>Path after decision=[]"]
-    S1 --> S2
-    S3["i=2<br/>nums[i]=3<br/>Decision=skip<br/>Path after decision=[] save"]
-    S2 --> S3
-    S4["i=2<br/>nums[i]=3<br/>Decision=take<br/>Path after decision=[3] save"]
-    S3 --> S4
-    S5["i=1<br/>nums[i]=2<br/>Decision=take<br/>Path after decision=[2]"]
-    S4 --> S5
-    S6["i=2<br/>nums[i]=3<br/>Decision=skip<br/>Path after decision=[2] save"]
-    S5 --> S6
-    S7["i=2<br/>nums[i]=3<br/>Decision=take<br/>Path after decision=[2,3] save"]
-    S6 --> S7
-    S8["i=0<br/>nums[i]=1<br/>Decision=take<br/>Path after decision=[1]"]
-    S7 --> S8
-    S9["i=1<br/>nums[i]=2<br/>Decision=skip/take<br/>Path after decision=[1], [1,2]"]
-    S8 --> S9
-```
+| i | nums[i] | Decision | Path after decision |
+|---:|---:|---|---|
+| 0 | 1 | skip | [] |
+| 1 | 2 | skip | [] |
+| 2 | 3 | skip | [] save |
+| 2 | 3 | take | [3] save |
+| 1 | 2 | take | [2] |
+| 2 | 3 | skip | [2] save |
+| 2 | 3 | take | [2,3] save |
+| 0 | 1 | take | [1] |
+| 1 | 2 | skip/take | [1], [1,2] |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > Subset means every element asks: should I enter the answer or not?
@@ -1195,24 +1154,17 @@ vector<vector<int>> permute(vector<int>& input) {
         └── 3,2,1 save
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["level=0<br/>path=[]<br/>used indexes=none<br/>available choices=1,2,3"]
-    S2["level=1<br/>path=[1]<br/>used indexes=0<br/>available choices=2,3"]
-    S1 --> S2
-    S3["level=2<br/>path=[1,2]<br/>used indexes=0,1<br/>available choices=3"]
-    S2 --> S3
-    S4["level=3<br/>path=[1,2,3]<br/>used indexes=0,1,2<br/>available choices=save"]
-    S3 --> S4
-    S5["level=2<br/>path=[1,3]<br/>used indexes=0,2<br/>available choices=2"]
-    S4 --> S5
-    S6["level=3<br/>path=[1,3,2]<br/>used indexes=0,2,1<br/>available choices=save"]
-    S5 --> S6
-```
+| level | path | used indexes | available choices |
+|---:|---|---|---|
+| 0 | [] | none | 1,2,3 |
+| 1 | [1] | 0 | 2,3 |
+| 2 | [1,2] | 0,1 | 3 |
+| 3 | [1,2,3] | 0,1,2 | save |
+| 2 | [1,3] | 0,2 | 2 |
+| 3 | [1,3,2] | 0,2,1 | save |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > Permutation fills positions. At every position, choose one unused item.
@@ -1331,24 +1283,17 @@ freq = {1:1, 2:2}
         └── choose 1 -> [2,2,1] save
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["level=0<br/>path=[]<br/>freq before=1:1, 2:2<br/>choose=1<br/>freq after=1:0, 2:2"]
-    S2["level=1<br/>path=[1]<br/>freq before=1:0, 2:2<br/>choose=2<br/>freq after=1:0, 2:1"]
-    S1 --> S2
-    S3["level=2<br/>path=[1,2]<br/>freq before=1:0, 2:1<br/>choose=2<br/>freq after=1:0, 2:0 save"]
-    S2 --> S3
-    S4["level=0<br/>path=[]<br/>freq before=1:1, 2:2<br/>choose=2<br/>freq after=1:1, 2:1"]
-    S3 --> S4
-    S5["level=1<br/>path=[2]<br/>freq before=1:1, 2:1<br/>choose=1<br/>freq after=1:0, 2:1"]
-    S4 --> S5
-    S6["level=2<br/>path=[2,1]<br/>freq before=1:0, 2:1<br/>choose=2<br/>freq after=save"]
-    S5 --> S6
-```
+| level | path | freq before | choose | freq after |
+|---:|---|---|---|---|
+| 0 | [] | 1:1, 2:2 | 1 | 1:0, 2:2 |
+| 1 | [1] | 1:0, 2:2 | 2 | 1:0, 2:1 |
+| 2 | [1,2] | 1:0, 2:1 | 2 | 1:0, 2:0 save |
+| 0 | [] | 1:1, 2:2 | 2 | 1:1, 2:1 |
+| 1 | [2] | 1:1, 2:1 | 1 | 1:0, 2:1 |
+| 2 | [2,1] | 1:0, 2:1 | 2 | save |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > Duplicates? Use frequency map. Choice is value, not index.
@@ -1452,24 +1397,17 @@ vector<string> generateParenthesis(int inputN) {
             └── "()()" (2,2) save
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["path=empty<br/>open=0<br/>close=0<br/>Can add (?=yes<br/>Can add )?=no<br/>Action=add ("]
-    S2["path=(<br/>open=1<br/>close=0<br/>Can add (?=yes<br/>Can add )?=yes<br/>Action=branch both"]
-    S1 --> S2
-    S3["path=((<br/>open=2<br/>close=0<br/>Can add (?=no<br/>Can add )?=yes<br/>Action=add )"]
-    S2 --> S3
-    S4["path=(()<br/>open=2<br/>close=1<br/>Can add (?=no<br/>Can add )?=yes<br/>Action=add ) save"]
-    S3 --> S4
-    S5["path=()<br/>open=1<br/>close=1<br/>Can add (?=yes<br/>Can add )?=no<br/>Action=add ("]
-    S4 --> S5
-    S6["path=()(<br/>open=2<br/>close=1<br/>Can add (?=no<br/>Can add )?=yes<br/>Action=add ) save"]
-    S5 --> S6
-```
+| path | open | close | Can add `(`? | Can add `)`? | Action |
+|---|---:|---:|---|---|---|
+| empty | 0 | 0 | yes | no | add `(` |
+| `(` | 1 | 0 | yes | yes | branch both |
+| `((` | 2 | 0 | no | yes | add `)` |
+| `(()` | 2 | 1 | no | yes | add `)` save |
+| `()` | 1 | 1 | yes | no | add `(` |
+| `()(` | 2 | 1 | no | yes | add `)` save |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > Opening bracket creates permission. Closing bracket spends permission.
@@ -1576,26 +1514,18 @@ start=0 path=[]
 └── choose s[0..2] = "aab" not palindrome prune
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["start=0<br/>end=0<br/>substring=a<br/>palindrome?=yes<br/>action=push, dfs(1)"]
-    S2["start=1<br/>end=1<br/>substring=a<br/>palindrome?=yes<br/>action=push, dfs(2)"]
-    S1 --> S2
-    S3["start=2<br/>end=2<br/>substring=b<br/>palindrome?=yes<br/>action=push, dfs(3), save"]
-    S2 --> S3
-    S4["start=1<br/>end=2<br/>substring=ab<br/>palindrome?=no<br/>action=prune"]
-    S3 --> S4
-    S5["start=0<br/>end=1<br/>substring=aa<br/>palindrome?=yes<br/>action=push, dfs(2)"]
-    S4 --> S5
-    S6["start=2<br/>end=2<br/>substring=b<br/>palindrome?=yes<br/>action=save"]
-    S5 --> S6
-    S7["start=0<br/>end=2<br/>substring=aab<br/>palindrome?=no<br/>action=prune"]
-    S6 --> S7
-```
+| start | end | substring | palindrome? | action |
+|---:|---:|---|---|---|
+| 0 | 0 | a | yes | push, dfs(1) |
+| 1 | 1 | a | yes | push, dfs(2) |
+| 2 | 2 | b | yes | push, dfs(3), save |
+| 1 | 2 | ab | no | prune |
+| 0 | 1 | aa | yes | push, dfs(2) |
+| 2 | 2 | b | yes | save |
+| 0 | 2 | aab | no | prune |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > Partitioning problems usually mean: Level = start index, Choice = next cut.
@@ -1696,28 +1626,19 @@ vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
     └── skip to 7 -> take 7 -> rem=0 save [7]
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["idx=0<br/>candidate=2<br/>rem=7<br/>path=[]<br/>decision=take 2"]
-    S2["idx=0<br/>candidate=2<br/>rem=5<br/>path=[2]<br/>decision=take 2"]
-    S1 --> S2
-    S3["idx=0<br/>candidate=2<br/>rem=3<br/>path=[2,2]<br/>decision=skip 2, try 3"]
-    S2 --> S3
-    S4["idx=1<br/>candidate=3<br/>rem=3<br/>path=[2,2]<br/>decision=take 3"]
-    S3 --> S4
-    S5["idx=1<br/>candidate=3<br/>rem=0<br/>path=[2,2,3]<br/>decision=save"]
-    S4 --> S5
-    S6["idx=0<br/>candidate=2<br/>rem=7<br/>path=[]<br/>decision=skip 2"]
-    S5 --> S6
-    S7["idx=3<br/>candidate=7<br/>rem=7<br/>path=[]<br/>decision=take 7"]
-    S6 --> S7
-    S8["idx=3<br/>candidate=7<br/>rem=0<br/>path=[7]<br/>decision=save"]
-    S7 --> S8
-```
+| idx | candidate | rem | path | decision |
+|---:|---:|---:|---|---|
+| 0 | 2 | 7 | [] | take 2 |
+| 0 | 2 | 5 | [2] | take 2 |
+| 0 | 2 | 3 | [2,2] | skip 2, try 3 |
+| 1 | 3 | 3 | [2,2] | take 3 |
+| 1 | 3 | 0 | [2,2,3] | save |
+| 0 | 2 | 7 | [] | skip 2 |
+| 3 | 7 | 7 | [] | take 7 |
+| 3 | 7 | 0 | [7] | save |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > Reuse allowed means after taking a number, stay on same index.
@@ -1835,23 +1756,6 @@ start=0 rem=8 path=[]
 └── choose 2 -> path=[2], rem=6
     └── choose 6 -> [2,6] save
 ```
-
-## Index-by-Index Dry Run — Mermaid Recursion Tree
-
-```mermaid
-flowchart TD
-    A["start=0 rem=8 path=[] sorted=[1,1,2,5,6,7,10]"] --> B["choose i=0 value=1<br/>path=[1] rem=7"]
-    A --> C["i=1 value=1<br/>SKIP duplicate at same level"]
-    A --> D["choose i=2 value=2<br/>path=[2] rem=6"]
-    B --> E["choose i=1 value=1<br/>path=[1,1] rem=6"]
-    E --> F["choose value=6<br/>path=[1,1,6] SAVE"]
-    B --> G["choose value=2<br/>path=[1,2] rem=5"]
-    G --> H["choose value=5<br/>path=[1,2,5] SAVE"]
-    B --> I["choose value=7<br/>path=[1,7] SAVE"]
-    D --> J["choose value=6<br/>path=[2,6] SAVE"]
-```
-
-**How to read:** same-level duplicate `1` is skipped, but deeper duplicate `1` is allowed for `[1,1,6]`.
 
 ## Mental Model
 
@@ -2104,24 +2008,17 @@ level 3, remaining number = 4
 └── choose 4 -> answer = 2314
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["Level=0<br/>Remaining choices=1,2,3,4<br/>Branch size=6<br/>k before=9<br/>Decision=skip 1<br/>k after=3<br/>Answer=empty"]
-    S2["Level=0<br/>Remaining choices=2,3,4<br/>Branch size=6<br/>k before=3<br/>Decision=take 2<br/>k after=3<br/>Answer=2"]
-    S1 --> S2
-    S3["Level=1<br/>Remaining choices=1,3,4<br/>Branch size=2<br/>k before=3<br/>Decision=skip 1<br/>k after=1<br/>Answer=2"]
-    S2 --> S3
-    S4["Level=1<br/>Remaining choices=3,4<br/>Branch size=2<br/>k before=1<br/>Decision=take 3<br/>k after=1<br/>Answer=23"]
-    S3 --> S4
-    S5["Level=2<br/>Remaining choices=1,4<br/>Branch size=1<br/>k before=1<br/>Decision=take 1<br/>k after=1<br/>Answer=231"]
-    S4 --> S5
-    S6["Level=3<br/>Remaining choices=4<br/>Branch size=1<br/>k before=1<br/>Decision=take 4<br/>k after=1<br/>Answer=2314"]
-    S5 --> S6
-```
+| Level | Remaining choices | Branch size | k before | Decision | k after | Answer |
+|---:|---|---:|---:|---|---:|---|
+| 0 | 1,2,3,4 | 6 | 9 | skip 1 | 3 | empty |
+| 0 | 2,3,4 | 6 | 3 | take 2 | 3 | 2 |
+| 1 | 1,3,4 | 2 | 3 | skip 1 | 1 | 2 |
+| 1 | 3,4 | 2 | 1 | take 3 | 1 | 23 |
+| 2 | 1,4 | 1 | 1 | take 1 | 1 | 231 |
+| 3 | 4 | 1 | 1 | take 4 | 1 | 2314 |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Complexity
 
 ```text
@@ -2301,22 +2198,16 @@ take 3
 answer = [1,3]
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["Level=0<br/>Element=1<br/>Branch=not take<br/>Branch size=4<br/>k before=6<br/>Decision=skip<br/>k after=2<br/>Answer=[]"]
-    S2["Level=0<br/>Element=1<br/>Branch=take<br/>Branch size=4<br/>k before=2<br/>Decision=take<br/>k after=2<br/>Answer=[1]"]
-    S1 --> S2
-    S3["Level=1<br/>Element=2<br/>Branch=not take<br/>Branch size=2<br/>k before=2<br/>Decision=enter<br/>k after=2<br/>Answer=[1]"]
-    S2 --> S3
-    S4["Level=2<br/>Element=3<br/>Branch=not take<br/>Branch size=1<br/>k before=2<br/>Decision=skip<br/>k after=1<br/>Answer=[1]"]
-    S3 --> S4
-    S5["Level=2<br/>Element=3<br/>Branch=take<br/>Branch size=1<br/>k before=1<br/>Decision=take<br/>k after=1<br/>Answer=[1,3]"]
-    S4 --> S5
-```
+| Level | Element | Branch | Branch size | k before | Decision | k after | Answer |
+|---:|---:|---|---:|---:|---|---:|---|
+| 0 | 1 | not take | 4 | 6 | skip | 2 | [] |
+| 0 | 1 | take | 4 | 2 | take | 2 | [1] |
+| 1 | 2 | not take | 2 | 2 | enter | 2 | [1] |
+| 2 | 3 | not take | 1 | 2 | skip | 1 | [1] |
+| 2 | 3 | take | 1 | 1 | take | 1 | [1,3] |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > K-th subset = binary tree blocks. Each take/not-take branch has `2^remaining` answers.
@@ -2496,26 +2387,18 @@ continue lexicographically inside that branch
 answer = "()(())"
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["Path=empty<br/>open=0<br/>close=0<br/>Try=(<br/>Branch count=5<br/>k before=4<br/>Decision=take<br/>k after=4"]
-    S2["Path=(<br/>open=1<br/>close=0<br/>Try=(<br/>Branch count=3<br/>k before=4<br/>Decision=skip<br/>k after=1"]
-    S1 --> S2
-    S3["Path=(<br/>open=1<br/>close=0<br/>Try=)<br/>Branch count=2<br/>k before=1<br/>Decision=take<br/>k after=1"]
-    S2 --> S3
-    S4["Path=()<br/>open=1<br/>close=1<br/>Try=(<br/>Branch count=2<br/>k before=1<br/>Decision=take<br/>k after=1"]
-    S3 --> S4
-    S5["Path=()(<br/>open=2<br/>close=1<br/>Try=(<br/>Branch count=1<br/>k before=1<br/>Decision=take<br/>k after=1"]
-    S4 --> S5
-    S6["Path=()((<br/>open=3<br/>close=1<br/>Try=)<br/>Branch count=1<br/>k before=1<br/>Decision=take<br/>k after=1"]
-    S5 --> S6
-    S7["Path=()(()<br/>open=3<br/>close=2<br/>Try=)<br/>Branch count=1<br/>k before=1<br/>Decision=take<br/>k after=1"]
-    S6 --> S7
-```
+| Path | open | close | Try | Branch count | k before | Decision | k after |
+|---|---:|---:|---|---:|---:|---|---:|
+| empty | 0 | 0 | `(` | 5 | 4 | take | 4 |
+| `(` | 1 | 0 | `(` | 3 | 4 | skip | 1 |
+| `(` | 1 | 0 | `)` | 2 | 1 | take | 1 |
+| `()` | 1 | 1 | `(` | 2 | 1 | take | 1 |
+| `()(` | 2 | 1 | `(` | 1 | 1 | take | 1 |
+| `()((` | 3 | 1 | `)` | 1 | 1 | take | 1 |
+| `()(()` | 3 | 2 | `)` | 1 | 1 | take | 1 |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > K-th valid parentheses = Catalan-style counting + lexicographic branch skipping.
@@ -2663,20 +2546,15 @@ start=0, s="algomonster"
             └── start=11 == n -> true
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    S1["start=0<br/>remaining string=algomonster<br/>tried word=algo<br/>matches?=yes<br/>next=4"]
-    S2["start=4<br/>remaining string=monster<br/>tried word=algo<br/>matches?=no<br/>next=-"]
-    S1 --> S2
-    S3["start=4<br/>remaining string=monster<br/>tried word=monster<br/>matches?=yes<br/>next=11"]
-    S2 --> S3
-    S4["start=11<br/>remaining string=empty<br/>tried word=base<br/>matches?=true<br/>next=return"]
-    S3 --> S4
-```
+| start | remaining string | tried word | matches? | next |
+|---:|---|---|---|---:|
+| 0 | algomonster | algo | yes | 4 |
+| 4 | monster | algo | no | - |
+| 4 | monster | monster | yes | 11 |
+| 11 | empty | base | true | return |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Aggregation
 
 ```text
@@ -2798,18 +2676,14 @@ i=0 "226"
 
 Total = 3 ways.
 
-## Index-by-Index Dry Run For `"226"` — Mermaid Recursion Tree
+## Index-by-Index Dry Run For `"226"`
 
-```mermaid
-flowchart TD
-    S1["i=2<br/>char=6<br/>valid one?=yes -> dfs(3)=1<br/>valid two?=no<br/>ways=1"]
-    S2["i=1<br/>char=2<br/>valid one?=yes -> dfs(2)=1<br/>valid two?=26 yes -> dfs(3)=1<br/>ways=2"]
-    S1 --> S2
-    S3["i=0<br/>char=2<br/>valid one?=yes -> dfs(1)=2<br/>valid two?=22 yes -> dfs(2)=1<br/>ways=3"]
-    S2 --> S3
-```
+| i | char | valid one? | valid two? | ways |
+|---:|---|---|---|---:|
+| 2 | 6 | yes -> dfs(3)=1 | no | 1 |
+| 1 | 2 | yes -> dfs(2)=1 | 26 yes -> dfs(3)=1 | 2 |
+| 0 | 2 | yes -> dfs(1)=2 | 22 yes -> dfs(2)=1 | 3 |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Aggregation
 
 ```text
@@ -2905,23 +2779,6 @@ dfs(0) = 10 + min(15,20) = 25
 dfs(1) = 15 + min(20,0) = 15
 answer = min(25,15) = 15
 ```
-
-## Index-by-Index Dry Run — Mermaid Recursion Tree
-
-```mermaid
-flowchart TD
-    A["answer = min(rec(0), rec(1))"] --> B["rec(0): cost 10 + min(rec(1), rec(2))"]
-    A --> C["rec(1): cost 15 + min(rec(2), rec(3))"]
-    B --> D["rec(2): cost 20 + min(rec(3), rec(4))"]
-    C --> E["rec(3) >= n -> 0"]
-    D --> F["rec(3) >= n -> 0"]
-    D --> G["rec(4) >= n -> 0"]
-    F -. compute .-> H["rec(2)=20"]
-    E -. compute .-> I["rec(1)=15"]
-    I -. final .-> J["answer=15"]
-```
-
-**How to read:** child calls return cost; parent takes the minimum child result.
 
 ## Mental Model
 
@@ -3049,20 +2906,24 @@ row 0
 └── place Q at col 3
 ```
 
-## Index-by-Index Dry Run For One Valid Board — Mermaid Recursion Tree
+## Index-by-Index Dry Run For One Valid Board
 
-```mermaid
-flowchart TD
-    S1["row=0<br/>chosen col=1<br/>col used=no<br/>diag1 row+col=1<br/>diag2 row-col+n=3<br/>valid?=yes"]
-    S2["row=1<br/>chosen col=3<br/>col used=no<br/>diag1 row+col=4<br/>diag2 row-col+n=2<br/>valid?=yes"]
-    S1 --> S2
-    S3["row=2<br/>chosen col=0<br/>col used=no<br/>diag1 row+col=2<br/>diag2 row-col+n=6<br/>valid?=yes"]
-    S2 --> S3
-    S4["row=3<br/>chosen col=2<br/>col used=no<br/>diag1 row+col=5<br/>diag2 row-col+n=5<br/>valid?=yes"]
-    S3 --> S4
+One valid solution for `n=4`:
+
+```text
+.Q..
+...Q
+Q...
+..Q.
 ```
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
+| row | chosen col | col used | diag1 row+col | diag2 row-col+n | valid? |
+|---:|---:|---|---:|---:|---|
+| 0 | 1 | no | 1 | 3 | yes |
+| 1 | 3 | no | 4 | 2 | yes |
+| 2 | 0 | no | 2 | 6 | yes |
+| 3 | 2 | no | 5 | 5 | yes |
+
 ## K Queens Variation
 
 If placing exactly `k` queens on `n x n`, level can be linear cell index.
@@ -3214,26 +3075,26 @@ cell=0 placed=0
 
 Total ways = choose any 2 cells from 4 = 6.
 
-## Index-by-Index Dry Run For `n=3, k=2` — Mermaid Recursion Tree
+## Index-by-Index Dry Run For `n=3, k=2`
 
-```mermaid
-flowchart TD
-    S1["Step=1<br/>cell=0<br/>row,col=(0,0)<br/>placed=0<br/>decision=place<br/>safe?=yes"]
-    S2["Step=2<br/>cell=1<br/>row,col=(0,1)<br/>placed=1<br/>decision=place<br/>safe?=yes"]
-    S1 --> S2
-    S3["Step=3<br/>cell=-<br/>row,col=-<br/>placed=2<br/>decision=save placement<br/>safe?=-"]
-    S2 --> S3
-    S4["Step=4<br/>cell=1<br/>row,col=(0,1)<br/>placed=1<br/>decision=skip<br/>safe?=-"]
-    S3 --> S4
-    S5["Step=5<br/>cell=2<br/>row,col=(0,2)<br/>placed=1<br/>decision=place<br/>safe?=yes"]
-    S4 --> S5
-    S6["Step=6<br/>cell=-<br/>row,col=-<br/>placed=2<br/>decision=save placement<br/>safe?=-"]
-    S5 --> S6
-    S7["Step=7<br/>cell=5<br/>row,col=(1,2)<br/>placed=1<br/>decision=place?<br/>safe?=no if attacked by (0,0)? yes, knight attacks (1,2)"]
-    S6 --> S7
+Board indexes:
+
+```text
+0 1 2
+3 4 5
+6 7 8
 ```
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
+| Step | cell | row,col | placed | decision | safe? |
+|---:|---:|---|---:|---|---|
+| 1 | 0 | (0,0) | 0 | place | yes |
+| 2 | 1 | (0,1) | 1 | place | yes |
+| 3 | - | - | 2 | save placement | - |
+| 4 | 1 | (0,1) | 1 | skip | - |
+| 5 | 2 | (0,2) | 1 | place | yes |
+| 6 | - | - | 2 | save placement | - |
+| 7 | 5 | (1,2) | 1 | place? | no if attacked by (0,0)? yes, knight attacks (1,2) |
+
 ## Formula Notes For Small K
 
 From the notes, for `k=2`, there are known OEIS / combinatorial formulas to count non-attacking knight pairs quickly. But for learning backtracking, implement DFS first.
@@ -3361,21 +3222,6 @@ vector<string> findPath(vector<vector<int>>& inputMaze) {
             └── D/R... save DRDDRR
 ```
 
-## Index-by-Index Dry Run — Mermaid Recursion Tree
-
-```mermaid
-flowchart TD
-    A["cell=(0,0) path='' start"] --> B["try D if safe"]
-    A --> C["try R if safe"]
-    B --> D["mark visited and recurse"]
-    C --> E["mark visited and recurse"]
-    D --> F["blocked / visited / out of bound<br/>PRUNE"]
-    D --> G["reach destination<br/>SAVE path"]
-    E --> H["dead end<br/>BACKTRACK unmark"]
-```
-
-**How to read:** each node is a cell; every safe direction becomes a child branch.
-
 ## Mental Model
 
 > Grid backtracking = current cell as level, directions as choices, visited as additional state.
@@ -3471,20 +3317,15 @@ first empty cell = (0,2)
 └── try 4 valid ...
 ```
 
-## Index-by-Index Dry Run Pattern — Mermaid Recursion Tree
+## Index-by-Index Dry Run Pattern
 
-```mermaid
-flowchart TD
-    S1["Empty cell=(0,2)<br/>Try digit=1<br/>Row valid?=no<br/>Col valid?=-<br/>Box valid?=-<br/>Action=skip"]
-    S2["Empty cell=(0,2)<br/>Try digit=3<br/>Row valid?=yes<br/>Col valid?=yes<br/>Box valid?=yes<br/>Action=place"]
-    S1 --> S2
-    S3["Empty cell=next empty<br/>Try digit=1..9<br/>Row valid?=check<br/>Col valid?=check<br/>Box valid?=check<br/>Action=continue"]
-    S2 --> S3
-    S4["Empty cell=dead end<br/>Try digit=-<br/>Row valid?=-<br/>Col valid?=-<br/>Box valid?=-<br/>Action=undo previous digit"]
-    S3 --> S4
-```
+| Empty cell | Try digit | Row valid? | Col valid? | Box valid? | Action |
+|---|---:|---|---|---|---|
+| (0,2) | 1 | no | - | - | skip |
+| (0,2) | 3 | yes | yes | yes | place |
+| next empty | 1..9 | check | check | check | continue |
+| dead end | - | - | - | - | undo previous digit |
 
-**How to read:** follow arrows from top to bottom. Each node is one recursive state / decision; `SAVE`, `PRUNE`, and `BACKTRACK` show what happens at that state.
 ## Mental Model
 
 > Sudoku is backtracking where the constraint check is stronger than the recursion itself.
