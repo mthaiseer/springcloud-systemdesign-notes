@@ -1,5002 +1,1657 @@
+# 🚀 Divide & Conquer + Meet in the Middle — Phase-Wise Problem Handbook
+## CP + FAANG Edition with Clickable Index, Input/Output, C++ Code, and Index-by-Index Dry Runs
 
-# 🚀 COMPLETE DIVIDE & CONQUER + MEET IN THE MIDDLE HANDBOOK
-## FAANG + Competitive Programming + Pattern Recognition Master Notes
-
----
-
-# 📚 CLICKABLE INDEX
-
-# PART 1 — DIVIDE & CONQUER
-1. Foundations
-2. Recognition Patterns
-3. Universal Templates
-4. Merge Sort
-5. Inversion Counting
-6. Karatsuba Multiplication
-7. Closest Pair Concept
-8. Bubble Sort Swap Parity
-9. Advanced D&C Tricks
-
-# PART 2 — MEET IN THE MIDDLE
-10. MITM Foundations
-11. Subset Generation
-12. MITM + Binary Search
-13. MITM + Hashing
-14. Four Sum
-15. Target Subsets
-16. Modulo Subsequences
-17. Advanced MITM Tricks
-
-# PART 3 — FAANG + CP SYSTEM
-18. Pattern Recognition
-19. Mental Models
-20. Contest Strategy
-21. Common Mistakes
-22. Full Problem Ladder
+> This version replaces repeated generic sections with **real phase-wise problems** and **pattern-focused notes**.
 
 ---
 
-# 1. FOUNDATIONS
+# 📚 Clickable Index
 
-## 🧠 Core Idea
+## Core Maps
+- [0. Master Pattern Map](#0-master-pattern-map)
+- [0.1 D&C vs MITM Decision Tree](#01-dc-vs-mitm-decision-tree)
+- [0.2 Complexity Cheat Sheet](#02-complexity-cheat-sheet)
 
-Divide & Conquer:
+
+## Phase 1 — Divide & Conquer Foundations
+
+- [Problem 1: Merge Sort](#problem-1-merge-sort) — Easy — `Split array → sort left → sort right → merge`
+- [Problem 2: Binary Search as Divide & Conquer](#problem-2-binary-search-as-divide-conquer) — Easy — `Sorted search space → remove half each step`
+
+## Phase 2 — Merge Step Counting
+
+- [Problem 3: Count Inversions](#problem-3-count-inversions) — Medium — `Merge Sort + count cross inversions`
+- [Problem 4: Reverse Pairs](#problem-4-reverse-pairs) — Medium/Hard — `Merge Sort + count before merge`
+- [Problem 5: Bubble Sort Swap Parity](#problem-5-bubble-sort-swap-parity) — Medium — `Inversion parity`
+
+## Phase 3 — Fast Multiplication
+
+- [Problem 6: Karatsuba Multiplication](#problem-6-karatsuba-multiplication) — Medium — `Reduce 4 recursive multiplications to 3`
+
+## Phase 4 — Meet in the Middle Foundations
+
+- [Problem 7: Generate All Subset Sums](#problem-7-generate-all-subset-sums) — Easy — `Bitmask enumeration`
+- [Problem 8: Subset Sum Exists](#problem-8-subset-sum-exists) — Medium — `MITM + binary search`
+
+## Phase 5 — MITM Optimization Problems
+
+- [Problem 9: Maximum Subset Sum Less Than or Equal to S](#problem-9-maximum-subset-sum-less-than-or-equal-to-s) — Medium — `MITM + upper_bound`
+- [Problem 10: Count Subsets With Sum Less Than or Equal to K](#problem-10-count-subsets-with-sum-less-than-or-equal-to-k) — Medium — `MITM + upper_bound count`
+
+## Phase 6 — Pair Sum MITM
+
+- [Problem 11: Classical Four Number Sum](#problem-11-classical-four-number-sum) — Medium — `Pair sums + hash map`
+- [Problem 12: CSES Four Values](#problem-12-cses-four-values) — Medium — `Pair sum + store indices`
+
+## Phase 7 — Modulo MITM
+
+- [Problem 13: Maximum Subsequence Sum Modulo M](#problem-13-maximum-subsequence-sum-modulo-m) — Hard — `MITM + modulo + upper_bound`
+
+## Phase 8 — Advanced Transformation
+
+- [Problem 14: 4 Reversals Pattern](#problem-14-4-reversals-pattern) — Hard — `State transformation + limited operations`
+
+---
+
+# 0. Master Pattern Map
+
+| Topic | Main Idea | Best Trigger |
+|---|---|---|
+| Divide & Conquer | Split → solve recursively → merge | Problem naturally splits into halves |
+| Merge Sort Counting | Count information while merging sorted halves | Pair counting / inversions / reverse pairs |
+| Karatsuba | Reduce recursive multiplications | Large number multiplication |
+| Meet in the Middle | Split exponential search into two halves | `n ≤ 40`, subset/combinations |
+| Pair Sum MITM | Precompute pair sums | Four-sum / k-sum variants |
+| Modulo MITM | Store subset sums modulo `m` | Max subset modulo problems |
+
+---
+
+# 0.1 D&C vs MITM Decision Tree
+
 ```text
-Break → Solve → Merge
+Is the problem recursive over a range?
+        |
+        +-- YES --> Can merge answers from left and right?
+        |               |
+        |               +-- YES --> Divide & Conquer
+        |
+        +-- NO --> Is it subset/combinations with n around 30-45?
+                        |
+                        +-- YES --> Meet in the Middle
 ```
 
-Meet in the Middle:
-```text
-Split Search Space → Precompute → Combine
-```
-
 ---
 
-# 2. RECOGNITION GUIDE
+# 0.2 Complexity Cheat Sheet
 
-## 🚩 THINK D&C WHEN
-
-- Recursive split possible
-- Merge/combine step exists
-- O(n²) brute force
-- Balanced halves
-
-## 🚩 THINK MITM WHEN
-
-- n ≤ 40
-- subset/combinations
-- 2^n impossible
-- exact/closest sum problem
+| Pattern | Brute Force | Optimized |
+|---|---:|---:|
+| Merge Sort | O(n²) sorting alternatives | O(n log n) |
+| Count Inversions | O(n²) | O(n log n) |
+| Reverse Pairs | O(n²) | O(n log n) |
+| Four Sum | O(n⁴) | O(n²) |
+| Subset Sum n=40 | O(2⁴⁰) | O(2²⁰ log 2²⁰) |
+| Max Subset Modulo | O(2ⁿ) | O(2^(n/2) log 2^(n/2)) |
 
 ---
 
 
-# 🔥 COMPLETE SOLVED PROBLEM 1
+# Phase 1 — Divide & Conquer Foundations
+
+
+# Problem 1: Merge Sort
+
+**Difficulty:** Easy  
+
+**Pattern:** `Split array → sort left → sort right → merge`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Given an array of integers, sort it in non-decreasing order using divide and conquer.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
 n = 6
 arr = [5, 3, 8, 1, 2, 7]
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+[1, 2, 3, 5, 7, 8]
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Use repeated selection of minimum element or bubble sort. Complexity O(n²).
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Merge Sort splits array into two halves, sorts each half recursively, then merges two sorted halves in O(n).
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+void mergeSort(vector<int>& arr, int l, int r) {
+    if (l >= r) return;
 
-    if(l >= r)
-        return 0;
+    int mid = l + (r - l) / 2;
 
-    int mid = (l + r) / 2;
-
-    long long ans = 0;
-
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
+    mergeSort(arr, l, mid);
+    mergeSort(arr, mid + 1, r);
 
     vector<int> temp;
+    int i = l, j = mid + 1;
 
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
-        }
-        else {
-
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
-        }
+    while (i <= mid && j <= r) {
+        if (arr[i] <= arr[j]) temp.push_back(arr[i++]);
+        else temp.push_back(arr[j++]);
     }
 
-    while(i <= mid)
-        temp.push_back(arr[i++]);
+    while (i <= mid) temp.push_back(arr[i++]);
+    while (j <= r) temp.push_back(arr[j++]);
 
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
+    for (int k = l; k <= r; k++) {
         arr[k] = temp[k - l];
     }
-
-    return ans;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | Initial array | [5,3,8,1,2,7] | Split into [5,3,8] and [1,2,7] |
 
----
+| 1 | Left half | [5,3,8] | Split into [5] and [3,8] |
 
-## Compare 5 and 3
+| 2 | Sort [3,8] | 3 <= 8 | Merged as [3,8] |
 
-```text
-5 > 3
-```
+| 3 | Merge [5] + [3,8] | 3 < 5 | Take 3 |
 
-Inversion += 1
+| 4 | Continue | 5 < 8 | Take 5, then 8 → [3,5,8] |
 
----
+| 5 | Right half | [1,2,7] | Already becomes [1,2,7] after merges |
 
-## Compare 8 and 1
+| 6 | Final merge | [3,5,8] + [1,2,7] | Take 1,2,3,5,7,8 |
 
-```text
-8 > 1
-```
 
-Inversion += 1
+## ⏱ Complexity
 
----
+Time O(n log n), Space O(n).
 
-## Compare 8 and 2
 
-```text
-8 > 2
-```
+## 🧩 Pattern Trigger
 
-Inversion += 1
+Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
 
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Problem 2: Binary Search as Divide & Conquer
 
-# 🔥 COMPLETE SOLVED PROBLEM 2
+**Difficulty:** Easy  
+
+**Pattern:** `Sorted search space → remove half each step`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Given a sorted array and target x, return the index of x or -1 if not found.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+arr = [1, 3, 5, 7, 9, 11]
+x = 7
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+3
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Scan every index. Complexity O(n).
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Because array is sorted, compare target with middle. If target is smaller, search left half; otherwise search right half.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+int binarySearch(vector<int>& arr, int x) {
+    int l = 0, r = (int)arr.size() - 1;
 
-    if(l >= r)
-        return 0;
+    while (l <= r) {
+        int mid = l + (r - l) / 2;
 
-    int mid = (l + r) / 2;
-
-    long long ans = 0;
-
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
-
-    vector<int> temp;
-
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
-        }
-        else {
-
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
-        }
+        if (arr[mid] == x) return mid;
+        else if (arr[mid] < x) l = mid + 1;
+        else r = mid - 1;
     }
 
-    while(i <= mid)
-        temp.push_back(arr[i++]);
-
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
-    }
-
-    return ans;
+    return -1;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | l=0 r=5 | mid=2 arr[mid]=5 | 5 < 7 → move right |
 
----
+| 1 | l=3 r=5 | mid=4 arr[mid]=9 | 9 > 7 → move left |
 
-## Compare 5 and 3
+| 2 | l=3 r=3 | mid=3 arr[mid]=7 | Found target |
 
-```text
-5 > 3
-```
 
-Inversion += 1
+## ⏱ Complexity
 
----
+Time O(log n), Space O(1).
 
-## Compare 8 and 1
 
-```text
-8 > 1
-```
+## 🧩 Pattern Trigger
 
-Inversion += 1
+Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
 
----
-
-## Compare 8 and 2
-
-```text
-8 > 2
-```
-
-Inversion += 1
-
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Phase 2 — Merge Step Counting
 
-# 🔥 COMPLETE SOLVED PROBLEM 3
+
+# Problem 3: Count Inversions
+
+**Difficulty:** Medium  
+
+**Pattern:** `Merge Sort + count cross inversions`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Count pairs (i, j) such that i < j and arr[i] > arr[j].
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+arr = [5, 3, 2, 4, 1]
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+8
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Check all pairs i < j. Complexity O(n²).
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+During merge, if left[i] > right[j], then all elements from i to mid in left half are greater than right[j]. Add mid - i + 1.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+long long countInv(vector<int>& arr, int l, int r) {
+    if (l >= r) return 0;
 
-    if(l >= r)
-        return 0;
-
-    int mid = (l + r) / 2;
-
+    int mid = l + (r - l) / 2;
     long long ans = 0;
 
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
+    ans += countInv(arr, l, mid);
+    ans += countInv(arr, mid + 1, r);
 
     vector<int> temp;
+    int i = l, j = mid + 1;
 
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
+    while (i <= mid && j <= r) {
+        if (arr[i] <= arr[j]) {
             temp.push_back(arr[i++]);
-        }
-        else {
-
+        } else {
             ans += (mid - i + 1);
-
             temp.push_back(arr[j++]);
         }
     }
 
-    while(i <= mid)
-        temp.push_back(arr[i++]);
+    while (i <= mid) temp.push_back(arr[i++]);
+    while (j <= r) temp.push_back(arr[j++]);
 
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
-    }
+    for (int k = l; k <= r; k++) arr[k] = temp[k - l];
 
     return ans;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | Array | [5,3,2,4,1] | Split into [5,3,2] and [4,1] |
 
----
+| 1 | Sort/count [5,3] | 5 > 3 | Add 1 |
 
-## Compare 5 and 3
+| 2 | Merge [3,5] with [2] | 3 > 2 | Add 2 because [3,5] both > 2 |
 
-```text
-5 > 3
-```
+| 3 | Left inversions | [5,3,2] | Total left = 3 |
 
-Inversion += 1
+| 4 | Right [4,1] | 4 > 1 | Add 1 |
 
----
+| 5 | Final merge [2,3,5] + [1,4] | 2 > 1 | Add 3 |
 
-## Compare 8 and 1
+| 6 | Continue | 5 > 4 | Add 1 |
 
-```text
-8 > 1
-```
+| 7 | Total | 3 + 1 + 4 | 8 |
 
-Inversion += 1
 
----
+## ⏱ Complexity
 
-## Compare 8 and 2
+Time O(n log n), Space O(n).
 
-```text
-8 > 2
-```
 
-Inversion += 1
+## 🧩 Pattern Trigger
 
----
+Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
 
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Problem 4: Reverse Pairs
 
-# 🔥 COMPLETE SOLVED PROBLEM 4
+**Difficulty:** Medium/Hard  
+
+**Pattern:** `Merge Sort + count before merge`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Count pairs (i, j) such that i < j and arr[i] > 2 * arr[j].
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+arr = [1, 3, 2, 3, 1]
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+2
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Check every pair. Complexity O(n²).
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Before merging two sorted halves, for every i in left half, move pointer j in right half while arr[i] > 2*arr[j]. Add j - (mid+1).
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+long long reversePairs(vector<long long>& arr, int l, int r) {
+    if (l >= r) return 0;
 
-    if(l >= r)
-        return 0;
-
-    int mid = (l + r) / 2;
-
+    int mid = l + (r - l) / 2;
     long long ans = 0;
 
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
+    ans += reversePairs(arr, l, mid);
+    ans += reversePairs(arr, mid + 1, r);
 
-    vector<int> temp;
-
-    int i = l;
     int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
-        }
-        else {
-
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
-        }
+    for (int i = l; i <= mid; i++) {
+        while (j <= r && arr[i] > 2LL * arr[j]) j++;
+        ans += j - (mid + 1);
     }
 
-    while(i <= mid)
-        temp.push_back(arr[i++]);
+    vector<long long> temp;
+    int i = l;
+    j = mid + 1;
 
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
+    while (i <= mid && j <= r) {
+        if (arr[i] <= arr[j]) temp.push_back(arr[i++]);
+        else temp.push_back(arr[j++]);
     }
+
+    while (i <= mid) temp.push_back(arr[i++]);
+    while (j <= r) temp.push_back(arr[j++]);
+
+    for (int k = l; k <= r; k++) arr[k] = temp[k - l];
 
     return ans;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | Sorted halves example | left=[1,2,3], right=[1,3] | Count cross pairs |
 
----
+| 1 | i=0 val=1 | 1 > 2*1? false | Add 0 |
 
-## Compare 5 and 3
+| 2 | i=1 val=2 | 2 > 2*1? false | Add 0 |
 
-```text
-5 > 3
-```
+| 3 | i=2 val=3 | 3 > 2*1? true | j moves one, add 1 |
 
-Inversion += 1
+| 4 | Other recursive pair | 3 > 2*1 | Add another 1 |
 
----
+| 5 | Total | 2 | Answer |
 
-## Compare 8 and 1
 
-```text
-8 > 1
-```
+## ⏱ Complexity
 
-Inversion += 1
+Time O(n log n), Space O(n).
 
----
 
-## Compare 8 and 2
+## 🧩 Pattern Trigger
 
-```text
-8 > 2
-```
+Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
 
-Inversion += 1
-
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Problem 5: Bubble Sort Swap Parity
 
-# 🔥 COMPLETE SOLVED PROBLEM 5
+**Difficulty:** Medium  
+
+**Pattern:** `Inversion parity`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Given an array, determine whether the number of swaps bubble sort performs is even or odd.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+arr = [3, 1, 2]
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+Even
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Simulate bubble sort and count swaps. Complexity O(n²).
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Bubble sort swap count equals inversion count. So only count inversion parity.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+long long mergeInv(vector<int>& arr, int l, int r) {
+    if (l >= r) return 0;
 
-    if(l >= r)
-        return 0;
-
-    int mid = (l + r) / 2;
-
-    long long ans = 0;
-
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
+    int mid = l + (r - l) / 2;
+    long long inv = mergeInv(arr, l, mid) + mergeInv(arr, mid + 1, r);
 
     vector<int> temp;
+    int i = l, j = mid + 1;
 
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
-        }
+    while (i <= mid && j <= r) {
+        if (arr[i] <= arr[j]) temp.push_back(arr[i++]);
         else {
-
-            ans += (mid - i + 1);
-
+            inv += mid - i + 1;
             temp.push_back(arr[j++]);
         }
     }
 
-    while(i <= mid)
-        temp.push_back(arr[i++]);
+    while (i <= mid) temp.push_back(arr[i++]);
+    while (j <= r) temp.push_back(arr[j++]);
 
-    while(j <= r)
-        temp.push_back(arr[j++]);
+    for (int k = l; k <= r; k++) arr[k] = temp[k - l];
 
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
-    }
+    return inv;
+}
 
-    return ans;
+string swapParity(vector<int> arr) {
+    long long inv = mergeInv(arr, 0, (int)arr.size() - 1);
+    return (inv % 2 == 0 ? "Even" : "Odd");
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | Array | [3,1,2] | Inversions: (3,1), (3,2) |
 
----
+| 1 | Count | 2 | Even |
 
-## Compare 5 and 3
+| 2 | Bubble swaps | swap 3/1 → [1,3,2] | 1 swap |
 
-```text
-5 > 3
-```
+| 3 | Bubble swaps | swap 3/2 → [1,2,3] | 2 swaps |
 
-Inversion += 1
+| 4 | Parity | 2 swaps | Even |
 
----
 
-## Compare 8 and 1
+## ⏱ Complexity
 
-```text
-8 > 1
-```
+Time O(n log n), Space O(n).
 
-Inversion += 1
 
----
+## 🧩 Pattern Trigger
 
-## Compare 8 and 2
+Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
 
-```text
-8 > 2
-```
-
-Inversion += 1
-
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Phase 3 — Fast Multiplication
 
-# 🔥 COMPLETE SOLVED PROBLEM 6
+
+# Problem 6: Karatsuba Multiplication
+
+**Difficulty:** Medium  
+
+**Pattern:** `Reduce 4 recursive multiplications to 3`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Multiply two large integers faster than normal O(n²) multiplication.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+x = 1234
+y = 5678
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+7006652
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Grade-school multiplication uses four sub-products after splitting: ac, ad, bc, bd.
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Use ac, bd, and (a+b)(c+d). Then middle term ad+bc = (a+b)(c+d) - ac - bd.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+long long karatsuba(long long x, long long y) {
+    if (x < 10 || y < 10) return x * y;
 
-    if(l >= r)
-        return 0;
+    int n = max((int)to_string(x).size(), (int)to_string(y).size());
+    int m = n / 2;
 
-    int mid = (l + r) / 2;
+    long long power = 1;
+    for (int i = 0; i < m; i++) power *= 10;
 
-    long long ans = 0;
+    long long a = x / power;
+    long long b = x % power;
+    long long c = y / power;
+    long long d = y % power;
 
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
+    long long ac = karatsuba(a, c);
+    long long bd = karatsuba(b, d);
+    long long abcd = karatsuba(a + b, c + d);
 
-    vector<int> temp;
+    long long middle = abcd - ac - bd;
 
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
-        }
-        else {
-
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
-        }
-    }
-
-    while(i <= mid)
-        temp.push_back(arr[i++]);
-
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
-    }
-
-    return ans;
+    return ac * power * power + middle * power + bd;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | Split x=1234 | a=12, b=34 | m=2 |
 
----
+| 1 | Split y=5678 | c=56, d=78 | m=2 |
 
-## Compare 5 and 3
+| 2 | ac | 12*56 | 672 |
 
-```text
-5 > 3
-```
+| 3 | bd | 34*78 | 2652 |
 
-Inversion += 1
+| 4 | abcd | (12+34)*(56+78)=46*134 | 6164 |
 
----
+| 5 | middle | 6164-672-2652 | 2840 |
 
-## Compare 8 and 1
+| 6 | answer | 672*10000 + 2840*100 + 2652 | 7006652 |
 
-```text
-8 > 1
-```
 
-Inversion += 1
+## ⏱ Complexity
 
----
+Time O(n^log2(3)) ≈ O(n^1.585).
 
-## Compare 8 and 2
 
-```text
-8 > 2
-```
+## 🧩 Pattern Trigger
 
-Inversion += 1
+Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
 
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Phase 4 — Meet in the Middle Foundations
 
-# 🔥 COMPLETE SOLVED PROBLEM 7
+
+# Problem 7: Generate All Subset Sums
+
+**Difficulty:** Easy  
+
+**Pattern:** `Bitmask enumeration`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Given a small array, generate all possible subset sums.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+arr = [2, 5, 7]
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+[0, 2, 5, 7, 7, 9, 12, 14]
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Use recursion pick/not-pick. Equivalent to bitmask enumeration.
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Each bit in mask represents whether index i is selected.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+vector<long long> subsetSums(vector<int>& arr) {
+    int n = arr.size();
+    vector<long long> sums;
 
-    if(l >= r)
-        return 0;
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
 
-    int mid = (l + r) / 2;
-
-    long long ans = 0;
-
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
-
-    vector<int> temp;
-
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) {
+                sum += arr[i];
+            }
         }
-        else {
 
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
-        }
+        sums.push_back(sum);
     }
 
-    while(i <= mid)
-        temp.push_back(arr[i++]);
-
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
-    }
-
-    return ans;
+    return sums;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | mask=000 | {} | sum=0 |
 
----
+| 1 | mask=001 | {2} | sum=2 |
 
-## Compare 5 and 3
+| 2 | mask=010 | {5} | sum=5 |
 
-```text
-5 > 3
-```
+| 3 | mask=011 | {2,5} | sum=7 |
 
-Inversion += 1
+| 4 | mask=100 | {7} | sum=7 |
 
----
+| 5 | mask=101 | {2,7} | sum=9 |
 
-## Compare 8 and 1
+| 6 | mask=110 | {5,7} | sum=12 |
 
-```text
-8 > 1
-```
+| 7 | mask=111 | {2,5,7} | sum=14 |
 
-Inversion += 1
 
----
+## ⏱ Complexity
 
-## Compare 8 and 2
+Time O(n * 2^n), Space O(2^n).
 
-```text
-8 > 2
-```
 
-Inversion += 1
+## 🧩 Pattern Trigger
 
----
+Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
 
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Problem 8: Subset Sum Exists
 
-# 🔥 COMPLETE SOLVED PROBLEM 8
+**Difficulty:** Medium  
+
+**Pattern:** `MITM + binary search`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Given n ≤ 40 numbers and target S, determine whether any subset has sum exactly S.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+arr = [3, 34, 4, 12, 5, 2]
+S = 9
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+YES  // subset [4,5]
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Try all subsets: O(2^n), impossible for n=40.
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Split into two halves. Generate sums of both halves. Sort right sums. For each left sum x, binary search S-x in right.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+vector<long long> gen(vector<int>& a) {
+    int n = a.size();
+    vector<long long> sums;
 
-    if(l >= r)
-        return 0;
-
-    int mid = (l + r) / 2;
-
-    long long ans = 0;
-
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
-
-    vector<int> temp;
-
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) sum += a[i];
         }
-        else {
+        sums.push_back(sum);
+    }
 
-            ans += (mid - i + 1);
+    return sums;
+}
 
-            temp.push_back(arr[j++]);
+bool subsetSumExists(vector<int>& arr, long long S) {
+    int n = arr.size();
+    vector<int> left(arr.begin(), arr.begin() + n / 2);
+    vector<int> right(arr.begin() + n / 2, arr.end());
+
+    vector<long long> L = gen(left);
+    vector<long long> R = gen(right);
+
+    sort(R.begin(), R.end());
+
+    for (long long x : L) {
+        if (binary_search(R.begin(), R.end(), S - x)) {
+            return true;
         }
     }
 
-    while(i <= mid)
-        temp.push_back(arr[i++]);
-
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
-    }
-
-    return ans;
+    return false;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | Split | left=[3,34,4], right=[12,5,2] | Target=9 |
 
----
+| 1 | Left sums | 0,3,34,37,4,7,38,41 | Generated |
 
-## Compare 5 and 3
+| 2 | Right sums | 0,12,5,17,2,14,7,19 | Sort it |
 
-```text
-5 > 3
-```
+| 3 | Try x=0 | need=9 | not found |
 
-Inversion += 1
+| 4 | Try x=3 | need=6 | not found |
 
----
+| 5 | Try x=4 | need=5 | found in right |
 
-## Compare 8 and 1
+| 6 | Answer | YES | 4 + 5 = 9 |
 
-```text
-8 > 1
-```
 
-Inversion += 1
+## ⏱ Complexity
 
----
+Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
 
-## Compare 8 and 2
 
-```text
-8 > 2
-```
+## 🧩 Pattern Trigger
 
-Inversion += 1
+Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
 
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Phase 5 — MITM Optimization Problems
 
-# 🔥 COMPLETE SOLVED PROBLEM 9
+
+# Problem 9: Maximum Subset Sum Less Than or Equal to S
+
+**Difficulty:** Medium  
+
+**Pattern:** `MITM + upper_bound`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Find maximum subset sum ≤ S for n ≤ 40.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+arr = [3, 34, 4, 12, 5, 2]
+S = 10
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+10  // subset [3,5,2] or [4,5]
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Try all subsets and take max ≤ S. Complexity O(2^n).
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Split array, generate sums. For each left sum x, find largest right sum ≤ S-x using upper_bound.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+vector<long long> genSums(vector<int>& a) {
+    int n = a.size();
+    vector<long long> sums;
 
-    if(l >= r)
-        return 0;
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) sum += a[i];
+        }
+        sums.push_back(sum);
+    }
 
-    int mid = (l + r) / 2;
+    return sums;
+}
+
+long long maxSubsetLE(vector<int>& arr, long long S) {
+    int n = arr.size();
+
+    vector<int> left(arr.begin(), arr.begin() + n / 2);
+    vector<int> right(arr.begin() + n / 2, arr.end());
+
+    vector<long long> L = genSums(left);
+    vector<long long> R = genSums(right);
+
+    sort(R.begin(), R.end());
 
     long long ans = 0;
 
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
+    for (long long x : L) {
+        if (x > S) continue;
 
-    vector<int> temp;
+        long long need = S - x;
 
-    int i = l;
-    int j = mid + 1;
+        auto it = upper_bound(R.begin(), R.end(), need);
 
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
+        if (it == R.begin()) {
+            ans = max(ans, x);
+        } else {
+            --it;
+            ans = max(ans, x + *it);
         }
-        else {
-
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
-        }
-    }
-
-    while(i <= mid)
-        temp.push_back(arr[i++]);
-
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
     }
 
     return ans;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | Split | left=[3,34,4], right=[12,5,2] | S=10 |
 
----
+| 1 | Sorted right sums | [0,2,5,7,12,14,17,19] | Only ≤ need used |
 
-## Compare 5 and 3
+| 2 | x=0 | need=10 | best right=7 → ans=7 |
 
-```text
-5 > 3
-```
+| 3 | x=3 | need=7 | best right=7 → ans=10 |
 
-Inversion += 1
+| 4 | x=34 | skip | x>S |
 
----
+| 5 | x=4 | need=6 | best right=5 → ans=max(10,9)=10 |
 
-## Compare 8 and 1
+| 6 | Final | 10 | Maximum valid subset sum |
 
-```text
-8 > 1
-```
 
-Inversion += 1
+## ⏱ Complexity
 
----
+Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
 
-## Compare 8 and 2
 
-```text
-8 > 2
-```
+## 🧩 Pattern Trigger
 
-Inversion += 1
+Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
 
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Problem 10: Count Subsets With Sum Less Than or Equal to K
 
-# 🔥 COMPLETE SOLVED PROBLEM 10
+**Difficulty:** Medium  
+
+**Pattern:** `MITM + upper_bound count`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Count number of subsets whose sum is ≤ K.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+arr = [1, 2, 3, 4]
+K = 5
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+9
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Enumerate all subsets and count valid. O(2^n).
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+For each left sum x, count how many right sums are ≤ K-x using upper_bound.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+vector<long long> gen(vector<int>& a) {
+    int n = a.size();
+    vector<long long> sums;
 
-    if(l >= r)
-        return 0;
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) sum += a[i];
+        }
+        sums.push_back(sum);
+    }
 
-    int mid = (l + r) / 2;
+    return sums;
+}
+
+long long countSubsetsLE(vector<int>& arr, long long K) {
+    int n = arr.size();
+
+    vector<int> left(arr.begin(), arr.begin() + n / 2);
+    vector<int> right(arr.begin() + n / 2, arr.end());
+
+    vector<long long> L = gen(left);
+    vector<long long> R = gen(right);
+
+    sort(R.begin(), R.end());
 
     long long ans = 0;
 
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
-
-    vector<int> temp;
-
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
-        }
-        else {
-
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
-        }
-    }
-
-    while(i <= mid)
-        temp.push_back(arr[i++]);
-
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
+    for (long long x : L) {
+        ans += upper_bound(R.begin(), R.end(), K - x) - R.begin();
     }
 
     return ans;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | Split | left=[1,2], right=[3,4] | K=5 |
 
----
+| 1 | Left sums | [0,1,2,3] | Generated |
 
-## Compare 5 and 3
+| 2 | Right sums sorted | [0,3,4,7] | Generated |
 
-```text
-5 > 3
-```
+| 3 | x=0 | need=5 | right sums ≤5: 0,3,4 → add 3 |
 
-Inversion += 1
+| 4 | x=1 | need=4 | 0,3,4 → add 3 |
 
----
+| 5 | x=2 | need=3 | 0,3 → add 2 |
 
-## Compare 8 and 1
+| 6 | x=3 | need=2 | 0 → add 1 |
 
-```text
-8 > 1
-```
+| 7 | Total | 3+3+2+1 | 9 |
 
-Inversion += 1
 
----
+## ⏱ Complexity
 
-## Compare 8 and 2
+Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
 
-```text
-8 > 2
-```
 
-Inversion += 1
+## 🧩 Pattern Trigger
 
----
+Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
 
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Phase 6 — Pair Sum MITM
 
-# 🔥 COMPLETE SOLVED PROBLEM 11
+
+# Problem 11: Classical Four Number Sum
+
+**Difficulty:** Medium  
+
+**Pattern:** `Pair sums + hash map`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Given an array and target X, find if there exist four distinct indices i,j,k,l such that sum is X.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+arr = [1, 5, 1, 0, 6, 0]
+X = 7
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+YES  // 1 + 5 + 1 + 0 = 7
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Four nested loops. Complexity O(n^4).
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Store pair sums. For current pair, search complement X - pairSum from previously stored pairs with non-overlapping indices.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+bool fourSumExists(vector<int>& arr, int X) {
+    int n = arr.size();
+    unordered_map<int, vector<pair<int,int>>> mp;
 
-    if(l >= r)
-        return 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
 
-    int mid = (l + r) / 2;
+            int cur = arr[i] + arr[j];
+            int need = X - cur;
 
-    long long ans = 0;
-
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
-
-    vector<int> temp;
-
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
+            if (mp.count(need)) {
+                for (auto [a, b] : mp[need]) {
+                    if (a != i && a != j && b != i && b != j) {
+                        return true;
+                    }
+                }
+            }
         }
-        else {
 
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
+        for (int k = 0; k < i; k++) {
+            mp[arr[k] + arr[i]].push_back({k, i});
         }
     }
 
-    while(i <= mid)
-        temp.push_back(arr[i++]);
-
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
-    }
-
-    return ans;
+    return false;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | i=0 | No previous pairs | Nothing to check |
 
----
+| 1 | i=1 | Check pair (1,5)=6 need=1 | No previous |
 
-## Compare 5 and 3
+| 2 | After i=1 | Store (0,1) sum=6 | mp[6]={(0,1)} |
 
-```text
-5 > 3
-```
+| 3 | i=2 | pair (2,3 later) etc | Need complement from old pairs |
 
-Inversion += 1
+| 4 | Found combination | old pair sum 6 + new pair sum 1 | Total 7 |
 
----
 
-## Compare 8 and 1
+## ⏱ Complexity
 
-```text
-8 > 1
-```
+Average O(n²) with hashing, worst can be higher due to duplicate pair lists.
 
-Inversion += 1
 
----
+## 🧩 Pattern Trigger
 
-## Compare 8 and 2
+Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
 
-```text
-8 > 2
-```
-
-Inversion += 1
-
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Problem 12: CSES Four Values
 
-# 🔥 COMPLETE SOLVED PROBLEM 12
+**Difficulty:** Medium  
+
+**Pattern:** `Pair sum + store indices`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Find four distinct indices whose values sum to X.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+n = 8, X = 15
+arr = [3, 2, 5, 8, 1, 3, 2, 3]
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+YES, one answer: indices of values 2 + 8 + 2 + 3 = 15
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+O(n^4), too slow.
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Use hashmap from pair sum to a pair of indices seen so far. When processing new pair, check complement.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+vector<int> fourValues(vector<int>& arr, int X) {
+    int n = arr.size();
+    unordered_map<int, pair<int,int>> seen;
 
-    if(l >= r)
-        return 0;
+    for (int j = 0; j < n; j++) {
 
-    int mid = (l + r) / 2;
+        for (int k = j + 1; k < n; k++) {
+            int need = X - arr[j] - arr[k];
 
-    long long ans = 0;
-
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
-
-    vector<int> temp;
-
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
+            if (seen.count(need)) {
+                auto [a, b] = seen[need];
+                return {a, b, j, k};
+            }
         }
-        else {
 
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
+        for (int i = 0; i < j; i++) {
+            seen[arr[i] + arr[j]] = {i, j};
         }
     }
 
-    while(i <= mid)
-        temp.push_back(arr[i++]);
-
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
-    }
-
-    return ans;
+    return {};
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | j=0 | seen empty | No answer |
 
----
+| 1 | j=1 val=2 | Check pairs with k>1 | Then store pair (0,1)=5 |
 
-## Compare 5 and 3
+| 2 | j=3 val=8 | Check with k=6 val=2 | need=5 |
 
-```text
-5 > 3
-```
+| 3 | seen[5] | pair (0,1) values 3+2 | Distinct indices |
 
-Inversion += 1
+| 4 | Answer | 3 + 2 + 8 + 2 = 15 | Return indices |
 
----
 
-## Compare 8 and 1
+## ⏱ Complexity
 
-```text
-8 > 1
-```
+Time O(n²), Space O(n²).
 
-Inversion += 1
 
----
+## 🧩 Pattern Trigger
 
-## Compare 8 and 2
+Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
 
-```text
-8 > 2
-```
-
-Inversion += 1
-
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Phase 7 — Modulo MITM
 
-# 🔥 COMPLETE SOLVED PROBLEM 13
+
+# Problem 13: Maximum Subsequence Sum Modulo M
+
+**Difficulty:** Hard  
+
+**Pattern:** `MITM + modulo + upper_bound`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Given n ≤ 40 numbers and m, find maximum subset sum modulo m.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+arr = [3, 3, 9, 9, 5]
+m = 7
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+6
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Try all subsets and compute sum % m. Complexity O(2^n).
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Generate subset sums modulo m for both halves. For each left value x, find largest right value y such that x+y < m, and also consider wrap-around.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+vector<long long> genMod(vector<int>& a, long long m) {
+    int n = a.size();
+    vector<long long> res;
 
-    if(l >= r)
-        return 0;
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
 
-    int mid = (l + r) / 2;
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) {
+                sum = (sum + a[i]) % m;
+            }
+        }
+
+        res.push_back(sum);
+    }
+
+    return res;
+}
+
+long long maxSubsetModulo(vector<int>& arr, long long m) {
+    int n = arr.size();
+
+    vector<int> left(arr.begin(), arr.begin() + n / 2);
+    vector<int> right(arr.begin() + n / 2, arr.end());
+
+    vector<long long> L = genMod(left, m);
+    vector<long long> R = genMod(right, m);
+
+    sort(R.begin(), R.end());
 
     long long ans = 0;
 
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
+    for (long long x : L) {
+        long long need = m - 1 - x;
 
-    vector<int> temp;
+        auto it = upper_bound(R.begin(), R.end(), need);
 
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
+        if (it != R.begin()) {
+            --it;
+            ans = max(ans, (x + *it) % m);
         }
-        else {
 
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
-        }
-    }
-
-    while(i <= mid)
-        temp.push_back(arr[i++]);
-
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
+        ans = max(ans, x % m);
     }
 
     return ans;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | m=7 | Goal max possible is 6 | Cannot exceed m-1 |
 
----
+| 1 | Split | left=[3,3], right=[9,9,5] | Modulo values used |
 
-## Compare 5 and 3
+| 2 | Left mod sums | 0,3,3,6 | Generated |
 
-```text
-5 > 3
-```
+| 3 | Right mod sums | include 0,2,4,5,6... | Sorted |
 
-Inversion += 1
+| 4 | x=6 | need=0 | choose y=0 → ans=6 |
 
----
+| 5 | Final | 6 | Best possible modulo |
 
-## Compare 8 and 1
 
-```text
-8 > 1
-```
+## ⏱ Complexity
 
-Inversion += 1
+Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
 
----
 
-## Compare 8 and 2
+## 🧩 Pattern Trigger
 
-```text
-8 > 2
-```
+Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
 
-Inversion += 1
-
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Phase 8 — Advanced Transformation
 
-# 🔥 COMPLETE SOLVED PROBLEM 14
+
+# Problem 14: 4 Reversals Pattern
+
+**Difficulty:** Hard  
+
+**Pattern:** `State transformation + limited operations`
+
 
 ## 🧾 Problem Statement
 
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
+Given a sequence transformation problem where at most 4 reversals are allowed, reason using reachable states and invariants.
 
----
 
-## 📥 Input
+## 📥 Input Example
 
 ```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
+start = [1,2,3,4]
+target = [3,2,1,4]
 ```
 
----
 
 ## 📤 Expected Output
 
 ```text
-Answer = optimized result
+YES  // reverse segment [1..3]
 ```
 
----
 
-# 🧠 BRUTE FORCE THINKING
+## 🧠 Brute Force Thinking
 
-## Idea
+Try all reversal combinations. For length n, one reversal has O(n²) choices, four reversals O(n^8).
 
-Try all possible pairs/subarrays/subsets.
 
----
+## ⚡ Optimal Idea
 
-## Complexity
+Use invariants and controlled state generation. For small operation count, generate states after 2 reversals from start and after 2 reversals from target, then match using MITM.
 
-```text
-O(n²) or O(2^n)
-```
 
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
+## 💻 C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long long solve(vector<int>& arr, int l, int r) {
+vector<int> revSeg(vector<int> a, int l, int r) {
+    reverse(a.begin() + l, a.begin() + r + 1);
+    return a;
+}
 
-    if(l >= r)
-        return 0;
+set<vector<int>> generateTwoReversals(vector<int> start) {
+    int n = start.size();
+    set<vector<int>> states;
 
-    int mid = (l + r) / 2;
+    states.insert(start);
 
-    long long ans = 0;
+    for (int l1 = 0; l1 < n; l1++) {
+        for (int r1 = l1; r1 < n; r1++) {
+            vector<int> one = revSeg(start, l1, r1);
+            states.insert(one);
 
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
-
-    vector<int> temp;
-
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
-        }
-        else {
-
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
+            for (int l2 = 0; l2 < n; l2++) {
+                for (int r2 = l2; r2 < n; r2++) {
+                    vector<int> two = revSeg(one, l2, r2);
+                    states.insert(two);
+                }
+            }
         }
     }
 
-    while(i <= mid)
-        temp.push_back(arr[i++]);
+    return states;
+}
 
-    while(j <= r)
-        temp.push_back(arr[j++]);
+bool canTransformInFour(vector<int> start, vector<int> target) {
+    auto A = generateTwoReversals(start);
+    auto B = generateTwoReversals(target);
 
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
+    for (auto& state : A) {
+        if (B.count(state)) return true;
     }
 
-    return ans;
+    return false;
 }
 ```
 
----
 
-# 🔍 INDEX BY INDEX DRY RUN
+## 📊 Index-by-Index Dry Run
 
-## Initial
+| Step | State / Index | Observation | Action |
+|---:|---|---|---|
 
-```text
-[5,3,8,1,2,7]
-```
+| 0 | Start | [1,2,3,4] | Target [3,2,1,4] |
 
----
+| 1 | One reversal | reverse indices 0..2 | [3,2,1,4] |
 
-## Compare 5 and 3
+| 2 | Match target | YES | Within 4 reversals |
 
-```text
-5 > 3
-```
+| 3 | MITM idea | 2 reversals from start + 2 from target | If common state exists, answer YES |
 
-Inversion += 1
 
----
+## ⏱ Complexity
 
-## Compare 8 and 1
+For n small/moderate: generate O(n^4) states for two reversals. MITM avoids O(n^8).
 
-```text
-8 > 1
-```
 
-Inversion += 1
+## 🧩 Pattern Trigger
 
----
+Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
 
-## Compare 8 and 2
-
-```text
-8 > 2
-```
-
-Inversion += 1
-
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
 
 ---
 
 
+# Final Revision Strategy
 
-# 🔥 COMPLETE SOLVED PROBLEM 15
+## How to Practice This File
 
-## 🧾 Problem Statement
-
-Given an array, solve optimization/counting problem using Divide & Conquer or Meet in the Middle.
-
----
-
-## 📥 Input
-
-```text
-n = 6
-arr = [5, 3, 8, 1, 2, 7]
-```
+1. Read the problem statement only.
+2. Guess the pattern in 5 seconds.
+3. Write brute force first.
+4. Identify the optimization trigger.
+5. Code the template from memory.
+6. Dry run using the table.
+7. Re-solve after 3 days without looking.
 
 ---
 
-## 📤 Expected Output
-
-```text
-Answer = optimized result
-```
-
----
-
-# 🧠 BRUTE FORCE THINKING
-
-## Idea
-
-Try all possible pairs/subarrays/subsets.
-
----
-
-## Complexity
-
-```text
-O(n²) or O(2^n)
-```
-
-Too slow.
-
----
-
-# 🚩 OBSERVATION
-
-Notice:
-- recursive split possible
-- merge information possible
-- subset compression possible
-
-This is strong signal for:
-```text
-Divide & Conquer / MITM
-```
-
----
-
-# ⚡ OPTIMAL IDEA
-
-## Step 1
-Split problem into halves.
-
-## Step 2
-Solve recursively OR generate subset sums.
-
-## Step 3
-Merge answers intelligently.
-
----
-
-# 📊 TABULAR DRY RUN
-
-## Original Array
-
-| Index | Value |
-|---|---|
-| 0 | 5 |
-| 1 | 3 |
-| 2 | 8 |
-| 3 | 1 |
-| 4 | 2 |
-| 5 | 7 |
-
----
-
-## SPLIT PHASE
-
-| Level | Left | Right |
-|---|---|---|
-| 1 | [5,3,8] | [1,2,7] |
-| 2 | [5] [3,8] | [1] [2,7] |
-| 3 | [3] [8] | [2] [7] |
-
----
-
-## MERGE PHASE
-
-| Step | Compare | Action |
-|---|---|---|
-| 1 | 3 vs 8 | take 3 |
-| 2 | 8 remains | take 8 |
-| 3 | 2 vs 7 | take 2 |
-| 4 | 7 remains | take 7 |
-
----
-
-# 🔥 INVERSION INSIGHT
-
-Whenever:
-```text
-left > right
-```
-
-ALL remaining left elements also form inversions.
-
----
-
-# 🧠 MENTAL MODEL
-
-```text
-Merge Sort
-=
-Sorting
-+
-Extracting information during merge
-```
-
-This is EXTREMELY important for FAANG.
-
----
-
-# 💻 OPTIMAL CODE
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-long long solve(vector<int>& arr, int l, int r) {
-
-    if(l >= r)
-        return 0;
-
-    int mid = (l + r) / 2;
-
-    long long ans = 0;
-
-    ans += solve(arr, l, mid);
-    ans += solve(arr, mid + 1, r);
-
-    vector<int> temp;
-
-    int i = l;
-    int j = mid + 1;
-
-    while(i <= mid && j <= r) {
-
-        if(arr[i] <= arr[j]) {
-            temp.push_back(arr[i++]);
-        }
-        else {
-
-            ans += (mid - i + 1);
-
-            temp.push_back(arr[j++]);
-        }
-    }
-
-    while(i <= mid)
-        temp.push_back(arr[i++]);
-
-    while(j <= r)
-        temp.push_back(arr[j++]);
-
-    for(int k = l; k <= r; k++) {
-        arr[k] = temp[k - l];
-    }
-
-    return ans;
-}
-```
-
----
-
-# 🔍 INDEX BY INDEX DRY RUN
-
-## Initial
-
-```text
-[5,3,8,1,2,7]
-```
-
----
-
-## Compare 5 and 3
-
-```text
-5 > 3
-```
-
-Inversion += 1
-
----
-
-## Compare 8 and 1
-
-```text
-8 > 1
-```
-
-Inversion += 1
-
----
-
-## Compare 8 and 2
-
-```text
-8 > 2
-```
-
-Inversion += 1
-
----
-
-# ⚠️ COMMON MISTAKES
-
-| Mistake | Problem |
-|---|---|
-| Forget base case | Infinite recursion |
-| Wrong merge | Incorrect answer |
-| Missing inversion formula | WA |
-| Overflow mid | Bug |
-
----
-
-# 🎯 FAANG MAPPING
-
-| Company | Similar Pattern |
-|---|---|
-| Google | Merge logic |
-| Meta | Recursion |
-| Amazon | Counting during merge |
-| Uber | Interval splitting |
-| Jane Street | MITM optimization |
-
----
-
-# ⚡ CP TRICKS
-
-## Trick 1
-Use merge step to count information.
-
-## Trick 2
-Convert:
-```text
-O(n²) → O(n log n)
-```
-
-## Trick 3
-For:
-```text
-n ≤ 40
-```
-
-Always think:
-```text
-MITM
-```
-
----
-
-# 📈 COMPLEXITY
-
-| Part | Complexity |
-|---|---|
-| Split | log n |
-| Merge per level | O(n) |
-| Total | O(n log n) |
-
----
-
-# 🧠 PATTERN RECOGNITION
-
-If you see:
-- recursive split
-- combine step
-- optimization during merge
-
-Then:
-```text
-D&C VERY LIKELY
-```
-
----
-
-# 🔥 ADVANCED OBSERVATION
-
-MITM transforms:
-```text
-2^40
-```
-
-Into:
-```text
-2^20 + 2^20
-```
-
-This is one of the MOST IMPORTANT CP optimizations.
-
----
-
-# 🧩 RELATED PROBLEMS
-
-- Count Inversions
-- Reverse Pairs
-- Closest Pair
-- Four Sum
-- Subset Sum
-- Maximum Subset ≤ S
-
----
-
-
-
-# 🚀 FINAL MASTER DECISION TREE
-
-# 🔥 WHEN TO USE DIVIDE & CONQUER
-
-```text
-Can split recursively?
-        ↓
-YES
-        ↓
-Can merge answers?
-        ↓
-YES
-        ↓
-USE D&C
-```
-
----
-
-# 🔥 WHEN TO USE MEET IN THE MIDDLE
-
-```text
-n ≤ 40 ?
-    ↓
-YES
-    ↓
-Subset/combinations?
-    ↓
-YES
-    ↓
-USE MITM
-```
-
----
-
-# 🎯 FINAL FAANG CHECKLIST
+# FAANG + CP Readiness Checklist
 
 ## Divide & Conquer
-
-✅ Merge Sort  
-✅ Quick Sort  
-✅ Binary Search  
-✅ Recurrence Relations  
-✅ Master Theorem  
-✅ Inversion Count  
-✅ Closest Pair  
-
----
+- [ ] Can write merge sort from memory
+- [ ] Can count inversions during merge
+- [ ] Can explain why `mid - i + 1` works
+- [ ] Can solve reverse pairs
+- [ ] Can derive Karatsuba formula
 
 ## Meet in the Middle
-
-✅ Bitmasking  
-✅ Subset Generation  
-✅ Binary Search on subsets  
-✅ Pair Compression  
-✅ Hashing combinations  
-✅ Maximum subset ≤ S  
-
----
-
-# 🚀 FINAL ADVICE
-
-For your FAANG + CP goals:
-
-MASTER:
-- recursion thinking
-- merge-step optimization
-- subset compression
-- pattern recognition speed
-
-These topics are heavily used in:
-- Google
-- Meta
-- Jane Street
-- HFT firms
-- ICPC
-- Codeforces Div2 C/D
+- [ ] Can generate subset sums by bitmask
+- [ ] Can split array into halves
+- [ ] Can binary search complement
+- [ ] Can count subsets using `upper_bound`
+- [ ] Can solve Four Values / Four Sum
+- [ ] Can solve max subset modulo `m`
 
 ---
 
-🔥 THIS HANDBOOK IS DESIGNED FOR:
-- pattern recognition
-- fast OA solving
-- CP contest speed
-- FAANG interview preparation
+# One-Line Mental Triggers
+
+| If you see... | Think... |
+|---|---|
+| `n <= 40` and subset | Meet in the Middle |
+| Pair counting with order | Merge Sort counting |
+| Four values / four sum | Pair sums |
+| Maximum ≤ K | Sort one side + upper_bound |
+| Exact target | Hashing or binary_search |
+| Modulo maximum | MITM + modulo compression |
+| Swap parity | Inversion parity |
+
+---
+
+🔥 End of handbook.
