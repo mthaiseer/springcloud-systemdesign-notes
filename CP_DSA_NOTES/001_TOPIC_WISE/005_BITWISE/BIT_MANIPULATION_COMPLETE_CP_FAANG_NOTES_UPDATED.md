@@ -2232,3 +2232,483 @@ for (int b = 60; b >= 0; b--) {
 | query kth bit / kth one | Binary search + bit count |
 | each bit independently | Contribution technique |
 | need store subset compactly | Mask as integer |
+
+
+---
+
+# EXTRA VISUAL SECTION — COLUMN WISE BIT THINKING
+
+# Why Elite CP Programmers Think Column Wise
+
+Instead of thinking:
+
+```text
+number by number
+```
+
+Think:
+
+```text
+bit column by bit column
+```
+
+Because:
+
+```text
+Each bit works independently
+```
+
+This is the foundation behind:
+
+- XOR contribution
+- OR contribution
+- AND contribution
+- Maximum AND
+- Maximum XOR
+- Bit DP
+- Trie problems
+- Greedy bit construction
+
+---
+
+# COLUMN WISE REPRESENTATION — MASTER EXAMPLE
+
+Array:
+
+```text
+A = [1, 3, 5]
+```
+
+Binary:
+
+```text
+1 = 001
+3 = 011
+5 = 101
+```
+
+Represent vertically:
+
+| Number | bit2 | bit1 | bit0 |
+|---|---|---|---|
+| 1 | 0 | 0 | 1 |
+| 3 | 0 | 1 | 1 |
+| 5 | 1 | 0 | 1 |
+
+Now solve:
+
+```text
+(1 ^ 3) + (1 ^ 5) + (3 ^ 5)
+```
+
+WITHOUT directly computing XORs.
+
+---
+
+# COLUMN DRY RUN — BIT 0
+
+Column:
+
+```text
+1
+1
+1
+```
+
+Count:
+
+```text
+ones = 3
+zeros = 0
+```
+
+XOR becomes 1 only when bits differ.
+
+Possible pairs:
+
+```text
+1 ^ 0
+0 ^ 1
+```
+
+But here:
+
+```text
+all are 1
+```
+
+So:
+
+```text
+pairs = ones * zeros
+      = 3 * 0
+      = 0
+```
+
+Contribution:
+
+```text
+0 * (2^0)
+= 0
+```
+
+---
+
+# COLUMN DRY RUN — BIT 1
+
+Column:
+
+```text
+0
+1
+0
+```
+
+Count:
+
+```text
+ones = 1
+zeros = 2
+```
+
+Valid XOR pairs:
+
+```text
+1 with 0
+```
+
+Number of valid pairs:
+
+```text
+1 * 2 = 2
+```
+
+Each contributes:
+
+```text
+2^1 = 2
+```
+
+Total:
+
+```text
+2 * 2 = 4
+```
+
+Visual pairs:
+
+| Pair | bit1 XOR |
+|---|---|
+| (1,3) | 1 |
+| (1,5) | 0 |
+| (3,5) | 1 |
+
+Contribution:
+
+```text
+2 + 0 + 2 = 4
+```
+
+---
+
+# COLUMN DRY RUN — BIT 2
+
+Column:
+
+```text
+0
+0
+1
+```
+
+Count:
+
+```text
+ones = 1
+zeros = 2
+```
+
+Pairs:
+
+```text
+1 * 2 = 2
+```
+
+Each contributes:
+
+```text
+2^2 = 4
+```
+
+Total:
+
+```text
+2 * 4 = 8
+```
+
+Visual:
+
+| Pair | bit2 XOR |
+|---|---|
+| (1,3) | 0 |
+| (1,5) | 1 |
+| (3,5) | 1 |
+
+Contribution:
+
+```text
+0 + 4 + 4 = 8
+```
+
+---
+
+# FINAL CONTRIBUTION TABLE
+
+| Bit | Ones | Zeros | Valid Pairs | Bit Value | Contribution |
+|---|---|---|---|---|---|
+| 0 | 3 | 0 | 0 | 1 | 0 |
+| 1 | 1 | 2 | 2 | 2 | 4 |
+| 2 | 1 | 2 | 2 | 4 | 8 |
+
+Final Answer:
+
+```text
+0 + 4 + 8 = 12
+```
+
+---
+
+# COLUMN WISE THINKING FOR AND
+
+Example:
+
+```text
+A = [1, 3, 5]
+```
+
+Binary:
+
+| Number | bit2 | bit1 | bit0 |
+|---|---|---|---|
+| 1 | 0 | 0 | 1 |
+| 3 | 0 | 1 | 1 |
+| 5 | 1 | 0 | 1 |
+
+For AND:
+
+Bit becomes 1 only if BOTH bits are 1.
+
+---
+
+# BIT 0
+
+Column:
+
+```text
+1
+1
+1
+```
+
+All pairs contribute.
+
+Number of valid pairs:
+
+```text
+C(3,2) = 3
+```
+
+Contribution:
+
+```text
+3 * 1 = 3
+```
+
+---
+
+# BIT 1
+
+Column:
+
+```text
+0
+1
+0
+```
+
+Only one 1.
+
+Need two 1s for AND.
+
+Contribution:
+
+```text
+0
+```
+
+---
+
+# BIT 2
+
+Column:
+
+```text
+0
+0
+1
+```
+
+Only one 1.
+
+Contribution:
+
+```text
+0
+```
+
+Final AND pair sum:
+
+```text
+3
+```
+
+---
+
+# COLUMN WISE THINKING FOR OR
+
+OR becomes 1 when:
+
+```text
+at least one bit is 1
+```
+
+---
+
+# Example
+
+Array:
+
+```text
+[1, 3, 5]
+```
+
+Binary:
+
+| Number | bit2 | bit1 | bit0 |
+|---|---|---|---|
+| 1 | 0 | 0 | 1 |
+| 3 | 0 | 1 | 1 |
+| 5 | 1 | 0 | 1 |
+
+Total pairs:
+
+```text
+3C2 = 3
+```
+
+---
+
+# BIT 0
+
+All numbers have 1.
+
+So every pair contributes.
+
+Contribution:
+
+```text
+3 * 1 = 3
+```
+
+---
+
+# BIT 1
+
+Column:
+
+```text
+0
+1
+0
+```
+
+Only pair without OR contribution:
+
+```text
+0 with 0
+```
+
+zero pairs:
+
+```text
+C(2,2) = 1
+```
+
+Valid pairs:
+
+```text
+3 - 1 = 2
+```
+
+Contribution:
+
+```text
+2 * 2 = 4
+```
+
+---
+
+# BIT 2
+
+Column:
+
+```text
+0
+0
+1
+```
+
+Zero pairs:
+
+```text
+C(2,2) = 1
+```
+
+Valid pairs:
+
+```text
+3 - 1 = 2
+```
+
+Contribution:
+
+```text
+2 * 4 = 8
+```
+
+Final OR pair sum:
+
+```text
+3 + 4 + 8 = 15
+```
+
+---
+
+# ULTIMATE MENTAL MODEL
+
+Whenever you see:
+
+```text
+sum over pairs
+sum over subarrays
+maximize xor
+maximize and
+```
+
+ASK:
+
+```text
+Can I solve this COLUMN WISE?
+```
+
+That is the real breakthrough in Bit Manipulation.
