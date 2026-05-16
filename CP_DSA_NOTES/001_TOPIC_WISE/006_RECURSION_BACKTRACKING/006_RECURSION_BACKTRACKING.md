@@ -48,18 +48,24 @@ This is a **phase-wise CP + FAANG style master guide** with:
 - [P12. Combination Sum - Reuse Allowed](#p12-combination-sum---reuse-allowed)
 - [P13. Combination Sum II - Reuse Not Allowed + Duplicates](#p13-combination-sum-ii---reuse-not-allowed--duplicates)
 
-### Phase 4 - Aggregation Recursion
+### Phase 4 - K-th Solution / Count-and-Skip Recursion
 
-- [P14. Word Break - Possible Or Not](#p14-word-break---possible-or-not)
-- [P15. Decode Ways - Count Ways](#p15-decode-ways---count-ways)
-- [P16. Min Cost Climbing Stairs - Min Aggregation](#p16-min-cost-climbing-stairs---min-aggregation)
+- [P14. K-th Permutation](#p14-k-th-permutation)
+- [P15. K-th Subset In Lexicographic Binary Order](#p15-k-th-subset-in-lexicographic-binary-order)
+- [P16. K-th Valid Parentheses](#p16-k-th-valid-parentheses)
 
-### Phase 5 - Board Placement / Constraint Search
+### Phase 5 - Aggregation Recursion
 
-- [P17. N Queens / K Queens](#p17-n-queens--k-queens)
-- [P18. K Knights](#p18-k-knights)
-- [P19. Rat in a Maze](#p19-rat-in-a-maze)
-- [P20. Sudoku Solver](#p20-sudoku-solver)
+- [P17. Word Break - Possible Or Not](#p17-word-break---possible-or-not)
+- [P18. Decode Ways - Count Ways](#p18-decode-ways---count-ways)
+- [P19. Min Cost Climbing Stairs - Min Aggregation](#p19-min-cost-climbing-stairs---min-aggregation)
+
+### Phase 6 - Board Placement / Constraint Search
+
+- [P20. N Queens / K Queens](#p20-n-queens--k-queens)
+- [P21. K Knights](#p21-k-knights)
+- [P22. Rat in a Maze](#p22-rat-in-a-maze)
+- [P23. Sudoku Solver](#p23-sudoku-solver)
 
 ### Final Revision
 
@@ -233,8 +239,9 @@ level 0: ""
 | 1 | Simple recursion | Base case + smaller problem |
 | 2 | Generate all | Save answer only at base case |
 | 3 | Backtracking + pruning | Skip invalid branches early |
-| 4 | Aggregation | Return value from recursion and combine |
-| 5 | Board placement | Maintain board / used state and validate moves |
+| 4 | K-th solution | Count branch size and skip whole branches |
+| 5 | Aggregation | Return value from recursion and combine |
+| 6 | Board placement | Maintain board / used state and validate moves |
 
 ---
 
@@ -1734,7 +1741,701 @@ start=0 rem=8 path=[]
 
 ---
 
-# P14. Word Break - Possible Or Not
+
+# Phase 4 - K-th Solution / Count-and-Skip Recursion
+
+## Why K-th Solution Is Different
+
+Normal backtracking generates every answer:
+
+```text
+choose -> recurse -> save all answers
+```
+
+K-th solution recursion does **not** generate all answers. It counts how many answers exist under each branch. If a whole branch has fewer than `k` answers, skip that complete branch.
+
+```text
+for each choice in sorted order:
+    branchCount = number of solutions if I choose this
+
+    if k > branchCount:
+        k -= branchCount       // skip this whole branch
+    else:
+        choose this branch     // answer is inside this branch
+```
+
+## LCCM For K-th Solution
+
+```text
+Level      = current position in answer
+Choices    = choices in required order, usually lexicographic
+Check      = choice must be valid
+Move       = count branch -> skip branch OR enter branch
+Base case  = answer length complete / state complete
+Answer     = only the k-th answer, not all answers
+```
+
+## Universal K-th Template
+
+```cpp
+// Count-and-skip recursion template
+// L = answer position / recursion level
+// C = choices in sorted / lexicographic order
+// C = choice must be valid
+// M = count branch, skip or choose
+void rec(int level) {
+    if (base_case) {
+        return;
+    }
+
+    for (int choice = firstChoice; choice <= lastChoice; choice++) {
+        if (!isSafe(choice)) continue;
+
+        long long branchCount = countWaysIfChoose(choice);
+
+        if (k > branchCount) {
+            // skip this full subtree
+            k -= branchCount;
+        } else {
+            // k-th answer lies inside this subtree
+            apply(choice);
+            rec(level + 1);
+            return;
+        }
+    }
+}
+```
+
+## Core Mental Model
+
+```text
+Backtracking asks: generate all branches.
+K-th recursion asks: which branch contains the k-th answer?
+```
+
+---
+
+# P14. K-th Permutation
+
+## Problem Statement
+
+Given `n` and `k`, return the k-th permutation of numbers `1..n` in lexicographic order.
+
+## Input
+
+```text
+n = 4
+k = 9
+```
+
+## Output
+
+```text
+2314
+```
+
+## Example Order For n = 3
+
+```text
+1: 123
+2: 132
+3: 213
+4: 231
+5: 312
+6: 321
+```
+
+## LCCM
+
+```text
+Level      = position in permutation
+Choices    = unused numbers in increasing order
+Check      = number must be unused
+Move       = each choice fixes one number; branch size = factorial(remaining positions)
+Base case  = permutation length == n
+Answer     = k-th permutation
+```
+
+## Brute Force Thinking
+
+Generate all permutations, sort them, return `ans[k-1]`.
+
+Problem:
+
+```text
+n! permutations are too many.
+```
+
+## Optimal Count-and-Skip Idea
+
+At each position:
+
+```text
+If remaining positions = r
+then each candidate at current position contributes r! permutations.
+```
+
+For `n = 4`, first position branch sizes:
+
+```text
+1 _ _ _ -> 3! = 6 permutations
+2 _ _ _ -> 3! = 6 permutations
+3 _ _ _ -> 3! = 6 permutations
+4 _ _ _ -> 3! = 6 permutations
+```
+
+For `k = 9`:
+
+```text
+k = 9
+choice 1 has 6 permutations, skip them
+k = 9 - 6 = 3
+choice 2 contains answer
+answer starts with 2
+```
+
+## C++ Code - Simple Notes Style, No Lambda
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+long long k;
+vector<int> used;
+vector<long long> fact;
+string answer;
+
+bool isSafe(int value) {
+    return used[value] == 0;
+}
+
+long long countBranch(int remainingPositions) {
+    return fact[remainingPositions];
+}
+
+// L = current position in permutation
+// C = unused numbers from 1 to n in increasing order
+// C = number must be unused
+// M = count branch -> skip branch OR choose and recurse
+void rec(int level) {
+    // base case
+    if (level == n) {
+        return;
+    }
+
+    int remainingPositions = n - level - 1;
+    long long branchSize = countBranch(remainingPositions);
+
+    // choices in lexicographic order
+    for (int value = 1; value <= n; value++) {
+        if (!isSafe(value)) continue;
+
+        if (k > branchSize) {
+            // k-th answer is not in this branch
+            k -= branchSize;
+        } else {
+            // k-th answer is inside this branch
+            used[value] = 1;
+            answer.push_back(char('0' + value));
+
+            rec(level + 1);
+            return;
+        }
+    }
+}
+
+string kthPermutation(int inputN, long long inputK) {
+    n = inputN;
+    k = inputK;
+
+    used.assign(n + 1, 0);
+    fact.assign(n + 1, 1);
+    answer.clear();
+
+    for (int i = 1; i <= n; i++) {
+        fact[i] = fact[i - 1] * i;
+    }
+
+    rec(0);
+    return answer;
+}
+
+int main() {
+    cin >> n >> k;
+    cout << kthPermutation(n, k) << '\n';
+    return 0;
+}
+```
+
+## Recursion Tree For `n = 4, k = 9`
+
+```text
+level 0, k=9
+├── choose 1: branch size 6 -> skip, k=3
+└── choose 2: branch size 6 -> enter, answer = 2
+
+level 1, remaining numbers = 1,3,4, k=3
+├── choose 1: branch size 2 -> skip, k=1
+└── choose 3: branch size 2 -> enter, answer = 23
+
+level 2, remaining numbers = 1,4, k=1
+└── choose 1: branch size 1 -> enter, answer = 231
+
+level 3, remaining number = 4
+└── choose 4 -> answer = 2314
+```
+
+## Index-by-Index Dry Run
+
+| Level | Remaining choices | Branch size | k before | Decision | k after | Answer |
+|---:|---|---:|---:|---|---:|---|
+| 0 | 1,2,3,4 | 6 | 9 | skip 1 | 3 | empty |
+| 0 | 2,3,4 | 6 | 3 | take 2 | 3 | 2 |
+| 1 | 1,3,4 | 2 | 3 | skip 1 | 1 | 2 |
+| 1 | 3,4 | 2 | 1 | take 3 | 1 | 23 |
+| 2 | 1,4 | 1 | 1 | take 1 | 1 | 231 |
+| 3 | 4 | 1 | 1 | take 4 | 1 | 2314 |
+
+## Complexity
+
+```text
+Time  = O(n^2) with used array scanning
+Space = O(n)
+```
+
+## Mental Model
+
+> K-th permutation = factorial blocks. Skip whole blocks until k lands inside one block.
+
+---
+
+# P15. K-th Subset In Lexicographic Binary Order
+
+## Problem Statement
+
+Given an array of `n` elements, return the k-th subset if subsets are generated by binary take/not-take order.
+
+For `nums = [1,2,3]`, one common binary recursion order is:
+
+```text
+1: []
+2: [3]
+3: [2]
+4: [2,3]
+5: [1]
+6: [1,3]
+7: [1,2]
+8: [1,2,3]
+```
+
+This is produced when recursion does:
+
+```text
+not take first
+then take first
+```
+
+## Input
+
+```text
+nums = [1, 2, 3]
+k = 6
+```
+
+## Output
+
+```text
+[1, 3]
+```
+
+## LCCM
+
+```text
+Level      = index in nums
+Choices    = not take OR take
+Check      = level must be inside array
+Move       = branch size for each choice = 2^(remaining elements)
+Base case  = level == n
+Answer     = k-th subset
+```
+
+## Key Count Formula
+
+At index `level`, after deciding current element, remaining elements are:
+
+```text
+remaining = n - level - 1
+```
+
+Number of subsets under each branch:
+
+```text
+2^remaining
+```
+
+## C++ Code - Simple Notes Style, No Lambda
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> nums;
+vector<int> answer;
+long long k;
+int n;
+
+bool isSafeIndex(int level) {
+    return level <= n;
+}
+
+long long countBranch(int remainingElements) {
+    return 1LL << remainingElements;
+}
+
+// L = current index
+// C = not take nums[level] OR take nums[level]
+// C = level must be inside boundary
+// M = count not-take branch, skip or enter; then take branch if needed
+void rec(int level) {
+    if (!isSafeIndex(level)) return;
+
+    // base case
+    if (level == n) {
+        return;
+    }
+
+    int remainingElements = n - level - 1;
+    long long branchSize = countBranch(remainingElements);
+
+    // choice 1: not take nums[level]
+    if (k <= branchSize) {
+        rec(level + 1);
+        return;
+    }
+
+    // skip all subsets where nums[level] is not taken
+    k -= branchSize;
+
+    // choice 2: take nums[level]
+    answer.push_back(nums[level]);
+    rec(level + 1);
+}
+
+vector<int> kthSubset(vector<int>& input, long long inputK) {
+    nums = input;
+    n = nums.size();
+    k = inputK;
+    answer.clear();
+
+    rec(0);
+    return answer;
+}
+
+int main() {
+    int m;
+    cin >> m >> k;
+
+    vector<int> input(m);
+    for (int i = 0; i < m; i++) cin >> input[i];
+
+    vector<int> result = kthSubset(input, k);
+
+    for (int x : result) cout << x << ' ';
+    cout << '\n';
+
+    return 0;
+}
+```
+
+## Recursion Tree For `[1,2,3]`
+
+```text
+level 0: decide 1
+├── not take 1 -> 4 subsets: [], [3], [2], [2,3]
+└── take 1     -> 4 subsets: [1], [1,3], [1,2], [1,2,3]
+```
+
+For `k = 6`:
+
+```text
+not-take 1 branch has 4 subsets
+k = 6 > 4, skip it
+k = 2
+take 1
+
+level 1: decide 2
+not-take 2 branch has 2 subsets: [1], [1,3]
+k = 2 <= 2, enter not-take 2
+
+level 2: decide 3
+not-take 3 branch has 1 subset: [1]
+k = 2 > 1, skip
+k = 1
+take 3
+answer = [1,3]
+```
+
+## Index-by-Index Dry Run
+
+| Level | Element | Branch | Branch size | k before | Decision | k after | Answer |
+|---:|---:|---|---:|---:|---|---:|---|
+| 0 | 1 | not take | 4 | 6 | skip | 2 | [] |
+| 0 | 1 | take | 4 | 2 | take | 2 | [1] |
+| 1 | 2 | not take | 2 | 2 | enter | 2 | [1] |
+| 2 | 3 | not take | 1 | 2 | skip | 1 | [1] |
+| 2 | 3 | take | 1 | 1 | take | 1 | [1,3] |
+
+## Mental Model
+
+> K-th subset = binary tree blocks. Each take/not-take branch has `2^remaining` answers.
+
+---
+
+# P16. K-th Valid Parentheses
+
+## Problem Statement
+
+Given `n` pairs of parentheses and `k`, return the k-th valid parentheses string in lexicographic order where `'(' < ')'`.
+
+## Input
+
+```text
+n = 3
+k = 4
+```
+
+## All Valid Parentheses For n = 3
+
+```text
+1: ((()))
+2: (()())
+3: (())()
+4: ()(())
+5: ()()()
+```
+
+## Output
+
+```text
+()(())
+```
+
+## LCCM
+
+```text
+Level      = current position in string
+Choices    = '(' first, then ')'
+Check      = open < n, close < open
+Move       = count valid completions after choice; skip or choose
+Base case  = path length == 2*n
+Answer     = k-th valid parentheses string
+```
+
+## Count Function
+
+We need to know how many valid completions exist from state:
+
+```text
+open  = number of '(' used
+close = number of ')' used
+```
+
+Use memoized recursion:
+
+```text
+count(open, close)
+```
+
+## C++ Code - Simple Notes Style, No Lambda
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+long long k;
+string answer;
+long long memo[35][35];
+
+bool isSafeOpen(int open) {
+    return open < n;
+}
+
+bool isSafeClose(int open, int close) {
+    return close < open;
+}
+
+long long countWays(int open, int close) {
+    // invalid state
+    if (open > n || close > open) return 0;
+
+    // base case
+    if (open == n && close == n) return 1;
+
+    if (memo[open][close] != -1) return memo[open][close];
+
+    long long ways = 0;
+
+    // choice 1: add '('
+    if (isSafeOpen(open)) {
+        ways += countWays(open + 1, close);
+    }
+
+    // choice 2: add ')'
+    if (isSafeClose(open, close)) {
+        ways += countWays(open, close + 1);
+    }
+
+    return memo[open][close] = ways;
+}
+
+// L = current position / path length
+// C = '(' first, then ')'
+// C = open < n, close < open
+// M = count branch -> skip OR choose
+void rec(int open, int close) {
+    // base case
+    if ((int)answer.size() == 2 * n) {
+        return;
+    }
+
+    // choice 1: try '(' first because '(' is lexicographically smaller
+    if (isSafeOpen(open)) {
+        long long branchCount = countWays(open + 1, close);
+
+        if (k <= branchCount) {
+            answer.push_back('(');
+            rec(open + 1, close);
+            return;
+        } else {
+            k -= branchCount;
+        }
+    }
+
+    // choice 2: try ')'
+    if (isSafeClose(open, close)) {
+        long long branchCount = countWays(open, close + 1);
+
+        if (k <= branchCount) {
+            answer.push_back(')');
+            rec(open, close + 1);
+            return;
+        } else {
+            k -= branchCount;
+        }
+    }
+}
+
+string kthParentheses(int inputN, long long inputK) {
+    n = inputN;
+    k = inputK;
+    answer.clear();
+    memset(memo, -1, sizeof(memo));
+
+    rec(0, 0);
+    return answer;
+}
+
+int main() {
+    cin >> n >> k;
+    cout << kthParentheses(n, k) << '\n';
+    return 0;
+}
+```
+
+## Recursion Tree For `n = 3, k = 4`
+
+```text
+start: open=0 close=0 k=4
+only '(' possible -> answer = "("
+
+state "(" open=1 close=0
+try '(' branch: count = 3 strings
+k=4 > 3, skip this branch
+k=1
+try ')' -> answer = "()"
+
+state "()" open=1 close=1
+try '(' branch: count = 2 strings
+k=1 <= 2, enter
+answer = "()("
+
+continue lexicographically inside that branch
+answer = "()(())"
+```
+
+## Index-by-Index Dry Run
+
+| Path | open | close | Try | Branch count | k before | Decision | k after |
+|---|---:|---:|---|---:|---:|---|---:|
+| empty | 0 | 0 | `(` | 5 | 4 | take | 4 |
+| `(` | 1 | 0 | `(` | 3 | 4 | skip | 1 |
+| `(` | 1 | 0 | `)` | 2 | 1 | take | 1 |
+| `()` | 1 | 1 | `(` | 2 | 1 | take | 1 |
+| `()(` | 2 | 1 | `(` | 1 | 1 | take | 1 |
+| `()((` | 3 | 1 | `)` | 1 | 1 | take | 1 |
+| `()(()` | 3 | 2 | `)` | 1 | 1 | take | 1 |
+
+## Mental Model
+
+> K-th valid parentheses = Catalan-style counting + lexicographic branch skipping.
+
+---
+
+# K-th Solution Pattern Recognition Table
+
+| Problem type | Branch count | Choice order | Key idea |
+|---|---:|---|---|
+| K-th permutation | `(remaining)!` | increasing unused numbers | factorial blocks |
+| K-th subset | `2^remaining` | not-take, then take | binary blocks |
+| K-th valid parentheses | DP count state | `'('`, then `')'` | Catalan branch count |
+| K-th grid path | DP paths from cell | lexicographic moves | skip path-count blocks |
+| K-th lexicographic string | power / DP count | alphabet order | skip character branches |
+
+## Common Mistakes In K-th Problems
+
+### 1. Generating all answers first
+
+This is usually too slow.
+
+```text
+Wrong for large n:
+generate all -> sort -> return k-th
+```
+
+### 2. Forgetting that k is usually 1-indexed
+
+Most K-th problems use:
+
+```text
+k = 1 means first answer
+```
+
+### 3. Wrong choice order
+
+K-th depends completely on order.
+
+```text
+lexicographic order means choices must be tried sorted.
+```
+
+### 4. Not checking branch count before entering
+
+Correct approach:
+
+```text
+count branch first
+then decide skip or enter
+```
+
+## Final K-th One-Liner
+
+> K-th recursion = ordered DFS + count subtree size + skip full subtrees.
+
+---
+
+# P17. Word Break - Possible Or Not
 
 ## Problem Statement
 
@@ -1844,7 +2545,7 @@ Possible or not => OR aggregation
 
 ---
 
-# P15. Decode Ways - Count Ways
+# P18. Decode Ways - Count Ways
 
 ## Problem Statement
 
@@ -1973,7 +2674,7 @@ Count ways => sum aggregation
 
 ---
 
-# P16. Min Cost Climbing Stairs - Min Aggregation
+# P19. Min Cost Climbing Stairs - Min Aggregation
 
 ## Problem Statement
 
@@ -2063,7 +2764,7 @@ answer = min(25,15) = 15
 
 ---
 
-# P17. N Queens / K Queens
+# P20. N Queens / K Queens
 
 ## Problem Statement
 
@@ -2219,7 +2920,7 @@ Base case  = placed == k
 
 ---
 
-# P18. K Knights
+# P21. K Knights
 
 ## Problem Statement
 
@@ -2382,7 +3083,7 @@ From the notes, for `k=2`, there are known OEIS / combinatorial formulas to coun
 
 ---
 
-# P19. Rat in a Maze
+# P22. Rat in a Maze
 
 ## Problem Statement
 
@@ -2505,7 +3206,7 @@ vector<string> findPath(vector<vector<int>>& inputMaze) {
 
 ---
 
-# P20. Sudoku Solver
+# P23. Sudoku Solver
 
 ## Problem Statement
 
