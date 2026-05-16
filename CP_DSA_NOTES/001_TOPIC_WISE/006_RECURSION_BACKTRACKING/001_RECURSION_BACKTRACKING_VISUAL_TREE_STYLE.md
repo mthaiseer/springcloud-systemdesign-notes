@@ -1,5 +1,8 @@
 # Recursion + Backtracking LCCM Master Guide
 
+> Mermaid recursion trees updated to visual branch-style layout similar to the provided screenshot.
+
+
 > Fully updated: dry run sections are now branch-style Mermaid recursion trees for visual learning.
 
 > Built from your uploaded `006_RECURSION_BACKTRACKING.md` and PDF notes: AlgoMonster backtracking patterns, Recursion-1, Recursion-2, and K-Knights notes.
@@ -91,6 +94,7 @@ Memoization    = cache repeated states.
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     A[Problem] --> B{What is asked?}
     B --> C[Compute one value]
     B --> D[Generate all answers]
@@ -318,6 +322,7 @@ fact(5)
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["fact(5)"]
     N1["5 * fact(4)"]
     N2["4 * fact(3)"]
@@ -443,6 +448,7 @@ int main() {
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["fib(5)"]
     N1["fib(4)"]
     N2["fib(3)"]
@@ -600,6 +606,7 @@ int main() {
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["(0,0,' ')"]
     N1["'(' -> (1,1,'(')"]
     N2["'(' -> (2,2,'((')"]
@@ -745,6 +752,7 @@ hanoi(3, A, B, C)
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["hanoi(3, A, B, C)"]
     N1["hanoi(2, A, C, B)"]
     N2["hanoi(1, A, B, C)"]
@@ -912,6 +920,7 @@ level 0: ""
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["level 0: ''"]
     N1["choose a -> level 1: 'a'"]
     N2[["choose a -> level 2: 'aa' save"]]
@@ -1050,6 +1059,7 @@ level 0 digit 2 choices: a,b,c
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["level 0 digit 2 choices: a,b,c"]
     N1["a"]
     N2["d -> ad"]
@@ -1195,6 +1205,7 @@ i=0 path=[]
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["i=0 path=[]"]
     N1(("skip 1 -> i=1 path=[]"))
     N2(("skip 2 -> i=2 path=[] save"))
@@ -1222,6 +1233,7 @@ i=0 path=[]
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["i=0 path=[]"]
     N1(("skip 1 -> i=1 path=[]"))
     N2(("skip 2 -> i=2 path=[] save"))
@@ -1362,6 +1374,7 @@ vector<vector<int>> permute(vector<int>& input) {
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["[]"]
     N1["1"]
     N2["1,2"]
@@ -1534,6 +1547,7 @@ freq = {1:1, 2:2}
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["freq = {1:1, 2:2}"]
     N1["[]"]
     N2["choose 1 -> [1], freq {1:0,2:2}"]
@@ -1673,6 +1687,7 @@ vector<string> generateParenthesis(int inputN) {
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["'' (open=0, close=0)"]
     N1["'(' (1,0)"]
     N2["'((' (2,0)"]
@@ -1811,6 +1826,7 @@ start=0 path=[]
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["start=0 path=[]"]
     N1["choose s[0..0] = 'a' palindrome"]
     N2["start=1 path=['a']"]
@@ -1950,6 +1966,7 @@ vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["(idx=0, rem=7, path=[]), cand[0]=2"]
     N1["take 2 -> (0,5,[2])"]
     N2["take 2 -> (0,3,[2,2])"]
@@ -2105,6 +2122,7 @@ start=0 rem=8 path=[]
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["sorted = [1,1,2,5,6,7,10]"]
     N1["start=0 rem=8 path=[]"]
     N2["choose index 0 value 1 -> start=1 rem=7 path=[1]"]
@@ -2393,6 +2411,7 @@ level 3, remaining number = 4
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["level 0, k=9"]
     N1(("choose 1: branch size 6 -> skip, k=3"))
     N2["choose 2: branch size 6 -> enter, answer = 2"]
@@ -2605,6 +2624,7 @@ answer = [1,3]
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["level 0: decide 1"]
     N1["not take 1 -> 4 subsets: [], [3], [2], [2,3]"]
     N2["take 1     -> 4 subsets: [1], [1,3], [1,2], [1,2,3]"]
@@ -2800,6 +2820,7 @@ answer = "()(())"
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["start: open=0 close=0 k=4"]
     N1["only '(' possible -> answer = '('"]
     N2["state '(' open=1 close=0"]
@@ -2986,6 +3007,7 @@ start=0, s="algomonster"
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["start=0, s='algomonster'"]
     N1["choose 'algo' because prefix matches"]
     N2["start=4, remaining='monster'"]
@@ -3122,6 +3144,7 @@ i=0 "226"
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["i=0 '226'"]
     N1["take '2' -> i=1 '26'"]
     N2["take '2' -> i=2 '6'"]
@@ -3151,6 +3174,7 @@ Total = 3 ways.
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["i=0 '226'"]
     N1["take '2' -> i=1 '26'"]
     N2["take '2' -> i=2 '6'"]
@@ -3267,6 +3291,7 @@ dfs(0)
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["dfs(0)"]
     N1["pay 10 + dfs(1)"]
     N2["pay 15 + dfs(2)"]
@@ -3422,6 +3447,7 @@ row 0
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["row 0"]
     N1["place Q at col 0"]
     N2(("row 1 col 0 invalid same col"))
@@ -3456,6 +3482,7 @@ row 0
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["row 0"]
     N1["place Q at col 0"]
     N2(("row 1 col 0 invalid same col"))
@@ -3642,6 +3669,7 @@ Total ways = choose any 2 cells from 4 = 6.
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     A[Start] --> B[Explore branches]
     B --> C[Save / prune / return]
 ```
@@ -3778,6 +3806,7 @@ vector<string> findPath(vector<vector<int>>& inputMaze) {
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["(0,0)"]
     N1["D -> (1,0)"]
     N2["D -> (2,0)"]
@@ -3910,6 +3939,7 @@ first empty cell = (0,2)
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["first empty cell = (0,2)"]
     N1(("try 1 invalid row/box"))
     N2(("try 2 invalid row/box"))
@@ -3938,6 +3968,7 @@ first empty cell = (0,2)
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     N0["first empty cell = (0,2)"]
     N1(("try 1 invalid row/box"))
     N2(("try 2 invalid row/box"))
@@ -3991,6 +4022,7 @@ first empty cell = (0,2)
 
 ```mermaid
 flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     A[Read problem] --> B{Generate all answers?}
     B -->|yes| C[Use backtracking path]
     B -->|no| D{Count/Possible/Min/Max?}
