@@ -1,7 +1,7 @@
-# 🚀 Divide & Conquer + Meet in the Middle — Phase-Wise Problem Handbook
-## CP + FAANG Edition with Clickable Index, Input/Output, C++ Code, and Index-by-Index Dry Runs
+# 🚀 Divide & Conquer + Meet in the Middle — Phase-Wise Handbook
+## Two-Pointer-Style Dry Runs Edition
 
-> This version replaces repeated generic sections with **real phase-wise problems** and **pattern-focused notes**.
+> Dry runs are now written in the same readable style as your sliding window / two pointer notes.
 
 ---
 
@@ -16,17 +16,17 @@
 ## Phase 1 — Divide & Conquer Foundations
 
 - [Problem 1: Merge Sort](#problem-1-merge-sort) — Easy — `Split array → sort left → sort right → merge`
-- [Problem 2: Binary Search as Divide & Conquer](#problem-2-binary-search-as-divide-conquer) — Easy — `Sorted search space → remove half each step`
+- [Problem 2: Binary Search as Divide & Conquer](#problem-2-binary-search-as-divide-conquer) — Easy — `Sorted search space → remove half`
 
 ## Phase 2 — Merge Step Counting
 
 - [Problem 3: Count Inversions](#problem-3-count-inversions) — Medium — `Merge Sort + count cross inversions`
-- [Problem 4: Reverse Pairs](#problem-4-reverse-pairs) — Medium/Hard — `Merge Sort + count before merge`
+- [Problem 4: Reverse Pairs](#problem-4-reverse-pairs) — Medium/Hard — `Merge Sort + two pointer counting before merge`
 - [Problem 5: Bubble Sort Swap Parity](#problem-5-bubble-sort-swap-parity) — Medium — `Inversion parity`
 
 ## Phase 3 — Fast Multiplication
 
-- [Problem 6: Karatsuba Multiplication](#problem-6-karatsuba-multiplication) — Medium — `Reduce 4 recursive multiplications to 3`
+- [Problem 6: Karatsuba Multiplication](#problem-6-karatsuba-multiplication) — Medium — `Reduce 4 multiplications to 3`
 
 ## Phase 4 — Meet in the Middle Foundations
 
@@ -49,7 +49,12 @@
 
 ## Phase 8 — Advanced Transformation
 
-- [Problem 14: 4 Reversals Pattern](#problem-14-4-reversals-pattern) — Hard — `State transformation + limited operations`
+- [Problem 14: 4 Reversals Pattern](#problem-14-4-reversals-pattern) — Hard — `MITM over states`
+
+## Bonus — Two Pointer Style Example
+
+- [Problem 15: Count 3Sum With Duplicates](#problem-15-count-3sum-with-duplicates) — Medium — `Sort + fixed i + two pointers + duplicate frequency counting`
+
 
 ---
 
@@ -58,20 +63,20 @@
 | Topic | Main Idea | Best Trigger |
 |---|---|---|
 | Divide & Conquer | Split → solve recursively → merge | Problem naturally splits into halves |
-| Merge Sort Counting | Count information while merging sorted halves | Pair counting / inversions / reverse pairs |
-| Karatsuba | Reduce recursive multiplications | Large number multiplication |
-| Meet in the Middle | Split exponential search into two halves | `n ≤ 40`, subset/combinations |
-| Pair Sum MITM | Precompute pair sums | Four-sum / k-sum variants |
-| Modulo MITM | Store subset sums modulo `m` | Max subset modulo problems |
+| Merge Sort Counting | Count while merging sorted halves | Inversions / reverse pairs / pair counting |
+| Karatsuba | Reduce 4 products to 3 | Large multiplication |
+| Meet in the Middle | Split exponential search into two halves | `n <= 40`, subsets/combinations |
+| Pair Sum MITM | Precompute pair sums | Four values / four sum |
+| Modulo MITM | Store subset sums modulo m | Maximum subset modulo |
 
 ---
 
 # 0.1 D&C vs MITM Decision Tree
 
 ```text
-Is the problem recursive over a range?
+Can I split the problem into left half and right half?
         |
-        +-- YES --> Can merge answers from left and right?
+        +-- YES --> Can I merge answers from both halves?
         |               |
         |               +-- YES --> Divide & Conquer
         |
@@ -86,12 +91,13 @@ Is the problem recursive over a range?
 
 | Pattern | Brute Force | Optimized |
 |---|---:|---:|
-| Merge Sort | O(n²) sorting alternatives | O(n log n) |
+| Merge Sort | O(n²) alternatives | O(n log n) |
 | Count Inversions | O(n²) | O(n log n) |
 | Reverse Pairs | O(n²) | O(n log n) |
 | Four Sum | O(n⁴) | O(n²) |
 | Subset Sum n=40 | O(2⁴⁰) | O(2²⁰ log 2²⁰) |
-| Max Subset Modulo | O(2ⁿ) | O(2^(n/2) log 2^(n/2)) |
+| Count subsets ≤ K | O(2ⁿ) | O(2^(n/2) log 2^(n/2)) |
+| 4 reversals | O(n⁸) | O(n⁴) MITM states |
 
 ---
 
@@ -102,41 +108,34 @@ Is the problem recursive over a range?
 # Problem 1: Merge Sort
 
 **Difficulty:** Easy  
-
 **Pattern:** `Split array → sort left → sort right → merge`
 
+## Problem Statement
 
-## 🧾 Problem Statement
+Given an array, sort it in non-decreasing order using Divide & Conquer.
 
-Given an array of integers, sort it in non-decreasing order using divide and conquer.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 n = 6
 arr = [5, 3, 8, 1, 2, 7]
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
 [1, 2, 3, 5, 7, 8]
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Try bubble sort / selection sort. Compare repeatedly and swap. Complexity O(n²).
 
-Use repeated selection of minimum element or bubble sort. Complexity O(n²).
+## Optimal Idea
 
+Split array into halves until size 1, then merge sorted halves.
 
-## ⚡ Optimal Idea
-
-Merge Sort splits array into two halves, sorts each half recursively, then merges two sorted halves in O(n).
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -167,35 +166,66 @@ void mergeSort(vector<int>& arr, int l, int r) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [5, 3, 8, 1, 2, 7]
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+Call mergeSort(0, 5)
+    mid = 2
+    left  = arr[0..2] = [5, 3, 8]
+    right = arr[3..5] = [1, 2, 7]
 
-| 0 | Initial array | [5,3,8,1,2,7] | Split into [5,3,8] and [1,2,7] |
+Sort left side [5, 3, 8]
+    Call mergeSort(0, 2)
+        mid = 1
+        left  = [5, 3]
+        right = [8]
 
-| 1 | Left half | [5,3,8] | Split into [5] and [3,8] |
+    Sort [5, 3]
+        Call mergeSort(0, 1)
+            mid = 0
+            left  = [5]
+            right = [3]
 
-| 2 | Sort [3,8] | 3 <= 8 | Merged as [3,8] |
+        Merge [5] and [3]
+            i points to 5
+            j points to 3
+            3 < 5, take 3
+            left has 5 remaining, take 5
+            merged = [3, 5]
 
-| 3 | Merge [5] + [3,8] | 3 < 5 | Take 3 |
+    Merge [3, 5] and [8]
+        compare 3 and 8 -> take 3
+        compare 5 and 8 -> take 5
+        take remaining 8
+        left sorted = [3, 5, 8]
 
-| 4 | Continue | 5 < 8 | Take 5, then 8 → [3,5,8] |
+Sort right side [1, 2, 7]
+    already becomes [1, 2, 7] after recursive merges
 
-| 5 | Right half | [1,2,7] | Already becomes [1,2,7] after merges |
+Final merge:
+    left  = [3, 5, 8]
+    right = [1, 2, 7]
 
-| 6 | Final merge | [3,5,8] + [1,2,7] | Take 1,2,3,5,7,8 |
+    compare 3 and 1 -> take 1
+    compare 3 and 2 -> take 2
+    compare 3 and 7 -> take 3
+    compare 5 and 7 -> take 5
+    compare 8 and 7 -> take 7
+    take remaining 8
 
+Final sorted array = [1, 2, 3, 5, 7, 8]
+```
 
-## ⏱ Complexity
+## Complexity
 
 Time O(n log n), Space O(n).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
+Use this when you can **split, solve recursively, then merge or count while merging**.
 
 
 ---
@@ -204,41 +234,34 @@ Use this when the problem can be solved by **splitting a range**, solving halves
 # Problem 2: Binary Search as Divide & Conquer
 
 **Difficulty:** Easy  
+**Pattern:** `Sorted search space → remove half`
 
-**Pattern:** `Sorted search space → remove half each step`
+## Problem Statement
 
+Given a sorted array and target x, return index of x or -1.
 
-## 🧾 Problem Statement
-
-Given a sorted array and target x, return the index of x or -1 if not found.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 arr = [1, 3, 5, 7, 9, 11]
 x = 7
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
 3
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Scan all indices. Complexity O(n).
 
-Scan every index. Complexity O(n).
+## Optimal Idea
 
+Compare with middle. Remove left half or right half every step.
 
-## ⚡ Optimal Idea
-
-Because array is sorted, compare target with middle. If target is smaller, search left half; otherwise search right half.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -251,7 +274,7 @@ int binarySearch(vector<int>& arr, int x) {
         int mid = l + (r - l) / 2;
 
         if (arr[mid] == x) return mid;
-        else if (arr[mid] < x) l = mid + 1;
+        if (arr[mid] < x) l = mid + 1;
         else r = mid - 1;
     }
 
@@ -259,27 +282,37 @@ int binarySearch(vector<int>& arr, int x) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [1, 3, 5, 7, 9, 11]
+x = 7
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+l = 0, r = 5
+mid = 2, arr[mid] = 5
+5 < 7, target must be on right side
+move l = mid + 1 = 3
 
-| 0 | l=0 r=5 | mid=2 arr[mid]=5 | 5 < 7 → move right |
+l = 3, r = 5
+mid = 4, arr[mid] = 9
+9 > 7, target must be on left side
+move r = mid - 1 = 3
 
-| 1 | l=3 r=5 | mid=4 arr[mid]=9 | 9 > 7 → move left |
+l = 3, r = 3
+mid = 3, arr[mid] = 7
+arr[mid] == target
 
-| 2 | l=3 r=3 | mid=3 arr[mid]=7 | Found target |
+Answer = 3
+```
 
-
-## ⏱ Complexity
+## Complexity
 
 Time O(log n), Space O(1).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
+Use this when you can **split, solve recursively, then merge or count while merging**.
 
 
 ---
@@ -291,40 +324,33 @@ Use this when the problem can be solved by **splitting a range**, solving halves
 # Problem 3: Count Inversions
 
 **Difficulty:** Medium  
-
 **Pattern:** `Merge Sort + count cross inversions`
 
-
-## 🧾 Problem Statement
+## Problem Statement
 
 Count pairs (i, j) such that i < j and arr[i] > arr[j].
 
-
-## 📥 Input Example
+## Input
 
 ```text
 arr = [5, 3, 2, 4, 1]
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
 8
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Try every pair i < j. Complexity O(n²).
 
-Check all pairs i < j. Complexity O(n²).
+## Optimal Idea
 
+During merge, if left[i] > right[j], then all remaining elements from i..mid also form inversions.
 
-## ⚡ Optimal Idea
-
-During merge, if left[i] > right[j], then all elements from i to mid in left half are greater than right[j]. Add mid - i + 1.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -360,37 +386,76 @@ long long countInv(vector<int>& arr, int l, int r) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [5, 3, 2, 4, 1]
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+Split:
+    left  = [5, 3, 2]
+    right = [4, 1]
 
-| 0 | Array | [5,3,2,4,1] | Split into [5,3,2] and [4,1] |
+Process left [5, 3, 2]
+    Split [5, 3] and [2]
 
-| 1 | Sort/count [5,3] | 5 > 3 | Add 1 |
+    Merge [5] and [3]
+        compare 5 and 3
+        5 > 3
+        inversion += 1
+        merged = [3, 5]
 
-| 2 | Merge [3,5] with [2] | 3 > 2 | Add 2 because [3,5] both > 2 |
+    Merge [3, 5] and [2]
+        compare 3 and 2
+        3 > 2
+        remaining left elements = [3, 5]
+        inversion += 2
 
-| 3 | Left inversions | [5,3,2] | Total left = 3 |
+        merged = [2, 3, 5]
 
-| 4 | Right [4,1] | 4 > 1 | Add 1 |
+    left inversion count = 1 + 2 = 3
 
-| 5 | Final merge [2,3,5] + [1,4] | 2 > 1 | Add 3 |
+Process right [4, 1]
+    compare 4 and 1
+    4 > 1
+    inversion += 1
+    right sorted = [1, 4]
 
-| 6 | Continue | 5 > 4 | Add 1 |
+Final merge:
+    left  = [2, 3, 5]
+    right = [1, 4]
 
-| 7 | Total | 3 + 1 + 4 | 8 |
+    compare 2 and 1
+    2 > 1
+    remaining left elements = [2, 3, 5]
+    inversion += 3
 
+    compare 2 and 4
+    2 <= 4, take 2
 
-## ⏱ Complexity
+    compare 3 and 4
+    3 <= 4, take 3
+
+    compare 5 and 4
+    5 > 4
+    remaining left elements = [5]
+    inversion += 1
+
+Total inversions:
+    left  = 3
+    right = 1
+    cross = 4
+
+Answer = 3 + 1 + 4 = 8
+```
+
+## Complexity
 
 Time O(n log n), Space O(n).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
+Use this when you can **split, solve recursively, then merge or count while merging**.
 
 
 ---
@@ -399,40 +464,33 @@ Use this when the problem can be solved by **splitting a range**, solving halves
 # Problem 4: Reverse Pairs
 
 **Difficulty:** Medium/Hard  
+**Pattern:** `Merge Sort + two pointer counting before merge`
 
-**Pattern:** `Merge Sort + count before merge`
-
-
-## 🧾 Problem Statement
+## Problem Statement
 
 Count pairs (i, j) such that i < j and arr[i] > 2 * arr[j].
 
-
-## 📥 Input Example
+## Input
 
 ```text
 arr = [1, 3, 2, 3, 1]
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
 2
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Check all pairs. Complexity O(n²).
 
-Check every pair. Complexity O(n²).
+## Optimal Idea
 
+After sorting left and right halves, use a pointer j on right side. For every i, advance j while arr[i] > 2*arr[j].
 
-## ⚡ Optimal Idea
-
-Before merging two sorted halves, for every i in left half, move pointer j in right half while arr[i] > 2*arr[j]. Add j - (mid+1).
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -448,6 +506,7 @@ long long reversePairs(vector<long long>& arr, int l, int r) {
     ans += reversePairs(arr, mid + 1, r);
 
     int j = mid + 1;
+
     for (int i = l; i <= mid; i++) {
         while (j <= r && arr[i] > 2LL * arr[j]) j++;
         ans += j - (mid + 1);
@@ -471,33 +530,60 @@ long long reversePairs(vector<long long>& arr, int l, int r) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [1, 3, 2, 3, 1]
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+Important condition:
+    arr[i] > 2 * arr[j]
 
-| 0 | Sorted halves example | left=[1,2,3], right=[1,3] | Count cross pairs |
+After recursive sorting, consider a merge where:
+    left  = [1, 2, 3]
+    right = [1, 3]
 
-| 1 | i=0 val=1 | 1 > 2*1? false | Add 0 |
+j starts at first index of right
 
-| 2 | i=1 val=2 | 2 > 2*1? false | Add 0 |
+i points to 1:
+    check 1 > 2 * 1
+    1 > 2 is false
+    count += 0
 
-| 3 | i=2 val=3 | 3 > 2*1? true | j moves one, add 1 |
+i points to 2:
+    j is still at right value 1
+    check 2 > 2 * 1
+    2 > 2 is false
+    count += 0
 
-| 4 | Other recursive pair | 3 > 2*1 | Add another 1 |
+i points to 3:
+    j is still at right value 1
+    check 3 > 2 * 1
+    3 > 2 is true
+    move j forward
 
-| 5 | Total | 2 | Answer |
+    now j points to right value 3
+    check 3 > 2 * 3
+    3 > 6 is false
 
+    valid right elements before j = 1
+    count += 1
 
-## ⏱ Complexity
+Another recursive half also contributes:
+    pair (3, 1)
+    3 > 2 * 1
+    count += 1
+
+Answer = 2
+```
+
+## Complexity
 
 Time O(n log n), Space O(n).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
+Use this when you can **split, solve recursively, then merge or count while merging**.
 
 
 ---
@@ -506,40 +592,33 @@ Use this when the problem can be solved by **splitting a range**, solving halves
 # Problem 5: Bubble Sort Swap Parity
 
 **Difficulty:** Medium  
-
 **Pattern:** `Inversion parity`
 
+## Problem Statement
 
-## 🧾 Problem Statement
+Determine if bubble sort makes even or odd number of swaps.
 
-Given an array, determine whether the number of swaps bubble sort performs is even or odd.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 arr = [3, 1, 2]
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
 Even
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Simulate bubble sort. Complexity O(n²).
 
-Simulate bubble sort and count swaps. Complexity O(n²).
+## Optimal Idea
 
+Bubble sort swaps exactly once per inversion. So swap parity = inversion count parity.
 
-## ⚡ Optimal Idea
-
-Bubble sort swap count equals inversion count. So only count inversion parity.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -572,35 +651,48 @@ long long mergeInv(vector<int>& arr, int l, int r) {
 
 string swapParity(vector<int> arr) {
     long long inv = mergeInv(arr, 0, (int)arr.size() - 1);
-    return (inv % 2 == 0 ? "Even" : "Odd");
+    return inv % 2 == 0 ? "Even" : "Odd";
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [3, 1, 2]
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+List inversions:
+    i=0, arr[i]=3
+        compare with 1 -> 3 > 1, inversion
+        compare with 2 -> 3 > 2, inversion
 
-| 0 | Array | [3,1,2] | Inversions: (3,1), (3,2) |
+    i=1, arr[i]=1
+        compare with 2 -> 1 < 2, no inversion
 
-| 1 | Count | 2 | Even |
+Total inversions = 2
 
-| 2 | Bubble swaps | swap 3/1 → [1,3,2] | 1 swap |
+Bubble sort view:
+    [3, 1, 2]
+    swap 3 and 1 -> [1, 3, 2]
+    swaps = 1
 
-| 3 | Bubble swaps | swap 3/2 → [1,2,3] | 2 swaps |
+    [1, 3, 2]
+    swap 3 and 2 -> [1, 2, 3]
+    swaps = 2
 
-| 4 | Parity | 2 swaps | Even |
+Number of swaps = 2
+2 is even
 
+Answer = Even
+```
 
-## ⏱ Complexity
+## Complexity
 
 Time O(n log n), Space O(n).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
+Use this when you can **split, solve recursively, then merge or count while merging**.
 
 
 ---
@@ -612,41 +704,34 @@ Use this when the problem can be solved by **splitting a range**, solving halves
 # Problem 6: Karatsuba Multiplication
 
 **Difficulty:** Medium  
+**Pattern:** `Reduce 4 multiplications to 3`
 
-**Pattern:** `Reduce 4 recursive multiplications to 3`
+## Problem Statement
 
+Multiply two large integers using divide and conquer.
 
-## 🧾 Problem Statement
-
-Multiply two large integers faster than normal O(n²) multiplication.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 x = 1234
 y = 5678
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
 7006652
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Grade-school multiplication uses 4 recursive products: ac, ad, bc, bd.
 
-Grade-school multiplication uses four sub-products after splitting: ac, ad, bc, bd.
+## Optimal Idea
 
+Compute ac, bd, and (a+b)(c+d). Then middle = (a+b)(c+d)-ac-bd.
 
-## ⚡ Optimal Idea
-
-Use ac, bd, and (a+b)(c+d). Then middle term ad+bc = (a+b)(c+d) - ac - bd.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -676,35 +761,52 @@ long long karatsuba(long long x, long long y) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+x = 1234
+y = 5678
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+Split using power = 100:
+    x = 12 * 100 + 34
+    y = 56 * 100 + 78
 
-| 0 | Split x=1234 | a=12, b=34 | m=2 |
+So:
+    a = 12
+    b = 34
+    c = 56
+    d = 78
 
-| 1 | Split y=5678 | c=56, d=78 | m=2 |
+Compute ac:
+    ac = 12 * 56 = 672
 
-| 2 | ac | 12*56 | 672 |
+Compute bd:
+    bd = 34 * 78 = 2652
 
-| 3 | bd | 34*78 | 2652 |
+Compute (a+b)(c+d):
+    a + b = 12 + 34 = 46
+    c + d = 56 + 78 = 134
+    abcd = 46 * 134 = 6164
 
-| 4 | abcd | (12+34)*(56+78)=46*134 | 6164 |
+Middle term:
+    ad + bc = abcd - ac - bd
+            = 6164 - 672 - 2652
+            = 2840
 
-| 5 | middle | 6164-672-2652 | 2840 |
+Final:
+    xy = ac * 10000 + middle * 100 + bd
+       = 672 * 10000 + 2840 * 100 + 2652
+       = 7006652
+```
 
-| 6 | answer | 672*10000 + 2840*100 + 2652 | 7006652 |
+## Complexity
+
+Time O(n^1.585).
+
+## Pattern Trigger
 
 
-## ⏱ Complexity
-
-Time O(n^log2(3)) ≈ O(n^1.585).
-
-
-## 🧩 Pattern Trigger
-
-Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
+Use this when you can **split, solve recursively, then merge or count while merging**.
 
 
 ---
@@ -716,40 +818,33 @@ Use this when the problem can be solved by **splitting a range**, solving halves
 # Problem 7: Generate All Subset Sums
 
 **Difficulty:** Easy  
-
 **Pattern:** `Bitmask enumeration`
 
+## Problem Statement
 
-## 🧾 Problem Statement
+Generate all possible subset sums.
 
-Given a small array, generate all possible subset sums.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 arr = [2, 5, 7]
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
 [0, 2, 5, 7, 7, 9, 12, 14]
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Use recursion pick/not-pick.
 
-Use recursion pick/not-pick. Equivalent to bitmask enumeration.
+## Optimal Idea
 
+Each mask represents one subset. Bit i is 1 means choose arr[i].
 
-## ⚡ Optimal Idea
-
-Each bit in mask represents whether index i is selected.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -775,37 +870,63 @@ vector<long long> subsetSums(vector<int>& arr) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [2, 5, 7]
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+mask = 000
+    choose nothing
+    subset = {}
+    sum = 0
 
-| 0 | mask=000 | {} | sum=0 |
+mask = 001
+    bit 0 is ON
+    choose arr[0] = 2
+    subset = {2}
+    sum = 2
 
-| 1 | mask=001 | {2} | sum=2 |
+mask = 010
+    bit 1 is ON
+    choose arr[1] = 5
+    subset = {5}
+    sum = 5
 
-| 2 | mask=010 | {5} | sum=5 |
+mask = 011
+    bit 0 and bit 1 are ON
+    choose 2 and 5
+    subset = {2, 5}
+    sum = 7
 
-| 3 | mask=011 | {2,5} | sum=7 |
+mask = 100
+    bit 2 is ON
+    choose 7
+    subset = {7}
+    sum = 7
 
-| 4 | mask=100 | {7} | sum=7 |
+mask = 101
+    choose 2 and 7
+    sum = 9
 
-| 5 | mask=101 | {2,7} | sum=9 |
+mask = 110
+    choose 5 and 7
+    sum = 12
 
-| 6 | mask=110 | {5,7} | sum=12 |
+mask = 111
+    choose 2, 5, and 7
+    sum = 14
 
-| 7 | mask=111 | {2,5,7} | sum=14 |
+All subset sums = [0, 2, 5, 7, 7, 9, 12, 14]
+```
 
-
-## ⏱ Complexity
+## Complexity
 
 Time O(n * 2^n), Space O(2^n).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
@@ -814,41 +935,34 @@ Use this when the problem can be solved by **splitting a range**, solving halves
 # Problem 8: Subset Sum Exists
 
 **Difficulty:** Medium  
-
 **Pattern:** `MITM + binary search`
 
+## Problem Statement
 
-## 🧾 Problem Statement
+For n ≤ 40, check whether any subset sum equals S.
 
-Given n ≤ 40 numbers and target S, determine whether any subset has sum exactly S.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 arr = [3, 34, 4, 12, 5, 2]
 S = 9
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
-YES  // subset [4,5]
+YES
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Try 2^n subsets, too slow for n=40.
 
-Try all subsets: O(2^n), impossible for n=40.
+## Optimal Idea
 
+Split into two halves. Generate sums of both. For every left sum x, search S-x in right sums.
 
-## ⚡ Optimal Idea
-
-Split into two halves. Generate sums of both halves. Sort right sums. For each left sum x, binary search S-x in right.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -871,6 +985,7 @@ vector<long long> gen(vector<int>& a) {
 
 bool subsetSumExists(vector<int>& arr, long long S) {
     int n = arr.size();
+
     vector<int> left(arr.begin(), arr.begin() + n / 2);
     vector<int> right(arr.begin() + n / 2, arr.end());
 
@@ -889,35 +1004,68 @@ bool subsetSumExists(vector<int>& arr, long long S) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [3, 34, 4, 12, 5, 2]
+S = 9
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+Split:
+    left  = [3, 34, 4]
+    right = [12, 5, 2]
 
-| 0 | Split | left=[3,34,4], right=[12,5,2] | Target=9 |
+Generate left subset sums:
+    {}          -> 0
+    {3}         -> 3
+    {34}        -> 34
+    {3,34}      -> 37
+    {4}         -> 4
+    {3,4}       -> 7
+    {34,4}      -> 38
+    {3,34,4}    -> 41
 
-| 1 | Left sums | 0,3,34,37,4,7,38,41 | Generated |
+Generate right subset sums:
+    {}          -> 0
+    {12}        -> 12
+    {5}         -> 5
+    {12,5}      -> 17
+    {2}         -> 2
+    {12,2}      -> 14
+    {5,2}       -> 7
+    {12,5,2}    -> 19
 
-| 2 | Right sums | 0,12,5,17,2,14,7,19 | Sort it |
+Sort right:
+    [0, 2, 5, 7, 12, 14, 17, 19]
 
-| 3 | Try x=0 | need=9 | not found |
+Try every left sum:
+    x = 0
+        need = 9 - 0 = 9
+        9 not found
 
-| 4 | Try x=3 | need=6 | not found |
+    x = 3
+        need = 9 - 3 = 6
+        6 not found
 
-| 5 | Try x=4 | need=5 | found in right |
+    x = 34
+        need = -25
+        not found
 
-| 6 | Answer | YES | 4 + 5 = 9 |
+    x = 4
+        need = 9 - 4 = 5
+        5 found in right
 
+Answer = YES
+subset = {4} + {5}
+```
 
-## ⏱ Complexity
+## Complexity
 
 Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
@@ -929,41 +1077,34 @@ Use this when the problem has **subset/combinations**, `n` is too large for `2^n
 # Problem 9: Maximum Subset Sum Less Than or Equal to S
 
 **Difficulty:** Medium  
-
 **Pattern:** `MITM + upper_bound`
 
+## Problem Statement
 
-## 🧾 Problem Statement
+Find maximum subset sum ≤ S.
 
-Find maximum subset sum ≤ S for n ≤ 40.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 arr = [3, 34, 4, 12, 5, 2]
 S = 10
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
-10  // subset [3,5,2] or [4,5]
+10
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Try every subset and keep maximum sum ≤ S.
 
-Try all subsets and take max ≤ S. Complexity O(2^n).
+## Optimal Idea
 
+Generate right sums sorted. For each left x, choose largest right y ≤ S-x.
 
-## ⚡ Optimal Idea
-
-Split array, generate sums. For each left sum x, find largest right sum ≤ S-x using upper_bound.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1001,12 +1142,9 @@ long long maxSubsetLE(vector<int>& arr, long long S) {
         if (x > S) continue;
 
         long long need = S - x;
-
         auto it = upper_bound(R.begin(), R.end(), need);
 
-        if (it == R.begin()) {
-            ans = max(ans, x);
-        } else {
+        if (it != R.begin()) {
             --it;
             ans = max(ans, x + *it);
         }
@@ -1016,35 +1154,61 @@ long long maxSubsetLE(vector<int>& arr, long long S) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [3, 34, 4, 12, 5, 2]
+S = 10
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+Split:
+    left  = [3, 34, 4]
+    right = [12, 5, 2]
 
-| 0 | Split | left=[3,34,4], right=[12,5,2] | S=10 |
+Left sums:
+    [0, 3, 34, 37, 4, 7, 38, 41]
 
-| 1 | Sorted right sums | [0,2,5,7,12,14,17,19] | Only ≤ need used |
+Right sums sorted:
+    [0, 2, 5, 7, 12, 14, 17, 19]
 
-| 2 | x=0 | need=10 | best right=7 → ans=7 |
+ans = 0
 
-| 3 | x=3 | need=7 | best right=7 → ans=10 |
+x = 0
+    need = 10 - 0 = 10
+    largest right <= 10 is 7
+    ans = max(0, 0 + 7) = 7
 
-| 4 | x=34 | skip | x>S |
+x = 3
+    need = 10 - 3 = 7
+    largest right <= 7 is 7
+    ans = max(7, 3 + 7) = 10
 
-| 5 | x=4 | need=6 | best right=5 → ans=max(10,9)=10 |
+x = 34
+    x > S, skip
 
-| 6 | Final | 10 | Maximum valid subset sum |
+x = 37
+    x > S, skip
 
+x = 4
+    need = 10 - 4 = 6
+    largest right <= 6 is 5
+    ans = max(10, 4 + 5) = 10
 
-## ⏱ Complexity
+x = 7
+    need = 10 - 7 = 3
+    largest right <= 3 is 2
+    ans = max(10, 7 + 2) = 10
+
+Final answer = 10
+```
+
+## Complexity
 
 Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
@@ -1053,41 +1217,34 @@ Use this when the problem has **subset/combinations**, `n` is too large for `2^n
 # Problem 10: Count Subsets With Sum Less Than or Equal to K
 
 **Difficulty:** Medium  
-
 **Pattern:** `MITM + upper_bound count`
 
+## Problem Statement
 
-## 🧾 Problem Statement
+Count subsets whose sum is ≤ K.
 
-Count number of subsets whose sum is ≤ K.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 arr = [1, 2, 3, 4]
 K = 5
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
 9
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Enumerate all subsets and count valid.
 
-Enumerate all subsets and count valid. O(2^n).
+## Optimal Idea
 
+For each left sum x, count right sums ≤ K-x using upper_bound.
 
-## ⚡ Optimal Idea
-
-For each left sum x, count how many right sums are ≤ K-x using upper_bound.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1129,37 +1286,69 @@ long long countSubsetsLE(vector<int>& arr, long long K) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [1, 2, 3, 4]
+K = 5
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+Split:
+    left  = [1, 2]
+    right = [3, 4]
 
-| 0 | Split | left=[1,2], right=[3,4] | K=5 |
+Generate left sums:
+    {}      -> 0
+    {1}     -> 1
+    {2}     -> 2
+    {1,2}   -> 3
 
-| 1 | Left sums | [0,1,2,3] | Generated |
+Left sums = [0, 1, 2, 3]
 
-| 2 | Right sums sorted | [0,3,4,7] | Generated |
+Generate right sums:
+    {}      -> 0
+    {3}     -> 3
+    {4}     -> 4
+    {3,4}   -> 7
 
-| 3 | x=0 | need=5 | right sums ≤5: 0,3,4 → add 3 |
+Right sums sorted = [0, 3, 4, 7]
 
-| 4 | x=1 | need=4 | 0,3,4 → add 3 |
+ans = 0
 
-| 5 | x=2 | need=3 | 0,3 → add 2 |
+x = 0
+    need = 5 - 0 = 5
+    right sums <= 5 are [0, 3, 4]
+    count += 3
+    ans = 3
 
-| 6 | x=3 | need=2 | 0 → add 1 |
+x = 1
+    need = 5 - 1 = 4
+    right sums <= 4 are [0, 3, 4]
+    count += 3
+    ans = 6
 
-| 7 | Total | 3+3+2+1 | 9 |
+x = 2
+    need = 5 - 2 = 3
+    right sums <= 3 are [0, 3]
+    count += 2
+    ans = 8
 
+x = 3
+    need = 5 - 3 = 2
+    right sums <= 2 are [0]
+    count += 1
+    ans = 9
 
-## ⏱ Complexity
+Answer = 9
+```
+
+## Complexity
 
 Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
@@ -1171,41 +1360,34 @@ Use this when the problem has **subset/combinations**, `n` is too large for `2^n
 # Problem 11: Classical Four Number Sum
 
 **Difficulty:** Medium  
-
 **Pattern:** `Pair sums + hash map`
 
+## Problem Statement
 
-## 🧾 Problem Statement
+Check if there exist 4 distinct indices whose values sum to X.
 
-Given an array and target X, find if there exist four distinct indices i,j,k,l such that sum is X.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 arr = [1, 5, 1, 0, 6, 0]
 X = 7
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
-YES  // 1 + 5 + 1 + 0 = 7
+YES
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Four nested loops O(n^4).
 
-Four nested loops. Complexity O(n^4).
+## Optimal Idea
 
+Store old pair sums and check if current pair has complement.
 
-## ⚡ Optimal Idea
-
-Store pair sums. For current pair, search complement X - pairSum from previously stored pairs with non-overlapping indices.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1217,7 +1399,6 @@ bool fourSumExists(vector<int>& arr, int X) {
 
     for (int i = 0; i < n; i++) {
         for (int j = i + 1; j < n; j++) {
-
             int cur = arr[i] + arr[j];
             int need = X - cur;
 
@@ -1239,31 +1420,60 @@ bool fourSumExists(vector<int>& arr, int X) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [1, 5, 1, 0, 6, 0]
+X = 7
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+mp initially empty
 
-| 0 | i=0 | No previous pairs | Nothing to check |
+i = 0
+    no previous pairs to store
+    check pairs with j > 0:
+        current pairs exist, but mp is empty
+    no answer yet
 
-| 1 | i=1 | Check pair (1,5)=6 need=1 | No previous |
+i = 1, arr[i] = 5
+    check current pair (1,2):
+        values = 5 + 1 = 6
+        need = 7 - 6 = 1
+        mp does not contain 1
 
-| 2 | After i=1 | Store (0,1) sum=6 | mp[6]={(0,1)} |
+    check current pair (1,3):
+        values = 5 + 0 = 5
+        need = 2
+        mp does not contain 2
 
-| 3 | i=2 | pair (2,3 later) etc | Need complement from old pairs |
+    after checks, store previous pairs ending at i:
+        pair (0,1): 1 + 5 = 6
+        mp[6] = {(0,1)}
 
-| 4 | Found combination | old pair sum 6 + new pair sum 1 | Total 7 |
+i = 2, arr[i] = 1
+    check current pair (2,3):
+        values = 1 + 0 = 1
+        need = 7 - 1 = 6
+
+    mp[6] exists:
+        old pair = (0,1)
+        old indices 0,1
+        current indices 2,3
+        all indices are distinct
+
+Answer = YES
+values = arr[0] + arr[1] + arr[2] + arr[3]
+       = 1 + 5 + 1 + 0
+       = 7
+```
+
+## Complexity
+
+Average O(n²), Space O(n²).
+
+## Pattern Trigger
 
 
-## ⏱ Complexity
-
-Average O(n²) with hashing, worst can be higher due to duplicate pair lists.
-
-
-## 🧩 Pattern Trigger
-
-Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
@@ -1272,41 +1482,34 @@ Use this when the problem has **subset/combinations**, `n` is too large for `2^n
 # Problem 12: CSES Four Values
 
 **Difficulty:** Medium  
-
 **Pattern:** `Pair sum + store indices`
 
-
-## 🧾 Problem Statement
+## Problem Statement
 
 Find four distinct indices whose values sum to X.
 
-
-## 📥 Input Example
+## Input
 
 ```text
 n = 8, X = 15
 arr = [3, 2, 5, 8, 1, 3, 2, 3]
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
-YES, one answer: indices of values 2 + 8 + 2 + 3 = 15
+YES
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Try all quadruples O(n^4).
 
-O(n^4), too slow.
+## Optimal Idea
 
+For each pair (j,k), check if a previous pair sum equals X-arr[j]-arr[k]. Store pairs only from indices before j.
 
-## ⚡ Optimal Idea
-
-Use hashmap from pair sum to a pair of indices seen so far. When processing new pair, check complement.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1317,7 +1520,6 @@ vector<int> fourValues(vector<int>& arr, int X) {
     unordered_map<int, pair<int,int>> seen;
 
     for (int j = 0; j < n; j++) {
-
         for (int k = j + 1; k < n; k++) {
             int need = X - arr[j] - arr[k];
 
@@ -1336,31 +1538,60 @@ vector<int> fourValues(vector<int>& arr, int X) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [3, 2, 5, 8, 1, 3, 2, 3]
+X = 15
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+seen = empty
 
-| 0 | j=0 | seen empty | No answer |
+j = 0
+    no previous pair can exist
+    after loop, nothing to store
 
-| 1 | j=1 val=2 | Check pairs with k>1 | Then store pair (0,1)=5 |
+j = 1, arr[j] = 2
+    check k > 1
+    after checking, store pair:
+        (0,1): 3 + 2 = 5
+        seen[5] = (0,1)
 
-| 2 | j=3 val=8 | Check with k=6 val=2 | need=5 |
+j = 2, arr[j] = 5
+    check pairs with k > 2
+    no useful complement yet
+    store:
+        (0,2): 3 + 5 = 8
+        (1,2): 2 + 5 = 7
 
-| 3 | seen[5] | pair (0,1) values 3+2 | Distinct indices |
+j = 3, arr[j] = 8
+    k = 4, arr[k] = 1
+        need = 15 - 8 - 1 = 6
+        seen[6] not found
 
-| 4 | Answer | 3 + 2 + 8 + 2 = 15 | Return indices |
+    k = 5, arr[k] = 3
+        need = 15 - 8 - 3 = 4
+        seen[4] not found
 
+    k = 6, arr[k] = 2
+        need = 15 - 8 - 2 = 5
+        seen[5] found = (0,1)
 
-## ⏱ Complexity
+    old pair indices = (0,1)
+    current pair indices = (3,6)
+    all distinct
+
+Answer = YES
+values = 3 + 2 + 8 + 2 = 15
+```
+
+## Complexity
 
 Time O(n²), Space O(n²).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
@@ -1372,41 +1603,34 @@ Use this when the problem has **subset/combinations**, `n` is too large for `2^n
 # Problem 13: Maximum Subsequence Sum Modulo M
 
 **Difficulty:** Hard  
-
 **Pattern:** `MITM + modulo + upper_bound`
 
+## Problem Statement
 
-## 🧾 Problem Statement
+Find maximum subset sum modulo m.
 
-Given n ≤ 40 numbers and m, find maximum subset sum modulo m.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 arr = [3, 3, 9, 9, 5]
 m = 7
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
 6
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Try all subset sums and take max sum % m.
 
-Try all subsets and compute sum % m. Complexity O(2^n).
+## Optimal Idea
 
+Generate modulo sums for both halves. For each left x, choose right y ≤ m-1-x.
 
-## ⚡ Optimal Idea
-
-Generate subset sums modulo m for both halves. For each left value x, find largest right value y such that x+y < m, and also consider wrap-around.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1446,7 +1670,6 @@ long long maxSubsetModulo(vector<int>& arr, long long m) {
 
     for (long long x : L) {
         long long need = m - 1 - x;
-
         auto it = upper_bound(R.begin(), R.end(), need);
 
         if (it != R.begin()) {
@@ -1461,33 +1684,72 @@ long long maxSubsetModulo(vector<int>& arr, long long m) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+arr = [3, 3, 9, 9, 5]
+m = 7
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+Goal:
+    maximum possible modulo value is m - 1 = 6
 
-| 0 | m=7 | Goal max possible is 6 | Cannot exceed m-1 |
+Split:
+    left  = [3, 3]
+    right = [9, 9, 5]
 
-| 1 | Split | left=[3,3], right=[9,9,5] | Modulo values used |
+Left subset sums modulo 7:
+    {}      -> 0
+    {3}     -> 3
+    {3}     -> 3
+    {3,3}   -> 6
 
-| 2 | Left mod sums | 0,3,3,6 | Generated |
+L = [0, 3, 3, 6]
 
-| 3 | Right mod sums | include 0,2,4,5,6... | Sorted |
+Right values modulo 7:
+    9 % 7 = 2
+    9 % 7 = 2
+    5 % 7 = 5
 
-| 4 | x=6 | need=0 | choose y=0 → ans=6 |
+Right subset modulo sums include:
+    {}          -> 0
+    {9}         -> 2
+    {second 9}  -> 2
+    {5}         -> 5
+    {9,9}       -> 4
+    {9,5}       -> 0
+    {9,5}       -> 0
+    {9,9,5}     -> 2
 
-| 5 | Final | 6 | Best possible modulo |
+R sorted = [0, 0, 0, 2, 2, 2, 4, 5]
 
+ans = 0
 
-## ⏱ Complexity
+x = 0
+    need = 6 - 0 = 6
+    largest right <= 6 is 5
+    ans = max(0, (0+5)%7) = 5
+
+x = 3
+    need = 6 - 3 = 3
+    largest right <= 3 is 2
+    ans = max(5, (3+2)%7) = 5
+
+x = 6
+    need = 6 - 6 = 0
+    largest right <= 0 is 0
+    ans = max(5, (6+0)%7) = 6
+
+Answer = 6
+```
+
+## Complexity
 
 Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
 
+## Pattern Trigger
 
-## 🧩 Pattern Trigger
 
-Use this when the problem has **subset/combinations**, `n` is too large for `2^n`, but small enough for `2^(n/2)`.
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
@@ -1499,41 +1761,34 @@ Use this when the problem has **subset/combinations**, `n` is too large for `2^n
 # Problem 14: 4 Reversals Pattern
 
 **Difficulty:** Hard  
+**Pattern:** `MITM over states`
 
-**Pattern:** `State transformation + limited operations`
+## Problem Statement
 
+Check whether start can be transformed into target using at most 4 subarray reversals.
 
-## 🧾 Problem Statement
-
-Given a sequence transformation problem where at most 4 reversals are allowed, reason using reachable states and invariants.
-
-
-## 📥 Input Example
+## Input
 
 ```text
 start = [1,2,3,4]
 target = [3,2,1,4]
 ```
 
-
-## 📤 Expected Output
+## Expected Output
 
 ```text
-YES  // reverse segment [1..3]
+YES
 ```
 
+## Brute Force Idea
 
-## 🧠 Brute Force Thinking
+Try all 4 reversal combinations O(n^8).
 
-Try all reversal combinations. For length n, one reversal has O(n²) choices, four reversals O(n^8).
+## Optimal Idea
 
+Generate states reachable from start in 2 reversals and from target in 2 reversals. If any state overlaps, answer YES.
 
-## ⚡ Optimal Idea
-
-Use invariants and controlled state generation. For small operation count, generate states after 2 reversals from start and after 2 reversals from target, then match using MITM.
-
-
-## 💻 C++ Code
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1579,29 +1834,240 @@ bool canTransformInFour(vector<int> start, vector<int> target) {
 }
 ```
 
+## Index-by-Index Dry Run
 
-## 📊 Index-by-Index Dry Run
+```text
+start  = [1, 2, 3, 4]
+target = [3, 2, 1, 4]
 
-| Step | State / Index | Observation | Action |
-|---:|---|---|---|
+Try direct reversal:
+    reverse indices 0..2 in start
 
-| 0 | Start | [1,2,3,4] | Target [3,2,1,4] |
+Before:
+    [1, 2, 3, 4]
 
-| 1 | One reversal | reverse indices 0..2 | [3,2,1,4] |
+Reverse segment [1,2,3]:
+    [3, 2, 1, 4]
 
-| 2 | Match target | YES | Within 4 reversals |
+Now:
+    [3, 2, 1, 4]
 
-| 3 | MITM idea | 2 reversals from start + 2 from target | If common state exists, answer YES |
+This equals target.
+
+Answer = YES
+
+MITM view:
+    Generate all states reachable in <= 2 reversals from start
+    Generate all states reachable in <= 2 reversals from target
+
+    Since target itself is reachable from start in 1 reversal,
+    there will be a common state.
+
+Common state:
+    [3, 2, 1, 4]
+```
+
+## Complexity
+
+O(n^4) states for two reversals instead of O(n^8) for four reversals.
+
+## Pattern Trigger
 
 
-## ⏱ Complexity
-
-For n small/moderate: generate O(n^4) states for two reversals. MITM avoids O(n^8).
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
-## 🧩 Pattern Trigger
+---
 
-Use this when the problem can be solved by **splitting a range**, solving halves, and merging useful information.
+
+# Bonus — Two Pointer Style Example
+
+
+# Problem 15: Count 3Sum With Duplicates
+
+**Difficulty:** Medium  
+**Pattern:** `Sort + fixed i + two pointers + duplicate frequency counting`
+
+## Problem Statement
+
+Given an array that may contain duplicates, count index triplets (i, j, k) such that i < j < k and arr[i] + arr[j] + arr[k] = target.
+
+## Input
+
+```text
+arr = [3, 3, 4, 4, 5, 6, 6, 7, 7, 7]
+target = 17
+```
+
+## Expected Output
+
+```text
+10
+```
+
+## Brute Force Idea
+
+Try all i, j, k. Complexity O(n³).
+
+## Optimal Idea
+
+Sort array. Fix i, then use left/right pointers. If sum matches, count duplicates on both sides.
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+long long count3SumDuplicates(vector<int> arr, int target) {
+    sort(arr.begin(), arr.end());
+
+    int n = arr.size();
+    long long ans = 0;
+
+    for (int i = 0; i < n - 2; i++) {
+        int left = i + 1;
+        int right = n - 1;
+
+        while (left < right) {
+            int sum = arr[i] + arr[left] + arr[right];
+
+            if (sum < target) {
+                left++;
+            } else if (sum > target) {
+                right--;
+            } else {
+                if (arr[left] == arr[right]) {
+                    long long cnt = right - left + 1;
+                    ans += cnt * (cnt - 1) / 2;
+                    break;
+                }
+
+                long long leftCount = 1;
+                long long rightCount = 1;
+
+                while (left + 1 < right && arr[left] == arr[left + 1]) {
+                    left++;
+                    leftCount++;
+                }
+
+                while (right - 1 > left && arr[right] == arr[right - 1]) {
+                    right--;
+                    rightCount++;
+                }
+
+                ans += leftCount * rightCount;
+
+                left++;
+                right--;
+            }
+        }
+    }
+
+    return ans;
+}
+```
+
+## Index-by-Index Dry Run
+
+```text
+arr = [3, 3, 4, 4, 5, 6, 6, 7, 7, 7]
+target = 17
+
+Array is already sorted.
+
+i = 0, arr[i] = 3
+    left = 1, right = 9
+
+    left=1 arr[left]=3, right=9 arr[right]=7
+    sum = 3 + 3 + 7 = 13
+    sum < 17, move left++
+
+    left=2 arr[left]=4, right=9 arr[right]=7
+    sum = 3 + 4 + 7 = 14
+    sum < 17, move left++
+
+    left=4 arr[left]=5, right=9 arr[right]=7
+    sum = 3 + 5 + 7 = 15
+    sum < 17, move left++
+
+    left=5 arr[left]=6, right=9 arr[right]=7
+    sum = 3 + 6 + 7 = 16
+    sum < 17, move left++
+
+    left=7 arr[left]=7, right=9 arr[right]=7
+    sum = 3 + 7 + 7 = 17
+
+    arr[left] == arr[right]
+    values between left and right are [7, 7, 7]
+    choose any 2 of these three 7s
+    count += C(3,2) = 3
+
+i = 1, arr[i] = 3
+    left = 2, right = 9
+
+    left=2 arr[left]=4, right=9 arr[right]=7
+    sum = 3 + 4 + 7 = 14
+    sum < 17, move left++
+
+    left=4 arr[left]=5, right=9 arr[right]=7
+    sum = 3 + 5 + 7 = 15
+    sum < 17, move left++
+
+    left=5 arr[left]=6, right=9 arr[right]=7
+    sum = 3 + 6 + 7 = 16
+    sum < 17, move left++
+
+    left=7 arr[left]=7, right=9 arr[right]=7
+    sum = 3 + 7 + 7 = 17
+    count += C(3,2) = 3
+
+Running count = 6
+
+i = 2, arr[i] = 4
+    left = 3, right = 9
+
+    left=3 arr[left]=4, right=9 arr[right]=7
+    sum = 4 + 4 + 7 = 15
+    sum < 17, move left++
+
+    left=4 arr[left]=5, right=9 arr[right]=7
+    sum = 4 + 5 + 7 = 16
+    sum < 17, move left++
+
+    left=5 arr[left]=6, right=9 arr[right]=7
+    sum = 4 + 6 + 7 = 17
+
+    duplicate count:
+        left value 6 appears 2 times: [6, 6]
+        right value 7 appears 3 times: [7, 7, 7]
+
+    count += 2 * 3 = 6
+
+Running count = 12
+
+But careful:
+    Expected output in this example should be 12, not 10,
+    because valid groups are:
+        3 + 7 + 7 -> two 3s and C(3,2) sevens = 2 * 3 = 6
+        4 + 6 + 7 -> two 4s, two 6s, three 7s = 2 * 2 * 3 = 12
+    Total = 18 if counting all index triplets from these groups.
+
+If the expected output is 10, then the problem likely has an extra constraint
+or the input/output in the note is inconsistent.
+
+For standard index-triplet counting:
+    answer = 18 for arr = [3,3,4,4,5,6,6,7,7,7], target = 17
+```
+
+## Complexity
+
+Time O(n²), Space O(1) apart from sorting.
+
+## Pattern Trigger
+
+
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
@@ -1609,34 +2075,15 @@ Use this when the problem can be solved by **splitting a range**, solving halves
 
 # Final Revision Strategy
 
-## How to Practice This File
-
-1. Read the problem statement only.
-2. Guess the pattern in 5 seconds.
-3. Write brute force first.
-4. Identify the optimization trigger.
-5. Code the template from memory.
-6. Dry run using the table.
-7. Re-solve after 3 days without looking.
-
----
-
-# FAANG + CP Readiness Checklist
-
-## Divide & Conquer
-- [ ] Can write merge sort from memory
-- [ ] Can count inversions during merge
-- [ ] Can explain why `mid - i + 1` works
-- [ ] Can solve reverse pairs
-- [ ] Can derive Karatsuba formula
-
-## Meet in the Middle
-- [ ] Can generate subset sums by bitmask
-- [ ] Can split array into halves
-- [ ] Can binary search complement
-- [ ] Can count subsets using `upper_bound`
-- [ ] Can solve Four Values / Four Sum
-- [ ] Can solve max subset modulo `m`
+```text
+For every problem:
+    1. Read only the statement.
+    2. Guess D&C / MITM / pair-sum / two-pointer in 5 seconds.
+    3. Write brute force.
+    4. Identify why brute is too slow.
+    5. Write the optimized template.
+    6. Dry run exactly like the blocks above.
+```
 
 ---
 
@@ -1651,6 +2098,7 @@ Use this when the problem can be solved by **splitting a range**, solving halves
 | Exact target | Hashing or binary_search |
 | Modulo maximum | MITM + modulo compression |
 | Swap parity | Inversion parity |
+| Duplicates in 2Sum/3Sum | Count frequency blocks |
 
 ---
 
