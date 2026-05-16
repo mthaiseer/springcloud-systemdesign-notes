@@ -11,13 +11,16 @@ For every problem, learn in this order:
 
 1. Problem statement
 2. Input / output
-3. Brute-force thinking
-4. Why brute force fails
-5. Binary-search form
-6. How check(mid) works
-7. C++ code
-8. Step-by-step dry run
-9. Recognition signal
+3. Detailed example
+4. Key observation
+5. Brute-force thinking
+6. Brute-force C++ code
+7. Why brute force fails
+8. Binary-search form
+9. How check(mid) works
+10. Optimal C++ code
+11. Step-by-step dry run
+12. Recognition signal
 ```
 
 ---
@@ -224,6 +227,61 @@ arr = [0, 0, 0, 0, 1, 1, 1]
 4
 ```
 
+
+## Detailed Example
+
+```text
+arr = [0, 0, 0, 0, 1, 1, 1]
+index  0  1  2  3  4  5  6
+```
+
+We need the **first** index where the value changes from `0` to `1`.
+
+```text
+Indexes 0..3 are false/invalid because arr[i] = 0.
+Indexes 4..6 are true/valid because arr[i] = 1.
+Answer = 4.
+```
+
+## Observation
+
+```text
+The condition arr[i] == 1 is monotonic:
+false false false false true true true
+
+Once we see a 1, all elements after it are also 1.
+So the problem is not just searching value 1; it is searching the boundary.
+```
+
+## Brute-Force Code
+
+```cpp
+int firstOneBrute(vector<int>& arr) {
+    int n = arr.size();
+
+    for (int i = 0; i < n; i++) {
+        if (arr[i] == 1) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+arr = [0, 0, 0, 0, 1, 1, 1]
+
+ i   arr[i]   action
+ 0     0      not 1, continue
+ 1     0      not 1, continue
+ 2     0      not 1, continue
+ 3     0      not 1, continue
+ 4     1      first 1 found, return 4
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -379,6 +437,72 @@ x = 11
 5
 ```
 
+
+## Detailed Example
+
+```text
+arr = [2, 3, 3, 7, 9, 11, 11, 17]
+x = 11
+```
+
+Lower bound means the **first position where value is at least x**.
+
+```text
+Values before index 5 are < 11.
+arr[5] = 11, so answer = 5.
+```
+
+## Observation
+
+```text
+Condition: arr[i] >= x
+
+For x = 11:
+2   3   3   7   9   11   11   17
+F   F   F   F   F    T    T    T
+                    ^
+                    first true
+```
+
+Lower bound is useful for:
+
+```text
+1. first occurrence position
+2. insertion position
+3. count of elements < x
+4. binary-search counting problems
+```
+
+## Brute-Force Code
+
+```cpp
+int lowerBoundBrute(vector<int>& arr, int x) {
+    int n = arr.size();
+
+    for (int i = 0; i < n; i++) {
+        if (arr[i] >= x) {
+            return i;
+        }
+    }
+
+    return n;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+x = 11
+
+ i   arr[i]   arr[i] >= 11?
+ 0     2      false
+ 1     3      false
+ 2     3      false
+ 3     7      false
+ 4     9      false
+ 5    11      true -> return 5
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -522,6 +646,74 @@ x = 11
 7
 ```
 
+
+## Detailed Example
+
+```text
+arr = [2, 3, 3, 7, 9, 11, 11, 17]
+x = 11
+```
+
+Upper bound means the **first position where value is strictly greater than x**.
+
+```text
+arr[5] = 11 is not greater than 11.
+arr[6] = 11 is not greater than 11.
+arr[7] = 17 is greater than 11.
+Answer = 7.
+```
+
+## Observation
+
+```text
+Condition: arr[i] > x
+
+For x = 11:
+2   3   3   7   9   11   11   17
+F   F   F   F   F    F    F    T
+                              ^
+                              first true
+```
+
+Upper bound is useful for:
+
+```text
+count of elements <= x = upper_bound(arr, x) - arr.begin()
+count of x = upper_bound(x) - lower_bound(x)
+```
+
+## Brute-Force Code
+
+```cpp
+int upperBoundBrute(vector<int>& arr, int x) {
+    int n = arr.size();
+
+    for (int i = 0; i < n; i++) {
+        if (arr[i] > x) {
+            return i;
+        }
+    }
+
+    return n;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+x = 11
+
+ i   arr[i]   arr[i] > 11?
+ 0     2      false
+ 1     3      false
+ 2     3      false
+ 3     7      false
+ 4     9      false
+ 5    11      false
+ 6    11      false
+ 7    17      true -> return 7
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -656,6 +848,65 @@ target = 5
 2
 ```
 
+
+## Detailed Example
+
+```text
+nums = [1, 3, 5, 6]
+target = 2
+```
+
+Target `2` is not present. It should be inserted before `3`.
+
+```text
+[1, 2, 3, 5, 6]
+    ^
+    index 1
+```
+
+## Observation
+
+```text
+Search Insert Position = Lower Bound
+Answer = first index where nums[i] >= target
+```
+
+Cases:
+
+```text
+target = 5 -> answer 2 because nums[2] = 5
+target = 2 -> answer 1 because 2 should come before 3
+target = 7 -> answer 4 because 7 goes after all elements
+target = 0 -> answer 0 because 0 goes before all elements
+```
+
+## Brute-Force Code
+
+```cpp
+int searchInsertBrute(vector<int>& nums, int target) {
+    int n = nums.size();
+
+    for (int i = 0; i < n; i++) {
+        if (nums[i] >= target) {
+            return i;
+        }
+    }
+
+    return n;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+nums = [1, 3, 5, 6]
+target = 2
+
+ i   nums[i]   nums[i] >= 2?
+ 0      1      false
+ 1      3      true -> return 1
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -767,6 +1018,70 @@ target = 0
 ```text
 4
 ```
+
+
+## Detailed Example
+
+```text
+nums = [4, 5, 6, 7, 0, 1, 2]
+target = 0
+```
+
+This array was originally sorted:
+
+```text
+[0, 1, 2, 4, 5, 6, 7]
+```
+
+Then it was rotated:
+
+```text
+[4, 5, 6, 7, 0, 1, 2]
+```
+
+Target `0` is at index `4`.
+
+## Observation
+
+```text
+Even though the full array is not sorted, at least one half around mid is always sorted.
+
+At every step:
+1. Check if nums[mid] is target.
+2. Identify sorted half.
+3. Check if target lies inside sorted half.
+4. Discard the other half.
+```
+
+## Brute-Force Code
+
+```cpp
+int searchRotatedBrute(vector<int>& nums, int target) {
+    for (int i = 0; i < (int)nums.size(); i++) {
+        if (nums[i] == target) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+nums = [4,5,6,7,0,1,2]
+target = 0
+
+ i   nums[i]   match?
+ 0      4      no
+ 1      5      no
+ 2      6      no
+ 3      7      no
+ 4      0      yes -> return 4
+```
+
+Brute force works, but ignores the rotated sorted structure.
 
 ## Brute-Force Thinking
 
@@ -919,6 +1234,65 @@ nums = [8, 9, 1, 2, 3, 4]
 1
 ```
 
+
+## Detailed Example
+
+```text
+nums = [8, 9, 1, 2, 3, 4]
+```
+
+The minimum element is the rotation point.
+
+```text
+8  9  1  2  3  4
+      ^
+      minimum = 1
+```
+
+## Observation
+
+```text
+Compare nums[mid] with nums[hi].
+
+If nums[mid] > nums[hi]:
+    mid is in the left high-value part.
+    minimum must be to the right.
+
+Else:
+    mid is in the right sorted part.
+    minimum can be mid or to the left.
+```
+
+## Brute-Force Code
+
+```cpp
+int findMinBrute(vector<int>& nums) {
+    int mn = nums[0];
+
+    for (int x : nums) {
+        mn = min(mn, x);
+    }
+
+    return mn;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+nums = [8, 9, 1, 2, 3, 4]
+
+start mn = 8
+see 8 -> mn = 8
+see 9 -> mn = 8
+see 1 -> mn = 1
+see 2 -> mn = 1
+see 3 -> mn = 1
+see 4 -> mn = 1
+
+answer = 1
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -1025,6 +1399,63 @@ nums = [1, 2, 3, 1]
 
 ```text
 2
+```
+
+
+## Detailed Example
+
+```text
+nums = [1, 2, 3, 1]
+```
+
+Index `2` is peak because:
+
+```text
+nums[2] = 3
+left neighbor = 2
+right neighbor = 1
+3 > 2 and 3 > 1
+```
+
+## Observation
+
+```text
+If nums[mid] < nums[mid + 1], slope is going up.
+A peak must exist on the right.
+
+If nums[mid] > nums[mid + 1], slope is going down.
+A peak exists at mid or on the left.
+```
+
+This works because outside boundaries can be imagined as `-infinity`.
+
+## Brute-Force Code
+
+```cpp
+int findPeakBrute(vector<int>& nums) {
+    int n = nums.size();
+
+    for (int i = 0; i < n; i++) {
+        bool leftOk = (i == 0 || nums[i] > nums[i - 1]);
+        bool rightOk = (i == n - 1 || nums[i] > nums[i + 1]);
+
+        if (leftOk && rightOk) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+nums = [1, 2, 3, 1]
+
+index 0: right neighbor 2 is bigger -> not peak
+index 1: right neighbor 3 is bigger -> not peak
+index 2: 3 > 2 and 3 > 1 -> peak, return 2
 ```
 
 ## Brute-Force Thinking
@@ -1140,6 +1571,92 @@ k = 2
 
 ```text
 18
+```
+
+
+## Detailed Example
+
+```text
+nums = [7, 2, 5, 10, 8]
+k = 2
+```
+
+Possible splits:
+
+```text
+[7] | [2,5,10,8]       max = 25
+[7,2] | [5,10,8]       max = 23
+[7,2,5] | [10,8]       max = 18  <- best
+[7,2,5,10] | [8]       max = 24
+```
+
+Answer is `18`.
+
+## Observation
+
+```text
+We are minimizing the maximum partition sum.
+
+If limit = 18 works, any limit > 18 also works.
+If limit = 15 fails, any limit < 15 also fails.
+
+So the answer space is:
+false false false true true true
+                  ^
+                  first true
+```
+
+## Brute-Force Code
+
+```cpp
+void generateSplits(vector<int>& nums, int idx, int partsLeft,
+                    long long currentSum, long long currentMax,
+                    long long& best) {
+    int n = nums.size();
+
+    if (idx == n) {
+        if (partsLeft == 1) {
+            best = min(best, max(currentMax, currentSum));
+        }
+        return;
+    }
+
+    // Option 1: continue current partition
+    generateSplits(nums, idx + 1, partsLeft,
+                   currentSum + nums[idx], currentMax, best);
+
+    // Option 2: cut before nums[idx], if we still can create more parts
+    if (partsLeft > 1) {
+        generateSplits(nums, idx + 1, partsLeft - 1,
+                       nums[idx], max(currentMax, currentSum), best);
+    }
+}
+
+long long splitArrayBrute(vector<int>& nums, int k) {
+    long long best = LLONG_MAX;
+    generateSplits(nums, 1, k, nums[0], 0, best);
+    return best;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+For k = 2, choose one cut position:
+
+cut after index 0: [7] and [2,5,10,8]
+max sum = max(7,25) = 25
+
+cut after index 1: [7,2] and [5,10,8]
+max sum = max(9,23) = 23
+
+cut after index 2: [7,2,5] and [10,8]
+max sum = max(14,18) = 18
+
+cut after index 3: [7,2,5,10] and [8]
+max sum = max(24,8) = 24
+
+minimum among [25,23,18,24] = 18
 ```
 
 ## Brute-Force Thinking
@@ -1333,6 +1850,67 @@ target = 10
 12
 ```
 
+
+## Detailed Example
+
+```text
+machines = [2, 3, 7]
+target = 10
+```
+
+At time `12`:
+
+```text
+machine 2 produces floor(12/2) = 6 items
+machine 3 produces floor(12/3) = 4 items
+machine 7 produces floor(12/7) = 1 item
+
+total = 11 items
+```
+
+So time `12` is enough. Time `11` produces only `9`, so answer is `12`.
+
+## Observation
+
+```text
+If time t can produce target items, any time greater than t also works.
+
+not enough, not enough, enough, enough, enough
+                        ^
+                        first true
+```
+
+## Brute-Force Code
+
+```cpp
+long long minimumTimeBrute(vector<long long>& machines, long long target) {
+    for (long long t = 0; ; t++) {
+        long long made = 0;
+
+        for (long long m : machines) {
+            made += t / m;
+        }
+
+        if (made >= target) {
+            return t;
+        }
+    }
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+machines = [2,3,7]
+
+time 1: 1/2 + 1/3 + 1/7 = 0 + 0 + 0 = 0
+time 2: 2/2 + 2/3 + 2/7 = 1 + 0 + 0 = 1
+time 3: 1 + 1 + 0 = 2
+...
+time 11: 5 + 3 + 1 = 9, not enough
+time 12: 6 + 4 + 1 = 11, enough -> answer 12
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -1497,6 +2075,85 @@ k = 3
 
 ```text
 3
+```
+
+
+## Detailed Example
+
+```text
+positions = [1, 2, 4, 8, 9]
+k = 3
+```
+
+Try minimum distance `3`:
+
+```text
+place cow at 1
+next must be >= 4 -> place at 4
+next must be >= 7 -> place at 8
+placed 3 cows, so distance 3 works
+```
+
+Try minimum distance `4`:
+
+```text
+place at 1
+next must be >= 5 -> place at 8
+next must be >= 12 -> impossible
+only 2 cows placed, so distance 4 fails
+```
+
+Answer = `3`.
+
+## Observation
+
+```text
+We are maximizing the minimum distance.
+
+If distance d works, all smaller distances also work.
+If distance d fails, all larger distances also fail.
+
+true true true false false
+          ^
+          last true
+```
+
+## Brute-Force Code
+
+```cpp
+long long aggressiveCowsBrute(vector<long long>& pos, int k) {
+    sort(pos.begin(), pos.end());
+    int n = pos.size();
+    long long best = 0;
+
+    // Simple brute force over all distances.
+    for (long long d = 0; d <= pos.back() - pos.front(); d++) {
+        int placed = 1;
+        long long last = pos[0];
+
+        for (int i = 1; i < n; i++) {
+            if (pos[i] - last >= d) {
+                placed++;
+                last = pos[i];
+            }
+        }
+
+        if (placed >= k) best = d;
+    }
+
+    return best;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+Try d = 1 -> can place at 1,2,4 -> works
+Try d = 2 -> can place at 1,4,8 -> works
+Try d = 3 -> can place at 1,4,8 -> works
+Try d = 4 -> can place at 1,8 only -> fails
+
+Best working d = 3
 ```
 
 ## Brute-Force Thinking
@@ -1677,6 +2334,85 @@ k = 2
 25
 ```
 
+
+## Detailed Example
+
+```text
+positions = [0, 50, 100]
+k = 2
+```
+
+Add points at `25` and `75`:
+
+```text
+0, 25, 50, 75, 100
+```
+
+Now every adjacent gap is `25`, so answer is `25`.
+
+## Observation
+
+```text
+For a gap d and allowed maximum gap x:
+needed points = ceil(d / x) - 1
+
+Example:
+d = 50, x = 25
+ceil(50 / 25) - 1 = 2 - 1 = 1
+One point is enough: 0, 25, 50
+
+Example:
+d = 50, x = 24
+ceil(50 / 24) - 1 = 3 - 1 = 2
+Need two points because one point cannot keep both sub-gaps <= 24.
+```
+
+## Brute-Force Code
+
+```cpp
+long long minimizeMaxGapBrute(vector<long long> pos, long long k) {
+    sort(pos.begin(), pos.end());
+
+    long long hi = 0;
+    for (int i = 1; i < (int)pos.size(); i++) {
+        hi = max(hi, pos[i] - pos[i - 1]);
+    }
+
+    for (long long x = 1; x <= hi; x++) {
+        long long need = 0;
+
+        for (int i = 1; i < (int)pos.size(); i++) {
+            long long d = pos[i] - pos[i - 1];
+            need += (d + x - 1) / x - 1;
+        }
+
+        if (need <= k) {
+            return x;
+        }
+    }
+
+    return hi;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+positions = [0,50,100], k = 2
+
+Try x = 24:
+gap 50 needs 2 points
+gap 50 needs 2 points
+total need = 4 > 2 -> fail
+
+Try x = 25:
+gap 50 needs 1 point
+gap 50 needs 1 point
+total need = 2 <= 2 -> works
+
+answer = 25
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -1836,6 +2572,83 @@ k = 6
 
 ```text
 7
+```
+
+
+## Detailed Example
+
+```text
+A = [1, 2, 3]
+B = [4, 5, 6]
+k = 6
+```
+
+All pair sums:
+
+```text
+        B=4  B=5  B=6
+A=1      5    6    7
+A=2      6    7    8
+A=3      7    8    9
+```
+
+Sorted:
+
+```text
+[5, 6, 6, 7, 7, 7, 8, 8, 9]
+```
+
+The 6th smallest is `7`.
+
+## Observation
+
+```text
+Instead of generating all pair sums, count how many pair sums are <= x.
+
+If count <= x is at least k, then kth value is <= x.
+If count is less than k, x is too small.
+```
+
+## Brute-Force Code
+
+```cpp
+long long kthPairSumBrute(vector<long long>& A, vector<long long>& B, long long k) {
+    vector<long long> sums;
+
+    for (long long a : A) {
+        for (long long b : B) {
+            sums.push_back(a + b);
+        }
+    }
+
+    sort(sums.begin(), sums.end());
+    return sums[k - 1];
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+Generate:
+1+4=5
+1+5=6
+1+6=7
+2+4=6
+2+5=7
+2+6=8
+3+4=7
+3+5=8
+3+6=9
+
+After sorting:
+1st = 5
+2nd = 6
+3rd = 6
+4th = 7
+5th = 7
+6th = 7
+
+answer = 7
 ```
 
 ## Brute-Force Thinking
@@ -2009,6 +2822,74 @@ k = 7
 4
 ```
 
+
+## Detailed Example
+
+```text
+n = 3, m = 5, k = 7
+```
+
+Table:
+
+```text
+1  2  3  4  5
+2  4  6  8 10
+3  6  9 12 15
+```
+
+Sorted values:
+
+```text
+1, 2, 2, 3, 3, 4, 4, 5, 6, 6, 8, 9, 10, 12, 15
+```
+
+The 7th smallest is `4`.
+
+## Observation
+
+```text
+Row i is:
+i, 2i, 3i, ..., m*i
+
+How many values in row i are <= x?
+Need j*i <= x
+So j <= x/i
+There are floor(x/i) such columns, capped by m.
+
+count in row i = min(m, x / i)
+```
+
+## Brute-Force Code
+
+```cpp
+long long kthMultiplicationTableBrute(long long n, long long m, long long k) {
+    vector<long long> values;
+
+    for (long long i = 1; i <= n; i++) {
+        for (long long j = 1; j <= m; j++) {
+            values.push_back(i * j);
+        }
+    }
+
+    sort(values.begin(), values.end());
+    return values[k - 1];
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+Generate row by row:
+row 1: 1,2,3,4,5
+row 2: 2,4,6,8,10
+row 3: 3,6,9,12,15
+
+Sort everything:
+1,2,2,3,3,4,4,5,6,6,8,9,10,12,15
+
+7th value = 4
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -2171,6 +3052,76 @@ k = 1
 4
 ```
 
+
+## Detailed Example
+
+```text
+arr = [1, 0, 0]
+k = 1
+```
+
+All subarrays:
+
+```text
+[1]       zeros = 0 valid
+[1,0]     zeros = 1 valid
+[1,0,0]   zeros = 2 invalid
+[0]       zeros = 1 valid
+[0,0]     zeros = 2 invalid
+[0]       zeros = 1 valid
+```
+
+Valid count = `4`.
+
+## Observation
+
+```text
+For a fixed start, as end moves right, zero count never decreases.
+So validity changes like:
+valid valid valid invalid invalid
+
+That means we can binary search the farthest valid end for each start.
+```
+
+## Brute-Force Code
+
+```cpp
+long long countAtMostKZerosBrute(vector<int>& arr, int k) {
+    int n = arr.size();
+    long long ans = 0;
+
+    for (int l = 0; l < n; l++) {
+        int zeros = 0;
+
+        for (int r = l; r < n; r++) {
+            if (arr[r] == 0) zeros++;
+
+            if (zeros <= k) {
+                ans++;
+            }
+        }
+    }
+
+    return ans;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+l = 0:
+r = 0 -> [1], zeros 0 -> valid, ans = 1
+r = 1 -> [1,0], zeros 1 -> valid, ans = 2
+r = 2 -> [1,0,0], zeros 2 -> invalid
+
+l = 1:
+r = 1 -> [0], zeros 1 -> valid, ans = 3
+r = 2 -> [0,0], zeros 2 -> invalid
+
+l = 2:
+r = 2 -> [0], zeros 1 -> valid, ans = 4
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -2331,6 +3282,78 @@ k = 2
 6
 ```
 
+
+## Detailed Example
+
+```text
+arr = [1,1,1,0,1,0,0,1,1]
+k = 2
+```
+
+Choose window `0..5`:
+
+```text
+[1,1,1,0,1,0]
+```
+
+It has two zeros. Flip both zeros to ones:
+
+```text
+[1,1,1,1,1,1]
+```
+
+Length = `6`.
+
+No window of length `7` has at most two zeros, so answer is `6`.
+
+## Observation
+
+```text
+If length L is possible, all smaller lengths are also possible.
+If length L is impossible, all larger lengths are also impossible.
+
+possible possible possible impossible impossible
+                      ^
+                      last true
+```
+
+## Brute-Force Code
+
+```cpp
+int longestOnesBrute(vector<int>& arr, int k) {
+    int n = arr.size();
+    int best = 0;
+
+    for (int l = 0; l < n; l++) {
+        int zeros = 0;
+
+        for (int r = l; r < n; r++) {
+            if (arr[r] == 0) zeros++;
+
+            if (zeros <= k) {
+                best = max(best, r - l + 1);
+            }
+        }
+    }
+
+    return best;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+Check subarrays and keep longest with <= 2 zeros.
+
+For l = 0:
+r = 0..5 gives [1,1,1,0,1,0], zeros = 2, length = 6
+r = 6 gives [1,1,1,0,1,0,0], zeros = 3, invalid
+
+For other l values, no valid subarray longer than 6.
+
+answer = 6
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -2485,6 +3508,63 @@ x = 2
 1.41421356237
 ```
 
+
+## Detailed Example
+
+```text
+x = 2
+```
+
+We need a decimal value `y` such that:
+
+```text
+y * y ≈ 2
+```
+
+The answer is approximately:
+
+```text
+1.41421356237
+```
+
+## Observation
+
+```text
+For candidate mid:
+if mid * mid >= x, mid is high enough, move left.
+if mid * mid < x, mid is too small, move right.
+```
+
+Real binary search does not use `mid + 1` or `mid - 1`.
+
+## Brute-Force Code
+
+```cpp
+long double sqrtPrecisionBrute(long double x) {
+    long double ans = 0;
+    long double step = 0.000001;
+
+    for (long double y = 0; y * y <= x; y += step) {
+        ans = y;
+    }
+
+    return ans;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+Try y = 0.0 -> square = 0
+Try y = 1.0 -> square = 1
+Try y = 1.4 -> square = 1.96
+Try y = 1.41 -> square = 1.9881
+Try y = 1.414 -> square = 1.999396
+Try y = 1.415 -> square = 2.002225, crossed 2
+
+answer is near 1.414
+```
+
 ## Brute-Force Thinking
 
 ```text
@@ -2624,6 +3704,70 @@ B = 1
 
 ```text
 approximately 7.7735
+```
+
+
+## Detailed Example
+
+```text
+A = 10
+B = 1
+f(x) = x + 10 / sqrt(x + 1)
+```
+
+Evaluate small values:
+
+```text
+x = 0 -> 10.000
+x = 1 -> 8.071
+x = 2 -> 7.773
+x = 3 -> 8.000
+```
+
+Minimum is near `x = 2`.
+
+## Observation
+
+```text
+The function has two forces:
+
+B*x increases as x increases.
+A/sqrt(x+1) decreases as x increases.
+
+Total first decreases, then increases.
+This is a unimodal / valley-shaped function.
+```
+
+## Brute-Force Code
+
+```cpp
+long double freefallBrute(long double A, long double B) {
+    auto f = [&](long long x) {
+        return B * x + A / sqrt((long double)x + 1);
+    };
+
+    long long hi = (long long)(A / B) + 10;
+    long double best = f(0);
+
+    for (long long x = 0; x <= hi; x++) {
+        best = min(best, f(x));
+    }
+
+    return best;
+}
+```
+
+## Brute-Force Detailed Walkthrough
+
+```text
+A = 10, B = 1
+
+x = 0: f = 0 + 10/sqrt(1) = 10
+x = 1: f = 1 + 10/sqrt(2) = 8.071
+x = 2: f = 2 + 10/sqrt(3) = 7.773
+x = 3: f = 3 + 10/sqrt(4) = 8
+
+Best among these = 7.773 at x = 2
 ```
 
 ## Brute-Force Thinking
