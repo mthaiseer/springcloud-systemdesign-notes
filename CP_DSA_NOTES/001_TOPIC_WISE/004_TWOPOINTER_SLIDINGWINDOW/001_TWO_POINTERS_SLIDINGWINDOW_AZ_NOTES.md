@@ -1029,18 +1029,18 @@ Total = 8
 
 ### Optimal Idea
 
-Maintain a window `[tail ... head]` with:
+Maintain a window `[left ... right]` with:
 
 ```text
 distinctCount <= k
 ```
 
-For every `tail`, after expanding `head` as far as possible, all subarrays starting at `tail` and ending between `tail` and `head` are valid.
+For every `right`, after shrinking `left` until the window becomes valid, all subarrays ending at `right` and starting between `left` and `right` are valid.
 
-Number of valid subarrays starting at `tail`:
+Number of valid subarrays ending at `right`:
 
 ```text
-head - tail + 1
+right - left + 1
 ```
 
 ### Why Add `head - tail + 1`?
@@ -1048,20 +1048,20 @@ head - tail + 1
 If current valid window is:
 
 ```text
-arr[tail ... head]
+arr[left ... right]
 ```
 
-Then these are valid:
+Then these subarrays ending at `right` are valid:
 
 ```text
-arr[tail ... tail]
-arr[tail ... tail+1]
-arr[tail ... tail+2]
+arr[left ... right]
+arr[left+1 ... right]
+arr[left+2 ... right]
 ...
-arr[tail ... head]
+arr[right ... right]
 ```
 
-Count = `head - tail + 1`.
+Count = `right - left + 1`.
 
 ### C++ Code Using map
 
@@ -1070,30 +1070,38 @@ Count = `head - tail + 1`.
 using namespace std;
 
 long long atMostKDistinct(vector<int>& arr, int k) {
+    if (k < 0) return 0;
+
     int n = arr.size();
-    int head = -1;
-    int tail = 0;
-    int distinct = 0;
-    long long ans = 0;
     map<int, int> freq;
+    int distinct = 0;
+    int left = 0;
+    long long ans = 0;
 
-    while (tail < n) {
-        while (head + 1 < n && (freq[arr[head + 1]] > 0 || distinct < k)) {
-            head++;
-            if (freq[arr[head]] == 0) distinct++;
-            freq[arr[head]]++;
+    // Template B style:
+    // expand right, shrink left while invalid, then count valid windows ending at right
+    for (int right = 0; right < n; right++) {
+        // append arr[right] to window
+        if (freq[arr[right]] == 0) {
+            distinct++;
+        }
+        freq[arr[right]]++;
+
+        // invalid(window): more than k distinct elements
+        while (distinct > k) {
+            // remove arr[left] from window
+            freq[arr[left]]--;
+
+            if (freq[arr[left]] == 0) {
+                distinct--;
+            }
+
+            left++;
         }
 
-        ans += head - tail + 1;
-
-        if (tail > head) {
-            tail++;
-            head = tail - 1;
-        } else {
-            freq[arr[tail]]--;
-            if (freq[arr[tail]] == 0) distinct--;
-            tail++;
-        }
+        // window [left..right] is valid here
+        // all subarrays ending at right and starting from left..right are valid
+        ans += right - left + 1;
     }
 
     return ans;
@@ -1116,30 +1124,35 @@ Use this if values are small, for example `arr[i] <= 100000`.
 using namespace std;
 
 long long atMostKDistinct(vector<int>& arr, int k) {
+    if (k < 0) return 0;
+
     int n = arr.size();
     vector<int> freq(100001, 0);
-    int head = -1;
-    int tail = 0;
     int distinct = 0;
+    int left = 0;
     long long ans = 0;
 
-    while (tail < n) {
-        while (head + 1 < n && (freq[arr[head + 1]] > 0 || distinct < k)) {
-            head++;
-            if (freq[arr[head]] == 0) distinct++;
-            freq[arr[head]]++;
+    for (int right = 0; right < n; right++) {
+        // append arr[right] to window
+        if (freq[arr[right]] == 0) {
+            distinct++;
+        }
+        freq[arr[right]]++;
+
+        // while invalid(window)
+        while (distinct > k) {
+            // remove arr[left] from window
+            freq[arr[left]]--;
+
+            if (freq[arr[left]] == 0) {
+                distinct--;
+            }
+
+            left++;
         }
 
-        ans += head - tail + 1;
-
-        if (tail > head) {
-            tail++;
-            head = tail - 1;
-        } else {
-            freq[arr[tail]]--;
-            if (freq[arr[tail]] == 0) distinct--;
-            tail++;
-        }
+        // window [left..right] is valid here
+        ans += right - left + 1;
     }
 
     return ans;
@@ -1163,38 +1176,61 @@ arr = [1, 2, 1, 3]
 k = 2
 
 Start:
-head = -1, tail = 0, distinct = 0, ans = 0
+left = 0, distinct = 0, ans = 0
 freq = {}
 
-Tail = 0:
-  add 1 -> freq[1]=1, distinct=1, head=0
-  add 2 -> freq[2]=1, distinct=2, head=1
-  add 1 -> freq[1]=2, distinct=2, head=2
-  next 3 is new and distinct would become 3 > 2, stop
-  valid subarrays starting at 0 = head-tail+1 = 2-0+1 = 3
-  ans = 3
-  remove arr[0]=1 -> freq[1]=1, distinct=2
-  tail = 1
+right = 0:
+  append arr[0] = 1
+  freq[1] was 0, so distinct = 1
+  freq[1] = 1
+  distinct <= k, window [0..0] is valid
+  valid subarrays ending at right = right-left+1 = 0-0+1 = 1
+  subarrays: [1]
+  ans = 1
 
-Tail = 1:
-  next 3 is new and distinct would become 3 > 2, stop
-  valid subarrays starting at 1 = 2-1+1 = 2
-  ans = 5
-  remove arr[1]=2 -> freq[2]=0, distinct=1
-  tail = 2
+right = 1:
+  append arr[1] = 2
+  freq[2] was 0, so distinct = 2
+  freq[2] = 1
+  distinct <= k, window [0..1] is valid
+  valid subarrays ending at right = 1-0+1 = 2
+  subarrays: [1,2], [2]
+  ans = 1 + 2 = 3
 
-Tail = 2:
-  add 3 -> freq[3]=1, distinct=2, head=3
-  valid subarrays starting at 2 = 3-2+1 = 2
-  ans = 7
-  remove arr[2]=1 -> freq[1]=0, distinct=1
-  tail = 3
+right = 2:
+  append arr[2] = 1
+  freq[1] already exists, distinct stays 2
+  freq[1] = 2
+  distinct <= k, window [0..2] is valid
+  valid subarrays ending at right = 2-0+1 = 3
+  subarrays: [1,2,1], [2,1], [1]
+  ans = 3 + 3 = 6
 
-Tail = 3:
-  valid subarrays starting at 3 = 3-3+1 = 1
-  ans = 8
-  remove arr[3]=3 -> freq[3]=0, distinct=0
-  tail = 4
+right = 3:
+  append arr[3] = 3
+  freq[3] was 0, so distinct = 3
+  freq[3] = 1
+
+  invalid because distinct = 3 > k = 2
+
+  shrink:
+    remove arr[left] = arr[0] = 1
+    freq[1] becomes 1
+    distinct still 3
+    left = 1
+
+  still invalid because distinct = 3 > 2
+
+  shrink:
+    remove arr[left] = arr[1] = 2
+    freq[2] becomes 0
+    distinct becomes 2
+    left = 2
+
+  now window [2..3] = [1,3] is valid
+  valid subarrays ending at right = 3-2+1 = 2
+  subarrays: [1,3], [3]
+  ans = 6 + 2 = 8
 
 Answer = 8
 ```
