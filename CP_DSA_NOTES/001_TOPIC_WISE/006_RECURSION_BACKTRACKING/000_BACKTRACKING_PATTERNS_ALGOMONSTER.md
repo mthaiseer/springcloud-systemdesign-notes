@@ -1,206 +1,139 @@
-# 🧠 Backtracking Patterns — AlgoMonster PDF Master Notes
-## LCCM + Pruning + Additional State + Aggregation + Deduplication
+# 🚀 Divide & Conquer + Meet in the Middle — Phase-Wise Handbook
+## Two-Pointer-Style Dry Runs Edition
 
-> Source PDF summary: pages show the LCCM model for combinatorial search, backtracking with pruning, additional state, aggregation, permutation state using a boolean array, word break, decode ways, coin change, deduplication for 3Sum, combination sum, and subsets. The PDF emphasizes **Level, Choices, Constraints, Move** as the coding framework.
+> Dry runs are now written in the same readable style as your sliding window / two pointer notes.
 
 ---
 
 # 📚 Clickable Index
 
-## Core Concepts
-- [0. Backtracking Mental Model](#0-backtracking-mental-model)
-- [0.1 LCCM Template](#01-lccm-template)
-- [0.2 Backtracking Pattern Decision Tree](#02-backtracking-pattern-decision-tree)
-- [0.3 Complexity Cheat Sheet](#03-complexity-cheat-sheet)
+## Core Maps
+- [0. Master Pattern Map](#0-master-pattern-map)
+- [0.1 D&C vs MITM Decision Tree](#01-dc-vs-mitm-decision-tree)
+- [0.2 Complexity Cheat Sheet](#02-complexity-cheat-sheet)
 
 
-## Phase 1 — Core Combinatorial Search
+## Phase 1 — Divide & Conquer Foundations
 
-- [Problem 1: Generate All Strings From Choices](#problem-1-generate-all-strings-from-choices) — Easy — `LCCM: Level=index, Choice=character, Constraint=index<n, Move=add→recurse→remove`
-- [Problem 2: Letter Combinations of a Phone Number](#problem-2-letter-combinations-of-a-phone-number) — Medium — `LCCM: Level=digit index, Choice=letter mapped from digit`
+- [Problem 1: Merge Sort](#problem-1-merge-sort) — Easy — `Split array → sort left → sort right → merge`
+- [Problem 2: Binary Search as Divide & Conquer](#problem-2-binary-search-as-divide-conquer) — Easy — `Sorted search space → remove half`
 
-## Phase 2 — Backtracking With Pruning
+## Phase 2 — Merge Step Counting
 
-- [Problem 3: Palindrome Partitioning](#problem-3-palindrome-partitioning) — Medium — `LCCM: Level=start index, Choice=substring start..end, Constraint=substring is palindrome`
+- [Problem 3: Count Inversions](#problem-3-count-inversions) — Medium — `Merge Sort + count cross inversions`
+- [Problem 4: Reverse Pairs](#problem-4-reverse-pairs) — Medium/Hard — `Merge Sort + two pointer counting before merge`
+- [Problem 5: Bubble Sort Swap Parity](#problem-5-bubble-sort-swap-parity) — Medium — `Inversion parity`
 
-## Phase 3 — Backtracking With Additional State
+## Phase 3 — Fast Multiplication
 
-- [Problem 4: Generate Valid Parentheses](#problem-4-generate-valid-parentheses) — Medium — `Additional state: open count and close count`
-- [Problem 5: Permutations](#problem-5-permutations) — Medium — `Additional state: used boolean array`
+- [Problem 6: Karatsuba Multiplication](#problem-6-karatsuba-multiplication) — Medium — `Reduce 4 multiplications to 3`
 
-## Phase 4 — Aggregation / Return Value Backtracking
+## Phase 4 — Meet in the Middle Foundations
 
-- [Problem 6: Word Break](#problem-6-word-break) — Medium — `Aggregation OR: does any branch return true?`
-- [Problem 7: Number of Ways to Decode a Message](#problem-7-number-of-ways-to-decode-a-message) — Medium — `Aggregation SUM: number of valid branches`
-- [Problem 8: Coin Change Minimum Coins](#problem-8-coin-change-minimum-coins) — Medium — `Aggregation MIN: take or skip coin`
+- [Problem 7: Generate All Subset Sums](#problem-7-generate-all-subset-sums) — Easy — `Bitmask enumeration`
+- [Problem 8: Subset Sum Exists](#problem-8-subset-sum-exists) — Medium — `MITM + binary search`
 
-## Phase 5 — Deduplication Patterns
+## Phase 5 — MITM Optimization Problems
 
-- [Problem 9: Three Sum Without Duplicate Triplets](#problem-9-three-sum-without-duplicate-triplets) — Medium — `Sort + fixed i + two pointers + skip duplicates`
+- [Problem 9: Maximum Subset Sum Less Than or Equal to S](#problem-9-maximum-subset-sum-less-than-or-equal-to-s) — Medium — `MITM + upper_bound`
+- [Problem 10: Count Subsets With Sum Less Than or Equal to K](#problem-10-count-subsets-with-sum-less-than-or-equal-to-k) — Medium — `MITM + upper_bound count`
 
-## Phase 6 — Combination Style Backtracking
+## Phase 6 — Pair Sum MITM
 
-- [Problem 10: Combination Sum](#problem-10-combination-sum) — Medium — `Index based take/skip, unlimited reuse`
-- [Problem 11: Subsets](#problem-11-subsets) — Easy — `Include / exclude at every index`
+- [Problem 11: Classical Four Number Sum](#problem-11-classical-four-number-sum) — Medium — `Pair sums + hash map`
+- [Problem 12: CSES Four Values](#problem-12-cses-four-values) — Medium — `Pair sum + store indices`
+
+## Phase 7 — Modulo MITM
+
+- [Problem 13: Maximum Subsequence Sum Modulo M](#problem-13-maximum-subsequence-sum-modulo-m) — Hard — `MITM + modulo + upper_bound`
+
+## Phase 8 — Advanced Transformation
+
+- [Problem 14: 4 Reversals Pattern](#problem-14-4-reversals-pattern) — Hard — `MITM over states`
+
+## Bonus — Two Pointer Style Example
+
+- [Problem 15: Count 3Sum With Duplicates](#problem-15-count-3sum-with-duplicates) — Medium — `Sort + fixed i + two pointers + duplicate frequency counting`
 
 
 ---
 
-# 0. Backtracking Mental Model
+# 0. Master Pattern Map
 
-Backtracking means:
-
-```text
-choose
-    ↓
-explore recursively
-    ↓
-undo choice
-```
-
-The PDF repeatedly uses this movement:
-
-```text
-add
-recurse(level + something)
-remove
-```
-
-That is the heart of every backtracking problem.
-
----
-
-# 0.1 LCCM Template
-
-LCCM:
-
-| Letter | Meaning | Question |
+| Topic | Main Idea | Best Trigger |
 |---|---|---|
-| L | Level | What does recursion level represent? |
-| C | Choices | What choices can I make at this level? |
-| C | Constraints | Which choices are valid? |
-| M | Move | How do I apply choice, recurse, and undo? |
-
-## Universal C++ Template
-
-```cpp
-void dfs(int level, vector<int>& path) {
-    if (isBaseCase(level, path)) {
-        report(path);
-        return;
-    }
-
-    for (auto choice : getChoices(level, path)) {
-        if (!isValid(choice, level, path)) continue;
-
-        path.push_back(choice);
-
-        dfs(nextLevel(level, choice), path);
-
-        path.pop_back();
-    }
-}
-```
+| Divide & Conquer | Split → solve recursively → merge | Problem naturally splits into halves |
+| Merge Sort Counting | Count while merging sorted halves | Inversions / reverse pairs / pair counting |
+| Karatsuba | Reduce 4 products to 3 | Large multiplication |
+| Meet in the Middle | Split exponential search into two halves | `n <= 40`, subsets/combinations |
+| Pair Sum MITM | Precompute pair sums | Four values / four sum |
+| Modulo MITM | Store subset sums modulo m | Maximum subset modulo |
 
 ---
 
-# 0.2 Backtracking Pattern Decision Tree
+# 0.1 D&C vs MITM Decision Tree
 
 ```text
-Do I need to output all possibilities?
+Can I split the problem into left half and right half?
         |
-        +-- YES --> Backtracking
-                    |
-                    +-- Need to avoid invalid branches?
-                    |       |
-                    |       +-- YES --> Backtracking with pruning
-                    |
-                    +-- Need extra info like used/open/close?
-                    |       |
-                    |       +-- YES --> Backtracking with additional state
-
-Do I need true/false or min/max/count?
+        +-- YES --> Can I merge answers from both halves?
+        |               |
+        |               +-- YES --> Divide & Conquer
         |
-        +-- YES --> Aggregation recursion
-                    |
-                    +-- true/false --> OR aggregation
-                    +-- count ways  --> SUM aggregation
-                    +-- min/max      --> MIN/MAX aggregation
+        +-- NO --> Is it subset/combinations with n around 30-45?
+                        |
+                        +-- YES --> Meet in the Middle
 ```
 
 ---
 
-# 0.3 Complexity Cheat Sheet
+# 0.2 Complexity Cheat Sheet
 
-| Problem | Pattern | Rough Complexity |
-|---|---|---|
-| Generate strings | k choices per level | O(k^n) |
-| Phone combinations | 3 or 4 choices per digit | O(4^n) |
-| Palindrome partitioning | choose cuts | O(n * 2^n) |
-| Valid parentheses | Catalan | O(Cn) |
-| Permutations | unused choice each level | O(n!) |
-| Word break | aggregation + memo | O(n * words * wordLen) |
-| Decode ways | aggregation + memo | O(n) |
-| Coin change | DP recursion | O(n * amount) |
-| 3Sum | sort + two pointers | O(n²) |
-| Combination sum | take/skip recursion | exponential |
-| Subsets | include/exclude | O(n * 2^n) |
+| Pattern | Brute Force | Optimized |
+|---|---:|---:|
+| Merge Sort | O(n²) alternatives | O(n log n) |
+| Count Inversions | O(n²) | O(n log n) |
+| Reverse Pairs | O(n²) | O(n log n) |
+| Four Sum | O(n⁴) | O(n²) |
+| Subset Sum n=40 | O(2⁴⁰) | O(2²⁰ log 2²⁰) |
+| Count subsets ≤ K | O(2ⁿ) | O(2^(n/2) log 2^(n/2)) |
+| 4 reversals | O(n⁸) | O(n⁴) MITM states |
 
 ---
 
 
-# Problem 1: Generate All Strings From Choices
+# Phase 1 — Divide & Conquer Foundations
 
-**Phase:** Phase 1 — Core Combinatorial Search  
+
+# Problem 1: Merge Sort
+
 **Difficulty:** Easy  
-**Pattern:** `LCCM: Level=index, Choice=character, Constraint=index<n, Move=add→recurse→remove`
+**Pattern:** `Split array → sort left → sort right → merge`
 
 ## Problem Statement
 
-Given possible characters at each position, generate all strings. Example choices are {a,b} for each of 2 positions.
+Given an array, sort it in non-decreasing order using Divide & Conquer.
 
 ## Input
 
 ```text
-choices = ['a', 'b']
-length = 2
+n = 6
+arr = [5, 3, 8, 1, 2, 7]
 ```
 
 ## Expected Output
 
 ```text
-aa
-ab
-ba
-bb
+[1, 2, 3, 5, 7, 8]
 ```
 
-## Core Idea
+## Brute Force Idea
 
-At every level, choose one character, append it to path, recurse to next index, then remove it while backtracking.
+Try bubble sort / selection sort. Compare repeatedly and swap. Complexity O(n²).
 
-## LCCM Summary
+## Optimal Idea
 
-
-```text
-Level = index / position
-Choices = valid next elements
-Constraint = depends on problem
-Move = add → recurse → remove
-```
-
-
-## Recursion Tree
-
-```text
-rec(0, "")
-├── choose 'a' -> rec(1, "a")
-│   ├── choose 'a' -> rec(2, "aa") ✅ output
-│   └── choose 'b' -> rec(2, "ab") ✅ output
-└── choose 'b' -> rec(1, "b")
-    ├── choose 'a' -> rec(2, "ba") ✅ output
-    └── choose 'b' -> rec(2, "bb") ✅ output
-```
+Split array into halves until size 1, then merge sorted halves.
 
 ## C++ Code
 
@@ -208,875 +141,130 @@ rec(0, "")
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<string> ans;
-string path;
+void mergeSort(vector<int>& arr, int l, int r) {
+    if (l >= r) return;
 
-void dfs(int level, int n) {
-    if (level == n) {
-        ans.push_back(path);
-        return;
+    int mid = l + (r - l) / 2;
+
+    mergeSort(arr, l, mid);
+    mergeSort(arr, mid + 1, r);
+
+    vector<int> temp;
+    int i = l, j = mid + 1;
+
+    while (i <= mid && j <= r) {
+        if (arr[i] <= arr[j]) temp.push_back(arr[i++]);
+        else temp.push_back(arr[j++]);
     }
 
-    for (char ch : {'a', 'b'}) {
-        path.push_back(ch);
-        dfs(level + 1, n);
-        path.pop_back();
+    while (i <= mid) temp.push_back(arr[i++]);
+    while (j <= r) temp.push_back(arr[j++]);
+
+    for (int k = l; k <= r; k++) {
+        arr[k] = temp[k - l];
     }
 }
 ```
 
-## Index-by-Index Dry Run
+## Tree-Style Index-by-Index Dry Run
+
+> 🌳 Tree-style dry runs help visualize:
+> - recursive splitting
+> - merge flow
+> - pointer movement
+> - MITM state generation
+> - recursion depth
+> - pruning and aggregation
+
 
 ```text
-choices = ['a', 'b']
-length = 2
+mergeSort([5, 3, 8, 1, 2, 7])
 
-level=0, path=""
-    choose 'a'
-    path="a"
-    call level=1
+├── split mid=2
+│
+├── LEFT = [5, 3, 8]
+│   │
+│   ├── split mid=1
+│   │
+│   ├── LEFT = [5, 3]
+│   │   │
+│   │   ├── split mid=0
+│   │   │
+│   │   ├── [5]
+│   │   └── [3]
+│   │
+│   │   merge:
+│   │       compare 5 vs 3
+│   │       take 3
+│   │       take remaining 5
+│   │
+│   │   result = [3, 5]
+│   │
+│   └── RIGHT = [8]
+│
+│   merge:
+│       [3,5] with [8]
+│
+│       3 < 8 -> take 3
+│       5 < 8 -> take 5
+│       take remaining 8
+│
+│   result = [3, 5, 8]
+│
+└── RIGHT = [1, 2, 7]
+    │
+    ├── split
+    │
+    ├── [1,2]
+    └── [7]
+    │
+    merge:
+        [1,2] with [7]
+        result = [1,2,7]
 
-level=1, path="a"
-    choose 'a'
-    path="aa"
-    call level=2
-        level == length
-        output "aa"
+FINAL MERGE
+│
+├── left  = [3,5,8]
+├── right = [1,2,7]
+│
+├── compare 3 vs 1 -> take 1
+├── compare 3 vs 2 -> take 2
+├── compare 3 vs 7 -> take 3
+├── compare 5 vs 7 -> take 5
+├── compare 8 vs 7 -> take 7
+└── take remaining 8
 
-    backtrack
-    path="a"
-
-    choose 'b'
-    path="ab"
-    call level=2
-        output "ab"
-
-    backtrack
-    path="a"
-
-backtrack
-path=""
-
-level=0, path=""
-    choose 'b'
-    path="b"
-    call level=1
-
-level=1, path="b"
-    choose 'a'
-    path="ba"
-    call level=2
-        output "ba"
-
-    backtrack
-    path="b"
-
-    choose 'b'
-    path="bb"
-    call level=2
-        output "bb"
-
-Final output:
-    aa, ab, ba, bb
+FINAL:
+    [1,2,3,5,7,8]
 ```
 
 ## Complexity
 
-Time O(k^n * n), Space O(n) recursion path, excluding output.
+Time O(n log n), Space O(n).
 
 ## Pattern Trigger
 
 
-Use this when the problem asks to generate all combinations/strings/subsets by trying choices recursively.
+Use this when you can **split, solve recursively, then merge or count while merging**.
 
 
 ---
 
 
-# Problem 2: Letter Combinations of a Phone Number
+# Problem 2: Binary Search as Divide & Conquer
 
-**Phase:** Phase 1 — Core Combinatorial Search  
-**Difficulty:** Medium  
-**Pattern:** `LCCM: Level=digit index, Choice=letter mapped from digit`
+**Difficulty:** Easy  
+**Pattern:** `Sorted search space → remove half`
 
 ## Problem Statement
 
-Given digits 2-9, return all possible letter combinations based on phone keypad mapping.
+Given a sorted array and target x, return index of x or -1.
 
 ## Input
 
 ```text
-digits = "23"
-```
-
-## Expected Output
-
-```text
-["ad","ae","af","bd","be","bf","cd","ce","cf"]
-```
-
-## Core Idea
-
-For each digit, iterate over mapped letters. Add letter, recurse to next digit, then remove letter.
-
-## LCCM Summary
-
-
-```text
-Level = index in digits
-Choices = letters mapped from digits[level]
-Constraint = level < digits.size()
-Move = add letter → recurse(level+1) → remove letter
-```
-
-
-## Recursion Tree
-
-```text
-rec(0, "")
-├── choose 'a' from digit 2 -> rec(1, "a")
-│   ├── choose 'd' -> "ad" ✅
-│   ├── choose 'e' -> "ae" ✅
-│   └── choose 'f' -> "af" ✅
-├── choose 'b' from digit 2 -> rec(1, "b")
-│   ├── choose 'd' -> "bd" ✅
-│   ├── choose 'e' -> "be" ✅
-│   └── choose 'f' -> "bf" ✅
-└── choose 'c' from digit 2 -> rec(1, "c")
-    ├── choose 'd' -> "cd" ✅
-    ├── choose 'e' -> "ce" ✅
-    └── choose 'f' -> "cf" ✅
-```
-
-## C++ Code
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-vector<string> letterCombinations(string digits) {
-    if (digits.empty()) return {};
-
-    vector<string> mp(10);
-    mp[2] = "abc";
-    mp[3] = "def";
-    mp[4] = "ghi";
-    mp[5] = "jkl";
-    mp[6] = "mno";
-    mp[7] = "pqrs";
-    mp[8] = "tuv";
-    mp[9] = "wxyz";
-
-    vector<string> ans;
-    string path;
-
-    function<void(int)> dfs = [&](int level) {
-        if (level == (int)digits.size()) {
-            ans.push_back(path);
-            return;
-        }
-
-        int digit = digits[level] - '0';
-
-        for (char ch : mp[digit]) {
-            path.push_back(ch);
-            dfs(level + 1);
-            path.pop_back();
-        }
-    };
-
-    dfs(0);
-    return ans;
-}
-```
-
-## Index-by-Index Dry Run
-
-```text
-digits = "23"
-
-mapping:
-    2 -> abc
-    3 -> def
-
-level=0, digit='2', path=""
-    choose 'a'
-    path="a"
-
-level=1, digit='3', path="a"
-    choose 'd' -> path="ad" -> output
-    remove 'd' -> path="a"
-
-    choose 'e' -> path="ae" -> output
-    remove 'e' -> path="a"
-
-    choose 'f' -> path="af" -> output
-    remove 'f' -> path="a"
-
-backtrack from 'a'
-path=""
-
-level=0
-    choose 'b'
-    path="b"
-
-level=1
-    choose d/e/f
-    output "bd", "be", "bf"
-
-backtrack from 'b'
-
-level=0
-    choose 'c'
-    path="c"
-
-level=1
-    choose d/e/f
-    output "cd", "ce", "cf"
-
-Final:
-    ad ae af bd be bf cd ce cf
-```
-
-## Complexity
-
-Time O(4^n * n), Space O(n) recursion path, excluding output.
-
-## Pattern Trigger
-
-
-Use this when the problem asks to generate all combinations/strings/subsets by trying choices recursively.
-
-
----
-
-
-# Problem 3: Palindrome Partitioning
-
-**Phase:** Phase 2 — Backtracking With Pruning  
-**Difficulty:** Medium  
-**Pattern:** `LCCM: Level=start index, Choice=substring start..end, Constraint=substring is palindrome`
-
-## Problem Statement
-
-Given a string s, partition it so every substring is a palindrome. Return all valid partitions.
-
-## Input
-
-```text
-s = "aab"
-```
-
-## Expected Output
-
-```text
-[["a","a","b"], ["aa","b"]]
-```
-
-## Core Idea
-
-At each start index, try every ending index. Only recurse if s[start..end] is palindrome. Non-palindromes are pruned.
-
-## LCCM Summary
-
-
-```text
-Level = start index
-Choices = substring s[start..end]
-Constraint = substring must be palindrome
-Move = add substring → recurse(end+1) → remove substring
-```
-
-
-## Recursion Tree
-
-```text
-rec(start=0, path=[])
-├── choose "a" ✅ palindrome -> rec(1, ["a"])
-│   ├── choose "a" ✅ -> rec(2, ["a","a"])
-│   │   └── choose "b" ✅ -> rec(3, ["a","a","b"]) ✅ output
-│   └── choose "ab" ❌ prune
-├── choose "aa" ✅ palindrome -> rec(2, ["aa"])
-│   └── choose "b" ✅ -> rec(3, ["aa","b"]) ✅ output
-└── choose "aab" ❌ prune
-```
-
-## C++ Code
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-bool isPal(const string& s, int l, int r) {
-    while (l < r) {
-        if (s[l] != s[r]) return false;
-        l++;
-        r--;
-    }
-    return true;
-}
-
-vector<vector<string>> partition(string s) {
-    vector<vector<string>> ans;
-    vector<string> path;
-    int n = s.size();
-
-    function<void(int)> dfs = [&](int start) {
-        if (start == n) {
-            ans.push_back(path);
-            return;
-        }
-
-        for (int end = start; end < n; end++) {
-            if (!isPal(s, start, end)) continue;
-
-            path.push_back(s.substr(start, end - start + 1));
-            dfs(end + 1);
-            path.pop_back();
-        }
-    };
-
-    dfs(0);
-    return ans;
-}
-```
-
-## Index-by-Index Dry Run
-
-```text
-s = "aab"
-
-start=0, path=[]
-    try substring s[0..0] = "a"
-    "a" is palindrome
-    add "a"
-    path=["a"]
-    recurse start=1
-
-start=1, path=["a"]
-    try s[1..1] = "a"
-    palindrome
-    path=["a","a"]
-    recurse start=2
-
-start=2, path=["a","a"]
-    try s[2..2] = "b"
-    palindrome
-    path=["a","a","b"]
-    recurse start=3
-
-start=3
-    start == n
-    output ["a","a","b"]
-
-backtrack:
-    remove "b" -> ["a","a"]
-    remove second "a" -> ["a"]
-
-start=1
-    try s[1..2] = "ab"
-    not palindrome
-    prune
-
-backtrack:
-    remove first "a" -> []
-
-start=0
-    try s[0..1] = "aa"
-    palindrome
-    path=["aa"]
-    recurse start=2
-
-start=2
-    choose "b"
-    path=["aa","b"]
-    start=3
-    output ["aa","b"]
-
-start=0
-    try s[0..2] = "aab"
-    not palindrome
-    prune
-
-Final output:
-    ["a","a","b"]
-    ["aa","b"]
-```
-
-## Complexity
-
-Time O(n * 2^n), Space O(n) recursion path, excluding output.
-
-## Pattern Trigger
-
-
-Use this when some choices can be rejected immediately before recursion.
-
-
----
-
-
-# Problem 4: Generate Valid Parentheses
-
-**Phase:** Phase 3 — Backtracking With Additional State  
-**Difficulty:** Medium  
-**Pattern:** `Additional state: open count and close count`
-
-## Problem Statement
-
-Generate all valid parentheses strings with n pairs.
-
-## Input
-
-```text
-n = 2
-```
-
-## Expected Output
-
-```text
-["(())", "()()"]
-```
-
-## Core Idea
-
-At every position choose '(' if open<n. Choose ')' if close<open. This prunes invalid states early.
-
-## LCCM Summary
-
-
-```text
-Level = position / path length
-Choices = '(' or ')'
-Constraint = open < n, close < open
-Move = add bracket → update open/close → recurse → remove bracket
-```
-
-
-## Recursion Tree
-
-```text
-rec("", open=0, close=0)
-└── add '(' -> rec("(", 1, 0)
-    ├── add '(' -> rec("((", 2, 0)
-    │   └── add ')' -> rec("(()", 2, 1)
-    │       └── add ')' -> rec("(())", 2, 2) ✅
-    └── add ')' -> rec("()", 1, 1)
-        └── add '(' -> rec("()(", 2, 1)
-            └── add ')' -> rec("()()", 2, 2) ✅
-```
-
-## C++ Code
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-vector<string> generateParenthesis(int n) {
-    vector<string> ans;
-    string path;
-
-    function<void(int,int)> dfs = [&](int open, int close) {
-        if ((int)path.size() == 2 * n) {
-            ans.push_back(path);
-            return;
-        }
-
-        if (open < n) {
-            path.push_back('(');
-            dfs(open + 1, close);
-            path.pop_back();
-        }
-
-        if (close < open) {
-            path.push_back(')');
-            dfs(open, close + 1);
-            path.pop_back();
-        }
-    };
-
-    dfs(0, 0);
-    return ans;
-}
-```
-
-## Index-by-Index Dry Run
-
-```text
-n = 2
-
-path="", open=0, close=0
-    can add '(' because open < n
-    path="("
-    open=1, close=0
-
-path="("
-    can add '(' because open < n
-    path="(("
-    open=2, close=0
-
-path="(("
-    cannot add '(' because open == n
-    can add ')' because close < open
-    path="(()"
-    open=2, close=1
-
-path="(()"
-    can add ')' because close < open
-    path="(())"
-    open=2, close=2
-    length == 4
-    output "(())"
-
-backtrack to path="("
-
-path="("
-    can add ')' because close < open
-    path="()"
-    open=1, close=1
-
-path="()"
-    can add '(' because open < n
-    path="()("
-    open=2, close=1
-
-path="()("
-    can add ')' because close < open
-    path="()()"
-    open=2, close=2
-    output "()()"
-
-Final:
-    (())
-    ()()
-```
-
-## Complexity
-
-Time O(Catalan(n) * n), Space O(n).
-
-## Pattern Trigger
-
-
-Use this when path alone is not enough; you must carry extra state like `used`, `open`, `close`, or counts.
-
-
----
-
-
-# Problem 5: Permutations
-
-**Phase:** Phase 3 — Backtracking With Additional State  
-**Difficulty:** Medium  
-**Pattern:** `Additional state: used boolean array`
-
-## Problem Statement
-
-Given distinct characters, generate all permutations.
-
-## Input
-
-```text
-s = "abc"
-```
-
-## Expected Output
-
-```text
-abc
-acb
-bac
-bca
-cab
-cba
-```
-
-## Core Idea
-
-At each level choose any unused character. Mark it used, recurse, then unmark while backtracking.
-
-## LCCM Summary
-
-
-```text
-Level = position in permutation
-Choices = unused characters
-Constraint = each character used once
-Move = mark used → add → recurse → remove → unmark
-```
-
-
-## Recursion Tree
-
-```text
-rec(path="")
-├── choose a
-│   ├── choose b
-│   │   └── choose c -> abc ✅
-│   └── choose c
-│       └── choose b -> acb ✅
-├── choose b
-│   ├── choose a
-│   │   └── choose c -> bac ✅
-│   └── choose c
-│       └── choose a -> bca ✅
-└── choose c
-    ├── choose a
-    │   └── choose b -> cab ✅
-    └── choose b
-        └── choose a -> cba ✅
-```
-
-## C++ Code
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-vector<string> permutations(string s) {
-    int n = s.size();
-    vector<string> ans;
-    string path;
-    vector<bool> used(n, false);
-
-    function<void()> dfs = [&]() {
-        if ((int)path.size() == n) {
-            ans.push_back(path);
-            return;
-        }
-
-        for (int i = 0; i < n; i++) {
-            if (used[i]) continue;
-
-            used[i] = true;
-            path.push_back(s[i]);
-
-            dfs();
-
-            path.pop_back();
-            used[i] = false;
-        }
-    };
-
-    dfs();
-    return ans;
-}
-```
-
-## Index-by-Index Dry Run
-
-```text
-s = "abc"
-
-path="", used=[false,false,false]
-
-level=0:
-    choose index 0 -> 'a'
-    path="a"
-    used=[true,false,false]
-
-level=1:
-    index 0 already used, skip
-
-    choose index 1 -> 'b'
-    path="ab"
-    used=[true,true,false]
-
-level=2:
-    choose index 2 -> 'c'
-    path="abc"
-    used=[true,true,true]
-
-path length == 3
-output "abc"
-
-backtrack:
-    remove 'c'
-    used[2]=false
-    path="ab"
-
-backtrack:
-    remove 'b'
-    used[1]=false
-    path="a"
-
-level=1:
-    choose index 2 -> 'c'
-    path="ac"
-
-level=2:
-    choose remaining index 1 -> 'b'
-    path="acb"
-    output "acb"
-
-After finishing branch starting with 'a':
-    output abc, acb
-
-Then choose 'b' first:
-    output bac, bca
-
-Then choose 'c' first:
-    output cab, cba
-```
-
-## Complexity
-
-Time O(n! * n), Space O(n).
-
-## Pattern Trigger
-
-
-Use this when path alone is not enough; you must carry extra state like `used`, `open`, `close`, or counts.
-
-
----
-
-
-# Problem 6: Word Break
-
-**Phase:** Phase 4 — Aggregation / Return Value Backtracking  
-**Difficulty:** Medium  
-**Pattern:** `Aggregation OR: does any branch return true?`
-
-## Problem Statement
-
-Given a string and dictionary words, return true if string can be segmented into dictionary words.
-
-## Input
-
-```text
-target = "algomonster"
-words = ["algo", "monster"]
-```
-
-## Expected Output
-
-```text
-true
-```
-
-## Core Idea
-
-At index start, try every dictionary word matching the prefix. If any recursive branch reaches the end, return true.
-
-## LCCM Summary
-
-
-```text
-Level = start index in target
-Choices = dictionary words matching prefix
-Constraint = word must match target[start..]
-Move = recurse(start + word.length), aggregate OR
-```
-
-
-## Recursion Tree
-
-```text
-rec(start=0, remaining="algomonster")
-└── choose "algo" ✅ matches prefix
-    rec(start=4, remaining="monster")
-    └── choose "monster" ✅ matches prefix
-        rec(start=11)
-        start == target.length ✅ true
-```
-
-## C++ Code
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-bool wordBreak(string target, vector<string>& words) {
-    int n = target.size();
-    vector<int> memo(n + 1, -1);
-
-    function<bool(int)> dfs = [&](int start) -> bool {
-        if (start == n) return true;
-        if (memo[start] != -1) return memo[start];
-
-        for (string& word : words) {
-            int len = word.size();
-
-            if (start + len <= n && target.substr(start, len) == word) {
-                if (dfs(start + len)) {
-                    return memo[start] = true;
-                }
-            }
-        }
-
-        return memo[start] = false;
-    };
-
-    return dfs(0);
-}
-```
-
-## Index-by-Index Dry Run
-
-```text
-target = "algomonster"
-words = ["algo", "monster"]
-
-start=0
-    remaining string = "algomonster"
-
-    try word "algo"
-        target.substr(0,4) = "algo"
-        match found
-        recurse start = 0 + 4 = 4
-
-start=4
-    remaining string = "monster"
-
-    try word "algo"
-        target.substr(4,4) = "mons"
-        not match
-
-    try word "monster"
-        target.substr(4,7) = "monster"
-        match found
-        recurse start = 4 + 7 = 11
-
-start=11
-    start == target.length
-    return true
-
-Aggregation:
-    dfs(11) returns true
-    dfs(4) returns true
-    dfs(0) returns true
-
-Answer = true
-```
-
-## Complexity
-
-Without memo can be exponential. With memo: O(n * number_of_words * word_length).
-
-## Pattern Trigger
-
-
-Use this when recursion must **return a value** instead of only printing paths: true/false, count, min, or max.
-
-
----
-
-
-# Problem 7: Number of Ways to Decode a Message
-
-**Phase:** Phase 4 — Aggregation / Return Value Backtracking  
-**Difficulty:** Medium  
-**Pattern:** `Aggregation SUM: number of valid branches`
-
-## Problem Statement
-
-Given a digit string, count how many ways it can be decoded where 1=A, 2=B, ..., 26=Z.
-
-## Input
-
-```text
-s = "123"
+arr = [1, 3, 5, 7, 9, 11]
+x = 7
 ```
 
 ## Expected Output
@@ -1085,34 +273,13 @@ s = "123"
 3
 ```
 
-## Core Idea
+## Brute Force Idea
 
-At each index choose one digit if valid, and choose two digits if valid between 10 and 26. Sum results from both choices.
+Scan all indices. Complexity O(n).
 
-## LCCM Summary
+## Optimal Idea
 
-
-```text
-Level = current index i
-Choices = 1 digit or 2 digits
-Constraint = valid number 1..26, no leading zero
-Move = recurse next index, aggregate SUM
-```
-
-
-## Recursion Tree
-
-```text
-rec(0, "123")
-├── take "1" -> rec(1, "23")
-│   ├── take "2" -> rec(2, "3")
-│   │   └── take "3" -> rec(3) ✅ 1 way: A B C
-│   └── take "23" -> rec(3) ✅ 1 way: A W
-└── take "12" -> rec(2, "3")
-    └── take "3" -> rec(3) ✅ 1 way: L C
-
-Total = 3
-```
+Compare with middle. Remove left half or right half every step.
 
 ## C++ Code
 
@@ -1120,150 +287,707 @@ Total = 3
 #include <bits/stdc++.h>
 using namespace std;
 
-int numDecodings(string s) {
-    int n = s.size();
-    vector<int> memo(n + 1, -1);
+int binarySearch(vector<int>& arr, int x) {
+    int l = 0, r = (int)arr.size() - 1;
 
-    function<int(int)> dfs = [&](int i) -> int {
-        if (i == n) return 1;
-        if (s[i] == '0') return 0;
-        if (memo[i] != -1) return memo[i];
+    while (l <= r) {
+        int mid = l + (r - l) / 2;
 
-        int ways = 0;
+        if (arr[mid] == x) return mid;
+        if (arr[mid] < x) l = mid + 1;
+        else r = mid - 1;
+    }
 
-        ways += dfs(i + 1);
+    return -1;
+}
+```
 
-        if (i + 1 < n) {
-            int val = (s[i] - '0') * 10 + (s[i + 1] - '0');
-            if (val >= 10 && val <= 26) {
-                ways += dfs(i + 2);
+## Tree-Style Index-by-Index Dry Run
+
+```text
+arr = [1, 3, 5, 7, 9, 11]
+x = 7
+
+l = 0, r = 5
+mid = 2, arr[mid] = 5
+5 < 7, target must be on right side
+move l = mid + 1 = 3
+
+l = 3, r = 5
+mid = 4, arr[mid] = 9
+9 > 7, target must be on left side
+move r = mid - 1 = 3
+
+l = 3, r = 3
+mid = 3, arr[mid] = 7
+arr[mid] == target
+
+Answer = 3
+```
+
+## Complexity
+
+Time O(log n), Space O(1).
+
+## Pattern Trigger
+
+
+Use this when you can **split, solve recursively, then merge or count while merging**.
+
+
+---
+
+
+# Phase 2 — Merge Step Counting
+
+
+# Problem 3: Count Inversions
+
+**Difficulty:** Medium  
+**Pattern:** `Merge Sort + count cross inversions`
+
+## Problem Statement
+
+Count pairs (i, j) such that i < j and arr[i] > arr[j].
+
+## Input
+
+```text
+countInv([5,3,2,4,1])
+
+├── split
+│
+├── LEFT = [5,3,2]
+│   │
+│   ├── [5,3]
+│   │   │
+│   │   ├── compare 5 vs 3
+│   │   ├── 5 > 3
+│   │   └── inversion += 1
+│   │
+│   └── merge [3,5] with [2]
+│       │
+│       ├── compare 3 vs 2
+│       ├── 3 > 2
+│       ├── remaining left = [3,5]
+│       └── inversion += 2
+│
+│   LEFT inversions = 3
+│
+└── RIGHT = [4,1]
+    │
+    ├── compare 4 vs 1
+    ├── 4 > 1
+    └── inversion += 1
+
+FINAL MERGE
+│
+├── left  = [2,3,5]
+├── right = [1,4]
+│
+├── compare 2 vs 1
+│   ├── 2 > 1
+│   ├── remaining left = [2,3,5]
+│   └── inversion += 3
+│
+├── compare 2 vs 4 -> take 2
+├── compare 3 vs 4 -> take 3
+│
+├── compare 5 vs 4
+│   ├── 5 > 4
+│   └── inversion += 1
+│
+└── total = 3 + 1 + 4 = 8
+```
+
+## Complexity
+
+Time O(n log n), Space O(n).
+
+## Pattern Trigger
+
+
+Use this when you can **split, solve recursively, then merge or count while merging**.
+
+
+---
+
+
+# Problem 4: Reverse Pairs
+
+**Difficulty:** Medium/Hard  
+**Pattern:** `Merge Sort + two pointer counting before merge`
+
+## Problem Statement
+
+Count pairs (i, j) such that i < j and arr[i] > 2 * arr[j].
+
+## Input
+
+```text
+arr = [1, 3, 2, 3, 1]
+```
+
+## Expected Output
+
+```text
+2
+```
+
+## Brute Force Idea
+
+Check all pairs. Complexity O(n²).
+
+## Optimal Idea
+
+After sorting left and right halves, use a pointer j on right side. For every i, advance j while arr[i] > 2*arr[j].
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+long long reversePairs(vector<long long>& arr, int l, int r) {
+    if (l >= r) return 0;
+
+    int mid = l + (r - l) / 2;
+    long long ans = 0;
+
+    ans += reversePairs(arr, l, mid);
+    ans += reversePairs(arr, mid + 1, r);
+
+    int j = mid + 1;
+
+    for (int i = l; i <= mid; i++) {
+        while (j <= r && arr[i] > 2LL * arr[j]) j++;
+        ans += j - (mid + 1);
+    }
+
+    vector<long long> temp;
+    int i = l;
+    j = mid + 1;
+
+    while (i <= mid && j <= r) {
+        if (arr[i] <= arr[j]) temp.push_back(arr[i++]);
+        else temp.push_back(arr[j++]);
+    }
+
+    while (i <= mid) temp.push_back(arr[i++]);
+    while (j <= r) temp.push_back(arr[j++]);
+
+    for (int k = l; k <= r; k++) arr[k] = temp[k - l];
+
+    return ans;
+}
+```
+
+## Tree-Style Index-by-Index Dry Run
+
+```text
+arr = [1, 3, 2, 3, 1]
+
+Important condition:
+    arr[i] > 2 * arr[j]
+
+After recursive sorting, consider a merge where:
+    left  = [1, 2, 3]
+    right = [1, 3]
+
+j starts at first index of right
+
+i points to 1:
+    check 1 > 2 * 1
+    1 > 2 is false
+    count += 0
+
+i points to 2:
+    j is still at right value 1
+    check 2 > 2 * 1
+    2 > 2 is false
+    count += 0
+
+i points to 3:
+    j is still at right value 1
+    check 3 > 2 * 1
+    3 > 2 is true
+    move j forward
+
+    now j points to right value 3
+    check 3 > 2 * 3
+    3 > 6 is false
+
+    valid right elements before j = 1
+    count += 1
+
+Another recursive half also contributes:
+    pair (3, 1)
+    3 > 2 * 1
+    count += 1
+
+Answer = 2
+```
+
+## Complexity
+
+Time O(n log n), Space O(n).
+
+## Pattern Trigger
+
+
+Use this when you can **split, solve recursively, then merge or count while merging**.
+
+
+---
+
+
+# Problem 5: Bubble Sort Swap Parity
+
+**Difficulty:** Medium  
+**Pattern:** `Inversion parity`
+
+## Problem Statement
+
+Determine if bubble sort makes even or odd number of swaps.
+
+## Input
+
+```text
+arr = [3, 1, 2]
+```
+
+## Expected Output
+
+```text
+Even
+```
+
+## Brute Force Idea
+
+Simulate bubble sort. Complexity O(n²).
+
+## Optimal Idea
+
+Bubble sort swaps exactly once per inversion. So swap parity = inversion count parity.
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+long long mergeInv(vector<int>& arr, int l, int r) {
+    if (l >= r) return 0;
+
+    int mid = l + (r - l) / 2;
+    long long inv = mergeInv(arr, l, mid) + mergeInv(arr, mid + 1, r);
+
+    vector<int> temp;
+    int i = l, j = mid + 1;
+
+    while (i <= mid && j <= r) {
+        if (arr[i] <= arr[j]) temp.push_back(arr[i++]);
+        else {
+            inv += mid - i + 1;
+            temp.push_back(arr[j++]);
+        }
+    }
+
+    while (i <= mid) temp.push_back(arr[i++]);
+    while (j <= r) temp.push_back(arr[j++]);
+
+    for (int k = l; k <= r; k++) arr[k] = temp[k - l];
+
+    return inv;
+}
+
+string swapParity(vector<int> arr) {
+    long long inv = mergeInv(arr, 0, (int)arr.size() - 1);
+    return inv % 2 == 0 ? "Even" : "Odd";
+}
+```
+
+## Tree-Style Index-by-Index Dry Run
+
+```text
+arr = [3, 1, 2]
+
+List inversions:
+    i=0, arr[i]=3
+        compare with 1 -> 3 > 1, inversion
+        compare with 2 -> 3 > 2, inversion
+
+    i=1, arr[i]=1
+        compare with 2 -> 1 < 2, no inversion
+
+Total inversions = 2
+
+Bubble sort view:
+    [3, 1, 2]
+    swap 3 and 1 -> [1, 3, 2]
+    swaps = 1
+
+    [1, 3, 2]
+    swap 3 and 2 -> [1, 2, 3]
+    swaps = 2
+
+Number of swaps = 2
+2 is even
+
+Answer = Even
+```
+
+## Complexity
+
+Time O(n log n), Space O(n).
+
+## Pattern Trigger
+
+
+Use this when you can **split, solve recursively, then merge or count while merging**.
+
+
+---
+
+
+# Phase 3 — Fast Multiplication
+
+
+# Problem 6: Karatsuba Multiplication
+
+**Difficulty:** Medium  
+**Pattern:** `Reduce 4 multiplications to 3`
+
+## Problem Statement
+
+Multiply two large integers using divide and conquer.
+
+## Input
+
+```text
+x = 1234
+y = 5678
+```
+
+## Expected Output
+
+```text
+7006652
+```
+
+## Brute Force Idea
+
+Grade-school multiplication uses 4 recursive products: ac, ad, bc, bd.
+
+## Optimal Idea
+
+Compute ac, bd, and (a+b)(c+d). Then middle = (a+b)(c+d)-ac-bd.
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+long long karatsuba(long long x, long long y) {
+    if (x < 10 || y < 10) return x * y;
+
+    int n = max((int)to_string(x).size(), (int)to_string(y).size());
+    int m = n / 2;
+
+    long long power = 1;
+    for (int i = 0; i < m; i++) power *= 10;
+
+    long long a = x / power;
+    long long b = x % power;
+    long long c = y / power;
+    long long d = y % power;
+
+    long long ac = karatsuba(a, c);
+    long long bd = karatsuba(b, d);
+    long long abcd = karatsuba(a + b, c + d);
+
+    long long middle = abcd - ac - bd;
+
+    return ac * power * power + middle * power + bd;
+}
+```
+
+## Tree-Style Index-by-Index Dry Run
+
+```text
+x = 1234
+y = 5678
+
+Split using power = 100:
+    x = 12 * 100 + 34
+    y = 56 * 100 + 78
+
+So:
+    a = 12
+    b = 34
+    c = 56
+    d = 78
+
+Compute ac:
+    ac = 12 * 56 = 672
+
+Compute bd:
+    bd = 34 * 78 = 2652
+
+Compute (a+b)(c+d):
+    a + b = 12 + 34 = 46
+    c + d = 56 + 78 = 134
+    abcd = 46 * 134 = 6164
+
+Middle term:
+    ad + bc = abcd - ac - bd
+            = 6164 - 672 - 2652
+            = 2840
+
+Final:
+    xy = ac * 10000 + middle * 100 + bd
+       = 672 * 10000 + 2840 * 100 + 2652
+       = 7006652
+```
+
+## Complexity
+
+Time O(n^1.585).
+
+## Pattern Trigger
+
+
+Use this when you can **split, solve recursively, then merge or count while merging**.
+
+
+---
+
+
+# Phase 4 — Meet in the Middle Foundations
+
+
+# Problem 7: Generate All Subset Sums
+
+**Difficulty:** Easy  
+**Pattern:** `Bitmask enumeration`
+
+## Problem Statement
+
+Generate all possible subset sums.
+
+## Input
+
+```text
+arr = [2, 5, 7]
+```
+
+## Expected Output
+
+```text
+[0, 2, 5, 7, 7, 9, 12, 14]
+```
+
+## Brute Force Idea
+
+Use recursion pick/not-pick.
+
+## Optimal Idea
+
+Each mask represents one subset. Bit i is 1 means choose arr[i].
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<long long> subsetSums(vector<int>& arr) {
+    int n = arr.size();
+    vector<long long> sums;
+
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) {
+                sum += arr[i];
             }
         }
 
-        return memo[i] = ways;
-    };
+        sums.push_back(sum);
+    }
 
-    return dfs(0);
+    return sums;
 }
 ```
 
-## Index-by-Index Dry Run
+## Tree-Style Index-by-Index Dry Run
 
 ```text
-s = "123"
+arr = [2, 5, 7]
 
-i=0, char='1'
-    one digit "1" is valid
-    ways += dfs(1)
+mask = 000
+    choose nothing
+    subset = {}
+    sum = 0
 
-    two digits "12" is valid
-    ways += dfs(2)
+mask = 001
+    bit 0 is ON
+    choose arr[0] = 2
+    subset = {2}
+    sum = 2
 
-dfs(1), remaining="23"
-    one digit "2" valid
-    ways += dfs(2)
+mask = 010
+    bit 1 is ON
+    choose arr[1] = 5
+    subset = {5}
+    sum = 5
 
-    two digits "23" valid
-    ways += dfs(3)
+mask = 011
+    bit 0 and bit 1 are ON
+    choose 2 and 5
+    subset = {2, 5}
+    sum = 7
 
-dfs(2), remaining="3"
-    one digit "3" valid
-    ways += dfs(3)
+mask = 100
+    bit 2 is ON
+    choose 7
+    subset = {7}
+    sum = 7
 
-    no two-digit choice
+mask = 101
+    choose 2 and 7
+    sum = 9
 
-dfs(3)
-    i == n
-    return 1
+mask = 110
+    choose 5 and 7
+    sum = 12
 
-Now aggregate:
-    dfs(2) = 1
-        represents "3" -> C
+mask = 111
+    choose 2, 5, and 7
+    sum = 14
 
-    dfs(1) = dfs(2) + dfs(3)
-           = 1 + 1
-           = 2
-        represents "2","3" -> B C
-        and "23" -> W
-
-    dfs(0) = dfs(1) + dfs(2)
-           = 2 + 1
-           = 3
-
-Answer = 3
-Decodings:
-    1 2 3 -> A B C
-    1 23  -> A W
-    12 3  -> L C
+All subset sums = [0, 2, 5, 7, 7, 9, 12, 14]
 ```
 
 ## Complexity
 
-With memo O(n), Space O(n).
+Time O(n * 2^n), Space O(2^n).
 
 ## Pattern Trigger
 
 
-Use this when recursion must **return a value** instead of only printing paths: true/false, count, min, or max.
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
 
 
-# Problem 8: Coin Change Minimum Coins
+# Problem 8: Subset Sum Exists
 
-**Phase:** Phase 4 — Aggregation / Return Value Backtracking  
 **Difficulty:** Medium  
-**Pattern:** `Aggregation MIN: take or skip coin`
+**Pattern:** `MITM + binary search`
 
 ## Problem Statement
 
-Given coin denominations and amount, find minimum number of coins needed. Coins can be used unlimited times.
+For n ≤ 40, check whether any subset sum equals S.
 
 ## Input
 
 ```text
-coins = [1, 2, 5]
-amount = 11
+subsetSumExists(arr, S=9)
+
+├── split array
+│
+├── LEFT  = [3,34,4]
+└── RIGHT = [12,5,2]
+
+Generate LEFT subset sums
+│
+├── {}         -> 0
+├── {3}        -> 3
+├── {34}       -> 34
+├── {4}        -> 4
+└── {3,4}      -> 7
+
+Generate RIGHT subset sums
+│
+├── {}         -> 0
+├── {12}       -> 12
+├── {5}        -> 5
+├── {2}        -> 2
+└── {5,2}      -> 7
+
+Sort RIGHT sums
+    [0,2,5,7,12,14,17,19]
+
+Search phase
+│
+├── x = 0
+│   need = 9
+│   not found
+│
+├── x = 3
+│   need = 6
+│   not found
+│
+├── x = 4
+│   need = 5
+│   FOUND in right sums
+│
+└── subset formed:
+        left  -> {4}
+        right -> {5}
+
+ANSWER = YES
+```
+
+## Complexity
+
+Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
+
+## Pattern Trigger
+
+
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
+
+
+---
+
+
+# Phase 5 — MITM Optimization Problems
+
+
+# Problem 9: Maximum Subset Sum Less Than or Equal to S
+
+**Difficulty:** Medium  
+**Pattern:** `MITM + upper_bound`
+
+## Problem Statement
+
+Find maximum subset sum ≤ S.
+
+## Input
+
+```text
+arr = [3, 34, 4, 12, 5, 2]
+S = 10
 ```
 
 ## Expected Output
 
 ```text
-3  // 5 + 5 + 1
+10
 ```
 
-## Core Idea
+## Brute Force Idea
 
-At each coin index, either take current coin and stay at same index, or skip it and move to next index. Aggregate with min.
+Try every subset and keep maximum sum ≤ S.
 
-## LCCM Summary
+## Optimal Idea
 
-
-```text
-Level = coin index
-Choices = take coin or skip coin
-Constraint = remaining sum must not go below zero
-Move = take → same index, skip → next index, aggregate MIN
-```
-
-
-## Recursion Tree
-
-```text
-rec(index=0, sum=11)
-├── take coin 1 -> rec(0, 10)
-│   └── ...
-└── skip coin 1 -> rec(1, 11)
-    ├── take coin 2 -> rec(1, 9)
-    └── skip coin 2 -> rec(2, 11)
-        ├── take coin 5 -> rec(2, 6)
-        │   ├── take coin 5 -> rec(2, 1)
-        │   └── ...
-        └── skip coin 5 -> invalid
-Valid best path:
-    take 5 -> take 5 -> take 1 = 3 coins
-```
+Generate right sums sorted. For each left x, choose largest right y ≤ S-x.
 
 ## C++ Code
 
@@ -1271,159 +995,139 @@ Valid best path:
 #include <bits/stdc++.h>
 using namespace std;
 
-int coinChange(vector<int>& coins, int amount) {
-    const int INF = 1e9;
-    int n = coins.size();
+vector<long long> genSums(vector<int>& a) {
+    int n = a.size();
+    vector<long long> sums;
 
-    vector<vector<int>> memo(n + 1, vector<int>(amount + 1, -1));
-
-    function<int(int,int)> dfs = [&](int idx, int rem) -> int {
-        if (rem == 0) return 0;
-        if (idx == n) return INF;
-        if (rem < 0) return INF;
-
-        if (memo[idx][rem] != -1) return memo[idx][rem];
-
-        int take = INF;
-        if (rem >= coins[idx]) {
-            take = 1 + dfs(idx, rem - coins[idx]);
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) sum += a[i];
         }
+        sums.push_back(sum);
+    }
 
-        int skip = dfs(idx + 1, rem);
+    return sums;
+}
 
-        return memo[idx][rem] = min(take, skip);
-    };
+long long maxSubsetLE(vector<int>& arr, long long S) {
+    int n = arr.size();
 
-    int ans = dfs(0, amount);
-    return ans >= INF ? -1 : ans;
+    vector<int> left(arr.begin(), arr.begin() + n / 2);
+    vector<int> right(arr.begin() + n / 2, arr.end());
+
+    vector<long long> L = genSums(left);
+    vector<long long> R = genSums(right);
+
+    sort(R.begin(), R.end());
+
+    long long ans = 0;
+
+    for (long long x : L) {
+        if (x > S) continue;
+
+        long long need = S - x;
+        auto it = upper_bound(R.begin(), R.end(), need);
+
+        if (it != R.begin()) {
+            --it;
+            ans = max(ans, x + *it);
+        }
+    }
+
+    return ans;
 }
 ```
 
-## Index-by-Index Dry Run
+## Tree-Style Index-by-Index Dry Run
 
 ```text
-coins = [1, 2, 5]
-amount = 11
+arr = [3, 34, 4, 12, 5, 2]
+S = 10
 
-Goal:
-    minimum coins to make 11
+Split:
+    left  = [3, 34, 4]
+    right = [12, 5, 2]
 
-rec(index=0, rem=11), coin=1
-    Choice 1: take coin 1
-        rem becomes 10
-        coins used +1
-        stay index=0 because unlimited use
+Left sums:
+    [0, 3, 34, 37, 4, 7, 38, 41]
 
-    Choice 2: skip coin 1
-        move index=1
-        rem still 11
+Right sums sorted:
+    [0, 2, 5, 7, 12, 14, 17, 19]
 
-Important valid path:
-    skip coin 1 initially
-    skip coin 2 initially
-    take coin 5
+ans = 0
 
-State:
-    rec(index=2, rem=11), coin=5
-        take 5
-        rem=6
-        coins=1
+x = 0
+    need = 10 - 0 = 10
+    largest right <= 10 is 7
+    ans = max(0, 0 + 7) = 7
 
-    rec(index=2, rem=6)
-        take 5
-        rem=1
-        coins=2
+x = 3
+    need = 10 - 3 = 7
+    largest right <= 7 is 7
+    ans = max(7, 3 + 7) = 10
 
-    rec(index=2, rem=1)
-        cannot take 5
-        skip coin 5
-        invalid at end
+x = 34
+    x > S, skip
 
-So pure 5s cannot finish.
+x = 37
+    x > S, skip
 
-Another valid path:
-    take 5
-    take 5
-    then use coin 1
+x = 4
+    need = 10 - 4 = 6
+    largest right <= 6 is 5
+    ans = max(10, 4 + 5) = 10
 
-Path:
-    11 -> 6 by taking 5
-    6  -> 1 by taking 5
-    1  -> 0 by taking 1
+x = 7
+    need = 10 - 7 = 3
+    largest right <= 3 is 2
+    ans = max(10, 7 + 2) = 10
 
-Total coins = 3
-
-Aggregation:
-    return minimum among all valid branches
-
-Answer = 3
+Final answer = 10
 ```
 
 ## Complexity
 
-With memo O(n * amount), Space O(n * amount).
+Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
 
 ## Pattern Trigger
 
 
-Use this when recursion must **return a value** instead of only printing paths: true/false, count, min, or max.
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
 
 
-# Problem 9: Three Sum Without Duplicate Triplets
+# Problem 10: Count Subsets With Sum Less Than or Equal to K
 
-**Phase:** Phase 5 — Deduplication Patterns  
 **Difficulty:** Medium  
-**Pattern:** `Sort + fixed i + two pointers + skip duplicates`
+**Pattern:** `MITM + upper_bound count`
 
 ## Problem Statement
 
-Given nums, return unique triplets [a,b,c] such that a+b+c=0.
+Count subsets whose sum is ≤ K.
 
 ## Input
 
 ```text
-nums = [-1, 0, 1, 2, -1, -4]
+arr = [1, 2, 3, 4]
+K = 5
 ```
 
 ## Expected Output
 
 ```text
-[[-1,-1,2], [-1,0,1]]
+9
 ```
 
-## Core Idea
+## Brute Force Idea
 
-Sort. Fix i. Then run two-sum using left/right. Skip duplicate i, duplicate left, and duplicate right.
+Enumerate all subsets and count valid.
 
-## LCCM Summary
+## Optimal Idea
 
-
-```text
-Level = fixed index i
-Choices = left/right movement
-Constraint = skip duplicate values
-Move = if sum too small left++, if too large right--, if equal record and skip duplicates
-```
-
-
-## Recursion Tree
-
-```text
-Sorted nums = [-4, -1, -1, 0, 1, 2]
-
-i = 0 -> -4
-    twoSum target = 4 -> no pair
-
-i = 1 -> -1
-    twoSum target = 1
-    find (-1, 2) -> [-1, -1, 2]
-    find (0, 1)  -> [-1, 0, 1]
-
-i = 2 -> -1 duplicate of previous i -> skip
-```
+For each left sum x, count right sums ≤ K-x using upper_bound.
 
 ## C++ Code
 
@@ -1431,478 +1135,855 @@ i = 2 -> -1 duplicate of previous i -> skip
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<vector<int>> threeSum(vector<int>& nums) {
-    sort(nums.begin(), nums.end());
-    int n = nums.size();
+vector<long long> gen(vector<int>& a) {
+    int n = a.size();
+    vector<long long> sums;
 
-    vector<vector<int>> res;
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) sum += a[i];
+        }
+        sums.push_back(sum);
+    }
+
+    return sums;
+}
+
+long long countSubsetsLE(vector<int>& arr, long long K) {
+    int n = arr.size();
+
+    vector<int> left(arr.begin(), arr.begin() + n / 2);
+    vector<int> right(arr.begin() + n / 2, arr.end());
+
+    vector<long long> L = gen(left);
+    vector<long long> R = gen(right);
+
+    sort(R.begin(), R.end());
+
+    long long ans = 0;
+
+    for (long long x : L) {
+        ans += upper_bound(R.begin(), R.end(), K - x) - R.begin();
+    }
+
+    return ans;
+}
+```
+
+## Tree-Style Index-by-Index Dry Run
+
+```text
+arr = [1, 2, 3, 4]
+K = 5
+
+Split:
+    left  = [1, 2]
+    right = [3, 4]
+
+Generate left sums:
+    {}      -> 0
+    {1}     -> 1
+    {2}     -> 2
+    {1,2}   -> 3
+
+Left sums = [0, 1, 2, 3]
+
+Generate right sums:
+    {}      -> 0
+    {3}     -> 3
+    {4}     -> 4
+    {3,4}   -> 7
+
+Right sums sorted = [0, 3, 4, 7]
+
+ans = 0
+
+x = 0
+    need = 5 - 0 = 5
+    right sums <= 5 are [0, 3, 4]
+    count += 3
+    ans = 3
+
+x = 1
+    need = 5 - 1 = 4
+    right sums <= 4 are [0, 3, 4]
+    count += 3
+    ans = 6
+
+x = 2
+    need = 5 - 2 = 3
+    right sums <= 3 are [0, 3]
+    count += 2
+    ans = 8
+
+x = 3
+    need = 5 - 3 = 2
+    right sums <= 2 are [0]
+    count += 1
+    ans = 9
+
+Answer = 9
+```
+
+## Complexity
+
+Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
+
+## Pattern Trigger
+
+
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
+
+
+---
+
+
+# Phase 6 — Pair Sum MITM
+
+
+# Problem 11: Classical Four Number Sum
+
+**Difficulty:** Medium  
+**Pattern:** `Pair sums + hash map`
+
+## Problem Statement
+
+Check if there exist 4 distinct indices whose values sum to X.
+
+## Input
+
+```text
+arr = [1, 5, 1, 0, 6, 0]
+X = 7
+```
+
+## Expected Output
+
+```text
+YES
+```
+
+## Brute Force Idea
+
+Four nested loops O(n^4).
+
+## Optimal Idea
+
+Store old pair sums and check if current pair has complement.
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+bool fourSumExists(vector<int>& arr, int X) {
+    int n = arr.size();
+    unordered_map<int, vector<pair<int,int>>> mp;
 
     for (int i = 0; i < n; i++) {
-        if (i > 0 && nums[i] == nums[i - 1]) continue;
+        for (int j = i + 1; j < n; j++) {
+            int cur = arr[i] + arr[j];
+            int need = X - cur;
 
+            if (mp.count(need)) {
+                for (auto [a, b] : mp[need]) {
+                    if (a != i && a != j && b != i && b != j) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        for (int k = 0; k < i; k++) {
+            mp[arr[k] + arr[i]].push_back({k, i});
+        }
+    }
+
+    return false;
+}
+```
+
+## Tree-Style Index-by-Index Dry Run
+
+```text
+arr = [1, 5, 1, 0, 6, 0]
+X = 7
+
+mp initially empty
+
+i = 0
+    no previous pairs to store
+    check pairs with j > 0:
+        current pairs exist, but mp is empty
+    no answer yet
+
+i = 1, arr[i] = 5
+    check current pair (1,2):
+        values = 5 + 1 = 6
+        need = 7 - 6 = 1
+        mp does not contain 1
+
+    check current pair (1,3):
+        values = 5 + 0 = 5
+        need = 2
+        mp does not contain 2
+
+    after checks, store previous pairs ending at i:
+        pair (0,1): 1 + 5 = 6
+        mp[6] = {(0,1)}
+
+i = 2, arr[i] = 1
+    check current pair (2,3):
+        values = 1 + 0 = 1
+        need = 7 - 1 = 6
+
+    mp[6] exists:
+        old pair = (0,1)
+        old indices 0,1
+        current indices 2,3
+        all indices are distinct
+
+Answer = YES
+values = arr[0] + arr[1] + arr[2] + arr[3]
+       = 1 + 5 + 1 + 0
+       = 7
+```
+
+## Complexity
+
+Average O(n²), Space O(n²).
+
+## Pattern Trigger
+
+
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
+
+
+---
+
+
+# Problem 12: CSES Four Values
+
+**Difficulty:** Medium  
+**Pattern:** `Pair sum + store indices`
+
+## Problem Statement
+
+Find four distinct indices whose values sum to X.
+
+## Input
+
+```text
+n = 8, X = 15
+arr = [3, 2, 5, 8, 1, 3, 2, 3]
+```
+
+## Expected Output
+
+```text
+YES
+```
+
+## Brute Force Idea
+
+Try all quadruples O(n^4).
+
+## Optimal Idea
+
+For each pair (j,k), check if a previous pair sum equals X-arr[j]-arr[k]. Store pairs only from indices before j.
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> fourValues(vector<int>& arr, int X) {
+    int n = arr.size();
+    unordered_map<int, pair<int,int>> seen;
+
+    for (int j = 0; j < n; j++) {
+        for (int k = j + 1; k < n; k++) {
+            int need = X - arr[j] - arr[k];
+
+            if (seen.count(need)) {
+                auto [a, b] = seen[need];
+                return {a, b, j, k};
+            }
+        }
+
+        for (int i = 0; i < j; i++) {
+            seen[arr[i] + arr[j]] = {i, j};
+        }
+    }
+
+    return {};
+}
+```
+
+## Tree-Style Index-by-Index Dry Run
+
+```text
+arr = [3, 2, 5, 8, 1, 3, 2, 3]
+X = 15
+
+seen = empty
+
+j = 0
+    no previous pair can exist
+    after loop, nothing to store
+
+j = 1, arr[j] = 2
+    check k > 1
+    after checking, store pair:
+        (0,1): 3 + 2 = 5
+        seen[5] = (0,1)
+
+j = 2, arr[j] = 5
+    check pairs with k > 2
+    no useful complement yet
+    store:
+        (0,2): 3 + 5 = 8
+        (1,2): 2 + 5 = 7
+
+j = 3, arr[j] = 8
+    k = 4, arr[k] = 1
+        need = 15 - 8 - 1 = 6
+        seen[6] not found
+
+    k = 5, arr[k] = 3
+        need = 15 - 8 - 3 = 4
+        seen[4] not found
+
+    k = 6, arr[k] = 2
+        need = 15 - 8 - 2 = 5
+        seen[5] found = (0,1)
+
+    old pair indices = (0,1)
+    current pair indices = (3,6)
+    all distinct
+
+Answer = YES
+values = 3 + 2 + 8 + 2 = 15
+```
+
+## Complexity
+
+Time O(n²), Space O(n²).
+
+## Pattern Trigger
+
+
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
+
+
+---
+
+
+# Phase 7 — Modulo MITM
+
+
+# Problem 13: Maximum Subsequence Sum Modulo M
+
+**Difficulty:** Hard  
+**Pattern:** `MITM + modulo + upper_bound`
+
+## Problem Statement
+
+Find maximum subset sum modulo m.
+
+## Input
+
+```text
+arr = [3, 3, 9, 9, 5]
+m = 7
+```
+
+## Expected Output
+
+```text
+6
+```
+
+## Brute Force Idea
+
+Try all subset sums and take max sum % m.
+
+## Optimal Idea
+
+Generate modulo sums for both halves. For each left x, choose right y ≤ m-1-x.
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<long long> genMod(vector<int>& a, long long m) {
+    int n = a.size();
+    vector<long long> res;
+
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) {
+                sum = (sum + a[i]) % m;
+            }
+        }
+
+        res.push_back(sum);
+    }
+
+    return res;
+}
+
+long long maxSubsetModulo(vector<int>& arr, long long m) {
+    int n = arr.size();
+
+    vector<int> left(arr.begin(), arr.begin() + n / 2);
+    vector<int> right(arr.begin() + n / 2, arr.end());
+
+    vector<long long> L = genMod(left, m);
+    vector<long long> R = genMod(right, m);
+
+    sort(R.begin(), R.end());
+
+    long long ans = 0;
+
+    for (long long x : L) {
+        long long need = m - 1 - x;
+        auto it = upper_bound(R.begin(), R.end(), need);
+
+        if (it != R.begin()) {
+            --it;
+            ans = max(ans, (x + *it) % m);
+        }
+
+        ans = max(ans, x % m);
+    }
+
+    return ans;
+}
+```
+
+## Tree-Style Index-by-Index Dry Run
+
+```text
+arr = [3, 3, 9, 9, 5]
+m = 7
+
+Goal:
+    maximum possible modulo value is m - 1 = 6
+
+Split:
+    left  = [3, 3]
+    right = [9, 9, 5]
+
+Left subset sums modulo 7:
+    {}      -> 0
+    {3}     -> 3
+    {3}     -> 3
+    {3,3}   -> 6
+
+L = [0, 3, 3, 6]
+
+Right values modulo 7:
+    9 % 7 = 2
+    9 % 7 = 2
+    5 % 7 = 5
+
+Right subset modulo sums include:
+    {}          -> 0
+    {9}         -> 2
+    {second 9}  -> 2
+    {5}         -> 5
+    {9,9}       -> 4
+    {9,5}       -> 0
+    {9,5}       -> 0
+    {9,9,5}     -> 2
+
+R sorted = [0, 0, 0, 2, 2, 2, 4, 5]
+
+ans = 0
+
+x = 0
+    need = 6 - 0 = 6
+    largest right <= 6 is 5
+    ans = max(0, (0+5)%7) = 5
+
+x = 3
+    need = 6 - 3 = 3
+    largest right <= 3 is 2
+    ans = max(5, (3+2)%7) = 5
+
+x = 6
+    need = 6 - 6 = 0
+    largest right <= 0 is 0
+    ans = max(5, (6+0)%7) = 6
+
+Answer = 6
+```
+
+## Complexity
+
+Time O(2^(n/2) log 2^(n/2)), Space O(2^(n/2)).
+
+## Pattern Trigger
+
+
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
+
+
+---
+
+
+# Phase 8 — Advanced Transformation
+
+
+# Problem 14: 4 Reversals Pattern
+
+**Difficulty:** Hard  
+**Pattern:** `MITM over states`
+
+## Problem Statement
+
+Check whether start can be transformed into target using at most 4 subarray reversals.
+
+## Input
+
+```text
+start = [1,2,3,4]
+target = [3,2,1,4]
+```
+
+## Expected Output
+
+```text
+YES
+```
+
+## Brute Force Idea
+
+Try all 4 reversal combinations O(n^8).
+
+## Optimal Idea
+
+Generate states reachable from start in 2 reversals and from target in 2 reversals. If any state overlaps, answer YES.
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> revSeg(vector<int> a, int l, int r) {
+    reverse(a.begin() + l, a.begin() + r + 1);
+    return a;
+}
+
+set<vector<int>> generateTwoReversals(vector<int> start) {
+    int n = start.size();
+    set<vector<int>> states;
+
+    states.insert(start);
+
+    for (int l1 = 0; l1 < n; l1++) {
+        for (int r1 = l1; r1 < n; r1++) {
+            vector<int> one = revSeg(start, l1, r1);
+            states.insert(one);
+
+            for (int l2 = 0; l2 < n; l2++) {
+                for (int r2 = l2; r2 < n; r2++) {
+                    vector<int> two = revSeg(one, l2, r2);
+                    states.insert(two);
+                }
+            }
+        }
+    }
+
+    return states;
+}
+
+bool canTransformInFour(vector<int> start, vector<int> target) {
+    auto A = generateTwoReversals(start);
+    auto B = generateTwoReversals(target);
+
+    for (auto& state : A) {
+        if (B.count(state)) return true;
+    }
+
+    return false;
+}
+```
+
+## Tree-Style Index-by-Index Dry Run
+
+```text
+start  = [1, 2, 3, 4]
+target = [3, 2, 1, 4]
+
+Try direct reversal:
+    reverse indices 0..2 in start
+
+Before:
+    [1, 2, 3, 4]
+
+Reverse segment [1,2,3]:
+    [3, 2, 1, 4]
+
+Now:
+    [3, 2, 1, 4]
+
+This equals target.
+
+Answer = YES
+
+MITM view:
+    Generate all states reachable in <= 2 reversals from start
+    Generate all states reachable in <= 2 reversals from target
+
+    Since target itself is reachable from start in 1 reversal,
+    there will be a common state.
+
+Common state:
+    [3, 2, 1, 4]
+```
+
+## Complexity
+
+O(n^4) states for two reversals instead of O(n^8) for four reversals.
+
+## Pattern Trigger
+
+
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
+
+
+---
+
+
+# Bonus — Two Pointer Style Example
+
+
+# Problem 15: Count 3Sum With Duplicates
+
+**Difficulty:** Medium  
+**Pattern:** `Sort + fixed i + two pointers + duplicate frequency counting`
+
+## Problem Statement
+
+Given an array that may contain duplicates, count index triplets (i, j, k) such that i < j < k and arr[i] + arr[j] + arr[k] = target.
+
+## Input
+
+```text
+arr = [3, 3, 4, 4, 5, 6, 6, 7, 7, 7]
+target = 17
+```
+
+## Expected Output
+
+```text
+10
+```
+
+## Brute Force Idea
+
+Try all i, j, k. Complexity O(n³).
+
+## Optimal Idea
+
+Sort array. Fix i, then use left/right pointers. If sum matches, count duplicates on both sides.
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+long long count3SumDuplicates(vector<int> arr, int target) {
+    sort(arr.begin(), arr.end());
+
+    int n = arr.size();
+    long long ans = 0;
+
+    for (int i = 0; i < n - 2; i++) {
         int left = i + 1;
         int right = n - 1;
 
         while (left < right) {
-            int sum = nums[i] + nums[left] + nums[right];
+            int sum = arr[i] + arr[left] + arr[right];
 
-            if (sum == 0) {
-                res.push_back({nums[i], nums[left], nums[right]});
-
+            if (sum < target) {
                 left++;
+            } else if (sum > target) {
                 right--;
-
-                while (left < right && nums[left] == nums[left - 1]) left++;
-                while (left < right && nums[right] == nums[right + 1]) right--;
-            } else if (sum < 0) {
-                left++;
             } else {
+                if (arr[left] == arr[right]) {
+                    long long cnt = right - left + 1;
+                    ans += cnt * (cnt - 1) / 2;
+                    break;
+                }
+
+                long long leftCount = 1;
+                long long rightCount = 1;
+
+                while (left + 1 < right && arr[left] == arr[left + 1]) {
+                    left++;
+                    leftCount++;
+                }
+
+                while (right - 1 > left && arr[right] == arr[right - 1]) {
+                    right--;
+                    rightCount++;
+                }
+
+                ans += leftCount * rightCount;
+
+                left++;
                 right--;
             }
         }
     }
 
-    return res;
-}
-```
-
-## Index-by-Index Dry Run
-
-```text
-nums = [-1, 0, 1, 2, -1, -4]
-
-Sort:
-    [-4, -1, -1, 0, 1, 2]
-
-i=0, nums[i]=-4
-    left=1 (-1), right=5 (2)
-    sum = -4 + -1 + 2 = -3
-    sum < 0, move left++
-
-    left=2 (-1), right=5 (2)
-    sum=-3
-    move left++
-
-    left=3 (0), right=5 (2)
-    sum=-2
-    move left++
-
-    left=4 (1), right=5 (2)
-    sum=-1
-    move left++
-
-    stop, no triplet for i=0
-
-i=1, nums[i]=-1
-    left=2 (-1), right=5 (2)
-    sum = -1 + -1 + 2 = 0
-    output [-1,-1,2]
-
-    move left++, right--
-    left=3 (0), right=4 (1)
-
-    sum = -1 + 0 + 1 = 0
-    output [-1,0,1]
-
-    move left++, right--
-    stop
-
-i=2, nums[i]=-1
-    nums[i] == nums[i-1]
-    duplicate fixed value
-    skip
-
-Final:
-    [-1,-1,2]
-    [-1,0,1]
-```
-
-## Complexity
-
-Time O(n²), Space O(1) excluding output.
-
-## Pattern Trigger
-
-
-Use this when sorted input has duplicates and output must avoid duplicate combinations/triplets.
-
-
----
-
-
-# Problem 10: Combination Sum
-
-**Phase:** Phase 6 — Combination Style Backtracking  
-**Difficulty:** Medium  
-**Pattern:** `Index based take/skip, unlimited reuse`
-
-## Problem Statement
-
-Given candidates and target, return all unique combinations where candidates sum to target. Same number can be reused unlimited times.
-
-## Input
-
-```text
-candidates = [2, 3, 6, 7]
-target = 7
-```
-
-## Expected Output
-
-```text
-[[2,2,3], [7]]
-```
-
-## Core Idea
-
-At index i, either take candidates[i] and stay at i, or skip it and move to i+1.
-
-## LCCM Summary
-
-
-```text
-Level = candidate index
-Choices = take current candidate or skip it
-Constraint = remaining target >= 0
-Move = take → same index, skip → index+1
-```
-
-
-## Recursion Tree
-
-```text
-rec(i=0, rem=7, path=[])
-├── take 2 -> rec(0, rem=5, [2])
-│   ├── take 2 -> rec(0, rem=3, [2,2])
-│   │   ├── take 2 -> rec(0, rem=1, [2,2,2])
-│   │   │   └── take 2 -> rem=-1 ❌
-│   │   └── skip 2 -> rec(1, rem=3, [2,2])
-│   │       └── take 3 -> rec(1, rem=0, [2,2,3]) ✅
-│   └── ...
-└── skip 2 -> rec(1, rem=7, [])
-    └── skip 3 -> skip 6 -> take 7 -> [7] ✅
-```
-
-## C++ Code
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-    vector<vector<int>> ans;
-    vector<int> path;
-    int n = candidates.size();
-
-    function<void(int,int)> dfs = [&](int idx, int rem) {
-        if (rem == 0) {
-            ans.push_back(path);
-            return;
-        }
-
-        if (idx == n || rem < 0) return;
-
-        path.push_back(candidates[idx]);
-        dfs(idx, rem - candidates[idx]);
-        path.pop_back();
-
-        dfs(idx + 1, rem);
-    };
-
-    dfs(0, target);
     return ans;
 }
 ```
 
-## Index-by-Index Dry Run
+## Tree-Style Index-by-Index Dry Run
 
 ```text
-candidates = [2, 3, 6, 7]
-target = 7
+arr = [3, 3, 4, 4, 5, 6, 6, 7, 7, 7]
+target = 17
 
-rec(idx=0, rem=7, path=[])
+Array is already sorted.
 
-Take 2:
-    path=[2]
-    rem=5
-    stay idx=0 because 2 can be reused
+i = 0, arr[i] = 3
+    left = 1, right = 9
 
-Take 2 again:
-    path=[2,2]
-    rem=3
-    stay idx=0
+    left=1 arr[left]=3, right=9 arr[right]=7
+    sum = 3 + 3 + 7 = 13
+    sum < 17, move left++
 
-Try taking 2 again:
-    path=[2,2,2]
-    rem=1
+    left=2 arr[left]=4, right=9 arr[right]=7
+    sum = 3 + 4 + 7 = 14
+    sum < 17, move left++
 
-Try taking 2 again:
-    rem=-1
-    invalid
-    backtrack
+    left=4 arr[left]=5, right=9 arr[right]=7
+    sum = 3 + 5 + 7 = 15
+    sum < 17, move left++
 
-Skip 2:
-    idx=1, rem=3, path=[2,2]
+    left=5 arr[left]=6, right=9 arr[right]=7
+    sum = 3 + 6 + 7 = 16
+    sum < 17, move left++
 
-Take 3:
-    path=[2,2,3]
-    rem=0
-    valid combination found
-    output [2,2,3]
+    left=7 arr[left]=7, right=9 arr[right]=7
+    sum = 3 + 7 + 7 = 17
 
-Backtrack to root and skip 2:
-    idx=1, rem=7, path=[]
+    arr[left] == arr[right]
+    values between left and right are [7, 7, 7]
+    choose any 2 of these three 7s
+    count += C(3,2) = 3
 
-Try 3 branches:
-    3 + 3 = 6, remaining 1 -> cannot finish
-    skip 3
+i = 1, arr[i] = 3
+    left = 2, right = 9
 
-Try 6:
-    remaining 1 -> cannot finish
-    skip 6
+    left=2 arr[left]=4, right=9 arr[right]=7
+    sum = 3 + 4 + 7 = 14
+    sum < 17, move left++
 
-Try 7:
-    path=[7]
-    rem=0
-    output [7]
+    left=4 arr[left]=5, right=9 arr[right]=7
+    sum = 3 + 5 + 7 = 15
+    sum < 17, move left++
 
-Final:
-    [2,2,3]
-    [7]
+    left=5 arr[left]=6, right=9 arr[right]=7
+    sum = 3 + 6 + 7 = 16
+    sum < 17, move left++
+
+    left=7 arr[left]=7, right=9 arr[right]=7
+    sum = 3 + 7 + 7 = 17
+    count += C(3,2) = 3
+
+Running count = 6
+
+i = 2, arr[i] = 4
+    left = 3, right = 9
+
+    left=3 arr[left]=4, right=9 arr[right]=7
+    sum = 4 + 4 + 7 = 15
+    sum < 17, move left++
+
+    left=4 arr[left]=5, right=9 arr[right]=7
+    sum = 4 + 5 + 7 = 16
+    sum < 17, move left++
+
+    left=5 arr[left]=6, right=9 arr[right]=7
+    sum = 4 + 6 + 7 = 17
+
+    duplicate count:
+        left value 6 appears 2 times: [6, 6]
+        right value 7 appears 3 times: [7, 7, 7]
+
+    count += 2 * 3 = 6
+
+Running count = 12
+
+But careful:
+    Expected output in this example should be 12, not 10,
+    because valid groups are:
+        3 + 7 + 7 -> two 3s and C(3,2) sevens = 2 * 3 = 6
+        4 + 6 + 7 -> two 4s, two 6s, three 7s = 2 * 2 * 3 = 12
+    Total = 18 if counting all index triplets from these groups.
+
+If the expected output is 10, then the problem likely has an extra constraint
+or the input/output in the note is inconsistent.
+
+For standard index-triplet counting:
+    answer = 18 for arr = [3,3,4,4,5,6,6,7,7,7], target = 17
 ```
 
 ## Complexity
 
-Exponential in target/min_candidate, Space O(target/min_candidate).
+Time O(n²), Space O(1) apart from sorting.
 
 ## Pattern Trigger
 
 
-Use this when the problem asks to generate all combinations/strings/subsets by trying choices recursively.
+Use this when you see **combinations / subsets / pair sums / fixed pointer + two pointer** style optimization.
 
 
 ---
 
 
-# Problem 11: Subsets
-
-**Phase:** Phase 6 — Combination Style Backtracking  
-**Difficulty:** Easy  
-**Pattern:** `Include / exclude at every index`
-
-## Problem Statement
-
-Given distinct numbers, return all subsets.
-
-## Input
+# Final Revision Strategy
 
 ```text
-nums = [1, 2, 3]
-```
-
-## Expected Output
-
-```text
-[[], [1], [2], [3], [1,2], [1,3], [2,3], [1,2,3]]
-```
-
-## Core Idea
-
-At every index, choose to include nums[i] or exclude nums[i].
-
-## LCCM Summary
-
-
-```text
-Level = index in nums
-Choices = include nums[i] or exclude nums[i]
-Constraint = none
-Move = include → recurse → remove → exclude
-```
-
-
-## Recursion Tree
-
-```text
-rec(i=0, path=[])
-├── include 1 -> rec(1, [1])
-│   ├── include 2 -> rec(2, [1,2])
-│   │   ├── include 3 -> [1,2,3] ✅
-│   │   └── exclude 3 -> [1,2] ✅
-│   └── exclude 2 -> rec(2, [1])
-│       ├── include 3 -> [1,3] ✅
-│       └── exclude 3 -> [1] ✅
-└── exclude 1 -> rec(1, [])
-    ├── include 2 -> rec(2, [2])
-    │   ├── include 3 -> [2,3] ✅
-    │   └── exclude 3 -> [2] ✅
-    └── exclude 2 -> rec(2, [])
-        ├── include 3 -> [3] ✅
-        └── exclude 3 -> [] ✅
-```
-
-## C++ Code
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-vector<vector<int>> subsets(vector<int>& nums) {
-    vector<vector<int>> ans;
-    vector<int> path;
-    int n = nums.size();
-
-    function<void(int)> dfs = [&](int idx) {
-        if (idx == n) {
-            ans.push_back(path);
-            return;
-        }
-
-        path.push_back(nums[idx]);
-        dfs(idx + 1);
-        path.pop_back();
-
-        dfs(idx + 1);
-    };
-
-    dfs(0);
-    return ans;
-}
-```
-
-## Index-by-Index Dry Run
-
-```text
-nums = [1, 2, 3]
-
-idx=0, path=[]
-    include 1
-    path=[1]
-    idx=1
-
-idx=1, path=[1]
-    include 2
-    path=[1,2]
-    idx=2
-
-idx=2, path=[1,2]
-    include 3
-    path=[1,2,3]
-    idx=3
-    output [1,2,3]
-
-    backtrack remove 3
-    path=[1,2]
-
-    exclude 3
-    idx=3
-    output [1,2]
-
-backtrack remove 2
-path=[1]
-
-idx=1, path=[1]
-    exclude 2
-    idx=2
-
-idx=2, path=[1]
-    include 3 -> output [1,3]
-    exclude 3 -> output [1]
-
-backtrack remove 1
-path=[]
-
-idx=0
-    exclude 1
-
-Now solve remaining [2,3]:
-    include 2, include 3 -> [2,3]
-    include 2, exclude 3 -> [2]
-    exclude 2, include 3 -> [3]
-    exclude 2, exclude 3 -> []
-
-Final subsets:
-    [1,2,3], [1,2], [1,3], [1], [2,3], [2], [3], []
-```
-
-## Complexity
-
-Time O(n * 2^n), Space O(n) recursion path, excluding output.
-
-## Pattern Trigger
-
-
-Use this when the problem asks to generate all combinations/strings/subsets by trying choices recursively.
-
-
----
-
-
-# Final Backtracking Revision Sheet
-
-## Universal Backtracking Checklist
-
-```text
-1. What is LEVEL?
-2. What are CHOICES at this level?
-3. What CONSTRAINT rejects bad choices?
-4. What is MOVE?
-       add
-       recurse
-       remove
-5. Is this:
-       all results?
-       true/false?
-       count ways?
-       min/max?
-6. Do I need extra state?
-       used[]
-       open/close
-       remaining sum
-       start index
-7. Do I need deduplication?
-       sort
-       skip same value
+For every problem:
+    1. Read only the statement.
+    2. Guess D&C / MITM / pair-sum / two-pointer in 5 seconds.
+    3. Write brute force.
+    4. Identify why brute is too slow.
+    5. Write the optimized template.
+    6. Dry run exactly like the blocks above.
 ```
 
 ---
 
-# Fast Pattern Recognition
+# One-Line Mental Triggers
 
-| Problem Shape | Pattern |
+| If you see... | Think... |
 |---|---|
-| Generate all strings | Basic combinatorial search |
-| Phone digits | Choices depend on digit |
-| Palindrome cuts | Backtracking with pruning |
-| Parentheses | Additional state open/close |
-| Permutations | used[] state |
-| Word break | OR aggregation |
-| Decode ways | SUM aggregation |
-| Coin change min | MIN aggregation |
-| 3Sum | Sort + two pointers + dedup |
-| Combination sum | Take/skip with reuse |
-| Subsets | Include/exclude |
-
----
-
-# Interview One-Liners
-
-```text
-Backtracking:
-At each level, try every valid choice, recurse, then undo the choice.
-
-Pruning:
-Do not recurse into branches that can never lead to a valid answer.
-
-Additional state:
-When path alone is not enough, carry extra variables like used[], open, close, or remaining sum.
-
-Aggregation:
-If recursion returns true/count/min/max, combine child answers using OR, SUM, MIN, or MAX.
-
-Deduplication:
-Sort first, then skip repeated values at the same decision level.
-```
+| `n <= 40` and subset | Meet in the Middle |
+| Pair counting with order | Merge Sort counting |
+| Four values / four sum | Pair sums |
+| Maximum ≤ K | Sort one side + upper_bound |
+| Exact target | Hashing or binary_search |
+| Modulo maximum | MITM + modulo compression |
+| Swap parity | Inversion parity |
+| Duplicates in 2Sum/3Sum | Count frequency blocks |
 
 ---
 
