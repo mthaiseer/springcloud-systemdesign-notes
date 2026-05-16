@@ -1,5 +1,8 @@
 # Recursion + Backtracking LCCM Master Guide
 
+> Fixed again: Mermaid nodes are now short multi-line labels (`<br/>`) so the diagrams render as compact parent-child trees instead of wide horizontal chains.
+
+
 > Fixed: Mermaid dry runs now connect the actual root node to every child, producing parent-child recursion trees instead of disconnected horizontal blocks.
 
 
@@ -427,6 +430,45 @@ fib(5)
     └── fib(1) = 1
 ```
 
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
+    linkStyle default stroke:#555,stroke-width:1.4px;
+
+    N0["fib(5)"]
+    N1["fib(4)"]
+    N2["fib(3)"]
+    N3["fib(2)"]
+    N4["fib(1) = 1"]
+    N5["fib(0) = 0"]
+    N6["fib(1) = 1"]
+    N7["fib(2)"]
+    N8["fib(1) = 1"]
+    N9["fib(0) = 0"]
+    N10["fib(3)"]
+    N11["fib(2)"]
+    N12["fib(1) = 1"]
+    N13["fib(0) = 0"]
+    N14["fib(1) = 1"]
+
+    N0 --> N1
+    N1 --> N2
+    N2 --> N3
+    N3 --> N4
+    N3 --> N5
+    N2 --> N6
+    N1 --> N7
+    N7 --> N8
+    N7 --> N9
+    N0 --> N10
+    N10 --> N11
+    N11 --> N12
+    N11 --> N13
+    N10 --> N14
+```
+
 ## Observation
 
 `fib(3)`, `fib(2)` repeat many times.
@@ -567,18 +609,18 @@ flowchart TD
     linkStyle default stroke:#555,stroke-width:1.4px;
 
     N0["(0,0,' ')"]
-    N1["'(' -> (1,1,'(')"]
-    N2["'(' -> (2,2,'((')"]
-    N3["'(' -> (3,3,'(((') INVALID depth > k"]
-    N4["')' -> (3,1,'(()')"]
-    N5["'(' -> (4,2,'(()(') invalid end depth != 0"]
-    N6["')' -> (4,0,'(())') VALID"]
-    N7["')' -> (2,0,'()')"]
-    N8["'(' -> (3,1,'()(')"]
-    N9["'(' -> (4,2,'()(('') invalid end depth != 0"]
-    N10["')' -> (4,0,'()()') VALID"]
-    N11["')' -> (3,-1,'())') INVALID"]
-    N12["')' -> (1,-1,')') INVALID"]
+    N1["'('<br/>(1,1,'(')"]
+    N2["'('<br/>(2,2,'((')"]
+    N3["'('<br/>(3,3,'(((')<br/>INVALID depth > k"]
+    N4["')'<br/>(3,1,'(()')"]
+    N5["'('<br/>(4,2,'(()(')<br/>invalid end depth != 0"]
+    N6["')'<br/>(4,0,'(())')<br/>VALID"]
+    N7["')'<br/>(2,0,'()')"]
+    N8["'('<br/>(3,1,'()(')"]
+    N9["'('<br/>(4,2,'()(('')<br/>invalid end depth != 0"]
+    N10["')'<br/>(4,0,'()()')<br/>VALID"]
+    N11["')'<br/>(3,-1,'())')<br/>INVALID"]
+    N12["')'<br/>(1,-1,')')<br/>INVALID"]
 
     N0 --> N1
     N1 --> N2
@@ -710,6 +752,51 @@ hanoi(3, A, B, C)
         ├── move A -> C
 ```
 
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
+    linkStyle default stroke:#555,stroke-width:1.4px;
+
+    N0["hanoi(3, A, B, C)"]
+    N1["hanoi(2, A, C, B)"]
+    N2["hanoi(1, A, B, C)"]
+    N3["hanoi(0)"]
+    N4["move A<br/>C"]
+    N5["hanoi(0)"]
+    N6["move A<br/>B"]
+    N7["hanoi(1, C, A, B)"]
+    N8["hanoi(0)"]
+    N9["move C<br/>B"]
+    N10["hanoi(0)"]
+    N11["move A<br/>C"]
+    N12["hanoi(2, B, A, C)"]
+    N13["hanoi(1, B, C, A)"]
+    N14["move B<br/>A"]
+    N15["move B<br/>C"]
+    N16["hanoi(1, A, B, C)"]
+    N17["move A<br/>C"]
+
+    N0 --> N1
+    N1 --> N2
+    N2 --> N3
+    N2 --> N4
+    N2 --> N5
+    N1 --> N6
+    N1 --> N7
+    N7 --> N8
+    N7 --> N9
+    N7 --> N10
+    N0 --> N11
+    N0 --> N12
+    N12 --> N13
+    N13 --> N14
+    N12 --> N15
+    N12 --> N16
+    N16 --> N17
+```
+
 
 ## Complexity
 
@@ -826,12 +913,12 @@ flowchart TD
     linkStyle default stroke:#555,stroke-width:1.4px;
 
     N0["level 0: ''"]
-    N1["choose a -> level 1: 'a'"]
-    N2["choose a -> level 2: 'aa' save"]
-    N3["choose b -> level 2: 'ab' save"]
-    N4["choose b -> level 1: 'b'"]
-    N5["choose a -> level 2: 'ba' save"]
-    N6["choose b -> level 2: 'bb' save"]
+    N1["choose a<br/>level 1: 'a'"]
+    N2["choose a<br/>level 2: 'aa'<br/>save"]
+    N3["choose b<br/>level 2: 'ab'<br/>save"]
+    N4["choose b<br/>level 1: 'b'"]
+    N5["choose a<br/>level 2: 'ba'<br/>save"]
+    N6["choose b<br/>level 2: 'bb'<br/>save"]
 
     N0 --> N1
     N1 --> N2
@@ -962,6 +1049,41 @@ level 0 digit 2 choices: a,b,c
     └── f -> cf
 ```
 
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
+    linkStyle default stroke:#555,stroke-width:1.4px;
+
+    N0["level 0 digit 2 choices: a,b,c"]
+    N1["a"]
+    N2["d<br/>ad"]
+    N3["e<br/>ae"]
+    N4["f<br/>af"]
+    N5["b"]
+    N6["d<br/>bd"]
+    N7["e<br/>be"]
+    N8["f<br/>bf"]
+    N9["c"]
+    N10["d<br/>cd"]
+    N11["e<br/>ce"]
+    N12["f<br/>cf"]
+
+    N0 --> N1
+    N1 --> N2
+    N1 --> N3
+    N1 --> N4
+    N0 --> N5
+    N5 --> N6
+    N5 --> N7
+    N5 --> N8
+    N0 --> N9
+    N9 --> N10
+    N9 --> N11
+    N9 --> N12
+```
+
 
 ## Mental Model
 
@@ -1070,20 +1192,16 @@ flowchart TD
     classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     linkStyle default stroke:#555,stroke-width:1.4px;
 
-    N0["i=0 path=&#91;&#93;"]
-    N1["skip 1 -> i=1 path=&#91;&#93;"]
-    N2["skip 2 -> i=2 path=&#91;&#93; save"]
-    N3["take 2 -> i=2 path=&#91;2&#93; save"]
-    N4["take 1 -> i=1 path=&#91;1&#93;"]
-    N5["skip 2 -> i=2 path=&#91;1&#93; save"]
-    N6["take 2 -> i=2 path=&#91;1,2&#93; save"]
+    A["i=0<br/>path=[]"]
 
-    N0 --> N1
-    N1 --> N2
-    N1 --> N3
-    N0 --> N4
-    N4 --> N5
-    N4 --> N6
+    A --> B["skip 1<br/>i=1<br/>path=[]"]
+    A --> C["take 1<br/>i=1<br/>path=[1]"]
+
+    B --> D["skip 2<br/>i=2<br/>path=[]<br/>save"]
+    B --> E["take 2<br/>i=2<br/>path=[2]<br/>save"]
+
+    C --> F["skip 2<br/>i=2<br/>path=[1]<br/>save"]
+    C --> G["take 2<br/>i=2<br/>path=[1,2]<br/>save"]
 ```
 
 ```text
@@ -1216,22 +1334,22 @@ flowchart TD
     classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     linkStyle default stroke:#555,stroke-width:1.4px;
 
-    N0["&#91;&#93;"]
+    N0["#91;#93;"]
     N1["1"]
     N2["1,2"]
-    N3["1,2,3 save"]
+    N3["1,2,3<br/>save"]
     N4["1,3"]
-    N5["1,3,2 save"]
+    N5["1,3,2<br/>save"]
     N6["2"]
     N7["2,1"]
-    N8["2,1,3 save"]
+    N8["2,1,3<br/>save"]
     N9["2,3"]
-    N10["2,3,1 save"]
+    N10["2,3,1<br/>save"]
     N11["3"]
     N12["3,1"]
-    N13["3,1,2 save"]
+    N13["3,1,2<br/>save"]
     N14["3,2"]
-    N15["3,2,1 save"]
+    N15["3,2,1<br/>save"]
 
     N0 --> N1
     N1 --> N2
@@ -1388,6 +1506,34 @@ freq = {1:1, 2:2}
         └── choose 1 -> [2,2,1] save
 ```
 
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
+    linkStyle default stroke:#555,stroke-width:1.4px;
+
+    N0["freq = #123;1:1, 2:2#125;"]
+    N1["#91;#93;"]
+    N2["choose 1<br/>#91;1#93;,<br/>freq #123;1:0,2:2#125;"]
+    N3["choose 2<br/>#91;1,2#93;,<br/>freq #123;1:0,2:1#125;"]
+    N4["choose 2<br/>#91;1,2,2#93;<br/>save"]
+    N5["choose 2<br/>#91;2#93;,<br/>freq #123;1:1,2:1#125;"]
+    N6["choose 1<br/>#91;2,1#93;,<br/>freq #123;1:0,2:1#125;"]
+    N7["choose 2<br/>#91;2,1,2#93;<br/>save"]
+    N8["choose 2<br/>#91;2,2#93;,<br/>freq #123;1:1,2:0#125;"]
+    N9["choose 1<br/>#91;2,2,1#93;<br/>save"]
+
+    N1 --> N2
+    N2 --> N3
+    N3 --> N4
+    N1 --> N5
+    N5 --> N6
+    N6 --> N7
+    N5 --> N8
+    N8 --> N9
+```
+
 
 ## Mental Model
 
@@ -1499,14 +1645,14 @@ flowchart TD
     classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     linkStyle default stroke:#555,stroke-width:1.4px;
 
-    N0["'' (open=0, close=0)"]
+    N0["'' (open=0,<br/>close=0)"]
     N1["'(' (1,0)"]
     N2["'((' (2,0)"]
     N3["'(()' (2,1)"]
-    N4["'(())' (2,2) save"]
+    N4["'(())' (2,2)<br/>save"]
     N5["'()' (1,1)"]
     N6["'()(' (2,1)"]
-    N7["'()()' (2,2) save"]
+    N7["'()()' (2,2)<br/>save"]
 
     N0 --> N1
     N1 --> N2
@@ -1635,6 +1781,37 @@ start=0 path=[]
 └── choose s[0..2] = "aab" not palindrome prune
 ```
 
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
+    linkStyle default stroke:#555,stroke-width:1.4px;
+
+    N0["start=0<br/>path=#91;#93;"]
+    N1["choose s#91;0..0#93; = 'a' palindrome"]
+    N2["start=1<br/>path=#91;'a'#93;"]
+    N3["choose s#91;1..1#93; = 'a' palindrome"]
+    N4["start=2<br/>path=#91;'a','a'#93;"]
+    N5["choose s#91;2..2#93; = 'b'<br/>save #91;'a','a','b'#93;"]
+    N6["choose s#91;1..2#93; = 'ab' not palindrome<br/>prune"]
+    N7["choose s#91;0..1#93; = 'aa' palindrome"]
+    N8["start=2<br/>path=#91;'aa'#93;"]
+    N9["choose s#91;2..2#93; = 'b'<br/>save #91;'aa','b'#93;"]
+    N10["choose s#91;0..2#93; = 'aab' not palindrome<br/>prune"]
+
+    N0 --> N1
+    N1 --> N2
+    N2 --> N3
+    N3 --> N4
+    N4 --> N5
+    N2 --> N6
+    N0 --> N7
+    N7 --> N8
+    N8 --> N9
+    N0 --> N10
+```
+
 
 ## Mental Model
 
@@ -1743,16 +1920,16 @@ flowchart TD
     classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     linkStyle default stroke:#555,stroke-width:1.4px;
 
-    N0["(idx=0, rem=7, path=&#91;&#93;), cand&#91;0&#93;=2"]
-    N1["take 2 -> (0,5,&#91;2&#93;)"]
-    N2["take 2 -> (0,3,&#91;2,2&#93;)"]
-    N3["take 2 -> (0,1,&#91;2,2,2&#93;) eventually invalid"]
-    N4["skip 2 -> (1,3,&#91;2,2&#93;)"]
-    N5["take 3 -> (1,0,&#91;2,2,3&#93;) save"]
-    N6["skip 2 -> try 3,6,7"]
-    N7["skip 2 -> (1,7,&#91;&#93;)"]
+    N0["(idx=0,<br/>rem=7,<br/>path=#91;#93;), cand#91;0#93;=2"]
+    N1["take 2<br/>(0,5,#91;2#93;)"]
+    N2["take 2<br/>(0,3,#91;2,2#93;)"]
+    N3["take 2<br/>(0,1,#91;2,2,2#93;) eventually<br/>invalid"]
+    N4["skip 2<br/>(1,3,#91;2,2#93;)"]
+    N5["take 3<br/>(1,0,#91;2,2,3#93;)<br/>save"]
+    N6["skip 2<br/>try 3,6,7"]
+    N7["skip 2<br/>(1,7,#91;#93;)"]
     N8["try 3 branches"]
-    N9["skip to 7 -> take 7 -> rem=0 save &#91;7&#93;"]
+    N9["skip to 7<br/>take 7<br/>rem=0<br/>save #91;7#93;"]
 
     N0 --> N1
     N1 --> N2
@@ -1895,6 +2072,36 @@ start=0 rem=8 path=[]
 ├── index 1 value 1 skipped at same level
 └── choose 2 -> path=[2], rem=6
     └── choose 6 -> [2,6] save
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
+    linkStyle default stroke:#555,stroke-width:1.4px;
+
+    N0["sorted = #91;1,1,2,5,6,7,10#93;"]
+    N1["start=0<br/>rem=8<br/>path=#91;#93;"]
+    N2["choose index 0 value 1<br/>start=1<br/>rem=7<br/>path=#91;1#93;"]
+    N3["choose index 1 value 1<br/>path=#91;1,1#93;,<br/>rem=6"]
+    N4["choose 6<br/>#91;1,1,6#93;<br/>save"]
+    N5["choose 2<br/>path=#91;1,2#93;,<br/>rem=5"]
+    N6["choose 5<br/>#91;1,2,5#93;<br/>save"]
+    N7["choose 7<br/>#91;1,7#93;<br/>save"]
+    N8["index 1 value 1 skipped at same level"]
+    N9["choose 2<br/>path=#91;2#93;,<br/>rem=6"]
+    N10["choose 6<br/>#91;2,6#93;<br/>save"]
+
+    N1 --> N2
+    N2 --> N3
+    N3 --> N4
+    N2 --> N5
+    N5 --> N6
+    N2 --> N7
+    N1 --> N8
+    N1 --> N9
+    N9 --> N10
 ```
 
 ## Mental Model
@@ -2155,16 +2362,16 @@ flowchart TD
     classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
     linkStyle default stroke:#555,stroke-width:1.4px;
 
-    N0["level 0, k=9"]
-    N1["choose 1: branch size 6 -> skip, k=3"]
-    N2["choose 2: branch size 6 -> enter, answer = 2"]
-    N3["level 1, remaining numbers = 1,3,4, k=3"]
-    N4["choose 1: branch size 2 -> skip, k=1"]
-    N5["choose 3: branch size 2 -> enter, answer = 23"]
-    N6["level 2, remaining numbers = 1,4, k=1"]
-    N7["choose 1: branch size 1 -> enter, answer = 231"]
+    N0["level 0,<br/>k=9"]
+    N1["choose 1: branch size 6<br/>skip,<br/>k=3"]
+    N2["choose 2: branch size 6<br/>enter, answer = 2"]
+    N3["level 1, remaining numbers = 1,3,4,<br/>k=3"]
+    N4["choose 1: branch size 2<br/>skip,<br/>k=1"]
+    N5["choose 3: branch size 2<br/>enter, answer = 23"]
+    N6["level 2, remaining numbers = 1,4,<br/>k=1"]
+    N7["choose 1: branch size 1<br/>enter, answer = 231"]
     N8["level 3, remaining number = 4"]
-    N9["choose 4 -> answer = 2314"]
+    N9["choose 4<br/>answer = 2314"]
 
     N0 --> N1
     N0 --> N2
@@ -2348,6 +2555,21 @@ int main() {
 level 0: decide 1
 ├── not take 1 -> 4 subsets: [], [3], [2], [2,3]
 └── take 1     -> 4 subsets: [1], [1,3], [1,2], [1,2,3]
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
+    linkStyle default stroke:#555,stroke-width:1.4px;
+
+    N0["level 0: decide 1"]
+    N1["not take 1<br/>4 subsets: #91;#93;, #91;3#93;, #91;2#93;, #91;2,3#93;"]
+    N2["take 1    <br/>4 subsets: #91;1#93;, #91;1,3#93;, #91;1,2#93;, #91;1,2,3#93;"]
+
+    N0 --> N1
+    N0 --> N2
 ```
 
 For `k = 6`:
@@ -2740,6 +2962,25 @@ start=0, s="algomonster"
             └── start=11 == n -> true
 ```
 
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
+    linkStyle default stroke:#555,stroke-width:1.4px;
+
+    N0["start=0, s='algomonster'"]
+    N1["choose 'algo' because prefix matches"]
+    N2["start=4, remaining='monster'"]
+    N3["choose 'monster' because prefix matches"]
+    N4["start=11 == n<br/>true"]
+
+    N0 --> N1
+    N1 --> N2
+    N2 --> N3
+    N3 --> N4
+```
+
 
 ## Mental Model
 
@@ -2862,12 +3103,12 @@ flowchart TD
     linkStyle default stroke:#555,stroke-width:1.4px;
 
     N0["i=0 '226'"]
-    N1["take '2' -> i=1 '26'"]
-    N2["take '2' -> i=2 '6'"]
-    N3["take '6' -> i=3 save 1"]
-    N4["take '26' -> i=3 save 1"]
-    N5["take '22' -> i=2 '6'"]
-    N6["take '6' -> i=3 save 1"]
+    N1["take '2'<br/>i=1 '26'"]
+    N2["take '2'<br/>i=2 '6'"]
+    N3["take '6'<br/>i=3<br/>save 1"]
+    N4["take '26'<br/>i=3<br/>save 1"]
+    N5["take '22'<br/>i=2 '6'"]
+    N6["take '6'<br/>i=3<br/>save 1"]
 
     N0 --> N1
     N1 --> N2
@@ -3006,6 +3247,25 @@ dfs(0)
 │   ├── pay 15 + dfs(2)
 │   └── pay 15 + dfs(3)
 └── pay 10 + dfs(2)
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
+    linkStyle default stroke:#555,stroke-width:1.4px;
+
+    N0["dfs(0)"]
+    N1["pay 10 + dfs(1)"]
+    N2["pay 15 + dfs(2)"]
+    N3["pay 15 + dfs(3)"]
+    N4["pay 10 + dfs(2)"]
+
+    N0 --> N1
+    N1 --> N2
+    N1 --> N3
+    N0 --> N4
 ```
 
 Start can be stair 0 or 1.
@@ -3151,8 +3411,8 @@ flowchart TD
 
     N0["row 0"]
     N1["place Q at col 0"]
-    N2["row 1 col 0 invalid same col"]
-    N3["row 1 col 1 invalid diagonal"]
+    N2["row 1 col 0<br/>invalid same col"]
+    N3["row 1 col 1<br/>invalid diagonal"]
     N4["row 1 col 2 valid"]
     N5["row 1 col 3 valid"]
     N6["place Q at col 1"]
@@ -3483,15 +3743,15 @@ flowchart TD
     linkStyle default stroke:#555,stroke-width:1.4px;
 
     N0["(0,0)"]
-    N1["D -> (1,0)"]
-    N2["D -> (2,0)"]
-    N3["R -> (2,1)"]
-    N4["D -> (3,1)"]
-    N5["R -> (3,2)"]
-    N6["R -> (3,3) save DDRDRR"]
-    N7["R -> (1,1)"]
-    N8["D -> (2,1)"]
-    N9["D/R... save DRDDRR"]
+    N1["D<br/>(1,0)"]
+    N2["D<br/>(2,0)"]
+    N3["R<br/>(2,1)"]
+    N4["D<br/>(3,1)"]
+    N5["R<br/>(3,2)"]
+    N6["R<br/>(3,3)<br/>save DDRDRR"]
+    N7["R<br/>(1,1)"]
+    N8["D<br/>(2,1)"]
+    N9["D/R...<br/>save DRDDRR"]
 
     N0 --> N1
     N1 --> N2
@@ -3617,19 +3877,24 @@ first empty cell = (0,2)
 ```mermaid
 flowchart TD
     classDef default fill:#f4f0ff,stroke:#8b5cf6,color:#111,stroke-width:1px;
-    linkStyle default stroke:#555,stroke-width:1.5px;
+    linkStyle default stroke:#555,stroke-width:1.4px;
 
     N0["first empty cell = (0,2)"]
-    N1(("try 1 invalid row/box"))
-    N2(("try 2 invalid row/box"))
-    N3[["try 3 valid"]]
+    N1["try 1<br/>invalid row/box"]
+    N2["try 2<br/>invalid row/box"]
+    N3["try 3 valid"]
     N4["next empty cell"]
     N5["try 1 ..."]
     N6["if dead end, backtrack"]
-    N7[["try 4 valid ..."]]
+    N7["try 4 valid ..."]
+
+    N0 --> N1
+    N0 --> N2
+    N0 --> N3
     N3 --> N4
     N4 --> N5
     N4 --> N6
+    N0 --> N7
 ```
 
 ```text
