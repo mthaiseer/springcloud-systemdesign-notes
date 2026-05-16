@@ -793,32 +793,39 @@ Answer     = all combinations
 #include <bits/stdc++.h>
 using namespace std;
 
+vector<string> mp = {
+    "", "", "abc", "def", "ghi", "jkl",
+    "mno", "pqrs", "tuv", "wxyz"
+};
+
+bool isSafeDigit(char digit) {
+    return digit >= '2' && digit <= '9';
+}
+
+void dfs(int level, string& digits, string& path, vector<string>& ans) {
+    if (level == (int)digits.size()) {
+        ans.push_back(path);
+        return;
+    }
+
+    if (!isSafeDigit(digits[level])) return;
+
+    int d = digits[level] - '0';
+
+    for (char ch : mp[d]) {
+        path.push_back(ch);
+        dfs(level + 1, digits, path, ans);
+        path.pop_back();
+    }
+}
+
 vector<string> letterCombinations(string digits) {
     if (digits.empty()) return {};
-
-    vector<string> mp = {
-        "", "", "abc", "def", "ghi", "jkl",
-        "mno", "pqrs", "tuv", "wxyz"
-    };
 
     vector<string> ans;
     string path;
 
-    function<void(int)> dfs = [&](int level) {
-        if (level == (int)digits.size()) {
-            ans.push_back(path);
-            return;
-        }
-
-        int d = digits[level] - '0';
-        for (char ch : mp[d]) {
-            path.push_back(ch);
-            dfs(level + 1);
-            path.pop_back();
-        }
-    };
-
-    dfs(0);
+    dfs(0, digits, path, ans);
     return ans;
 }
 ```
@@ -902,26 +909,34 @@ Answer     = all subsets
 #include <bits/stdc++.h>
 using namespace std;
 
+bool isSafeIndex(int i, int n) {
+    return i <= n;
+}
+
+void dfs(int i, vector<int>& nums, vector<int>& path, vector<vector<int>>& ans) {
+    int n = nums.size();
+
+    if (i == n) {
+        ans.push_back(path);
+        return;
+    }
+
+    if (!isSafeIndex(i, n)) return;
+
+    // choice 1: skip nums[i]
+    dfs(i + 1, nums, path, ans);
+
+    // choice 2: take nums[i]
+    path.push_back(nums[i]);
+    dfs(i + 1, nums, path, ans);
+    path.pop_back();
+}
+
 vector<vector<int>> subsets(vector<int>& nums) {
     vector<vector<int>> ans;
     vector<int> path;
 
-    function<void(int)> dfs = [&](int i) {
-        if (i == (int)nums.size()) {
-            ans.push_back(path);
-            return;
-        }
-
-        // choice 1: skip nums[i]
-        dfs(i + 1);
-
-        // choice 2: take nums[i]
-        path.push_back(nums[i]);
-        dfs(i + 1);
-        path.pop_back();
-    };
-
-    dfs(0);
+    dfs(0, nums, path, ans);
     return ans;
 }
 ```
@@ -998,32 +1013,38 @@ Answer     = all permutations
 #include <bits/stdc++.h>
 using namespace std;
 
+bool isSafe(int i, vector<int>& used) {
+    return used[i] == 0;
+}
+
+void dfs(vector<int>& nums, vector<int>& used, vector<int>& path, vector<vector<int>>& ans) {
+    int n = nums.size();
+
+    if ((int)path.size() == n) {
+        ans.push_back(path);
+        return;
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (!isSafe(i, used)) continue;
+
+        used[i] = 1;
+        path.push_back(nums[i]);
+
+        dfs(nums, used, path, ans);
+
+        path.pop_back();
+        used[i] = 0;
+    }
+}
+
 vector<vector<int>> permute(vector<int>& nums) {
     int n = nums.size();
     vector<vector<int>> ans;
     vector<int> path;
     vector<int> used(n, 0);
 
-    function<void()> dfs = [&]() {
-        if ((int)path.size() == n) {
-            ans.push_back(path);
-            return;
-        }
-
-        for (int i = 0; i < n; i++) {
-            if (used[i]) continue;
-
-            used[i] = 1;
-            path.push_back(nums[i]);
-
-            dfs();
-
-            path.pop_back();
-            used[i] = 0;
-        }
-    };
-
-    dfs();
+    dfs(nums, used, path, ans);
     return ans;
 }
 ```
@@ -1114,6 +1135,29 @@ Answer     = unique permutations
 #include <bits/stdc++.h>
 using namespace std;
 
+bool isSafe(int cnt) {
+    return cnt > 0;
+}
+
+void dfs(map<int, int>& freq, int n, vector<int>& path, vector<vector<int>>& ans) {
+    if ((int)path.size() == n) {
+        ans.push_back(path);
+        return;
+    }
+
+    for (auto& [x, cnt] : freq) {
+        if (!isSafe(cnt)) continue;
+
+        cnt--;
+        path.push_back(x);
+
+        dfs(freq, n, path, ans);
+
+        path.pop_back();
+        cnt++;
+    }
+}
+
 vector<vector<int>> permuteUnique(vector<int>& nums) {
     map<int, int> freq;
     for (int x : nums) freq[x]++;
@@ -1122,26 +1166,7 @@ vector<vector<int>> permuteUnique(vector<int>& nums) {
     vector<int> path;
     int n = nums.size();
 
-    function<void()> dfs = [&]() {
-        if ((int)path.size() == n) {
-            ans.push_back(path);
-            return;
-        }
-
-        for (auto& [x, cnt] : freq) {
-            if (cnt == 0) continue;
-
-            cnt--;
-            path.push_back(x);
-
-            dfs();
-
-            path.pop_back();
-            cnt++;
-        }
-    };
-
-    dfs();
+    dfs(freq, n, path, ans);
     return ans;
 }
 ```
@@ -1214,30 +1239,38 @@ Answer     = valid strings
 #include <bits/stdc++.h>
 using namespace std;
 
+bool canAddOpen(int open, int n) {
+    return open < n;
+}
+
+bool canAddClose(int close, int open) {
+    return close < open;
+}
+
+void dfs(int open, int close, int n, string& path, vector<string>& ans) {
+    if ((int)path.size() == 2 * n) {
+        ans.push_back(path);
+        return;
+    }
+
+    if (canAddOpen(open, n)) {
+        path.push_back('(');
+        dfs(open + 1, close, n, path, ans);
+        path.pop_back();
+    }
+
+    if (canAddClose(close, open)) {
+        path.push_back(')');
+        dfs(open, close + 1, n, path, ans);
+        path.pop_back();
+    }
+}
+
 vector<string> generateParenthesis(int n) {
     vector<string> ans;
     string path;
 
-    function<void(int, int)> dfs = [&](int open, int close) {
-        if ((int)path.size() == 2 * n) {
-            ans.push_back(path);
-            return;
-        }
-
-        if (open < n) {
-            path.push_back('(');
-            dfs(open + 1, close);
-            path.pop_back();
-        }
-
-        if (close < open) {
-            path.push_back(')');
-            dfs(open, close + 1);
-            path.pop_back();
-        }
-    };
-
-    dfs(0, 0);
+    dfs(0, 0, n, path, ans);
     return ans;
 }
 ```
@@ -1317,27 +1350,32 @@ bool isPal(const string& s, int l, int r) {
     return true;
 }
 
+bool isSafe(const string& s, int start, int end) {
+    return isPal(s, start, end);
+}
+
+void dfs(int start, string& s, vector<string>& path, vector<vector<string>>& ans) {
+    int n = s.size();
+
+    if (start == n) {
+        ans.push_back(path);
+        return;
+    }
+
+    for (int end = start; end < n; end++) {
+        if (!isSafe(s, start, end)) continue;
+
+        path.push_back(s.substr(start, end - start + 1));
+        dfs(end + 1, s, path, ans);
+        path.pop_back();
+    }
+}
+
 vector<vector<string>> partition(string s) {
     vector<vector<string>> ans;
     vector<string> path;
-    int n = s.size();
 
-    function<void(int)> dfs = [&](int start) {
-        if (start == n) {
-            ans.push_back(path);
-            return;
-        }
-
-        for (int end = start; end < n; end++) {
-            if (!isPal(s, start, end)) continue;
-
-            path.push_back(s.substr(start, end - start + 1));
-            dfs(end + 1);
-            path.pop_back();
-        }
-    };
-
-    dfs(0);
+    dfs(0, s, path, ans);
     return ans;
 }
 ```
@@ -1413,28 +1451,34 @@ Answer     = all valid combinations
 #include <bits/stdc++.h>
 using namespace std;
 
+bool isSafe(int idx, int rem, int n) {
+    return idx < n && rem >= 0;
+}
+
+void dfs(int idx, int rem, vector<int>& cand, vector<int>& path, vector<vector<int>>& ans) {
+    int n = cand.size();
+
+    if (rem == 0) {
+        ans.push_back(path);
+        return;
+    }
+
+    if (!isSafe(idx, rem, n)) return;
+
+    // take current, reuse allowed, so idx remains same
+    path.push_back(cand[idx]);
+    dfs(idx, rem - cand[idx], cand, path, ans);
+    path.pop_back();
+
+    // skip current
+    dfs(idx + 1, rem, cand, path, ans);
+}
+
 vector<vector<int>> combinationSum(vector<int>& cand, int target) {
     vector<vector<int>> ans;
     vector<int> path;
-    int n = cand.size();
 
-    function<void(int, int)> dfs = [&](int idx, int rem) {
-        if (rem == 0) {
-            ans.push_back(path);
-            return;
-        }
-        if (idx == n || rem < 0) return;
-
-        // take current, reuse allowed, so idx remains same
-        path.push_back(cand[idx]);
-        dfs(idx, rem - cand[idx]);
-        path.pop_back();
-
-        // skip current
-        dfs(idx + 1, rem);
-    };
-
-    dfs(0, target);
+    dfs(0, target, cand, path, ans);
     return ans;
 }
 ```
@@ -1512,29 +1556,39 @@ Answer     = unique combinations
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<vector<int>> combinationSum2(vector<int>& a, int target) {
-    sort(a.begin(), a.end());
-    vector<vector<int>> ans;
-    vector<int> path;
+bool isSafe(int i, int start, vector<int>& a, int rem) {
+    if (i > start && a[i] == a[i - 1]) return false; // same-level duplicate skip
+    if (a[i] > rem) return false;
+    return true;
+}
+
+void dfs(int start, int rem, vector<int>& a, vector<int>& path, vector<vector<int>>& ans) {
     int n = a.size();
 
-    function<void(int, int)> dfs = [&](int start, int rem) {
-        if (rem == 0) {
-            ans.push_back(path);
-            return;
-        }
+    if (rem == 0) {
+        ans.push_back(path);
+        return;
+    }
 
-        for (int i = start; i < n; i++) {
-            if (i > start && a[i] == a[i - 1]) continue; // same-level duplicate skip
-            if (a[i] > rem) break;
+    for (int i = start; i < n; i++) {
+        if (i > start && a[i] == a[i - 1]) continue; // same-level duplicate skip
+        if (a[i] > rem) break;
 
-            path.push_back(a[i]);
-            dfs(i + 1, rem - a[i]);
-            path.pop_back();
-        }
-    };
+        if (!isSafe(i, start, a, rem)) continue;
 
-    dfs(0, target);
+        path.push_back(a[i]);
+        dfs(i + 1, rem - a[i], a, path, ans);
+        path.pop_back();
+    }
+}
+
+vector<vector<int>> combinationSum2(vector<int>& a, int target) {
+    sort(a.begin(), a.end());
+
+    vector<vector<int>> ans;
+    vector<int> path;
+
+    dfs(0, target, a, path, ans);
     return ans;
 }
 ```
@@ -1608,27 +1662,34 @@ Answer     = OR of child results
 #include <bits/stdc++.h>
 using namespace std;
 
+bool isSafe(string& s, int start, string& word) {
+    int len = word.size();
+    if (start + len > (int)s.size()) return false;
+    return s.substr(start, len) == word;
+}
+
+bool dfs(int start, string& s, vector<string>& words, vector<int>& memo) {
+    int n = s.size();
+
+    if (start == n) return true;
+    if (memo[start] != -1) return memo[start];
+
+    for (string& w : words) {
+        if (!isSafe(s, start, w)) continue;
+
+        if (dfs(start + (int)w.size(), s, words, memo)) {
+            return memo[start] = true;
+        }
+    }
+
+    return memo[start] = false;
+}
+
 bool wordBreak(string s, vector<string>& words) {
     int n = s.size();
     vector<int> memo(n + 1, -1);
 
-    function<bool(int)> dfs = [&](int start) -> bool {
-        if (start == n) return true;
-        if (memo[start] != -1) return memo[start];
-
-        for (string& w : words) {
-            int len = w.size();
-            if (start + len <= n && s.substr(start, len) == w) {
-                if (dfs(start + len)) {
-                    return memo[start] = true;
-                }
-            }
-        }
-
-        return memo[start] = false;
-    };
-
-    return dfs(0);
+    return dfs(0, s, words, memo);
 }
 ```
 
@@ -1712,32 +1773,42 @@ Answer     = count ways = sum of valid child ways
 #include <bits/stdc++.h>
 using namespace std;
 
+bool isSafeOneDigit(string& s, int i) {
+    return s[i] != '0';
+}
+
+bool isSafeTwoDigits(string& s, int i) {
+    if (i + 1 >= (int)s.size()) return false;
+
+    int val = (s[i] - '0') * 10 + (s[i + 1] - '0');
+    return val >= 10 && val <= 26;
+}
+
+int dfs(int i, string& s, vector<int>& memo) {
+    int n = s.size();
+
+    if (i == n) return 1;
+    if (!isSafeOneDigit(s, i)) return 0;
+    if (memo[i] != -1) return memo[i];
+
+    int ways = 0;
+
+    // take one digit
+    ways += dfs(i + 1, s, memo);
+
+    // take two digits
+    if (isSafeTwoDigits(s, i)) {
+        ways += dfs(i + 2, s, memo);
+    }
+
+    return memo[i] = ways;
+}
+
 int numDecodings(string s) {
     int n = s.size();
     vector<int> memo(n + 1, -1);
 
-    function<int(int)> dfs = [&](int i) -> int {
-        if (i == n) return 1;
-        if (s[i] == '0') return 0;
-        if (memo[i] != -1) return memo[i];
-
-        int ways = 0;
-
-        // take one digit
-        ways += dfs(i + 1);
-
-        // take two digits
-        if (i + 1 < n) {
-            int val = (s[i] - '0') * 10 + (s[i + 1] - '0');
-            if (val >= 10 && val <= 26) {
-                ways += dfs(i + 2);
-            }
-        }
-
-        return memo[i] = ways;
-    };
-
-    return dfs(0);
+    return dfs(0, s, memo);
 }
 ```
 
@@ -1810,21 +1881,27 @@ Answer     = min(dfs(0), dfs(1))
 #include <bits/stdc++.h>
 using namespace std;
 
+bool isSafe(int i, int n) {
+    return i < n;
+}
+
+int dfs(int i, vector<int>& cost, vector<int>& memo) {
+    int n = cost.size();
+
+    if (!isSafe(i, n)) return 0;
+    if (memo[i] != -1) return memo[i];
+
+    int one = dfs(i + 1, cost, memo);
+    int two = dfs(i + 2, cost, memo);
+
+    return memo[i] = cost[i] + min(one, two);
+}
+
 int minCostClimbingStairs(vector<int>& cost) {
     int n = cost.size();
     vector<int> memo(n, -1);
 
-    function<int(int)> dfs = [&](int i) -> int {
-        if (i >= n) return 0;
-        if (memo[i] != -1) return memo[i];
-
-        int one = dfs(i + 1);
-        int two = dfs(i + 2);
-
-        return memo[i] = cost[i] + min(one, two);
-    };
-
-    return min(dfs(0), dfs(1));
+    return min(dfs(0, cost, memo), dfs(1, cost, memo));
 }
 ```
 
@@ -1894,6 +1971,33 @@ So we decide row by row.
 #include <bits/stdc++.h>
 using namespace std;
 
+bool isSafe(int row, int colNo, int n, vector<int>& col, vector<int>& diag1, vector<int>& diag2) {
+    if (col[colNo]) return false;
+    if (diag1[row + colNo]) return false;
+    if (diag2[row - colNo + n]) return false;
+    return true;
+}
+
+void dfs(int row, int n, vector<string>& board, vector<int>& col,
+         vector<int>& diag1, vector<int>& diag2, vector<vector<string>>& ans) {
+    if (row == n) {
+        ans.push_back(board);
+        return;
+    }
+
+    for (int c = 0; c < n; c++) {
+        if (!isSafe(row, c, n, col, diag1, diag2)) continue;
+
+        board[row][c] = 'Q';
+        col[c] = diag1[row + c] = diag2[row - c + n] = 1;
+
+        dfs(row + 1, n, board, col, diag1, diag2, ans);
+
+        board[row][c] = '.';
+        col[c] = diag1[row + c] = diag2[row - c + n] = 0;
+    }
+}
+
 vector<vector<string>> solveNQueens(int n) {
     vector<vector<string>> ans;
     vector<string> board(n, string(n, '.'));
@@ -1902,26 +2006,7 @@ vector<vector<string>> solveNQueens(int n) {
     vector<int> diag1(2 * n, 0); // row + col
     vector<int> diag2(2 * n, 0); // row - col + n
 
-    function<void(int)> dfs = [&](int row) {
-        if (row == n) {
-            ans.push_back(board);
-            return;
-        }
-
-        for (int c = 0; c < n; c++) {
-            if (col[c] || diag1[row + c] || diag2[row - c + n]) continue;
-
-            board[row][c] = 'Q';
-            col[c] = diag1[row + c] = diag2[row - c + n] = 1;
-
-            dfs(row + 1);
-
-            board[row][c] = '.';
-            col[c] = diag1[row + c] = diag2[row - c + n] = 0;
-        }
-    };
-
-    dfs(0);
+    dfs(0, n, board, col, diag1, diag2, ans);
     return ans;
 }
 ```
@@ -2176,40 +2261,55 @@ Answer     = all paths
 #include <bits/stdc++.h>
 using namespace std;
 
+string dir = "DLRU";
+int dr[4] = {1, 0, 0, -1};
+int dc[4] = {0, -1, 1, 0};
+
+bool isSafe(int r, int c, vector<vector<int>>& maze, vector<vector<int>>& vis) {
+    int n = maze.size();
+
+    if (r < 0 || r >= n || c < 0 || c >= n) return false;
+    if (maze[r][c] == 0) return false;
+    if (vis[r][c]) return false;
+
+    return true;
+}
+
+void dfs(int r, int c, vector<vector<int>>& maze, vector<vector<int>>& vis,
+         string& path, vector<string>& ans) {
+    int n = maze.size();
+
+    if (r == n - 1 && c == n - 1) {
+        ans.push_back(path);
+        return;
+    }
+
+    vis[r][c] = 1;
+
+    for (int i = 0; i < 4; i++) {
+        int nr = r + dr[i];
+        int nc = c + dc[i];
+
+        if (!isSafe(nr, nc, maze, vis)) continue;
+
+        path.push_back(dir[i]);
+        dfs(nr, nc, maze, vis, path, ans);
+        path.pop_back();
+    }
+
+    vis[r][c] = 0;
+}
+
 vector<string> findPath(vector<vector<int>>& maze) {
     int n = maze.size();
     vector<string> ans;
     string path;
     vector<vector<int>> vis(n, vector<int>(n, 0));
 
-    string dir = "DLRU";
-    int dr[4] = {1, 0, 0, -1};
-    int dc[4] = {0, -1, 1, 0};
+    if (n > 0 && maze[0][0] == 1) {
+        dfs(0, 0, maze, vis, path, ans);
+    }
 
-    function<void(int,int)> dfs = [&](int r, int c) {
-        if (r == n - 1 && c == n - 1) {
-            ans.push_back(path);
-            return;
-        }
-
-        vis[r][c] = 1;
-
-        for (int i = 0; i < 4; i++) {
-            int nr = r + dr[i];
-            int nc = c + dc[i];
-
-            if (nr < 0 || nr >= n || nc < 0 || nc >= n) continue;
-            if (maze[nr][nc] == 0 || vis[nr][nc]) continue;
-
-            path.push_back(dir[i]);
-            dfs(nr, nc);
-            path.pop_back();
-        }
-
-        vis[r][c] = 0;
-    };
-
-    if (maze[0][0] == 1) dfs(0, 0);
     return ans;
 }
 ```
