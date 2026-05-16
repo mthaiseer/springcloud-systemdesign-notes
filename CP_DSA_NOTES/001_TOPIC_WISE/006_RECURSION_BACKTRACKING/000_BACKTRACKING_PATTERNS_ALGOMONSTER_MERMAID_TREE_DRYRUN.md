@@ -11,8 +11,7 @@ This guide includes:
 - Optimal recursion / backtracking idea
 - C++ code
 - Recursion tree
-- Mermaid tree diagram
-- Index-by-index dry run
+- Mermaid tree-style dry run
 - Pattern recognition cheat sheet
 
 ---
@@ -283,24 +282,6 @@ rec(0, "")
     └── choose 'b' -> rec(2, "bb") ✅ output
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["rec(0, path='')"] --> B["choose a<br/>rec(1, path='a')"]
-    A --> C["choose b<br/>rec(1, path='b')"]
-
-    B --> D["choose a<br/>rec(2, path='aa')"]
-    B --> E["choose b<br/>rec(2, path='ab')"]
-    C --> F["choose a<br/>rec(2, path='ba')"]
-    C --> G["choose b<br/>rec(2, path='bb')"]
-
-    D --> D1["✅ output aa"]
-    E --> E1["✅ output ab"]
-    F --> F1["✅ output ba"]
-    G --> G1["✅ output bb"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -324,56 +305,65 @@ void dfs(int level, int n) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["level=0<br/>path=''"] --> B["choose 'a'<br/>path='a'"]
+    A --> C["choose 'b'<br/>path='b'"]
+
+    B --> D["choose 'a'<br/>path='aa'"]
+    B --> E["choose 'b'<br/>path='ab'"]
+
+    C --> F["choose 'a'<br/>path='ba'"]
+    C --> G["choose 'b'<br/>path='bb'"]
+
+    D --> D1["level=2 == length<br/>save aa"]
+    E --> E1["level=2 == length<br/>save ab"]
+    F --> F1["level=2 == length<br/>save ba"]
+    G --> G1["level=2 == length<br/>save bb"]
+
+    D1 --> D2["backtrack<br/>remove last char"]
+    E1 --> E2["backtrack<br/>remove last char"]
+    F1 --> F2["backtrack<br/>remove last char"]
+    G1 --> G2["backtrack<br/>remove last char"]
+```
 
 ```text
 choices = ['a', 'b']
 length = 2
 
-level=0, path=""
+Root:
+    level=0, path=""
+
+Branch 1:
     choose 'a'
     path="a"
-    call level=1
 
-level=1, path="a"
     choose 'a'
     path="aa"
-    call level=2
-        level == length
-        output "aa"
-
-    backtrack
-    path="a"
+    level == length
+    save "aa"
+    backtrack -> path="a"
 
     choose 'b'
     path="ab"
-    call level=2
-        output "ab"
+    save "ab"
+    backtrack -> path="a"
 
-    backtrack
-    path="a"
+    backtrack -> path=""
 
-backtrack
-path=""
-
-level=0, path=""
+Branch 2:
     choose 'b'
     path="b"
-    call level=1
 
-level=1, path="b"
     choose 'a'
     path="ba"
-    call level=2
-        output "ba"
-
-    backtrack
-    path="b"
+    save "ba"
 
     choose 'b'
     path="bb"
-    call level=2
-        output "bb"
+    save "bb"
 
 Final output:
     aa, ab, ba, bb
@@ -454,27 +444,6 @@ rec(0, "")
     └── choose 'f' -> "cf" ✅
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["rec(0, path='')<br/>digit=2 choices=a,b,c"] --> B["choose a<br/>rec(1,'a')"]
-    A --> C["choose b<br/>rec(1,'b')"]
-    A --> D["choose c<br/>rec(1,'c')"]
-
-    B --> B1["choose d<br/>ad ✅"]
-    B --> B2["choose e<br/>ae ✅"]
-    B --> B3["choose f<br/>af ✅"]
-
-    C --> C1["choose d<br/>bd ✅"]
-    C --> C2["choose e<br/>be ✅"]
-    C --> C3["choose f<br/>bf ✅"]
-
-    D --> D1["choose d<br/>cd ✅"]
-    D --> D2["choose e<br/>ce ✅"]
-    D --> D3["choose f<br/>cf ✅"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -517,49 +486,50 @@ vector<string> letterCombinations(string digits) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["level=0<br/>digit=2<br/>path=''"] --> B["choose a<br/>path=a"]
+    A --> C["choose b<br/>path=b"]
+    A --> D["choose c<br/>path=c"]
+
+    B --> B1["choose d<br/>ad"]
+    B --> B2["choose e<br/>ae"]
+    B --> B3["choose f<br/>af"]
+
+    C --> C1["choose d<br/>bd"]
+    C --> C2["choose e<br/>be"]
+    C --> C3["choose f<br/>bf"]
+
+    D --> D1["choose d<br/>cd"]
+    D --> D2["choose e<br/>ce"]
+    D --> D3["choose f<br/>cf"]
+
+    B1 --> X1["save"]
+    B2 --> X2["save"]
+    B3 --> X3["save"]
+    C1 --> X4["save"]
+    C2 --> X5["save"]
+    C3 --> X6["save"]
+    D1 --> X7["save"]
+    D2 --> X8["save"]
+    D3 --> X9["save"]
+```
 
 ```text
 digits = "23"
 
-mapping:
-    2 -> abc
-    3 -> def
+Level 0:
+    digit 2 -> choices a,b,c
 
-level=0, digit='2', path=""
-    choose 'a'
-    path="a"
+Level 1:
+    digit 3 -> choices d,e,f
 
-level=1, digit='3', path="a"
-    choose 'd' -> path="ad" -> output
-    remove 'd' -> path="a"
-
-    choose 'e' -> path="ae" -> output
-    remove 'e' -> path="a"
-
-    choose 'f' -> path="af" -> output
-    remove 'f' -> path="a"
-
-backtrack from 'a'
-path=""
-
-level=0
-    choose 'b'
-    path="b"
-
-level=1
-    choose d/e/f
-    output "bd", "be", "bf"
-
-backtrack from 'b'
-
-level=0
-    choose 'c'
-    path="c"
-
-level=1
-    choose d/e/f
-    output "cd", "ce", "cf"
+Tree expansion:
+    a -> ad, ae, af
+    b -> bd, be, bf
+    c -> cd, ce, cf
 
 Final:
     ad ae af bd be bf cd ce cf
@@ -637,24 +607,6 @@ rec(start=0, path=[])
 └── choose "aab" ❌ prune
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["rec(start=0, path=[])"] --> B["choose 'a' ✅<br/>rec(1,['a'])"]
-    A --> C["choose 'aa' ✅<br/>rec(2,['aa'])"]
-    A --> X["choose 'aab' ❌ prune"]
-
-    B --> D["choose 'a' ✅<br/>rec(2,['a','a'])"]
-    B --> Y["choose 'ab' ❌ prune"]
-
-    D --> E["choose 'b' ✅<br/>rec(3,['a','a','b'])"]
-    E --> E1["✅ output ['a','a','b']"]
-
-    C --> F["choose 'b' ✅<br/>rec(3,['aa','b'])"]
-    F --> F1["✅ output ['aa','b']"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -695,64 +647,49 @@ vector<vector<string>> partition(string s) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["start=0<br/>path=[]"] --> B["choose 'a'<br/>palindrome<br/>path=[a]"]
+    A --> C["choose 'aa'<br/>palindrome<br/>path=[aa]"]
+    A --> D["choose 'aab'<br/>not palindrome<br/>PRUNE"]
+
+    B --> E["start=1<br/>choose 'a'<br/>path=[a,a]"]
+    B --> F["start=1<br/>choose 'ab'<br/>not palindrome<br/>PRUNE"]
+
+    E --> G["start=2<br/>choose 'b'<br/>path=[a,a,b]"]
+    G --> H["start=3 == n<br/>SAVE [a,a,b]"]
+
+    C --> I["start=2<br/>choose 'b'<br/>path=[aa,b]"]
+    I --> J["start=3 == n<br/>SAVE [aa,b]"]
+```
 
 ```text
 s = "aab"
 
-start=0, path=[]
-    try substring s[0..0] = "a"
-    "a" is palindrome
-    add "a"
-    path=["a"]
-    recurse start=1
+start=0:
+    try "a"   -> palindrome -> recurse start=1
+    try "aa"  -> palindrome -> recurse start=2
+    try "aab" -> not palindrome -> prune
 
-start=1, path=["a"]
-    try s[1..1] = "a"
-    palindrome
-    path=["a","a"]
-    recurse start=2
+Branch "a":
+    start=1
+    try "a"  -> palindrome
+        start=2
+        try "b" -> palindrome
+            start=3
+            save ["a","a","b"]
 
-start=2, path=["a","a"]
-    try s[2..2] = "b"
-    palindrome
-    path=["a","a","b"]
-    recurse start=3
+    try "ab" -> not palindrome -> prune
 
-start=3
-    start == n
-    output ["a","a","b"]
+Branch "aa":
+    start=2
+    try "b" -> palindrome
+        start=3
+        save ["aa","b"]
 
-backtrack:
-    remove "b" -> ["a","a"]
-    remove second "a" -> ["a"]
-
-start=1
-    try s[1..2] = "ab"
-    not palindrome
-    prune
-
-backtrack:
-    remove first "a" -> []
-
-start=0
-    try s[0..1] = "aa"
-    palindrome
-    path=["aa"]
-    recurse start=2
-
-start=2
-    choose "b"
-    path=["aa","b"]
-    start=3
-    output ["aa","b"]
-
-start=0
-    try s[0..2] = "aab"
-    not palindrome
-    prune
-
-Final output:
+Final:
     ["a","a","b"]
     ["aa","b"]
 ```
@@ -829,23 +766,6 @@ rec("", open=0, close=0)
             └── add ')' -> rec("()()", 2, 2) ✅
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["path='', open=0, close=0"] --> B["add '(' <br/>path='(', open=1, close=0"]
-
-    B --> C["add '(' <br/>path='((', open=2, close=0"]
-    C --> D["add ')' <br/>path='(()', open=2, close=1"]
-    D --> E["add ')' <br/>path='(())', open=2, close=2"]
-    E --> E1["✅ output (())"]
-
-    B --> F["add ')' <br/>path='()', open=1, close=1"]
-    F --> G["add '(' <br/>path='()(', open=2, close=1"]
-    G --> H["add ')' <br/>path='()()', open=2, close=2"]
-    H --> H1["✅ output ()()"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -880,51 +800,48 @@ vector<string> generateParenthesis(int n) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["path=''<br/>open=0 close=0"] --> B["add '(' <br/>path='('<br/>open=1 close=0"]
+
+    B --> C["add '(' <br/>path='(('<br/>open=2 close=0"]
+    B --> D["add ')' <br/>path='()'<br/>open=1 close=1"]
+
+    C --> E["cannot add '(' because open==n"]
+    C --> F["add ')' <br/>path='(()'<br/>open=2 close=1"]
+    F --> G["add ')' <br/>path='(())'<br/>open=2 close=2<br/>SAVE"]
+
+    D --> H["add '(' <br/>path='()('<br/>open=2 close=1"]
+    H --> I["add ')' <br/>path='()()'<br/>open=2 close=2<br/>SAVE"]
+```
 
 ```text
 n = 2
 
-path="", open=0, close=0
-    can add '(' because open < n
-    path="("
-    open=1, close=0
+Root:
+    path="", open=0, close=0
 
-path="("
-    can add '(' because open < n
-    path="(("
-    open=2, close=0
+Only valid first move:
+    add '(' -> path="(", open=1, close=0
 
-path="(("
-    cannot add '(' because open == n
-    can add ')' because close < open
-    path="(()"
-    open=2, close=1
+From "(":
+    Choice 1: add '('
+        path="(("
+        open=2, close=0
+        now open == n, so cannot add more '('
+        add ')' -> "(()"
+        add ')' -> "(())"
+        save
 
-path="(()"
-    can add ')' because close < open
-    path="(())"
-    open=2, close=2
-    length == 4
-    output "(())"
-
-backtrack to path="("
-
-path="("
-    can add ')' because close < open
-    path="()"
-    open=1, close=1
-
-path="()"
-    can add '(' because open < n
-    path="()("
-    open=2, close=1
-
-path="()("
-    can add ')' because close < open
-    path="()()"
-    open=2, close=2
-    output "()()"
+    Choice 2: add ')'
+        path="()"
+        open=1, close=1
+        cannot add ')' because close == open
+        add '(' -> "()("
+        add ')' -> "()()"
+        save
 
 Final:
     (())
@@ -1014,30 +931,6 @@ rec(path="")
         └── choose a -> cba ✅
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["path='', used=[F,F,F]"] --> B["choose a<br/>path='a'"]
-    A --> C["choose b<br/>path='b'"]
-    A --> D["choose c<br/>path='c'"]
-
-    B --> B1["choose b<br/>path='ab'"]
-    B --> B2["choose c<br/>path='ac'"]
-    B1 --> B11["choose c<br/>abc ✅"]
-    B2 --> B21["choose b<br/>acb ✅"]
-
-    C --> C1["choose a<br/>path='ba'"]
-    C --> C2["choose c<br/>path='bc'"]
-    C1 --> C11["choose c<br/>bac ✅"]
-    C2 --> C21["choose a<br/>bca ✅"]
-
-    D --> D1["choose a<br/>path='ca'"]
-    D --> D2["choose b<br/>path='cb'"]
-    D1 --> D11["choose b<br/>cab ✅"]
-    D2 --> D21["choose a<br/>cba ✅"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -1074,60 +967,56 @@ vector<string> permutations(string s) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["path='' <br/>used=[F,F,F]"] --> B["choose a<br/>path=a"]
+    A --> C["choose b<br/>path=b"]
+    A --> D["choose c<br/>path=c"]
+
+    B --> B1["choose b<br/>path=ab"]
+    B --> B2["choose c<br/>path=ac"]
+    B1 --> B11["choose c<br/>abc SAVE"]
+    B2 --> B21["choose b<br/>acb SAVE"]
+
+    C --> C1["choose a<br/>path=ba"]
+    C --> C2["choose c<br/>path=bc"]
+    C1 --> C11["choose c<br/>bac SAVE"]
+    C2 --> C21["choose a<br/>bca SAVE"]
+
+    D --> D1["choose a<br/>path=ca"]
+    D --> D2["choose b<br/>path=cb"]
+    D1 --> D11["choose b<br/>cab SAVE"]
+    D2 --> D21["choose a<br/>cba SAVE"]
+```
 
 ```text
 s = "abc"
 
-path="", used=[false,false,false]
+Level 0:
+    choose a, b, or c
 
-level=0:
-    choose index 0 -> 'a'
+Branch a:
     path="a"
-    used=[true,false,false]
+    remaining choices = b,c
 
-level=1:
-    index 0 already used, skip
+    choose b -> path="ab"
+        remaining c -> "abc" save
 
-    choose index 1 -> 'b'
-    path="ab"
-    used=[true,true,false]
+    backtrack to "a"
 
-level=2:
-    choose index 2 -> 'c'
-    path="abc"
-    used=[true,true,true]
+    choose c -> path="ac"
+        remaining b -> "acb" save
 
-path length == 3
-output "abc"
+Branch b:
+    produces bac, bca
 
-backtrack:
-    remove 'c'
-    used[2]=false
-    path="ab"
+Branch c:
+    produces cab, cba
 
-backtrack:
-    remove 'b'
-    used[1]=false
-    path="a"
-
-level=1:
-    choose index 2 -> 'c'
-    path="ac"
-
-level=2:
-    choose remaining index 1 -> 'b'
-    path="acb"
-    output "acb"
-
-After finishing branch starting with 'a':
-    output abc, acb
-
-Then choose 'b' first:
-    output bac, bca
-
-Then choose 'c' first:
-    output cab, cba
+Final:
+    abc, acb, bac, bca, cab, cba
 ```
 
 ## Complexity
@@ -1201,22 +1090,6 @@ rec(start=0, remaining="algomonster")
         start == target.length ✅ true
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["dfs(start=0)<br/>remaining='algomonster'"] --> B["try 'algo' ✅<br/>dfs(start=4)"]
-    A --> X["try 'monster' ❌ prefix mismatch"]
-
-    B --> C["try 'algo' ❌ prefix mismatch"]
-    B --> D["try 'monster' ✅<br/>dfs(start=11)"]
-
-    D --> E["start == n ✅ return true"]
-
-    E --> R1["dfs(4) returns true"]
-    R1 --> R2["dfs(0) returns true"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -1248,40 +1121,46 @@ bool wordBreak(string target, vector<string>& words) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["start=0<br/>remaining='algomonster'"] --> B["try 'algo'<br/>matches prefix"]
+    A --> C["try 'monster'<br/>does not match<br/>skip"]
+
+    B --> D["start=4<br/>remaining='monster'"]
+    D --> E["try 'algo'<br/>not match<br/>skip"]
+    D --> F["try 'monster'<br/>matches prefix"]
+
+    F --> G["start=11 == n<br/>return true"]
+
+    G --> H["dfs(4)=true"]
+    H --> I["dfs(0)=true"]
+```
 
 ```text
 target = "algomonster"
 words = ["algo", "monster"]
 
-start=0
-    remaining string = "algomonster"
+dfs(0):
+    remaining = "algomonster"
+    "algo" matches prefix
+    recurse dfs(4)
 
-    try word "algo"
-        target.substr(0,4) = "algo"
-        match found
-        recurse start = 0 + 4 = 4
+dfs(4):
+    remaining = "monster"
+    "algo" does not match
+    "monster" matches
+    recurse dfs(11)
 
-start=4
-    remaining string = "monster"
-
-    try word "algo"
-        target.substr(4,4) = "mons"
-        not match
-
-    try word "monster"
-        target.substr(4,7) = "monster"
-        match found
-        recurse start = 4 + 7 = 11
-
-start=11
+dfs(11):
     start == target.length
     return true
 
-Aggregation:
-    dfs(11) returns true
-    dfs(4) returns true
-    dfs(0) returns true
+Aggregation OR:
+    dfs(11) = true
+    dfs(4)  = true
+    dfs(0)  = true
 
 Answer = true
 ```
@@ -1357,24 +1236,6 @@ rec(0, "123")
 Total = 3
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["dfs(0), s='123'"] --> B["take '1'<br/>dfs(1), remaining='23'"]
-    A --> C["take '12'<br/>dfs(2), remaining='3'"]
-
-    B --> D["take '2'<br/>dfs(2), remaining='3'"]
-    B --> E["take '23'<br/>dfs(3) ✅ 1 way"]
-
-    D --> F["take '3'<br/>dfs(3) ✅ 1 way"]
-    C --> G["take '3'<br/>dfs(3) ✅ 1 way"]
-
-    F --> H["dfs(2)=1"]
-    E --> I["dfs(1)=dfs(2)+dfs(3)=2"]
-    G --> J["dfs(0)=dfs(1)+dfs(2)=3"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -1408,54 +1269,57 @@ int numDecodings(string s) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["dfs(0)<br/>s='123'"] --> B["take '1'<br/>dfs(1)"]
+    A --> C["take '12'<br/>dfs(2)"]
+
+    B --> D["take '2'<br/>dfs(2)"]
+    B --> E["take '23'<br/>dfs(3)"]
+
+    D --> F["take '3'<br/>dfs(3)"]
+    C --> G["take '3'<br/>dfs(3)"]
+
+    E --> H["return 1"]
+    F --> I["return 1"]
+    G --> J["return 1"]
+
+    D --> K["dfs(2)=1"]
+    B --> L["dfs(1)=2"]
+    A --> M["dfs(0)=3"]
+```
 
 ```text
 s = "123"
 
-i=0, char='1'
-    one digit "1" is valid
-    ways += dfs(1)
+dfs(0):
+    one digit  "1"  -> dfs(1)
+    two digits "12" -> dfs(2)
 
-    two digits "12" is valid
-    ways += dfs(2)
+dfs(1), remaining "23":
+    one digit  "2"  -> dfs(2)
+    two digits "23" -> dfs(3)
 
-dfs(1), remaining="23"
-    one digit "2" valid
-    ways += dfs(2)
+dfs(2), remaining "3":
+    one digit "3" -> dfs(3)
 
-    two digits "23" valid
-    ways += dfs(3)
-
-dfs(2), remaining="3"
-    one digit "3" valid
-    ways += dfs(3)
-
-    no two-digit choice
-
-dfs(3)
-    i == n
+dfs(3):
+    reached end
     return 1
 
-Now aggregate:
+Aggregate:
     dfs(2) = 1
-        represents "3" -> C
-
     dfs(1) = dfs(2) + dfs(3)
            = 1 + 1
            = 2
-        represents "2","3" -> B C
-        and "23" -> W
 
     dfs(0) = dfs(1) + dfs(2)
            = 2 + 1
            = 3
 
 Answer = 3
-Decodings:
-    1 2 3 -> A B C
-    1 23  -> A W
-    12 3  -> L C
 ```
 
 ## Complexity
@@ -1533,24 +1397,6 @@ Valid best path:
     take 5 -> take 5 -> take 1 = 3 coins
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["dfs(idx=0, rem=11)<br/>coin=1"] --> B["take 1<br/>dfs(0,10)"]
-    A --> C["skip 1<br/>dfs(1,11)<br/>coin=2"]
-
-    C --> D["take 2<br/>dfs(1,9)"]
-    C --> E["skip 2<br/>dfs(2,11)<br/>coin=5"]
-
-    E --> F["take 5<br/>dfs(2,6)"]
-    F --> G["take 5<br/>dfs(2,1)"]
-    G --> H["cannot finish with coin 5 alone ❌"]
-
-    A --> I["better path:<br/>5 + 5 + 1 = 11"]
-    I --> J["✅ min coins = 3"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -1585,64 +1431,57 @@ int coinChange(vector<int>& coins, int amount) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["dfs(idx=0, rem=11)<br/>coin=1"] --> B["take 1<br/>dfs(0,10)"]
+    A --> C["skip 1<br/>dfs(1,11)"]
+
+    C --> D["take 2<br/>dfs(1,9)"]
+    C --> E["skip 2<br/>dfs(2,11)"]
+
+    E --> F["take 5<br/>dfs(2,6)<br/>coins=1"]
+    F --> G["take 5<br/>dfs(2,1)<br/>coins=2"]
+    G --> H["cannot take 5<br/>skip -> invalid"]
+
+    A --> I["another branch uses 5 + 5 + 1"]
+    I --> J["rem 11 -> 6 -> 1 -> 0<br/>3 coins<br/>BEST"]
+```
 
 ```text
 coins = [1, 2, 5]
 amount = 11
 
-Goal:
-    minimum coins to make 11
+State:
+    dfs(index, remaining)
 
-rec(index=0, rem=11), coin=1
+At dfs(0, 11):
     Choice 1: take coin 1
-        rem becomes 10
-        coins used +1
-        stay index=0 because unlimited use
+        dfs(0, 10)
+        stay on index 0 because coin reuse allowed
 
     Choice 2: skip coin 1
-        move index=1
-        rem still 11
+        dfs(1, 11)
 
-Important valid path:
-    skip coin 1 initially
-    skip coin 2 initially
-    take coin 5
+At dfs(1, 11):
+    Choice 1: take coin 2
+        dfs(1, 9)
 
-State:
-    rec(index=2, rem=11), coin=5
-        take 5
-        rem=6
-        coins=1
+    Choice 2: skip coin 2
+        dfs(2, 11)
 
-    rec(index=2, rem=6)
-        take 5
-        rem=1
-        coins=2
+At dfs(2, 11), coin=5:
+    take 5 -> dfs(2, 6)
+    take 5 -> dfs(2, 1)
+    cannot take 5 now
 
-    rec(index=2, rem=1)
-        cannot take 5
-        skip coin 5
-        invalid at end
-
-So pure 5s cannot finish.
-
-Another valid path:
-    take 5
-    take 5
-    then use coin 1
-
-Path:
+Best successful path:
     11 -> 6 by taking 5
     6  -> 1 by taking 5
     1  -> 0 by taking 1
 
-Total coins = 3
-
-Aggregation:
-    return minimum among all valid branches
-
-Answer = 3
+Answer = 3 coins
 ```
 
 ## Complexity
@@ -1720,24 +1559,6 @@ i = 1 -> -1
 i = 2 -> -1 duplicate of previous i -> skip
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["sorted nums=[-4,-1,-1,0,1,2]"] --> B["i=0, nums[i]=-4"]
-    A --> C["i=1, nums[i]=-1"]
-    A --> D["i=2, nums[i]=-1 duplicate ❌ skip"]
-
-    B --> B1["left/right search target=4"]
-    B1 --> B2["no pair found"]
-
-    C --> C1["left=2(-1), right=5(2)<br/>sum=0"]
-    C1 --> C2["✅ output [-1,-1,2]"]
-
-    C --> C3["left=3(0), right=4(1)<br/>sum=0"]
-    C3 --> C4["✅ output [-1,0,1]"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -1779,7 +1600,24 @@ vector<vector<int>> threeSum(vector<int>& nums) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["sort nums<br/>[-4,-1,-1,0,1,2]"] --> B["i=0<br/>nums[i]=-4"]
+    A --> C["i=1<br/>nums[i]=-1"]
+    A --> D["i=2<br/>duplicate -1<br/>skip"]
+
+    B --> B1["left=1 right=5<br/>sum=-3"]
+    B1 --> B2["sum<0<br/>left++"]
+    B2 --> B3["no valid pair"]
+
+    C --> C1["left=2 right=5<br/>sum=0"]
+    C1 --> C2["save [-1,-1,2]"]
+    C2 --> C3["move left/right"]
+    C3 --> C4["left=3 right=4<br/>sum=0"]
+    C4 --> C5["save [-1,0,1]"]
+```
 
 ```text
 nums = [-1, 0, 1, 2, -1, -4]
@@ -1787,41 +1625,26 @@ nums = [-1, 0, 1, 2, -1, -4]
 Sort:
     [-4, -1, -1, 0, 1, 2]
 
-i=0, nums[i]=-4
-    left=1 (-1), right=5 (2)
+i=0, nums[i]=-4:
+    left=1, right=5
     sum = -4 + -1 + 2 = -3
-    sum < 0, move left++
+    sum < 0, move left
 
-    left=2 (-1), right=5 (2)
-    sum=-3
-    move left++
+    keep moving left
+    no valid triplet
 
-    left=3 (0), right=5 (2)
-    sum=-2
-    move left++
-
-    left=4 (1), right=5 (2)
-    sum=-1
-    move left++
-
-    stop, no triplet for i=0
-
-i=1, nums[i]=-1
-    left=2 (-1), right=5 (2)
+i=1, nums[i]=-1:
+    left=2, right=5
     sum = -1 + -1 + 2 = 0
-    output [-1,-1,2]
+    save [-1,-1,2]
 
-    move left++, right--
-    left=3 (0), right=4 (1)
-
+    move left and right
+    left=3, right=4
     sum = -1 + 0 + 1 = 0
-    output [-1,0,1]
+    save [-1,0,1]
 
-    move left++, right--
-    stop
-
-i=2, nums[i]=-1
-    nums[i] == nums[i-1]
+i=2:
+    nums[2] == nums[1]
     duplicate fixed value
     skip
 
@@ -1905,26 +1728,6 @@ rec(i=0, rem=7, path=[])
     └── skip 3 -> skip 6 -> take 7 -> [7] ✅
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["rec(idx=0, rem=7, path=[])"] --> B["take 2<br/>rec(0,5,[2])"]
-    A --> C["skip 2<br/>rec(1,7,[])"]
-
-    B --> D["take 2<br/>rec(0,3,[2,2])"]
-    D --> E["take 2<br/>rec(0,1,[2,2,2])"]
-    E --> F["take 2<br/>rem=-1 ❌ prune"]
-
-    D --> G["skip 2<br/>rec(1,3,[2,2])"]
-    G --> H["take 3<br/>rec(1,0,[2,2,3])"]
-    H --> H1["✅ output [2,2,3]"]
-
-    C --> I["skip 3, skip 6"]
-    I --> J["take 7<br/>rec(3,0,[7])"]
-    J --> J1["✅ output [7]"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -1956,57 +1759,64 @@ vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["rec(idx=0, rem=7, path=[])"] --> B["take 2<br/>rec(0,5,[2])"]
+    A --> C["skip 2<br/>rec(1,7,[])"]
+
+    B --> D["take 2<br/>rec(0,3,[2,2])"]
+    D --> E["take 2<br/>rec(0,1,[2,2,2])"]
+    E --> F["take 2<br/>rem=-1 ❌ prune"]
+
+    D --> G["skip 2<br/>rec(1,3,[2,2])"]
+    G --> H["take 3<br/>rec(1,0,[2,2,3]) ✅ SAVE"]
+
+    C --> I["skip 3<br/>rec(2,7,[])"]
+    I --> J["skip 6<br/>rec(3,7,[])"]
+    J --> K["take 7<br/>rec(3,0,[7]) ✅ SAVE"]
+```
 
 ```text
 candidates = [2, 3, 6, 7]
 target = 7
 
-rec(idx=0, rem=7, path=[])
+Root:
+    rec(idx=0, rem=7, path=[])
 
-Take 2:
-    path=[2]
-    rem=5
-    stay idx=0 because 2 can be reused
+Branch take 2:
+    path=[2], rem=5
 
 Take 2 again:
-    path=[2,2]
-    rem=3
-    stay idx=0
+    path=[2,2], rem=3
 
-Try taking 2 again:
-    path=[2,2,2]
-    rem=1
+Take 2 again:
+    path=[2,2,2], rem=1
 
-Try taking 2 again:
+Take 2 again:
     rem=-1
-    invalid
-    backtrack
+    prune
+
+Backtrack to path=[2,2], rem=3
 
 Skip 2:
-    idx=1, rem=3, path=[2,2]
+    idx=1, rem=3
 
 Take 3:
     path=[2,2,3]
     rem=0
-    valid combination found
-    output [2,2,3]
+    SAVE [2,2,3]
 
-Backtrack to root and skip 2:
-    idx=1, rem=7, path=[]
+Backtrack to root
 
-Try 3 branches:
-    3 + 3 = 6, remaining 1 -> cannot finish
-    skip 3
+Skip 2:
+    idx=1, rem=7
 
-Try 6:
-    remaining 1 -> cannot finish
-    skip 6
-
-Try 7:
+Skip 3, skip 6, take 7:
     path=[7]
     rem=0
-    output [7]
+    SAVE [7]
 
 Final:
     [2,2,3]
@@ -2090,32 +1900,6 @@ rec(i=0, path=[])
         └── exclude 3 -> [] ✅
 ```
 
-## Mermaid Tree Diagram
-
-```mermaid
-flowchart TD
-    A["rec(i=0, path=[])"] --> B["include 1<br/>rec(1,[1])"]
-    A --> C["exclude 1<br/>rec(1,[])"]
-
-    B --> D["include 2<br/>rec(2,[1,2])"]
-    B --> E["exclude 2<br/>rec(2,[1])"]
-
-    D --> F["include 3<br/>[1,2,3] ✅"]
-    D --> G["exclude 3<br/>[1,2] ✅"]
-
-    E --> H["include 3<br/>[1,3] ✅"]
-    E --> I["exclude 3<br/>[1] ✅"]
-
-    C --> J["include 2<br/>rec(2,[2])"]
-    C --> K["exclude 2<br/>rec(2,[])"]
-
-    J --> L["include 3<br/>[2,3] ✅"]
-    J --> M["exclude 3<br/>[2] ✅"]
-
-    K --> N["include 3<br/>[3] ✅"]
-    K --> O["exclude 3<br/>[] ✅"]
-```
-
 ## C++ Code
 
 ```cpp
@@ -2145,59 +1929,63 @@ vector<vector<int>> subsets(vector<int>& nums) {
 }
 ```
 
-## Index-by-Index Dry Run
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["idx=0<br/>path=[]"] --> B["include 1<br/>path=[1]"]
+    A --> C["exclude 1<br/>path=[]"]
+
+    B --> D["include 2<br/>path=[1,2]"]
+    B --> E["exclude 2<br/>path=[1]"]
+
+    D --> F["include 3<br/>[1,2,3] ✅"]
+    D --> G["exclude 3<br/>[1,2] ✅"]
+
+    E --> H["include 3<br/>[1,3] ✅"]
+    E --> I["exclude 3<br/>[1] ✅"]
+
+    C --> J["include 2<br/>path=[2]"]
+    C --> K["exclude 2<br/>path=[]"]
+
+    J --> L["include 3<br/>[2,3] ✅"]
+    J --> M["exclude 3<br/>[2] ✅"]
+
+    K --> N["include 3<br/>[3] ✅"]
+    K --> O["exclude 3<br/>[] ✅"]
+```
 
 ```text
 nums = [1, 2, 3]
 
-idx=0, path=[]
+idx=0:
     include 1
-    path=[1]
-    idx=1
+        idx=1:
+            include 2
+                idx=2:
+                    include 3 -> [1,2,3]
+                    exclude 3 -> [1,2]
 
-idx=1, path=[1]
-    include 2
-    path=[1,2]
-    idx=2
+            exclude 2
+                idx=2:
+                    include 3 -> [1,3]
+                    exclude 3 -> [1]
 
-idx=2, path=[1,2]
-    include 3
-    path=[1,2,3]
-    idx=3
-    output [1,2,3]
-
-    backtrack remove 3
-    path=[1,2]
-
-    exclude 3
-    idx=3
-    output [1,2]
-
-backtrack remove 2
-path=[1]
-
-idx=1, path=[1]
-    exclude 2
-    idx=2
-
-idx=2, path=[1]
-    include 3 -> output [1,3]
-    exclude 3 -> output [1]
-
-backtrack remove 1
-path=[]
-
-idx=0
     exclude 1
+        idx=1:
+            include 2
+                idx=2:
+                    include 3 -> [2,3]
+                    exclude 3 -> [2]
 
-Now solve remaining [2,3]:
-    include 2, include 3 -> [2,3]
-    include 2, exclude 3 -> [2]
-    exclude 2, include 3 -> [3]
-    exclude 2, exclude 3 -> []
+            exclude 2
+                idx=2:
+                    include 3 -> [3]
+                    exclude 3 -> []
 
 Final subsets:
-    [1,2,3], [1,2], [1,3], [1], [2,3], [2], [3], []
+    [1,2,3], [1,2], [1,3], [1],
+    [2,3], [2], [3], []
 ```
 
 ## Complexity
