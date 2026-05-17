@@ -93,79 +93,74 @@
 
 # 0.1 Graph Master Map
 
-```text
-Graph Algorithms Master Map
+```mermaid
+flowchart TD
+    A["Graphs"] --> B["Basics"]
+    A --> C["Traversal"]
+    A --> D["Cycles and DAG"]
+    A --> E["Shortest Path"]
+    A --> F["MST and DSU"]
+    A --> G["Advanced CP"]
 
-Graphs
-├── 1. Basics
-│   ├── node / vertex
-│   ├── edge
-│   ├── directed graph
-│   ├── undirected graph
-│   └── weighted graph
-│
-├── 2. Traversal
-│   ├── DFS: go deep, then backtrack
-│   ├── BFS: level by level
-│   ├── Grid BFS/DFS: cell = node
-│   ├── Multi-source BFS: many starting nodes
-│   └── 0-1 BFS: deque for weights 0 and 1
-│
-├── 3. Cycles and DAG
-│   ├── undirected cycle: visited neighbor != parent
-│   ├── directed cycle: recursion-stack state
-│   ├── topological sort
-│   └── DAG DP
-│
-├── 4. Shortest Path
-│   ├── BFS: unweighted
-│   ├── Dijkstra: positive weights
-│   ├── Bellman-Ford: negative edges
-│   └── Floyd-Warshall: all pairs
-│
-├── 5. MST and DSU
-│   ├── DSU: components
-│   ├── Kruskal: sort edges + DSU
-│   └── Prim: grow MST using priority queue
-│
-└── 6. Advanced CP
-    ├── SCC
-    ├── Bridges
-    ├── Articulation Points
-    ├── LCA
-    └── Flow / Matching
+    B --> B1["Node / Vertex"]
+    B --> B2["Edge"]
+    B --> B3["Directed"]
+    B --> B4["Undirected"]
+    B --> B5["Weighted"]
+
+    C --> C1["DFS"]
+    C --> C2["BFS"]
+    C --> C3["Grid BFS / DFS"]
+    C --> C4["Multi-Source BFS"]
+    C --> C5["0-1 BFS"]
+
+    D --> D1["Undirected Cycle"]
+    D --> D2["Directed Cycle"]
+    D --> D3["Topological Sort"]
+    D --> D4["DAG DP"]
+
+    E --> E1["BFS Shortest Path"]
+    E --> E2["Dijkstra"]
+    E --> E3["Bellman-Ford"]
+    E --> E4["Floyd-Warshall"]
+
+    F --> F1["DSU"]
+    F --> F2["Kruskal"]
+    F --> F3["Prim"]
+
+    G --> G1["SCC"]
+    G --> G2["Bridges"]
+    G --> G3["Articulation Points"]
+    G --> G4["LCA"]
+    G --> G5["Flow / Matching"]
 ```
 
 # 0.2 Algorithm Selection Map
 
-```text
-Algorithm Selection Map
+```mermaid
+flowchart TD
+    A["Problem Signal"] --> B{Need shortest path?}
+    B -->|Unweighted| C["BFS"]
+    B -->|0 or 1 weights| D["0-1 BFS"]
+    B -->|Positive weights| E["Dijkstra"]
+    B -->|Negative edge| F["Bellman-Ford"]
+    B -->|All pairs small n| G["Floyd-Warshall"]
 
-Problem Signal
-├── Need shortest path?
-│   ├── all edges cost 1 / unweighted  -> BFS
-│   ├── edge weights only 0 or 1       -> 0-1 BFS
-│   ├── positive weights only          -> Dijkstra
-│   ├── negative edge exists           -> Bellman-Ford
-│   └── many/all-pair queries, small n -> Floyd-Warshall
-│
-├── Need ordering / prerequisites?
-│   ├── dependencies must be resolved  -> Topological Sort
-│   └── need detect impossible order   -> Kahn / DFS state cycle
-│
-├── Need connect all nodes with min cost?
-│   └── weighted undirected graph      -> MST: Kruskal or Prim
-│
-├── Need groups / components?
-│   ├── static graph traversal         -> DFS / BFS
-│   └── online merging edges           -> DSU
-│
-├── Need critical edges/nodes?
-│   ├── edge removal disconnects graph -> Bridges
-│   └── node removal disconnects graph -> Articulation Points
-│
-└── Need directed strongly connected groups?
-    └── SCC: Kosaraju / Tarjan
+    A --> H{Need ordering?}
+    H -->|Dependencies| I["Topological Sort"]
+    H -->|Cycle in prerequisites| J["Kahn / DFS State"]
+
+    A --> K{Need connect all min cost?}
+    K --> L["MST: Kruskal / Prim"]
+
+    A --> M{Need groups?}
+    M --> N["DFS / BFS / DSU"]
+
+    A --> O{Need critical edges or nodes?}
+    O --> P["Bridges / Articulation Points"]
+
+    A --> Q{Need directed strong groups?}
+    Q --> R["SCC"]
 ```
 
 # 0.3 CP + DSA Graph Roadmap
@@ -188,65 +183,63 @@ Problem Signal
 
 ## Node and Edge
 
-```text
-1 ----- 2
-
-1 and 2 are nodes.
-The line between them is an edge.
+```mermaid
+flowchart LR
+    A((1)) --- B((2))
 ```
+
+`1` and `2` are nodes. The line between them is an edge.
 
 - `1` and `2` are nodes / vertices.
 - `(1,2)` is an edge.
 
 ## Directed Graph
 
-```text
-1 ----> 2 ----> 3
-
-Direction matters:
-1 can go to 2, 2 can go to 3.
-But 3 cannot automatically go back to 2.
+```mermaid
+flowchart LR
+    A((1)) --> B((2))
+    B --> C((3))
 ```
+
+Direction matters: `1` can go to `2`, and `2` can go to `3`.
 
 Direction matters. You can move only along the arrow.
 
 ## Undirected Graph
 
-```text
-1 ----- 2 ----- 3
-
-Undirected edge works both ways:
-1 <-> 2 and 2 <-> 3
+```mermaid
+flowchart LR
+    A((1)) --- B((2))
+    B --- C((3))
 ```
+
+Undirected edge works both ways.
 
 Edge works both ways.
 
 ## Weighted Graph
 
-```text
-1 --5--> 2 --2--> 3
-
-Edge cost:
-1 to 2 costs 5
-2 to 3 costs 2
+```mermaid
+flowchart LR
+    A((1)) -->|5| B((2))
+    B -->|2| C((3))
 ```
+
+Each edge has a cost.
 
 Each edge has cost.
 
 ## DAG
 
-```text
-      1
-     / \
-    v   v
-    2   3
-     \ /
-      v
-      4
-
-DAG = Directed Acyclic Graph.
-No path can return to an already active node.
+```mermaid
+flowchart TD
+    A((1)) --> B((2))
+    A --> C((3))
+    B --> D((4))
+    C --> D
 ```
+
+DAG = Directed Acyclic Graph. No directed path returns to an active node.
 
 DAG = Directed Acyclic Graph. Used in prerequisites, build order, dependency ordering, DP on graph.
 
@@ -370,6 +363,29 @@ Examples:
 
 ## Idea
 
+### Graph Model — Mermaid
+
+```mermaid
+flowchart TD
+    A((1)) --- B((2))
+    A --- C((3))
+    B --- D((4))
+    B --- E((5))
+    C --- F((6))
+```
+
+### DFS Call Model — Mermaid
+
+```mermaid
+flowchart TD
+    A["dfs(1)"] --> B["dfs(2)"]
+    B --> D["dfs(4)"]
+    B --> E["dfs(5)"]
+    A --> C["dfs(3)"]
+    C --> F["dfs(6)"]
+```
+
+
 DFS goes deep, then backtracks.
 
 ```text
@@ -477,6 +493,29 @@ dfs(1) | visit 1
 # 2.2 BFS Breadth First Search
 
 ## Idea
+
+### Graph Model — Mermaid
+
+```mermaid
+flowchart TD
+    A((1)) --- B((2))
+    A --- C((3))
+    B --- D((4))
+    B --- E((5))
+    C --- F((6))
+```
+
+### BFS Level Model — Mermaid
+
+```mermaid
+flowchart TD
+    L0["Level 0: 1"] --> L1A["Level 1: 2"]
+    L0 --> L1B["Level 1: 3"]
+    L1A --> L2A["Level 2: 4"]
+    L1A --> L2B["Level 2: 5"]
+    L1B --> L2C["Level 2: 6"]
+```
+
 
 BFS explores level by level. It gives shortest path in unweighted graph.
 
@@ -669,6 +708,17 @@ for i = 1..6
 
 ## Idea
 
+### Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A["1 / color 0"] --- B["2 / color 1"]
+    A --- C["3 / color 1"]
+    B --- D["4 / color 0"]
+    C --- D
+```
+
+
 A graph is bipartite if every node can be colored with two colors and no edge connects same color.
 
 ```text
@@ -773,6 +823,17 @@ start 1 -> color[1]=0
 
 ## Idea
 
+### Grid as Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A["(0,0) S"] --- B["(0,1) ."]
+    A --- C["(1,0) ."]
+    C --- D["(1,1) ."]
+    D --- E["(1,2) T"]
+```
+
+
 A grid is an implicit graph.
 
 ```text
@@ -797,7 +858,7 @@ for d = 0..3
 ├── nx = x + dx[d]
 ├── ny = y + dy[d]
 ├── if outside grid -> skip
-├── if wall '#'' -> skip
+├── if wall '#' -> skip
 └── otherwise this neighbor is reachable
 ```
 
@@ -836,6 +897,19 @@ BFS from S=(0,0)
 # 2.6 Multi-Source BFS
 
 ## Idea
+
+### Multi-Source Wave Model — Mermaid
+
+```mermaid
+flowchart TD
+    M1["Source M1 dist=0"] --> A["dist=1"]
+    M1 --> B["dist=1"]
+    M2["Source M2 dist=0"] --> C["dist=1"]
+    M2 --> D["dist=1"]
+    A --> E["dist=2"]
+    C --> E
+```
+
 
 Push all sources first with distance `0`. Then normal BFS.
 
@@ -961,6 +1035,17 @@ Expansion tree:
 
 ## Idea
 
+### Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) -->|0| B((2))
+    A -->|1| C((3))
+    B -->|1| D((4))
+    C -->|0| D
+```
+
+
 For edge weights only `0` and `1`:
 
 ```text
@@ -1060,6 +1145,26 @@ start dq=[1], d1=0
 
 ## Idea
 
+### Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --- B((2))
+    B --- C((3))
+    C --- A
+```
+
+### DFS Cycle Model — Mermaid
+
+```mermaid
+flowchart TD
+    A["dfs 1 parent -1"] --> B["dfs 2 parent 1"]
+    B --> C["dfs 3 parent 2"]
+    C --> D["neighbor 1 visited and not parent"]
+    D --> E["cycle found"]
+```
+
+
 If DFS reaches a visited node that is not parent, cycle exists.
 
 ```text
@@ -1135,6 +1240,16 @@ dfs(1, parent=-1)
 # 3.2 Cycle Detection in Directed Graph
 
 ## Idea
+
+### Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --> B((2))
+    B --> C((3))
+    C --> A
+```
+
 
 Use state array:
 
@@ -1212,6 +1327,17 @@ dfs(1) -> state[1]=1
 
 ## Idea
 
+### DAG Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --> B((2))
+    A --> C((3))
+    B --> D((4))
+    C --> D
+```
+
+
 In DAG, node is pushed after processing all children. Reverse the order.
 
 ```text
@@ -1287,6 +1413,17 @@ after reverse  = [1,3,2,4]
 # 3.4 Topological Sort — Kahn
 
 ## Idea
+
+### DAG Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --> B((2))
+    A --> C((3))
+    B --> D((4))
+    C --> D
+```
+
 
 Use indegree and queue of zero-indegree nodes.
 
@@ -1377,6 +1514,17 @@ Queue=[1]
 
 ## Idea
 
+### DAG DP Model — Mermaid
+
+```mermaid
+flowchart LR
+    A["1: dp=1"] --> B["2: dp += dp1"]
+    A --> C["3: dp += dp1"]
+    B --> D["4: dp += dp2"]
+    C --> D["4: dp += dp3"]
+```
+
+
 If graph is DAG, process nodes in topological order and relax transitions.
 
 ```text
@@ -1458,6 +1606,19 @@ source 1 distance 0
 
 ## Use When
 
+### Weighted Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) -->|2| B((2))
+    A -->|5| C((3))
+    B -->|1| C
+    B -->|2| D((4))
+    C -->|1| E((5))
+    D -->|3| E
+```
+
+
 - weighted graph
 - non-negative weights
 - single-source shortest path
@@ -1537,6 +1698,16 @@ pq={(0,1)}, dist[1]=0
 
 ## Use When
 
+### Negative Edge Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) -->|1| B((2))
+    B -->|-1| C((3))
+    C -->|-1| A
+```
+
+
 - negative edges exist
 - need negative cycle detection
 
@@ -1603,6 +1774,16 @@ Start dist[src]=0
 # 4.4 Floyd-Warshall
 
 ## Use When
+
+### All-Pairs Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) -->|4| B((2))
+    B -->|2| C((3))
+    A -->|10| C
+```
+
 
 - all-pairs shortest path
 - `n` is small
@@ -1677,6 +1858,16 @@ answer = min dist[target][0], dist[target][1]
 # 5.1 DSU Disjoint Set Union
 
 ## Idea
+
+### Component Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --- B((2))
+    B --- C((3))
+    D((4))
+```
+
 
 DSU maintains groups/components.
 
@@ -1773,6 +1964,18 @@ union(1,3)
 
 ## Idea
 
+### Weighted Undirected Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) ---|1| B((2))
+    B ---|2| C((3))
+    C ---|3| D((4))
+    A ---|4| C
+    B ---|7| D
+```
+
+
 Sort edges by weight. Add edge if DSU says it connects different components.
 
 ```text
@@ -1857,6 +2060,18 @@ Start components: {1},{2},{3},{4}
 # 5.3 Prim MST
 
 ## Idea
+
+### Frontier Model — Mermaid
+
+```mermaid
+flowchart LR
+    A["1 visited"] ---|1| B((2))
+    A ---|4| C((3))
+    B ---|2| C
+    B ---|7| D((4))
+    C ---|3| D
+```
+
 
 Grow one connected tree. Always choose cheapest edge from visited set to unvisited node.
 
@@ -1947,6 +2162,19 @@ visited={1}
 # 6.1 SCC — Kosaraju
 
 ## Idea
+
+### SCC Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --> B((2))
+    B --> C((3))
+    C --> A
+    C --> D((4))
+    D --> E((5))
+    E --> D
+```
+
 
 Strongly Connected Component = every node can reach every other node inside component.
 
@@ -2046,6 +2274,18 @@ Reverse order for pass 2:
 
 ## Idea
 
+### Bridge Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --- B((2))
+    B --- C((3))
+    B --- D((4))
+    D --- E((5))
+    E --- B
+```
+
+
 Bridge = edge whose removal increases number of components.
 
 Use DFS timestamps:
@@ -2136,6 +2376,16 @@ dfs(1)
 # 6.3 Articulation Points
 
 ## Idea
+
+### Articulation Graph Model — Mermaid
+
+```mermaid
+flowchart TD
+    A((1)) --- B((2))
+    A --- C((3))
+    B --- D((4))
+```
+
 
 Articulation point = removing this node increases components.
 
@@ -2261,6 +2511,17 @@ Degrees:
 
 ## Idea
 
+### Tree Model — Mermaid
+
+```mermaid
+flowchart TD
+    A((1)) --> B((2))
+    A --> C((3))
+    B --> D((4))
+    B --> E((5))
+```
+
+
 Precompute `up[u][j]` = 2^j-th ancestor of `u`.
 
 ```text
@@ -2368,6 +2629,18 @@ Query `lca(4,3)`:
 
 ## Idea
 
+### Diameter Tree Model — Mermaid
+
+```mermaid
+flowchart TD
+    A((1)) --- B((2))
+    A --- C((3))
+    B --- D((4))
+    B --- E((5))
+    C --- F((6))
+```
+
+
 Diameter = longest path in tree.
 
 Two BFS/DFS method:
@@ -2474,6 +2747,17 @@ For interviews, flow is uncommon. For CP, Dinic is the standard next algorithm.
 
 ## When to Use
 
+### Bipartite Matching Model — Mermaid
+
+```mermaid
+flowchart LR
+    A1["Applicant A"] --> J1["Job 1"]
+    A1 --> J2["Job 2"]
+    A2["Applicant B"] --> J1
+    A3["Applicant C"] --> J2
+```
+
+
 - assign applicants to jobs
 - match workers to tasks
 - pair left-side nodes with right-side nodes
@@ -2509,6 +2793,17 @@ try match left node B
 ---
 
 # P1. Number of Connected Components
+
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --- B((2))
+    B --- C((3))
+    D((4)) --- E((5))
+    F((6))
+```
+
 
 ## Problem Statement
 
@@ -2599,6 +2894,18 @@ for i=1..6
 
 # P2. Shortest Path in Unweighted Graph
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart TD
+    A((1)) --- B((2))
+    A --- C((3))
+    B --- D((4))
+    B --- E((5))
+    C --- F((6))
+```
+
+
 ## Problem Statement
 
 Given unweighted graph and source `s`, print shortest distance from source to every node.
@@ -2677,6 +2984,17 @@ source 1, dist=0
 ---
 
 # P3. Escape from Monsters
+
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A["A player"] --- X1["open cell"]
+    X1 --- X2["open cell"]
+    M["M monster"] --- X3["open cell"]
+    X2 --- Exit["boundary exit"]
+```
+
 
 ## Problem Statement
 
@@ -2767,6 +3085,16 @@ Phase 2: Player BFS
 
 # P4. Course Schedule
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --> B((2))
+    B --> C((3))
+    C --> D((4))
+```
+
+
 ## Problem Statement
 
 Given courses and prerequisites `u -> v`, decide whether all courses can be completed.
@@ -2844,6 +3172,16 @@ queue=[1]
 ---
 
 # P5. Network Delay
+
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((2)) -->|1| B((1))
+    A -->|1| C((3))
+    C -->|1| D((4))
+```
+
 
 ## Problem Statement
 
@@ -2933,6 +3271,17 @@ start k=2, dist[2]=0
 
 # P6. Cheapest Path With 0/1 Edges
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) -->|0| B((2))
+    A -->|1| C((3))
+    B -->|1| D((4))
+    C -->|0| D
+```
+
+
 ## Problem Statement
 
 Given graph with edge weights only `0` and `1`, find shortest distance from source to all nodes.
@@ -3016,6 +3365,16 @@ dq=[1]
 
 # P7. Negative Cycle Detection
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) -->|1| B((2))
+    B -->|-1| C((3))
+    C -->|-1| A
+```
+
+
 ## Problem Statement
 
 Given weighted directed graph, detect whether a negative cycle is reachable from source.
@@ -3090,6 +3449,16 @@ Extra pass:
 ---
 
 # P8. All Pairs Shortest Path
+
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) -->|4| B((2))
+    B -->|2| C((3))
+    A -->|10| C
+```
+
 
 ## Problem Statement
 
@@ -3177,6 +3546,17 @@ Query 3 1 -> unreachable -> -1
 ---
 
 # P9. Minimum Cost to Connect Cities
+
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) ---|1| B((2))
+    B ---|2| C((3))
+    C ---|3| D((4))
+    A ---|4| C
+```
+
 
 ## Problem Statement
 
@@ -3272,6 +3652,16 @@ Kruskal:
 
 # P10. Count Islands
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A["land cell"] --- B["land cell"]
+    C["water"]
+    D["land cell"] --- E["land cell"]
+```
+
+
 ## Problem Statement
 
 Given grid of `1` land and `0` water, count islands.
@@ -3351,6 +3741,16 @@ scan grid row by row
 
 # P11. Rotten Oranges
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart TD
+    R["rotten orange t=0"] --> F1["fresh becomes rotten t=1"]
+    R --> F2["fresh becomes rotten t=1"]
+    F1 --> F3["fresh becomes rotten t=2"]
+```
+
+
 ## Problem Statement
 
 Each minute, rotten oranges rot adjacent fresh oranges. Return minimum minutes to rot all, or `-1`.
@@ -3395,6 +3795,16 @@ continue until queue empty
 
 # P12. Alien Dictionary
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    B((b)) --> A((a))
+    D((d)) --> C((c))
+    A --> C
+```
+
+
 ## Problem Statement
 
 Given sorted words in alien language, find one possible character order.
@@ -3435,6 +3845,16 @@ Then topological sort characters.
 
 # P13. Redundant Connection
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --- B((2))
+    B --- C((3))
+    C --- A
+```
+
+
 ## Problem Statement
 
 Given an undirected graph that started as a tree and one extra edge was added, find the extra edge.
@@ -3467,6 +3887,16 @@ edge 2-3
 
 # P14. Number of Provinces
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A["City 1"] --- B["City 2"]
+    C["City 3"]
+    D["City 4"] --- E["City 5"]
+```
+
+
 ## Problem Statement
 
 Given adjacency matrix of cities, count connected components.
@@ -3489,6 +3919,16 @@ scan next unvisited city
 ---
 
 # P15. Cheapest Flights With K Stops
+
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((0)) -->|100| B((1))
+    B -->|100| C((2))
+    A -->|500| C
+```
+
 
 ## Problem Statement
 
@@ -3520,6 +3960,18 @@ Only accept paths with edges <= k+1.
 
 # P16. Bridges in Graph
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --- B((2))
+    B --- C((3))
+    B --- D((4))
+    D --- E((5))
+    E --- B
+```
+
+
 Same as section [6.2 Bridges](#62-bridges).
 
 ## Tree-Wise Dry Run
@@ -3536,6 +3988,19 @@ dfs parent-child tree
 
 # P17. Strongly Connected Components
 
+## Graph Model — Mermaid
+
+```mermaid
+flowchart LR
+    A((1)) --> B((2))
+    B --> C((3))
+    C --> A
+    C --> D((4))
+    D --> E((5))
+    E --> D
+```
+
+
 Same as section [6.1 SCC — Kosaraju](#61-scc--kosaraju).
 
 ## Tree-Wise Dry Run
@@ -3551,6 +4016,17 @@ Pass 2 reversed graph:
 ---
 
 # P18. LCA Queries
+
+## Graph Model — Mermaid
+
+```mermaid
+flowchart TD
+    A((1)) --> B((2))
+    A --> C((3))
+    B --> D((4))
+    B --> E((5))
+```
+
 
 Same as section [6.5 LCA Binary Lifting](#65-lca-binary-lifting).
 
@@ -3727,4 +4203,96 @@ Graph solving = modelling + algorithm selection + implementation discipline.
 4. Pick algorithm.
 5. Write template.
 6. Dry run with queue/stack/tree.
+```
+
+---
+
+# 8.5 Mermaid Graph Model Pack
+
+Use these when you want quick visual memory of graph patterns.
+
+## Undirected Graph
+
+```mermaid
+flowchart LR
+    A((1)) --- B((2))
+    B --- C((3))
+    C --- A
+```
+
+## Directed Graph
+
+```mermaid
+flowchart LR
+    A((1)) --> B((2))
+    B --> C((3))
+    C --> D((4))
+```
+
+## Weighted Graph
+
+```mermaid
+flowchart LR
+    A((1)) -->|5| B((2))
+    B -->|2| C((3))
+    A -->|10| C
+```
+
+## DAG
+
+```mermaid
+flowchart LR
+    A((1)) --> B((2))
+    A --> C((3))
+    B --> D((4))
+    C --> D
+```
+
+## Cycle Graph
+
+```mermaid
+flowchart LR
+    A((1)) --- B((2))
+    B --- C((3))
+    C --- A
+```
+
+## Tree Graph
+
+```mermaid
+flowchart TD
+    A((1)) --> B((2))
+    A --> C((3))
+    B --> D((4))
+    B --> E((5))
+```
+
+## Grid as Graph
+
+```mermaid
+flowchart LR
+    A["(0,0)"] --- B["(0,1)"]
+    A --- C["(1,0)"]
+    C --- D["(1,1)"]
+    B --- D
+```
+
+## Bipartite Graph
+
+```mermaid
+flowchart LR
+    L1["Left 1"] --> R1["Right 1"]
+    L1 --> R2["Right 2"]
+    L2["Left 2"] --> R1
+    L3["Left 3"] --> R2
+```
+
+## Flow Network
+
+```mermaid
+flowchart LR
+    S((S)) -->|cap 3| A((A))
+    S -->|cap 2| B((B))
+    A -->|cap 2| T((T))
+    B -->|cap 2| T
 ```
