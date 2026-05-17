@@ -1,60 +1,90 @@
-# 🚀 Divide & Conquer + Meet in the Middle — Phase-Wise Handbook
-## Two-Pointer-Style Dry Runs Edition
+# 🚀 Divide & Conquer + Meet in the Middle — LCCM Master Guide
+## Backtracking-Pattern Style Edition
 
-> Dry runs are now written in the same readable style as your sliding window / two pointer notes.
+> Rebuilt in the same **Backtracking Patterns** style: phase-wise map, LCCM thinking, code templates, C++ code, recursion/merge trees, Mermaid dry runs, and index-by-index walkthroughs.
 
 ---
 
 # 📚 Clickable Index
 
-## Core Maps
+> Use this index like a study roadmap. Each problem section contains: **problem statement → input → expected output → brute force → optimal idea → DCMM/MITM framework → tree/diagram → C++ code → index-by-index dry run → complexity → pattern trigger**.
+
+## A. Core Maps
+
 - [0. Master Pattern Map](#0-master-pattern-map)
+- [0.0 DCMM / MITM Framework](#00-dcmm--mitm-framework)
+- [0.0.1 Universal Code Templates](#001-universal-code-templates)
 - [0.1 D&C vs MITM Decision Tree](#01-dc-vs-mitm-decision-tree)
 - [0.2 Complexity Cheat Sheet](#02-complexity-cheat-sheet)
 
+## B. Phase-Wise Problem Index
 
-## Phase 1 — Divide & Conquer Foundations
+| Phase | Problem | Difficulty | Pattern | Main Output |
+|---|---|---:|---|---|
+| Phase 1 | [P1. Merge Sort](#problem-1-merge-sort) | Easy | Split → sort → merge | Sorted array |
+| Phase 1 | [P2. Binary Search as Divide & Conquer](#problem-2-binary-search-as-divide-conquer) | Easy | Remove half | Target index |
+| Phase 2 | [P3. Count Inversions](#problem-3-count-inversions) | Medium | Merge sort count | Count of `(i,j)` where `a[i] > a[j]` |
+| Phase 2 | [P4. Reverse Pairs](#problem-4-reverse-pairs) | Medium/Hard | Merge sort + two pointers | Count of `a[i] > 2*a[j]` |
+| Phase 2 | [P5. Bubble Sort Swap Parity](#problem-5-bubble-sort-swap-parity) | Medium | Inversion parity | Even/Odd swaps |
+| Phase 3 | [P6. Karatsuba Multiplication](#problem-6-karatsuba-multiplication) | Medium | 3 recursive multiplications | Product |
+| Phase 4 | [P7. Generate All Subset Sums](#problem-7-generate-all-subset-sums) | Easy | Bitmask enumeration | All subset sums |
+| Phase 4 | [P8. Subset Sum Exists](#problem-8-subset-sum-exists) | Medium | MITM + binary search | YES/NO |
+| Phase 5 | [P9. Maximum Subset Sum ≤ S](#problem-9-maximum-subset-sum-less-than-or-equal-to-s) | Medium | MITM + upper_bound | Best sum ≤ S |
+| Phase 5 | [P10. Count Subsets With Sum ≤ K](#problem-10-count-subsets-with-sum-less-than-or-equal-to-k) | Medium | MITM + upper_bound count | Number of valid subsets |
+| Phase 6 | [P11. Classical Four Number Sum](#problem-11-classical-four-number-sum) | Medium | Pair sums + hash map | YES/NO |
+| Phase 6 | [P12. CSES Four Values](#problem-12-cses-four-values) | Medium | Pair sum + store indices | Four indices |
+| Phase 7 | [P13. Maximum Subsequence Sum Modulo M](#problem-13-maximum-subsequence-sum-modulo-m) | Hard | Modulo MITM | Max modulo value |
+| Phase 8 | [P14. 4 Reversals Pattern](#problem-14-4-reversals-pattern) | Hard | State-space MITM | Operation sequence |
+| Bonus | [P15. Count 3Sum With Duplicates](#problem-15-count-3sum-with-duplicates) | Medium | Sort + two pointers + duplicate count | Number of triplets |
 
-- [Problem 1: Merge Sort](#problem-1-merge-sort) — Easy — `Split array → sort left → sort right → merge`
-- [Problem 2: Binary Search as Divide & Conquer](#problem-2-binary-search-as-divide-conquer) — Easy — `Sorted search space → remove half`
+## C. Phase Templates
 
-## Phase 2 — Merge Step Counting
+- [Phase 1 — Divide & Conquer Foundations](#phase-1--divide--conquer-foundations)
+- [Phase 2 — Merge Step Counting](#phase-2--merge-step-counting)
+- [Phase 3 — Fast Multiplication](#phase-3--fast-multiplication)
+- [Phase 4 — Meet in the Middle Foundations](#phase-4--meet-in-the-middle-foundations)
+- [Phase 5 — MITM Optimization Problems](#phase-5--mitm-optimization-problems)
+- [Phase 6 — Pair Sum MITM](#phase-6--pair-sum-mitm)
+- [Phase 7 — Modulo MITM](#phase-7--modulo-mitm)
+- [Phase 8 — Advanced Transformation](#phase-8--advanced-transformation)
+- [Bonus — Two Pointer Style Example](#bonus--two-pointer-style-example)
 
-- [Problem 3: Count Inversions](#problem-3-count-inversions) — Medium — `Merge Sort + count cross inversions`
-- [Problem 4: Reverse Pairs](#problem-4-reverse-pairs) — Medium/Hard — `Merge Sort + two pointer counting before merge`
-- [Problem 5: Bubble Sort Swap Parity](#problem-5-bubble-sort-swap-parity) — Medium — `Inversion parity`
+## D. Quick Input / Output Practice Table
 
-## Phase 3 — Fast Multiplication
+| Problem | Input Example | Expected Output | First Thing To Notice |
+|---|---|---|---|
+| Merge Sort | `[5,3,8,1,2,7]` | `[1,2,3,5,7,8]` | Need sorted merge |
+| Binary Search | `[1,3,5,7,9,11], x=7` | `3` | Sorted search space |
+| Count Inversions | `[5,3,2,4,1]` | `8` | Count cross pairs while merging |
+| Reverse Pairs | `[1,3,2,3,1]` | `2` | Count before merge using sorted halves |
+| Bubble Sort Swap Parity | `[3,1,2]` | `Even` | Swaps = inversions |
+| Karatsuba | `1234, 5678` | `7006652` | Split digits into high/low parts |
+| Subset Sums | `[2,5,7]` | `[0,2,5,7,7,9,12,14]` | Every mask is one subset |
+| Subset Sum Exists | `[3,34,4,12,5,2], S=9` | `YES` | Split array into two halves |
+| Max Subset Sum ≤ S | `arr, S=10` | `10` | For left sum, find best right complement |
+| Count Subsets ≤ K | `[1,2,3,4], K=5` | `9` | For left sum, count right sums ≤ need |
+| Four Number Sum | `[1,5,1,0,6,0], X=7` | `YES` | Pair sum complement |
+| CSES Four Values | `n=8, X=15` | `YES` | Store previous pair indices |
+| Max Subsequence Sum Mod M | `[3,3,9,9,5], m=7` | `6` | Target modulo value is `m-1` |
+| 4 Reversals | state transformation | operation sequence | Meet two generated state spaces |
+| Count 3Sum With Duplicates | `[1,1,2,2,3,3], target=6` | count | Handle duplicate frequencies |
 
-- [Problem 6: Karatsuba Multiplication](#problem-6-karatsuba-multiplication) — Medium — `Reduce 4 multiplications to 3`
+## E. Final Revision
 
-## Phase 4 — Meet in the Middle Foundations
+- [Final Revision Strategy](#final-revision-strategy)
+- [One-Line Mental Triggers](#one-line-mental-triggers)
 
-- [Problem 7: Generate All Subset Sums](#problem-7-generate-all-subset-sums) — Easy — `Bitmask enumeration`
-- [Problem 8: Subset Sum Exists](#problem-8-subset-sum-exists) — Medium — `MITM + binary search`
+## F. How To Study Each Problem Quickly
 
-## Phase 5 — MITM Optimization Problems
-
-- [Problem 9: Maximum Subset Sum Less Than or Equal to S](#problem-9-maximum-subset-sum-less-than-or-equal-to-s) — Medium — `MITM + upper_bound`
-- [Problem 10: Count Subsets With Sum Less Than or Equal to K](#problem-10-count-subsets-with-sum-less-than-or-equal-to-k) — Medium — `MITM + upper_bound count`
-
-## Phase 6 — Pair Sum MITM
-
-- [Problem 11: Classical Four Number Sum](#problem-11-classical-four-number-sum) — Medium — `Pair sums + hash map`
-- [Problem 12: CSES Four Values](#problem-12-cses-four-values) — Medium — `Pair sum + store indices`
-
-## Phase 7 — Modulo MITM
-
-- [Problem 13: Maximum Subsequence Sum Modulo M](#problem-13-maximum-subsequence-sum-modulo-m) — Hard — `MITM + modulo + upper_bound`
-
-## Phase 8 — Advanced Transformation
-
-- [Problem 14: 4 Reversals Pattern](#problem-14-4-reversals-pattern) — Hard — `MITM over states`
-
-## Bonus — Two Pointer Style Example
-
-- [Problem 15: Count 3Sum With Duplicates](#problem-15-count-3sum-with-duplicates) — Medium — `Sort + fixed i + two pointers + duplicate frequency counting`
-
+```text
+1. Read the problem statement.
+2. Check the input/output example.
+3. Write DCMM or MITM in 5 lines.
+4. Read the tree/diagram to understand the shape.
+5. Read the C++ code after the idea is clear.
+6. Dry run index-by-index until every pointer/mask/merge step is obvious.
+7. Memorize only the pattern trigger, not the full code.
+```
 
 ---
 
@@ -68,6 +98,131 @@
 | Meet in the Middle | Split exponential search into two halves | `n <= 40`, subsets/combinations |
 | Pair Sum MITM | Precompute pair sums | Four values / four sum |
 | Modulo MITM | Store subset sums modulo m | Maximum subset modulo |
+
+
+
+---
+
+# 0.0 DCMM / MITM Framework
+
+This is the Divide & Conquer version of LCCM.
+
+| Letter | Meaning | Question |
+|---|---|---|
+| D | Divide | How do I split the problem? |
+| C | Conquer | What recursive calls solve smaller parts? |
+| M | Merge | How do I combine answers? |
+| M | Measure | What extra value do I count / optimize? |
+
+```text
+Divide      = split by mid / split into halves / split state-space
+Conquer     = solve left + solve right
+Merge       = merge sorted arrays / combine answers / search complement
+Measure     = count inversions / max answer / min answer / existence
+Base case   = single element / empty range / small number / one state
+Answer      = merged result + measured contribution
+```
+
+## MITM Thinking Framework
+
+MITM is used when recursion over all subsets is too large, but half-subsets are possible.
+
+```text
+Full brute force:        2^n
+Split into two halves:   2^(n/2) + 2^(n/2)
+Combine smartly:         sort + binary search / two pointers / hash map
+```
+
+| Ask | MITM combine method |
+|---|---|
+| Does subset sum exist? | binary_search(complement) |
+| Maximum sum <= S | upper_bound(S - leftSum) |
+| Count sums <= K | upper_bound count |
+| Four values | pair sums + hash/index check |
+| Maximum modulo | sorted set / upper_bound on modulo complement |
+
+---
+
+# 0.0.1 Universal Code Templates
+
+## Template 1 — Pure Divide & Conquer
+
+```cpp
+ReturnType solve(int l, int r) {
+    if (l == r) {
+        return base_value;
+    }
+
+    int mid = l + (r - l) / 2;
+
+    ReturnType leftAns = solve(l, mid);
+    ReturnType rightAns = solve(mid + 1, r);
+
+    ReturnType mergedAns = merge(leftAns, rightAns);
+    return mergedAns;
+}
+```
+
+## Template 2 — Merge Sort Counting
+
+```cpp
+long long solve(vector<int>& arr, int l, int r) {
+    if (l >= r) return 0;
+
+    int mid = l + (r - l) / 2;
+
+    long long ans = 0;
+    ans += solve(arr, l, mid);
+    ans += solve(arr, mid + 1, r);
+
+    // count cross contribution before/during merge
+    ans += countCross(arr, l, mid, r);
+
+    mergeSortedHalves(arr, l, mid, r);
+    return ans;
+}
+```
+
+## Template 3 — Meet in the Middle
+
+```cpp
+vector<long long> generateSums(vector<int>& part) {
+    vector<long long> sums;
+    int n = part.size();
+
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) sum += part[i];
+        }
+        sums.push_back(sum);
+    }
+
+    return sums;
+}
+
+Answer solveMITM(vector<int>& arr) {
+    split arr into left and right;
+    generate all left answers;
+    generate all right answers;
+    sort one side;
+    combine using binary search / upper_bound / hash map;
+}
+```
+
+## Template 4 — Pair Sum MITM
+
+```cpp
+for (int i = 0; i < n; i++) {
+    for (int j = i + 1; j < n; j++) {
+        long long sum = arr[i] + arr[j];
+        // store sum with indices
+    }
+}
+
+// For every pair sum x, search target - x.
+// Always ensure indices are distinct.
+```
 
 ---
 
@@ -104,8 +259,30 @@ Can I split the problem into left half and right half?
 
 # Phase 1 — Divide & Conquer Foundations
 
+## Phase Code Template — Basic Divide & Conquer
+
+```cpp
+void solve(int l, int r) {
+    if (l >= r) {
+        return;
+    }
+
+    int mid = l + (r - l) / 2;
+
+    solve(l, mid);       // conquer left
+    solve(mid + 1, r);   // conquer right
+
+    merge(l, mid, r);    // combine answers
+}
+```
+
+**Phase idea:** split the range, solve both halves, then merge/combine.
+
+
 
 # Problem 1: Merge Sort
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Easy  
 **Pattern:** `Split array → sort left → sort right → merge`
@@ -134,6 +311,53 @@ Try bubble sort / selection sort. Compare repeatedly and swap. Complexity O(n²)
 ## Optimal Idea
 
 Split array into halves until size 1, then merge sorted halves.
+
+## DCMM
+
+```text
+Divide  = split array into [l..mid] and [mid+1..r]
+Conquer = recursively sort both halves
+Merge   = merge two sorted halves using two pointers
+Measure = sorted order
+Base    = l >= r
+```
+
+## Recursion / Merge Tree
+
+```text
+mergeSort(0,5) [5,3,8,1,2,7]
+├── mergeSort(0,2) [5,3,8]
+│   ├── mergeSort(0,1) [5,3]
+│   │   ├── [5]
+│   │   └── [3]
+│   │   └── merge -> [3,5]
+│   └── [8]
+│   └── merge -> [3,5,8]
+└── mergeSort(3,5) [1,2,7]
+    ├── [1,2]
+    └── [7]
+    └── merge -> [1,2,7]
+Final merge -> [1,2,3,5,7,8]
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["mergeSort 0..5<br/>[5,3,8,1,2,7]"] --> B["left 0..2<br/>[5,3,8]"]
+    A --> C["right 3..5<br/>[1,2,7]"]
+    B --> D["0..1<br/>[5,3]"]
+    B --> E["2..2<br/>[8]"]
+    D --> F["0..0<br/>[5]"]
+    D --> G["1..1<br/>[3]"]
+    F --> H["merge [5] + [3]<br/>[3,5]"]
+    G --> H
+    H --> I["merge [3,5] + [8]<br/>[3,5,8]"]
+    E --> I
+    C --> J["sorted right<br/>[1,2,7]"]
+    I --> K["final merge<br/>[1,2,3,5,7,8]"]
+    J --> K
+```
 
 ## C++ Code
 
@@ -233,6 +457,8 @@ Use this when you can **split, solve recursively, then merge or count while merg
 
 # Problem 2: Binary Search as Divide & Conquer
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Easy  
 **Pattern:** `Sorted search space → remove half`
 
@@ -260,6 +486,37 @@ Scan all indices. Complexity O(n).
 ## Optimal Idea
 
 Compare with middle. Remove left half or right half every step.
+
+## DCMM
+
+```text
+Divide  = choose mid index
+Conquer = keep only left half or right half
+Merge   = no merge needed
+Measure = target index / not found
+Base    = l > r or arr[mid] == x
+```
+
+## Recursion / Decision Tree
+
+```text
+search(l=0,r=5)
+├── mid=2, arr[mid]=5 < 7 -> go right
+└── search(l=3,r=5)
+    ├── mid=4, arr[mid]=9 > 7 -> go left
+    └── search(l=3,r=3)
+        └── mid=3, arr[mid]=7 -> found
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["l=0 r=5<br/>mid=2 value=5"] --> B["5 < 7<br/>discard left"]
+    B --> C["l=3 r=5<br/>mid=4 value=9"]
+    C --> D["9 > 7<br/>discard right"]
+    D --> E["l=3 r=3<br/>mid=3 value=7<br/>FOUND"]
+```
 
 ## C++ Code
 
@@ -320,8 +577,35 @@ Use this when you can **split, solve recursively, then merge or count while merg
 
 # Phase 2 — Merge Step Counting
 
+## Phase Code Template — Count While Merging
+
+```cpp
+long long rec(int l, int r) {
+    if (l >= r) return 0;
+
+    int mid = l + (r - l) / 2;
+
+    long long ans = 0;
+    ans += rec(l, mid);
+    ans += rec(mid + 1, r);
+
+    // count cross pairs between left half and right half
+    ans += countCross(l, mid, r);
+
+    // merge sorted halves
+    merge(l, mid, r);
+
+    return ans;
+}
+```
+
+**Phase idea:** left answer + right answer + cross answer.
+
+
 
 # Problem 3: Count Inversions
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `Merge Sort + count cross inversions`
@@ -349,6 +633,41 @@ Try every pair i < j. Complexity O(n²).
 ## Optimal Idea
 
 During merge, if left[i] > right[j], then all remaining elements from i..mid also form inversions.
+
+## DCMM
+
+```text
+Divide  = split array into left and right halves
+Conquer = count inversions in left and right recursively
+Merge   = merge sorted halves
+Measure = cross inversions when left[i] > right[j]
+Base    = single element has 0 inversions
+```
+
+## Recursion / Count Tree
+
+```text
+countInv([5,3,2,4,1])
+├── left [5,3,2]  -> 3 inversions
+├── right [4,1]   -> 1 inversion
+└── cross merge [2,3,5] and [1,4]
+    ├── 2 > 1 -> +3
+    └── 5 > 4 -> +1
+Total = 3 + 1 + 4 = 8
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["[5,3,2,4,1]"] --> B["left [5,3,2]<br/>inv=3"]
+    A --> C["right [4,1]<br/>inv=1"]
+    B --> D["sorted left [2,3,5]"]
+    C --> E["sorted right [1,4]"]
+    D --> F["cross count<br/>2>1 gives +3<br/>5>4 gives +1"]
+    E --> F
+    F --> G["total 8"]
+```
 
 ## C++ Code
 
@@ -463,6 +782,8 @@ Use this when you can **split, solve recursively, then merge or count while merg
 
 # Problem 4: Reverse Pairs
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Medium/Hard  
 **Pattern:** `Merge Sort + two pointer counting before merge`
 
@@ -489,6 +810,38 @@ Check all pairs. Complexity O(n²).
 ## Optimal Idea
 
 After sorting left and right halves, use a pointer j on right side. For every i, advance j while arr[i] > 2*arr[j].
+
+## DCMM
+
+```text
+Divide  = split array into halves
+Conquer = count reverse pairs in both halves
+Merge   = sort/merge halves after counting
+Measure = cross pairs where arr[i] > 2 * arr[j]
+Base    = one element has 0 pairs
+```
+
+## Recursion / Count Tree
+
+```text
+reversePairs([1,3,2,3,1])
+├── count inside left half
+├── count inside right half
+└── count cross after halves are sorted
+    for each i in left:
+        advance j while left[i] > 2 * right[j]
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["sorted halves<br/>left=[1,2,3]<br/>right=[1,3]"] --> B["i=1 value=1<br/>1 > 2*1 false<br/>+0"]
+    B --> C["i=2 value=2<br/>2 > 2*1 false<br/>+0"]
+    C --> D["i=3 value=3<br/>3 > 2*1 true<br/>move j<br/>+1"]
+    D --> E["other half contributes +1"]
+    E --> F["answer=2"]
+```
 
 ## C++ Code
 
@@ -591,6 +944,8 @@ Use this when you can **split, solve recursively, then merge or count while merg
 
 # Problem 5: Bubble Sort Swap Parity
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Medium  
 **Pattern:** `Inversion parity`
 
@@ -617,6 +972,38 @@ Simulate bubble sort. Complexity O(n²).
 ## Optimal Idea
 
 Bubble sort swaps exactly once per inversion. So swap parity = inversion count parity.
+
+## DCMM
+
+```text
+Divide  = same as inversion count
+Conquer = count left and right inversions
+Merge   = count cross inversions while sorting
+Measure = inversion_count % 2
+Base    = one element has even parity
+```
+
+## Recursion / Parity Tree
+
+```text
+Bubble sort swaps = inversion count
+arr = [3,1,2]
+Inversions:
+    (3,1)
+    (3,2)
+Total = 2 -> Even
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["[3,1,2]"] --> B["inversion (3,1)<br/>swap needed"]
+    A --> C["inversion (3,2)<br/>swap needed"]
+    B --> D["total swaps=2"]
+    C --> D
+    D --> E["2 % 2 == 0<br/>Even"]
+```
 
 ## C++ Code
 
@@ -700,8 +1087,32 @@ Use this when you can **split, solve recursively, then merge or count while merg
 
 # Phase 3 — Fast Multiplication
 
+## Phase Code Template — Karatsuba Divide & Conquer
+
+```cpp
+long long karatsuba(long long x, long long y) {
+    if (x < 10 || y < 10) return x * y;
+
+    split x into a and b;
+    split y into c and d;
+
+    long long ac = karatsuba(a, c);
+    long long bd = karatsuba(b, d);
+    long long abcd = karatsuba(a + b, c + d);
+
+    long long middle = abcd - ac - bd;
+
+    return ac * base^2 + middle * base + bd;
+}
+```
+
+**Phase idea:** reduce 4 multiplications into 3 recursive multiplications.
+
+
 
 # Problem 6: Karatsuba Multiplication
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `Reduce 4 multiplications to 3`
@@ -730,6 +1141,46 @@ Grade-school multiplication uses 4 recursive products: ac, ad, bc, bd.
 ## Optimal Idea
 
 Compute ac, bd, and (a+b)(c+d). Then middle = (a+b)(c+d)-ac-bd.
+
+## DCMM
+
+```text
+Divide  = split x into a,b and y into c,d
+Conquer = compute ac, bd, and (a+b)(c+d)
+Merge   = ac * base^2 + middle * base + bd
+Measure = product value
+Base    = one number has one digit
+```
+
+## Recursion / Formula Tree
+
+```text
+1234 * 5678
+├── ac = 12 * 56 = 672
+├── bd = 34 * 78 = 2652
+└── middle = (12+34)(56+78) - ac - bd
+           = 6164 - 672 - 2652
+           = 2840
+Answer = 672*10000 + 2840*100 + 2652
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["1234 x 5678"] --> B["split x: a=12 b=34"]
+    A --> C["split y: c=56 d=78"]
+    B --> D["ac=12*56=672"]
+    C --> D
+    B --> E["bd=34*78=2652"]
+    C --> E
+    B --> F["(a+b)(c+d)=46*134=6164"]
+    C --> F
+    F --> G["middle=6164-672-2652=2840"]
+    D --> H["final=7006652"]
+    E --> H
+    G --> H
+```
 
 ## C++ Code
 
@@ -814,8 +1265,32 @@ Use this when you can **split, solve recursively, then merge or count while merg
 
 # Phase 4 — Meet in the Middle Foundations
 
+## Phase Code Template — Generate Half Answers
+
+```cpp
+vector<long long> gen(vector<int>& a) {
+    vector<long long> sums;
+    int n = a.size();
+
+    for (int mask = 0; mask < (1 << n); mask++) {
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) sum += a[i];
+        }
+        sums.push_back(sum);
+    }
+
+    return sums;
+}
+```
+
+**Phase idea:** generate all answers from left half and right half separately.
+
+
 
 # Problem 7: Generate All Subset Sums
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Easy  
 **Pattern:** `Bitmask enumeration`
@@ -843,6 +1318,43 @@ Use recursion pick/not-pick.
 ## Optimal Idea
 
 Each mask represents one subset. Bit i is 1 means choose arr[i].
+
+## MITM / Bitmask Framework
+
+```text
+Divide  = not needed for small array; for MITM split into halves
+Conquer = enumerate every subset using mask
+Merge   = collect sums into vector
+Measure = subset sum
+Base    = mask from 0 to 2^n - 1 covers all subsets
+```
+
+## Enumeration Tree
+
+```text
+arr = [2,5,7]
+Each item has two choices: skip or take
+                {}
+         /skip 2   	ake 2
+       {}           {2}
+    /skip5 	ake5  /skip5 	ake5
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["start sum=0"] --> B["skip 2<br/>sum=0"]
+    A --> C["take 2<br/>sum=2"]
+    B --> D["skip 5<br/>sum=0"]
+    B --> E["take 5<br/>sum=5"]
+    C --> F["skip 5<br/>sum=2"]
+    C --> G["take 5<br/>sum=7"]
+    D --> H["with/without 7 -> 0,7"]
+    E --> I["with/without 7 -> 5,12"]
+    F --> J["with/without 7 -> 2,9"]
+    G --> K["with/without 7 -> 7,14"]
+```
 
 ## C++ Code
 
@@ -934,6 +1446,8 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 # Problem 8: Subset Sum Exists
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Medium  
 **Pattern:** `MITM + binary search`
 
@@ -961,6 +1475,42 @@ Try 2^n subsets, too slow for n=40.
 ## Optimal Idea
 
 Split into two halves. Generate sums of both. For every left sum x, search S-x in right sums.
+
+## MITM Framework
+
+```text
+Divide  = split array into left half and right half
+Conquer = generate all subset sums from both halves
+Merge   = for each left sum x, binary search S - x in right sums
+Measure = existence true/false
+Base    = if complement exists, answer is YES
+```
+
+## Meet Tree
+
+```text
+arr = [3,34,4 | 12,5,2]
+Left sums  = all subset sums from [3,34,4]
+Right sums = all subset sums from [12,5,2]
+Try x=4 from left
+Need 9-4=5
+5 exists in right -> YES
+```
+
+## Mermaid Tree Dry Run
+
+```mermaid
+flowchart TD
+    A["split array"] --> B["left [3,34,4]"]
+    A --> C["right [12,5,2]"]
+    B --> D["generate L sums"]
+    C --> E["generate R sums + sort"]
+    D --> F["try x=4"]
+    E --> G["need=5"]
+    F --> H["binary_search 5 in R"]
+    G --> H
+    H --> I["found -> YES"]
+```
 
 ## C++ Code
 
@@ -1073,8 +1623,29 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 # Phase 5 — MITM Optimization Problems
 
+## Phase Code Template — MITM + Upper Bound
+
+```cpp
+sort(R.begin(), R.end());
+
+for (long long x : L) {
+    long long need = limit - x;
+    auto it = upper_bound(R.begin(), R.end(), need);
+
+    if (it != R.begin()) {
+        --it;
+        ans = max(ans, x + *it);    // or count using index distance
+    }
+}
+```
+
+**Phase idea:** for each left answer, find the best/countable right answer using binary search.
+
+
 
 # Problem 9: Maximum Subset Sum Less Than or Equal to S
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `MITM + upper_bound`
@@ -1103,6 +1674,27 @@ Try every subset and keep maximum sum ≤ S.
 ## Optimal Idea
 
 Generate right sums sorted. For each left x, choose largest right y ≤ S-x.
+
+## DCMM / MITM Framework
+
+```text
+Pattern = MITM + upper_bound
+Divide  = split search space or fix one dimension
+Conquer = generate / sort / scan smaller components
+Merge   = for each left sum, find largest right sum <= S-left
+Measure = required answer for this problem
+Base    = empty subset / pair found / pointer crossing depending on problem
+```
+
+## Visual Decision Tree
+
+```mermaid
+flowchart TD
+    A["Start problem"] --> B["Identify pattern<br/>MITM + upper_bound"]
+    B --> C["Build smaller searchable structure"]
+    C --> D["Combine with complement logic"]
+    D --> E["Update answer"]
+```
 
 ## C++ Code
 
@@ -1216,6 +1808,8 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 # Problem 10: Count Subsets With Sum Less Than or Equal to K
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Medium  
 **Pattern:** `MITM + upper_bound count`
 
@@ -1243,6 +1837,27 @@ Enumerate all subsets and count valid.
 ## Optimal Idea
 
 For each left sum x, count right sums ≤ K-x using upper_bound.
+
+## DCMM / MITM Framework
+
+```text
+Pattern = MITM + upper_bound count
+Divide  = split search space or fix one dimension
+Conquer = generate / sort / scan smaller components
+Merge   = for each left sum, count right sums <= K-left
+Measure = required answer for this problem
+Base    = empty subset / pair found / pointer crossing depending on problem
+```
+
+## Visual Decision Tree
+
+```mermaid
+flowchart TD
+    A["Start problem"] --> B["Identify pattern<br/>MITM + upper_bound count"]
+    B --> C["Build smaller searchable structure"]
+    C --> D["Combine with complement logic"]
+    D --> E["Update answer"]
+```
 
 ## C++ Code
 
@@ -1356,8 +1971,31 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 # Phase 6 — Pair Sum MITM
 
+## Phase Code Template — Pair Sum Storage
+
+```cpp
+map<long long, vector<pair<int,int>>> mp;
+
+for (int i = 0; i < n; i++) {
+    for (int j = i + 1; j < n; j++) {
+        long long sum = arr[i] + arr[j];
+        mp[sum].push_back({i, j});
+    }
+}
+
+for each pair (i, j):
+    need = target - arr[i] - arr[j]
+    search need in map
+    ensure all four indices are different
+```
+
+**Phase idea:** convert four-number search into two pair-sum searches.
+
+
 
 # Problem 11: Classical Four Number Sum
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `Pair sums + hash map`
@@ -1386,6 +2024,27 @@ Four nested loops O(n^4).
 ## Optimal Idea
 
 Store old pair sums and check if current pair has complement.
+
+## DCMM / MITM Framework
+
+```text
+Pattern = Pair Sum MITM
+Divide  = split search space or fix one dimension
+Conquer = generate / sort / scan smaller components
+Merge   = build pair sums and search target complement
+Measure = required answer for this problem
+Base    = empty subset / pair found / pointer crossing depending on problem
+```
+
+## Visual Decision Tree
+
+```mermaid
+flowchart TD
+    A["Start problem"] --> B["Identify pattern<br/>Pair Sum MITM"]
+    B --> C["Build smaller searchable structure"]
+    C --> D["Combine with complement logic"]
+    D --> E["Update answer"]
+```
 
 ## C++ Code
 
@@ -1481,6 +2140,8 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 # Problem 12: CSES Four Values
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Medium  
 **Pattern:** `Pair sum + store indices`
 
@@ -1508,6 +2169,27 @@ Try all quadruples O(n^4).
 ## Optimal Idea
 
 For each pair (j,k), check if a previous pair sum equals X-arr[j]-arr[k]. Store pairs only from indices before j.
+
+## DCMM / MITM Framework
+
+```text
+Pattern = Pair Sum + distinct indices
+Divide  = split search space or fix one dimension
+Conquer = generate / sort / scan smaller components
+Merge   = store pair sums with indices and verify no index repeats
+Measure = required answer for this problem
+Base    = empty subset / pair found / pointer crossing depending on problem
+```
+
+## Visual Decision Tree
+
+```mermaid
+flowchart TD
+    A["Start problem"] --> B["Identify pattern<br/>Pair Sum + distinct indices"]
+    B --> C["Build smaller searchable structure"]
+    C --> D["Combine with complement logic"]
+    D --> E["Update answer"]
+```
 
 ## C++ Code
 
@@ -1599,8 +2281,31 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 # Phase 7 — Modulo MITM
 
+## Phase Code Template — Modulo Complement Search
+
+```cpp
+sort(R.begin(), R.end());
+
+for (long long x : L) {
+    ans = max(ans, x);
+
+    long long need = m - 1 - x;
+    auto it = upper_bound(R.begin(), R.end(), need);
+
+    if (it != R.begin()) {
+        --it;
+        ans = max(ans, (x + *it) % m);
+    }
+}
+```
+
+**Phase idea:** choose the largest complement that keeps the modulo sum close to `m - 1`.
+
+
 
 # Problem 13: Maximum Subsequence Sum Modulo M
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Hard  
 **Pattern:** `MITM + modulo + upper_bound`
@@ -1629,6 +2334,27 @@ Try all subset sums and take max sum % m.
 ## Optimal Idea
 
 Generate modulo sums for both halves. For each left x, choose right y ≤ m-1-x.
+
+## DCMM / MITM Framework
+
+```text
+Pattern = Modulo MITM
+Divide  = split search space or fix one dimension
+Conquer = generate / sort / scan smaller components
+Merge   = combine modulo sums close to m-1
+Measure = required answer for this problem
+Base    = empty subset / pair found / pointer crossing depending on problem
+```
+
+## Visual Decision Tree
+
+```mermaid
+flowchart TD
+    A["Start problem"] --> B["Identify pattern<br/>Modulo MITM"]
+    B --> C["Build smaller searchable structure"]
+    C --> D["Combine with complement logic"]
+    D --> E["Update answer"]
+```
 
 ## C++ Code
 
@@ -1757,8 +2483,31 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 # Phase 8 — Advanced Transformation
 
+## Phase Code Template — State-Space MITM
+
+```cpp
+map<State, Info> firstHalf;
+
+for (all operations in first half) {
+    State s = applyOperations(start);
+    firstHalf[s] = info;
+}
+
+for (all operations in second half) {
+    State s = applyOperations(target);
+    if (firstHalf contains compatible_state(s)) {
+        reconstruct answer;
+    }
+}
+```
+
+**Phase idea:** generate states from both sides and meet at a common state.
+
+
 
 # Problem 14: 4 Reversals Pattern
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Hard  
 **Pattern:** `MITM over states`
@@ -1787,6 +2536,27 @@ Try all 4 reversal combinations O(n^8).
 ## Optimal Idea
 
 Generate states reachable from start in 2 reversals and from target in 2 reversals. If any state overlaps, answer YES.
+
+## DCMM / MITM Framework
+
+```text
+Pattern = State-space MITM
+Divide  = split search space or fix one dimension
+Conquer = generate / sort / scan smaller components
+Merge   = generate states from both sides and match
+Measure = required answer for this problem
+Base    = empty subset / pair found / pointer crossing depending on problem
+```
+
+## Visual Decision Tree
+
+```mermaid
+flowchart TD
+    A["Start problem"] --> B["Identify pattern<br/>State-space MITM"]
+    B --> C["Build smaller searchable structure"]
+    C --> D["Combine with complement logic"]
+    D --> E["Update answer"]
+```
 
 ## C++ Code
 
@@ -1885,6 +2655,8 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 # Problem 15: Count 3Sum With Duplicates
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Medium  
 **Pattern:** `Sort + fixed i + two pointers + duplicate frequency counting`
 
@@ -1912,6 +2684,27 @@ Try all i, j, k. Complexity O(n³).
 ## Optimal Idea
 
 Sort array. Fix i, then use left/right pointers. If sum matches, count duplicates on both sides.
+
+## DCMM / MITM Framework
+
+```text
+Pattern = Sort + two pointers
+Divide  = split search space or fix one dimension
+Conquer = generate / sort / scan smaller components
+Merge   = fix one value, count pair combinations with duplicates
+Measure = required answer for this problem
+Base    = empty subset / pair found / pointer crossing depending on problem
+```
+
+## Visual Decision Tree
+
+```mermaid
+flowchart TD
+    A["Start problem"] --> B["Identify pattern<br/>Sort + two pointers"]
+    B --> C["Build smaller searchable structure"]
+    C --> D["Combine with complement logic"]
+    D --> E["Update answer"]
+```
 
 ## C++ Code
 
