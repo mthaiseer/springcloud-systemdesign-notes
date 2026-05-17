@@ -1,885 +1,489 @@
-# Graph Algorithms Pattern-Wise Visual Reference
+# Graph Algorithms Complete Handbook — CP + DSA / FAANG
 
-Reference notes made from the attached graph PDFs, kept in the same learning order:
-
-1. Introduction  
-2. Overview  
-3. DFS  
-4. BFS  
-5. DFS tree and cycle detection  
-6. Multi-source BFS  
-7. Topological ordering  
-8. Short notes and 0-1 BFS  
-9. Dijkstra  
-10. Bellman-Ford  
-11. Floyd-Warshall  
-12. Graph formulation  
-13. MST  
-
-The goal is visual learning: Mermaid diagrams, step-by-step examples, intuition, C++ templates, Java helpers where useful, and 1-minute mental tricks.
+> Goal: one complete graph notebook for Competitive Programming and DSA interviews.
+>
+> Rendering rule used in this file:
+>
+> - Mental maps and term diagrams use **safe Mermaid only**.
+> - All problem dry runs use **plain text tree style**, like recursion/backtracking notes.
+> - No Mermaid is used inside dry-run sections, so you will not get `Unable to render rich display` there.
 
 ---
 
-## 0. Master Graph Mental Map
+## Clickable Index
+
+### 0. Master Maps
+- [0.1 Graph Master Map](#01-graph-master-map)
+- [0.2 Algorithm Selection Map](#02-algorithm-selection-map)
+- [0.3 CP + DSA Graph Roadmap](#03-cp--dsa-graph-roadmap)
+
+### 1. Graph Basics
+- [1.1 Core Terms](#11-core-terms)
+- [1.2 Graph Representation](#12-graph-representation)
+- [1.3 Input Templates](#13-input-templates)
+- [1.4 Graph Modelling Checklist](#14-graph-modelling-checklist)
+
+### 2. Traversal
+- [2.1 DFS](#21-dfs-depth-first-search)
+- [2.2 BFS](#22-bfs-breadth-first-search)
+- [2.3 Connected Components](#23-connected-components)
+- [2.4 Bipartite Check](#24-bipartite-check)
+- [2.5 Grid BFS / DFS](#25-grid-bfs--dfs)
+- [2.6 Multi-Source BFS](#26-multi-source-bfs)
+- [2.7 0-1 BFS](#27-0-1-bfs)
+
+### 3. Cycles and DAG
+- [3.1 Cycle Detection in Undirected Graph](#31-cycle-detection-in-undirected-graph)
+- [3.2 Cycle Detection in Directed Graph](#32-cycle-detection-in-directed-graph)
+- [3.3 Topological Sort — DFS](#33-topological-sort--dfs)
+- [3.4 Topological Sort — Kahn](#34-topological-sort--kahn)
+- [3.5 DAG DP](#35-dag-dp)
+
+### 4. Shortest Path
+- [4.1 BFS Shortest Path](#41-bfs-shortest-path)
+- [4.2 Dijkstra](#42-dijkstra)
+- [4.3 Bellman-Ford](#43-bellman-ford)
+- [4.4 Floyd-Warshall](#44-floyd-warshall)
+- [4.5 Shortest Path Formulation Patterns](#45-shortest-path-formulation-patterns)
+
+### 5. MST and DSU
+- [5.1 DSU](#51-dsu-disjoint-set-union)
+- [5.2 Kruskal MST](#52-kruskal-mst)
+- [5.3 Prim MST](#53-prim-mst)
+- [5.4 MST Pattern Problems](#54-mst-pattern-problems)
+
+### 6. Advanced CP Graphs
+- [6.1 SCC — Kosaraju](#61-scc--kosaraju)
+- [6.2 Bridges](#62-bridges)
+- [6.3 Articulation Points](#63-articulation-points)
+- [6.4 Euler Path / Circuit](#64-euler-path--circuit)
+- [6.5 LCA Binary Lifting](#65-lca-binary-lifting)
+- [6.6 Tree Diameter](#66-tree-diameter)
+- [6.7 Tree DP / Rerooting Intro](#67-tree-dp--rerooting-intro)
+- [6.8 Network Flow Intro](#68-network-flow-intro)
+- [6.9 Bipartite Matching Intro](#69-bipartite-matching-intro)
+
+### 7. Practice Problem Pack
+- [P1. Number of Connected Components](#p1-number-of-connected-components)
+- [P2. Shortest Path in Unweighted Graph](#p2-shortest-path-in-unweighted-graph)
+- [P3. Escape from Monsters](#p3-escape-from-monsters)
+- [P4. Course Schedule](#p4-course-schedule)
+- [P5. Network Delay](#p5-network-delay)
+- [P6. Cheapest Path With 0/1 Edges](#p6-cheapest-path-with-01-edges)
+- [P7. Negative Cycle Detection](#p7-negative-cycle-detection)
+- [P8. All Pairs Shortest Path](#p8-all-pairs-shortest-path)
+- [P9. Minimum Cost to Connect Cities](#p9-minimum-cost-to-connect-cities)
+- [P10. Count Islands](#p10-count-islands)
+- [P11. Rotten Oranges](#p11-rotten-oranges)
+- [P12. Alien Dictionary](#p12-alien-dictionary)
+- [P13. Redundant Connection](#p13-redundant-connection)
+- [P14. Number of Provinces](#p14-number-of-provinces)
+- [P15. Cheapest Flights With K Stops](#p15-cheapest-flights-with-k-stops)
+- [P16. Bridges in Graph](#p16-bridges-in-graph)
+- [P17. Strongly Connected Components](#p17-strongly-connected-components)
+- [P18. LCA Queries](#p18-lca-queries)
+
+### 8. Final Revision
+- [8.1 Complexity Table](#81-complexity-table)
+- [8.2 Pattern Recognition Table](#82-pattern-recognition-table)
+- [8.3 Template Pack](#83-template-pack)
+- [8.4 Common Bugs](#84-common-bugs)
+
+---
+
+# 0.1 Graph Master Map
 
 ```mermaid
-flowchart TD
-    A[Graph Problem] --> B{What is being asked}
+graph TD
+    A[Graphs] --> B[Basics]
+    A --> C[Traversal]
+    A --> D[Cycles and DAG]
+    A --> E[Shortest Path]
+    A --> F[MST and DSU]
+    A --> G[Advanced CP]
 
-    B --> C[Reachability]
+    B --> B1[Nodes]
+    B --> B2[Edges]
+    B --> B3[Directed]
+    B --> B4[Undirected]
+    B --> B5[Weighted]
+
     C --> C1[DFS]
     C --> C2[BFS]
+    C --> C3[Grid BFS]
+    C --> C4[Multi Source BFS]
+    C --> C5[0-1 BFS]
 
-    B --> D[Shortest Path]
-    D --> D1[Unweighted BFS]
-    D --> D2[Zero One BFS]
-    D --> D3[Dijkstra]
-    D --> D4[Bellman Ford]
-    D --> D5[Floyd Warshall]
+    D --> D1[Undirected Cycle]
+    D --> D2[Directed Cycle]
+    D --> D3[Topological Sort]
+    D --> D4[DAG DP]
 
-    B --> E[Ordering]
-    E --> E1[Topological Sort]
+    E --> E1[BFS]
+    E --> E2[Dijkstra]
+    E --> E3[Bellman Ford]
+    E --> E4[Floyd Warshall]
 
-    B --> F[Cycle]
-    F --> F1[Undirected DFS Parent]
-    F --> F2[Directed DFS Color]
-    F --> F3[Kahn Cycle Check]
+    F --> F1[DSU]
+    F --> F2[Kruskal]
+    F --> F3[Prim]
 
-    B --> G[Components]
-    G --> G1[Connected Components]
-    G --> G2[SCC]
-
-    B --> H[Connect All Nodes Cheaply]
-    H --> H1[MST Kruskal]
-    H --> H2[MST Prim]
-
-    B --> I[Grid Problems]
-    I --> I1[Implicit Graph]
-    I --> I2[Multi Source BFS]
-    I --> I3[State Graph]
+    G --> G1[SCC]
+    G --> G2[Bridges]
+    G --> G3[Articulation]
+    G --> G4[LCA]
+    G --> G5[Flow]
 ```
 
-### 1-minute mental trick
-
-> First identify what the **node** is and what the **edge** is.  
-> After that, the algorithm usually becomes obvious.
-
----
-
-# Part 1. Graph Introduction
-
-## 1. What is a graph
-
-A graph is:
-
-```text
-G = (V, E)
-
-V = set of vertices or nodes
-E = set of edges
-```
+# 0.2 Algorithm Selection Map
 
 ```mermaid
-flowchart LR
-    A[Graph] --> B[Vertices]
-    A --> C[Edges]
-    B --> D[Objects]
-    C --> E[Connections]
+graph TD
+    A[Problem Signal] --> B{Need shortest path?}
+    B -->|Unweighted| C[BFS]
+    B -->|0/1 weights| D[0-1 BFS]
+    B -->|Positive weights| E[Dijkstra]
+    B -->|Negative edge| F[Bellman Ford]
+    B -->|All pairs small n| G[Floyd Warshall]
+
+    A --> H{Need ordering?}
+    H -->|Dependencies| I[Topological Sort]
+    H -->|Cycle in prerequisites| J[Kahn or DFS State]
+
+    A --> K{Need connect all min cost?}
+    K --> L[MST Kruskal or Prim]
+
+    A --> M{Need groups?}
+    M --> N[DFS BFS or DSU]
+
+    A --> O{Need critical edges?}
+    O --> P[Bridges and Articulation]
+
+    A --> Q{Need directed components?}
+    Q --> R[SCC]
 ```
 
-Example:
+# 0.3 CP + DSA Graph Roadmap
 
-```text
-V = {1, 2, 3, 4}
-E = {(1,2), (2,3), (2,4), (3,4)}
-```
-
-### 1-minute mental trick
-
-> Nodes are things.  
-> Edges are relationships between things.
+| Phase | Topics | Target |
+|---|---|---|
+| 1 | representation, DFS, BFS | foundation |
+| 2 | components, bipartite, grid BFS | interview medium |
+| 3 | cycle detection, topo sort | course/dependency problems |
+| 4 | shortest path: BFS, 0-1 BFS, Dijkstra | CP + FAANG core |
+| 5 | Bellman-Ford, Floyd-Warshall | advanced shortest path |
+| 6 | DSU, MST | greedy graph patterns |
+| 7 | SCC, bridges, articulation | CP intermediate/advanced |
+| 8 | LCA, tree DP, rerooting | tree graph mastery |
+| 9 | flow, matching | advanced CP |
 
 ---
 
-## 2. Numbered and unnumbered graphs
+# 1.1 Core Terms
 
-In CP, nodes are usually numbered:
+## Node and Edge
 
-```text
-1, 2, 3, ..., n
+```mermaid
+graph LR
+    A((1)) --- B((2))
 ```
 
-If the graph is unnumbered, map each object to an integer.
+- `1` and `2` are nodes / vertices.
+- `(1,2)` is an edge.
+
+## Directed Graph
+
+```mermaid
+graph LR
+    A((1)) --> B((2))
+    B --> C((3))
+```
+
+Direction matters. You can move only along the arrow.
+
+## Undirected Graph
+
+```mermaid
+graph LR
+    A((1)) --- B((2))
+    B --- C((3))
+```
+
+Edge works both ways.
+
+## Weighted Graph
+
+```mermaid
+graph LR
+    A((1)) -- 5 --> B((2))
+    B -- 2 --> C((3))
+```
+
+Each edge has cost.
+
+## DAG
+
+```mermaid
+graph LR
+    A((1)) --> B((2))
+    A --> C((3))
+    B --> D((4))
+    C --> D
+```
+
+DAG = Directed Acyclic Graph. Used in prerequisites, build order, dependency ordering, DP on graph.
+
+---
+
+# 1.2 Graph Representation
+
+## Edge List
+
+Best for algorithms that process edges directly.
 
 ```cpp
-unordered_map<string, int> id;
-int getId(string s) {
-    if (!id.count(s)) id[s] = id.size() + 1;
-    return id[s];
+vector<tuple<int,int,int>> edges; // u, v, w
+```
+
+Used in:
+
+- Bellman-Ford
+- Kruskal
+- sorting edges
+
+## Adjacency List
+
+Best for sparse graph and traversal.
+
+```cpp
+vector<vector<int>> g(n + 1);
+```
+
+Weighted version:
+
+```cpp
+vector<vector<pair<int,int>>> g(n + 1); // {neighbor, weight}
+```
+
+## Adjacency Matrix
+
+Best for dense graph or Floyd-Warshall.
+
+```cpp
+vector<vector<long long>> dist(n + 1, vector<long long>(n + 1, INF));
+```
+
+---
+
+# 1.3 Input Templates
+
+## Undirected Unweighted
+
+```cpp
+int n, m;
+cin >> n >> m;
+vector<vector<int>> g(n + 1);
+
+for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    g[u].push_back(v);
+    g[v].push_back(u);
+}
+```
+
+## Directed Unweighted
+
+```cpp
+int n, m;
+cin >> n >> m;
+vector<vector<int>> g(n + 1);
+
+for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    g[u].push_back(v);
+}
+```
+
+## Weighted Directed
+
+```cpp
+int n, m;
+cin >> n >> m;
+vector<vector<pair<int,int>>> g(n + 1);
+
+for (int i = 0; i < m; i++) {
+    int u, v, w;
+    cin >> u >> v >> w;
+    g[u].push_back({v, w});
 }
 ```
 
 ---
 
-## 3. Weighted and unweighted graphs
+# 1.4 Graph Modelling Checklist
 
-```mermaid
-flowchart TD
-    A[Graph] --> B{Does edge have cost}
-    B -->|No| C[Unweighted graph]
-    B -->|Yes| D[Weighted graph]
-```
-
-Unweighted edge:
+Before choosing an algorithm, answer this:
 
 ```text
-1 -- 2
+Node       = What is one state? city, cell, word, course, mask?
+Edge       = What transition is allowed?
+Cost       = 1, 0/1, positive, negative?
+Source     = one source or many sources?
+Target     = one node, boundary, all nodes, minimum among many?
+Visited    = node only or state tuple?
+Answer     = distance, count, possible, order, min cost?
 ```
 
-Weighted edge:
+Examples:
 
-```text
-1 -- 2 with cost 5
-```
-
-### Mental trick
-
-> If every edge has same cost, think BFS.  
-> If edge costs differ, think shortest path algorithms.
+| Problem | Node | Edge | Algorithm |
+|---|---|---|---|
+| Grid shortest path | `(r,c)` | 4-direction move | BFS |
+| Word ladder | word | change one char | BFS |
+| Course schedule | course | prerequisite | Topo |
+| Network delay | city | weighted road | Dijkstra |
+| Cheapest 0/1 path | node | 0/1 edge | 0-1 BFS |
+| Build roads min cost | city | weighted connection | MST |
 
 ---
 
-## 4. Directed and undirected graphs
+# 2.1 DFS Depth First Search
+
+## Idea
+
+DFS goes deep, then backtracks.
 
 ```mermaid
-flowchart TD
-    A[Edge] --> B{Direction exists}
-    B -->|No| C[Undirected]
-    B -->|Yes| D[Directed]
+graph TD
+    A[Start u] --> B[Mark u visited]
+    B --> C{Unvisited neighbor?}
+    C -->|Yes| D[DFS neighbor]
+    D --> C
+    C -->|No| E[Return]
 ```
 
-Undirected edge:
-
-```text
-u -- v
-```
-
-Add both:
+## C++ Code
 
 ```cpp
-g[u].push_back(v);
-g[v].push_back(u);
-```
+#include <bits/stdc++.h>
+using namespace std;
 
-Directed edge:
-
-```text
-u -> v
-```
-
-Add one:
-
-```cpp
-g[u].push_back(v);
-```
-
-### Common mistake
-
-For directed graph, do **not** add reverse edge unless the problem says it exists.
-
----
-
-## 5. Degree
-
-For undirected graph:
-
-```text
-degree(node) = number of neighbours
-```
-
-For directed graph:
-
-```text
-indegree  = number of incoming edges
-outdegree = number of outgoing edges
-```
-
-```mermaid
-flowchart TD
-    A[Degree] --> B[Undirected degree]
-    A --> C[Directed indegree]
-    A --> D[Directed outdegree]
-```
-
----
-
-## 6. Sparse and dense graphs
-
-```text
-N = number of nodes
-M = number of edges
-```
-
-Sparse graph:
-
-```text
-M is much smaller than N squared
-```
-
-Dense graph:
-
-```text
-M is close to N squared
-```
-
-### Mental trick
-
-> Sparse graph: use adjacency list.  
-> Dense graph: adjacency matrix can be acceptable.
-
----
-
-## 7. Path, cycle, isolated node
-
-Path:
-
-```text
-sequence of vertices where consecutive vertices have an edge
-```
-
-Cycle:
-
-```text
-path where first node and last node are same
-```
-
-Isolated node:
-
-```text
-node with no edges
-```
-
-```mermaid
-flowchart LR
-    A[Path] --> B[Move through edges]
-    C[Cycle] --> D[Come back to start]
-    E[Isolated Node] --> F[No connection]
-```
-
----
-
-## 8. Reachability and connected graph
-
-`v` is reachable from `u` if there is a path from `u` to `v`.
-
-Connected graph:
-
-```text
-Every node can reach every other node
-```
-
-For directed graph, reachability can be one-way.
-
-```mermaid
-flowchart TD
-    A[Reachability] --> B{Can I reach target}
-    B -->|Yes| C[Reachable]
-    B -->|No| D[Not reachable]
-```
-
----
-
-## 9. Strongly Connected Component
-
-In a directed graph, an SCC is a group of nodes where every node can reach every other node inside the group.
-
-```mermaid
-flowchart TD
-    A[Directed graph] --> B[SCC]
-    B --> C[Every node reaches every other inside]
-```
-
-### Key observations
-
-```text
-1. In a directed cycle, all nodes in that cycle are in the same SCC.
-2. Each node belongs to exactly one SCC.
-```
-
----
-
-## 10. Self loop and multiple edges
-
-Self loop:
-
-```text
-u -> u
-```
-
-Multiple edges:
-
-```text
-more than one edge between same pair of nodes
-```
-
-Simple graph:
-
-```text
-No self loop and no multiple edges
-```
-
-Multi graph:
-
-```text
-Has self loop or multiple edges
-```
-
----
-
-## 11. Subgraph
-
-Vertex induced subgraph:
-
-```text
-Choose some vertices and keep edges between chosen vertices.
-```
-
-Edge induced subgraph:
-
-```text
-Choose some edges and keep endpoints of those edges.
-```
-
-```mermaid
-flowchart TD
-    A[Subgraph] --> B[Vertex induced]
-    A --> C[Edge induced]
-```
-
----
-
-## 12. DAG and tree
-
-DAG:
-
-```text
-Directed Acyclic Graph
-```
-
-Tree:
-
-```text
-Connected acyclic undirected graph
-```
-
-For a tree:
-
-```text
-V = N
-E = N - 1
-There is exactly one simple path between any two nodes.
-```
-
-```mermaid
-flowchart TD
-    A[Tree] --> B[Connected]
-    A --> C[Acyclic]
-    A --> D[Edges equals nodes minus one]
-```
-
----
-
-# Part 2. Graph Representation
-
-## 13. Adjacency matrix
-
-Use matrix `mat[u][v]`.
-
-```text
-mat[u][v] = 1 if edge exists
-mat[u][v] = 0 otherwise
-```
-
-For weighted graph:
-
-```text
-mat[u][v] = weight
-mat[u][v] = INF if no edge
-```
-
-```cpp
-vector<vector<int>> mat(n + 1, vector<int>(n + 1, 0));
-
-mat[u][v] = 1;
-mat[v][u] = 1; // only for undirected
-```
-
-### Pros and cons
-
-| Operation | Time |
-|---|---|
-| Check edge u v | O(1) |
-| Insert edge | O(1) |
-| Delete edge | O(1) |
-| Memory | O(N squared) |
-
----
-
-## 14. Edge list
-
-Store only edges.
-
-```cpp
-struct Edge {
-    int u, v, w;
-};
-
-vector<Edge> edges;
-```
-
-Useful for:
-- Kruskal
-- Bellman-Ford
-- reading input first
-
-Memory:
-
-```text
-O(M)
-```
-
----
-
-## 15. Adjacency list
-
-Most used representation.
-
-```cpp
-vector<vector<int>> g(n + 1);
-
-g[u].push_back(v);
-g[v].push_back(u); // only undirected
-```
-
-Weighted:
-
-```cpp
-vector<vector<pair<int,int>>> g(n + 1);
-
-g[u].push_back({v, w});
-g[v].push_back({u, w}); // only undirected
-```
-
-Memory:
-
-```text
-O(N + M) for directed
-O(N + 2M) for undirected
-```
-
-### 1-minute mental trick
-
-> Matrix answers “is there an edge fast?”  
-> List answers “who are my neighbours fast?”
-
----
-
-# Part 3. DFS
-
-## 16. DFS intuition
-
-DFS means:
-
-```text
-Keep going deeper until no more node is left to explore.
-```
-
-```mermaid
-flowchart TD
-    A[Start node] --> B[Visit node]
-    B --> C[Go to unvisited neighbour]
-    C --> D[Repeat deeply]
-    D --> E[Backtrack when stuck]
-```
-
-DFS is useful for:
-- reachability
-- connected components
-- component size
-- bipartite check
-- cycle detection
-- DFS tree
-
----
-
-## 17. DFS LCCM style
-
-```text
-Level  = current node
-Choice = all neighbours
-Check  = neighbour not visited
-Move   = dfs neighbour
-```
-
-```mermaid
-flowchart TD
-    A[DFS node u] --> B[Mark u visited]
-    B --> C[Loop neighbours v]
-    C --> D{visited v}
-    D -->|No| E[DFS v]
-    D -->|Yes| F[Skip]
-```
-
-### C++ DFS template
-
-```cpp
 vector<vector<int>> g;
 vector<int> vis;
 
 void dfs(int u) {
     vis[u] = 1;
-
     for (int v : g[u]) {
-        if (!vis[v]) {
-            dfs(v);
-        }
+        if (!vis[v]) dfs(v);
     }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    g.assign(n + 1, {});
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    vis.assign(n + 1, 0);
+    dfs(1);
 }
 ```
 
-### Java DFS template
+## Tree-Wise Dry Run
 
-```java
-static ArrayList<Integer>[] g;
-static boolean[] vis;
+Graph:
 
-static void dfs(int u) {
-    vis[u] = true;
-
-    for (int v : g[u]) {
-        if (!vis[v]) {
-            dfs(v);
-        }
-    }
-}
+```text
+1 -- 2
+1 -- 3
+2 -- 4
+2 -- 5
+3 -- 6
 ```
+
+```text
+dfs(1) | visit 1
+├── neighbor 2 unvisited
+│   └── dfs(2) | visit 2
+│       ├── neighbor 1 already visited -> skip
+│       ├── neighbor 4 unvisited
+│       │   └── dfs(4) | visit 4 -> return
+│       └── neighbor 5 unvisited
+│           └── dfs(5) | visit 5 -> return
+└── neighbor 3 unvisited
+    └── dfs(3) | visit 3
+        ├── neighbor 1 already visited -> skip
+        └── neighbor 6 unvisited
+            └── dfs(6) | visit 6 -> return
+```
+
+## Index-by-Index Dry Run
+
+| Step | Current call | Neighbor checked | Action | Visited |
+|---:|---|---|---|---|
+| 1 | dfs(1) | — | visit 1 | {1} |
+| 2 | dfs(1) | 2 | call dfs(2) | {1} |
+| 3 | dfs(2) | — | visit 2 | {1,2} |
+| 4 | dfs(2) | 1 | visited, skip | {1,2} |
+| 5 | dfs(2) | 4 | call dfs(4) | {1,2} |
+| 6 | dfs(4) | — | visit 4, return | {1,2,4} |
+| 7 | dfs(2) | 5 | call dfs(5) | {1,2,4} |
+| 8 | dfs(5) | — | visit 5, return | {1,2,4,5} |
+| 9 | dfs(1) | 3 | call dfs(3) | {1,2,4,5} |
+| 10 | dfs(3) | 6 | call dfs(6) | {1,2,3,4,5} |
+| 11 | dfs(6) | — | visit 6, return | {1,2,3,4,5,6} |
 
 ---
 
-## 18. Connected components
+# 2.2 BFS Breadth First Search
 
-Problem types:
+## Idea
 
-```text
-1. Number of components
-2. Size of each component
-3. List of components
-4. Query whether x and y are in same component
-```
-
-### Idea
-
-Run DFS from every unvisited node.  
-Each DFS call discovers one component.
+BFS explores level by level. It gives shortest path in unweighted graph.
 
 ```mermaid
-flowchart TD
-    A[Loop all nodes] --> B{visited}
-    B -->|Yes| C[Skip]
-    B -->|No| D[New component]
-    D --> E[DFS mark all nodes with component id]
+graph TD
+    A[Push source] --> B[Set distance source to 0]
+    B --> C{Queue empty?}
+    C -->|No| D[Pop front]
+    D --> E[Visit neighbors]
+    E --> F{Unvisited?}
+    F -->|Yes| G[Set distance and push]
+    F -->|No| C
+    G --> C
+    C -->|Yes| H[Done]
 ```
 
-### C++ code
+## C++ Code
 
 ```cpp
-int n, m;
-vector<vector<int>> g;
-vector<int> comp;
-vector<int> compSize;
+#include <bits/stdc++.h>
+using namespace std;
 
-void dfsComponent(int u, int id) {
-    comp[u] = id;
-    compSize[id]++;
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
 
-    for (int v : g[u]) {
-        if (comp[v] == 0) {
-            dfsComponent(v, id);
-        }
-    }
-}
-
-void findComponents() {
-    comp.assign(n + 1, 0);
-    compSize.assign(n + 1, 0);
-
-    int id = 0;
-    for (int i = 1; i <= n; i++) {
-        if (comp[i] == 0) {
-            id++;
-            dfsComponent(i, id);
-        }
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
     }
 
-    cout << "components = " << id << "\n";
-}
-```
+    int src;
+    cin >> src;
 
-### Query
-
-```cpp
-bool sameComponent(int x, int y) {
-    return comp[x] == comp[y];
-}
-```
-
-### 1-minute mental trick
-
-> One DFS from an unvisited node = one full component.
-
----
-
-## 19. Bipartite graph
-
-A graph is bipartite if it can be colored using two colors so that no edge connects nodes of same color.
-
-Equivalent:
-
-```text
-No odd cycle
-```
-
-```mermaid
-flowchart TD
-    A[Start node color 0] --> B[Neighbour gets color 1]
-    B --> C[Next neighbour gets opposite color]
-    C --> D{Edge with same color}
-    D -->|Yes| E[Not bipartite]
-    D -->|No| F[Continue]
-```
-
-### C++ code
-
-```cpp
-bool isBipartite(int n, vector<vector<int>>& g) {
-    vector<int> color(n + 1, -1);
-
-    function<bool(int, int)> dfs = [&](int u, int c) {
-        color[u] = c;
-
-        for (int v : g[u]) {
-            if (color[v] == -1) {
-                if (!dfs(v, c ^ 1)) return false;
-            } else if (color[v] == color[u]) {
-                return false;
-            }
-        }
-
-        return true;
-    };
-
-    for (int i = 1; i <= n; i++) {
-        if (color[i] == -1) {
-            if (!dfs(i, 0)) return false;
-        }
-    }
-
-    return true;
-}
-```
-
-### Number of ways to bipartition connected components
-
-For `c` connected components, each component can flip colors.
-
-```text
-ways = 2^c
-```
-
-### 1-minute mental trick
-
-> Bipartite means alternate colors.  
-> Same color edge means odd cycle.
-
----
-
-# Part 4. BFS
-
-## 20. BFS intuition
-
-BFS explores level by level.
-
-```mermaid
-flowchart TD
-    A[Source level 0] --> B[Neighbours level 1]
-    B --> C[Their neighbours level 2]
-    C --> D[Continue]
-```
-
-BFS is best for shortest path when all edge weights are equal.
-
-```text
-Time = O(V + E)
-```
-
----
-
-## 21. BFS template
-
-```cpp
-vector<int> bfs(int n, vector<vector<int>>& g, int src) {
-    const int INF = 1e9;
-    vector<int> dist(n + 1, INF);
-    queue<int> q;
-
-    dist[src] = 0;
-    q.push(src);
-
-    while (!q.empty()) {
-        int u = q.front();
-        q.pop();
-
-        for (int v : g[u]) {
-            if (dist[v] == INF) {
-                dist[v] = dist[u] + 1;
-                q.push(v);
-            }
-        }
-    }
-
-    return dist;
-}
-```
-
-### Java BFS
-
-```java
-static int[] bfs(int n, ArrayList<Integer>[] g, int src) {
-    int INF = 1_000_000_000;
-    int[] dist = new int[n + 1];
-    Arrays.fill(dist, INF);
-
-    Queue<Integer> q = new ArrayDeque<>();
-    dist[src] = 0;
-    q.add(src);
-
-    while (!q.isEmpty()) {
-        int u = q.poll();
-
-        for (int v : g[u]) {
-            if (dist[v] == INF) {
-                dist[v] = dist[u] + 1;
-                q.add(v);
-            }
-        }
-    }
-
-    return dist;
-}
-```
-
-### 1-minute mental trick
-
-> BFS first time visiting a node gives shortest distance in unweighted graph.
-
----
-
-## 22. BFS on grid implicit graph
-
-Grid does not explicitly give nodes and edges.
-
-Node:
-
-```text
-cell coordinate (row, col)
-```
-
-Edges:
-
-```text
-move up, down, left, right
-```
-
-```mermaid
-flowchart TD
-    A[Grid cell r c] --> B[Neighbour r plus 1 c]
-    A --> C[Neighbour r minus 1 c]
-    A --> D[Neighbour r c plus 1]
-    A --> E[Neighbour r c minus 1]
-```
-
-### C++ grid BFS
-
-```cpp
-using State = pair<int,int>;
-
-int shortestGridPath(vector<string>& grid, State start, State finish) {
-    int n = grid.size();
-    int m = grid[0].size();
-
-    const int INF = 1e9;
-    vector<vector<int>> dist(n, vector<int>(m, INF));
-
-    int dr[4] = {1, -1, 0, 0};
-    int dc[4] = {0, 0, 1, -1};
-
-    auto valid = [&](int r, int c) {
-        return r >= 0 && r < n && c >= 0 && c < m && grid[r][c] != '#';
-    };
-
-    queue<State> q;
-    dist[start.first][start.second] = 0;
-    q.push(start);
-
-    while (!q.empty()) {
-        auto [r, c] = q.front();
-        q.pop();
-
-        for (int k = 0; k < 4; k++) {
-            int nr = r + dr[k];
-            int nc = c + dc[k];
-
-            if (valid(nr, nc) && dist[nr][nc] == INF) {
-                dist[nr][nc] = dist[r][c] + 1;
-                q.push({nr, nc});
-            }
-        }
-    }
-
-    return dist[finish.first][finish.second];
-}
-```
-
-### Step-by-step grid thinking
-
-```text
-1. Define state = cell coordinate.
-2. Define valid moves = four directions.
-3. Define blocked cells.
-4. Run BFS from source.
-5. Distance to finish is answer.
-```
-
----
-
-## 23. Print shortest path using parent
-
-To print path, store parent of every node.
-
-```mermaid
-flowchart TD
-    A[BFS visits child] --> B[Store parent child equals current]
-    B --> C[At target]
-    C --> D[Move target to parent repeatedly]
-    D --> E[Reverse path]
-```
-
-### C++ code
-
-```cpp
-vector<int> shortestPath(int n, vector<vector<int>>& g, int src, int target) {
     vector<int> dist(n + 1, -1);
-    vector<int> parent(n + 1, -1);
     queue<int> q;
 
     dist[src] = 0;
@@ -892,328 +496,297 @@ vector<int> shortestPath(int n, vector<vector<int>>& g, int src, int target) {
         for (int v : g[u]) {
             if (dist[v] == -1) {
                 dist[v] = dist[u] + 1;
-                parent[v] = u;
                 q.push(v);
             }
         }
     }
 
-    if (dist[target] == -1) return {};
-
-    vector<int> path;
-    for (int cur = target; cur != -1; cur = parent[cur]) {
-        path.push_back(cur);
-    }
-
-    reverse(path.begin(), path.end());
-    return path;
+    for (int i = 1; i <= n; i++) cout << dist[i] << ' ';
 }
 ```
 
----
+## Tree-Wise Dry Run
 
-# Part 5. DFS Tree and Cycle Detection
-
-## 24. Cycle detection in undirected graph
-
-In undirected graph, if a visited neighbour is not parent, cycle exists.
-
-```mermaid
-flowchart TD
-    A[DFS u parent p] --> B[Check neighbour v]
-    B --> C{v not visited}
-    C -->|Yes| D[DFS v u]
-    C -->|No| E{v is parent}
-    E -->|Yes| F[Ignore]
-    E -->|No| G[Cycle found]
+```text
+Level 0: 1 | dist[1]=0
+├── Level 1: 2 | dist[2]=1
+│   ├── Level 2: 4 | dist[4]=2
+│   └── Level 2: 5 | dist[5]=2
+└── Level 1: 3 | dist[3]=1
+    └── Level 2: 6 | dist[6]=2
 ```
 
-### C++ code
+## Index-by-Index Queue Dry Run
+
+| Step | Queue before | Pop | Newly pushed | Distance update |
+|---:|---|---:|---|---|
+| 1 | [1] | 1 | 2, 3 | d2=1, d3=1 |
+| 2 | [2,3] | 2 | 4, 5 | d4=2, d5=2 |
+| 3 | [3,4,5] | 3 | 6 | d6=2 |
+| 4 | [4,5,6] | 4 | none | — |
+| 5 | [5,6] | 5 | none | — |
+| 6 | [6] | 6 | none | — |
+
+---
+
+# 2.3 Connected Components
+
+## Problem Statement
+
+Given an undirected graph, count connected components.
+
+## Input
+
+```text
+6 3
+1 2
+2 3
+4 5
+```
+
+## Output
+
+```text
+3
+```
+
+## C++ Code
 
 ```cpp
-bool hasCycleUndirected(int n, vector<vector<int>>& g) {
-    vector<int> vis(n + 1, 0);
+#include <bits/stdc++.h>
+using namespace std;
 
-    function<bool(int, int)> dfs = [&](int u, int parent) {
-        vis[u] = 1;
+vector<vector<int>> g;
+vector<int> vis;
 
-        for (int v : g[u]) {
-            if (!vis[v]) {
-                if (dfs(v, u)) return true;
-            } else if (v != parent) {
-                return true;
-            }
-        }
+void dfs(int u) {
+    vis[u] = 1;
+    for (int v : g[u]) {
+        if (!vis[v]) dfs(v);
+    }
+}
 
-        return false;
-    };
+int main() {
+    int n, m;
+    cin >> n >> m;
+    g.assign(n + 1, {});
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    vis.assign(n + 1, 0);
+    int components = 0;
 
     for (int i = 1; i <= n; i++) {
         if (!vis[i]) {
-            if (dfs(i, -1)) return true;
+            components++;
+            dfs(i);
         }
     }
 
-    return false;
+    cout << components << '\n';
 }
 ```
 
-### Important limitation
-
-This simple parent method assumes simple graph.  
-For self loops and multi-edges, handle at input.
-
----
-
-## 25. Cycle detection in directed graph using colors
-
-Color meaning:
+## Tree-Wise Dry Run
 
 ```text
-0 = unvisited
-1 = currently exploring
-2 = fully explored
+for i = 1..6
+├── i=1 unvisited -> components=1
+│   └── dfs(1)
+│       └── dfs(2)
+│           └── dfs(3)
+├── i=2 visited -> skip
+├── i=3 visited -> skip
+├── i=4 unvisited -> components=2
+│   └── dfs(4)
+│       └── dfs(5)
+├── i=5 visited -> skip
+└── i=6 unvisited -> components=3
+    └── dfs(6)
 ```
 
-If during DFS we find edge to color `1`, that is a back edge and a cycle exists.
+## Index-by-Index Dry Run
 
-```mermaid
-flowchart TD
-    A[DFS u] --> B[color u as 1]
-    B --> C[Explore v]
-    C --> D{color v}
-    D -->|0| E[DFS v]
-    D -->|1| F[Cycle found]
-    D -->|2| G[Already done]
-    E --> H[color u as 2]
-```
-
-### C++ code
-
-```cpp
-bool hasCycleDirected(int n, vector<vector<int>>& g) {
-    vector<int> color(n + 1, 0);
-
-    function<bool(int)> dfs = [&](int u) {
-        color[u] = 1;
-
-        for (int v : g[u]) {
-            if (color[v] == 0) {
-                if (dfs(v)) return true;
-            } else if (color[v] == 1) {
-                return true;
-            }
-        }
-
-        color[u] = 2;
-        return false;
-    };
-
-    for (int i = 1; i <= n; i++) {
-        if (color[i] == 0) {
-            if (dfs(i)) return true;
-        }
-    }
-
-    return false;
-}
-```
-
-### 1-minute mental trick
-
-> Directed cycle = edge to a node still inside current recursion stack.
+| i | visited before? | Action | components |
+|---:|---|---|---:|
+| 1 | no | start dfs(1), visits 1,2,3 | 1 |
+| 2 | yes | skip | 1 |
+| 3 | yes | skip | 1 |
+| 4 | no | start dfs(4), visits 4,5 | 2 |
+| 5 | yes | skip | 2 |
+| 6 | no | start dfs(6) | 3 |
 
 ---
 
-## 26. Print one cycle in directed graph
+# 2.4 Bipartite Check
 
-Store parent. When you see edge `u -> v` where `v` is currently exploring, walk parent from `u` back to `v`.
+## Idea
+
+A graph is bipartite if every node can be colored with two colors and no edge connects same color.
+
+## C++ Code
 
 ```cpp
-vector<int> findDirectedCycle(int n, vector<vector<int>>& g) {
-    vector<int> color(n + 1, 0), parent(n + 1, -1);
-    vector<int> cycle;
+#include <bits/stdc++.h>
+using namespace std;
 
-    function<bool(int)> dfs = [&](int u) {
-        color[u] = 1;
+bool isBipartite(int n, vector<vector<int>>& g) {
+    vector<int> color(n + 1, -1);
 
-        for (int v : g[u]) {
-            if (color[v] == 0) {
-                parent[v] = u;
-                if (dfs(v)) return true;
-            } else if (color[v] == 1) {
-                cycle.push_back(v);
-                int cur = u;
+    for (int start = 1; start <= n; start++) {
+        if (color[start] != -1) continue;
 
-                while (cur != v) {
-                    cycle.push_back(cur);
-                    cur = parent[cur];
+        queue<int> q;
+        color[start] = 0;
+        q.push(start);
+
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+
+            for (int v : g[u]) {
+                if (color[v] == -1) {
+                    color[v] = color[u] ^ 1;
+                    q.push(v);
+                } else if (color[v] == color[u]) {
+                    return false;
                 }
-
-                cycle.push_back(v);
-                reverse(cycle.begin(), cycle.end());
-                return true;
             }
         }
-
-        color[u] = 2;
-        return false;
-    };
-
-    for (int i = 1; i <= n; i++) {
-        if (color[i] == 0 && dfs(i)) break;
     }
 
-    return cycle;
+    return true;
 }
 ```
 
----
+## Tree-Wise Dry Run
 
-## 27. Nodes that are part of any directed cycle
-
-Idea from notes:
+Graph:
 
 ```text
-When a back edge finds a cycle, mark contribution on parent path.
-Use partial sum over DFS finish order to avoid overcounting.
+1 -- 2
+1 -- 3
+2 -- 4
+3 -- 4
 ```
-
-Simple practical method for CP:
 
 ```text
-Use SCC algorithm. Any SCC with size > 1 is part of a cycle.
-A node with self loop is also part of a cycle.
+start 1 -> color[1]=0
+├── neighbor 2 uncolored -> color[2]=1
+├── neighbor 3 uncolored -> color[3]=1
+├── pop 2
+│   └── neighbor 4 uncolored -> color[4]=0
+└── pop 3
+    └── neighbor 4 already color 0, different from color[3]=1 -> ok
 ```
 
-### Mental trick
+## Index-by-Index Dry Run
 
-> In directed graphs, cycle membership is easiest through SCC.
+| Step | Node | Action | Colors |
+|---:|---:|---|---|
+| 1 | 1 | color 0 | 1:0 |
+| 2 | 2 | color opposite of 1 | 1:0, 2:1 |
+| 3 | 3 | color opposite of 1 | 1:0, 2:1, 3:1 |
+| 4 | 4 | color opposite of 2 | 1:0, 2:1, 3:1, 4:0 |
+| 5 | edge 3-4 | colors differ | valid |
 
 ---
 
-# Part 6. Multi-Source BFS
+# 2.5 Grid BFS / DFS
 
-## 28. What is multi-source BFS
+## Idea
 
-Start BFS from many sources at once.
+A grid is an implicit graph.
 
-```mermaid
-flowchart TD
-    A[All sources] --> B[Push all into queue]
-    B --> C[All have distance zero]
-    C --> D[BFS expands together]
-    D --> E[Each node gets distance to nearest source]
+```text
+cell (r,c) = node
+move up/down/left/right = edge
+wall/block = no edge
 ```
 
-### Use cases
+## C++ Grid Template
+
+```cpp
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, 1, -1};
+
+bool inside(int x, int y, int n, int m) {
+    return x >= 0 && y >= 0 && x < n && y < m;
+}
+```
+
+## Tree-Wise Dry Run
+
+Grid:
+
+```text
+S . .
+# # .
+. . T
+```
+
+```text
+BFS from S=(0,0)
+├── level 0: (0,0)
+├── level 1: (0,1)
+├── level 2: (0,2)
+├── level 3: (1,2)
+└── level 4: (2,2) target
+```
+
+---
+
+# 2.6 Multi-Source BFS
+
+## Idea
+
+Push all sources first with distance `0`. Then normal BFS.
+
+Used for:
 
 - nearest monster
-- nearest exit
-- nearest hospital
-- rotting oranges
+- nearest zero
 - fire spread
-- distance to closest special cell
+- rotting oranges
+- nearest hospital
 
-### C++ template
-
-```cpp
-vector<int> multiSourceBFS(int n, vector<vector<int>>& g, vector<int> sources) {
-    const int INF = 1e9;
-    vector<int> dist(n + 1, INF);
-    queue<int> q;
-
-    for (int s : sources) {
-        dist[s] = 0;
-        q.push(s);
-    }
-
-    while (!q.empty()) {
-        int u = q.front();
-        q.pop();
-
-        for (int v : g[u]) {
-            if (dist[v] == INF) {
-                dist[v] = dist[u] + 1;
-                q.push(v);
-            }
-        }
-    }
-
-    return dist;
-}
-```
-
-### 1-minute mental trick
-
-> Multi-source BFS is like adding a fake super source connected to all sources with zero cost.
-
----
-
-## 29. Monster escape pattern
-
-Given:
-- person `P`
-- monsters `M`
-- exits `E`
-
-Need escape if person reaches an exit before any monster.
-
-Condition:
-
-```text
-distPerson[exit] < distMonster[exit]
-```
-
-But instead of BFS from every monster separately:
-
-```text
-Push all monsters into one queue.
-Run one multi-source BFS.
-```
-
-```mermaid
-flowchart TD
-    A[All monsters in queue] --> B[Compute nearest monster distance]
-    C[Person BFS] --> D[Compute person distance]
-    B --> E[Compare at exits]
-    D --> E
-```
-
-### Grid multi-source BFS
+## C++ Code
 
 ```cpp
-vector<vector<int>> multiSourceGridBFS(vector<string>& grid, vector<pair<int,int>> sources) {
-    int n = grid.size();
-    int m = grid[0].size();
+#include <bits/stdc++.h>
+using namespace std;
 
-    const int INF = 1e9;
+const int INF = 1e9;
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, 1, -1};
+
+vector<vector<int>> multiSourceBFS(vector<string>& grid, vector<pair<int,int>> sources) {
+    int n = grid.size(), m = grid[0].size();
     vector<vector<int>> dist(n, vector<int>(m, INF));
-
     queue<pair<int,int>> q;
-    for (auto [r, c] : sources) {
-        dist[r][c] = 0;
-        q.push({r, c});
+
+    for (auto [x, y] : sources) {
+        dist[x][y] = 0;
+        q.push({x, y});
     }
 
-    int dr[4] = {1, -1, 0, 0};
-    int dc[4] = {0, 0, 1, -1};
-
-    auto valid = [&](int r, int c) {
-        return r >= 0 && r < n && c >= 0 && c < m && grid[r][c] != '#';
-    };
-
     while (!q.empty()) {
-        auto [r, c] = q.front();
+        auto [x, y] = q.front();
         q.pop();
 
-        for (int k = 0; k < 4; k++) {
-            int nr = r + dr[k];
-            int nc = c + dc[k];
+        for (int d = 0; d < 4; d++) {
+            int nx = x + dx[d], ny = y + dy[d];
+            if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+            if (grid[nx][ny] == '#') continue;
 
-            if (valid(nr, nc) && dist[nr][nc] == INF) {
-                dist[nr][nc] = dist[r][c] + 1;
-                q.push({nr, nc});
+            if (dist[nx][ny] > dist[x][y] + 1) {
+                dist[nx][ny] = dist[x][y] + 1;
+                q.push({nx, ny});
             }
         }
     }
@@ -1222,277 +795,64 @@ vector<vector<int>> multiSourceGridBFS(vector<string>& grid, vector<pair<int,int
 }
 ```
 
----
+## Tree-Wise Dry Run
 
-# Part 7. Topological Ordering
-
-## 30. Topological sort meaning
-
-Topological ordering is an ordering of nodes in a DAG such that every edge goes forward.
+Grid:
 
 ```text
-For every edge u -> v, u appears before v.
+M . .
+. # .
+. . M
 ```
-
-```mermaid
-flowchart LR
-    A[u] --> B[v]
-    C[Topological order] --> D[u before v]
-```
-
-Only works for:
 
 ```text
-DAG = Directed Acyclic Graph
+Initial queue:
+├── (0,0) dist=0
+└── (2,2) dist=0
+
+Expansion tree:
+├── source (0,0)
+│   ├── (0,1) dist=1
+│   │   └── (0,2) dist=2
+│   └── (1,0) dist=1
+│       └── (2,0) dist=2
+└── source (2,2)
+    ├── (1,2) dist=1
+    │   └── (0,2) already has dist=2
+    └── (2,1) dist=1
+        └── (2,0) already has dist=2
 ```
 
-There can be multiple valid topological orders.
+## Index-by-Index Queue Dry Run
+
+| Step | Queue before | Pop | Push | Meaning |
+|---:|---|---|---|---|
+| 1 | [(0,0),(2,2)] | (0,0) | (0,1),(1,0) | wave from first monster |
+| 2 | [(2,2),(0,1),(1,0)] | (2,2) | (1,2),(2,1) | wave from second monster |
+| 3 | [(0,1),(1,0),(1,2),(2,1)] | (0,1) | (0,2) | dist 2 |
+| 4 | [...] | (1,0) | (2,0) | dist 2 |
 
 ---
 
-## 31. DFS topological sort
+# 2.7 0-1 BFS
 
-Idea:
+## Idea
+
+For edge weights only `0` and `1`:
 
 ```text
-When DFS finishes a node completely, push it into topo.
-Then reverse topo.
+weight 0 -> push_front
+weight 1 -> push_back
 ```
 
-```mermaid
-flowchart TD
-    A[DFS u] --> B[DFS all neighbours]
-    B --> C[Push u after children]
-    C --> D[Reverse final list]
-```
-
-### C++ code
+## C++ Code
 
 ```cpp
-vector<int> topoDFS(int n, vector<vector<int>>& g) {
-    vector<int> vis(n + 1, 0), topo;
+#include <bits/stdc++.h>
+using namespace std;
+const int INF = 1e9;
 
-    function<void(int)> dfs = [&](int u) {
-        vis[u] = 1;
-
-        for (int v : g[u]) {
-            if (!vis[v]) dfs(v);
-        }
-
-        topo.push_back(u);
-    };
-
-    for (int i = 1; i <= n; i++) {
-        if (!vis[i]) dfs(i);
-    }
-
-    reverse(topo.begin(), topo.end());
-    return topo;
-}
-```
-
----
-
-## 32. Kahn algorithm using BFS
-
-Idea:
-
-```text
-Repeatedly remove nodes with indegree zero.
-```
-
-```mermaid
-flowchart TD
-    A[Compute indegree] --> B[Push indegree zero nodes]
-    B --> C[Pop node into topo]
-    C --> D[Decrease indegree of neighbours]
-    D --> E{Neighbour indegree zero}
-    E -->|Yes| B
-    E -->|No| C
-```
-
-### C++ code
-
-```cpp
-vector<int> topoKahn(int n, vector<vector<int>>& g) {
-    vector<int> indeg(n + 1, 0);
-
-    for (int u = 1; u <= n; u++) {
-        for (int v : g[u]) {
-            indeg[v]++;
-        }
-    }
-
-    queue<int> q;
-    for (int i = 1; i <= n; i++) {
-        if (indeg[i] == 0) q.push(i);
-    }
-
-    vector<int> topo;
-
-    while (!q.empty()) {
-        int u = q.front();
-        q.pop();
-
-        topo.push_back(u);
-
-        for (int v : g[u]) {
-            indeg[v]--;
-            if (indeg[v] == 0) {
-                q.push(v);
-            }
-        }
-    }
-
-    return topo;
-}
-```
-
-### Cycle check using Kahn
-
-```cpp
-bool hasCycleUsingKahn(int n, vector<vector<int>>& g) {
-    vector<int> topo = topoKahn(n, g);
-    return (int)topo.size() != n;
-}
-```
-
----
-
-## 33. Lexicographically smallest topological order
-
-Use priority queue instead of normal queue.
-
-```cpp
-vector<int> lexicographicallySmallestTopo(int n, vector<vector<int>>& g) {
-    vector<int> indeg(n + 1, 0);
-
-    for (int u = 1; u <= n; u++) {
-        for (int v : g[u]) indeg[v]++;
-    }
-
-    priority_queue<int, vector<int>, greater<int>> pq;
-
-    for (int i = 1; i <= n; i++) {
-        if (indeg[i] == 0) pq.push(i);
-    }
-
-    vector<int> topo;
-
-    while (!pq.empty()) {
-        int u = pq.top();
-        pq.pop();
-
-        topo.push_back(u);
-
-        for (int v : g[u]) {
-            indeg[v]--;
-            if (indeg[v] == 0) pq.push(v);
-        }
-    }
-
-    return topo;
-}
-```
-
-### 1-minute mental trick
-
-> Topological sort = dependency order.  
-> Indegree zero means “nothing is blocking me.”
-
----
-
-## 34. DP on DAG using topological order
-
-Use topological order to solve states in valid dependency order.
-
-Example: longest path in DAG.
-
-```mermaid
-flowchart TD
-    A[Get topo order] --> B[Process nodes in topo order]
-    B --> C[Relax outgoing edges]
-    C --> D[dp v equals max dp v and dp u plus 1]
-```
-
-### C++ code
-
-```cpp
-int longestPathDAG(int n, vector<vector<int>>& g) {
-    vector<int> topo = topoKahn(n, g);
-    vector<int> dp(n + 1, 0);
-
-    for (int u : topo) {
-        for (int v : g[u]) {
-            dp[v] = max(dp[v], dp[u] + 1);
-        }
-    }
-
-    return *max_element(dp.begin(), dp.end());
-}
-```
-
-### Mental trick
-
-> DP on DAG is just shortest or longest path after topological ordering.
-
----
-
-# Part 8. Shortest Path Overview
-
-## 35. Which shortest path algorithm
-
-```mermaid
-flowchart TD
-    A[Shortest Path Problem] --> B{Edge weights}
-    B -->|All 1| C[BFS]
-    B -->|Only 0 and 1| D[Zero One BFS]
-    B -->|Non negative| E[Dijkstra]
-    B -->|Has negative edge| F[Bellman Ford]
-    B -->|All pairs query| G[Floyd Warshall]
-```
-
-| Problem | Algorithm | Time |
-|---|---|---|
-| Unweighted SSSP | BFS | O(V + E) |
-| 0 or 1 weights | 0-1 BFS | O(V + E) |
-| Non-negative weights | Dijkstra | O(E log E) or O(E log V) |
-| Negative edges | Bellman-Ford | O(VE) |
-| All pairs shortest path | Floyd-Warshall | O(V cubed) |
-
-### 1-minute mental trick
-
-> All edge weights equal: queue.  
-> Weights 0 and 1: deque.  
-> Non-negative weights: priority queue.  
-> Negative edges: Bellman-Ford.  
-> All pairs: Floyd-Warshall.
-
----
-
-# Part 9. 0-1 BFS
-
-## 36. 0-1 BFS idea
-
-Used when edge weights are only `0` or `1`.
-
-```text
-If weight is 0, push front.
-If weight is 1, push back.
-```
-
-```mermaid
-flowchart TD
-    A[Relax edge u to v] --> B{weight}
-    B -->|0| C[push front]
-    B -->|1| D[push back]
-```
-
-### C++ code
-
-```cpp
 vector<int> zeroOneBFS(int n, vector<vector<pair<int,int>>>& g, int src) {
-    const int INF = 1e9;
     vector<int> dist(n + 1, INF);
     deque<int> dq;
 
@@ -1506,7 +866,6 @@ vector<int> zeroOneBFS(int n, vector<vector<pair<int,int>>>& g, int src) {
         for (auto [v, w] : g[u]) {
             if (dist[v] > dist[u] + w) {
                 dist[v] = dist[u] + w;
-
                 if (w == 0) dq.push_front(v);
                 else dq.push_back(v);
             }
@@ -1517,126 +876,307 @@ vector<int> zeroOneBFS(int n, vector<vector<pair<int,int>>>& g, int src) {
 }
 ```
 
-### Why not normal BFS
+## Tree-Wise Dry Run
 
-Normal BFS assumes every edge cost is `1`.  
-Here zero edges should be processed earlier.
+Graph:
+
+```text
+1 --0--> 2
+1 --1--> 3
+2 --1--> 4
+3 --0--> 4
+```
+
+```text
+start dq=[1], d1=0
+└── pop 1
+    ├── edge 1->2 cost 0 -> d2=0 -> push_front 2
+    └── edge 1->3 cost 1 -> d3=1 -> push_back 3
+        dq becomes [2,3]
+        └── pop 2
+            └── edge 2->4 cost 1 -> d4=1 -> push_back 4
+                dq becomes [3,4]
+                └── pop 3
+                    └── edge 3->4 cost 0 -> candidate 1, no improvement
+```
+
+## Index-by-Index Dry Run
+
+| Step | dq before | pop | Relax | dq after | dist |
+|---:|---|---:|---|---|---|
+| 1 | [1] | 1 | 1->2 cost0 | [2] | d2=0 |
+| 2 | [2] then [2,3] | 1 | 1->3 cost1 | [2,3] | d3=1 |
+| 3 | [2,3] | 2 | 2->4 cost1 | [3,4] | d4=1 |
+| 4 | [3,4] | 3 | 3->4 cost0 no improve | [4] | d4=1 |
 
 ---
 
-## 37. Grid with wall break as 0-1 BFS
+# 3.1 Cycle Detection in Undirected Graph
 
-Question:
+## Idea
 
-```text
-Find minimum number of walls to break to reach end.
-```
+If DFS reaches a visited node that is not parent, cycle exists.
 
-Model:
-
-```text
-Node = cell
-Edge cost = 0 if next cell is empty
-Edge cost = 1 if next cell is wall
-```
-
-Then apply 0-1 BFS.
+## C++ Code
 
 ```cpp
-int minWallsToBreak(vector<string>& grid, pair<int,int> start, pair<int,int> finish) {
-    int n = grid.size();
-    int m = grid[0].size();
-    const int INF = 1e9;
+bool dfsCycle(int u, int parent, vector<vector<int>>& g, vector<int>& vis) {
+    vis[u] = 1;
 
-    vector<vector<int>> dist(n, vector<int>(m, INF));
-    deque<pair<int,int>> dq;
-
-    int dr[4] = {1, -1, 0, 0};
-    int dc[4] = {0, 0, 1, -1};
-
-    auto valid = [&](int r, int c) {
-        return r >= 0 && r < n && c >= 0 && c < m;
-    };
-
-    dist[start.first][start.second] = 0;
-    dq.push_front(start);
-
-    while (!dq.empty()) {
-        auto [r, c] = dq.front();
-        dq.pop_front();
-
-        for (int k = 0; k < 4; k++) {
-            int nr = r + dr[k];
-            int nc = c + dc[k];
-
-            if (!valid(nr, nc)) continue;
-
-            int w = (grid[nr][nc] == '#');
-
-            if (dist[nr][nc] > dist[r][c] + w) {
-                dist[nr][nc] = dist[r][c] + w;
-
-                if (w == 0) dq.push_front({nr, nc});
-                else dq.push_back({nr, nc});
-            }
+    for (int v : g[u]) {
+        if (!vis[v]) {
+            if (dfsCycle(v, u, g, vis)) return true;
+        } else if (v != parent) {
+            return true;
         }
     }
 
-    return dist[finish.first][finish.second];
+    return false;
 }
 ```
 
-### 1-minute mental trick
+## Tree-Wise Dry Run
 
-> 0 cost means urgent, push front.  
-> 1 cost means later, push back.
-
----
-
-# Part 10. Dijkstra
-
-## 38. Dijkstra intuition
-
-Dijkstra solves single source shortest path for non-negative weights.
-
-Basic idea:
+Input edges:
 
 ```text
-Always take the currently known least distance node.
-Relax its neighbours.
+1-2, 2-3, 3-1
 ```
-
-```mermaid
-flowchart TD
-    A[Source distance zero] --> B[Priority queue]
-    B --> C[Take minimum distance node]
-    C --> D[Relax all outgoing edges]
-    D --> B
-```
-
-### Relaxation
-
-For edge `u -> v` with weight `w`:
 
 ```text
-if dist[v] > dist[u] + w:
-    dist[v] = dist[u] + w
+dfs(1, parent=-1)
+└── dfs(2, parent=1)
+    ├── neighbor 1 is parent -> ignore
+    └── dfs(3, parent=2)
+        ├── neighbor 2 is parent -> ignore
+        └── neighbor 1 is visited and 1 != parent
+            └── cycle found
 ```
 
 ---
 
-## 39. C++ Dijkstra template
+# 3.2 Cycle Detection in Directed Graph
+
+## Idea
+
+Use state array:
+
+```text
+0 = unvisited
+1 = currently in recursion stack
+2 = fully processed
+```
+
+If DFS sees state `1`, cycle exists.
+
+## C++ Code
 
 ```cpp
-vector<long long> dijkstra(int n, vector<vector<pair<int,int>>>& g, int src) {
-    const long long INF = 4e18;
-    vector<long long> dist(n + 1, INF);
+bool dfsDirectedCycle(int u, vector<vector<int>>& g, vector<int>& state) {
+    state[u] = 1;
 
-    priority_queue<
-        pair<long long,int>,
-        vector<pair<long long,int>>,
-        greater<pair<long long,int>>
-    > pq;
+    for (int v : g[u]) {
+        if (state[v] == 0) {
+            if (dfsDirectedCycle(v, g, state)) return true;
+        } else if (state[v] == 1) {
+            return true;
+        }
+    }
+
+    state[u] = 2;
+    return false;
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+dfs(1) -> state[1]=1
+└── dfs(2) -> state[2]=1
+    └── dfs(3) -> state[3]=1
+        └── edge 3->1
+            └── state[1]=1 means 1 is in current call path
+                └── directed cycle found
+```
+
+---
+
+# 3.3 Topological Sort — DFS
+
+## Idea
+
+In DAG, node is pushed after processing all children. Reverse the order.
+
+## C++ Code
+
+```cpp
+void dfsTopo(int u, vector<vector<int>>& g, vector<int>& vis, vector<int>& topo) {
+    vis[u] = 1;
+    for (int v : g[u]) {
+        if (!vis[v]) dfsTopo(v, g, vis, topo);
+    }
+    topo.push_back(u);
+}
+```
+
+## Tree-Wise Dry Run
+
+Graph:
+
+```text
+1 -> 2
+1 -> 3
+2 -> 4
+3 -> 4
+```
+
+```text
+dfs(1)
+├── dfs(2)
+│   └── dfs(4)
+│       └── push 4
+│   └── push 2
+├── dfs(3)
+│   └── neighbor 4 already visited
+│   └── push 3
+└── push 1
+
+before reverse = [4,2,3,1]
+after reverse  = [1,3,2,4]
+```
+
+---
+
+# 3.4 Topological Sort — Kahn
+
+## Idea
+
+Use indegree and queue of zero-indegree nodes.
+
+## C++ Code
+
+```cpp
+vector<int> topoKahn(int n, vector<vector<int>>& g) {
+    vector<int> indeg(n + 1, 0);
+    for (int u = 1; u <= n; u++) {
+        for (int v : g[u]) indeg[v]++;
+    }
+
+    queue<int> q;
+    for (int i = 1; i <= n; i++) {
+        if (indeg[i] == 0) q.push(i);
+    }
+
+    vector<int> topo;
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        topo.push_back(u);
+
+        for (int v : g[u]) {
+            indeg[v]--;
+            if (indeg[v] == 0) q.push(v);
+        }
+    }
+
+    return topo;
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+Initial indegree:
+1:0, 2:1, 3:1, 4:2
+
+Queue=[1]
+└── pop 1 -> topo=[1]
+    ├── remove 1->2 -> indeg[2]=0 -> push 2
+    └── remove 1->3 -> indeg[3]=0 -> push 3
+        Queue=[2,3]
+        ├── pop 2 -> topo=[1,2]
+        │   └── remove 2->4 -> indeg[4]=1
+        └── pop 3 -> topo=[1,2,3]
+            └── remove 3->4 -> indeg[4]=0 -> push 4
+                └── pop 4 -> topo=[1,2,3,4]
+```
+
+---
+
+# 3.5 DAG DP
+
+## Idea
+
+If graph is DAG, process nodes in topological order and relax transitions.
+
+Used for:
+
+- longest path in DAG
+- count paths in DAG
+- minimum cost with dependencies
+
+## C++ Template
+
+```cpp
+vector<int> topo = topoKahn(n, g);
+vector<long long> dp(n + 1, 0);
+dp[src] = 1;
+
+for (int u : topo) {
+    for (int v : g[u]) {
+        dp[v] += dp[u]; // count paths example
+    }
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+topo order = [1,2,3,4]
+dp[1]=1
+├── process 1 -> add to 2 and 3
+│   ├── dp[2]=1
+│   └── dp[3]=1
+├── process 2 -> add to 4 -> dp[4]=1
+└── process 3 -> add to 4 -> dp[4]=2
+```
+
+---
+
+# 4.1 BFS Shortest Path
+
+Same as BFS when all edges have cost 1.
+
+## Tree-Wise Dry Run
+
+```text
+source 1 distance 0
+├── nodes reachable in 1 edge: 2,3
+│   ├── nodes reachable in 2 edges from 2: 4,5
+│   └── nodes reachable in 2 edges from 3: 6
+└── first time visiting a node gives shortest distance
+```
+
+---
+
+# 4.2 Dijkstra
+
+## Use When
+
+- weighted graph
+- non-negative weights
+- single-source shortest path
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+const long long INF = 4e18;
+
+vector<long long> dijkstra(int n, vector<vector<pair<int,int>>>& g, int src) {
+    vector<long long> dist(n + 1, INF);
+    priority_queue<pair<long long,int>, vector<pair<long long,int>>, greater<pair<long long,int>>> pq;
 
     dist[src] = 0;
     pq.push({0, src});
@@ -1659,151 +1199,53 @@ vector<long long> dijkstra(int n, vector<vector<pair<int,int>>>& g, int src) {
 }
 ```
 
-### Java Dijkstra helper
+## Tree-Wise Dry Run
 
-```java
-static long[] dijkstra(int n, ArrayList<int[]>[] g, int src) {
-    long INF = Long.MAX_VALUE / 4;
-    long[] dist = new long[n + 1];
-    Arrays.fill(dist, INF);
-
-    PriorityQueue<long[]> pq = new PriorityQueue<>(Comparator.comparingLong(a -> a[0]));
-
-    dist[src] = 0;
-    pq.add(new long[]{0, src});
-
-    while (!pq.isEmpty()) {
-        long[] cur = pq.poll();
-        long d = cur[0];
-        int u = (int)cur[1];
-
-        if (d != dist[u]) continue;
-
-        for (int[] edge : g[u]) {
-            int v = edge[0];
-            int w = edge[1];
-
-            if (dist[v] > dist[u] + w) {
-                dist[v] = dist[u] + w;
-                pq.add(new long[]{dist[v], v});
-            }
-        }
-    }
-
-    return dist;
-}
-```
-
-### Complexity
+Input:
 
 ```text
-O(E log E)
+1->2 cost 2
+1->3 cost 5
+2->3 cost 1
+2->4 cost 2
+3->5 cost 1
+4->5 cost 3
 ```
-
-Often written as:
 
 ```text
-O((V + E) log V)
+pq={(0,1)}, dist[1]=0
+└── pop 1
+    ├── relax 1->2 -> dist[2]=2
+    └── relax 1->3 -> dist[3]=5
+        pq={(2,2),(5,3)}
+        └── pop 2
+            ├── relax 2->3 -> dist[3]=3 better than 5
+            └── relax 2->4 -> dist[4]=4
+                pq={(3,3),(4,4),(5,3 old)}
+                └── pop 3
+                    └── relax 3->5 -> dist[5]=4
 ```
+
+## Index-by-Index Dry Run
+
+| Step | Pop | Relaxation | Dist array for nodes 1..5 |
+|---:|---|---|---|
+| 1 | 1 | d2=2, d3=5 | [0,2,5,INF,INF] |
+| 2 | 2 | d3=3, d4=4 | [0,2,3,4,INF] |
+| 3 | 3 | d5=4 | [0,2,3,4,4] |
+| 4 | 4 | no improvement | [0,2,3,4,4] |
+| 5 | 5 | done | [0,2,3,4,4] |
 
 ---
 
-## 40. Dijkstra limitation
+# 4.3 Bellman-Ford
 
-Dijkstra does not work with negative edges.
+## Use When
 
-```mermaid
-flowchart TD
-    A[Dijkstra fixes shortest node] --> B[Negative edge later may improve it]
-    B --> C[Algorithm assumption breaks]
-```
+- negative edges exist
+- need negative cycle detection
 
-### 1-minute mental trick
-
-> Dijkstra trusts that once the smallest distance is picked, it will not improve.  
-> Negative edges can break this trust.
-
----
-
-## 41. Dijkstra on state graph
-
-Sometimes node is not just city.
-
-Example fuel problem:
-
-```text
-state = (city, fuel remaining)
-```
-
-Each original city becomes multiple states.
-
-```mermaid
-flowchart TD
-    A[Original city] --> B[State city fuel zero]
-    A --> C[State city fuel one]
-    A --> D[State city fuel two]
-```
-
-### General state graph template
-
-```text
-1. Decide state.
-2. Decide transitions.
-3. Decide transition cost.
-4. Run shortest path algorithm.
-```
-
-### C++ skeleton
-
-```cpp
-struct State {
-    int node;
-    int fuel;
-};
-
-struct Item {
-    long long dist;
-    int node;
-    int fuel;
-
-    bool operator>(const Item& other) const {
-        return dist > other.dist;
-    }
-};
-```
-
-### Mental trick
-
-> If the same city can be reached with different useful conditions, include that condition in the state.
-
----
-
-# Part 11. Bellman-Ford
-
-## 42. Bellman-Ford intuition
-
-Bellman-Ford handles negative edges and can detect negative cycles.
-
-Main idea:
-
-```text
-Relax all edges V minus 1 times.
-```
-
-Why `V - 1`?
-
-```text
-A shortest simple path has at most V - 1 edges.
-```
-
-```mermaid
-flowchart TD
-    A[Initialize dist source zero] --> B[Repeat V minus 1 times]
-    B --> C[Relax every edge]
-    C --> D[Distances improve gradually]
-```
-
-### C++ code
+## C++ Code
 
 ```cpp
 struct Edge {
@@ -1814,21 +1256,16 @@ struct Edge {
 vector<long long> bellmanFord(int n, vector<Edge>& edges, int src) {
     const long long INF = 4e18;
     vector<long long> dist(n + 1, INF);
-
     dist[src] = 0;
 
-    for (int iter = 1; iter <= n - 1; iter++) {
+    for (int i = 1; i <= n - 1; i++) {
         bool changed = false;
-
         for (auto e : edges) {
-            if (dist[e.u] == INF) continue;
-
-            if (dist[e.v] > dist[e.u] + e.w) {
+            if (dist[e.u] != INF && dist[e.v] > dist[e.u] + e.w) {
                 dist[e.v] = dist[e.u] + e.w;
                 changed = true;
             }
         }
-
         if (!changed) break;
     }
 
@@ -1836,495 +1273,135 @@ vector<long long> bellmanFord(int n, vector<Edge>& edges, int src) {
 }
 ```
 
----
-
-## 43. Detect negative cycle
-
-After `V - 1` relaxations, do one more relaxation.  
-If anything still improves, a negative cycle is reachable.
+## Negative Cycle Check
 
 ```cpp
-bool hasNegativeCycle(int n, vector<Edge>& edges, int src) {
+bool hasNegativeCycle(int n, vector<Edge>& edges, vector<long long>& dist) {
     const long long INF = 4e18;
-    vector<long long> dist(n + 1, INF);
-
-    dist[src] = 0;
-
-    for (int iter = 1; iter <= n - 1; iter++) {
-        for (auto e : edges) {
-            if (dist[e.u] != INF && dist[e.v] > dist[e.u] + e.w) {
-                dist[e.v] = dist[e.u] + e.w;
-            }
-        }
-    }
-
     for (auto e : edges) {
         if (dist[e.u] != INF && dist[e.v] > dist[e.u] + e.w) {
             return true;
         }
     }
-
     return false;
 }
 ```
 
-### Nodes affected by negative cycle
+## Tree-Wise Dry Run
 
-If a node can still relax on nth iteration, it is affected by a negative cycle.  
-To find all nodes reachable from negative cycle:
-1. Mark nodes relaxed on nth iteration.
-2. Run DFS or BFS from them in original graph.
-
-### 1-minute mental trick
-
-> If distance keeps decreasing even after V minus 1 rounds, a negative cycle is feeding it.
+```text
+Start dist[src]=0
+├── pass 1 over all edges
+│   └── paths with at most 1 edge become correct
+├── pass 2 over all edges
+│   └── paths with at most 2 edges become correct
+├── ...
+├── pass n-1
+│   └── all shortest simple paths are considered
+└── extra pass
+    ├── if any distance improves -> negative cycle
+    └── otherwise -> final distances
+```
 
 ---
 
-# Part 12. Floyd-Warshall
+# 4.4 Floyd-Warshall
 
-## 44. Floyd-Warshall intuition
+## Use When
 
-Floyd-Warshall solves all-pairs shortest path.
+- all-pairs shortest path
+- `n` is small
+- `O(n^3)` is acceptable
 
-It tries every node as an intermediate node.
-
-```text
-dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
-```
-
-```mermaid
-flowchart LR
-    A[i] --> B[k]
-    B --> C[j]
-    D[Compare i to j direct] --> E[with i to k to j]
-```
-
-### C++ code
-
-```cpp
-vector<vector<long long>> floydWarshall(int n, vector<vector<long long>> dist) {
-    const long long INF = 4e18;
-
-    for (int k = 1; k <= n; k++) {
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (dist[i][k] == INF || dist[k][j] == INF) continue;
-
-                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
-            }
-        }
-    }
-
-    return dist;
-}
-```
-
-### Initialization
+## C++ Code
 
 ```cpp
 const long long INF = 4e18;
-vector<vector<long long>> dist(n + 1, vector<long long>(n + 1, INF));
 
-for (int i = 1; i <= n; i++) {
-    dist[i][i] = 0;
-}
-
-for (auto [u, v, w] : edges) {
-    dist[u][v] = min(dist[u][v], w); // handle multiple edges
-}
-```
-
----
-
-## 45. Floyd path reconstruction
-
-Maintain parent array.
-
-```cpp
-vector<vector<int>> parent(n + 1, vector<int>(n + 1));
-
-for (int i = 1; i <= n; i++) {
-    for (int j = 1; j <= n; j++) {
-        parent[i][j] = i;
-    }
-}
-
-if (dist[i][j] > dist[i][k] + dist[k][j]) {
-    dist[i][j] = dist[i][k] + dist[k][j];
-    parent[i][j] = parent[k][j];
-}
-```
-
-Print path:
-
-```cpp
-void printPath(int i, int j, vector<vector<int>>& parent) {
-    if (i == j) {
-        cout << i << " ";
-        return;
-    }
-
-    printPath(i, parent[i][j], parent);
-    cout << j << " ";
-}
-```
-
----
-
-## 46. Transitive closure
-
-To find reachability between all pairs:
-
-```text
-reach[i][j] = reach[i][j] OR reach[i][k] AND reach[k][j]
-```
-
-```cpp
-void transitiveClosure(int n, vector<vector<int>>& reach) {
-    for (int k = 1; k <= n; k++) {
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) {
-                reach[i][j] = reach[i][j] || (reach[i][k] && reach[k][j]);
-            }
-        }
-    }
-}
-```
-
----
-
-## 47. Negative cycle using Floyd-Warshall
-
-After Floyd:
-
-```text
-if dist[i][i] < 0, negative cycle exists
-```
-
-```cpp
-bool hasNegativeCycleFloyd(vector<vector<long long>>& dist, int n) {
+for (int k = 1; k <= n; k++) {
     for (int i = 1; i <= n; i++) {
-        if (dist[i][i] < 0) return true;
+        for (int j = 1; j <= n; j++) {
+            if (dist[i][k] == INF || dist[k][j] == INF) continue;
+            dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+        }
     }
-    return false;
 }
 ```
 
-### 1-minute mental trick
+## Tree-Wise Dry Run
 
-> Floyd asks: can going through k improve i to j?
+```text
+k = 1 | allow node 1 as middle
+└── update every pair (i,j)
+
+k = 2 | allow nodes {1,2} as middle
+└── dist[1][3] = min(direct 10, dist[1][2] + dist[2][3]) = 6
+
+k = 3 | allow nodes {1,2,3} as middle
+└── final matrix ready
+```
+
+## Matrix Example
+
+| From/To | 1 | 2 | 3 |
+|---|---:|---:|---:|
+| 1 | 0 | 4 | 10 |
+| 2 | INF | 0 | 2 |
+| 3 | INF | INF | 0 |
+
+After `k=2`:
+
+```text
+dist[1][3] = min(10, 4 + 2) = 6
+```
 
 ---
 
-# Part 13. Graph Formulation
+# 4.5 Shortest Path Formulation Patterns
 
-## 48. How to formulate graph problems
-
-From notes:
-
-```text
-Problem statement -> extract graph
-1. What does a node represent?
-2. What does an edge represent?
-3. What is the cost of an edge?
-4. Which algorithm fits?
-```
-
-```mermaid
-flowchart TD
-    A[Problem statement] --> B[Define node]
-    B --> C[Define edge]
-    C --> D[Define cost]
-    D --> E[Choose algorithm]
-```
-
-### Algorithm selection after formulation
-
-| Edge cost | Algorithm |
+| Signal | Algorithm |
 |---|---|
-| all edges cost 1 | BFS |
-| cost 0 or 1 | 0-1 BFS |
-| non-negative | Dijkstra |
-| negative edges | Bellman-Ford |
-| all pairs | Floyd-Warshall |
+| Minimum moves in grid | BFS |
+| Multiple starts | Multi-source BFS |
+| 0/1 edge cost | 0-1 BFS |
+| Positive road times | Dijkstra |
+| Negative edges | Bellman-Ford |
+| All pair queries | Floyd-Warshall |
+| State includes coupons/stops/mask | BFS/Dijkstra on state graph |
 
----
-
-## 49. Wall breaking formulation
-
-Question 1:
+## State Graph Example
 
 ```text
-Find minimum walls to break from S to E.
-```
-
-Model:
-
-```text
-Node = cell
-Edge cost = 0 if moving into empty cell
-Edge cost = 1 if moving into wall
-Algorithm = 0-1 BFS
-```
-
-Question 2:
-
-```text
-Find minimum moves if you can break at most k walls.
-```
-
-Model:
-
-```text
-Node = (row, col, walls_broken)
-Edge cost = 1 move
-Constraint = walls_broken <= k
-Algorithm = BFS over state graph
-```
-
-```mermaid
-flowchart TD
-    A[Grid cell] --> B[State row col broken]
-    B --> C[Move to next cell]
-    C --> D{Is wall}
-    D -->|Yes| E[broken plus one]
-    D -->|No| F[broken same]
-```
-
-### C++ BFS with at most k wall breaks
-
-```cpp
-int shortestPathBreakK(vector<string>& grid, pair<int,int> start,
-                       pair<int,int> finish, int k) {
-    int n = grid.size();
-    int m = grid[0].size();
-
-    const int INF = 1e9;
-    vector<vector<vector<int>>> dist(
-        n, vector<vector<int>>(m, vector<int>(k + 1, INF))
-    );
-
-    queue<tuple<int,int,int>> q;
-
-    dist[start.first][start.second][0] = 0;
-    q.push({start.first, start.second, 0});
-
-    int dr[4] = {1, -1, 0, 0};
-    int dc[4] = {0, 0, 1, -1};
-
-    auto valid = [&](int r, int c) {
-        return r >= 0 && r < n && c >= 0 && c < m;
-    };
-
-    while (!q.empty()) {
-        auto [r, c, broken] = q.front();
-        q.pop();
-
-        for (int dir = 0; dir < 4; dir++) {
-            int nr = r + dr[dir];
-            int nc = c + dc[dir];
-
-            if (!valid(nr, nc)) continue;
-
-            int nb = broken + (grid[nr][nc] == '#');
-
-            if (nb <= k && dist[nr][nc][nb] == INF) {
-                dist[nr][nc][nb] = dist[r][c][broken] + 1;
-                q.push({nr, nc, nb});
-            }
-        }
-    }
-
-    int ans = INF;
-    for (int broken = 0; broken <= k; broken++) {
-        ans = min(ans, dist[finish.first][finish.second][broken]);
-    }
-
-    return ans;
-}
-```
-
-### 1-minute mental trick
-
-> If a condition changes future possibilities, add it to the state.
-
----
-
-## 50. Fuel shortest path formulation
-
-Problem idea:
-
-```text
-Cars have fuel capacity k.
-Traveling edge consumes petrol.
-Buying petrol costs money depending on city.
-```
-
-State:
-
-```text
-(city, fuel_remaining)
-```
-
-Transitions:
-
-```text
-Buy one fuel at current city.
-Move to neighbour if enough fuel.
-```
-
-```mermaid
-flowchart TD
-    A[city fuel] --> B[buy fuel]
-    A --> C[travel edge]
-    B --> D[city fuel plus one]
-    C --> E[next city fuel minus distance]
-```
-
-### Dijkstra state template
-
-```cpp
-struct Node {
-    long long cost;
-    int city;
-    int fuel;
-
-    bool operator>(const Node& other) const {
-        return cost > other.cost;
-    }
-};
-```
-
-### Mental trick
-
-> If money is minimized and edge costs vary, use Dijkstra on expanded states.
-
----
-
-## 51. Binary string transformation formulation
-
-Problem idea from notes:
-
-```text
-Start string -> end string
-Each move changes bits.
-Some strings are banned.
-Find minimum moves.
-```
-
-Model:
-
-```text
-Node = binary string
-Edge = one allowed transformation
-Blocked nodes = banned strings
-Algorithm = BFS
-```
-
-```mermaid
-flowchart TD
-    A[Start string] --> B[Flip one bit]
-    B --> C[New string]
-    C --> D{Banned}
-    D -->|No| E[BFS continue]
-    D -->|Yes| F[Skip]
-```
-
-### C++ skeleton
-
-```cpp
-int minStringMoves(string start, string target, unordered_set<string>& banned) {
-    queue<string> q;
-    unordered_map<string, int> dist;
-
-    if (banned.count(start)) return -1;
-
-    dist[start] = 0;
-    q.push(start);
-
-    while (!q.empty()) {
-        string cur = q.front();
-        q.pop();
-
-        if (cur == target) return dist[cur];
-
-        for (int i = 0; i < (int)cur.size(); i++) {
-            string nxt = cur;
-            nxt[i] = (nxt[i] == '0' ? '1' : '0');
-
-            if (!banned.count(nxt) && !dist.count(nxt)) {
-                dist[nxt] = dist[cur] + 1;
-                q.push(nxt);
-            }
-        }
-    }
-
-    return -1;
-}
+state = (node, usedCoupon)
+edge  = move to neighbor with coupon unchanged or used
+answer = min dist[target][0], dist[target][1]
 ```
 
 ---
 
-# Part 14. MST
+# 5.1 DSU Disjoint Set Union
 
-## 52. Minimum Spanning Tree
+## Idea
 
-Given:
+DSU maintains groups/components.
 
-```text
-N nodes, M weighted edges
-Choose N - 1 edges
-All nodes connected
-Minimum sum of edge weights
-```
+Used for:
 
-```mermaid
-flowchart TD
-    A[Weighted connected graph] --> B[Choose N minus 1 edges]
-    B --> C[No cycle]
-    C --> D[All nodes connected]
-    D --> E[Minimum total cost]
-```
+- connectivity queries
+- cycle detection in undirected graph
+- Kruskal MST
+- redundant connection
 
-### 1-minute mental trick
-
-> MST connects all nodes with minimum wiring cost.
-
----
-
-## 53. Kruskal algorithm
-
-Idea:
-
-```text
-Sort edges by weight.
-Take smallest edge if it connects two different components.
-Use DSU.
-```
-
-```mermaid
-flowchart TD
-    A[Sort edges] --> B[Take smallest edge]
-    B --> C{Same component}
-    C -->|Yes| D[Skip edge]
-    C -->|No| E[Add edge and union]
-    E --> F{N minus 1 edges chosen}
-```
-
-### DSU code
+## C++ Code
 
 ```cpp
 struct DSU {
-    vector<int> parent, size;
+    vector<int> parent, sz;
 
     DSU(int n) {
         parent.resize(n + 1);
-        size.assign(n + 1, 1);
-
-        for (int i = 1; i <= n; i++) {
-            parent[i] = i;
-        }
+        sz.assign(n + 1, 1);
+        iota(parent.begin(), parent.end(), 0);
     }
 
     int find(int x) {
@@ -2335,29 +1412,53 @@ struct DSU {
     bool unite(int a, int b) {
         a = find(a);
         b = find(b);
-
         if (a == b) return false;
-
-        if (size[a] < size[b]) swap(a, b);
-
+        if (sz[a] < sz[b]) swap(a, b);
         parent[b] = a;
-        size[a] += size[b];
-
+        sz[a] += sz[b];
         return true;
     }
 };
 ```
 
-### Kruskal code
+## Tree-Wise Dry Run
+
+```text
+Initial:
+├── {1}
+├── {2}
+├── {3}
+└── {4}
+
+union(1,2)
+└── {1,2}, {3}, {4}
+
+union(2,3)
+└── find(2)=1, find(3)=3 -> merge
+    └── {1,2,3}, {4}
+
+union(1,3)
+└── find(1)=1, find(3)=1 -> already same -> cycle/redundant edge
+```
+
+---
+
+# 5.2 Kruskal MST
+
+## Idea
+
+Sort edges by weight. Add edge if DSU says it connects different components.
+
+## C++ Code
 
 ```cpp
-struct EdgeMST {
+struct Edge {
     int u, v;
     long long w;
 };
 
-long long kruskal(int n, vector<EdgeMST>& edges) {
-    sort(edges.begin(), edges.end(), [](const EdgeMST& a, const EdgeMST& b) {
+long long kruskal(int n, vector<Edge>& edges) {
+    sort(edges.begin(), edges.end(), [](Edge a, Edge b) {
         return a.w < b.w;
     });
 
@@ -2369,166 +1470,1729 @@ long long kruskal(int n, vector<EdgeMST>& edges) {
         if (dsu.unite(e.u, e.v)) {
             cost += e.w;
             used++;
-
-            if (used == n - 1) break;
         }
     }
 
-    if (used != n - 1) return -1; // graph not connected
+    if (used != n - 1) return -1;
     return cost;
 }
 ```
 
-### Complexity
+## Tree-Wise Dry Run
+
+Edges sorted:
 
 ```text
-O(E log E)
+1-2:1
+2-3:2
+3-4:3
+1-3:4
+2-4:7
+```
+
+```text
+Start components: {1},{2},{3},{4}
+├── take 1-2 cost 1 -> {1,2},{3},{4}
+├── take 2-3 cost 2 -> {1,2,3},{4}
+├── take 3-4 cost 3 -> {1,2,3,4}
+└── chosen edges = 3 = n-1 -> MST cost = 6
 ```
 
 ---
 
-## 54. Maximum spanning tree
+# 5.3 Prim MST
 
-Two easy methods:
+## Idea
 
-Method 1:
+Grow one connected tree. Always choose cheapest edge from visited set to unvisited node.
 
-```text
-Sort edges descending and run Kruskal.
-```
-
-Method 2:
-
-```text
-Negate all weights, find MST, negate final answer.
-```
-
-### Mental trick
-
-> Minimum spanning tree picks smallest safe edge.  
-> Maximum spanning tree picks largest safe edge.
-
----
-
-## 55. Node activation cost with MST
-
-Problem idea:
-
-```text
-Nodes are plants.
-Edges are pipes or wires.
-Each plant can be activated individually with cost c[i].
-Find minimum cost to activate/connect all plants.
-```
-
-Model:
-
-```text
-Add super node 0.
-Connect 0 to each node i with edge cost c[i].
-Run MST.
-```
-
-```mermaid
-flowchart TD
-    A[Super node] --> B[Plant 1]
-    A --> C[Plant 2]
-    A --> D[Plant 3]
-    B --> E[Original edges]
-    C --> E
-    D --> E
-```
-
-### C++ idea
+## C++ Code
 
 ```cpp
-for (int i = 1; i <= n; i++) {
-    edges.push_back({0, i, activationCost[i]});
+long long primMST(int n, vector<vector<pair<int,int>>>& g) {
+    vector<int> used(n + 1, 0);
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+
+    pq.push({0, 1});
+    long long cost = 0;
+    int count = 0;
+
+    while (!pq.empty()) {
+        auto [w, u] = pq.top();
+        pq.pop();
+
+        if (used[u]) continue;
+        used[u] = 1;
+        cost += w;
+        count++;
+
+        for (auto [v, wt] : g[u]) {
+            if (!used[v]) pq.push({wt, v});
+        }
+    }
+
+    if (count != n) return -1;
+    return cost;
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+visited={1}
+└── push edges from 1
+    └── pick cheapest crossing edge 1-2
+        └── visited={1,2}
+            └── push edges from 2
+                └── pick cheapest crossing edge 2-3
+                    └── visited={1,2,3}
+                        └── continue until all nodes visited
+```
+
+---
+
+# 5.4 MST Pattern Problems
+
+| Problem signal | Think |
+|---|---|
+| connect all cities minimum cost | MST |
+| n nodes, weighted undirected edges | MST |
+| choose n-1 edges | MST |
+| avoid cycle while minimizing cost | Kruskal + DSU |
+| graph already adjacency list | Prim can be natural |
+
+---
+
+# 6.1 SCC — Kosaraju
+
+## Idea
+
+Strongly Connected Component = every node can reach every other node inside component.
+
+Kosaraju:
+
+1. DFS original graph, push nodes by finish time.
+2. Reverse graph.
+3. Process nodes in reverse finish order on reversed graph.
+
+## C++ Code
+
+```cpp
+void dfs1(int u, vector<vector<int>>& g, vector<int>& vis, vector<int>& order) {
+    vis[u] = 1;
+    for (int v : g[u]) if (!vis[v]) dfs1(v, g, vis, order);
+    order.push_back(u);
 }
 
-long long ans = kruskal(n + 1, edges);
+void dfs2(int u, vector<vector<int>>& rg, vector<int>& comp, int cid) {
+    comp[u] = cid;
+    for (int v : rg[u]) if (comp[v] == -1) dfs2(v, rg, comp, cid);
+}
+
+vector<int> kosaraju(int n, vector<vector<int>>& g) {
+    vector<vector<int>> rg(n + 1);
+    for (int u = 1; u <= n; u++) {
+        for (int v : g[u]) rg[v].push_back(u);
+    }
+
+    vector<int> vis(n + 1, 0), order;
+    for (int i = 1; i <= n; i++) if (!vis[i]) dfs1(i, g, vis, order);
+
+    reverse(order.begin(), order.end());
+    vector<int> comp(n + 1, -1);
+    int cid = 0;
+
+    for (int u : order) {
+        if (comp[u] == -1) dfs2(u, rg, comp, cid++);
+    }
+
+    return comp;
+}
 ```
 
-### 1-minute mental trick
-
-> If node has a cost, convert it into an edge from a super node.
-
----
-
-# Part 15. Final Pattern Checklist
-
-## 56. Graph algorithm decision checklist
-
-```mermaid
-flowchart TD
-    A[Read problem] --> B[Find nodes and edges]
-    B --> C{Need reachability}
-    C -->|Yes| D[DFS or BFS]
-    C -->|No| E{Need shortest path}
-    E -->|Yes| F[Choose by edge weights]
-    E -->|No| G{Need ordering}
-    G -->|Yes| H[Topological sort]
-    G -->|No| I{Need connect all cheaply}
-    I -->|Yes| J[MST]
-    I -->|No| K[Think components cycles SCC flow]
-```
-
-## 57. One-page memory sheet
+## Tree-Wise Dry Run
 
 ```text
-Graph = V plus E
+Original graph:
+1 -> 2 -> 3 -> 1, 3 -> 4, 4 -> 5 -> 4
 
-Representations:
-Matrix -> O(N squared), edge check O(1)
-Edge list -> O(M), useful for Kruskal and Bellman-Ford
-Adj list -> O(N plus M), most used
+Pass 1 finish order:
+└── DFS from 1 visits 1,2,3,4,5
+    └── push by finish: [5,4,3,2,1]
 
-DFS:
-Reachability, components, bipartite, cycle
-
-BFS:
-Unweighted shortest path, grid shortest path
-
-Multi-source BFS:
-Nearest source distance
-
-0-1 BFS:
-Weights only 0 or 1, use deque
-
-Dijkstra:
-Non-negative weighted shortest path
-
-Bellman-Ford:
-Negative edges, negative cycle
-
-Floyd-Warshall:
-All-pairs shortest path, O(N cubed)
-
-Topological sort:
-Only DAG, dependency ordering
-
-MST:
-Connect all nodes with minimum total edge cost
-
-Graph formulation:
-Node, edge, cost, algorithm
-```
-
-## 58. Final mental tricks
-
-```text
-1. If all edges same cost -> BFS.
-2. If weight is 0 or 1 -> 0-1 BFS.
-3. If non-negative weights -> Dijkstra.
-4. If negative edge exists -> Bellman-Ford.
-5. If all pairs -> Floyd-Warshall.
-6. If dependencies -> Topological sort.
-7. If connect all with minimum cost -> MST.
-8. If grid has extra condition -> add condition to state.
-9. If multiple starting points -> multi-source BFS.
-10. If node has cost -> super node trick.
+Reverse order for pass 2:
+└── [1,2,3,4,5]
+    ├── start 1 in reversed graph -> reaches 1,2,3 -> SCC 0
+    └── start 4 -> reaches 4,5 -> SCC 1
 ```
 
 ---
 
-END
+# 6.2 Bridges
+
+## Idea
+
+Bridge = edge whose removal increases number of components.
+
+Use DFS timestamps:
+
+```text
+tin[u] = entry time
+low[u] = earliest reachable ancestor from subtree of u
+edge u-v is bridge if low[v] > tin[u]
+```
+
+## C++ Code
+
+```cpp
+int timer = 0;
+vector<int> tin, low, vis;
+vector<pair<int,int>> bridges;
+
+void dfsBridge(int u, int p, vector<vector<int>>& g) {
+    vis[u] = 1;
+    tin[u] = low[u] = timer++;
+
+    for (int v : g[u]) {
+        if (v == p) continue;
+        if (vis[v]) {
+            low[u] = min(low[u], tin[v]);
+        } else {
+            dfsBridge(v, u, g);
+            low[u] = min(low[u], low[v]);
+            if (low[v] > tin[u]) {
+                bridges.push_back({u, v});
+            }
+        }
+    }
+}
+```
+
+## Tree-Wise Dry Run
+
+Graph:
+
+```text
+1-2-3 forms chain, and 2-4-5-2 forms cycle
+```
+
+```text
+dfs(1)
+└── dfs(2)
+    ├── dfs(3)
+    │   └── low[3] cannot reach ancestor of 2
+    │       └── low[3] > tin[2] -> edge 2-3 is bridge
+    └── dfs(4)
+        └── dfs(5)
+            └── back edge 5->2 updates low[5]
+                └── low[4] becomes tin[2], so 2-4 not bridge
+```
+
+---
+
+# 6.3 Articulation Points
+
+## Idea
+
+Articulation point = removing this node increases components.
+
+Rules:
+
+```text
+root is articulation if it has more than 1 DFS child
+non-root u is articulation if some child v has low[v] >= tin[u]
+```
+
+## C++ Code
+
+```cpp
+int timerAP = 0;
+vector<int> tinAP, lowAP, visAP, isArt;
+
+void dfsAP(int u, int p, vector<vector<int>>& g) {
+    visAP[u] = 1;
+    tinAP[u] = lowAP[u] = timerAP++;
+    int children = 0;
+
+    for (int v : g[u]) {
+        if (v == p) continue;
+        if (visAP[v]) {
+            lowAP[u] = min(lowAP[u], tinAP[v]);
+        } else {
+            dfsAP(v, u, g);
+            lowAP[u] = min(lowAP[u], lowAP[v]);
+            if (p != -1 && lowAP[v] >= tinAP[u]) {
+                isArt[u] = 1;
+            }
+            children++;
+        }
+    }
+
+    if (p == -1 && children > 1) isArt[u] = 1;
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+dfs root 1
+├── child subtree A
+└── child subtree B
+
+If root has two DFS children:
+└── removing root separates A and B -> articulation
+
+For non-root u:
+└── if child v cannot reach ancestor of u
+    └── low[v] >= tin[u]
+        └── removing u disconnects v subtree -> articulation
+```
+
+---
+
+# 6.4 Euler Path / Circuit
+
+## Undirected Graph Rules
+
+| Case | Condition |
+|---|---|
+| Euler circuit | all vertices have even degree |
+| Euler path | exactly 0 or 2 odd degree vertices |
+| none | more than 2 odd degree vertices |
+
+Graph must be connected ignoring isolated nodes.
+
+## Tree-Wise Dry Run
+
+```text
+Degrees:
+1:2, 2:2, 3:2
+└── all even -> Euler circuit exists
+
+Degrees:
+1:1, 2:2, 3:1
+└── exactly two odd nodes -> Euler path exists, starts at one odd and ends at other
+```
+
+---
+
+# 6.5 LCA Binary Lifting
+
+## Idea
+
+Precompute `up[u][j]` = 2^j-th ancestor of `u`.
+
+## C++ Code
+
+```cpp
+const int LOG = 20;
+vector<vector<int>> up;
+vector<int> depth;
+vector<vector<int>> tree;
+
+void dfsLCA(int u, int p) {
+    up[u][0] = p;
+    for (int j = 1; j < LOG; j++) {
+        up[u][j] = up[up[u][j - 1]][j - 1];
+    }
+
+    for (int v : tree[u]) {
+        if (v == p) continue;
+        depth[v] = depth[u] + 1;
+        dfsLCA(v, u);
+    }
+}
+
+int lca(int a, int b) {
+    if (depth[a] < depth[b]) swap(a, b);
+
+    int diff = depth[a] - depth[b];
+    for (int j = LOG - 1; j >= 0; j--) {
+        if (diff & (1 << j)) a = up[a][j];
+    }
+
+    if (a == b) return a;
+
+    for (int j = LOG - 1; j >= 0; j--) {
+        if (up[a][j] != up[b][j]) {
+            a = up[a][j];
+            b = up[b][j];
+        }
+    }
+
+    return up[a][0];
+}
+```
+
+## Tree-Wise Dry Run
+
+Tree:
+
+```text
+1
+├── 2
+│   ├── 4
+│   └── 5
+└── 3
+```
+
+Query `lca(4,5)`:
+
+```text
+4 and 5 same depth
+├── highest jump where ancestors differ? none before parent
+└── parent of both = 2 -> LCA = 2
+```
+
+Query `lca(4,3)`:
+
+```text
+4 depth=2, 3 depth=1
+├── lift 4 by 1 -> becomes 2
+├── now compare 2 and 3
+└── parents are both 1 -> LCA = 1
+```
+
+---
+
+# 6.6 Tree Diameter
+
+## Idea
+
+Diameter = longest path in tree.
+
+Two BFS/DFS method:
+
+1. BFS from any node -> farthest node `A`.
+2. BFS from `A` -> farthest node `B`.
+3. Distance `A-B` is diameter.
+
+## Tree-Wise Dry Run
+
+```text
+start from 1
+└── farthest found = 5
+
+start from 5
+└── farthest found = 6
+    └── distance 5 to 6 = diameter
+```
+
+---
+
+# 6.7 Tree DP / Rerooting Intro
+
+## Tree DP Pattern
+
+```text
+dp[u] = answer for subtree rooted at u
+```
+
+Example subtree size:
+
+```cpp
+void dfsSize(int u, int p) {
+    sub[u] = 1;
+    for (int v : tree[u]) {
+        if (v == p) continue;
+        dfsSize(v, u);
+        sub[u] += sub[v];
+    }
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+dfs(1)
+├── dfs(2)
+│   ├── dfs(4) -> sub[4]=1
+│   └── dfs(5) -> sub[5]=1
+│   └── sub[2]=1+1+1=3
+└── dfs(3) -> sub[3]=1
+└── sub[1]=1+3+1=5
+```
+
+---
+
+# 6.8 Network Flow Intro
+
+## When to Think Flow
+
+| Signal | Think |
+|---|---|
+| maximum amount from source to sink | max flow |
+| capacity on edges | flow |
+| assign resources with constraints | bipartite matching / flow |
+| minimum cut | max-flow min-cut |
+
+## Core Mental Model
+
+```text
+source -> capacity edges -> sink
+flow cannot exceed capacity
+flow conservation at intermediate nodes
+```
+
+For interviews, flow is uncommon. For CP, Dinic is the standard next algorithm.
+
+---
+
+# 6.9 Bipartite Matching Intro
+
+## When to Use
+
+- assign applicants to jobs
+- match workers to tasks
+- pair left-side nodes with right-side nodes
+
+## Simple DFS Kuhn Template
+
+```cpp
+bool tryKuhn(int u, vector<vector<int>>& g, vector<int>& mt, vector<int>& seen) {
+    if (seen[u]) return false;
+    seen[u] = 1;
+
+    for (int v : g[u]) {
+        if (mt[v] == -1 || tryKuhn(mt[v], g, mt, seen)) {
+            mt[v] = u;
+            return true;
+        }
+    }
+    return false;
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+try match left node A
+├── job 1 free -> match A-1
+try match left node B
+├── job 1 occupied by A
+│   └── try to move A to another job
+└── if A can move, B gets job 1
+```
+
+---
+
+# P1. Number of Connected Components
+
+## Problem Statement
+
+Given `n` nodes and `m` undirected edges, find number of connected components.
+
+## Input
+
+```text
+6 3
+1 2
+2 3
+4 5
+```
+
+## Output
+
+```text
+3
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+void dfs(int u, vector<vector<int>>& g, vector<int>& vis) {
+    vis[u] = 1;
+    for (int v : g[u]) if (!vis[v]) dfs(v, g, vis);
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    vector<int> vis(n + 1, 0);
+    int ans = 0;
+
+    for (int i = 1; i <= n; i++) {
+        if (!vis[i]) {
+            ans++;
+            dfs(i, g, vis);
+        }
+    }
+
+    cout << ans << '\n';
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+for i=1..6
+├── i=1 unvisited -> ans=1
+│   └── dfs(1)
+│       └── dfs(2)
+│           └── dfs(3)
+├── i=2 visited -> skip
+├── i=3 visited -> skip
+├── i=4 unvisited -> ans=2
+│   └── dfs(4)
+│       └── dfs(5)
+├── i=5 visited -> skip
+└── i=6 unvisited -> ans=3
+    └── dfs(6)
+```
+
+## Index-by-Index Dry Run
+
+| i | Before | Action | ans |
+|---:|---|---|---:|
+| 1 | unvisited | visit component {1,2,3} | 1 |
+| 2 | visited | skip | 1 |
+| 3 | visited | skip | 1 |
+| 4 | unvisited | visit component {4,5} | 2 |
+| 5 | visited | skip | 2 |
+| 6 | unvisited | visit component {6} | 3 |
+
+---
+
+# P2. Shortest Path in Unweighted Graph
+
+## Problem Statement
+
+Given unweighted graph and source `s`, print shortest distance from source to every node.
+
+## Input
+
+```text
+6 5
+1 2
+1 3
+2 4
+2 5
+3 6
+1
+```
+
+## Output
+
+```text
+0 1 1 2 2 2
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    int src;
+    cin >> src;
+
+    vector<int> dist(n + 1, -1);
+    queue<int> q;
+    dist[src] = 0;
+    q.push(src);
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        for (int v : g[u]) {
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+
+    for (int i = 1; i <= n; i++) cout << dist[i] << ' ';
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+source 1, dist=0
+├── visit 2 from 1 -> dist[2]=1
+│   ├── visit 4 from 2 -> dist[4]=2
+│   └── visit 5 from 2 -> dist[5]=2
+└── visit 3 from 1 -> dist[3]=1
+    └── visit 6 from 3 -> dist[6]=2
+```
+
+---
+
+# P3. Escape from Monsters
+
+## Problem Statement
+
+Given grid with walls `#`, empty `.`, player `A`, monsters `M`, determine if player can escape to boundary before monsters.
+
+## Input
+
+```text
+5 5
+#####
+#A..#
+#.M.#
+#...#
+####.
+```
+
+## Output
+
+```text
+YES
+```
+
+## Technique
+
+```text
+1. Multi-source BFS from monsters -> monsterDist
+2. BFS from player -> playerDist
+3. Player can enter cell only when playerTime < monsterTime
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, 1, -1};
+
+vector<vector<int>> bfs(vector<string>& grid, vector<pair<int,int>> src) {
+    int n = grid.size(), m = grid[0].size();
+    vector<vector<int>> dist(n, vector<int>(m, INF));
+    queue<pair<int,int>> q;
+
+    for (auto [x, y] : src) {
+        dist[x][y] = 0;
+        q.push({x, y});
+    }
+
+    while (!q.empty()) {
+        auto [x, y] = q.front();
+        q.pop();
+
+        for (int d = 0; d < 4; d++) {
+            int nx = x + dx[d], ny = y + dy[d];
+            if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+            if (grid[nx][ny] == '#') continue;
+
+            if (dist[nx][ny] > dist[x][y] + 1) {
+                dist[nx][ny] = dist[x][y] + 1;
+                q.push({nx, ny});
+            }
+        }
+    }
+    return dist;
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+Phase 1: Monster BFS
+├── push all M with time 0
+├── expand time 1 cells
+└── expand time 2 cells
+
+Phase 2: Player BFS
+└── start A with time 0
+    ├── try next cell
+    │   ├── if wall -> reject
+    │   ├── if playerTime+1 >= monsterTime -> reject
+    │   └── else push cell
+    └── if boundary reached safely -> YES
+```
+
+---
+
+# P4. Course Schedule
+
+## Problem Statement
+
+Given courses and prerequisites `u -> v`, decide whether all courses can be completed.
+
+## Input
+
+```text
+4 3
+1 2
+2 3
+3 4
+```
+
+## Output
+
+```text
+YES
+```
+
+## C++ Code — Kahn
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+    vector<int> indeg(n + 1, 0);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        indeg[v]++;
+    }
+
+    queue<int> q;
+    for (int i = 1; i <= n; i++) if (indeg[i] == 0) q.push(i);
+
+    int taken = 0;
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        taken++;
+
+        for (int v : g[u]) {
+            indeg[v]--;
+            if (indeg[v] == 0) q.push(v);
+        }
+    }
+
+    cout << (taken == n ? "YES" : "NO") << '\n';
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+indegree:
+1:0, 2:1, 3:1, 4:1
+
+queue=[1]
+└── take 1
+    └── indeg[2] becomes 0 -> push 2
+        └── take 2
+            └── indeg[3] becomes 0 -> push 3
+                └── take 3
+                    └── indeg[4] becomes 0 -> push 4
+                        └── take 4
+                            └── taken=4=n -> YES
+```
+
+---
+
+# P5. Network Delay
+
+## Problem Statement
+
+Given weighted directed edges and start node `k`, find time for signal to reach all nodes.
+
+## Input
+
+```text
+4 3
+2 1 1
+2 3 1
+3 4 1
+2
+```
+
+## Output
+
+```text
+2
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+const long long INF = 4e18;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<pair<int,int>>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        g[u].push_back({v, w});
+    }
+
+    int k;
+    cin >> k;
+
+    vector<long long> dist(n + 1, INF);
+    priority_queue<pair<long long,int>, vector<pair<long long,int>>, greater<pair<long long,int>>> pq;
+
+    dist[k] = 0;
+    pq.push({0, k});
+
+    while (!pq.empty()) {
+        auto [du, u] = pq.top();
+        pq.pop();
+        if (du != dist[u]) continue;
+
+        for (auto [v, w] : g[u]) {
+            if (dist[v] > dist[u] + w) {
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+
+    long long ans = 0;
+    for (int i = 1; i <= n; i++) {
+        if (dist[i] == INF) {
+            cout << -1 << '\n';
+            return 0;
+        }
+        ans = max(ans, dist[i]);
+    }
+    cout << ans << '\n';
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+start k=2, dist[2]=0
+└── pop 2
+    ├── relax 2->1 -> d1=1
+    └── relax 2->3 -> d3=1
+        └── pop 3
+            └── relax 3->4 -> d4=2
+                └── max distance among all nodes = 2
+```
+
+---
+
+# P6. Cheapest Path With 0/1 Edges
+
+## Problem Statement
+
+Given graph with edge weights only `0` and `1`, find shortest distance from source to all nodes.
+
+## Input
+
+```text
+4 4
+1 2 0
+1 3 1
+2 4 1
+3 4 0
+1
+```
+
+## Output
+
+```text
+0 0 1 1
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+const int INF = 1e9;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<pair<int,int>>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        g[u].push_back({v, w});
+    }
+
+    int src;
+    cin >> src;
+
+    vector<int> dist(n + 1, INF);
+    deque<int> dq;
+    dist[src] = 0;
+    dq.push_front(src);
+
+    while (!dq.empty()) {
+        int u = dq.front();
+        dq.pop_front();
+
+        for (auto [v, w] : g[u]) {
+            if (dist[v] > dist[u] + w) {
+                dist[v] = dist[u] + w;
+                if (w == 0) dq.push_front(v);
+                else dq.push_back(v);
+            }
+        }
+    }
+
+    for (int i = 1; i <= n; i++) cout << dist[i] << ' ';
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+dq=[1]
+└── pop 1
+    ├── edge 1->2 cost 0 -> d2=0 -> push_front 2
+    └── edge 1->3 cost 1 -> d3=1 -> push_back 3
+        dq=[2,3]
+        └── pop 2
+            └── edge 2->4 cost 1 -> d4=1 -> push_back 4
+                dq=[3,4]
+                └── pop 3
+                    └── edge 3->4 cost 0 -> candidate=1, no better
+```
+
+---
+
+# P7. Negative Cycle Detection
+
+## Problem Statement
+
+Given weighted directed graph, detect whether a negative cycle is reachable from source.
+
+## Input
+
+```text
+3 3
+1 2 1
+2 3 -1
+3 1 -1
+1
+```
+
+## Output
+
+```text
+YES
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+const long long INF = 4e18;
+
+struct Edge { int u, v; long long w; };
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<Edge> edges(m);
+    for (auto &e : edges) cin >> e.u >> e.v >> e.w;
+
+    int src;
+    cin >> src;
+
+    vector<long long> dist(n + 1, INF);
+    dist[src] = 0;
+
+    for (int i = 1; i <= n - 1; i++) {
+        for (auto e : edges) {
+            if (dist[e.u] != INF && dist[e.v] > dist[e.u] + e.w) {
+                dist[e.v] = dist[e.u] + e.w;
+            }
+        }
+    }
+
+    bool neg = false;
+    for (auto e : edges) {
+        if (dist[e.u] != INF && dist[e.v] > dist[e.u] + e.w) neg = true;
+    }
+
+    cout << (neg ? "YES" : "NO") << '\n';
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+After n-1 passes:
+└── shortest simple paths should be fixed
+
+Extra pass:
+└── check every edge u->v
+    ├── if dist[v] > dist[u] + w
+    │   └── distance can still improve -> negative cycle exists
+    └── otherwise no negative cycle
+```
+
+---
+
+# P8. All Pairs Shortest Path
+
+## Problem Statement
+
+Given weighted directed graph and queries `(u,v)`, answer shortest path from `u` to `v`.
+
+## Input
+
+```text
+3 3
+1 2 4
+2 3 2
+1 3 10
+2
+1 3
+3 1
+```
+
+## Output
+
+```text
+6
+-1
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+const long long INF = 4e18;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<long long>> dist(n + 1, vector<long long>(n + 1, INF));
+
+    for (int i = 1; i <= n; i++) dist[i][i] = 0;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        long long w;
+        cin >> u >> v >> w;
+        dist[u][v] = min(dist[u][v], w);
+    }
+
+    for (int k = 1; k <= n; k++) {
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (dist[i][k] == INF || dist[k][j] == INF) continue;
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+            }
+        }
+    }
+
+    int q;
+    cin >> q;
+    while (q--) {
+        int u, v;
+        cin >> u >> v;
+        cout << (dist[u][v] == INF ? -1 : dist[u][v]) << '\n';
+    }
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+Initial:
+1->2 = 4
+2->3 = 2
+1->3 = 10
+
+k=1:
+└── using 1 as middle gives no better path
+
+k=2:
+└── check 1 -> 2 -> 3
+    └── 4 + 2 = 6 < 10
+        └── dist[1][3] = 6
+
+Query 1 3 -> 6
+Query 3 1 -> unreachable -> -1
+```
+
+---
+
+# P9. Minimum Cost to Connect Cities
+
+## Problem Statement
+
+Given cities and weighted undirected edges, connect all cities with minimum total cost.
+
+## Input
+
+```text
+4 5
+1 2 1
+1 3 4
+2 3 2
+2 4 7
+3 4 3
+```
+
+## Output
+
+```text
+6
+```
+
+## C++ Code — Kruskal
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct DSU {
+    vector<int> p, sz;
+    DSU(int n) {
+        p.resize(n + 1);
+        sz.assign(n + 1, 1);
+        iota(p.begin(), p.end(), 0);
+    }
+    int find(int x) {
+        if (p[x] == x) return x;
+        return p[x] = find(p[x]);
+    }
+    bool unite(int a, int b) {
+        a = find(a); b = find(b);
+        if (a == b) return false;
+        if (sz[a] < sz[b]) swap(a, b);
+        p[b] = a;
+        sz[a] += sz[b];
+        return true;
+    }
+};
+
+struct Edge { int u, v; long long w; };
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<Edge> edges(m);
+    for (auto &e : edges) cin >> e.u >> e.v >> e.w;
+
+    sort(edges.begin(), edges.end(), [](Edge a, Edge b) { return a.w < b.w; });
+
+    DSU dsu(n);
+    long long cost = 0;
+    int used = 0;
+
+    for (auto e : edges) {
+        if (dsu.unite(e.u, e.v)) {
+            cost += e.w;
+            used++;
+        }
+    }
+
+    cout << (used == n - 1 ? cost : -1) << '\n';
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+Sorted edges:
+1-2 cost 1
+2-3 cost 2
+3-4 cost 3
+1-3 cost 4
+2-4 cost 7
+
+Kruskal:
+├── take 1-2 -> cost=1, components {1,2},{3},{4}
+├── take 2-3 -> cost=3, components {1,2,3},{4}
+├── take 3-4 -> cost=6, components {1,2,3,4}
+└── used edges = 3 = n-1 -> answer 6
+```
+
+---
+
+# P10. Count Islands
+
+## Problem Statement
+
+Given grid of `1` land and `0` water, count islands.
+
+## Input
+
+```text
+4 5
+11000
+11000
+00100
+00011
+```
+
+## Output
+
+```text
+3
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, 1, -1};
+
+void dfs(int x, int y, vector<string>& grid, vector<vector<int>>& vis) {
+    int n = grid.size(), m = grid[0].size();
+    vis[x][y] = 1;
+
+    for (int d = 0; d < 4; d++) {
+        int nx = x + dx[d], ny = y + dy[d];
+        if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+        if (grid[nx][ny] == '0' || vis[nx][ny]) continue;
+        dfs(nx, ny, grid, vis);
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<string> grid(n);
+    for (auto &row : grid) cin >> row;
+
+    vector<vector<int>> vis(n, vector<int>(m, 0));
+    int islands = 0;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (grid[i][j] == '1' && !vis[i][j]) {
+                islands++;
+                dfs(i, j, grid, vis);
+            }
+        }
+    }
+
+    cout << islands << '\n';
+}
+```
+
+## Tree-Wise Dry Run
+
+```text
+scan grid row by row
+├── first land at (0,0) -> island=1
+│   └── DFS marks connected block: (0,0),(0,1),(1,0),(1,1)
+├── next unvisited land at (2,2) -> island=2
+│   └── DFS marks only (2,2)
+└── next unvisited land at (3,3) -> island=3
+    └── DFS marks (3,3),(3,4)
+```
+
+---
+
+# P11. Rotten Oranges
+
+## Problem Statement
+
+Each minute, rotten oranges rot adjacent fresh oranges. Return minimum minutes to rot all, or `-1`.
+
+## Input
+
+```text
+3 3
+2 1 1
+1 1 0
+0 1 1
+```
+
+## Output
+
+```text
+4
+```
+
+## Technique
+
+Multi-source BFS from all rotten oranges.
+
+## Tree-Wise Dry Run
+
+```text
+minute 0:
+└── rotten sources: all cells with 2
+
+minute 1:
+└── fresh neighbors become rotten
+
+minute 2:
+└── next layer rots
+
+continue until queue empty
+└── if any fresh remains -> -1
+└── else answer = max minute
+```
+
+---
+
+# P12. Alien Dictionary
+
+## Problem Statement
+
+Given sorted words in alien language, find one possible character order.
+
+## Technique
+
+Compare adjacent words. First different character gives directed edge.
+
+## Tree-Wise Dry Run
+
+Words:
+
+```text
+baa
+abcd
+abca
+cab
+cad
+```
+
+```text
+compare baa and abcd:
+└── b != a -> edge b -> a
+
+compare abcd and abca:
+└── d != a -> edge d -> a
+
+compare abca and cab:
+└── a != c -> edge a -> c
+
+compare cab and cad:
+└── b != d -> edge b -> d
+
+Then topological sort characters.
+```
+
+---
+
+# P13. Redundant Connection
+
+## Problem Statement
+
+Given an undirected graph that started as a tree and one extra edge was added, find the extra edge.
+
+## C++ Idea
+
+Use DSU. First edge whose endpoints already belong to same component is redundant.
+
+## Tree-Wise Dry Run
+
+Edges:
+
+```text
+1-2, 1-3, 2-3
+```
+
+```text
+edge 1-2
+└── different components -> union
+
+edge 1-3
+└── different components -> union
+
+edge 2-3
+└── find(2) == find(3)
+    └── adding this edge creates cycle -> redundant edge = 2-3
+```
+
+---
+
+# P14. Number of Provinces
+
+## Problem Statement
+
+Given adjacency matrix of cities, count connected components.
+
+## Technique
+
+Use DFS/BFS/DSU over matrix.
+
+## Tree-Wise Dry Run
+
+```text
+scan city 1
+└── unvisited -> province=1
+    └── DFS visits all connected cities
+
+scan next unvisited city
+└── province++
+```
+
+---
+
+# P15. Cheapest Flights With K Stops
+
+## Problem Statement
+
+Find cheapest price from `src` to `dst` with at most `k` stops.
+
+## Key Model
+
+State includes stops used.
+
+```text
+state = (city, stopsUsed)
+edge = flight to next city, stopsUsed+1
+answer = min cost to dst with stopsUsed <= k+1 edges
+```
+
+## Tree-Wise Dry Run
+
+```text
+start (src, 0 edges), cost=0
+├── take flight src->a, cost c1, edges=1
+│   ├── take a->dst, edges=2
+│   └── take a->b, edges=2
+└── take flight src->dst directly, cost c2, edges=1
+
+Only accept paths with edges <= k+1.
+```
+
+---
+
+# P16. Bridges in Graph
+
+Same as section [6.2 Bridges](#62-bridges).
+
+## Tree-Wise Dry Run
+
+```text
+dfs parent-child tree
+└── after child v returns:
+    ├── if low[v] > tin[u]
+    │   └── edge u-v is bridge
+    └── else subtree has back edge to ancestor -> not bridge
+```
+
+---
+
+# P17. Strongly Connected Components
+
+Same as section [6.1 SCC — Kosaraju](#61-scc--kosaraju).
+
+## Tree-Wise Dry Run
+
+```text
+Pass 1 original graph:
+└── produce finish order
+
+Pass 2 reversed graph:
+└── each DFS gives one SCC
+```
+
+---
+
+# P18. LCA Queries
+
+Same as section [6.5 LCA Binary Lifting](#65-lca-binary-lifting).
+
+## Tree-Wise Dry Run
+
+```text
+Query lca(a,b)
+├── lift deeper node until same depth
+├── if same node -> answer
+└── lift both upward from high powers to low powers
+    └── parent after final lift is LCA
+```
+
+---
+
+# 8.1 Complexity Table
+
+| Algorithm | Time | Space | Use |
+|---|---:|---:|---|
+| DFS | O(V+E) | O(V) | reachability/components |
+| BFS | O(V+E) | O(V) | unweighted shortest path |
+| Multi-source BFS | O(V+E) | O(V) | nearest source/spread |
+| 0-1 BFS | O(V+E) | O(V) | 0/1 weights |
+| Dijkstra | O((V+E)logV) | O(V+E) | non-negative weights |
+| Bellman-Ford | O(VE) | O(V) | negative edges/cycles |
+| Floyd-Warshall | O(V^3) | O(V^2) | all-pairs shortest path |
+| Topological Sort | O(V+E) | O(V) | DAG order |
+| DSU | almost O(1) amortized | O(V) | components/connectivity |
+| Kruskal | O(ElogE) | O(V) | MST |
+| Prim | O(ElogV) | O(V+E) | MST |
+| SCC Kosaraju | O(V+E) | O(V+E) | directed components |
+| Bridges | O(V+E) | O(V) | critical edges |
+| LCA binary lifting | O(NlogN) build, O(logN) query | O(NlogN) | tree ancestor queries |
+
+---
+
+# 8.2 Pattern Recognition Table
+
+| Problem words | Pattern |
+|---|---|
+| minimum moves | BFS |
+| nearest source | multi-source BFS |
+| 0/1 cost | 0-1 BFS |
+| positive weights | Dijkstra |
+| negative edge | Bellman-Ford |
+| all pair shortest path | Floyd-Warshall |
+| prerequisite / dependency | Topological sort |
+| can complete all tasks | cycle detection in directed graph |
+| connected groups | DFS/BFS/DSU |
+| minimum cost to connect all | MST |
+| redundant edge | DSU |
+| critical connection | bridge |
+| remove node disconnects graph | articulation point |
+| mutual reachability in directed graph | SCC |
+| ancestor queries in tree | LCA |
+| tree longest path | diameter |
+| assign left to right | bipartite matching |
+| capacity source sink | max flow |
+
+---
+
+# 8.3 Template Pack
+
+## DFS
+
+```cpp
+void dfs(int u) {
+    vis[u] = 1;
+    for (int v : g[u]) {
+        if (!vis[v]) dfs(v);
+    }
+}
+```
+
+## BFS
+
+```cpp
+queue<int> q;
+dist[src] = 0;
+q.push(src);
+
+while (!q.empty()) {
+    int u = q.front(); q.pop();
+    for (int v : g[u]) {
+        if (dist[v] == -1) {
+            dist[v] = dist[u] + 1;
+            q.push(v);
+        }
+    }
+}
+```
+
+## Dijkstra
+
+```cpp
+priority_queue<pair<long long,int>, vector<pair<long long,int>>, greater<pair<long long,int>>> pq;
+dist[src] = 0;
+pq.push({0, src});
+
+while (!pq.empty()) {
+    auto [du, u] = pq.top(); pq.pop();
+    if (du != dist[u]) continue;
+
+    for (auto [v, w] : g[u]) {
+        if (dist[v] > dist[u] + w) {
+            dist[v] = dist[u] + w;
+            pq.push({dist[v], v});
+        }
+    }
+}
+```
+
+## Topological Sort Kahn
+
+```cpp
+queue<int> q;
+for (int i = 1; i <= n; i++) if (indeg[i] == 0) q.push(i);
+
+while (!q.empty()) {
+    int u = q.front(); q.pop();
+    topo.push_back(u);
+    for (int v : g[u]) {
+        indeg[v]--;
+        if (indeg[v] == 0) q.push(v);
+    }
+}
+```
+
+## DSU
+
+```cpp
+int find(int x) {
+    if (parent[x] == x) return x;
+    return parent[x] = find(parent[x]);
+}
+
+bool unite(int a, int b) {
+    a = find(a); b = find(b);
+    if (a == b) return false;
+    if (sz[a] < sz[b]) swap(a, b);
+    parent[b] = a;
+    sz[a] += sz[b];
+    return true;
+}
+```
+
+---
+
+# 8.4 Common Bugs
+
+| Bug | Fix |
+|---|---|
+| forgetting undirected reverse edge | add both `g[u].push_back(v)` and `g[v].push_back(u)` |
+| using DFS for shortest path unweighted | use BFS |
+| using Dijkstra with negative edges | use Bellman-Ford |
+| not skipping stale Dijkstra states | `if (du != dist[u]) continue;` |
+| recursive DFS stack overflow | use iterative DFS or increase stack in CP if allowed |
+| topological sort on cyclic graph | check `topo.size() == n` |
+| 0-1 BFS using normal queue | use deque |
+| Floyd-Warshall overflow with INF | check `dist[i][k] != INF && dist[k][j] != INF` |
+| bridge code ignores parent edge wrongly in multigraph | track edge id for robust solution |
+| LCA `up[root][0]` invalid | set root parent to root |
+
+---
+
+# Final Mental Model
+
+```text
+Graph solving = modelling + algorithm selection + implementation discipline.
+
+1. Convert problem into nodes and edges.
+2. Identify edge cost type.
+3. Identify source/target form.
+4. Pick algorithm.
+5. Write template.
+6. Dry run with queue/stack/tree.
+```
