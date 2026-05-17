@@ -29,19 +29,23 @@ This guide includes:
 
 ### Phase 1 — Core Combinatorial Search
 
+
 - [P1. Generate All Strings From Choices](#p1-generate-all-strings-from-choices)
 - [P2. Letter Combinations of a Phone Number](#p2-letter-combinations-of-a-phone-number)
 
 ### Phase 2 — Backtracking With Pruning
 
+
 - [P3. Palindrome Partitioning](#p3-palindrome-partitioning)
 
 ### Phase 3 — Backtracking With Additional State
+
 
 - [P4. Generate Valid Parentheses](#p4-generate-valid-parentheses)
 - [P5. Permutations](#p5-permutations)
 
 ### Phase 4 — Aggregation / Return Value Backtracking
+
 
 - [P6. Word Break](#p6-word-break)
 - [P7. Number of Ways to Decode a Message](#p7-number-of-ways-to-decode-a-message)
@@ -49,9 +53,11 @@ This guide includes:
 
 ### Phase 5 — Deduplication Patterns
 
+
 - [P9. Three Sum Without Duplicate Triplets](#p9-three-sum-without-duplicate-triplets)
 
 ### Phase 6 — Combination Style Backtracking
+
 
 - [P10. Combination Sum](#p10-combination-sum)
 - [P11. Subsets](#p11-subsets)
@@ -228,6 +234,26 @@ level 0: ""
 
 # Phase 1 — Core Combinatorial Search
 
+## Phase Code Template From PDF
+
+```cpp
+void rec(int level) {
+    if (level == n) {
+        // report / print / store path
+        return;
+    }
+
+    for (auto choice : choices) {
+        path.push_back(choice);   // add
+        rec(level + 1);           // recurse
+        path.pop_back();          // remove / backtrack
+    }
+}
+```
+
+**PDF idea:** `add -> rec(level + 1) -> remove`.
+
+
 # P1. Generate All Strings From Choices
 
 **Difficulty:** Easy  
@@ -288,20 +314,27 @@ rec(0, "")
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<string> ans;
-string path;
+int n;
+string res;
+vector<char> choices = {'a', 'b'};
 
-void dfs(int level, int n) {
+void rec(int level) {
     if (level == n) {
-        ans.push_back(path);
+        cout << res << '\n';
         return;
     }
 
-    for (char ch : {'a', 'b'}) {
-        path.push_back(ch);
-        dfs(level + 1, n);
-        path.pop_back();
+    for (char ch : choices) {
+        res.push_back(ch);       // add
+        rec(level + 1);          // recurse
+        res.pop_back();          // remove / backtrack
     }
+}
+
+signed main() {
+    n = 2;
+    rec(0);
+    return 0;
 }
 ```
 
@@ -450,39 +483,38 @@ rec(0, "")
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<string> letterCombinations(string digits) {
-    if (digits.empty()) return {};
+string digits;
+string res;
+vector<string> keyboard(10);
 
-    vector<string> mp(10);
-    mp[2] = "abc";
-    mp[3] = "def";
-    mp[4] = "ghi";
-    mp[5] = "jkl";
-    mp[6] = "mno";
-    mp[7] = "pqrs";
-    mp[8] = "tuv";
-    mp[9] = "wxyz";
+void rec(int level) {
+    if (level == (int)digits.size()) {
+        cout << res << '\n';
+        return;
+    }
 
-    vector<string> ans;
-    string path;
+    int digit = digits[level] - '0';
 
-    function<void(int)> dfs = [&](int level) {
-        if (level == (int)digits.size()) {
-            ans.push_back(path);
-            return;
-        }
+    for (char ch : keyboard[digit]) {
+        res.push_back(ch);       // add letter
+        rec(level + 1);          // recurse to next digit
+        res.pop_back();          // remove letter
+    }
+}
 
-        int digit = digits[level] - '0';
+signed main() {
+    keyboard[2] = "abc";
+    keyboard[3] = "def";
+    keyboard[4] = "ghi";
+    keyboard[5] = "jkl";
+    keyboard[6] = "mno";
+    keyboard[7] = "pqrs";
+    keyboard[8] = "tuv";
+    keyboard[9] = "wxyz";
 
-        for (char ch : mp[digit]) {
-            path.push_back(ch);
-            dfs(level + 1);
-            path.pop_back();
-        }
-    };
-
-    dfs(0);
-    return ans;
+    cin >> digits;
+    rec(0);
+    return 0;
 }
 ```
 
@@ -556,6 +588,27 @@ Use this when the problem asks to generate all combinations/strings/subsets by t
 
 # Phase 2 — Backtracking With Pruning
 
+## Phase Code Template From PDF
+
+```cpp
+void rec(int start_index) {
+    if (is_leaf(start_index)) {
+        // report path
+        return;
+    }
+
+    for (int end = start_index; end < n; end++) {
+        if (!is_valid(choice)) continue;   // pruning
+        path.push_back(choice);
+        rec(end + 1);
+        path.pop_back();
+    }
+}
+```
+
+**PDF idea:** before going deeper, check whether the branch can still become valid.
+
+
 # P3. Palindrome Partitioning
 
 **Difficulty:** Medium  
@@ -613,37 +666,45 @@ rec(start=0, path=[])
 #include <bits/stdc++.h>
 using namespace std;
 
-bool isPal(const string& s, int l, int r) {
+string s;
+vector<string> res;
+
+bool isPalindrome(string x) {
+    int l = 0;
+    int r = (int)x.size() - 1;
+
     while (l < r) {
-        if (s[l] != s[r]) return false;
+        if (x[l] != x[r]) return false;
         l++;
         r--;
     }
     return true;
 }
 
-vector<vector<string>> partition(string s) {
-    vector<vector<string>> ans;
-    vector<string> path;
-    int n = s.size();
+void rec(int level) {
+    if (level == (int)s.size()) {
+        for (string part : res) cout << part << " ";
+        cout << '\n';
+        return;
+    }
 
-    function<void(int)> dfs = [&](int start) {
-        if (start == n) {
-            ans.push_back(path);
-            return;
+    string temp = "";
+
+    for (int end = level; end < (int)s.size(); end++) {
+        temp.push_back(s[end]);
+
+        if (isPalindrome(temp)) {        // pruning check
+            res.push_back(temp);         // add substring
+            rec(end + 1);                // move to next start index
+            res.pop_back();              // remove substring
         }
+    }
+}
 
-        for (int end = start; end < n; end++) {
-            if (!isPal(s, start, end)) continue;
-
-            path.push_back(s.substr(start, end - start + 1));
-            dfs(end + 1);
-            path.pop_back();
-        }
-    };
-
-    dfs(0);
-    return ans;
+signed main() {
+    cin >> s;
+    rec(0);
+    return 0;
 }
 ```
 
@@ -715,6 +776,28 @@ Use this when some choices can be rejected immediately before recursion.
 
 # Phase 3 — Backtracking With Additional State
 
+## Phase Code Template From PDF
+
+```cpp
+void rec(int level, /* additional state */) {
+    if (is_leaf(level)) {
+        // add result
+        return;
+    }
+
+    for (auto choice : choices) {
+        if (!is_valid(choice, state)) continue;
+
+        // add choice + update state
+        rec(level + 1, /* updated state */);
+        // remove choice + revert state
+    }
+}
+```
+
+**PDF idea:** carry extra state like `used[]`, `open`, `close`, or counters when path alone is not enough.
+
+
 # P4. Generate Valid Parentheses
 
 **Difficulty:** Medium  
@@ -772,31 +855,32 @@ rec("", open=0, close=0)
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<string> generateParenthesis(int n) {
-    vector<string> ans;
-    string path;
+int n;
+string res;
 
-    function<void(int,int)> dfs = [&](int open, int close) {
-        if ((int)path.size() == 2 * n) {
-            ans.push_back(path);
-            return;
-        }
+void rec(int open, int close) {
+    if ((int)res.size() == 2 * n) {
+        cout << res << '\n';
+        return;
+    }
 
-        if (open < n) {
-            path.push_back('(');
-            dfs(open + 1, close);
-            path.pop_back();
-        }
+    if (open < n) {
+        res.push_back('(');
+        rec(open + 1, close);
+        res.pop_back();
+    }
 
-        if (close < open) {
-            path.push_back(')');
-            dfs(open, close + 1);
-            path.pop_back();
-        }
-    };
+    if (close < open) {
+        res.push_back(')');
+        rec(open, close + 1);
+        res.pop_back();
+    }
+}
 
-    dfs(0, 0);
-    return ans;
+signed main() {
+    cin >> n;
+    rec(0, 0);
+    return 0;
 }
 ```
 
@@ -937,33 +1021,36 @@ rec(path="")
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<string> permutations(string s) {
-    int n = s.size();
-    vector<string> ans;
-    string path;
-    vector<bool> used(n, false);
+int n;
+string s;
+string res;
+vector<bool> used;
 
-    function<void()> dfs = [&]() {
-        if ((int)path.size() == n) {
-            ans.push_back(path);
-            return;
+void rec(int level) {
+    if (level == n) {
+        cout << res << '\n';
+        return;
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (!used[i]) {
+            used[i] = true;       // mark used
+            res.push_back(s[i]);  // add
+
+            rec(level + 1);       // recurse
+
+            res.pop_back();       // remove
+            used[i] = false;      // unmark used
         }
+    }
+}
 
-        for (int i = 0; i < n; i++) {
-            if (used[i]) continue;
-
-            used[i] = true;
-            path.push_back(s[i]);
-
-            dfs();
-
-            path.pop_back();
-            used[i] = false;
-        }
-    };
-
-    dfs();
-    return ans;
+signed main() {
+    cin >> s;
+    n = s.size();
+    used.assign(n, false);
+    rec(0);
+    return 0;
 }
 ```
 
@@ -1040,6 +1127,27 @@ Use this when path alone is not enough; you must carry extra state like `used`, 
 
 # Phase 4 — Aggregation / Return Value Backtracking
 
+## Phase Code Template From PDF
+
+```cpp
+ReturnType rec(int level) {
+    if (base_case) return base_value;
+
+    ReturnType res = initial_value;
+
+    for (auto choice : choices) {
+        if (!valid(choice)) continue;
+        ReturnType child = rec(next_level);
+        res = aggregate(res, child);   // OR / SUM / MIN / MAX
+    }
+
+    return res;
+}
+```
+
+**PDF idea:** recursive call returns a value, and parent combines child answers.
+
+
 # P6. Word Break
 
 **Difficulty:** Medium  
@@ -1096,28 +1204,38 @@ rec(start=0, remaining="algomonster")
 #include <bits/stdc++.h>
 using namespace std;
 
-bool wordBreak(string target, vector<string>& words) {
-    int n = target.size();
-    vector<int> memo(n + 1, -1);
+string target;
+int n;
+vector<string> words;
 
-    function<bool(int)> dfs = [&](int start) -> bool {
-        if (start == n) return true;
-        if (memo[start] != -1) return memo[start];
+bool rec(int level) {
+    if (level == n) {
+        return true;
+    }
 
-        for (string& word : words) {
-            int len = word.size();
+    bool res = false;
 
-            if (start + len <= n && target.substr(start, len) == word) {
-                if (dfs(start + len)) {
-                    return memo[start] = true;
-                }
-            }
+    for (string word : words) {
+        int len = word.size();
+
+        if (level + len <= n && target.substr(level, len) == word) {
+            res = res || rec(level + len);   // OR aggregation
         }
+    }
 
-        return memo[start] = false;
-    };
+    return res;
+}
 
-    return dfs(0);
+signed main() {
+    cin >> target;
+    cin >> n;
+
+    words.resize(n);
+    for (int i = 0; i < n; i++) cin >> words[i];
+
+    bool ans = rec(0);
+    cout << (ans ? "match found" : "match not found") << '\n';
+    return 0;
 }
 ```
 
@@ -1242,30 +1360,37 @@ Total = 3
 #include <bits/stdc++.h>
 using namespace std;
 
-int numDecodings(string s) {
-    int n = s.size();
-    vector<int> memo(n + 1, -1);
+string s;
 
-    function<int(int)> dfs = [&](int i) -> int {
-        if (i == n) return 1;
-        if (s[i] == '0') return 0;
-        if (memo[i] != -1) return memo[i];
+int rec(int level) {
+    if (level == (int)s.size()) {
+        return 1;
+    }
 
-        int ways = 0;
+    if (s[level] == '0') {
+        return 0;
+    }
 
-        ways += dfs(i + 1);
+    int ways = 0;
 
-        if (i + 1 < n) {
-            int val = (s[i] - '0') * 10 + (s[i + 1] - '0');
-            if (val >= 10 && val <= 26) {
-                ways += dfs(i + 2);
-            }
+    // choose 1 digit
+    ways += rec(level + 1);
+
+    // choose 2 digits if valid: 10 to 26
+    if (level + 1 < (int)s.size()) {
+        int val = stoi(s.substr(level, 2));
+        if (val >= 10 && val <= 26) {
+            ways += rec(level + 2);
         }
+    }
 
-        return memo[i] = ways;
-    };
+    return ways;
+}
 
-    return dfs(0);
+signed main() {
+    cin >> s;
+    cout << rec(0) << '\n';
+    return 0;
 }
 ```
 
@@ -1403,31 +1528,34 @@ Valid best path:
 #include <bits/stdc++.h>
 using namespace std;
 
-int coinChange(vector<int>& coins, int amount) {
-    const int INF = 1e9;
-    int n = coins.size();
+const int INF = 1e9;
+int n;
+int sum;
+vector<int> arr;
 
-    vector<vector<int>> memo(n + 1, vector<int>(amount + 1, -1));
+int rec(int level, int rem) {
+    if (rem == 0) return 0;
+    if (rem < 0) return INF;
+    if (level == n) return INF;
 
-    function<int(int,int)> dfs = [&](int idx, int rem) -> int {
-        if (rem == 0) return 0;
-        if (idx == n) return INF;
-        if (rem < 0) return INF;
+    int include = INF;
+    if (rem >= arr[level]) {
+        include = 1 + rec(level, rem - arr[level]);   // take, stay because unlimited use
+    }
 
-        if (memo[idx][rem] != -1) return memo[idx][rem];
+    int exclude = rec(level + 1, rem);                // skip, move next coin
 
-        int take = INF;
-        if (rem >= coins[idx]) {
-            take = 1 + dfs(idx, rem - coins[idx]);
-        }
+    return min(include, exclude);                     // MIN aggregation
+}
 
-        int skip = dfs(idx + 1, rem);
+signed main() {
+    cin >> n >> sum;
+    arr.resize(n);
+    for (int i = 0; i < n; i++) cin >> arr[i];
 
-        return memo[idx][rem] = min(take, skip);
-    };
-
-    int ans = dfs(0, amount);
-    return ans >= INF ? -1 : ans;
+    int ans = rec(0, sum);
+    cout << (ans >= INF ? -1 : ans) << '\n';
+    return 0;
 }
 ```
 
@@ -1505,6 +1633,38 @@ Use this when recursion must **return a value** instead of only printing paths: 
 
 # Phase 5 — Deduplication Patterns
 
+## Phase Code Template From PDF
+
+```cpp
+sort(nums.begin(), nums.end());
+
+for (int i = 0; i < n; i++) {
+    if (i > 0 && nums[i] == nums[i - 1]) continue;
+
+    int l = i + 1;
+    int r = n - 1;
+
+    while (l < r) {
+        int sum = nums[i] + nums[l] + nums[r];
+
+        if (sum == target) {
+            // save answer
+            l++;
+            r--;
+            while (l < r && nums[l] == nums[l - 1]) l++;
+            while (l < r && nums[r] == nums[r + 1]) r--;
+        } else if (sum < target) {
+            l++;
+        } else {
+            r--;
+        }
+    }
+}
+```
+
+**PDF idea:** sort first, then skip duplicates at the fixed index and pointer movement.
+
+
 # P9. Three Sum Without Duplicate Triplets
 
 **Difficulty:** Medium  
@@ -1567,36 +1727,36 @@ using namespace std;
 
 vector<vector<int>> threeSum(vector<int>& nums) {
     sort(nums.begin(), nums.end());
+    vector<vector<int>> result;
     int n = nums.size();
 
-    vector<vector<int>> res;
-
     for (int i = 0; i < n; i++) {
-        if (i > 0 && nums[i] == nums[i - 1]) continue;
+        if (i > 0 && nums[i] == nums[i - 1]) continue;   // skip duplicate fixed value
 
-        int left = i + 1;
-        int right = n - 1;
+        int l = i + 1;
+        int r = n - 1;
+        int target = -nums[i];
 
-        while (left < right) {
-            int sum = nums[i] + nums[left] + nums[right];
+        while (l < r) {
+            int sum = nums[l] + nums[r];
 
-            if (sum == 0) {
-                res.push_back({nums[i], nums[left], nums[right]});
+            if (sum == target) {
+                result.push_back({nums[i], nums[l], nums[r]});
 
-                left++;
-                right--;
+                l++;
+                r--;
 
-                while (left < right && nums[left] == nums[left - 1]) left++;
-                while (left < right && nums[right] == nums[right + 1]) right--;
-            } else if (sum < 0) {
-                left++;
+                while (l < r && nums[l] == nums[l - 1]) l++;   // skip duplicate left
+                while (l < r && nums[r] == nums[r + 1]) r--;   // skip duplicate right
+            } else if (sum < target) {
+                l++;
             } else {
-                right--;
+                r--;
             }
         }
     }
 
-    return res;
+    return result;
 }
 ```
 
@@ -1674,6 +1834,28 @@ Use this when sorted input has duplicates and output must avoid duplicate combin
 
 # Phase 6 — Combination Style Backtracking
 
+## Phase Code Template From PDF
+
+```cpp
+void rec(int level, int remaining) {
+    if (remaining == 0) {
+        // report path
+        return;
+    }
+
+    if (level == n || remaining < 0) return;
+
+    path.push_back(arr[level]);
+    rec(level, remaining - arr[level]);     // take: stay for reuse
+    path.pop_back();
+
+    rec(level + 1, remaining);              // skip
+}
+```
+
+**PDF idea:** combination problems usually become take/skip recursion by index.
+
+
 # P10. Combination Sum
 
 **Difficulty:** Medium  
@@ -1734,28 +1916,38 @@ rec(i=0, rem=7, path=[])
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-    vector<vector<int>> ans;
-    vector<int> path;
-    int n = candidates.size();
+int n;
+int target;
+vector<int> arr;
+vector<int> res;
 
-    function<void(int,int)> dfs = [&](int idx, int rem) {
-        if (rem == 0) {
-            ans.push_back(path);
-            return;
-        }
+void rec(int level, int sum) {
+    if (sum == 0) {
+        for (int x : res) cout << x << " ";
+        cout << '\n';
+        return;
+    }
 
-        if (idx == n || rem < 0) return;
+    if (level == n || sum < 0) {
+        return;
+    }
 
-        path.push_back(candidates[idx]);
-        dfs(idx, rem - candidates[idx]);
-        path.pop_back();
+    // take current number: stay at same level because reuse is allowed
+    res.push_back(arr[level]);
+    rec(level, sum - arr[level]);
+    res.pop_back();
 
-        dfs(idx + 1, rem);
-    };
+    // skip current number: move to next level
+    rec(level + 1, sum);
+}
 
-    dfs(0, target);
-    return ans;
+signed main() {
+    cin >> n >> target;
+    arr.resize(n);
+    for (int i = 0; i < n; i++) cin >> arr[i];
+
+    rec(0, target);
+    return 0;
 }
 ```
 
@@ -1906,26 +2098,34 @@ rec(i=0, path=[])
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<vector<int>> subsets(vector<int>& nums) {
-    vector<vector<int>> ans;
-    vector<int> path;
-    int n = nums.size();
+int n;
+vector<int> arr;
+vector<int> res;
 
-    function<void(int)> dfs = [&](int idx) {
-        if (idx == n) {
-            ans.push_back(path);
-            return;
-        }
+void rec(int level) {
+    if (level == n) {
+        cout << "[ ";
+        for (int x : res) cout << x << " ";
+        cout << "]\n";
+        return;
+    }
 
-        path.push_back(nums[idx]);
-        dfs(idx + 1);
-        path.pop_back();
+    // take arr[level]
+    res.push_back(arr[level]);
+    rec(level + 1);
+    res.pop_back();
 
-        dfs(idx + 1);
-    };
+    // skip arr[level]
+    rec(level + 1);
+}
 
-    dfs(0);
-    return ans;
+signed main() {
+    cin >> n;
+    arr.resize(n);
+    for (int i = 0; i < n; i++) cin >> arr[i];
+
+    rec(0);
+    return 0;
 }
 ```
 
