@@ -7,227 +7,84 @@
 
 # 📚 Clickable Index
 
-## Core Maps
+> Use this index like a study roadmap. Each problem section contains: **problem statement → input → expected output → brute force → optimal idea → DCMM/MITM framework → tree/diagram → C++ code → index-by-index dry run → complexity → pattern trigger**.
+
+## A. Core Maps
+
 - [0. Master Pattern Map](#0-master-pattern-map)
 - [0.0 DCMM / MITM Framework](#00-dcmm--mitm-framework)
 - [0.0.1 Universal Code Templates](#001-universal-code-templates)
 - [0.1 D&C vs MITM Decision Tree](#01-dc-vs-mitm-decision-tree)
 - [0.2 Complexity Cheat Sheet](#02-complexity-cheat-sheet)
 
+## B. Phase-Wise Problem Index
 
-## Phase 1 — Divide & Conquer Foundations
+| Phase | Problem | Difficulty | Pattern | Main Output |
+|---|---|---:|---|---|
+| Phase 1 | [P1. Merge Sort](#problem-1-merge-sort) | Easy | Split → sort → merge | Sorted array |
+| Phase 1 | [P2. Binary Search as Divide & Conquer](#problem-2-binary-search-as-divide-conquer) | Easy | Remove half | Target index |
+| Phase 2 | [P3. Count Inversions](#problem-3-count-inversions) | Medium | Merge sort count | Count of `(i,j)` where `a[i] > a[j]` |
+| Phase 2 | [P4. Reverse Pairs](#problem-4-reverse-pairs) | Medium/Hard | Merge sort + two pointers | Count of `a[i] > 2*a[j]` |
+| Phase 2 | [P5. Bubble Sort Swap Parity](#problem-5-bubble-sort-swap-parity) | Medium | Inversion parity | Even/Odd swaps |
+| Phase 3 | [P6. Karatsuba Multiplication](#problem-6-karatsuba-multiplication) | Medium | 3 recursive multiplications | Product |
+| Phase 4 | [P7. Generate All Subset Sums](#problem-7-generate-all-subset-sums) | Easy | Bitmask enumeration | All subset sums |
+| Phase 4 | [P8. Subset Sum Exists](#problem-8-subset-sum-exists) | Medium | MITM + binary search | YES/NO |
+| Phase 5 | [P9. Maximum Subset Sum ≤ S](#problem-9-maximum-subset-sum-less-than-or-equal-to-s) | Medium | MITM + upper_bound | Best sum ≤ S |
+| Phase 5 | [P10. Count Subsets With Sum ≤ K](#problem-10-count-subsets-with-sum-less-than-or-equal-to-k) | Medium | MITM + upper_bound count | Number of valid subsets |
+| Phase 6 | [P11. Classical Four Number Sum](#problem-11-classical-four-number-sum) | Medium | Pair sums + hash map | YES/NO |
+| Phase 6 | [P12. CSES Four Values](#problem-12-cses-four-values) | Medium | Pair sum + store indices | Four indices |
+| Phase 7 | [P13. Maximum Subsequence Sum Modulo M](#problem-13-maximum-subsequence-sum-modulo-m) | Hard | Modulo MITM | Max modulo value |
+| Phase 8 | [P14. 4 Reversals Pattern](#problem-14-4-reversals-pattern) | Hard | State-space MITM | Operation sequence |
+| Bonus | [P15. Count 3Sum With Duplicates](#problem-15-count-3sum-with-duplicates) | Medium | Sort + two pointers + duplicate count | Number of triplets |
 
-## Phase Code Template — Basic Divide & Conquer
+## C. Phase Templates
 
-```cpp
-void solve(int l, int r) {
-    if (l >= r) {
-        return;
-    }
+- [Phase 1 — Divide & Conquer Foundations](#phase-1--divide--conquer-foundations)
+- [Phase 2 — Merge Step Counting](#phase-2--merge-step-counting)
+- [Phase 3 — Fast Multiplication](#phase-3--fast-multiplication)
+- [Phase 4 — Meet in the Middle Foundations](#phase-4--meet-in-the-middle-foundations)
+- [Phase 5 — MITM Optimization Problems](#phase-5--mitm-optimization-problems)
+- [Phase 6 — Pair Sum MITM](#phase-6--pair-sum-mitm)
+- [Phase 7 — Modulo MITM](#phase-7--modulo-mitm)
+- [Phase 8 — Advanced Transformation](#phase-8--advanced-transformation)
+- [Bonus — Two Pointer Style Example](#bonus--two-pointer-style-example)
 
-    int mid = l + (r - l) / 2;
+## D. Quick Input / Output Practice Table
 
-    solve(l, mid);       // conquer left
-    solve(mid + 1, r);   // conquer right
+| Problem | Input Example | Expected Output | First Thing To Notice |
+|---|---|---|---|
+| Merge Sort | `[5,3,8,1,2,7]` | `[1,2,3,5,7,8]` | Need sorted merge |
+| Binary Search | `[1,3,5,7,9,11], x=7` | `3` | Sorted search space |
+| Count Inversions | `[5,3,2,4,1]` | `8` | Count cross pairs while merging |
+| Reverse Pairs | `[1,3,2,3,1]` | `2` | Count before merge using sorted halves |
+| Bubble Sort Swap Parity | `[3,1,2]` | `Even` | Swaps = inversions |
+| Karatsuba | `1234, 5678` | `7006652` | Split digits into high/low parts |
+| Subset Sums | `[2,5,7]` | `[0,2,5,7,7,9,12,14]` | Every mask is one subset |
+| Subset Sum Exists | `[3,34,4,12,5,2], S=9` | `YES` | Split array into two halves |
+| Max Subset Sum ≤ S | `arr, S=10` | `10` | For left sum, find best right complement |
+| Count Subsets ≤ K | `[1,2,3,4], K=5` | `9` | For left sum, count right sums ≤ need |
+| Four Number Sum | `[1,5,1,0,6,0], X=7` | `YES` | Pair sum complement |
+| CSES Four Values | `n=8, X=15` | `YES` | Store previous pair indices |
+| Max Subsequence Sum Mod M | `[3,3,9,9,5], m=7` | `6` | Target modulo value is `m-1` |
+| 4 Reversals | state transformation | operation sequence | Meet two generated state spaces |
+| Count 3Sum With Duplicates | `[1,1,2,2,3,3], target=6` | count | Handle duplicate frequencies |
 
-    merge(l, mid, r);    // combine answers
-}
+## E. Final Revision
+
+- [Final Revision Strategy](#final-revision-strategy)
+- [One-Line Mental Triggers](#one-line-mental-triggers)
+
+## F. How To Study Each Problem Quickly
+
+```text
+1. Read the problem statement.
+2. Check the input/output example.
+3. Write DCMM or MITM in 5 lines.
+4. Read the tree/diagram to understand the shape.
+5. Read the C++ code after the idea is clear.
+6. Dry run index-by-index until every pointer/mask/merge step is obvious.
+7. Memorize only the pattern trigger, not the full code.
 ```
-
-**Phase idea:** split the range, solve both halves, then merge/combine.
-
-
-- [Problem 1: Merge Sort](#problem-1-merge-sort) — Easy — `Split array → sort left → sort right → merge`
-- [Problem 2: Binary Search as Divide & Conquer](#problem-2-binary-search-as-divide-conquer) — Easy — `Sorted search space → remove half`
-
-## Phase 2 — Merge Step Counting
-
-## Phase Code Template — Count While Merging
-
-```cpp
-long long rec(int l, int r) {
-    if (l >= r) return 0;
-
-    int mid = l + (r - l) / 2;
-
-    long long ans = 0;
-    ans += rec(l, mid);
-    ans += rec(mid + 1, r);
-
-    // count cross pairs between left half and right half
-    ans += countCross(l, mid, r);
-
-    // merge sorted halves
-    merge(l, mid, r);
-
-    return ans;
-}
-```
-
-**Phase idea:** left answer + right answer + cross answer.
-
-
-- [Problem 3: Count Inversions](#problem-3-count-inversions) — Medium — `Merge Sort + count cross inversions`
-- [Problem 4: Reverse Pairs](#problem-4-reverse-pairs) — Medium/Hard — `Merge Sort + two pointer counting before merge`
-- [Problem 5: Bubble Sort Swap Parity](#problem-5-bubble-sort-swap-parity) — Medium — `Inversion parity`
-
-## Phase 3 — Fast Multiplication
-
-## Phase Code Template — Karatsuba Divide & Conquer
-
-```cpp
-long long karatsuba(long long x, long long y) {
-    if (x < 10 || y < 10) return x * y;
-
-    split x into a and b;
-    split y into c and d;
-
-    long long ac = karatsuba(a, c);
-    long long bd = karatsuba(b, d);
-    long long abcd = karatsuba(a + b, c + d);
-
-    long long middle = abcd - ac - bd;
-
-    return ac * base^2 + middle * base + bd;
-}
-```
-
-**Phase idea:** reduce 4 multiplications into 3 recursive multiplications.
-
-
-- [Problem 6: Karatsuba Multiplication](#problem-6-karatsuba-multiplication) — Medium — `Reduce 4 multiplications to 3`
-
-## Phase 4 — Meet in the Middle Foundations
-
-## Phase Code Template — Generate Half Answers
-
-```cpp
-vector<long long> gen(vector<int>& a) {
-    vector<long long> sums;
-    int n = a.size();
-
-    for (int mask = 0; mask < (1 << n); mask++) {
-        long long sum = 0;
-        for (int i = 0; i < n; i++) {
-            if (mask & (1 << i)) sum += a[i];
-        }
-        sums.push_back(sum);
-    }
-
-    return sums;
-}
-```
-
-**Phase idea:** generate all answers from left half and right half separately.
-
-
-- [Problem 7: Generate All Subset Sums](#problem-7-generate-all-subset-sums) — Easy — `Bitmask enumeration`
-- [Problem 8: Subset Sum Exists](#problem-8-subset-sum-exists) — Medium — `MITM + binary search`
-
-## Phase 5 — MITM Optimization Problems
-
-## Phase Code Template — MITM + Upper Bound
-
-```cpp
-sort(R.begin(), R.end());
-
-for (long long x : L) {
-    long long need = limit - x;
-    auto it = upper_bound(R.begin(), R.end(), need);
-
-    if (it != R.begin()) {
-        --it;
-        ans = max(ans, x + *it);    // or count using index distance
-    }
-}
-```
-
-**Phase idea:** for each left answer, find the best/countable right answer using binary search.
-
-
-- [Problem 9: Maximum Subset Sum Less Than or Equal to S](#problem-9-maximum-subset-sum-less-than-or-equal-to-s) — Medium — `MITM + upper_bound`
-- [Problem 10: Count Subsets With Sum Less Than or Equal to K](#problem-10-count-subsets-with-sum-less-than-or-equal-to-k) — Medium — `MITM + upper_bound count`
-
-## Phase 6 — Pair Sum MITM
-
-## Phase Code Template — Pair Sum Storage
-
-```cpp
-map<long long, vector<pair<int,int>>> mp;
-
-for (int i = 0; i < n; i++) {
-    for (int j = i + 1; j < n; j++) {
-        long long sum = arr[i] + arr[j];
-        mp[sum].push_back({i, j});
-    }
-}
-
-for each pair (i, j):
-    need = target - arr[i] - arr[j]
-    search need in map
-    ensure all four indices are different
-```
-
-**Phase idea:** convert four-number search into two pair-sum searches.
-
-
-- [Problem 11: Classical Four Number Sum](#problem-11-classical-four-number-sum) — Medium — `Pair sums + hash map`
-- [Problem 12: CSES Four Values](#problem-12-cses-four-values) — Medium — `Pair sum + store indices`
-
-## Phase 7 — Modulo MITM
-
-## Phase Code Template — Modulo Complement Search
-
-```cpp
-sort(R.begin(), R.end());
-
-for (long long x : L) {
-    ans = max(ans, x);
-
-    long long need = m - 1 - x;
-    auto it = upper_bound(R.begin(), R.end(), need);
-
-    if (it != R.begin()) {
-        --it;
-        ans = max(ans, (x + *it) % m);
-    }
-}
-```
-
-**Phase idea:** choose the largest complement that keeps the modulo sum close to `m - 1`.
-
-
-- [Problem 13: Maximum Subsequence Sum Modulo M](#problem-13-maximum-subsequence-sum-modulo-m) — Hard — `MITM + modulo + upper_bound`
-
-## Phase 8 — Advanced Transformation
-
-## Phase Code Template — State-Space MITM
-
-```cpp
-map<State, Info> firstHalf;
-
-for (all operations in first half) {
-    State s = applyOperations(start);
-    firstHalf[s] = info;
-}
-
-for (all operations in second half) {
-    State s = applyOperations(target);
-    if (firstHalf contains compatible_state(s)) {
-        reconstruct answer;
-    }
-}
-```
-
-**Phase idea:** generate states from both sides and meet at a common state.
-
-
-- [Problem 14: 4 Reversals Pattern](#problem-14-4-reversals-pattern) — Hard — `MITM over states`
-
-## Bonus — Two Pointer Style Example
-
-- [Problem 15: Count 3Sum With Duplicates](#problem-15-count-3sum-with-duplicates) — Medium — `Sort + fixed i + two pointers + duplicate frequency counting`
-
 
 ---
 
@@ -425,6 +282,8 @@ void solve(int l, int r) {
 
 # Problem 1: Merge Sort
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Easy  
 **Pattern:** `Split array → sort left → sort right → merge`
 
@@ -598,6 +457,8 @@ Use this when you can **split, solve recursively, then merge or count while merg
 
 # Problem 2: Binary Search as Divide & Conquer
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Easy  
 **Pattern:** `Sorted search space → remove half`
 
@@ -743,6 +604,8 @@ long long rec(int l, int r) {
 
 
 # Problem 3: Count Inversions
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `Merge Sort + count cross inversions`
@@ -919,6 +782,8 @@ Use this when you can **split, solve recursively, then merge or count while merg
 
 # Problem 4: Reverse Pairs
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Medium/Hard  
 **Pattern:** `Merge Sort + two pointer counting before merge`
 
@@ -1078,6 +943,8 @@ Use this when you can **split, solve recursively, then merge or count while merg
 
 
 # Problem 5: Bubble Sort Swap Parity
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `Inversion parity`
@@ -1244,6 +1111,8 @@ long long karatsuba(long long x, long long y) {
 
 
 # Problem 6: Karatsuba Multiplication
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `Reduce 4 multiplications to 3`
@@ -1421,6 +1290,8 @@ vector<long long> gen(vector<int>& a) {
 
 # Problem 7: Generate All Subset Sums
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Easy  
 **Pattern:** `Bitmask enumeration`
 
@@ -1574,6 +1445,8 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 
 # Problem 8: Subset Sum Exists
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `MITM + binary search`
@@ -1772,6 +1645,8 @@ for (long long x : L) {
 
 # Problem 9: Maximum Subset Sum Less Than or Equal to S
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Medium  
 **Pattern:** `MITM + upper_bound`
 
@@ -1932,6 +1807,8 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 
 # Problem 10: Count Subsets With Sum Less Than or Equal to K
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `MITM + upper_bound count`
@@ -2118,6 +1995,8 @@ for each pair (i, j):
 
 # Problem 11: Classical Four Number Sum
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Medium  
 **Pattern:** `Pair sums + hash map`
 
@@ -2260,6 +2139,8 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 
 # Problem 12: CSES Four Values
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `Pair sum + store indices`
@@ -2423,6 +2304,8 @@ for (long long x : L) {
 
 
 # Problem 13: Maximum Subsequence Sum Modulo M
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Hard  
 **Pattern:** `MITM + modulo + upper_bound`
@@ -2624,6 +2507,8 @@ for (all operations in second half) {
 
 # Problem 14: 4 Reversals Pattern
 
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
+
 **Difficulty:** Hard  
 **Pattern:** `MITM over states`
 
@@ -2769,6 +2654,8 @@ Use this when you see **combinations / subsets / pair sums / fixed pointer + two
 
 
 # Problem 15: Count 3Sum With Duplicates
+
+> **Easy reading order:** Problem → Input → Expected Output → Brute Force → Optimal Idea → Framework → Tree → Code → Index-by-Index Dry Run.
 
 **Difficulty:** Medium  
 **Pattern:** `Sort + fixed i + two pointers + duplicate frequency counting`
