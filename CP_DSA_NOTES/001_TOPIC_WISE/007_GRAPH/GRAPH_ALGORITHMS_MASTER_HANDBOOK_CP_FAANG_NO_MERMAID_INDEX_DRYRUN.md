@@ -3,6 +3,9 @@
 
 > Built from your graph notes: introduction, overview, DFS, BFS, cycle detection, multi-source BFS, topological ordering, 0-1 BFS, Dijkstra, Bellman-Ford, Floyd-Warshall, MST, graph formulation, graph modelling, and shortest-path formulation.
 
+> Diagram rendering fixed: all Mermaid/rich diagrams are converted into plain Markdown text trees so GitHub/ChatGPT will not show **Unable to render rich display**.
+> Dry runs are written in index-by-index / tree-call style similar to your backtracking notes.
+
 ---
 
 ## Clickable Index
@@ -56,8 +59,7 @@
 
 # 1. Graph Mental Map
 
-```mermaid
-mindmap
+```text
   root((Graphs))
     Basics
       Nodes
@@ -117,9 +119,8 @@ mindmap
 
 ## Node and Edge
 
-```mermaid
-graph LR
-  A((1)) --- B((2))
+```text
+1 -- 2
 ```
 
 - `1` and `2` are vertices/nodes.
@@ -127,40 +128,36 @@ graph LR
 
 ## Directed Graph
 
-```mermaid
-graph LR
-  A((1)) --> B((2))
-  B --> C((3))
+```text
+1 -> 2
+2 -> 3
 ```
 
 Edge has direction. You can travel only in arrow direction.
 
 ## Undirected Graph
 
-```mermaid
-graph LR
-  A((1)) --- B((2))
-  B --- C((3))
+```text
+1 -- 2
+2 -- 3
 ```
 
 Edge can be used both ways.
 
 ## Weighted Graph
 
-```mermaid
-graph LR
-  A((1)) -- 5 --> B((2))
-  B -- 2 --> C((3))
+```text
+1 --5-> 2
+2 --2-> 3
 ```
 
 Each edge has cost/weight.
 
 ## Unweighted Graph
 
-```mermaid
-graph LR
-  A((1)) --- B((2))
-  B --- C((3))
+```text
+1 -- 2
+2 -- 3
 ```
 
 Every edge is treated as cost `1`.
@@ -169,9 +166,8 @@ Every edge is treated as cost `1`.
 
 A path is a sequence of vertices where every consecutive pair has an edge.
 
-```mermaid
-graph LR
-  A((1)) --> B((2)) --> C((3)) --> D((4))
+```text
+1 -> 2 -> 3 -> 4
 ```
 
 Path: `1 -> 2 -> 3 -> 4`
@@ -180,23 +176,21 @@ Path: `1 -> 2 -> 3 -> 4`
 
 A cycle starts and ends at the same vertex.
 
-```mermaid
-graph LR
-  A((1)) --> B((2))
-  B --> C((3))
-  C --> A
+```text
+1 -> 2
+2 -> 3
+3 -> 1
 ```
 
 ## DAG
 
 DAG means **Directed Acyclic Graph**.
 
-```mermaid
-graph LR
-  A((1)) --> B((2))
-  A --> C((3))
-  B --> D((4))
-  C --> D
+```text
+1 -> 2
+1 -> 3
+2 -> 4
+3 -> 4
 ```
 
 DAG is used in dependency problems, course schedule, build order, task ordering.
@@ -332,13 +326,12 @@ for (int i = 0; i < m; i++) {
 
 DFS keeps going deeper until it cannot go further, then comes back.
 
-```mermaid
-flowchart TD
-  A[Start node u] --> B[mark visited[u] = true]
-  B --> C{Any unvisited neighbor v?}
-  C -- yes --> D[DFS v]
-  D --> C
-  C -- no --> E[Return]
+```text
+Start node u -> mark visited[u = true]
+mark visited[u -> Any unvisited neighbor v?
+Any unvisited neighbor v? --yes-> DFS v
+DFS v -> Any unvisited neighbor v?
+Any unvisited neighbor v? --no-> Return
 ```
 
 ## C++ Template
@@ -378,17 +371,16 @@ int main() {
 }
 ```
 
-## DFS Tree Dry Run
+## DFS Index-by-Index Tree Dry Run (Plain Text)
 
 Graph:
 
-```mermaid
-graph TD
-  1 --- 2
-  1 --- 3
-  2 --- 4
-  2 --- 5
-  3 --- 6
+```text
+1 -- 2
+1 -- 3
+2 -- 4
+2 -- 5
+3 -- 6
 ```
 
 Adjacency:
@@ -404,13 +396,12 @@ Adjacency:
 
 DFS from `1`:
 
-```mermaid
-graph TD
-  A["dfs(1)<br/>visit 1"] --> B["dfs(2)<br/>visit 2"]
-  A --> C["dfs(3)<br/>visit 3"]
-  B --> D["dfs(4)<br/>visit 4"]
-  B --> E["dfs(5)<br/>visit 5"]
-  C --> F["dfs(6)<br/>visit 6"]
+```text
+dfs(1) | visit 1 -> dfs(2) | visit 2
+dfs(1) | visit 1 -> dfs(3) | visit 3
+dfs(2) | visit 2 -> dfs(4) | visit 4
+dfs(2) | visit 2 -> dfs(5) | visit 5
+dfs(3) | visit 3 -> dfs(6) | visit 6
 ```
 
 Index-by-index call trace:
@@ -435,17 +426,16 @@ Time complexity: `O(V + E)`
 
 BFS explores level by level. It is powerful for shortest path in unweighted graphs.
 
-```mermaid
-flowchart TD
-  A[Push source into queue] --> B[dist[source] = 0]
-  B --> C{Queue not empty?}
-  C -- yes --> D[pop front node u]
-  D --> E[Explore all neighbors v]
-  E --> F{v unvisited?}
-  F -- yes --> G[dist[v] = dist[u] + 1 and push v]
-  F -- no --> C
-  G --> C
-  C -- no --> H[Done]
+```text
+Push source into queue -> u[source = 0]
+dist[source -> Queue not empty?
+Queue not empty? --yes-> pop front node u
+pop front node u -> Explore all neighbors v
+Explore all neighbors v -> v unvisited?
+v unvisited? --yes-> u[v = u + 1 and push v]
+v unvisited? --no-> Queue not empty?
+dist[v -> Queue not empty?
+Queue not empty? --no-> Done
 ```
 
 ## C++ Template
@@ -494,28 +484,26 @@ int main() {
 }
 ```
 
-## BFS Tree Dry Run
+## BFS Index-by-Index Tree Dry Run (Plain Text)
 
 Graph:
 
-```mermaid
-graph TD
-  1 --- 2
-  1 --- 3
-  2 --- 4
-  2 --- 5
-  3 --- 6
+```text
+1 -- 2
+1 -- 3
+2 -- 4
+2 -- 5
+3 -- 6
 ```
 
 BFS from `1`:
 
-```mermaid
-graph TD
-  L0["Level 0<br/>1"] --> L1A["Level 1<br/>2"]
-  L0 --> L1B["Level 1<br/>3"]
-  L1A --> L2A["Level 2<br/>4"]
-  L1A --> L2B["Level 2<br/>5"]
-  L1B --> L2C["Level 2<br/>6"]
+```text
+Level 0 | 1 -> Level 1 | 2
+Level 0 | 1 -> Level 1 | 3
+Level 1 | 2 -> Level 2 | 4
+Level 1 | 2 -> Level 2 | 5
+Level 1 | 3 -> Level 2 | 6
 ```
 
 Index-by-index queue trace:
@@ -560,12 +548,11 @@ Components:
 
 ## Diagram
 
-```mermaid
-graph LR
-  1 --- 2
-  2 --- 3
-  4 --- 5
-  6((6))
+```text
+1 -- 2
+2 -- 3
+4 -- 5
+6((6))
 ```
 
 ## C++ Code
@@ -615,16 +602,15 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  Root["for i = 1..6"] --> A["i=1 unvisited<br/>components=1<br/>dfs(1)"]
-  A --> B["dfs(2)"]
-  B --> C["dfs(3)"]
-  Root --> D["i=4 unvisited<br/>components=2<br/>dfs(4)"]
-  D --> E["dfs(5)"]
-  Root --> F["i=6 unvisited<br/>components=3<br/>dfs(6)"]
+```text
+for i = 1..6 -> i=1 unvisited | components=1 | dfs(1)
+i=1 unvisited | components=1 | dfs(1) -> dfs(2)
+dfs(2) -> dfs(3)
+for i = 1..6 -> i=4 unvisited | components=2 | dfs(4)
+i=4 unvisited | components=2 | dfs(4) -> dfs(5)
+for i = 1..6 -> i=6 unvisited | components=3 | dfs(6)
 ```
 
 ---
@@ -637,12 +623,11 @@ A graph is bipartite if we can color every node with two colors such that no adj
 
 ## Diagram
 
-```mermaid
-graph LR
-  A((1:0)) --- B((2:1))
-  A --- C((3:1))
-  B --- D((4:0))
-  C --- D
+```text
+1:0 -- 2:1
+1:0 -- 3:1
+2:1 -- 4:0
+3:1 -- 4:0
 ```
 
 ## C++ Code
@@ -706,11 +691,10 @@ In undirected graph DFS, if we reach an already visited node which is **not the 
 
 ## Diagram
 
-```mermaid
-graph LR
-  1 --- 2
-  2 --- 3
-  3 --- 1
+```text
+1 -- 2
+2 -- 3
+3 -- 1
 ```
 
 ## C++ Code
@@ -766,7 +750,7 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
 Input:
 
@@ -777,12 +761,11 @@ Input:
 3 1
 ```
 
-```mermaid
-graph TD
-  A["dfs(1, -1)<br/>visit 1"] --> B["dfs(2, 1)<br/>visit 2"]
-  B --> C["dfs(3, 2)<br/>visit 3"]
-  C --> D["neighbor 1 is visited<br/>and 1 != parent 2"]
-  D --> E["cycle found"]
+```text
+dfs(1, -1) | visit 1 -> dfs(2, 1) | visit 2
+dfs(2, 1) | visit 2 -> dfs(3, 2) | visit 3
+dfs(3, 2) | visit 3 -> neighbor 1 is visited | and 1 != parent 2
+neighbor 1 is visited | and 1 != parent 2 -> cycle found
 ```
 
 ---
@@ -803,11 +786,10 @@ If DFS reaches a node with state `1`, then there is a back edge and cycle exists
 
 ## Diagram
 
-```mermaid
-graph LR
-  1 --> 2
-  2 --> 3
-  3 --> 1
+```text
+1 -> 2
+2 -> 3
+3 -> 1
 ```
 
 ## C++ Code
@@ -863,14 +845,13 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["dfs(1)<br/>state[1]=1"] --> B["dfs(2)<br/>state[2]=1"]
-  B --> C["dfs(3)<br/>state[3]=1"]
-  C --> D["edge 3 -> 1"]
-  D --> E["state[1] == 1<br/>cycle found"]
+```text
+dfs(1) | state[1]=1 -> dfs(2) | state[2]=1
+dfs(2) | state[2]=1 -> dfs(3) | state[3]=1
+dfs(3) | state[3]=1 -> edge 3 -> 1
+edge 3 -> 1 -> state[1] == 1 | cycle found
 ```
 
 ---
@@ -889,12 +870,11 @@ DFS method:
 
 ## Diagram
 
-```mermaid
-graph LR
-  1 --> 2
-  1 --> 3
-  2 --> 4
-  3 --> 4
+```text
+1 -> 2
+1 -> 3
+2 -> 4
+3 -> 4
 ```
 
 One valid topological order:
@@ -958,17 +938,16 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["dfs(1)"] --> B["dfs(2)"]
-  B --> C["dfs(4)<br/>push 4"]
-  B --> D["push 2"]
-  A --> E["dfs(3)<br/>4 already visited<br/>push 3"]
-  A --> F["push 1"]
-  F --> G["topo before reverse: 4,2,3,1"]
-  G --> H["after reverse: 1,3,2,4"]
+```text
+dfs(1) -> dfs(2)
+dfs(2) -> dfs(4) | push 4
+dfs(2) -> push 2
+dfs(1) -> dfs(3) | 4 already visited | push 3
+dfs(1) -> push 1
+push 1 -> topo before reverse: 4,2,3,1
+topo before reverse: 4,2,3,1 -> after reverse: 1,3,2,4
 ```
 
 ---
@@ -1036,7 +1015,7 @@ int main() {
 }
 ```
 
-## Queue Dry Run
+## Queue Index-by-Index Dry Run (Plain Text)
 
 Input:
 
@@ -1048,35 +1027,33 @@ Input:
 3 4
 ```
 
-```mermaid
-graph TD
-  A["Initial indegree<br/>1:0, 2:1, 3:1, 4:2"] --> B["Queue = [1]"]
-  B --> C["pop 1<br/>topo=[1]"]
-  C --> D["decrease indegree 2 and 3<br/>both become 0"]
-  D --> E["Queue=[2,3]"]
-  E --> F["pop 2<br/>topo=[1,2]<br/>indegree[4]=1"]
-  F --> G["pop 3<br/>topo=[1,2,3]<br/>indegree[4]=0"]
-  G --> H["Queue=[4]"]
-  H --> I["pop 4<br/>topo=[1,2,3,4]"]
+```text
+Initial indegree | 1:0, 2:1, 3:1, 4:2 -> Queue = [1]
+Queue = [1] -> pop 1 | topo=[1]
+pop 1 | topo=[1] -> decrease indegree 2 and 3 | both become 0
+decrease indegree 2 and 3 | both become 0 -> Queue=[2,3]
+Queue=[2,3] -> pop 2 | topo=[1,2] | indegree[4]=1
+pop 2 | topo=[1,2] | indegree[4]=1 -> pop 3 | topo=[1,2,3] | indegree[4]=0
+pop 3 | topo=[1,2,3] | indegree[4]=0 -> Queue=[4]
+Queue=[4] -> pop 4 | topo=[1,2,3,4]
 ```
 
 ---
 
 # 13. Shortest Path Decision Map
 
-```mermaid
-flowchart TD
-  A[Need shortest path?] --> B{Weighted?}
-  B -- No --> C[BFS]
-  B -- Yes --> D{Weights are only 0 and 1?}
-  D -- Yes --> E[0-1 BFS]
-  D -- No --> F{Any negative weight?}
-  F -- No --> G[Dijkstra]
-  F -- Yes --> H{Need detect negative cycle?}
-  H -- Yes --> I[Bellman-Ford]
-  H -- No --> J[Bellman-Ford]
-  A --> K{All pairs?}
-  K -- Yes --> L[Floyd-Warshall]
+```text
+Need shortest path? -> Weighted?
+Weighted? --no-> BFS
+Weighted? --yes-> Weights are only 0 and 1?
+Weights are only 0 and 1? --yes-> 0-1 BFS
+Weights are only 0 and 1? --no-> Any negative weight?
+Any negative weight? --no-> Dijkstra
+Any negative weight? --yes-> Need detect negative cycle?
+Need detect negative cycle? --yes-> Bellman-Ford
+Need detect negative cycle? --no-> Bellman-Ford
+Need shortest path? -> All pairs?
+All pairs? --yes-> Floyd-Warshall
 ```
 
 ---
@@ -1113,12 +1090,11 @@ vector<int> shortestPathUnweighted(int n, vector<vector<int>>& g, int src) {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["src=1<br/>dist[1]=0"] --> B["level 1<br/>2,3"]
-  B --> C["level 2<br/>4,5,6"]
+```text
+src=1 | dist[1]=0 -> level 1 | 2,3
+level 1 | 2,3 -> level 2 | 4,5,6
 ```
 
 ---
@@ -1140,12 +1116,11 @@ Used for:
 
 ## Diagram
 
-```mermaid
-graph TD
-  M1["Monster M1<br/>dist=0"] --> A["cell A<br/>dist=1"]
-  M2["Monster M2<br/>dist=0"] --> B["cell B<br/>dist=1"]
-  A --> C["cell C<br/>dist=2"]
-  B --> C
+```text
+Monster Monster M1 | dist=0 | dist=0 -> cell cell A | dist=1 | dist=1
+Monster Monster M2 | dist=0 | dist=0 -> cell cell B | dist=1 | dist=1
+cell A | dist=1 -> cell cell C | dist=2 | dist=2
+cell B | dist=1 -> cell C | dist=2
 ```
 
 ## C++ Grid Template
@@ -1192,7 +1167,7 @@ vector<vector<int>> multiSourceBFS(vector<string>& grid, vector<pair<int,int>> s
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
 Grid:
 
@@ -1202,10 +1177,9 @@ M . .
 . . M
 ```
 
-```mermaid
-graph TD
-  A["Level 0<br/>(0,0), (2,2)"] --> B["Level 1<br/>(0,1), (1,0), (1,2), (2,1)"]
-  B --> C["Level 2<br/>(0,2), (2,0)"]
+```text
+Level 0 | (0,0), (2,2) -> Level 1 | (0,1), (1,0), (1,2), (2,1)
+Level 1 | (0,1), (1,0), (1,2), (2,1) -> Level 2 | (0,2), (2,0)
 ```
 
 ---
@@ -1257,27 +1231,25 @@ vector<int> zeroOneBFS(int n, vector<vector<pair<int,int>>>& g, int src) {
 }
 ```
 
-## Dry Run
+## Index-by-Index Dry Run (Plain Text)
 
 Graph:
 
-```mermaid
-graph LR
-  1 -- 0 --> 2
-  1 -- 1 --> 3
-  2 -- 1 --> 4
-  3 -- 0 --> 4
+```text
+1 --0-> 2
+1 --1-> 3
+2 --1-> 4
+3 --0-> 4
 ```
 
-```mermaid
-graph TD
-  A["dq=[1], d[1]=0"] --> B["pop 1"]
-  B --> C["edge 1->2 w=0<br/>d[2]=0<br/>push_front 2"]
-  B --> D["edge 1->3 w=1<br/>d[3]=1<br/>push_back 3"]
-  C --> E["dq=[2,3]"]
-  E --> F["pop 2<br/>edge 2->4 w=1<br/>d[4]=1<br/>push_back 4"]
-  F --> G["dq=[3,4]"]
-  G --> H["pop 3<br/>edge 3->4 w=0<br/>d[4] remains 1"]
+```text
+dq=[1], d[1]=0 -> pop 1
+pop 1 -> edge 1->2 w=0 | d[2]=0 | push_front 2
+pop 1 -> edge 1->3 w=1 | d[3]=1 | push_back 3
+edge 1->2 w=0 | d[2]=0 | push_front 2 -> dq=[2,3]
+dq=[2,3] -> pop 2 | edge 2->4 w=1 | d[4]=1 | push_back 4
+pop 2 | edge 2->4 w=1 | d[4]=1 | push_back 4 -> dq=[3,4]
+dq=[3,4] -> pop 3 | edge 3->4 w=0 | d[4] remains 1
 ```
 
 ---
@@ -1355,20 +1327,19 @@ Given weighted graph and source, find shortest distance from source to all nodes
 0 2 3 4 4
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["pq={(0,1)}<br/>dist[1]=0"] --> B["pop 1"]
-  B --> C["relax 1->2: d[2]=2"]
-  B --> D["relax 1->3: d[3]=5"]
-  C --> E["pq={(2,2),(5,3)}"]
-  E --> F["pop 2"]
-  F --> G["relax 2->3: d[3]=3"]
-  F --> H["relax 2->4: d[4]=4"]
-  G --> I["pq={(3,3),(5,3),(4,4)}"]
-  I --> J["pop 3"]
-  J --> K["relax 3->5: d[5]=4"]
+```text
+pq={(0,1)} | dist[1]=0 -> pop 1
+pop 1 -> relax 1->2: d[2]=2
+pop 1 -> relax 1->3: d[3]=5
+relax 1->2: d[2]=2 -> pq={(2,2),(5,3)}
+pq={(2,2),(5,3)} -> pop 2
+pop 2 -> relax 2->3: d[3]=3
+pop 2 -> relax 2->4: d[4]=4
+relax 2->3: d[3]=3 -> pq={(3,3),(5,3),(4,4)}
+pq={(3,3),(5,3),(4,4)} -> pop 3
+pop 3 -> relax 3->5: d[5]=4
 ```
 
 Index-by-index table:
@@ -1463,18 +1434,17 @@ int main() {
 }
 ```
 
-## Dry Run Tree
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["Iteration 1<br/>relax all edges"] --> B["some distances improve"]
-  B --> C["Iteration 2<br/>relax all edges"]
-  C --> D["some distances improve"]
-  D --> E["... up to n-1 iterations"]
-  E --> F["One extra pass"]
-  F --> G{"Any relaxation possible?"}
-  G -- yes --> H["Negative cycle"]
-  G -- no --> I["Shortest distances final"]
+```text
+Iteration 1 | relax all edges -> some distances improve
+some distances improve -> Iteration 2 | relax all edges
+Iteration 2 | relax all edges -> some distances improve
+some distances improve -> ... up to n-1 iterations
+... up to n-1 iterations -> One extra pass
+One extra pass -> Any relaxation possible?
+Any relaxation possible? --yes-> Negative cycle
+Any relaxation possible? --no-> Shortest distances final
 ```
 
 ---
@@ -1544,15 +1514,14 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["k=1<br/>allow node 1 as intermediate"] --> B["update all i,j"]
-  B --> C["k=2<br/>allow node 1,2 as intermediates"]
-  C --> D["update all i,j"]
-  D --> E["k=3<br/>allow node 1,2,3 as intermediates"]
-  E --> F["final matrix"]
+```text
+k=1 | allow node 1 as intermediate -> update all i,j
+update all i,j -> k=2 | allow node 1,2 as intermediates
+k=2 | allow node 1,2 as intermediates -> update all i,j
+update all i,j -> k=3 | allow node 1,2,3 as intermediates
+k=3 | allow node 1,2,3 as intermediates -> final matrix
 ```
 
 ## Matrix Example
@@ -1588,13 +1557,12 @@ Choose exactly `n - 1` edges such that:
 
 ## Diagram
 
-```mermaid
-graph LR
-  1 -- 1 --- 2
-  1 -- 4 --- 3
-  2 -- 2 --- 3
-  2 -- 7 --- 4
-  3 -- 3 --- 4
+```text
+1 -- 1 -- 2
+1 -- 4 -- 3
+2 -- 2 -- 3
+2 -- 7 -- 4
+3 -- 3 -- 4
 ```
 
 MST chooses:
@@ -1694,7 +1662,7 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
 Edges sorted:
 
@@ -1706,12 +1674,11 @@ Edges sorted:
 2-4:7
 ```
 
-```mermaid
-graph TD
-  A["Start<br/>components: {1},{2},{3},{4}"] --> B["take 1-2 weight 1<br/>{1,2},{3},{4}"]
-  B --> C["take 2-3 weight 2<br/>{1,2,3},{4}"]
-  C --> D["take 3-4 weight 3<br/>{1,2,3,4}"]
-  D --> E["chosen edges = n-1<br/>MST complete<br/>cost=6"]
+```text
+Start | components: {1},{2},{3},{4} -> take 1-2 weight 1 | {1,2},{3},{4}
+take 1-2 weight 1 | {1,2},{3},{4} -> take 2-3 weight 2 | {1,2,3},{4}
+take 2-3 weight 2 | {1,2,3},{4} -> take 3-4 weight 3 | {1,2,3,4}
+take 3-4 weight 3 | {1,2,3,4} -> chosen edges = n-1 | MST complete | cost=6
 ```
 
 ---
@@ -1782,15 +1749,14 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["visited={1}<br/>pq has edges from 1"] --> B["pick smallest edge 1-2"]
-  B --> C["visited={1,2}<br/>push edges from 2"]
-  C --> D["pick smallest crossing edge 2-3"]
-  D --> E["visited={1,2,3}"]
-  E --> F["continue until all nodes visited"]
+```text
+visited={1} | pq has edges from 1 -> pick smallest edge 1-2
+pick smallest edge 1-2 -> visited={1,2} | push edges from 2
+visited={1,2} | push edges from 2 -> pick smallest crossing edge 2-3
+pick smallest crossing edge 2-3 -> visited={1,2,3}
+visited={1,2,3} -> continue until all nodes visited
 ```
 
 ---
@@ -1857,12 +1823,11 @@ Examples:
 
 Each cell is node.
 
-```mermaid
-graph TD
-  A["(0,0)"] --- B["(0,1)"]
-  A --- C["(1,0)"]
-  B --- D["(1,1)"]
-  C --- D
+```text
+(0,0) -- (0,1)
+(0,0) -- (1,0)
+(0,1) -- (1,1)
+(1,0) -- (1,1)
 ```
 
 ## State Graph
@@ -1958,17 +1923,16 @@ int main() {
 
 ## Index-by-Index Tree Dry Run
 
-```mermaid
-graph TD
-  A["i=1<br/>unvisited<br/>ans=1"] --> B["dfs(1)"]
-  B --> C["dfs(2)"]
-  C --> D["dfs(3)"]
-  A --> E["i=2 visited<br/>skip"]
-  A --> F["i=3 visited<br/>skip"]
-  A --> G["i=4 unvisited<br/>ans=2"]
-  G --> H["dfs(4)"]
-  H --> I["dfs(5)"]
-  A --> J["i=6 unvisited<br/>ans=3"]
+```text
+i=1 | unvisited | ans=1 -> dfs(1)
+dfs(1) -> dfs(2)
+dfs(2) -> dfs(3)
+i=1 | unvisited | ans=1 -> i=2 visited | skip
+i=1 | unvisited | ans=1 -> i=3 visited | skip
+i=1 | unvisited | ans=1 -> i=4 unvisited | ans=2
+i=4 unvisited | ans=2 -> dfs(4)
+dfs(4) -> dfs(5)
+i=1 | unvisited | ans=1 -> i=6 unvisited | ans=3
 ```
 
 ---
@@ -2041,15 +2005,14 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["Level 0<br/>1<br/>dist=0"] --> B["Level 1<br/>2<br/>dist=1"]
-  A --> C["Level 1<br/>3<br/>dist=1"]
-  B --> D["Level 2<br/>4<br/>dist=2"]
-  B --> E["Level 2<br/>5<br/>dist=2"]
-  C --> F["Level 2<br/>6<br/>dist=2"]
+```text
+Level 0 | 1 | dist=0 -> Level 1 | 2 | dist=1
+Level 0 | 1 | dist=0 -> Level 1 | 3 | dist=1
+Level 1 | 2 | dist=1 -> Level 2 | 4 | dist=2
+Level 1 | 2 | dist=1 -> Level 2 | 5 | dist=2
+Level 1 | 3 | dist=1 -> Level 2 | 6 | dist=2
 ```
 
 ---
@@ -2184,18 +2147,17 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["Step 1<br/>All monsters pushed into queue"] --> B["monsterDist built level by level"]
-  B --> C["Step 2<br/>Player starts BFS"]
-  C --> D{"Next cell safe?<br/>playerTime + 1 < monsterTime"}
-  D -- yes --> E["move player"]
-  D -- no --> F["block this move"]
-  E --> G{"Reached boundary safely?"}
-  G -- yes --> H["YES"]
-  G -- no --> C
+```text
+Step 1 | All monsters pushed into queue -> monsterDist built level by level
+monsterDist built level by level -> Step 2 | Player starts BFS
+Step 2 | Player starts BFS -> Next cell safe? | playerTime + 1 < monsterTime
+Next cell safe? | playerTime + 1 < monsterTime --yes-> move player
+Next cell safe? | playerTime + 1 < monsterTime --no-> block this move
+move player -> Reached boundary safely?
+Reached boundary safely? --yes-> YES
+Reached boundary safely? --no-> Step 2 | Player starts BFS
 ```
 
 ---
@@ -2266,16 +2228,15 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["indegree zero nodes enter queue"] --> B["take course u"]
-  B --> C["remove outgoing edges"]
-  C --> D["new zero indegree courses enter queue"]
-  D --> E{"taken == n?"}
-  E -- yes --> F["YES"]
-  E -- no --> G["NO cycle exists"]
+```text
+indegree zero nodes enter queue -> take course u
+take course u -> remove outgoing edges
+remove outgoing edges -> new zero indegree courses enter queue
+new zero indegree courses enter queue -> taken == n?
+taken == n? --yes-> YES
+taken == n? --no-> NO cycle exists
 ```
 
 ---
@@ -2364,16 +2325,15 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["start k=2<br/>dist[2]=0"] --> B["pop 2"]
-  B --> C["relax 2->1<br/>d1=1"]
-  B --> D["relax 2->3<br/>d3=1"]
-  D --> E["pop 3"]
-  E --> F["relax 3->4<br/>d4=2"]
-  F --> G["answer=max distance=2"]
+```text
+start k=2 | dist[2]=0 -> pop 2
+pop 2 -> relax 2->1 | d1=1
+pop 2 -> relax 2->3 | d3=1
+relax 2->3 | d3=1 -> pop 3
+pop 3 -> relax 3->4 | d4=2
+relax 3->4 | d4=2 -> answer=max distance=2
 ```
 
 ---
@@ -2448,16 +2408,15 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["dq=[1]"] --> B["pop 1"]
-  B --> C["1->2 w=0<br/>push_front 2"]
-  B --> D["1->3 w=1<br/>push_back 3"]
-  C --> E["dq=[2,3]"]
-  E --> F["pop 2"]
-  F --> G["2->4 w=1<br/>push_back 4"]
+```text
+dq=[1] -> pop 1
+pop 1 -> 1->2 w=0 | push_front 2
+pop 1 -> 1->3 w=1 | push_back 3
+1->2 w=0 | push_front 2 -> dq=[2,3]
+dq=[2,3] -> pop 2
+pop 2 -> 2->4 w=1 | push_back 4
 ```
 
 ---
@@ -2533,14 +2492,13 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["After n-1 relaxations"] --> B["Run one more relaxation"]
-  B --> C{"Can any dist improve?"}
-  C -- yes --> D["Negative cycle exists"]
-  C -- no --> E["No negative cycle"]
+```text
+After n-1 relaxations -> Run one more relaxation
+Run one more relaxation -> Can any dist improve?
+Can any dist improve? --yes-> Negative cycle exists
+Can any dist improve? --no-> No negative cycle
 ```
 
 ---
@@ -2615,14 +2573,13 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["k=1<br/>allow 1 as middle"] --> B["k=2<br/>allow 2 as middle"]
-  B --> C["dist[1][3] = min(10, dist[1][2]+dist[2][3])"]
-  C --> D["dist[1][3] = 6"]
-  D --> E["k=3<br/>finish"]
+```text
+k=1 | allow 1 as middle -> k=2 | allow 2 as middle
+k=2 | allow 2 as middle -> dist[1][3] = min(10, dist[1][2]+dist[2][3])
+dist[1][3] = min(10, dist[1][2]+dist[2][3]) -> dist[1][3] = 6
+dist[1][3] = 6 -> k=3 | finish
 ```
 
 ---
@@ -2719,15 +2676,14 @@ int main() {
 }
 ```
 
-## Tree Dry Run
+## Index-by-Index Tree Dry Run (Plain Text)
 
-```mermaid
-graph TD
-  A["sort edges"] --> B["take 1-2 cost 1"]
-  B --> C["take 2-3 cost 2"]
-  C --> D["take 3-4 cost 3"]
-  D --> E["used edges = 3 = n-1"]
-  E --> F["answer = 6"]
+```text
+sort edges -> take 1-2 cost 1
+take 1-2 cost 1 -> take 2-3 cost 2
+take 2-3 cost 2 -> take 3-4 cost 3
+take 3-4 cost 3 -> used edges = 3 = n-1
+used edges = 3 = n-1 -> answer = 6
 ```
 
 ---
@@ -2893,21 +2849,20 @@ struct DSU {
 
 # One-Page Graph Algorithm Decision Tree
 
-```mermaid
-flowchart TD
-  A[Read problem] --> B{Can model as graph?}
-  B -- Grid / State / City / Course / Word --> C[Define node and edge]
-  C --> D{Need reachability only?}
-  D -- yes --> E[DFS/BFS]
-  D -- no --> F{Need shortest path?}
-  F -- unweighted --> G[BFS]
-  F -- many sources --> H[Multi-source BFS]
-  F -- 0/1 weight --> I[0-1 BFS]
-  F -- positive weight --> J[Dijkstra]
-  F -- negative edge --> K[Bellman-Ford]
-  F -- all pairs --> L[Floyd-Warshall]
-  C --> M{Need ordering?}
-  M -- yes --> N[Topological Sort]
-  C --> O{Need connect all nodes with min cost?}
-  O -- yes --> P[MST Kruskal/Prim]
+```text
+Read problem -> Can model as graph?
+Can model as graph? --Grid / State / City / Course / Word-> Define node and edge
+Define node and edge -> Need reachability only?
+Need reachability only? --yes-> DFS/BFS
+Need reachability only? --no-> Need shortest path?
+Need shortest path? --unweighted-> BFS
+Need shortest path? --many sources-> Multi-source BFS
+Need shortest path? --0/1 weight-> 0-1 BFS
+Need shortest path? --positive weight-> Dijkstra
+Need shortest path? --negative edge-> Bellman-Ford
+Need shortest path? --all pairs-> Floyd-Warshall
+Define node and edge -> Need ordering?
+Need ordering? --yes-> Topological Sort
+Define node and edge -> Need connect all nodes with min cost?
+Need connect all nodes with min cost? --yes-> MST Kruskal/Prim
 ```
