@@ -3,8 +3,8 @@
 
 > Built from your graph notes: introduction, overview, DFS, BFS, cycle detection, multi-source BFS, topological ordering, 0-1 BFS, Dijkstra, Bellman-Ford, Floyd-Warshall, MST, graph formulation, graph modelling, and shortest-path formulation.
 
-> Diagram rendering fixed: all Mermaid/rich diagrams are converted into plain Markdown text trees so GitHub/ChatGPT will not show **Unable to render rich display**.
-> Dry runs are written in index-by-index / tree-call style similar to your backtracking notes.
+> Diagram style fixed: **mental maps and graph terms use Mermaid** for visual learning.
+> Problem dry runs are kept as **plain recursion-note style trees + index-by-index tables**, not Mermaid, so they stay easy to read.
 
 ---
 
@@ -59,7 +59,8 @@
 
 # 1. Graph Mental Map
 
-```text
+```mermaid
+mindmap
   root((Graphs))
     Basics
       Nodes
@@ -79,7 +80,7 @@
     Ordering
       DAG
       Topological Sort
-      Kahn
+      Kahn Algorithm
       DFS Finish Time
     Shortest Path
       BFS
@@ -119,8 +120,9 @@
 
 ## Node and Edge
 
-```text
-1 -- 2
+```mermaid
+graph LR
+  A((1)) --- B((2))
 ```
 
 - `1` and `2` are vertices/nodes.
@@ -128,36 +130,40 @@
 
 ## Directed Graph
 
-```text
-1 -> 2
-2 -> 3
+```mermaid
+graph LR
+  A((1)) --> B((2))
+  B --> C((3))
 ```
 
 Edge has direction. You can travel only in arrow direction.
 
 ## Undirected Graph
 
-```text
-1 -- 2
-2 -- 3
+```mermaid
+graph LR
+  A((1)) --- B((2))
+  B --- C((3))
 ```
 
 Edge can be used both ways.
 
 ## Weighted Graph
 
-```text
-1 --5-> 2
-2 --2-> 3
+```mermaid
+graph LR
+  A((1)) -- 5 --> B((2))
+  B -- 2 --> C((3))
 ```
 
 Each edge has cost/weight.
 
 ## Unweighted Graph
 
-```text
-1 -- 2
-2 -- 3
+```mermaid
+graph LR
+  A((1)) --- B((2))
+  B --- C((3))
 ```
 
 Every edge is treated as cost `1`.
@@ -166,8 +172,9 @@ Every edge is treated as cost `1`.
 
 A path is a sequence of vertices where every consecutive pair has an edge.
 
-```text
-1 -> 2 -> 3 -> 4
+```mermaid
+graph LR
+  A((1)) --> B((2)) --> C((3)) --> D((4))
 ```
 
 Path: `1 -> 2 -> 3 -> 4`
@@ -176,21 +183,23 @@ Path: `1 -> 2 -> 3 -> 4`
 
 A cycle starts and ends at the same vertex.
 
-```text
-1 -> 2
-2 -> 3
-3 -> 1
+```mermaid
+graph LR
+  A((1)) --> B((2))
+  B --> C((3))
+  C --> A
 ```
 
 ## DAG
 
 DAG means **Directed Acyclic Graph**.
 
-```text
-1 -> 2
-1 -> 3
-2 -> 4
-3 -> 4
+```mermaid
+graph LR
+  A((1)) --> B((2))
+  A --> C((3))
+  B --> D((4))
+  C --> D
 ```
 
 DAG is used in dependency problems, course schedule, build order, task ordering.
@@ -326,12 +335,13 @@ for (int i = 0; i < m; i++) {
 
 DFS keeps going deeper until it cannot go further, then comes back.
 
-```text
-Start node u -> mark visited[u = true]
-mark visited[u -> Any unvisited neighbor v?
-Any unvisited neighbor v? --yes-> DFS v
-DFS v -> Any unvisited neighbor v?
-Any unvisited neighbor v? --no-> Return
+```mermaid
+flowchart TD
+  A[Start node u] --> B[mark visited[u] = true]
+  B --> C{Any unvisited neighbor v?}
+  C -- yes --> D[DFS v]
+  D --> C
+  C -- no --> E[Return]
 ```
 
 ## C++ Template
@@ -397,11 +407,12 @@ Adjacency:
 DFS from `1`:
 
 ```text
-dfs(1) | visit 1 -> dfs(2) | visit 2
-dfs(1) | visit 1 -> dfs(3) | visit 3
-dfs(2) | visit 2 -> dfs(4) | visit 4
-dfs(2) | visit 2 -> dfs(5) | visit 5
-dfs(3) | visit 3 -> dfs(6) | visit 6
+dfs(1) | visit 1
+├── dfs(2) | visit 2
+│   ├── dfs(4) | visit 4 -> return
+│   └── dfs(5) | visit 5 -> return
+└── dfs(3) | visit 3
+    └── dfs(6) | visit 6 -> return
 ```
 
 Index-by-index call trace:
@@ -426,16 +437,17 @@ Time complexity: `O(V + E)`
 
 BFS explores level by level. It is powerful for shortest path in unweighted graphs.
 
-```text
-Push source into queue -> u[source = 0]
-dist[source -> Queue not empty?
-Queue not empty? --yes-> pop front node u
-pop front node u -> Explore all neighbors v
-Explore all neighbors v -> v unvisited?
-v unvisited? --yes-> u[v = u + 1 and push v]
-v unvisited? --no-> Queue not empty?
-dist[v -> Queue not empty?
-Queue not empty? --no-> Done
+```mermaid
+flowchart TD
+  A[Push source into queue] --> B[dist[source] = 0]
+  B --> C{Queue not empty?}
+  C -- yes --> D[pop front node u]
+  D --> E[Explore all neighbors v]
+  E --> F{v unvisited?}
+  F -- yes --> G[dist[v] = dist[u] + 1 and push v]
+  F -- no --> C
+  G --> C
+  C -- no --> H[Done]
 ```
 
 ## C++ Template
@@ -499,11 +511,12 @@ Graph:
 BFS from `1`:
 
 ```text
-Level 0 | 1 -> Level 1 | 2
-Level 0 | 1 -> Level 1 | 3
-Level 1 | 2 -> Level 2 | 4
-Level 1 | 2 -> Level 2 | 5
-Level 1 | 3 -> Level 2 | 6
+Level 0: 1
+├── Level 1: 2
+│   ├── Level 2: 4
+│   └── Level 2: 5
+└── Level 1: 3
+    └── Level 2: 6
 ```
 
 Index-by-index queue trace:
@@ -605,12 +618,19 @@ int main() {
 ## Index-by-Index Tree Dry Run (Plain Text)
 
 ```text
-for i = 1..6 -> i=1 unvisited | components=1 | dfs(1)
-i=1 unvisited | components=1 | dfs(1) -> dfs(2)
-dfs(2) -> dfs(3)
-for i = 1..6 -> i=4 unvisited | components=2 | dfs(4)
-i=4 unvisited | components=2 | dfs(4) -> dfs(5)
-for i = 1..6 -> i=6 unvisited | components=3 | dfs(6)
+for i = 1..6
+├── i = 1 unvisited -> components = 1
+│   └── dfs(1)
+│       └── dfs(2)
+│           └── dfs(3)
+├── i = 2 visited -> skip
+├── i = 3 visited -> skip
+├── i = 4 unvisited -> components = 2
+│   └── dfs(4)
+│       └── dfs(5)
+├── i = 5 visited -> skip
+└── i = 6 unvisited -> components = 3
+    └── dfs(6)
 ```
 
 ---
@@ -762,10 +782,12 @@ Input:
 ```
 
 ```text
-dfs(1, -1) | visit 1 -> dfs(2, 1) | visit 2
-dfs(2, 1) | visit 2 -> dfs(3, 2) | visit 3
-dfs(3, 2) | visit 3 -> neighbor 1 is visited | and 1 != parent 2
-neighbor 1 is visited | and 1 != parent 2 -> cycle found
+dfs(1, parent=-1) | visit 1
+└── dfs(2, parent=1) | visit 2
+    └── dfs(3, parent=2) | visit 3
+        ├── neighbor 2 = parent -> ignore
+        └── neighbor 1 already visited AND 1 != parent
+            └── cycle found
 ```
 
 ---
@@ -848,10 +870,12 @@ int main() {
 ## Index-by-Index Tree Dry Run (Plain Text)
 
 ```text
-dfs(1) | state[1]=1 -> dfs(2) | state[2]=1
-dfs(2) | state[2]=1 -> dfs(3) | state[3]=1
-dfs(3) | state[3]=1 -> edge 3 -> 1
-edge 3 -> 1 -> state[1] == 1 | cycle found
+dfs(1) | state[1] = 1 visiting
+└── dfs(2) | state[2] = 1 visiting
+    └── dfs(3) | state[3] = 1 visiting
+        └── edge 3 -> 1
+            └── state[1] == 1 means node 1 is in current recursion path
+                └── directed cycle found
 ```
 
 ---
@@ -941,13 +965,17 @@ int main() {
 ## Index-by-Index Tree Dry Run (Plain Text)
 
 ```text
-dfs(1) -> dfs(2)
-dfs(2) -> dfs(4) | push 4
-dfs(2) -> push 2
-dfs(1) -> dfs(3) | 4 already visited | push 3
-dfs(1) -> push 1
-push 1 -> topo before reverse: 4,2,3,1
-topo before reverse: 4,2,3,1 -> after reverse: 1,3,2,4
+dfs(1)
+├── dfs(2)
+│   └── dfs(4) -> push 4
+│   └── finish 2 -> push 2
+├── dfs(3)
+│   └── neighbor 4 already visited
+│   └── finish 3 -> push 3
+└── finish 1 -> push 1
+
+topo before reverse = [4, 2, 3, 1]
+topo after reverse  = [1, 3, 2, 4]
 ```
 
 ---
@@ -1028,32 +1056,34 @@ Input:
 ```
 
 ```text
-Initial indegree | 1:0, 2:1, 3:1, 4:2 -> Queue = [1]
-Queue = [1] -> pop 1 | topo=[1]
-pop 1 | topo=[1] -> decrease indegree 2 and 3 | both become 0
-decrease indegree 2 and 3 | both become 0 -> Queue=[2,3]
-Queue=[2,3] -> pop 2 | topo=[1,2] | indegree[4]=1
-pop 2 | topo=[1,2] | indegree[4]=1 -> pop 3 | topo=[1,2,3] | indegree[4]=0
-pop 3 | topo=[1,2,3] | indegree[4]=0 -> Queue=[4]
-Queue=[4] -> pop 4 | topo=[1,2,3,4]
+Initial indegree: 1:0, 2:1, 3:1, 4:2
+Queue = [1]
+└── pop 1 -> topo = [1]
+    ├── remove edge 1->2 -> indegree[2] = 0 -> push 2
+    ├── remove edge 1->3 -> indegree[3] = 0 -> push 3
+    └── Queue = [2, 3]
+        └── pop 2 -> topo = [1, 2]
+            └── remove edge 2->4 -> indegree[4] = 1
+        └── pop 3 -> topo = [1, 2, 3]
+            └── remove edge 3->4 -> indegree[4] = 0 -> push 4
+        └── pop 4 -> topo = [1, 2, 3, 4]
 ```
 
 ---
 
 # 13. Shortest Path Decision Map
 
-```text
-Need shortest path? -> Weighted?
-Weighted? --no-> BFS
-Weighted? --yes-> Weights are only 0 and 1?
-Weights are only 0 and 1? --yes-> 0-1 BFS
-Weights are only 0 and 1? --no-> Any negative weight?
-Any negative weight? --no-> Dijkstra
-Any negative weight? --yes-> Need detect negative cycle?
-Need detect negative cycle? --yes-> Bellman-Ford
-Need detect negative cycle? --no-> Bellman-Ford
-Need shortest path? -> All pairs?
-All pairs? --yes-> Floyd-Warshall
+```mermaid
+flowchart TD
+  A[Need shortest path?] --> B{Weighted?}
+  B -- No --> C[BFS]
+  B -- Yes --> D{Weights only 0 and 1?}
+  D -- Yes --> E[0-1 BFS]
+  D -- No --> F{Any negative weight?}
+  F -- No --> G[Dijkstra]
+  F -- Yes --> H[Bellman-Ford]
+  A --> I{All pairs?}
+  I -- Yes --> J[Floyd-Warshall]
 ```
 
 ---
@@ -1093,8 +1123,11 @@ vector<int> shortestPathUnweighted(int n, vector<vector<int>>& g, int src) {
 ## Index-by-Index Tree Dry Run (Plain Text)
 
 ```text
-src=1 | dist[1]=0 -> level 1 | 2,3
-level 1 | 2,3 -> level 2 | 4,5,6
+src = 1 | dist[1] = 0
+├── level 1: nodes 2, 3 | distance = 1
+│   ├── from 2 -> nodes 4, 5 | distance = 2
+│   └── from 3 -> node 6 | distance = 2
+└── final dist = [0, 1, 1, 2, 2, 2]
 ```
 
 ---
@@ -1178,8 +1211,13 @@ M . .
 ```
 
 ```text
-Level 0 | (0,0), (2,2) -> Level 1 | (0,1), (1,0), (1,2), (2,1)
-Level 1 | (0,1), (1,0), (1,2), (2,1) -> Level 2 | (0,2), (2,0)
+Level 0 sources:
+├── (0,0) M
+└── (2,2) M
+
+Expansion:
+├── Level 1 from all sources: (0,1), (1,0), (1,2), (2,1)
+└── Level 2 from frontier: (0,2), (2,0)
 ```
 
 ---
