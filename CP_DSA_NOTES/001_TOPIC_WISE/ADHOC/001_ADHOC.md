@@ -1810,10 +1810,91 @@ flowchart TD
 
 ## Problem F1: Nim Game
 
-Already shown above. Key formula:
+**Link:** https://leetcode.com/problems/nim-game/
+
+### Statement
+
+There are `n` stones. Each player can remove `1`, `2`, or `3` stones. The player who removes the last stone wins. Return whether the first player can win.
+
+### Recognition Signals
+
+- Game has fixed move choices.
+- Need winning / losing state.
+- Small cases reveal modulo pattern.
+
+### Observation
+
+Every multiple of `4` is losing.
+
+```text
+n = 1 -> win  : take 1
+n = 2 -> win  : take 2
+n = 3 -> win  : take 3
+n = 4 -> lose : every move leaves 1,2,3 to opponent
+n = 5 -> win  : take 1, leave 4
+n = 6 -> win  : take 2, leave 4
+n = 7 -> win  : take 3, leave 4
+n = 8 -> lose : every move leaves 5,6,7 to opponent
+```
+
+### Dry Run
+
+| n | Can Take | Leaves | Result |
+|---:|---|---|---|
+| 1 | 1 | 0 | win |
+| 2 | 2 | 0 | win |
+| 3 | 3 | 0 | win |
+| 4 | 1/2/3 | 3/2/1 | lose |
+| 5 | 1 | 4 | win |
+| 8 | 1/2/3 | 7/6/5 | lose |
+
+### Timeline Dry Run
+
+```mermaid
+sequenceDiagram
+    participant N as Stones
+    participant Algo
+    participant Pattern
+    participant Result
+
+    N->>Algo: list small cases 1,2,3
+    Algo->>Pattern: first player can take all stones
+    Pattern-->>Result: winning states
+
+    N->>Algo: test n = 4
+    Algo->>Pattern: any move gives opponent a winning state
+    Pattern-->>Result: losing state
+
+    N->>Algo: test n = 5,6,7
+    Algo->>Pattern: remove 1,2,3 to leave 4
+    Pattern-->>Result: winning states
+
+    N->>Algo: modulo pattern repeats every 4
+    Pattern-->>Result: win when n mod 4 is not zero
+```
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Read n"] --> B{"n is divisible by 4?"}
+    B -->|Yes| C["Return false"]
+    B -->|No| D["Return true"]
+```
+
+### C++
 
 ```cpp
-return n % 4 != 0;
+bool canWinNim(int n) {
+    return n % 4 != 0;
+}
+```
+
+### Complexity
+
+```text
+Time: O(1)
+Space: O(1)
 ```
 
 ---
@@ -1893,7 +1974,102 @@ flowchart TD
 
 ## Problem G1: Maximum Difference Between Increasing Elements
 
-Already shown. Key idea: track minimum before current element.
+**Link:** https://leetcode.com/problems/maximum-difference-between-increasing-elements/
+
+### Statement
+
+Given array `nums`, find maximum `nums[j] - nums[i]` such that `i < j` and `nums[i] < nums[j]`. If no valid pair exists, return `-1`.
+
+### Recognition Signals
+
+- Need best previous smaller value.
+- Order matters: `i` must come before `j`.
+- Boundary tracking: minimum before current index.
+
+### Approach
+
+Scan left to right. Maintain `mn = minimum value seen before current index`. For each `nums[j]`, if `nums[j] > mn`, update answer with `nums[j] - mn`. Then update `mn`.
+
+### Dry Run
+
+```text
+nums = [7,1,5,4]
+```
+
+| Index | nums[j] | Min Before | Candidate Difference | Answer | New Min |
+|---:|---:|---:|---:|---:|---:|
+| 0 | 7 | none | none | -1 | 7 |
+| 1 | 1 | 7 | invalid | -1 | 1 |
+| 2 | 5 | 1 | 4 | 4 | 1 |
+| 3 | 4 | 1 | 3 | 4 | 1 |
+
+Answer = `4`.
+
+### Timeline Dry Run
+
+```mermaid
+sequenceDiagram
+    participant Arr
+    participant Algo
+    participant MinSoFar
+    participant Ans
+
+    Arr->>Algo: read 7
+    Algo->>MinSoFar: mn = 7
+    Ans-->>Algo: ans = -1
+
+    Arr->>Algo: read 1
+    Algo->>MinSoFar: 1 is smaller than 7
+    MinSoFar-->>Algo: mn = 1
+
+    Arr->>Algo: read 5
+    Algo->>Ans: 5 - 1 = 4
+    Ans-->>Algo: ans = 4
+
+    Arr->>Algo: read 4
+    Algo->>Ans: 4 - 1 = 3
+    Ans-->>Algo: ans remains 4
+```
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Start scanning"] --> B["Keep minimum value before current index"]
+    B --> C{"Current value greater than minimum?"}
+    C -->|Yes| D["Update answer with current - minimum"]
+    C -->|No| E["No valid pair ending here"]
+    D --> F["Update minimum"]
+    E --> F
+    F --> G{"More values?"}
+    G -->|Yes| B
+    G -->|No| H["Return answer"]
+```
+
+### C++
+
+```cpp
+int maximumDifference(vector<int>& nums) {
+    int mn = nums[0];
+    int ans = -1;
+
+    for (int j = 1; j < (int)nums.size(); j++) {
+        if (nums[j] > mn) {
+            ans = max(ans, nums[j] - mn);
+        }
+        mn = min(mn, nums[j]);
+    }
+
+    return ans;
+}
+```
+
+### Complexity
+
+```text
+Time: O(n)
+Space: O(1)
+```
 
 ---
 
@@ -1998,7 +2174,94 @@ flowchart TD
 
 ## Problem H1: Maximum Product of Three Numbers
 
-Already shown.
+**Link:** https://leetcode.com/problems/maximum-product-of-three-numbers/
+
+### Statement
+
+Given an integer array, find the maximum product of any three numbers.
+
+### Recognition Signals
+
+- Need maximum product.
+- Negative numbers can become positive when multiplied together.
+- Sorting exposes extremes.
+
+### Approach
+
+After sorting, answer is maximum of:
+
+```text
+1. largest * second largest * third largest
+2. smallest * second smallest * largest
+```
+
+The second case handles two large negative numbers.
+
+### Dry Run
+
+```text
+nums = [-10,-10,5,2]
+sorted = [-10,-10,2,5]
+```
+
+| Candidate | Product |
+|---|---:|
+| `5 * 2 * -10` | -100 |
+| `-10 * -10 * 5` | 500 |
+
+Answer = `500`.
+
+### Timeline Dry Run
+
+```mermaid
+sequenceDiagram
+    participant Nums
+    participant Algo
+    participant Extremes
+    participant Ans
+
+    Nums->>Algo: sort array
+    Algo-->>Nums: [-10,-10,2,5]
+
+    Algo->>Extremes: take top three values
+    Extremes-->>Ans: candidate one = -100
+
+    Algo->>Extremes: take two smallest and largest
+    Extremes-->>Ans: candidate two = 500
+
+    Ans-->>Nums: return max = 500
+```
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Sort nums"] --> B["Compute product of three largest"]
+    B --> C["Compute product of two smallest and largest"]
+    C --> D["Return max of both"]
+```
+
+### C++
+
+```cpp
+int maximumProduct(vector<int>& nums) {
+    sort(nums.begin(), nums.end());
+
+    int n = nums.size();
+
+    int option1 = nums[n - 1] * nums[n - 2] * nums[n - 3];
+    int option2 = nums[0] * nums[1] * nums[n - 1];
+
+    return max(option1, option2);
+}
+```
+
+### Complexity
+
+```text
+Time: O(n log n)
+Space: O(1) ignoring sort internals
+```
 
 ---
 
@@ -2091,13 +2354,242 @@ flowchart TD
 
 ## Problem I1: DI String Match
 
-Already shown.
+**Link:** https://leetcode.com/problems/di-string-match/
+
+### Statement
+
+Given a string `s` containing only `I` and `D`, construct a permutation of numbers `0..n` such that:
+
+| Character | Meaning |
+|---|---|
+| `I` | `perm[i] < perm[i + 1]` |
+| `D` | `perm[i] > perm[i + 1]` |
+
+### Recognition Signals
+
+- Need any valid answer.
+- Constraints are local between adjacent positions.
+- Low/high construction works.
+
+### Approach
+
+Keep two available numbers: `low = 0`, `high = n`.
+
+```text
+If s[i] == I, place low and increase low.
+If s[i] == D, place high and decrease high.
+At the end, low == high, place the last number.
+```
+
+### Dry Run
+
+```text
+s = "IDID"
+n = 4
+low = 0, high = 4
+```
+
+| i | s[i] | low | high | Pick | Answer So Far |
+|---:|---|---:|---:|---:|---|
+| 0 | I | 0 | 4 | 0 | `[0]` |
+| 1 | D | 1 | 4 | 4 | `[0,4]` |
+| 2 | I | 1 | 3 | 1 | `[0,4,1]` |
+| 3 | D | 2 | 3 | 3 | `[0,4,1,3]` |
+| end | - | 2 | 2 | 2 | `[0,4,1,3,2]` |
+
+Check: `0 < 4 > 1 < 3 > 2`.
+
+### Timeline Dry Run
+
+```mermaid
+sequenceDiagram
+    participant S as Pattern
+    participant Algo
+    participant Range as Low High
+    participant Ans
+
+    S->>Algo: read I
+    Algo->>Range: choose low = 0
+    Range-->>Ans: ans = [0], low becomes 1
+
+    S->>Algo: read D
+    Algo->>Range: choose high = 4
+    Range-->>Ans: ans = [0,4], high becomes 3
+
+    S->>Algo: read I
+    Algo->>Range: choose low = 1
+    Range-->>Ans: ans = [0,4,1], low becomes 2
+
+    S->>Algo: read D
+    Algo->>Range: choose high = 3
+    Range-->>Ans: ans = [0,4,1,3], high becomes 2
+
+    Algo->>Ans: append remaining value 2
+    Ans-->>S: valid permutation [0,4,1,3,2]
+```
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Set low = 0 and high = n"] --> B["Read next character"]
+    B --> C{"Character is I?"}
+    C -->|Yes| D["Append low and increase low"]
+    C -->|No| E["Append high and decrease high"]
+    D --> F{"More characters?"}
+    E --> F
+    F -->|Yes| B
+    F -->|No| G["Append remaining value"]
+```
+
+### C++
+
+```cpp
+vector<int> diStringMatch(string s) {
+    int n = s.size();
+    int low = 0;
+    int high = n;
+    vector<int> ans;
+
+    for (char c : s) {
+        if (c == 'I') {
+            ans.push_back(low);
+            low++;
+        } else {
+            ans.push_back(high);
+            high--;
+        }
+    }
+
+    ans.push_back(low);
+    return ans;
+}
+```
+
+### Complexity
+
+```text
+Time: O(n)
+Space: O(n)
+```
 
 ---
 
 ## Problem I2: CSES Beautiful Permutation
 
-Already shown.
+**Link:** https://cses.fi/problemset/task/1070
+
+### Statement
+
+Construct a permutation of numbers `1..n` such that no two adjacent numbers have absolute difference `1`. If impossible, print `NO SOLUTION`.
+
+### Recognition Signals
+
+- Need any valid arrangement.
+- Adjacent consecutive numbers are forbidden.
+- Constructive ordering by parity works.
+
+### Observation
+
+Put all even numbers first, then all odd numbers. Inside each group, adjacent difference is `2`, so it is safe.
+
+Impossible cases:
+
+```text
+n = 1 -> valid: 1
+n = 2 -> impossible
+n = 3 -> impossible
+n >= 4 -> possible
+```
+
+### Dry Run
+
+```text
+n = 5
+```
+
+Construct:
+
+```text
+evens: 2 4
+odds : 1 3 5
+answer: 2 4 1 3 5
+```
+
+Check adjacent differences:
+
+| Pair | Difference | Valid? |
+|---|---:|---|
+| 2,4 | 2 | yes |
+| 4,1 | 3 | yes |
+| 1,3 | 2 | yes |
+| 3,5 | 2 | yes |
+
+### Timeline Dry Run
+
+```mermaid
+sequenceDiagram
+    participant N
+    participant Algo
+    participant Even
+    participant Odd
+    participant Ans
+
+    N->>Algo: n = 5
+    Algo->>Even: collect 2 and 4
+    Even-->>Ans: ans = [2,4]
+
+    Algo->>Odd: collect 1,3,5
+    Odd-->>Ans: ans = [2,4,1,3,5]
+
+    Ans->>Algo: check adjacent differences
+    Algo-->>N: valid permutation
+```
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Read n"] --> B{"n equals 1?"}
+    B -->|Yes| C["Print 1"]
+    B -->|No| D{"n is 2 or 3?"}
+    D -->|Yes| E["Print NO SOLUTION"]
+    D -->|No| F["Print all evens"]
+    F --> G["Print all odds"]
+```
+
+### C++
+
+```cpp
+void beautifulPermutation(int n) {
+    if (n == 1) {
+        cout << 1 << '\n';
+        return;
+    }
+
+    if (n == 2 || n == 3) {
+        cout << "NO SOLUTION" << '\n';
+        return;
+    }
+
+    for (int x = 2; x <= n; x += 2) {
+        cout << x << ' ';
+    }
+
+    for (int x = 1; x <= n; x += 2) {
+        cout << x << ' ';
+    }
+
+    cout << '\n';
+}
+```
+
+### Complexity
+
+```text
+Time: O(n)
+Space: O(1) excluding output
+```
 
 ---
 
@@ -2211,13 +2703,209 @@ flowchart TD
 
 ## Problem J1: Validate Stack Sequences
 
-Already shown.
+**Link:** https://leetcode.com/problems/validate-stack-sequences/
+
+### Statement
+
+Given `pushed` and `popped`, return whether the popped sequence can be produced by stack push/pop operations.
+
+### Recognition Signals
+
+- Stack operation simulation.
+- Push order is fixed.
+- Pop whenever top matches next required popped value.
+
+### Approach
+
+Simulate pushing values one by one. After each push, keep popping while stack top equals `popped[j]`.
+
+### Dry Run
+
+```text
+pushed = [1,2,3,4,5]
+popped = [4,5,3,2,1]
+```
+
+| Push | Stack After Push | Pops Performed | Stack After Pops | j |
+|---:|---|---|---|---:|
+| 1 | `[1]` | none | `[1]` | 0 |
+| 2 | `[1,2]` | none | `[1,2]` | 0 |
+| 3 | `[1,2,3]` | none | `[1,2,3]` | 0 |
+| 4 | `[1,2,3,4]` | pop 4 | `[1,2,3]` | 1 |
+| 5 | `[1,2,3,5]` | pop 5, pop 3, pop 2, pop 1 | `[]` | 5 |
+
+All popped values matched, so answer is `true`.
+
+### Timeline Dry Run
+
+```mermaid
+sequenceDiagram
+    participant Pushed
+    participant Stack
+    participant Popped
+    participant Algo
+
+    Pushed->>Stack: push 1,2,3
+    Stack-->>Algo: top is 3, need 4, cannot pop
+
+    Pushed->>Stack: push 4
+    Stack->>Popped: top matches 4, pop
+    Popped-->>Algo: next needed is 5
+
+    Pushed->>Stack: push 5
+    Stack->>Popped: pop 5, then 3, then 2, then 1
+    Popped-->>Algo: all values matched
+```
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Push next value"] --> B{"Stack top equals next popped?"}
+    B -->|Yes| C["Pop stack and move popped pointer"]
+    C --> B
+    B -->|No| D{"More pushed values?"}
+    D -->|Yes| A
+    D -->|No| E{"Stack empty?"}
+    E -->|Yes| F["Return true"]
+    E -->|No| G["Return false"]
+```
+
+### C++
+
+```cpp
+bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
+    vector<int> st;
+    int j = 0;
+
+    for (int x : pushed) {
+        st.push_back(x);
+
+        while (!st.empty() && j < (int)popped.size() && st.back() == popped[j]) {
+            st.pop_back();
+            j++;
+        }
+    }
+
+    return st.empty();
+}
+```
+
+### Complexity
+
+```text
+Time: O(n)
+Space: O(n)
+```
 
 ---
 
 ## Problem J2: Asteroid Collision
 
-Already shown.
+**Link:** https://leetcode.com/problems/asteroid-collision/
+
+### Statement
+
+Asteroids move left or right. Positive values move right, negative values move left. When a right-moving asteroid meets a left-moving asteroid, the smaller one explodes. Equal sizes both explode. Return remaining asteroids.
+
+### Recognition Signals
+
+- Current item can collide with unresolved previous items.
+- Only collision case is `stack top > 0` and `current < 0`.
+- Stack keeps survivors.
+
+### Approach
+
+For each asteroid, resolve collisions while the stack top moves right and current asteroid moves left.
+
+### Dry Run
+
+```text
+asteroids = [10, 2, -5]
+```
+
+| Current | Stack Before | Collision | Stack After |
+|---:|---|---|---|
+| 10 | `[]` | none | `[10]` |
+| 2 | `[10]` | none | `[10,2]` |
+| -5 | `[10,2]` | 2 vs -5, 2 explodes | `[10]` |
+| -5 | `[10]` | 10 vs -5, -5 explodes | `[10]` |
+
+Answer = `[10]`.
+
+### Timeline Dry Run
+
+```mermaid
+sequenceDiagram
+    participant Ast as Asteroids
+    participant Algo
+    participant Stack
+
+    Ast->>Algo: read 10
+    Algo->>Stack: no collision, push 10
+    Stack-->>Algo: [10]
+
+    Ast->>Algo: read 2
+    Algo->>Stack: same direction as unresolved asteroid, push 2
+    Stack-->>Algo: [10,2]
+
+    Ast->>Algo: read -5
+    Algo->>Stack: top 2 collides with -5, pop 2
+    Stack-->>Algo: [10]
+
+    Algo->>Stack: top 10 collides with -5, current explodes
+    Stack-->>Ast: survivors [10]
+```
+
+### Mermaid Flow
+
+```mermaid
+flowchart TD
+    A["Read asteroid x"] --> B{"Top moves right and x moves left?"}
+    B -->|No| C["Push x"]
+    B -->|Yes| D{"abs(top) < abs(x)?"}
+    D -->|Yes| E["Pop top and continue collision"]
+    E --> B
+    D -->|No| F{"abs(top) == abs(x)?"}
+    F -->|Yes| G["Pop top and destroy x"]
+    F -->|No| H["Destroy x"]
+```
+
+### C++
+
+```cpp
+vector<int> asteroidCollision(vector<int>& asteroids) {
+    vector<int> st;
+
+    for (int x : asteroids) {
+        bool alive = true;
+
+        while (alive && x < 0 && !st.empty() && st.back() > 0) {
+            if (st.back() < -x) {
+                st.pop_back();
+            } else if (st.back() == -x) {
+                st.pop_back();
+                alive = false;
+            } else {
+                alive = false;
+            }
+        }
+
+        if (alive) {
+            st.push_back(x);
+        }
+    }
+
+    return st;
+}
+```
+
+### Complexity
+
+```text
+Time: O(n)
+Space: O(n)
+```
 
 ---
 
