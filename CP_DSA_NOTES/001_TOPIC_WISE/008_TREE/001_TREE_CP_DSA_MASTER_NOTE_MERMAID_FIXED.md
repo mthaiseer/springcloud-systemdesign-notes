@@ -90,32 +90,23 @@ Longest path?     -> Diameter
 ```mermaid
 flowchart TD
     A["Tree Problem"] --> B{"What is asked?"}
-
-    B --> C["Parent / depth / subtree"]
+    B --> C["Parent, depth, subtree"]
     C --> C1["One DFS"]
-
-    B --> D["Path u to v"]
-    D --> D1["DFS once if one query"]
-    D --> D2["LCA if many queries"]
-
-    B --> E["Distance u-v"]
-    E --> E1["depth[u"]+depth["v"]-2*depth["lca"]]
-
-    B --> F["K-th ancestor"]
+    B --> D["Path between u and v"]
+    D --> D1["DFS once for one query"]
+    D --> D2["LCA for many queries"]
+    B --> E["Distance between u and v"]
+    E --> E1["Use depth formula with LCA"]
+    B --> F["Kth ancestor"]
     F --> F1["Binary lifting"]
-
-    B --> G["Path sum/xor"]
+    B --> G["Path sum or XOR"]
     G --> G1["Prefix from root"]
-
     B --> H["Path update"]
-    H --> H1["Tree difference + postorder"]
-
-    B --> I["Path min/gcd/max"]
+    H --> H1["Tree difference plus postorder"]
+    B --> I["Path min, gcd, or max"]
     I --> I1["Binary lifting aggregate"]
-
     B --> J["Longest path"]
-    J --> J1["Diameter using 2 BFS/DFS"]
-
+    J --> J1["Diameter using two BFS or DFS runs"]
     B --> K["Balanced root"]
     K --> K1["Centroid"]
 ```
@@ -315,13 +306,13 @@ DFS goes downward to children, then returns subtree information upward.
 
 ```mermaid
 flowchart TD
-    A["Enter node u"] --> B["Set parent[u"] = p]
-    B --> C["Set subtree[u"] = 1]
+    A["Enter node u"] --> B["Set parent of u"]
+    B --> C["Initialize subtree size of u to 1"]
     C --> D["Visit every child v"]
-    D --> E["depth[v"] = depth["u"] + 1]
-    E --> F["DFS child v"]
-    F --> G["subtree[u"] += subtree["v"]]
-    G --> H["After all children, leaf if childCount = 0"]
+    D --> E["Set depth of v"]
+    E --> F["DFS on child v"]
+    F --> G["Add subtree of v into subtree of u"]
+    G --> H["After all children, mark leaf if child count is zero"]
 ```
 
 ### Index-by-Index Dry Run
@@ -1186,19 +1177,19 @@ Given a tree and queries `(u, v)`, find the lowest common ancestor of `u` and `v
 
 ```mermaid
 flowchart TD
-    A["Nodes u and v"] --> B{"depth[\"u\"] < depth[\"v\"]?"}
-    B -->|"Yes"| C["swap"]
+    A["Nodes u and v"] --> B{"Is u shallower than v?"}
+    B -->|"Yes"| C["Swap u and v"]
     B -->|"No"| D["Lift deeper node"]
     C --> D
-    D --> E{"u == v?"}
-    E -->|"Yes"| F["return u"]
-    E -->|"No"| G["For i from LOG-1 to 0"]
-    G --> H{"up[\"u\"][i] != up[\"v\"][i]?"}
-    H -->|"Yes"| I["u=up[u"][i], v=up["v"][i]]
-    H -->|"No"| J["skip"]
+    D --> E{"Are u and v same?"}
+    E -->|"Yes"| F["Return u"]
+    E -->|"No"| G["Try jumps from large to small"]
+    G --> H{"Do their jump ancestors differ?"}
+    H -->|"Yes"| I["Move both nodes upward"]
+    H -->|"No"| J["Skip this jump size"]
     I --> G
     J --> G
-    G --> K["return parent of u"]
+    G --> K["Return parent of u"]
 ```
 
 ### C++ Code
@@ -1750,10 +1741,10 @@ agg[u][i] = aggregate from u upward for 2^i edges/nodes
 
 ```mermaid
 flowchart TD
-    A["u"] --> B["First half: agg[u"][i-1]]
-    B --> C["mid = up[u"][i-1]]
-    C --> D["Second half: agg[mid"][i-1]]
-    D --> E["agg[u"][i] = combine both]
+    A["Node u"] --> B["First half aggregate"]
+    B --> C["Middle ancestor after first half"]
+    C --> D["Second half aggregate"]
+    D --> E["Combine both halves"]
 ```
 
 ### Generic Recurrence
@@ -1980,9 +1971,9 @@ Then use binary lifting aggregate with `min`.
 
 ```mermaid
 flowchart TD
-    A["Edge weight parent-child"] --> B["Store weight at child"]
-    B --> C["minUp[u"][i] = min edge in 2^i upward jump]
-    C --> D["During query, lift and take min"]
+    A["Edge weight between parent and child"] --> B["Store weight at child node"]
+    B --> C["Precompute minimum edge for each upward jump"]
+    C --> D["During query lift nodes and update answer"]
 ```
 
 ### C++ Code
