@@ -67,55 +67,38 @@ Answer = shortest path / possible / count / order / min cost
 
 ## Visual Mental Model
 
-```text
-Problem statement
-      |
-      v
-Find repeating unit/state
-      |
-      v
-Make it a node
-      |
-      v
-Find allowed move/change
-      |
-      v
-Make it an edge
-      |
-      v
-Choose algorithm based on edge cost and goal
+```mermaid
+flowchart TD
+    A[Problem Statement] --> B[Find repeating unit or state]
+    B --> C[Make it a node]
+    C --> D[Find allowed move/change]
+    D --> E[Make it an edge]
+    E --> F[Choose algorithm based on cost and goal]
 ```
 
 ---
 
 # 0.2 Graph Formulation Decision Tree
 
-```text
-Question 1: Is the problem about movement, transformation, dependency, or connection?
-|
-├── movement in grid/board
-│   └── Grid graph / BFS / Dijkstra
-│
-├── transformation from one value/string/state to another
-│   └── Implicit graph / BFS
-│
-├── prerequisites or ordering
-│   └── DAG / Topological sort
-│
-├── connection/groups
-│   └── DFS/BFS/DSU
-│
-├── shortest path with same cost moves
-│   └── BFS
-│
-├── shortest path with positive weights
-│   └── Dijkstra
-│
-├── shortest path with 0/1 cost
-│   └── 0-1 BFS
-│
-└── same node but different conditions matter
-    └── State graph
+```mermaid
+flowchart TD
+    A{Problem signal?}
+    A --> B[Movement in grid or board]
+    B --> B1[Grid Graph: BFS / Dijkstra]
+    A --> C[Transformation of value/string/state]
+    C --> C1[Implicit Graph: BFS]
+    A --> D[Prerequisite or ordering]
+    D --> D1[DAG: Topological Sort]
+    A --> E[Connection or groups]
+    E --> E1[DFS / BFS / DSU]
+    A --> F[Shortest path, same cost]
+    F --> F1[BFS]
+    A --> G[Shortest path, positive weights]
+    G --> G1[Dijkstra]
+    A --> H[Cost only 0 or 1]
+    H --> H1[0-1 BFS]
+    A --> I[Same node + different condition]
+    I --> I1[State Graph]
 ```
 
 ---
@@ -158,11 +141,12 @@ Edge = relation between objects
 
 ## Visualization
 
-```text
-1 ----- 2
-|       |
-|       |
-3 ----- 4
+```mermaid
+graph LR
+    A((1)) --- B((2))
+    A --- C((3))
+    B --- D((4))
+    C --- D
 ```
 
 ## Idea — How It Works
@@ -221,18 +205,13 @@ int dy[4] = {0, 0, 1, -1};
 
 Grid:
 
-```text
-S . #
-. . T
-```
-
-Graph view:
-
-```text
-(0,0) S ---- (0,1)
-   |
-   |
-(1,0) ---- (1,1) ---- (1,2) T
+```mermaid
+graph LR
+    A["S (0,0)"] --- B["Open (0,1)"]
+    A --- C["Open (1,0)"]
+    C --- D["Open (1,1)"]
+    D --- E["T (1,2)"]
+    B -. blocked .- X["# (0,2)"]
 ```
 
 ## Idea — How It Works
@@ -376,12 +355,23 @@ Same city, different stops:
 
 State graph layers:
 
-```text
-Stops 0:   (0,0)
-             |
-Stops 1:   (1,1)   (2,1)
-             |       |
-Stops 2:   (3,2)   (4,2)
+```mermaid
+graph TD
+    subgraph L0[Edges Used 0]
+        A["city 0, edges 0"]
+    end
+    subgraph L1[Edges Used 1]
+        B["city 1, edges 1"]
+        C["city 2, edges 1"]
+    end
+    subgraph L2[Edges Used 2]
+        D["city 3, edges 2"]
+        E["city 4, edges 2"]
+    end
+    A --> B
+    A --> C
+    B --> D
+    C --> E
 ```
 
 ## Idea — How It Works
@@ -449,18 +439,13 @@ Algorithm = BFS from all sources together
 
 ## Visualization
 
-```text
-M . .
-. . .
-. . M
-```
-
-BFS starts from both `M` cells:
-
-```text
-Time 0: M . .     . . M
-Time 1: cells adjacent to any source
-Time 2: next wave
+```mermaid
+graph TD
+    A["M source 1, time 0"] --> B["neighbors, time 1"]
+    I["M source 2, time 0"] --> H["neighbors, time 1"]
+    B --> C["next wave, time 2"]
+    H --> C
+    C --> D["remaining reachable cells"]
 ```
 
 ## Idea — How It Works
@@ -508,12 +493,12 @@ Algorithm = 0-1 BFS using deque
 
 ## Visualization
 
-```text
-1 --0--> 2 --1--> 4
-|                 ^
-1                 |
-v                 0
-3 ----------------+
+```mermaid
+graph LR
+    A((1)) -- 0 --> B((2))
+    B -- 1 --> D((4))
+    A -- 1 --> C((3))
+    C -- 0 --> D
 ```
 
 ## Rule
@@ -572,11 +557,12 @@ Edge = prerequisite relation
 
 ## Visualization
 
-```text
-A ---> B ---> D
-|             ^
-v             |
-C ------------+
+```mermaid
+graph LR
+    A((A)) --> B((B))
+    A --> C((C))
+    B --> D((D))
+    C --> D
 ```
 
 Meaning:
@@ -652,16 +638,20 @@ When many nodes ask distance/reachability to one target.
 
 Original:
 
-```text
-1 ---> 2 ---> 5
-3 ---> 4 ---> 5
+Original graph:
+
+```mermaid
+graph LR
+    A((1)) --> B((2)) --> T((5))
+    C((3)) --> D((4)) --> T
 ```
 
-Instead of BFS from every node to `5`, reverse edges:
+Reversed graph:
 
-```text
-5 ---> 2 ---> 1
-5 ---> 4 ---> 3
+```mermaid
+graph LR
+    T((5)) --> B((2)) --> A((1))
+    T --> D((4)) --> C((3))
 ```
 
 Now run BFS once from `5`.
@@ -726,11 +716,13 @@ Edge = relation between indices
 
 ## Visualization
 
-```text
-p = [2,3,1,5,4]
-
-1 -> 2 -> 3 -> 1
-4 -> 5 -> 4
+```mermaid
+graph LR
+    A((1)) --> B((2))
+    B --> C((3))
+    C --> A
+    D((4)) --> E((5))
+    E --> D
 ```
 
 ## Idea — How It Works
@@ -793,11 +785,12 @@ Edge = one valid transformation
 
 ## Visualization
 
-```text
-hit -> hot -> dot -> dog
-              |
-              v
-             log
+```mermaid
+graph LR
+    hit((hit)) --> hot((hot))
+    hot --> dot((dot))
+    dot --> dog((dog))
+    dot --> log((log))
 ```
 
 ## Idea — How It Works
@@ -862,10 +855,12 @@ visited nodes 0 and 1
 
 Layer view:
 
-```text
-mask 001: (0,001)
-mask 011: (1,011), (0,011)
-mask 111: all visited -> answer
+```mermaid
+graph TD
+    A["mask 001: node 0"] --> B["mask 011: node 1"]
+    A --> C["mask 011: node 0"]
+    B --> D["mask 111: all visited"]
+    C --> D
 ```
 
 ## Idea — How It Works
@@ -925,16 +920,20 @@ Compress each connected/SCC component into one node.
 
 Original:
 
-```text
-1 -> 2 -> 3 -> 1      4 -> 5 -> 4
-          |           ^
-          +----------+
+Original graph:
+
+```mermaid
+graph LR
+    A((1)) --> B((2)) --> C((3)) --> A
+    C --> D((4))
+    D --> E((5)) --> D
 ```
 
-SCCs:
+Condensation graph:
 
-```text
-{1,2,3} ---> {4,5}
+```mermaid
+graph LR
+    X["SCC {1,2,3}"] --> Y["SCC {4,5}"]
 ```
 
 ## Idea — How It Works
@@ -1041,10 +1040,10 @@ So it must belong to a new province.
 
 ## Visualization
 
-```text
-City 0 ----- City 1
-
-City 2 alone
+```mermaid
+graph LR
+    C0((City 0)) --- C1((City 1))
+    C2((City 2))
 ```
 
 ## C++ Code
@@ -1157,11 +1156,11 @@ Why not DFS? DFS may go deep through a longer path first. BFS expands by distanc
 
 ## Visualization
 
-```text
-(0,0) S   blocked
-blocked   (1,1) T
-
-S can move diagonally to T.
+```mermaid
+graph LR
+    S["S (0,0)"] -- diagonal move --> T["T (1,1)"]
+    B1["blocked (0,1)"]
+    B2["blocked (1,0)"]
 ```
 
 ## C++ Code
@@ -1403,15 +1402,15 @@ accidentally using too many flights in the same round.
 
 ## Visualization
 
-```text
-Layer 0 edges: (0,0)
-                  |
-Layer 1 edges: (1,1), (3,1)
-                  |
-Layer 2 edges: (2,2)
-
-k = 1 stop means at most k+1 = 2 edges.
+```mermaid
+graph TD
+    A["Layer 0: city 0, edges 0"] --> B["Layer 1: city 1, edges 1"]
+    A --> C["Layer 1: city 3, edges 1"]
+    B --> D["Layer 2: city 2, edges 2"]
+    D -. blocked by limit .-> E["city 3 would need 3 edges"]
 ```
+
+`k = 1` stop means at most `k + 1 = 2` edges.
 
 ## C++ Code
 
@@ -1525,16 +1524,14 @@ Those newly rotten nodes can spread only in the next minute.
 
 ## Visualization
 
-```text
-minute 0:
-2 1 1
-1 1 0
-0 1 1
-
-minute 1:
-2 2 1
-2 1 0
-0 1 1
+```mermaid
+graph TD
+    M0["minute 0: rotten at (0,0)"] --> M1A["minute 1: rot (0,1)"]
+    M0 --> M1B["minute 1: rot (1,0)"]
+    M1A --> M2A["minute 2: rot (0,2)"]
+    M1A --> M2B["minute 2: rot (1,1)"]
+    M2B --> M3["minute 3: rot (2,1)"]
+    M3 --> M4["minute 4: rot (2,2)"]
 ```
 
 ## C++ Code
@@ -1685,10 +1682,12 @@ It deserves to be processed before cost-1 moves.
 
 ## Visualization
 
-```text
-If current arrow points right:
-move right = cost 0
-move other direction = cost 1
+```mermaid
+graph LR
+    C["current cell: arrow right"] -- cost 0 --> R["right neighbor"]
+    C -- cost 1 --> L["left neighbor"]
+    C -- cost 1 --> U["up neighbor"]
+    C -- cost 1 --> D["down neighbor"]
 ```
 
 ## C++ Code
@@ -1823,8 +1822,9 @@ No course reaches indegree 0.
 
 ## Visualization
 
-```text
-0 ---> 1
+```mermaid
+graph LR
+    C0((Course 0)) --> C1((Course 1))
 ```
 
 ## C++ Code
@@ -2083,16 +2083,15 @@ So the first time we reach a word, it is by the minimum number of changes.
 
 ## Visualization
 
-```text
-hit
- |
-hot
-/  \
-dot lot
-|   |
-dog log
- \ /
- cog
+```mermaid
+graph TD
+    hit((hit)) --> hot((hot))
+    hot --> dot((dot))
+    hot --> lot((lot))
+    dot --> dog((dog))
+    lot --> log((log))
+    dog --> cog((cog))
+    log --> cog
 ```
 
 ## C++ Code
@@ -2229,19 +2228,11 @@ So push every possible starting node with distance 0.
 
 ## Visualization
 
-```text
-state = (u, mask)
-
-(0,0001)
-   |
-   v
-(1,0011)
-   |
-   v
-(0,0011)
-   |
-   v
-(2,0111)
+```mermaid
+graph TD
+    A["state (0,0001)"] --> B["move to 1: (1,0011)"]
+    B --> C["move back to 0: (0,0011)"]
+    C --> D["move to 2: (2,0111)"]
 ```
 
 ## C++ Code
