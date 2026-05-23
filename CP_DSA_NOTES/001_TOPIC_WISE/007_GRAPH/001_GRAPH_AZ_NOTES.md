@@ -361,6 +361,29 @@ Examples:
 
 # 2.1 DFS Depth First Search
 
+## Step-by-Step Working
+
+```text
+1. Start from a node/source.
+2. Mark current node as visited.
+3. Pick one unvisited neighbor and go deeper recursively.
+4. Keep going deep until no unvisited neighbor exists.
+5. Backtrack to the previous node.
+6. Try the next unvisited neighbor.
+7. Finish when all reachable nodes from the source are visited.
+```
+
+## Use Cases
+
+| Use Case | Why DFS fits |
+|---|---|
+| Connected components | One DFS marks one full component |
+| Cycle detection | DFS keeps parent/recursion-state information |
+| Topological sort | Finish-time order comes naturally from DFS |
+| Tree problems | Subtree traversal is recursive |
+| Backtracking on graph/grid | DFS explores one path fully before trying another |
+
+
 ## Idea
 
 ### Graph Model — Mermaid
@@ -492,6 +515,29 @@ dfs(1) | visit 1
 
 # 2.2 BFS Breadth First Search
 
+## Step-by-Step Working
+
+```text
+1. Put source node in queue.
+2. Set dist[source] = 0.
+3. Pop the front node from queue.
+4. Visit all unvisited neighbors.
+5. Assign dist[neighbor] = dist[current] + 1.
+6. Push newly visited neighbors into queue.
+7. Continue until queue becomes empty.
+```
+
+## Use Cases
+
+| Use Case | Why BFS fits |
+|---|---|
+| Shortest path in unweighted graph | First visit gives minimum edges |
+| Grid shortest path | Each move has equal cost |
+| Level order traversal | Queue naturally processes level by level |
+| Minimum moves problems | Every move costs 1 |
+| Word ladder/state graph | Each valid transformation is one edge |
+
+
 ## Idea
 
 ### Graph Model — Mermaid
@@ -612,6 +658,27 @@ Level 0: 1 | dist[1]=0
 
 # 2.3 Connected Components
 
+## Step-by-Step Working
+
+```text
+1. Initialize all nodes as unvisited.
+2. Iterate nodes from 1 to n.
+3. When an unvisited node is found, start DFS/BFS from it.
+4. That traversal marks all nodes in the same component.
+5. Increase component count by 1.
+6. Continue scanning remaining nodes.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Count groups | Number of independent graph parts |
+| Provinces/friend circles | Each component is one province/group |
+| Island counting | Each island is one grid component |
+| Connectivity preprocessing | Know which nodes belong together |
+
+
 ## Problem Statement
 
 Given an undirected graph, count connected components.
@@ -705,6 +772,29 @@ for i = 1..6
 ---
 
 # 2.4 Bipartite Check
+
+## Step-by-Step Working
+
+```text
+1. Keep color[node] = -1 initially.
+2. Start BFS/DFS from each uncolored node.
+3. Color source as 0.
+4. For every edge u-v:
+   ├── if v is uncolored, color[v] = color[u] ^ 1
+   ├── if v already has opposite color, continue
+   └── if v has same color as u, graph is not bipartite
+5. If no conflict appears, graph is bipartite.
+```
+
+## Use Cases
+
+| Use Case | Why bipartite matters |
+|---|---|
+| Two-team/group partition | Adjacent/conflicting nodes must be opposite |
+| Odd cycle detection | Undirected graph is bipartite iff no odd cycle |
+| Matching problems | Bipartite matching needs left/right partition |
+| Coloring constraints | Two-color feasibility problem |
+
 
 ## Idea
 
@@ -821,6 +911,28 @@ start 1 -> color[1]=0
 
 # 2.5 Grid BFS / DFS
 
+## Step-by-Step Working
+
+```text
+1. Treat every valid cell as a graph node.
+2. From cell (r,c), generate neighbors using dx/dy.
+3. Skip outside cells.
+4. Skip blocked/wall cells.
+5. Apply BFS for shortest path or DFS for component exploration.
+6. Store visited/dist in a 2D array.
+```
+
+## Use Cases
+
+| Use Case | Algorithm choice |
+|---|---|
+| Shortest path in maze | BFS |
+| Count islands/rooms | DFS or BFS |
+| Flood fill | DFS or BFS |
+| Fire/monster spread | Multi-source BFS |
+| Minimum steps in matrix | BFS |
+
+
 ## Idea
 
 ### Grid as Graph Model — Mermaid
@@ -895,6 +1007,26 @@ BFS from S=(0,0)
 ---
 
 # 2.6 Multi-Source BFS
+
+## Step-by-Step Working
+
+```text
+1. Identify all starting sources.
+2. Push all sources into queue initially.
+3. Set dist[source] = 0 for every source.
+4. Run normal BFS.
+5. The first time a node/cell is reached, it is reached from the nearest source.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Rotten oranges | All rotten cells spread together |
+| Monsters/fire escape | Enemy/fire wave starts from many cells |
+| Nearest zero/hospital | Distance to closest source |
+| Multi-start shortest path | Several valid starting nodes |
+
 
 ## Idea
 
@@ -1033,6 +1165,28 @@ Expansion tree:
 
 # 2.7 0-1 BFS
 
+## Step-by-Step Working
+
+```text
+1. Use deque instead of normal queue.
+2. Set dist[source] = 0.
+3. Pop node from front.
+4. For every edge u -> v:
+   ├── if weight is 0 and improves dist[v], push_front(v)
+   └── if weight is 1 and improves dist[v], push_back(v)
+5. Continue until deque is empty.
+```
+
+## Use Cases
+
+| Use Case | Why 0-1 BFS fits |
+|---|---|
+| Edge weights are only 0 and 1 | Faster than Dijkstra |
+| Minimum reversals | Original edge cost 0, reversed edge cost 1 |
+| Grid with free/paid moves | Free move = 0, paid move = 1 |
+| State transition with binary cost | Deque preserves shortest order |
+
+
 ## Idea
 
 ### Graph Model — Mermaid
@@ -1143,6 +1297,27 @@ start dq=[1], d1=0
 
 # 3.1 Cycle Detection in Undirected Graph
 
+## Step-by-Step Working
+
+```text
+1. Run DFS with parent parameter.
+2. Mark current node visited.
+3. For every neighbor:
+   ├── if neighbor is unvisited, DFS(neighbor, current)
+   ├── if neighbor is parent, ignore it
+   └── if neighbor is visited and not parent, cycle exists
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Detect redundant edge | Extra edge creates cycle |
+| Validate tree | Tree must be connected and acyclic |
+| Undirected graph sanity check | Find whether graph has loop structure |
+| Kruskal intuition | DSU also detects same idea |
+
+
 ## Idea
 
 ### Graph Model — Mermaid
@@ -1239,6 +1414,28 @@ dfs(1, parent=-1)
 
 # 3.2 Cycle Detection in Directed Graph
 
+## Step-by-Step Working
+
+```text
+1. Use state array: 0=unvisited, 1=active, 2=finished.
+2. When DFS enters node u, set state[u]=1.
+3. For every directed edge u -> v:
+   ├── if state[v]=0, DFS(v)
+   ├── if state[v]=1, back edge found -> cycle
+   └── if state[v]=2, already safe
+4. When all neighbors finish, set state[u]=2.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Course schedule possible? | Cycle means impossible prerequisites |
+| Build/dependency graph | Cyclic dependency is invalid |
+| Topological sort validation | Only DAG can be topologically sorted |
+| Deadlock-style dependency cycle | Active recursion path detects loop |
+
+
 ## Idea
 
 ### Graph Model — Mermaid
@@ -1324,6 +1521,26 @@ dfs(1) -> state[1]=1
 ---
 
 # 3.3 Topological Sort — DFS
+
+## Step-by-Step Working
+
+```text
+1. Run DFS on every unvisited node.
+2. Visit all outgoing neighbors first.
+3. After all children are finished, push current node into topo list.
+4. Reverse the final list.
+5. Result is a valid dependency order for a DAG.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Dependency ordering | Parent before dependent task |
+| Course schedule order | Prerequisite before course |
+| Build order | Compile dependencies first |
+| DAG DP | Need processing order before transitions |
+
 
 ## Idea
 
@@ -1411,6 +1628,27 @@ after reverse  = [1,3,2,4]
 ---
 
 # 3.4 Topological Sort — Kahn
+
+## Step-by-Step Working
+
+```text
+1. Compute indegree of every node.
+2. Push all indegree-0 nodes into queue.
+3. Pop one node and append to topo order.
+4. For each outgoing edge u -> v, reduce indegree[v].
+5. If indegree[v] becomes 0, push v.
+6. If topo size < n at the end, graph has a cycle.
+```
+
+## Use Cases
+
+| Use Case | Why Kahn fits |
+|---|---|
+| Course schedule | Natural prerequisite removal |
+| Detect cycle in DAG problem | topo size check |
+| Lexicographically smallest topo | Use priority queue instead of queue |
+| Task scheduling | Process tasks with no pending dependency |
+
 
 ## Idea
 
@@ -1512,6 +1750,27 @@ Queue=[1]
 
 # 3.5 DAG DP
 
+## Step-by-Step Working
+
+```text
+1. Confirm graph is DAG.
+2. Get topological order.
+3. Initialize dp[source] or base states.
+4. Process nodes in topo order.
+5. Relax/push dp value through outgoing edges.
+6. Final answer is stored in target/all dp states.
+```
+
+## Use Cases
+
+| Use Case | DP meaning |
+|---|---|
+| Count paths in DAG | dp[v] += dp[u] |
+| Longest path in DAG | dp[v] = max(dp[v], dp[u] + weight) |
+| Minimum cost dependency path | relax in topo order |
+| Number of ways to complete tasks | Dependencies form DAG |
+
+
 ## Idea
 
 ### DAG DP Model — Mermaid
@@ -1603,6 +1862,28 @@ source 1 distance 0
 ---
 
 # 4.2 Dijkstra
+
+## Step-by-Step Working
+
+```text
+1. Set all distances to INF.
+2. Set dist[source] = 0.
+3. Push (0, source) into min-priority queue.
+4. Always pop the node with smallest current distance.
+5. Ignore stale priority queue entries.
+6. Relax all outgoing positive-weight edges.
+7. Repeat until queue is empty.
+```
+
+## Use Cases
+
+| Use Case | Why Dijkstra fits |
+|---|---|
+| Road/network delay | Non-negative travel times |
+| Cheapest path with positive weights | Greedy min-distance expansion |
+| Weighted grid | Moving cost is positive |
+| State graph with positive cost | Priority queue handles different costs |
+
 
 ## Use When
 
@@ -1696,6 +1977,28 @@ pq={(0,1)}, dist[1]=0
 
 # 4.3 Bellman-Ford
 
+## Step-by-Step Working
+
+```text
+1. Store graph as edge list.
+2. Set dist[source] = 0, all others INF.
+3. Repeat n-1 times:
+   └── try relaxing every edge.
+4. After n-1 passes, all shortest simple paths are finalized.
+5. Do one extra pass.
+6. If any edge still relaxes, a negative cycle exists.
+```
+
+## Use Cases
+
+| Use Case | Why Bellman-Ford fits |
+|---|---|
+| Negative edge weights | Dijkstra is unsafe with negative edges |
+| Negative cycle detection | Extra relaxation detects it |
+| Currency arbitrage style problems | Profitable cycle maps to negative cycle |
+| Small/medium graph shortest path | Simpler than advanced algorithms |
+
+
 ## Use When
 
 ### Negative Edge Graph Model — Mermaid
@@ -1772,6 +2075,27 @@ Start dist[src]=0
 ---
 
 # 4.4 Floyd-Warshall
+
+## Step-by-Step Working
+
+```text
+1. Create dist matrix.
+2. dist[i][i] = 0.
+3. dist[u][v] = edge weight for every edge.
+4. For every middle node k:
+   └── try improving every pair i -> j using i -> k -> j.
+5. After all k, dist[i][j] is shortest path between every pair.
+```
+
+## Use Cases
+
+| Use Case | Why Floyd-Warshall fits |
+|---|---|
+| All-pairs shortest path | Direct dist matrix answer |
+| Many shortest path queries | Precompute once, answer O(1) |
+| Small dense graph | O(n^3) acceptable |
+| Transitive closure variant | Reachability between all pairs |
+
 
 ## Use When
 
@@ -1856,6 +2180,27 @@ answer = min dist[target][0], dist[target][1]
 ---
 
 # 5.1 DSU Disjoint Set Union
+
+## Step-by-Step Working
+
+```text
+1. Initially every node is its own parent.
+2. find(x) returns representative/leader of x's component.
+3. Path compression makes future find() faster.
+4. unite(a,b) finds both leaders.
+5. If leaders are same, a and b are already connected.
+6. Otherwise attach smaller component under larger component.
+```
+
+## Use Cases
+
+| Use Case | Why DSU fits |
+|---|---|
+| Dynamic connectivity | Merge components quickly |
+| Kruskal MST | Check whether edge creates cycle |
+| Redundant connection | Edge whose endpoints already share leader |
+| Number of components | Decrease count after successful union |
+
 
 ## Idea
 
@@ -1962,6 +2307,28 @@ union(1,3)
 
 # 5.2 Kruskal MST
 
+## Step-by-Step Working
+
+```text
+1. Sort all edges by increasing weight.
+2. Start with n separate components.
+3. For each edge from cheapest to costliest:
+   ├── if endpoints are in different components, take edge
+   └── otherwise skip because it creates cycle
+4. Stop after taking n-1 edges.
+5. Sum of taken edges is MST cost.
+```
+
+## Use Cases
+
+| Use Case | Why Kruskal fits |
+|---|---|
+| Minimum cost to connect all nodes | MST chooses cheapest non-cycle edges |
+| Sparse graph with edge list | Sorting edges is natural |
+| Need chosen edges | Kruskal directly builds selected edge set |
+| Clustering | Stop early when desired components remain |
+
+
 ## Idea
 
 ### Weighted Undirected Graph Model — Mermaid
@@ -2058,6 +2425,27 @@ Start components: {1},{2},{3},{4}
 ---
 
 # 5.3 Prim MST
+
+## Step-by-Step Working
+
+```text
+1. Start from any node.
+2. Push all outgoing edges into min-heap.
+3. Pick cheapest edge that reaches an unvisited node.
+4. Add that node to MST.
+5. Push its outgoing edges.
+6. Continue until all nodes are included.
+```
+
+## Use Cases
+
+| Use Case | Why Prim fits |
+|---|---|
+| Graph already in adjacency list | No need edge-list sorting |
+| Dense graph | Prim can be efficient with heap/matrix variants |
+| Grow connected network | Always expands from visited set |
+| Minimum spanning tree | Same MST result as Kruskal |
+
 
 ## Idea
 
@@ -2160,6 +2548,27 @@ visited={1}
 ---
 
 # 6.1 SCC — Kosaraju
+
+## Step-by-Step Working
+
+```text
+1. Run DFS on original graph.
+2. Push nodes after they finish.
+3. Reverse all directed edges.
+4. Process nodes in decreasing finish time.
+5. Each DFS on reversed graph gives exactly one SCC.
+6. Assign component id to reached nodes.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Find strongly connected groups | Every node inside group reaches every other |
+| Condense graph into DAG | SCCs become super-nodes |
+| 2-SAT foundation | Implication graph uses SCCs |
+| Deadlock/dependency clusters | Mutually dependent nodes form SCC |
+
 
 ## Idea
 
@@ -2272,6 +2681,27 @@ Reverse order for pass 2:
 
 # 6.2 Bridges
 
+## Step-by-Step Working
+
+```text
+1. Run DFS and assign tin[u].
+2. Maintain low[u] = earliest ancestor reachable from u/subtree.
+3. For tree edge u-v, DFS into v.
+4. After returning, update low[u] from low[v].
+5. If low[v] > tin[u], v's subtree cannot reach u or ancestor.
+6. Therefore edge u-v is a bridge.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Critical connections | Removing bridge disconnects network |
+| Network reliability | Find single points of edge failure |
+| Road/communication graph | Critical road/cable detection |
+| CP low-link problems | Foundation for advanced graph algorithms |
+
+
 ## Idea
 
 ### Bridge Graph Model — Mermaid
@@ -2374,6 +2804,27 @@ dfs(1)
 ---
 
 # 6.3 Articulation Points
+
+## Step-by-Step Working
+
+```text
+1. Run DFS with tin[] and low[].
+2. Root is articulation if it has more than one DFS child.
+3. For non-root u, check every DFS child v.
+4. If low[v] >= tin[u], subtree v cannot reach an ancestor of u.
+5. Removing u disconnects that subtree.
+6. Mark u as articulation point.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Critical routers/cities | Removing node disconnects network |
+| Biconnected component foundation | Low-link concept required |
+| Failure analysis | Single point of node failure |
+| CP graph cuts | Classic cut-vertex problems |
+
 
 ## Idea
 
@@ -2483,6 +2934,27 @@ For non-root u:
 
 # 6.4 Euler Path / Circuit
 
+## Step-by-Step Working
+
+```text
+1. Check graph connectivity ignoring isolated nodes.
+2. Count vertices with odd degree.
+3. If 0 odd vertices, Euler circuit exists.
+4. If 2 odd vertices, Euler path exists.
+5. Otherwise Euler path/circuit does not exist.
+6. To construct path, use Hierholzer algorithm.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Use every edge exactly once | Euler path/circuit definition |
+| Route inspection | Traverse all roads/edges |
+| Word chain/de Bruijn style problems | Edges must be consumed once |
+| CP path construction | Hierholzer is standard |
+
+
 ## Undirected Graph Rules
 
 | Case | Condition |
@@ -2508,6 +2980,27 @@ Degrees:
 ---
 
 # 6.5 LCA Binary Lifting
+
+## Step-by-Step Working
+
+```text
+1. Root the tree.
+2. DFS to compute depth[u] and up[u][0] = parent.
+3. Build up[u][j] = 2^j-th ancestor.
+4. To answer LCA(a,b), lift deeper node up to same depth.
+5. Lift both nodes upward from high powers to low powers.
+6. When their parents match, that parent is LCA.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Fast ancestor queries | O(log n) per query |
+| Distance between tree nodes | dist = depth[a]+depth[b]-2*depth[lca] |
+| Path queries on tree | LCA splits path into two ancestor paths |
+| Tree CP/interview problems | Core advanced tree technique |
+
 
 ## Idea
 
@@ -2627,6 +3120,26 @@ Query `lca(4,3)`:
 
 # 6.6 Tree Diameter
 
+## Step-by-Step Working
+
+```text
+1. Start BFS/DFS from any node x.
+2. Find farthest node a from x.
+3. Start BFS/DFS from a.
+4. Find farthest node b from a.
+5. Distance a-b is tree diameter.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Longest path in tree | Diameter definition |
+| Minimum height/tree center problems | Centers lie on diameter path |
+| Network maximum latency in tree | Longest node-to-node distance |
+| Tree DP practice | Diameter can also be computed by DP |
+
+
 ## Idea
 
 ### Diameter Tree Model — Mermaid
@@ -2687,6 +3200,26 @@ start from 5
 
 # 6.7 Tree DP / Rerooting Intro
 
+## Step-by-Step Working
+
+```text
+1. Root the tree at any node.
+2. Do postorder DFS to compute subtree DP.
+3. Combine children answers into parent answer.
+4. For rerooting, pass parent-side contribution to children.
+5. Recompute answer as if each node were root.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Subtree size/sum | Basic tree DP |
+| Maximum independent set on tree | Include/exclude DP |
+| Sum of distances from every node | Rerooting classic |
+| Tree contribution problems | Move root and reuse computed values |
+
+
 ## Tree DP Pattern
 
 ```text
@@ -2722,6 +3255,27 @@ dfs(1)
 
 # 6.8 Network Flow Intro
 
+## Step-by-Step Working
+
+```text
+1. Model source, sink, and directed capacity edges.
+2. Flow on an edge cannot exceed capacity.
+3. Intermediate nodes conserve flow: incoming = outgoing.
+4. Find augmenting paths from source to sink.
+5. Push possible flow through each path.
+6. Stop when no augmenting path remains.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Maximum transfer | Max flow from source to sink |
+| Min cut | Max-flow min-cut theorem |
+| Assignment with capacities | Model choices as flow |
+| Matching generalization | Bipartite matching can be solved by flow |
+
+
 ## When to Think Flow
 
 | Signal | Think |
@@ -2744,6 +3298,27 @@ For interviews, flow is uncommon. For CP, Dinic is the standard next algorithm.
 ---
 
 # 6.9 Bipartite Matching Intro
+
+## Step-by-Step Working
+
+```text
+1. Split graph into left side and right side.
+2. For each left node, try to assign one right node.
+3. If desired right node is free, match it.
+4. If occupied, try to rematch its current owner elsewhere.
+5. If rematching succeeds, current node gets that right node.
+6. Count successful matches.
+```
+
+## Use Cases
+
+| Use Case | Meaning |
+|---|---|
+| Assign workers to jobs | One-to-one valid pairing |
+| Students to projects | Match based on allowed choices |
+| Maximum pairings | Max cardinality bipartite matching |
+| Flow reduction | Can be modeled as max flow too |
+
 
 ## When to Use
 
@@ -4295,4 +4870,756 @@ flowchart LR
     S -->|cap 2| B((B))
     A -->|cap 2| T((T))
     B -->|cap 2| T
+```
+
+
+---
+
+# 9. Full Runnable C++ Algorithm Templates With `main()`
+
+> Use this section when you want every algorithm as a complete runnable file. Each template reads input, builds the graph, calls the algorithm, and prints the result.
+
+## 9.1 DFS — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>> g;
+vector<int> vis;
+
+void dfs(int u) {
+    vis[u] = 1;
+    cout << u << ' ';
+    for (int v : g[u]) {
+        if (!vis[v]) dfs(v);
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    g.assign(n + 1, {});
+    vis.assign(n + 1, 0);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    int src;
+    cin >> src;
+    dfs(src);
+    cout << '\n';
+}
+```
+
+## 9.2 BFS — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    int src;
+    cin >> src;
+    vector<int> dist(n + 1, -1);
+    queue<int> q;
+
+    dist[src] = 0;
+    q.push(src);
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        for (int v : g[u]) {
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+
+    for (int i = 1; i <= n; i++) cout << dist[i] << ' ';
+    cout << '\n';
+}
+```
+
+## 9.3 Bipartite Check — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    vector<int> color(n + 1, -1);
+    bool ok = true;
+
+    for (int start = 1; start <= n; start++) {
+        if (color[start] != -1) continue;
+
+        queue<int> q;
+        color[start] = 0;
+        q.push(start);
+
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+
+            for (int v : g[u]) {
+                if (color[v] == -1) {
+                    color[v] = color[u] ^ 1;
+                    q.push(v);
+                } else if (color[v] == color[u]) {
+                    ok = false;
+                }
+            }
+        }
+    }
+
+    cout << (ok ? "YES" : "NO") << '\n';
+}
+```
+
+## 9.4 Undirected Cycle Detection — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+bool dfsCycle(int u, int parent, vector<vector<int>>& g, vector<int>& vis) {
+    vis[u] = 1;
+
+    for (int v : g[u]) {
+        if (!vis[v]) {
+            if (dfsCycle(v, u, g, vis)) return true;
+        } else if (v != parent) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    vector<int> vis(n + 1, 0);
+    bool hasCycle = false;
+
+    for (int i = 1; i <= n; i++) {
+        if (!vis[i] && dfsCycle(i, -1, g, vis)) {
+            hasCycle = true;
+            break;
+        }
+    }
+
+    cout << (hasCycle ? "CYCLE" : "NO CYCLE") << '\n';
+}
+```
+
+## 9.5 Directed Cycle Detection — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+bool dfs(int u, vector<vector<int>>& g, vector<int>& state) {
+    state[u] = 1;
+    for (int v : g[u]) {
+        if (state[v] == 0) {
+            if (dfs(v, g, state)) return true;
+        } else if (state[v] == 1) {
+            return true;
+        }
+    }
+    state[u] = 2;
+    return false;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+    }
+
+    vector<int> state(n + 1, 0);
+    bool hasCycle = false;
+
+    for (int i = 1; i <= n; i++) {
+        if (state[i] == 0 && dfs(i, g, state)) {
+            hasCycle = true;
+            break;
+        }
+    }
+
+    cout << (hasCycle ? "CYCLE" : "NO CYCLE") << '\n';
+}
+```
+
+## 9.6 Topological Sort — Kahn Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+    vector<int> indeg(n + 1, 0);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        indeg[v]++;
+    }
+
+    queue<int> q;
+    for (int i = 1; i <= n; i++) {
+        if (indeg[i] == 0) q.push(i);
+    }
+
+    vector<int> topo;
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        topo.push_back(u);
+
+        for (int v : g[u]) {
+            indeg[v]--;
+            if (indeg[v] == 0) q.push(v);
+        }
+    }
+
+    if ((int)topo.size() != n) {
+        cout << "CYCLE\n";
+        return 0;
+    }
+
+    for (int x : topo) cout << x << ' ';
+    cout << '\n';
+}
+```
+
+## 9.7 Dijkstra — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const ll INF = 4e18;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<pair<int,int>>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        g[u].push_back({v, w});
+    }
+
+    int src;
+    cin >> src;
+    vector<ll> dist(n + 1, INF);
+    priority_queue<pair<ll,int>, vector<pair<ll,int>>, greater<pair<ll,int>>> pq;
+
+    dist[src] = 0;
+    pq.push({0, src});
+
+    while (!pq.empty()) {
+        auto [du, u] = pq.top();
+        pq.pop();
+
+        if (du != dist[u]) continue;
+
+        for (auto [v, w] : g[u]) {
+            if (dist[v] > dist[u] + w) {
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+
+    for (int i = 1; i <= n; i++) {
+        if (dist[i] == INF) cout << "INF ";
+        else cout << dist[i] << ' ';
+    }
+    cout << '\n';
+}
+```
+
+## 9.8 Bellman-Ford — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const ll INF = 4e18;
+
+struct Edge {
+    int u, v;
+    ll w;
+};
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<Edge> edges;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        ll w;
+        cin >> u >> v >> w;
+        edges.push_back({u, v, w});
+    }
+
+    int src;
+    cin >> src;
+    vector<ll> dist(n + 1, INF);
+    dist[src] = 0;
+
+    for (int i = 1; i <= n - 1; i++) {
+        bool changed = false;
+        for (auto e : edges) {
+            if (dist[e.u] != INF && dist[e.v] > dist[e.u] + e.w) {
+                dist[e.v] = dist[e.u] + e.w;
+                changed = true;
+            }
+        }
+        if (!changed) break;
+    }
+
+    bool negCycle = false;
+    for (auto e : edges) {
+        if (dist[e.u] != INF && dist[e.v] > dist[e.u] + e.w) {
+            negCycle = true;
+        }
+    }
+
+    if (negCycle) cout << "NEGATIVE CYCLE\n";
+    else {
+        for (int i = 1; i <= n; i++) {
+            if (dist[i] == INF) cout << "INF ";
+            else cout << dist[i] << ' ';
+        }
+        cout << '\n';
+    }
+}
+```
+
+## 9.9 Floyd-Warshall — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const ll INF = 4e18;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<ll>> dist(n + 1, vector<ll>(n + 1, INF));
+
+    for (int i = 1; i <= n; i++) dist[i][i] = 0;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        ll w;
+        cin >> u >> v >> w;
+        dist[u][v] = min(dist[u][v], w);
+    }
+
+    for (int k = 1; k <= n; k++) {
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (dist[i][k] == INF || dist[k][j] == INF) continue;
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+            }
+        }
+    }
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (dist[i][j] == INF) cout << "INF ";
+            else cout << dist[i][j] << ' ';
+        }
+        cout << '\n';
+    }
+}
+```
+
+## 9.10 DSU + Kruskal MST — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+struct DSU {
+    vector<int> parent, sz;
+
+    DSU(int n) {
+        parent.resize(n + 1);
+        sz.assign(n + 1, 1);
+        iota(parent.begin(), parent.end(), 0);
+    }
+
+    int find(int x) {
+        if (parent[x] == x) return x;
+        return parent[x] = find(parent[x]);
+    }
+
+    bool unite(int a, int b) {
+        a = find(a);
+        b = find(b);
+        if (a == b) return false;
+        if (sz[a] < sz[b]) swap(a, b);
+        parent[b] = a;
+        sz[a] += sz[b];
+        return true;
+    }
+};
+
+struct Edge {
+    int u, v;
+    ll w;
+};
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<Edge> edges(m);
+
+    for (auto &e : edges) cin >> e.u >> e.v >> e.w;
+
+    sort(edges.begin(), edges.end(), [](Edge a, Edge b) {
+        return a.w < b.w;
+    });
+
+    DSU dsu(n);
+    ll cost = 0;
+    int used = 0;
+
+    for (auto e : edges) {
+        if (dsu.unite(e.u, e.v)) {
+            cost += e.w;
+            used++;
+        }
+    }
+
+    if (used != n - 1) cout << -1 << '\n';
+    else cout << cost << '\n';
+}
+```
+
+## 9.11 Prim MST — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<pair<int,int>>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        g[u].push_back({v, w});
+        g[v].push_back({u, w});
+    }
+
+    vector<int> used(n + 1, 0);
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+    pq.push({0, 1});
+
+    ll cost = 0;
+    int count = 0;
+
+    while (!pq.empty()) {
+        auto [w, u] = pq.top();
+        pq.pop();
+
+        if (used[u]) continue;
+        used[u] = 1;
+        cost += w;
+        count++;
+
+        for (auto [v, wt] : g[u]) {
+            if (!used[v]) pq.push({wt, v});
+        }
+    }
+
+    if (count != n) cout << -1 << '\n';
+    else cout << cost << '\n';
+}
+```
+
+## 9.12 Kosaraju SCC — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+void dfs1(int u, vector<vector<int>>& g, vector<int>& vis, vector<int>& order) {
+    vis[u] = 1;
+    for (int v : g[u]) if (!vis[v]) dfs1(v, g, vis, order);
+    order.push_back(u);
+}
+
+void dfs2(int u, vector<vector<int>>& rg, vector<int>& comp, int cid) {
+    comp[u] = cid;
+    for (int v : rg[u]) if (comp[v] == -1) dfs2(v, rg, comp, cid);
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1), rg(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        rg[v].push_back(u);
+    }
+
+    vector<int> vis(n + 1, 0), order;
+    for (int i = 1; i <= n; i++) {
+        if (!vis[i]) dfs1(i, g, vis, order);
+    }
+
+    reverse(order.begin(), order.end());
+    vector<int> comp(n + 1, -1);
+    int cid = 0;
+
+    for (int u : order) {
+        if (comp[u] == -1) dfs2(u, rg, comp, cid++);
+    }
+
+    cout << "SCC count = " << cid << '\n';
+    for (int i = 1; i <= n; i++) cout << "node " << i << " -> comp " << comp[i] << '\n';
+}
+```
+
+## 9.13 Bridges — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int timer = 0;
+vector<int> tin, low, vis;
+vector<pair<int,int>> bridges;
+
+void dfsBridge(int u, int p, vector<vector<int>>& g) {
+    vis[u] = 1;
+    tin[u] = low[u] = timer++;
+
+    for (int v : g[u]) {
+        if (v == p) continue;
+        if (vis[v]) {
+            low[u] = min(low[u], tin[v]);
+        } else {
+            dfsBridge(v, u, g);
+            low[u] = min(low[u], low[v]);
+            if (low[v] > tin[u]) bridges.push_back({u, v});
+        }
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    tin.assign(n + 1, -1);
+    low.assign(n + 1, -1);
+    vis.assign(n + 1, 0);
+
+    for (int i = 1; i <= n; i++) {
+        if (!vis[i]) dfsBridge(i, -1, g);
+    }
+
+    for (auto [u, v] : bridges) cout << u << ' ' << v << '\n';
+}
+```
+
+## 9.14 Articulation Points — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int timerAP = 0;
+vector<int> tinAP, lowAP, visAP, isArt;
+
+void dfsAP(int u, int p, vector<vector<int>>& g) {
+    visAP[u] = 1;
+    tinAP[u] = lowAP[u] = timerAP++;
+    int children = 0;
+
+    for (int v : g[u]) {
+        if (v == p) continue;
+        if (visAP[v]) {
+            lowAP[u] = min(lowAP[u], tinAP[v]);
+        } else {
+            dfsAP(v, u, g);
+            lowAP[u] = min(lowAP[u], lowAP[v]);
+
+            if (p != -1 && lowAP[v] >= tinAP[u]) isArt[u] = 1;
+            children++;
+        }
+    }
+
+    if (p == -1 && children > 1) isArt[u] = 1;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    tinAP.assign(n + 1, -1);
+    lowAP.assign(n + 1, -1);
+    visAP.assign(n + 1, 0);
+    isArt.assign(n + 1, 0);
+
+    for (int i = 1; i <= n; i++) {
+        if (!visAP[i]) dfsAP(i, -1, g);
+    }
+
+    for (int i = 1; i <= n; i++) {
+        if (isArt[i]) cout << i << ' ';
+    }
+    cout << '\n';
+}
+```
+
+## 9.15 LCA Binary Lifting — Runnable
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int LOG = 20;
+vector<vector<int>> tree;
+vector<array<int, LOG>> up;
+vector<int> depth;
+
+void dfs(int u, int p) {
+    up[u][0] = p;
+    for (int j = 1; j < LOG; j++) {
+        up[u][j] = up[up[u][j - 1]][j - 1];
+    }
+
+    for (int v : tree[u]) {
+        if (v == p) continue;
+        depth[v] = depth[u] + 1;
+        dfs(v, u);
+    }
+}
+
+int lift(int u, int k) {
+    for (int j = 0; j < LOG; j++) {
+        if (k & (1 << j)) u = up[u][j];
+    }
+    return u;
+}
+
+int lca(int a, int b) {
+    if (depth[a] < depth[b]) swap(a, b);
+    a = lift(a, depth[a] - depth[b]);
+
+    if (a == b) return a;
+
+    for (int j = LOG - 1; j >= 0; j--) {
+        if (up[a][j] != up[b][j]) {
+            a = up[a][j];
+            b = up[b][j];
+        }
+    }
+    return up[a][0];
+}
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+    tree.assign(n + 1, {});
+    up.assign(n + 1, {});
+    depth.assign(n + 1, 0);
+
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        tree[u].push_back(v);
+        tree[v].push_back(u);
+    }
+
+    dfs(1, 1);
+
+    while (q--) {
+        int a, b;
+        cin >> a >> b;
+        cout << lca(a, b) << '\n';
+    }
+}
 ```
