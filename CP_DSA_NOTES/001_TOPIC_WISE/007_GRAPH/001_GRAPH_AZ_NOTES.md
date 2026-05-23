@@ -3369,20 +3369,35 @@ try match left node B
 
 # P1. Number of Connected Components
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A((1)) --- B((2))
-    B --- C((3))
-    D((4)) --- E((5))
-    F((6))
-```
-
-
 ## Problem Statement
 
-Given `n` nodes and `m` undirected edges, find number of connected components.
+Given `n` nodes and `m` undirected edges, find the number of connected components.
+
+## Technique
+
+DFS/BFS connected component counting.
+
+## Step-by-Step Working
+
+```text
+1. Build an undirected adjacency list.
+2. Keep visited array initialized with 0.
+3. Scan all nodes from 1 to n.
+4. If node i is unvisited, this is a new component.
+5. Increase answer by 1.
+6. Run DFS/BFS from i to mark the whole component.
+7. Continue until all nodes are scanned.
+```
+
+## Safe Diagram
+
+```text
+Component 1: 1 -- 2 -- 3
+Component 2: 4 -- 5
+Component 3: 6
+
+Answer = 3 components
+```
 
 ## Input
 
@@ -3407,14 +3422,16 @@ using namespace std;
 
 void dfs(int u, vector<vector<int>>& g, vector<int>& vis) {
     vis[u] = 1;
-    for (int v : g[u]) if (!vis[v]) dfs(v, g, vis);
+    for (int v : g[u]) {
+        if (!vis[v]) dfs(v, g, vis);
+    }
 }
 
 int main() {
     int n, m;
     cin >> n >> m;
-    vector<vector<int>> g(n + 1);
 
+    vector<vector<int>> g(n + 1);
     for (int i = 0; i < m; i++) {
         int u, v;
         cin >> u >> v;
@@ -3423,67 +3440,64 @@ int main() {
     }
 
     vector<int> vis(n + 1, 0);
-    int ans = 0;
+    int components = 0;
 
     for (int i = 1; i <= n; i++) {
         if (!vis[i]) {
-            ans++;
+            components++;
             dfs(i, g, vis);
         }
     }
 
-    cout << ans << '\n';
+    cout << components << '\n';
+    return 0;
 }
 ```
 
-## Tree-Wise Dry Run
+## Dry Run
 
 ```text
-for i=1..6
-├── i=1 unvisited -> ans=1
-│   └── dfs(1)
-│       └── dfs(2)
-│           └── dfs(3)
-├── i=2 visited -> skip
-├── i=3 visited -> skip
-├── i=4 unvisited -> ans=2
-│   └── dfs(4)
-│       └── dfs(5)
-├── i=5 visited -> skip
-└── i=6 unvisited -> ans=3
-    └── dfs(6)
+i=1 unvisited -> components=1 -> DFS visits 1,2,3
+i=2 visited -> skip
+i=3 visited -> skip
+i=4 unvisited -> components=2 -> DFS visits 4,5
+i=5 visited -> skip
+i=6 unvisited -> components=3 -> DFS visits 6
 ```
-
-## Index-by-Index Dry Run
-
-| i | Before | Action | ans |
-|---:|---|---|---:|
-| 1 | unvisited | visit component {1,2,3} | 1 |
-| 2 | visited | skip | 1 |
-| 3 | visited | skip | 1 |
-| 4 | unvisited | visit component {4,5} | 2 |
-| 5 | visited | skip | 2 |
-| 6 | unvisited | visit component {6} | 3 |
 
 ---
 
 # P2. Shortest Path in Unweighted Graph
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart TD
-    A((1)) --- B((2))
-    A --- C((3))
-    B --- D((4))
-    B --- E((5))
-    C --- F((6))
-```
-
-
 ## Problem Statement
 
-Given unweighted graph and source `s`, print shortest distance from source to every node.
+Given an unweighted graph and source `src`, print the shortest distance from `src` to every node.
+
+## Technique
+
+BFS shortest path.
+
+## Step-by-Step Working
+
+```text
+1. Build adjacency list.
+2. Initialize dist[i] = -1 for all nodes.
+3. Set dist[src] = 0 and push src into queue.
+4. Pop node u from queue.
+5. For each unvisited neighbor v, set dist[v] = dist[u] + 1.
+6. Push v into queue.
+7. First visit gives shortest distance because every edge has cost 1.
+```
+
+## Safe Diagram
+
+```text
+Source: 1
+
+Level 0: 1
+Level 1: 2, 3
+Level 2: 4, 5, 6
+```
 
 ## Input
 
@@ -3512,8 +3526,8 @@ using namespace std;
 int main() {
     int n, m;
     cin >> n >> m;
-    vector<vector<int>> g(n + 1);
 
+    vector<vector<int>> g(n + 1);
     for (int i = 0; i < m; i++) {
         int u, v;
         cin >> u >> v;
@@ -3526,6 +3540,7 @@ int main() {
 
     vector<int> dist(n + 1, -1);
     queue<int> q;
+
     dist[src] = 0;
     q.push(src);
 
@@ -3542,38 +3557,55 @@ int main() {
     }
 
     for (int i = 1; i <= n; i++) cout << dist[i] << ' ';
+    cout << '\n';
+    return 0;
 }
 ```
 
-## Tree-Wise Dry Run
+## Dry Run
 
 ```text
-source 1, dist=0
-├── visit 2 from 1 -> dist[2]=1
-│   ├── visit 4 from 2 -> dist[4]=2
-│   └── visit 5 from 2 -> dist[5]=2
-└── visit 3 from 1 -> dist[3]=1
-    └── visit 6 from 3 -> dist[6]=2
+queue=[1], dist[1]=0
+pop 1 -> push 2,3 -> dist[2]=1, dist[3]=1
+pop 2 -> push 4,5 -> dist[4]=2, dist[5]=2
+pop 3 -> push 6 -> dist[6]=2
 ```
 
 ---
 
 # P3. Escape from Monsters
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A["A player"] --- X1["open cell"]
-    X1 --- X2["open cell"]
-    M["M monster"] --- X3["open cell"]
-    X2 --- Exit["boundary exit"]
-```
-
-
 ## Problem Statement
 
-Given grid with walls `#`, empty `.`, player `A`, monsters `M`, determine if player can escape to boundary before monsters.
+Given a grid with walls `#`, empty cells `.`, player `A`, and monsters `M`, decide whether the player can reach any boundary cell before monsters reach that cell.
+
+## Technique
+
+Multi-source BFS for monsters + BFS for player.
+
+## Step-by-Step Working
+
+```text
+1. Push all monster cells into queue and compute monsterDist.
+2. Start BFS from player cell A.
+3. For every next player cell, check:
+   - inside grid
+   - not wall
+   - not already visited by player
+   - playerTime + 1 < monsterDist[next]
+4. If player reaches a boundary cell safely, answer YES.
+5. Otherwise answer NO.
+```
+
+## Safe Diagram
+
+```text
+M wave spreads first conceptually:
+M -> time 1 -> time 2 -> ...
+
+Player can move into a cell only if:
+player arrival time < monster arrival time
+```
 
 ## Input
 
@@ -3592,14 +3624,6 @@ Given grid with walls `#`, empty `.`, player `A`, monsters `M`, determine if pla
 YES
 ```
 
-## Technique
-
-```text
-1. Multi-source BFS from monsters -> monsterDist
-2. BFS from player -> playerDist
-3. Player can enter cell only when playerTime < monsterTime
-```
-
 ## C++ Code
 
 ```cpp
@@ -3610,12 +3634,16 @@ const int INF = 1e9;
 int dx[4] = {1, -1, 0, 0};
 int dy[4] = {0, 0, 1, -1};
 
-vector<vector<int>> bfs(vector<string>& grid, vector<pair<int,int>> src) {
+bool inside(int x, int y, int n, int m) {
+    return x >= 0 && y >= 0 && x < n && y < m;
+}
+
+vector<vector<int>> bfsMonsters(vector<string>& grid, vector<pair<int,int>>& monsters) {
     int n = grid.size(), m = grid[0].size();
     vector<vector<int>> dist(n, vector<int>(m, INF));
     queue<pair<int,int>> q;
 
-    for (auto [x, y] : src) {
+    for (auto [x, y] : monsters) {
         dist[x][y] = 0;
         q.push({x, y});
     }
@@ -3626,9 +3654,8 @@ vector<vector<int>> bfs(vector<string>& grid, vector<pair<int,int>> src) {
 
         for (int d = 0; d < 4; d++) {
             int nx = x + dx[d], ny = y + dy[d];
-            if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+            if (!inside(nx, ny, n, m)) continue;
             if (grid[nx][ny] == '#') continue;
-
             if (dist[nx][ny] > dist[x][y] + 1) {
                 dist[nx][ny] = dist[x][y] + 1;
                 q.push({nx, ny});
@@ -3637,42 +3664,92 @@ vector<vector<int>> bfs(vector<string>& grid, vector<pair<int,int>> src) {
     }
     return dist;
 }
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+
+    vector<string> grid(n);
+    pair<int,int> start;
+    vector<pair<int,int>> monsters;
+
+    for (int i = 0; i < n; i++) {
+        cin >> grid[i];
+        for (int j = 0; j < m; j++) {
+            if (grid[i][j] == 'A') start = {i, j};
+            if (grid[i][j] == 'M') monsters.push_back({i, j});
+        }
+    }
+
+    auto monsterDist = bfsMonsters(grid, monsters);
+    vector<vector<int>> playerDist(n, vector<int>(m, INF));
+    queue<pair<int,int>> q;
+
+    playerDist[start.first][start.second] = 0;
+    q.push(start);
+
+    while (!q.empty()) {
+        auto [x, y] = q.front();
+        q.pop();
+
+        if (x == 0 || y == 0 || x == n - 1 || y == m - 1) {
+            cout << "YES\n";
+            return 0;
+        }
+
+        for (int d = 0; d < 4; d++) {
+            int nx = x + dx[d], ny = y + dy[d];
+            if (!inside(nx, ny, n, m)) continue;
+            if (grid[nx][ny] == '#') continue;
+            if (playerDist[nx][ny] != INF) continue;
+
+            int nt = playerDist[x][y] + 1;
+            if (nt < monsterDist[nx][ny]) {
+                playerDist[nx][ny] = nt;
+                q.push({nx, ny});
+            }
+        }
+    }
+
+    cout << "NO\n";
+    return 0;
+}
 ```
 
-## Tree-Wise Dry Run
+## Dry Run
 
 ```text
-Phase 1: Monster BFS
-├── push all M with time 0
-├── expand time 1 cells
-└── expand time 2 cells
-
-Phase 2: Player BFS
-└── start A with time 0
-    ├── try next cell
-    │   ├── if wall -> reject
-    │   ├── if playerTime+1 >= monsterTime -> reject
-    │   └── else push cell
-    └── if boundary reached safely -> YES
+Phase 1: all monsters start at time 0 and fill monsterDist.
+Phase 2: player starts at A.
+For every move:
+├── wall -> reject
+├── monster arrives earlier/equal -> reject
+└── player arrives strictly earlier -> accept
 ```
 
 ---
 
 # P4. Course Schedule
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A((1)) --> B((2))
-    B --> C((3))
-    C --> D((4))
-```
-
-
 ## Problem Statement
 
-Given courses and prerequisites `u -> v`, decide whether all courses can be completed.
+Given courses and prerequisite edges `u -> v`, decide whether all courses can be completed.
+
+## Technique
+
+Topological sort using Kahn's algorithm.
+
+## Step-by-Step Working
+
+```text
+1. Build directed graph.
+2. Compute indegree of every node.
+3. Push all indegree-0 courses into queue.
+4. Pop a course and count it as completed.
+5. Reduce indegree of its dependent courses.
+6. If any dependent course becomes indegree 0, push it.
+7. If completed count == n, possible. Otherwise cycle exists.
+```
 
 ## Input
 
@@ -3689,7 +3766,7 @@ Given courses and prerequisites `u -> v`, decide whether all courses can be comp
 YES
 ```
 
-## C++ Code — Kahn
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -3698,6 +3775,7 @@ using namespace std;
 int main() {
     int n, m;
     cin >> n >> m;
+
     vector<vector<int>> g(n + 1);
     vector<int> indeg(n + 1, 0);
 
@@ -3709,13 +3787,15 @@ int main() {
     }
 
     queue<int> q;
-    for (int i = 1; i <= n; i++) if (indeg[i] == 0) q.push(i);
+    for (int i = 1; i <= n; i++) {
+        if (indeg[i] == 0) q.push(i);
+    }
 
-    int taken = 0;
+    int completed = 0;
     while (!q.empty()) {
         int u = q.front();
         q.pop();
-        taken++;
+        completed++;
 
         for (int v : g[u]) {
             indeg[v]--;
@@ -3723,44 +3803,45 @@ int main() {
         }
     }
 
-    cout << (taken == n ? "YES" : "NO") << '\n';
+    cout << (completed == n ? "YES" : "NO") << '\n';
+    return 0;
 }
 ```
 
-## Tree-Wise Dry Run
+## Dry Run
 
 ```text
-indegree:
-1:0, 2:1, 3:1, 4:1
-
+indegree: 1=0, 2=1, 3=1, 4=1
 queue=[1]
-└── take 1
-    └── indeg[2] becomes 0 -> push 2
-        └── take 2
-            └── indeg[3] becomes 0 -> push 3
-                └── take 3
-                    └── indeg[4] becomes 0 -> push 4
-                        └── take 4
-                            └── taken=4=n -> YES
+pop 1 -> indeg[2]=0 -> push 2
+pop 2 -> indeg[3]=0 -> push 3
+pop 3 -> indeg[4]=0 -> push 4
+pop 4 -> completed=4 -> YES
 ```
 
 ---
 
 # P5. Network Delay
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A((2)) -->|1| B((1))
-    A -->|1| C((3))
-    C -->|1| D((4))
-```
-
-
 ## Problem Statement
 
-Given weighted directed edges and start node `k`, find time for signal to reach all nodes.
+Given weighted directed edges and source `k`, find time needed for signal to reach all nodes. If any node is unreachable, print `-1`.
+
+## Technique
+
+Dijkstra shortest path.
+
+## Step-by-Step Working
+
+```text
+1. Build weighted directed graph.
+2. Set dist[k] = 0 and all other distances INF.
+3. Use min-priority queue by distance.
+4. Pop the closest node.
+5. Ignore stale queue entries.
+6. Relax all outgoing edges.
+7. Answer is maximum dist[i]. If any INF remains, answer is -1.
+```
 
 ## Input
 
@@ -3783,13 +3864,14 @@ Given weighted directed edges and start node `k`, find time for signal to reach 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
+
 const long long INF = 4e18;
 
 int main() {
     int n, m;
     cin >> n >> m;
-    vector<vector<pair<int,int>>> g(n + 1);
 
+    vector<vector<pair<int,int>>> g(n + 1);
     for (int i = 0; i < m; i++) {
         int u, v, w;
         cin >> u >> v >> w;
@@ -3808,6 +3890,7 @@ int main() {
     while (!pq.empty()) {
         auto [du, u] = pq.top();
         pq.pop();
+
         if (du != dist[u]) continue;
 
         for (auto [v, w] : g[u]) {
@@ -3826,40 +3909,44 @@ int main() {
         }
         ans = max(ans, dist[i]);
     }
+
     cout << ans << '\n';
+    return 0;
 }
 ```
 
-## Tree-Wise Dry Run
+## Dry Run
 
 ```text
 start k=2, dist[2]=0
-└── pop 2
-    ├── relax 2->1 -> d1=1
-    └── relax 2->3 -> d3=1
-        └── pop 3
-            └── relax 3->4 -> d4=2
-                └── max distance among all nodes = 2
+pop 2 -> relax 2->1 = 1, 2->3 = 1
+pop 1 -> no outgoing
+pop 3 -> relax 3->4 = 2
+max distance = 2
 ```
 
 ---
 
 # P6. Cheapest Path With 0/1 Edges
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A((1)) -->|0| B((2))
-    A -->|1| C((3))
-    B -->|1| D((4))
-    C -->|0| D
-```
-
-
 ## Problem Statement
 
 Given graph with edge weights only `0` and `1`, find shortest distance from source to all nodes.
+
+## Technique
+
+0-1 BFS using deque.
+
+## Step-by-Step Working
+
+```text
+1. Set all distances INF.
+2. Set dist[src] = 0.
+3. Use deque instead of queue.
+4. If edge cost is 0 and improves distance, push_front.
+5. If edge cost is 1 and improves distance, push_back.
+6. Continue until deque is empty.
+```
 
 ## Input
 
@@ -3883,13 +3970,14 @@ Given graph with edge weights only `0` and `1`, find shortest distance from sour
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
+
 const int INF = 1e9;
 
 int main() {
     int n, m;
     cin >> n >> m;
-    vector<vector<pair<int,int>>> g(n + 1);
 
+    vector<vector<pair<int,int>>> g(n + 1);
     for (int i = 0; i < m; i++) {
         int u, v, w;
         cin >> u >> v >> w;
@@ -3901,6 +3989,7 @@ int main() {
 
     vector<int> dist(n + 1, INF);
     deque<int> dq;
+
     dist[src] = 0;
     dq.push_front(src);
 
@@ -3918,41 +4007,43 @@ int main() {
     }
 
     for (int i = 1; i <= n; i++) cout << dist[i] << ' ';
+    cout << '\n';
+    return 0;
 }
 ```
 
-## Tree-Wise Dry Run
+## Dry Run
 
 ```text
 dq=[1]
-└── pop 1
-    ├── edge 1->2 cost 0 -> d2=0 -> push_front 2
-    └── edge 1->3 cost 1 -> d3=1 -> push_back 3
-        dq=[2,3]
-        └── pop 2
-            └── edge 2->4 cost 1 -> d4=1 -> push_back 4
-                dq=[3,4]
-                └── pop 3
-                    └── edge 3->4 cost 0 -> candidate=1, no better
+pop 1 -> 1->2 cost 0 -> push_front 2, d2=0
+pop 1 -> 1->3 cost 1 -> push_back 3, d3=1
+pop 2 -> 2->4 cost 1 -> push_back 4, d4=1
+pop 3 -> 3->4 cost 0 -> candidate 1, no improvement
 ```
 
 ---
 
 # P7. Negative Cycle Detection
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A((1)) -->|1| B((2))
-    B -->|-1| C((3))
-    C -->|-1| A
-```
-
-
 ## Problem Statement
 
 Given weighted directed graph, detect whether a negative cycle is reachable from source.
+
+## Technique
+
+Bellman-Ford extra relaxation pass.
+
+## Step-by-Step Working
+
+```text
+1. Store edges as edge list.
+2. Set dist[src] = 0 and others INF.
+3. Relax all edges n-1 times.
+4. Do one more pass over all edges.
+5. If any edge can still relax, a negative cycle exists.
+6. Otherwise no reachable negative cycle exists.
+```
 
 ## Input
 
@@ -3975,13 +4066,18 @@ YES
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
+
 const long long INF = 4e18;
 
-struct Edge { int u, v; long long w; };
+struct Edge {
+    int u, v;
+    long long w;
+};
 
 int main() {
     int n, m;
     cin >> n >> m;
+
     vector<Edge> edges(m);
     for (auto &e : edges) cin >> e.u >> e.v >> e.w;
 
@@ -3991,7 +4087,7 @@ int main() {
     vector<long long> dist(n + 1, INF);
     dist[src] = 0;
 
-    for (int i = 1; i <= n - 1; i++) {
+    for (int pass = 1; pass <= n - 1; pass++) {
         for (auto e : edges) {
             if (dist[e.u] != INF && dist[e.v] > dist[e.u] + e.w) {
                 dist[e.v] = dist[e.u] + e.w;
@@ -3999,45 +4095,49 @@ int main() {
         }
     }
 
-    bool neg = false;
+    bool negativeCycle = false;
     for (auto e : edges) {
-        if (dist[e.u] != INF && dist[e.v] > dist[e.u] + e.w) neg = true;
+        if (dist[e.u] != INF && dist[e.v] > dist[e.u] + e.w) {
+            negativeCycle = true;
+            break;
+        }
     }
 
-    cout << (neg ? "YES" : "NO") << '\n';
+    cout << (negativeCycle ? "YES" : "NO") << '\n';
+    return 0;
 }
 ```
 
-## Tree-Wise Dry Run
+## Dry Run
 
 ```text
-After n-1 passes:
-└── shortest simple paths should be fixed
-
+After n-1 passes, normal shortest paths should be fixed.
 Extra pass:
-└── check every edge u->v
-    ├── if dist[v] > dist[u] + w
-    │   └── distance can still improve -> negative cycle exists
-    └── otherwise no negative cycle
+if any dist[v] can become smaller, improvement is caused by a negative cycle.
 ```
 
 ---
 
 # P8. All Pairs Shortest Path
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A((1)) -->|4| B((2))
-    B -->|2| C((3))
-    A -->|10| C
-```
-
-
 ## Problem Statement
 
-Given weighted directed graph and queries `(u,v)`, answer shortest path from `u` to `v`.
+Given weighted directed graph and queries `(u, v)`, answer shortest path from `u` to `v`.
+
+## Technique
+
+Floyd-Warshall.
+
+## Step-by-Step Working
+
+```text
+1. Create dist matrix initialized to INF.
+2. Set dist[i][i] = 0.
+3. Add direct edges into matrix.
+4. For each middle node k, try path i -> k -> j.
+5. Update dist[i][j] if this path is shorter.
+6. Answer each query from matrix.
+```
 
 ## Input
 
@@ -4063,13 +4163,14 @@ Given weighted directed graph and queries `(u,v)`, answer shortest path from `u`
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
+
 const long long INF = 4e18;
 
 int main() {
     int n, m;
     cin >> n >> m;
-    vector<vector<long long>> dist(n + 1, vector<long long>(n + 1, INF));
 
+    vector<vector<long long>> dist(n + 1, vector<long long>(n + 1, INF));
     for (int i = 1; i <= n; i++) dist[i][i] = 0;
 
     for (int i = 0; i < m; i++) {
@@ -4095,47 +4196,42 @@ int main() {
         cin >> u >> v;
         cout << (dist[u][v] == INF ? -1 : dist[u][v]) << '\n';
     }
+
+    return 0;
 }
 ```
 
-## Tree-Wise Dry Run
+## Dry Run
 
 ```text
-Initial:
-1->2 = 4
-2->3 = 2
-1->3 = 10
-
-k=1:
-└── using 1 as middle gives no better path
-
-k=2:
-└── check 1 -> 2 -> 3
-    └── 4 + 2 = 6 < 10
-        └── dist[1][3] = 6
-
-Query 1 3 -> 6
-Query 3 1 -> unreachable -> -1
+Direct: 1->3 = 10
+Using middle node 2:
+1->2->3 = 4 + 2 = 6
+So dist[1][3] becomes 6.
 ```
 
 ---
 
 # P9. Minimum Cost to Connect Cities
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A((1)) ---|1| B((2))
-    B ---|2| C((3))
-    C ---|3| D((4))
-    A ---|4| C
-```
-
-
 ## Problem Statement
 
 Given cities and weighted undirected edges, connect all cities with minimum total cost.
+
+## Technique
+
+Minimum Spanning Tree using Kruskal + DSU.
+
+## Step-by-Step Working
+
+```text
+1. Sort all edges by weight.
+2. Initially every city is its own component.
+3. Process edges from cheapest to costliest.
+4. If endpoints are in different components, take the edge and union them.
+5. If endpoints are already connected, skip the edge.
+6. MST is valid when exactly n-1 edges are used.
+```
 
 ## Input
 
@@ -4154,42 +4250,52 @@ Given cities and weighted undirected edges, connect all cities with minimum tota
 6
 ```
 
-## C++ Code — Kruskal
+## C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 struct DSU {
-    vector<int> p, sz;
+    vector<int> parent, sz;
+
     DSU(int n) {
-        p.resize(n + 1);
+        parent.resize(n + 1);
         sz.assign(n + 1, 1);
-        iota(p.begin(), p.end(), 0);
+        iota(parent.begin(), parent.end(), 0);
     }
+
     int find(int x) {
-        if (p[x] == x) return x;
-        return p[x] = find(p[x]);
+        if (parent[x] == x) return x;
+        return parent[x] = find(parent[x]);
     }
+
     bool unite(int a, int b) {
-        a = find(a); b = find(b);
+        a = find(a);
+        b = find(b);
         if (a == b) return false;
         if (sz[a] < sz[b]) swap(a, b);
-        p[b] = a;
+        parent[b] = a;
         sz[a] += sz[b];
         return true;
     }
 };
 
-struct Edge { int u, v; long long w; };
+struct Edge {
+    int u, v;
+    long long w;
+};
 
 int main() {
     int n, m;
     cin >> n >> m;
+
     vector<Edge> edges(m);
     for (auto &e : edges) cin >> e.u >> e.v >> e.w;
 
-    sort(edges.begin(), edges.end(), [](Edge a, Edge b) { return a.w < b.w; });
+    sort(edges.begin(), edges.end(), [](const Edge& a, const Edge& b) {
+        return a.w < b.w;
+    });
 
     DSU dsu(n);
     long long cost = 0;
@@ -4203,43 +4309,41 @@ int main() {
     }
 
     cout << (used == n - 1 ? cost : -1) << '\n';
+    return 0;
 }
 ```
 
-## Tree-Wise Dry Run
+## Dry Run
 
 ```text
 Sorted edges:
-1-2 cost 1
-2-3 cost 2
-3-4 cost 3
-1-3 cost 4
-2-4 cost 7
-
-Kruskal:
-├── take 1-2 -> cost=1, components {1,2},{3},{4}
-├── take 2-3 -> cost=3, components {1,2,3},{4}
-├── take 3-4 -> cost=6, components {1,2,3,4}
-└── used edges = 3 = n-1 -> answer 6
+1-2 cost 1 -> take, cost=1
+2-3 cost 2 -> take, cost=3
+3-4 cost 3 -> take, cost=6
+Now used edges = 3 = n-1, answer = 6
 ```
 
 ---
 
 # P10. Count Islands
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A["land cell"] --- B["land cell"]
-    C["water"]
-    D["land cell"] --- E["land cell"]
-```
-
-
 ## Problem Statement
 
-Given grid of `1` land and `0` water, count islands.
+Given grid of `1` land and `0` water, count islands. An island is a group of connected land cells in 4 directions.
+
+## Technique
+
+Grid DFS connected components.
+
+## Step-by-Step Working
+
+```text
+1. Scan every cell.
+2. If cell is land and unvisited, this is a new island.
+3. Increase island count.
+4. Run DFS/BFS to mark all connected land cells.
+5. Continue scanning until grid ends.
+```
 
 ## Input
 
@@ -4281,6 +4385,7 @@ void dfs(int x, int y, vector<string>& grid, vector<vector<int>>& vis) {
 int main() {
     int n, m;
     cin >> n >> m;
+
     vector<string> grid(n);
     for (auto &row : grid) cin >> row;
 
@@ -4297,38 +4402,40 @@ int main() {
     }
 
     cout << islands << '\n';
+    return 0;
 }
 ```
 
-## Tree-Wise Dry Run
+## Dry Run
 
 ```text
-scan grid row by row
-├── first land at (0,0) -> island=1
-│   └── DFS marks connected block: (0,0),(0,1),(1,0),(1,1)
-├── next unvisited land at (2,2) -> island=2
-│   └── DFS marks only (2,2)
-└── next unvisited land at (3,3) -> island=3
-    └── DFS marks (3,3),(3,4)
+First unvisited land: (0,0) -> island 1, DFS marks top-left block.
+Next unvisited land: (2,2) -> island 2.
+Next unvisited land: (3,3) -> island 3, DFS marks (3,3),(3,4).
 ```
 
 ---
 
 # P11. Rotten Oranges
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart TD
-    R["rotten orange t=0"] --> F1["fresh becomes rotten t=1"]
-    R --> F2["fresh becomes rotten t=1"]
-    F1 --> F3["fresh becomes rotten t=2"]
-```
-
-
 ## Problem Statement
 
-Each minute, rotten oranges rot adjacent fresh oranges. Return minimum minutes to rot all, or `-1`.
+Each minute, rotten oranges rot adjacent fresh oranges. Return minimum minutes to rot all oranges, or `-1` if impossible.
+
+## Technique
+
+Multi-source BFS.
+
+## Step-by-Step Working
+
+```text
+1. Push all initially rotten oranges into queue with time 0.
+2. Count all fresh oranges.
+3. BFS layer by layer.
+4. When a fresh neighbor is reached, mark it rotten and reduce fresh count.
+5. Track maximum time used.
+6. If fresh count becomes 0, return time. Otherwise return -1.
+```
 
 ## Input
 
@@ -4345,54 +4452,90 @@ Each minute, rotten oranges rot adjacent fresh oranges. Return minimum minutes t
 4
 ```
 
-## Technique
+## C++ Code
 
-Multi-source BFS from all rotten oranges.
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-## Tree-Wise Dry Run
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, 1, -1};
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+
+    vector<vector<int>> grid(n, vector<int>(m));
+    queue<tuple<int,int,int>> q;
+    int fresh = 0;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j];
+            if (grid[i][j] == 2) q.push({i, j, 0});
+            if (grid[i][j] == 1) fresh++;
+        }
+    }
+
+    int ans = 0;
+    while (!q.empty()) {
+        auto [x, y, t] = q.front();
+        q.pop();
+        ans = max(ans, t);
+
+        for (int d = 0; d < 4; d++) {
+            int nx = x + dx[d], ny = y + dy[d];
+            if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+            if (grid[nx][ny] != 1) continue;
+
+            grid[nx][ny] = 2;
+            fresh--;
+            q.push({nx, ny, t + 1});
+        }
+    }
+
+    cout << (fresh == 0 ? ans : -1) << '\n';
+    return 0;
+}
+```
+
+## Dry Run
 
 ```text
-minute 0:
-└── rotten sources: all cells with 2
-
-minute 1:
-└── fresh neighbors become rotten
-
-minute 2:
-└── next layer rots
-
-continue until queue empty
-└── if any fresh remains -> -1
-└── else answer = max minute
+time 0: initial rotten cells in queue
+time 1: adjacent fresh cells become rotten
+time 2: next layer becomes rotten
+...
+answer = last time when a fresh orange became rotten
 ```
 
 ---
 
 # P12. Alien Dictionary
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    B((b)) --> A((a))
-    D((d)) --> C((c))
-    A --> C
-```
-
-
 ## Problem Statement
 
-Given sorted words in alien language, find one possible character order.
+Given words sorted in an alien language, find one valid character ordering.
 
 ## Technique
 
-Compare adjacent words. First different character gives directed edge.
+Graph construction from adjacent words + topological sort.
 
-## Tree-Wise Dry Run
-
-Words:
+## Step-by-Step Working
 
 ```text
+1. Compare every adjacent word pair.
+2. Find first position where characters differ.
+3. If word1[i] != word2[i], add edge word1[i] -> word2[i].
+4. This edge means word1[i] comes before word2[i].
+5. Run topological sort on characters.
+6. If topo contains all characters, return order. Otherwise cycle/invalid.
+```
+
+## Input
+
+```text
+5
 baa
 abcd
 abca
@@ -4400,219 +4543,722 @@ cab
 cad
 ```
 
+## Output
+
 ```text
-compare baa and abcd:
-└── b != a -> edge b -> a
+bdac
+```
 
-compare abcd and abca:
-└── d != a -> edge d -> a
+One valid output is `bdac`; other valid orders may exist.
 
-compare abca and cab:
-└── a != c -> edge a -> c
+## C++ Code
 
-compare cab and cad:
-└── b != d -> edge b -> d
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-Then topological sort characters.
+int main() {
+    int n;
+    cin >> n;
+
+    vector<string> words(n);
+    set<char> chars;
+
+    for (auto &w : words) {
+        cin >> w;
+        for (char c : w) chars.insert(c);
+    }
+
+    map<char, set<char>> g;
+    map<char, int> indeg;
+    for (char c : chars) indeg[c] = 0;
+
+    bool invalid = false;
+
+    for (int i = 0; i + 1 < n; i++) {
+        string a = words[i], b = words[i + 1];
+        int len = min(a.size(), b.size());
+        bool found = false;
+
+        for (int j = 0; j < len; j++) {
+            if (a[j] != b[j]) {
+                if (!g[a[j]].count(b[j])) {
+                    g[a[j]].insert(b[j]);
+                    indeg[b[j]]++;
+                }
+                found = true;
+                break;
+            }
+        }
+
+        if (!found && a.size() > b.size()) invalid = true;
+    }
+
+    queue<char> q;
+    for (auto [c, deg] : indeg) {
+        if (deg == 0) q.push(c);
+    }
+
+    string order;
+    while (!q.empty()) {
+        char u = q.front();
+        q.pop();
+        order.push_back(u);
+
+        for (char v : g[u]) {
+            indeg[v]--;
+            if (indeg[v] == 0) q.push(v);
+        }
+    }
+
+    if (invalid || order.size() != chars.size()) cout << "INVALID\n";
+    else cout << order << '\n';
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+baa vs abcd -> first diff b/a -> b before a
+abcd vs abca -> first diff d/a -> d before a
+abca vs cab -> first diff a/c -> a before c
+cab vs cad -> first diff b/d -> b before d
+Topo order can be b d a c
 ```
 
 ---
 
 # P13. Redundant Connection
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A((1)) --- B((2))
-    B --- C((3))
-    C --- A
-```
-
-
 ## Problem Statement
 
-Given an undirected graph that started as a tree and one extra edge was added, find the extra edge.
+Given an undirected graph that started as a tree and then one extra edge was added, find the extra edge.
 
-## C++ Idea
+## Technique
 
-Use DSU. First edge whose endpoints already belong to same component is redundant.
+DSU cycle detection.
 
-## Tree-Wise Dry Run
-
-Edges:
+## Step-by-Step Working
 
 ```text
-1-2, 1-3, 2-3
+1. Initially every node is its own component.
+2. Process edges in given order.
+3. For edge u-v, check find(u) and find(v).
+4. If leaders are different, unite them.
+5. If leaders are same, u and v are already connected.
+6. This edge creates a cycle, so it is redundant.
 ```
 
+## Input
+
 ```text
-edge 1-2
-└── different components -> union
+3
+1 2
+1 3
+2 3
+```
 
-edge 1-3
-└── different components -> union
+## Output
 
-edge 2-3
-└── find(2) == find(3)
-    └── adding this edge creates cycle -> redundant edge = 2-3
+```text
+2 3
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct DSU {
+    vector<int> parent, sz;
+
+    DSU(int n) {
+        parent.resize(n + 1);
+        sz.assign(n + 1, 1);
+        iota(parent.begin(), parent.end(), 0);
+    }
+
+    int find(int x) {
+        if (parent[x] == x) return x;
+        return parent[x] = find(parent[x]);
+    }
+
+    bool unite(int a, int b) {
+        a = find(a);
+        b = find(b);
+        if (a == b) return false;
+        if (sz[a] < sz[b]) swap(a, b);
+        parent[b] = a;
+        sz[a] += sz[b];
+        return true;
+    }
+};
+
+int main() {
+    int m;
+    cin >> m;
+
+    vector<pair<int,int>> edges(m);
+    int mx = 0;
+    for (auto &[u, v] : edges) {
+        cin >> u >> v;
+        mx = max(mx, max(u, v));
+    }
+
+    DSU dsu(mx);
+
+    for (auto [u, v] : edges) {
+        if (!dsu.unite(u, v)) {
+            cout << u << ' ' << v << '\n';
+            return 0;
+        }
+    }
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+edge 1-2 -> different components -> union
+edge 1-3 -> different components -> union
+edge 2-3 -> same component -> redundant edge = 2 3
 ```
 
 ---
 
 # P14. Number of Provinces
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A["City 1"] --- B["City 2"]
-    C["City 3"]
-    D["City 4"] --- E["City 5"]
-```
-
-
 ## Problem Statement
 
-Given adjacency matrix of cities, count connected components.
+Given an adjacency matrix `isConnected`, count how many provinces/components exist.
 
 ## Technique
 
-Use DFS/BFS/DSU over matrix.
+DFS/BFS over adjacency matrix.
 
-## Tree-Wise Dry Run
+## Step-by-Step Working
 
 ```text
-scan city 1
-└── unvisited -> province=1
-    └── DFS visits all connected cities
+1. Treat each city as a graph node.
+2. Matrix value 1 means direct connection.
+3. Scan all cities.
+4. If city is unvisited, start a new province.
+5. DFS marks all cities reachable from it.
+6. Number of DFS starts equals number of provinces.
+```
 
-scan next unvisited city
-└── province++
+## Input
+
+```text
+3
+1 1 0
+1 1 0
+0 0 1
+```
+
+## Output
+
+```text
+2
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+void dfs(int u, vector<vector<int>>& mat, vector<int>& vis) {
+    vis[u] = 1;
+    int n = mat.size();
+
+    for (int v = 0; v < n; v++) {
+        if (mat[u][v] == 1 && !vis[v]) {
+            dfs(v, mat, vis);
+        }
+    }
+}
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<vector<int>> mat(n, vector<int>(n));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) cin >> mat[i][j];
+    }
+
+    vector<int> vis(n, 0);
+    int provinces = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (!vis[i]) {
+            provinces++;
+            dfs(i, mat, vis);
+        }
+    }
+
+    cout << provinces << '\n';
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+city 0 unvisited -> province 1 -> DFS visits 0 and 1
+city 1 visited -> skip
+city 2 unvisited -> province 2 -> DFS visits 2
+answer = 2
 ```
 
 ---
 
 # P15. Cheapest Flights With K Stops
 
-## Graph Model — Mermaid
-
-```mermaid
-flowchart LR
-    A((0)) -->|100| B((1))
-    B -->|100| C((2))
-    A -->|500| C
-```
-
-
 ## Problem Statement
 
 Find cheapest price from `src` to `dst` with at most `k` stops.
 
-## Key Model
+## Technique
 
-State includes stops used.
+Modified Bellman-Ford by number of edges, or BFS/Dijkstra on state. This version uses Bellman-Ford style relaxation for at most `k + 1` edges.
+
+## Step-by-Step Working
 
 ```text
-state = (city, stopsUsed)
-edge = flight to next city, stopsUsed+1
-answer = min cost to dst with stopsUsed <= k+1 edges
+1. At most k stops means at most k + 1 edges.
+2. dist[x] means cheapest cost to reach x using current allowed edge count.
+3. For each round from 0 to k, copy old dist into temp.
+4. Relax every flight using old dist only.
+5. Assign temp back to dist.
+6. dist[dst] after k+1 rounds is answer.
 ```
 
-## Tree-Wise Dry Run
+## Input
 
 ```text
-start (src, 0 edges), cost=0
-├── take flight src->a, cost c1, edges=1
-│   ├── take a->dst, edges=2
-│   └── take a->b, edges=2
-└── take flight src->dst directly, cost c2, edges=1
+3 3
+0 1 100
+1 2 100
+0 2 500
+0 2 1
+```
 
-Only accept paths with edges <= k+1.
+## Output
+
+```text
+200
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+struct Flight {
+    int u, v, cost;
+};
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+
+    vector<Flight> flights(m);
+    for (auto &f : flights) cin >> f.u >> f.v >> f.cost;
+
+    int src, dst, k;
+    cin >> src >> dst >> k;
+
+    vector<int> dist(n, INF);
+    dist[src] = 0;
+
+    for (int edges = 0; edges <= k; edges++) {
+        vector<int> temp = dist;
+
+        for (auto f : flights) {
+            if (dist[f.u] == INF) continue;
+            temp[f.v] = min(temp[f.v], dist[f.u] + f.cost);
+        }
+
+        dist = temp;
+    }
+
+    cout << (dist[dst] == INF ? -1 : dist[dst]) << '\n';
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+k=1 stop means max 2 edges.
+round 1 allows paths with 1 edge:
+0->1 = 100, 0->2 = 500
+round 2 allows paths with 2 edges:
+0->1->2 = 200, better than 500
+answer = 200
 ```
 
 ---
 
 # P16. Bridges in Graph
 
-## Graph Model — Mermaid
+## Problem Statement
 
-```mermaid
-flowchart LR
-    A((1)) --- B((2))
-    B --- C((3))
-    B --- D((4))
-    D --- E((5))
-    E --- B
-```
+Given undirected graph, print all bridges. A bridge is an edge whose removal increases number of connected components.
 
+## Technique
 
-Same as section [6.2 Bridges](#62-bridges).
+Tarjan DFS using `tin` and `low`.
 
-## Tree-Wise Dry Run
+## Step-by-Step Working
 
 ```text
-dfs parent-child tree
-└── after child v returns:
-    ├── if low[v] > tin[u]
-    │   └── edge u-v is bridge
-    └── else subtree has back edge to ancestor -> not bridge
+1. Run DFS and assign tin[u] = low[u] = timer++.
+2. For tree edge u-v, DFS into v.
+3. After returning, update low[u] = min(low[u], low[v]).
+4. For back edge u-v, update low[u] = min(low[u], tin[v]).
+5. If low[v] > tin[u], subtree v cannot reach u or ancestor.
+6. Therefore edge u-v is a bridge.
+```
+
+## Input
+
+```text
+5 5
+1 2
+2 3
+2 4
+4 5
+5 2
+```
+
+## Output
+
+```text
+1 2
+2 3
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>> g;
+vector<int> tin, low, vis;
+vector<pair<int,int>> bridges;
+int timerVal = 0;
+
+void dfs(int u, int parent) {
+    vis[u] = 1;
+    tin[u] = low[u] = timerVal++;
+
+    for (int v : g[u]) {
+        if (v == parent) continue;
+
+        if (vis[v]) {
+            low[u] = min(low[u], tin[v]);
+        } else {
+            dfs(v, u);
+            low[u] = min(low[u], low[v]);
+
+            if (low[v] > tin[u]) {
+                bridges.push_back({u, v});
+            }
+        }
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+
+    g.assign(n + 1, {});
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    tin.assign(n + 1, -1);
+    low.assign(n + 1, -1);
+    vis.assign(n + 1, 0);
+
+    for (int i = 1; i <= n; i++) {
+        if (!vis[i]) dfs(i, -1);
+    }
+
+    for (auto [u, v] : bridges) {
+        cout << u << ' ' << v << '\n';
+    }
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+After DFS child v returns to parent u:
+if low[v] > tin[u]
+    v-subtree has no back edge to u or ancestor
+    so removing u-v disconnects graph
 ```
 
 ---
 
 # P17. Strongly Connected Components
 
-## Graph Model — Mermaid
+## Problem Statement
 
-```mermaid
-flowchart LR
-    A((1)) --> B((2))
-    B --> C((3))
-    C --> A
-    C --> D((4))
-    D --> E((5))
-    E --> D
-```
+Given directed graph, print strongly connected components. In one SCC, every node can reach every other node.
 
+## Technique
 
-Same as section [6.1 SCC — Kosaraju](#61-scc--kosaraju).
+Kosaraju algorithm.
 
-## Tree-Wise Dry Run
+## Step-by-Step Working
 
 ```text
-Pass 1 original graph:
-└── produce finish order
+1. Build original graph and reversed graph.
+2. First DFS on original graph stores nodes by finish time.
+3. Reverse the finish order.
+4. Run DFS on reversed graph in that order.
+5. Each DFS in reversed graph gives one SCC.
+```
 
-Pass 2 reversed graph:
-└── each DFS gives one SCC
+## Input
+
+```text
+5 6
+1 2
+2 3
+3 1
+3 4
+4 5
+5 4
+```
+
+## Output
+
+```text
+1 3 2
+4 5
+```
+
+Order may vary.
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+void dfs1(int u, vector<vector<int>>& g, vector<int>& vis, vector<int>& order) {
+    vis[u] = 1;
+    for (int v : g[u]) {
+        if (!vis[v]) dfs1(v, g, vis, order);
+    }
+    order.push_back(u);
+}
+
+void dfs2(int u, vector<vector<int>>& rg, vector<int>& vis, vector<int>& comp) {
+    vis[u] = 1;
+    comp.push_back(u);
+    for (int v : rg[u]) {
+        if (!vis[v]) dfs2(v, rg, vis, comp);
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+
+    vector<vector<int>> g(n + 1), rg(n + 1);
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        rg[v].push_back(u);
+    }
+
+    vector<int> vis(n + 1, 0), order;
+    for (int i = 1; i <= n; i++) {
+        if (!vis[i]) dfs1(i, g, vis, order);
+    }
+
+    reverse(order.begin(), order.end());
+    fill(vis.begin(), vis.end(), 0);
+
+    for (int u : order) {
+        if (!vis[u]) {
+            vector<int> comp;
+            dfs2(u, rg, vis, comp);
+            for (int x : comp) cout << x << ' ';
+            cout << '\n';
+        }
+    }
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+Original graph DFS:
+finish order captures source-like SCCs last.
+Reverse finish order:
+process highest finish first.
+Reversed graph DFS:
+each traversal stays inside one SCC.
 ```
 
 ---
 
 # P18. LCA Queries
 
-## Graph Model — Mermaid
+## Problem Statement
 
-```mermaid
-flowchart TD
-    A((1)) --> B((2))
-    A --> C((3))
-    B --> D((4))
-    B --> E((5))
-```
+Given a rooted tree and many queries `(u, v)`, return the lowest common ancestor of `u` and `v`.
 
+## Technique
 
-Same as section [6.5 LCA Binary Lifting](#65-lca-binary-lifting).
+Binary lifting.
 
-## Tree-Wise Dry Run
+## Step-by-Step Working
 
 ```text
-Query lca(a,b)
-├── lift deeper node until same depth
-├── if same node -> answer
-└── lift both upward from high powers to low powers
-    └── parent after final lift is LCA
+1. Root the tree, usually at 1.
+2. DFS to compute depth[node] and up[node][0] immediate parent.
+3. Precompute up[node][j] = 2^j-th ancestor.
+4. For query u,v, lift deeper node to same depth.
+5. If both nodes become same, that node is LCA.
+6. Otherwise lift both upward from high power to low power.
+7. Parent after final lift is LCA.
+```
+
+## Input
+
+```text
+5 3
+1 2
+1 3
+2 4
+2 5
+4 5
+4 3
+2 4
+```
+
+## Output
+
+```text
+2
+1
+2
+```
+
+## C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int LOG = 20;
+vector<vector<int>> g;
+vector<array<int, LOG>> up;
+vector<int> depth;
+
+void dfs(int u, int parent) {
+    up[u][0] = parent;
+
+    for (int j = 1; j < LOG; j++) {
+        up[u][j] = up[up[u][j - 1]][j - 1];
+    }
+
+    for (int v : g[u]) {
+        if (v == parent) continue;
+        depth[v] = depth[u] + 1;
+        dfs(v, u);
+    }
+}
+
+int lift(int u, int diff) {
+    for (int j = 0; j < LOG; j++) {
+        if (diff & (1 << j)) u = up[u][j];
+    }
+    return u;
+}
+
+int lca(int u, int v) {
+    if (depth[u] < depth[v]) swap(u, v);
+
+    u = lift(u, depth[u] - depth[v]);
+    if (u == v) return u;
+
+    for (int j = LOG - 1; j >= 0; j--) {
+        if (up[u][j] != up[v][j]) {
+            u = up[u][j];
+            v = up[v][j];
+        }
+    }
+
+    return up[u][0];
+}
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+
+    g.assign(n + 1, {});
+    up.assign(n + 1, {});
+    depth.assign(n + 1, 0);
+
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    dfs(1, 1);
+
+    while (q--) {
+        int u, v;
+        cin >> u >> v;
+        cout << lca(u, v) << '\n';
+    }
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+Query LCA(4,5):
+4 and 5 have same depth.
+Their parents are both 2.
+Answer = 2.
+
+Query LCA(4,3):
+4 is deeper, lift 4 to depth of 3 -> node 2.
+2 and 3 differ.
+Their parent is 1.
+Answer = 1.
 ```
 
 ---
