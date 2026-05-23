@@ -1,7 +1,7 @@
 # 001_TREE_CP_DSA_MASTER_NOTE
 
 > CP + DSA tree notes created from your Tree Application notes, Binary Lifting notes, and Tree/Union-Find reference.  
-> Style: clickable index → problem statement → input/output → example → idea → Mermaid diagram → C++ code → index-by-index dry run.
+> Style: clickable index → problem statement → input/output → example → which tree structure → technique → step-by-step working → plain text diagram → C++ code → index-by-index dry run. No Mermaid is used, so GitHub/Markdown rendering stays safe.
 
 ---
 
@@ -60,16 +60,19 @@ No cycle
 Exactly one simple path between any two nodes
 ```
 
-```mermaid
-flowchart TD
-    A["Input is graph-like"] --> B{"Edges = N - 1?"}
-    B -->|"No"| C["General graph thinking"]
-    B -->|"Yes"| D{"Connected?"}
-    D -->|"No"| E["Forest"]
-    D -->|"Yes"| F["Tree"]
-    F --> G["Unique path between u and v"]
-    F --> H["Can root it anywhere"]
-    F --> I["DFS/BFS gives parent/depth/subtree"]
+```text
+Tree Recognition Map
+
+Input is graph-like
+└── Are edges = N - 1?
+    ├── No  -> General graph thinking
+    └── Yes
+        └── Is it connected?
+            ├── No  -> Forest
+            └── Yes -> Tree
+                ├── Unique path between every pair u,v
+                ├── Can root it anywhere
+                └── DFS/BFS gives parent, depth, subtree
 ```
 
 ### Mental trigger
@@ -87,28 +90,29 @@ Longest path?     -> Diameter
 
 ## 0.2 Which Tree Technique To Use?
 
-```mermaid
-flowchart TD
-    A["Tree Problem"] --> B{"What is asked?"}
-    B --> C["Parent, depth, subtree"]
-    C --> C1["One DFS"]
-    B --> D["Path between u and v"]
-    D --> D1["DFS once for one query"]
-    D --> D2["LCA for many queries"]
-    B --> E["Distance between u and v"]
-    E --> E1["Use depth formula with LCA"]
-    B --> F["Kth ancestor"]
-    F --> F1["Binary lifting"]
-    B --> G["Path sum or XOR"]
-    G --> G1["Prefix from root"]
-    B --> H["Path update"]
-    H --> H1["Tree difference plus postorder"]
-    B --> I["Path min, gcd, or max"]
-    I --> I1["Binary lifting aggregate"]
-    B --> J["Longest path"]
-    J --> J1["Diameter using two BFS or DFS runs"]
-    B --> K["Balanced root"]
-    K --> K1["Centroid"]
+```text
+Which Tree Technique To Use?
+
+Tree Problem
+├── Parent / depth / subtree asked?
+│   └── One DFS
+├── Path between u and v?
+│   ├── One query  -> DFS path search
+│   └── Many query -> LCA / Binary Lifting
+├── Distance between u and v?
+│   └── depth[u] + depth[v] - 2*depth[lca]
+├── K-th ancestor?
+│   └── Binary Lifting
+├── Path sum / XOR?
+│   └── Prefix from root
+├── Path update?
+│   └── Tree difference + postorder accumulation
+├── Path min / max / gcd?
+│   └── Binary Lifting Aggregate
+├── Longest path?
+│   └── Tree Diameter using 2 BFS/DFS
+└── Balanced node?
+    └── Centroid
 ```
 
 ---
@@ -138,14 +142,14 @@ edges:
 3 7
 ```
 
-```mermaid
-flowchart TD
-    N1(("1")) --- N2(("2"))
-    N1 --- N3(("3"))
-    N2 --- N4(("4"))
-    N2 --- N5(("5"))
-    N3 --- N6(("6"))
-    N3 --- N7(("7"))
+```text
+Plain Tree Diagram
+
+        1
+      /   \
+     2     3
+    / \   / \
+   4   5 6   7
 ```
 
 ### Why this matters
@@ -161,22 +165,25 @@ For tree, the path is unique, so many problems become DFS + parent/depth/subtree
 
 No parent-child relation.
 
-```mermaid
-flowchart LR
-    N1(("1")) --- N2(("2"))
-    N2 --- N3(("3"))
-    N2 --- N4(("4"))
+```text
+Unrooted Tree
+
+1 --- 2 --- 3
+      |
+      4
 ```
 
 ### Rooted Tree
 
 Choose a root, usually `1` unless problem says otherwise.
 
-```mermaid
-flowchart TD
-    N1(("root 1")) --> N2(("2"))
-    N2 --> N3(("3"))
-    N2 --> N4(("4"))
+```text
+Rooted Tree
+
+root 1
+└── 2
+    ├── 3
+    └── 4
 ```
 
 ### Rooting creates these values
@@ -263,6 +270,41 @@ int main() {
 
 ## 4. Problem 1: Compute Tree Properties
 
+### Tree Structure
+
+```text
+        1
+      /   \
+     2     3
+    / \   / \
+   4   5 6   7
+```
+
+
+### Which Tree Structure
+
+```text
+Rooted tree
+```
+
+### Technique
+
+```text
+DFS preprocessing for parent, depth, child count, leaf flag, and subtree size
+```
+
+### Step-by-Step Working
+
+```text
+1. Root the tree at node 1.
+2. Run DFS while carrying parent.
+3. When entering node u, initialize subtree[u]=1.
+4. For every child v, set parent/depth and recurse.
+5. When child returns, add subtree[v] into subtree[u].
+6. If no children exist, mark u as leaf.
+```
+
+
 ### Problem Statement
 
 Given an undirected tree with `n` nodes, root it at node `1`. For every node, compute:
@@ -304,15 +346,74 @@ node parent depth subtree child leaf
 
 DFS goes downward to children, then returns subtree information upward.
 
-```mermaid
-flowchart TD
-    A["Enter node u"] --> B["Set parent of u"]
-    B --> C["Initialize subtree size of u to 1"]
-    C --> D["Visit every child v"]
-    D --> E["Set depth of v"]
-    E --> F["DFS on child v"]
-    F --> G["Add subtree of v into subtree of u"]
-    G --> H["After all children, mark leaf if child count is zero"]
+```text
+DFS Property Build Flow
+
+Enter node u
+├── set parent[u]
+├── subtree[u] = 1
+├── scan every neighbor v
+│   ├── skip parent
+│   ├── depth[v] = depth[u] + 1
+│   ├── dfs(v, u)
+│   └── subtree[u] += subtree[v]
+└── after children finish, leaf[u] = childCount[u] == 0
+```
+
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<vector<int>> g;
+vector<int> parentNode, depthNode, subtreeSize, childCount, isLeaf;
+
+void dfsBuild(int u, int p) {
+    parentNode[u] = p;
+    subtreeSize[u] = 1;
+    childCount[u] = 0;
+
+    for (int v : g[u]) {
+        if (v == p) continue;
+
+        depthNode[v] = depthNode[u] + 1;
+        childCount[u]++;
+
+        dfsBuild(v, u);
+        subtreeSize[u] += subtreeSize[v];
+    }
+
+    isLeaf[u] = (childCount[u] == 0);
+}
+
+int main() {
+    cin >> n;
+    g.assign(n + 1, {});
+
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    parentNode.assign(n + 1, 0);
+    depthNode.assign(n + 1, 0);
+    subtreeSize.assign(n + 1, 0);
+    childCount.assign(n + 1, 0);
+    isLeaf.assign(n + 1, 0);
+
+    dfsBuild(1, 0);
+
+    cout << "node parent depth subtree child leaf\n";
+    for (int i = 1; i <= n; i++) {
+        cout << i << " " << parentNode[i] << " " << depthNode[i] << " "
+             << subtreeSize[i] << " " << childCount[i] << " " << isLeaf[i] << "\n";
+    }
+}
 ```
 
 ### Index-by-Index Dry Run
@@ -348,6 +449,41 @@ index 11: return to 1, subtree[1]=4+3=7
 
 ## 5. Problem 2: Print Path From u To v
 
+### Tree Structure
+
+```text
+        1
+      /   \
+     2     3
+    / \   / \
+   4   5 6   7
+```
+
+
+### Which Tree Structure
+
+```text
+Unrooted tree treated as a rooted DFS search from source u
+```
+
+### Technique
+
+```text
+Backtracking DFS path search
+```
+
+### Step-by-Step Working
+
+```text
+1. Start DFS from u.
+2. Push current node into path.
+3. If current node is v, return true.
+4. Try all neighbors except parent.
+5. If a branch fails, pop current node and backtrack.
+6. The remaining path vector is the unique u-to-v path.
+```
+
+
 ### Problem Statement
 
 Given a tree and two nodes `u` and `v`, print the unique path from `u` to `v`.
@@ -375,15 +511,16 @@ Given a tree and two nodes `u` and `v`, print the unique path from `u` to `v`.
 
 Because a tree has exactly one path between two nodes, DFS from `u` until `v`. Maintain a `path` vector.
 
-```mermaid
-flowchart TD
-    A["Start DFS at u"] --> B["Push current node"]
-    B --> C{"current == target?"}
-    C -->|"Yes"| D["Path found"]
-    C -->|"No"| E["Try children/neighbors"]
-    E --> F{"Child returns true?"}
-    F -->|"Yes"| D
-    F -->|"No"| G["Pop current and backtrack"]
+```text
+Path DFS Flow
+
+Start DFS at u
+├── push current node into path
+├── if current == target -> path found
+├── else try every neighbor except parent
+│   ├── if child returns true -> keep path and return true
+│   └── if child returns false -> try next child
+└── if no child works -> pop current and backtrack
 ```
 
 ### C++ Code
@@ -446,6 +583,29 @@ index 5: current == target, return true all the way
 
 ## 6. Problem 3: Tree Diameter
 
+### Which Tree Structure
+
+```text
+Unweighted tree
+```
+
+### Technique
+
+```text
+Two BFS/DFS farthest-node technique
+```
+
+### Step-by-Step Working
+
+```text
+1. Run BFS from any node, usually 1.
+2. Find farthest node y.
+3. Run BFS again from y.
+4. Find farthest node z.
+5. Distance y-to-z is the diameter length.
+```
+
+
 ### Problem Statement
 
 Given a tree, find its diameter length.
@@ -493,12 +653,13 @@ Use 2 BFS/DFS:
 4. dist(y,z) is diameter.
 ```
 
-```mermaid
-flowchart TD
-    A["Pick any node x"] --> B["BFS/DFS to farthest y"]
-    B --> C["BFS/DFS from y"]
-    C --> D["Find farthest z"]
-    D --> E["diameter = dist y z"]
+```text
+Tree Diameter Flow
+
+Pick any node x
+└── BFS/DFS from x to farthest node y
+    └── BFS/DFS from y to farthest node z
+        └── diameter = dist[y][z]
 ```
 
 ### C++ Code
@@ -590,6 +751,29 @@ answer = 5
 
 ## 7. Problem 4: Center Of Tree
 
+### Which Tree Structure
+
+```text
+Unweighted tree
+```
+
+### Technique
+
+```text
+Diameter path middle technique
+```
+
+### Step-by-Step Working
+
+```text
+1. Find diameter endpoint y.
+2. Find opposite endpoint z and parent array from y.
+3. Recover path z back to y.
+4. If path length is odd, one center exists.
+5. If path length is even, two centers exist.
+```
+
+
 ### Problem Statement
 
 Given a tree, find its center node(s).
@@ -628,12 +812,13 @@ A tree can have:
 
 Find a diameter path. The center is the middle node or middle two nodes.
 
-```mermaid
-flowchart TD
-    A["Find diameter endpoints y and z"] --> B["Recover path y to z"]
-    B --> C{"Path node count odd?"}
-    C -->|"Yes"| D["One center"]
-    C -->|"No"| E["Two centers"]
+```text
+Tree Center Flow
+
+Find diameter endpoints y and z
+└── Recover diameter path y -> z
+    ├── odd number of nodes  -> one middle node is center
+    └── even number of nodes -> two middle nodes are centers
 ```
 
 ### C++ Code
@@ -728,6 +913,29 @@ index 3: answer = 3 and 4
 
 ## 8. Problem 5: Centroid Of Tree
 
+### Which Tree Structure
+
+```text
+Rooted tree with subtree sizes
+```
+
+### Technique
+
+```text
+Subtree-size balancing / centroid walk
+```
+
+### Step-by-Step Working
+
+```text
+1. Compute subtree sizes using DFS.
+2. Start from root.
+3. If a child subtree is bigger than n/2, move to that child.
+4. Repeat until no child subtree is bigger than n/2.
+5. That node is centroid.
+```
+
+
 ### Problem Statement
 
 Find a centroid of a tree.
@@ -760,12 +968,14 @@ A node such that if removed, every remaining component has size <= n/2.
 
 Start from root. If any child subtree has size `> n/2`, move to that child. Repeat until no such child exists.
 
-```mermaid
-flowchart TD
-    A["Start at node u"] --> B{"Any child subtree > n/2?"}
-    B -->|"Yes"| C["Move to that child"]
-    C --> B
-    B -->|"No"| D["u is centroid"]
+```text
+Tree Centroid Flow
+
+Start at node u
+├── Is there a child subtree with size > n/2?
+│   ├── Yes -> move to that child and repeat
+│   └── No
+└── u is a centroid
 ```
 
 ### Important Difference
@@ -847,6 +1057,29 @@ index 4: node 1 is centroid
 
 ## 9. Problem 6: Sum Of All Pair Distances
 
+### Which Tree Structure
+
+```text
+Unweighted tree rooted for subtree sizes
+```
+
+### Technique
+
+```text
+Edge contribution using subtree size
+```
+
+### Step-by-Step Working
+
+```text
+1. Root the tree.
+2. For every child edge u-v, know subtree size s=sub[v].
+3. Removing that edge splits tree into s and n-s nodes.
+4. Every cross pair uses this edge exactly once.
+5. Add s*(n-s) for every edge.
+```
+
+
 ### Problem Statement
 
 Given a tree with `n` nodes, compute:
@@ -888,11 +1121,16 @@ Then number of pairs using this edge:
 s * (n - s)
 ```
 
-```mermaid
-flowchart LR
-    A["Component size s"] --- E["Edge"]
-    E --- B["Component size n-s"]
-    C["Pairs using edge"] --> D["s * n-s"]
+```text
+Edge Contribution Diagram
+
+Component A size = s
+        |
+      edge
+        |
+Component B size = n - s
+
+Pairs whose path uses this edge = s * (n - s)
 ```
 
 ### C++ Code
@@ -988,11 +1226,15 @@ So to jump 13 ancestors:
 jump 8, then jump 4, then jump 1
 ```
 
-```mermaid
-flowchart LR
-    A["13 steps"] --> B["8"]
-    A --> C["4"]
-    A --> D["1"]
+```text
+Binary Split Diagram
+
+13 steps
+├── 8 steps  = 2^3
+├── 4 steps  = 2^2
+└── 1 step   = 2^0
+
+13 = 8 + 4 + 1 = binary 1101
 ```
 
 ### Table Meaning
@@ -1007,11 +1249,15 @@ up[u][i] = 2^i-th ancestor of node u
 up[u][i] = up[ up[u][i-1] ][i-1]
 ```
 
-```mermaid
-flowchart TD
-    A["u"] --> B["2^(i-1) ancestor"]
-    B --> C["Another 2^(i-1) jump"]
-    C --> D["2^i ancestor"]
+```text
+Binary Lifting Recurrence Diagram
+
+u
+└── jump 2^(i-1) -> mid = up[u][i-1]
+    └── jump 2^(i-1) again -> up[u][i]
+
+So:
+up[u][i] = up[ up[u][i-1] ][i-1]
 ```
 
 ### Complexity
@@ -1025,6 +1271,29 @@ flowchart TD
 ---
 
 ## 11. Problem 7: K-th Ancestor
+
+### Which Tree Structure
+
+```text
+Rooted tree
+```
+
+### Technique
+
+```text
+Binary lifting ancestor table
+```
+
+### Step-by-Step Working
+
+```text
+1. Build up[u][i] table using DFS.
+2. Represent k in binary.
+3. For every set bit i in k, jump u = up[u][i].
+4. If u becomes -1, ancestor does not exist.
+5. Final u is the k-th ancestor.
+```
+
 
 ### Problem Statement
 
@@ -1139,6 +1408,39 @@ index 3: answer = 1
 
 ## 12. Problem 8: LCA Using Binary Lifting
 
+### Tree Structure
+
+```text
+        1
+      /   \
+     2     3
+    / \   / \
+   4   5 6   7
+```
+
+
+### Which Tree Structure
+
+```text
+Rooted tree
+```
+
+### Technique
+
+```text
+Binary lifting LCA
+```
+
+### Step-by-Step Working
+
+```text
+1. Lift deeper node until both depths are equal.
+2. If both nodes match, return that node.
+3. From largest power to smallest, jump both nodes when ancestors differ.
+4. When no more jump is possible, parent of either node is LCA.
+```
+
+
 ### Problem Statement
 
 Given a tree and queries `(u, v)`, find the lowest common ancestor of `u` and `v`.
@@ -1175,21 +1477,16 @@ Given a tree and queries `(u, v)`, find the lowest common ancestor of `u` and `v
 4. Their immediate parent is LCA.
 ```
 
-```mermaid
-flowchart TD
-    A["Nodes u and v"] --> B{"Is u shallower than v?"}
-    B -->|"Yes"| C["Swap u and v"]
-    B -->|"No"| D["Lift deeper node"]
-    C --> D
-    D --> E{"Are u and v same?"}
-    E -->|"Yes"| F["Return u"]
-    E -->|"No"| G["Try jumps from large to small"]
-    G --> H{"Do their jump ancestors differ?"}
-    H -->|"Yes"| I["Move both nodes upward"]
-    H -->|"No"| J["Skip this jump size"]
-    I --> G
-    J --> G
-    G --> K["Return parent of u"]
+```text
+LCA Flow
+
+Given u and v
+├── make depths equal by lifting deeper node
+├── if u == v -> return u
+├── from large power to small power:
+│   ├── if up[u][i] != up[v][i], move both upward
+│   └── otherwise skip that jump
+└── return parent[u]
 ```
 
 ### C++ Code
@@ -1290,6 +1587,39 @@ index 6: answer = 1
 
 ## 13. Problem 9: Distance Between Two Nodes
 
+### Tree Structure
+
+```text
+        1
+      /   \
+     2     3
+    / \   / \
+   4   5 6   7
+```
+
+
+### Which Tree Structure
+
+```text
+Rooted tree with depth and LCA table
+```
+
+### Technique
+
+```text
+LCA + depth formula
+```
+
+### Step-by-Step Working
+
+```text
+1. Find w = lca(u,v).
+2. Distance from u to w is depth[u]-depth[w].
+3. Distance from v to w is depth[v]-depth[w].
+4. Total distance is depth[u]+depth[v]-2*depth[w].
+```
+
+
 ### Problem Statement
 
 Given a tree and queries `(u, v)`, return the number of edges on path from `u` to `v`.
@@ -1300,11 +1630,13 @@ Given a tree and queries `(u, v)`, return the number of edges on path from `u` t
 dist(u, v) = depth[u] + depth[v] - 2 * depth[lca(u, v)]
 ```
 
-```mermaid
-flowchart TD
-    A["u"] --> B["LCA"]
-    C["v"] --> B
-    D["Distance"] --> E["distance u to LCA + distance v to LCA"]
+```text
+Distance Formula Picture
+
+        LCA
+       /         /          u       v
+
+Distance(u, v) = distance(u, LCA) + distance(v, LCA)
 ```
 
 ### Input
@@ -1339,6 +1671,75 @@ int distTree(int u, int v) {
 }
 ```
 
+
+### Complete C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int LOG = 20;
+int n, q;
+vector<vector<int>> g, up;
+vector<int> depth;
+
+void dfs(int u, int p) {
+    up[u][0] = p;
+    for (int i = 1; i < LOG; i++) {
+        if (up[u][i - 1] == -1) up[u][i] = -1;
+        else up[u][i] = up[up[u][i - 1]][i - 1];
+    }
+    for (int v : g[u]) {
+        if (v == p) continue;
+        depth[v] = depth[u] + 1;
+        dfs(v, u);
+    }
+}
+
+int lca(int u, int v) {
+    if (depth[u] < depth[v]) swap(u, v);
+    int diff = depth[u] - depth[v];
+    for (int i = LOG - 1; i >= 0; i--) {
+        if ((diff >> i) & 1) u = up[u][i];
+    }
+    if (u == v) return u;
+    for (int i = LOG - 1; i >= 0; i--) {
+        if (up[u][i] != up[v][i]) {
+            u = up[u][i];
+            v = up[v][i];
+        }
+    }
+    return up[u][0];
+}
+
+int distTree(int u, int v) {
+    int w = lca(u, v);
+    return depth[u] + depth[v] - 2 * depth[w];
+}
+
+int main() {
+    cin >> n >> q;
+    g.assign(n + 1, {});
+    up.assign(n + 1, vector<int>(LOG, -1));
+    depth.assign(n + 1, 0);
+
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    dfs(1, -1);
+
+    while (q--) {
+        int u, v;
+        cin >> u >> v;
+        cout << distTree(u, v) << "\n";
+    }
+}
+```
+
 ### Dry Run: `dist(4, 6)`
 
 ```text
@@ -1352,6 +1753,28 @@ index 4: distance = 2 + 2 - 2*0 = 4
 ---
 
 ## 14. Problem 10: LCA With Dynamic Root
+
+### Which Tree Structure
+
+```text
+Same tree, changing logical root per query
+```
+
+### Technique
+
+```text
+Three-LCA deepest-node trick
+```
+
+### Step-by-Step Working
+
+```text
+1. Compute l=lca(u,v).
+2. Compute a=lca(u,root).
+3. Compute b=lca(v,root).
+4. Return the deepest among l,a,b.
+```
+
 
 ### Problem Statement
 
@@ -1373,12 +1796,14 @@ b = lca(v, x)
 
 Answer is deepest among `{l, a, b}`.
 
-```mermaid
-flowchart TD
-    A["l = lca u v"] --> D["Choose deepest"]
-    B["a = lca u root"] --> D
-    C["b = lca v root"] --> D
-    D --> E["Dynamic-root LCA"]
+```text
+Dynamic Root LCA Flow
+
+l = lca(u, v)
+a = lca(u, root)
+b = lca(v, root)
+
+Answer = deepest node among {l, a, b}
 ```
 
 ### C++ Code
@@ -1394,6 +1819,81 @@ int lcaDynamicRoot(int u, int v, int root) {
     if (depth[b] > depth[ans]) ans = b;
 
     return ans;
+}
+```
+
+
+### Complete C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int LOG = 20;
+int n, q;
+vector<vector<int>> g, up;
+vector<int> depth;
+
+void dfs(int u, int p) {
+    up[u][0] = p;
+    for (int i = 1; i < LOG; i++) {
+        if (up[u][i - 1] == -1) up[u][i] = -1;
+        else up[u][i] = up[up[u][i - 1]][i - 1];
+    }
+    for (int v : g[u]) {
+        if (v == p) continue;
+        depth[v] = depth[u] + 1;
+        dfs(v, u);
+    }
+}
+
+int lca(int u, int v) {
+    if (depth[u] < depth[v]) swap(u, v);
+    int diff = depth[u] - depth[v];
+    for (int i = LOG - 1; i >= 0; i--) {
+        if ((diff >> i) & 1) u = up[u][i];
+    }
+    if (u == v) return u;
+    for (int i = LOG - 1; i >= 0; i--) {
+        if (up[u][i] != up[v][i]) {
+            u = up[u][i];
+            v = up[v][i];
+        }
+    }
+    return up[u][0];
+}
+
+int lcaDynamicRoot(int u, int v, int root) {
+    int l = lca(u, v);
+    int a = lca(u, root);
+    int b = lca(v, root);
+
+    int ans = l;
+    if (depth[a] > depth[ans]) ans = a;
+    if (depth[b] > depth[ans]) ans = b;
+    return ans;
+}
+
+int main() {
+    cin >> n >> q;
+    g.assign(n + 1, {});
+    up.assign(n + 1, vector<int>(LOG, -1));
+    depth.assign(n + 1, 0);
+
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    dfs(1, -1);
+
+    while (q--) {
+        int u, v, root;
+        cin >> u >> v >> root;
+        cout << lcaDynamicRoot(u, v, root) << "\n";
+    }
 }
 ```
 
@@ -1428,6 +1928,27 @@ index 4: answer = 2
 # Part 4 — Prefix / Difference On Tree
 
 ## 15. Problem 11: Path XOR Query
+
+### Which Tree Structure
+
+```text
+Weighted tree
+```
+
+### Technique
+
+```text
+Root prefix XOR
+```
+
+### Step-by-Step Working
+
+```text
+1. DFS from root and store pref[u]=XOR from root to u.
+2. For query u-v, compute pref[u] XOR pref[v].
+3. The common root-to-LCA prefix cancels automatically.
+```
+
 
 ### Problem Statement
 
@@ -1474,13 +1995,15 @@ pathXor(u, v) = prefixXor[u] XOR prefixXor[v]
 
 Because common root-to-LCA part cancels out.
 
-```mermaid
-flowchart TD
-    R["root"] --> A["LCA"]
-    A --> U["u"]
-    A --> V["v"]
-    X["prefix u and prefix v share root to LCA"]
-    X --> Y["Shared XOR cancels"]
+```text
+Path XOR Prefix Diagram
+
+root -> ... -> LCA -> ... -> u
+root -> ... -> LCA -> ... -> v
+
+prefixXor[u] and prefixXor[v] both contain the shared root-to-LCA part.
+Shared XOR cancels:
+pathXor(u,v) = prefixXor[u] XOR prefixXor[v]
 ```
 
 ### C++ Code
@@ -1556,6 +2079,28 @@ index 2: pref[4] XOR pref[5] = 5 XOR 2 = 7
 
 ## 16. Problem 12: Path Update And Point Query
 
+### Which Tree Structure
+
+```text
+Rooted tree with LCA preprocessing
+```
+
+### Technique
+
+```text
+Tree difference + postorder accumulation
+```
+
+### Step-by-Step Working
+
+```text
+1. For each path update u-v by x, update endpoints and LCA correction points.
+2. After all updates, process nodes in postorder.
+3. Push each child accumulated value to its parent.
+4. Final add[u] is the value on node u.
+```
+
+
 ### Problem Statement
 
 Given a tree and `q` updates:
@@ -1598,17 +2143,16 @@ add[parent[lca(u,v)]] -= x
 
 Then process nodes in postorder, pushing child value to parent.
 
-```mermaid
-flowchart TD
-    A["Path update u-v by x"] --> B["+x at u"]
-    A --> C["+x at v"]
-    A --> D["-x at lca"]
-    A --> E["-x at parent of lca"]
-    B --> F["Postorder accumulate"]
-    C --> F
-    D --> F
-    E --> F
-    F --> G["Final node values"]
+```text
+Tree Difference Path Update Flow
+
+For update path u-v by x:
+├── add[u] += x
+├── add[v] += x
+├── add[lca(u,v)] -= x
+└── add[parent[lca(u,v)]] -= x
+
+Then postorder accumulation pushes child values to parent.
 ```
 
 ### C++ Code
@@ -1647,6 +2191,95 @@ void finalizeValues() {
             add[parentNode[u]] += add[u];
         }
     }
+}
+```
+
+
+### Complete C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int LOG = 20;
+int n, q;
+vector<vector<int>> g, up;
+vector<int> depth, parentNode, order;
+vector<long long> add;
+
+void dfsBuild(int u, int p) {
+    parentNode[u] = p;
+    up[u][0] = (p == 0 ? -1 : p);
+
+    for (int i = 1; i < LOG; i++) {
+        if (up[u][i - 1] == -1) up[u][i] = -1;
+        else up[u][i] = up[up[u][i - 1]][i - 1];
+    }
+
+    for (int v : g[u]) {
+        if (v == p) continue;
+        depth[v] = depth[u] + 1;
+        dfsBuild(v, u);
+    }
+
+    order.push_back(u); // postorder: child before parent
+}
+
+int lca(int u, int v) {
+    if (depth[u] < depth[v]) swap(u, v);
+    int diff = depth[u] - depth[v];
+    for (int i = LOG - 1; i >= 0; i--) {
+        if ((diff >> i) & 1) u = up[u][i];
+    }
+    if (u == v) return u;
+    for (int i = LOG - 1; i >= 0; i--) {
+        if (up[u][i] != up[v][i]) {
+            u = up[u][i];
+            v = up[v][i];
+        }
+    }
+    return up[u][0];
+}
+
+void updatePath(int u, int v, long long x) {
+    int w = lca(u, v);
+    add[u] += x;
+    add[v] += x;
+    add[w] -= x;
+    if (parentNode[w] != 0) add[parentNode[w]] -= x;
+}
+
+int main() {
+    cin >> n;
+    g.assign(n + 1, {});
+    up.assign(n + 1, vector<int>(LOG, -1));
+    depth.assign(n + 1, 0);
+    parentNode.assign(n + 1, 0);
+    add.assign(n + 1, 0);
+
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    dfsBuild(1, 0);
+
+    cin >> q;
+    while (q--) {
+        int u, v;
+        long long x;
+        cin >> u >> v >> x;
+        updatePath(u, v, x);
+    }
+
+    for (int u : order) {
+        if (parentNode[u] != 0) add[parentNode[u]] += add[u];
+    }
+
+    for (int i = 1; i <= n; i++) cout << add[i] << " ";
+    cout << "\n";
 }
 ```
 
@@ -1739,12 +2372,15 @@ up[u][i]  = 2^i-th ancestor of u
 agg[u][i] = aggregate from u upward for 2^i edges/nodes
 ```
 
-```mermaid
-flowchart TD
-    A["Node u"] --> B["First half aggregate"]
-    B --> C["Middle ancestor after first half"]
-    C --> D["Second half aggregate"]
-    D --> E["Combine both halves"]
+```text
+Binary Lifting Aggregate Diagram
+
+u
+├── first half aggregate for 2^(i-1) jump
+└── mid ancestor
+    └── second half aggregate for 2^(i-1) jump
+
+agg[u][i] = combine(first half, second half)
 ```
 
 ### Generic Recurrence
@@ -1767,6 +2403,29 @@ agg[u][i] = combine(agg[u][i - 1], agg[ up[u][i - 1] ][i - 1]);
 ---
 
 ## 18. Problem 13: Path GCD Query
+
+### Which Tree Structure
+
+```text
+Rooted tree with node values
+```
+
+### Technique
+
+```text
+Binary lifting aggregate with GCD
+```
+
+### Step-by-Step Working
+
+```text
+1. Build up table and gcdUp table.
+2. Lift deeper node and combine GCD values.
+3. Jump both nodes upward while ancestors differ.
+4. Combine values from both sides and LCA.
+5. Return final GCD.
+```
+
 
 ### Problem Statement
 
@@ -1802,13 +2461,15 @@ GCD of all node values on path u to v
 
 While lifting nodes upward, collect GCD of every jumped segment.
 
-```mermaid
-flowchart TD
-    A["Query u-v"] --> B["Make depths equal"]
-    B --> C["Collect GCD while lifting deeper node"]
-    C --> D["Jump both upward"]
-    D --> E["Collect GCD from both sides"]
-    E --> F["Add u, v, and LCA values"]
+```text
+Path GCD Query Flow
+
+Query u-v
+├── lift deeper node and collect GCD
+├── if nodes meet, include meeting node value
+├── otherwise jump both upward from large power to small
+├── collect GCD from both sides
+└── include u, v, and their parent/LCA
 ```
 
 ### C++ Code
@@ -1930,6 +2591,29 @@ index 6: answer = 3
 
 ## 19. Problem 14: Path Minimum Edge Query
 
+### Which Tree Structure
+
+```text
+Weighted tree
+```
+
+### Technique
+
+```text
+Binary lifting aggregate with min edge
+```
+
+### Step-by-Step Working
+
+```text
+1. Store each parent-child edge weight at child.
+2. Build up table and mn table.
+3. Lift deeper node and update answer.
+4. Jump both nodes upward while ancestors differ.
+5. Include final two edges to LCA.
+```
+
+
 ### Problem Statement
 
 Given a weighted tree, answer queries:
@@ -1969,11 +2653,15 @@ edge(parent -> child) weight is stored at child
 
 Then use binary lifting aggregate with `min`.
 
-```mermaid
-flowchart TD
-    A["Edge weight between parent and child"] --> B["Store weight at child node"]
-    B --> C["Precompute minimum edge for each upward jump"]
-    C --> D["During query lift nodes and update answer"]
+```text
+Path Minimum Edge Query Flow
+
+Store edge(parent, child) weight at the child node.
+During query u-v:
+├── lift deeper node and update answer with min edge seen
+├── jump both nodes upward while ancestors differ
+├── collect min edges from both sides
+└── final answer is minimum edge on full path
 ```
 
 ### C++ Code
@@ -2089,6 +2777,28 @@ index 4: min(1,4,7)=1
 
 ## 20. Problem 15: Detect Cycle Using DSU
 
+### Which Tree Structure
+
+```text
+Undirected graph / tree validation structure
+```
+
+### Technique
+
+```text
+Disjoint Set Union cycle detection
+```
+
+### Step-by-Step Working
+
+```text
+1. Initially every node is its own component.
+2. For every edge u-v, check leaders.
+3. If leaders are same, this edge creates a cycle.
+4. Otherwise union both components.
+```
+
+
 ### Problem Statement
 
 Given an undirected graph with `n` nodes and `m` edges, detect if adding edges creates a cycle.
@@ -2121,15 +2831,18 @@ DSU helps test cycle/connectivity quickly.
 Cycle found
 ```
 
-### Mermaid Diagram
+### Plain Diagram
 
-```mermaid
-flowchart TD
-    A["Read edge u-v"] --> B["Find root of u"]
-    B --> C["Find root of v"]
-    C --> D{"same root?"}
-    D -->|"Yes"| E["Cycle found"]
-    D -->|"No"| F["Union components"]
+```text
+DSU Cycle Detection Flow
+
+Read edge u-v
+├── rootU = find(u)
+├── rootV = find(v)
+├── if rootU == rootV
+│   └── cycle found
+└── otherwise
+    └── union the two components
 ```
 
 ### C++ Code
