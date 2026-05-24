@@ -242,7 +242,30 @@ TC = O(n * 2) = O(n)
 SC = O(n)
 ```
 
+## Decision Tree
+
+```text
+Problem asks count ways to reach n?
+├── Can move by fixed small jumps? YES
+│   └── State = current stair x
+│       └── DP(x) = ways from x to n
+└── Transition = try every allowed jump
+```
+
+## Step-by-Step Working
+
+```text
+1. Stand at stair x.
+2. If x > n, this path is invalid -> 0 ways.
+3. If x == n, one valid path is completed -> 1 way.
+4. Otherwise try jump 1 and jump 2.
+5. Add both answers.
+6. Cache DP(x), because many paths reach the same x.
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -277,6 +300,30 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<long long> dp(n + 2, 0);
+    dp[n] = 1;
+
+    for (int x = n - 1; x >= 0; x--) {
+        dp[x] = dp[x + 1] + dp[x + 2];
+    }
+
+    cout << dp[0] << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
@@ -400,7 +447,30 @@ TC = O(n * T * 2) = O(nT)
 SC = O(nT)
 ```
 
+## Decision Tree
+
+```text
+Need to check if some subset makes target T?
+├── Each element can be used at most once? YES
+│   └── Form = Take / Not Take
+│       └── State = (level, remaining target)
+└── Answer type = possible / impossible
+```
+
+## Step-by-Step Working
+
+```text
+1. At index level, decide whether to use a[level].
+2. Skip keeps rem unchanged.
+3. Take reduces rem by a[level].
+4. If rem becomes 0 at the end, subset is valid.
+5. If rem becomes negative, path is invalid.
+6. Use OR because any valid path is enough.
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -442,6 +512,36 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, T;
+    cin >> n >> T;
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    vector<vector<int>> dp(n + 1, vector<int>(T + 1, 0));
+    dp[0][0] = 1;
+
+    for (int i = 0; i < n; i++) {
+        for (int sum = 0; sum <= T; sum++) {
+            if (!dp[i][sum]) continue;
+            dp[i + 1][sum] = 1; // skip
+            if (sum + a[i] <= T) dp[i + 1][sum + a[i]] = 1; // take
+        }
+    }
+
+    cout << (dp[n][T] ? "YES" : "NO") << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
@@ -576,7 +676,30 @@ TC = O(nW)
 SC = O(nW)
 ```
 
+## Decision Tree
+
+```text
+Need maximize value under capacity?
+├── Each item can be chosen once? YES
+│   └── Form = 0/1 Take / Not Take
+│       └── State = (level, capacity left)
+└── Answer type = maximize
+```
+
+## Step-by-Step Working
+
+```text
+1. At item level, capacity left is capLeft.
+2. Option 1: skip item, value does not change.
+3. Option 2: take item if weight fits.
+4. Taking item adds value[level] and reduces capacity.
+5. Choose maximum of skip/take.
+6. Cache because same (level, capLeft) repeats.
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -620,6 +743,36 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, W;
+    cin >> n >> W;
+    vector<int> wt(n), val(n);
+    for (int i = 0; i < n; i++) cin >> wt[i] >> val[i];
+
+    vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
+
+    for (int i = 0; i < n; i++) {
+        for (int cap = 0; cap <= W; cap++) {
+            dp[i + 1][cap] = max(dp[i + 1][cap], dp[i][cap]); // skip
+            if (cap + wt[i] <= W) {
+                dp[i + 1][cap + wt[i]] = max(dp[i + 1][cap + wt[i]], dp[i][cap] + val[i]);
+            }
+        }
+    }
+
+    cout << dp[n][W] << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
@@ -749,7 +902,28 @@ TC = O(n * 4 * 3) = O(n)
 SC = O(n * 4)
 ```
 
+## Decision Tree
+
+```text
+Need choose one activity each day?
+├── Choice depends on previous day? YES
+│   └── State = (day, previous activity)
+└── Answer type = maximize total score
+```
+
+## Step-by-Step Working
+
+```text
+1. At each day, try activity A/B/C.
+2. Reject the activity if it equals previous activity.
+3. Add today's points.
+4. Move to next day with current activity as previous.
+5. Take maximum among valid activities.
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -793,6 +967,40 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<array<int, 3>> points(n);
+    for (int i = 0; i < n; i++) cin >> points[i][0] >> points[i][1] >> points[i][2];
+
+    vector<array<int, 3>> dp(n);
+    for (int act = 0; act < 3; act++) dp[0][act] = points[0][act];
+
+    for (int day = 1; day < n; day++) {
+        for (int act = 0; act < 3; act++) {
+            dp[day][act] = points[day][act];
+            int bestPrev = 0;
+            for (int prev = 0; prev < 3; prev++) {
+                if (prev == act) continue;
+                bestPrev = max(bestPrev, dp[day - 1][prev]);
+            }
+            dp[day][act] += bestPrev;
+        }
+    }
+
+    cout << max({dp[n - 1][0], dp[n - 1][1], dp[n - 1][2]}) << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
@@ -919,7 +1127,30 @@ TC = O(maxValue)
 SC = O(maxValue)
 ```
 
+## Decision Tree
+
+```text
+Choosing x deletes x-1 and x+1?
+├── Convert array to frequency/gain by value
+├── Looks like house robber on values
+│   └── State = value x
+└── Transition = skip x OR take x and jump x+2
+```
+
+## Step-by-Step Working
+
+```text
+1. Count frequency of every value.
+2. Convert each value x into gain[x] = x * freq[x].
+3. For every x, choose skip or take.
+4. Skip x means go to x+1.
+5. Take x means add gain[x] and go to x+2.
+6. Choose maximum.
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -960,6 +1191,39 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    int mx = 0;
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+        mx = max(mx, a[i]);
+    }
+
+    vector<long long> gain(mx + 1, 0);
+    for (int x : a) gain[x] += x;
+
+    vector<long long> dp(mx + 1, 0);
+    if (mx >= 1) dp[1] = gain[1];
+
+    for (int x = 2; x <= mx; x++) {
+        dp[x] = max(dp[x - 1], gain[x] + dp[x - 2]);
+    }
+
+    cout << dp[mx] << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
@@ -1090,7 +1354,29 @@ TC = O(n * n) = O(n²)
 SC = O(n)
 ```
 
+## Decision Tree
+
+```text
+Need longest increasing subsequence?
+├── Subsequence keeps relative order
+├── Best answer can end at each index i
+│   └── State = LIS ending at i
+└── Transition = extend from previous smaller a[j]
+```
+
+## Step-by-Step Working
+
+```text
+1. Let dp[i] start as 1 because every element alone is LIS length 1.
+2. For each previous j < i, check if a[j] < a[i].
+3. If yes, extend LIS ending at j.
+4. dp[i] = max(dp[i], dp[j] + 1).
+5. Final answer is max dp[i].
+```
+
 ### 6. Code
+
+### Original / Primary C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1118,6 +1404,44 @@ int main() {
     return 0;
 }
 ```
+
+### Top-down C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> a, dp;
+
+int rec(int i) {
+    if (dp[i] != -1) return dp[i];
+    int ans = 1;
+    for (int j = 0; j < i; j++) {
+        if (a[j] < a[i]) ans = max(ans, rec(j) + 1);
+    }
+    return dp[i] = ans;
+}
+
+int main() {
+    cin >> n;
+    a.resize(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    dp.assign(n, -1);
+    int ans = 0;
+    for (int i = 0; i < n; i++) ans = max(ans, rec(i));
+
+    cout << ans << "
+";
+    return 0;
+}
+```
+
+### Bottom-up C++ Code
+
+The code above in the original `### 6. Code` section is the standard bottom-up version.
+
 
 
 ## Top-down vs Bottom-up working
@@ -1244,7 +1568,30 @@ TC = O(n log n)
 SC = O(n)
 ```
 
+## Decision Tree
+
+```text
+Need LIS length only, not actual subsequence?
+├── O(N²) too slow?
+├── Maintain best possible tail for each length
+│   └── Use binary search lower_bound
+└── Answer = tail.size()
+```
+
+## Step-by-Step Working
+
+```text
+1. Process elements from left to right.
+2. tail[len] stores the smallest ending value for subsequence length len+1.
+3. For x, find first tail[pos] >= x.
+4. Replace tail[pos] with x.
+5. If no such position exists, append x.
+6. Smaller ending value is better for future extension.
+```
+
 ### 6. Code
+
+### Original / Primary C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1268,6 +1615,43 @@ int main() {
     return 0;
 }
 ```
+
+### Top-down Reference C++ Code — O(N²)
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> a, dp;
+
+int rec(int i) {
+    if (dp[i] != -1) return dp[i];
+    int ans = 1;
+    for (int j = 0; j < i; j++) {
+        if (a[j] < a[i]) ans = max(ans, rec(j) + 1);
+    }
+    return dp[i] = ans;
+}
+
+int main() {
+    cin >> n;
+    a.resize(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+    dp.assign(n, -1);
+
+    int ans = 0;
+    for (int i = 0; i < n; i++) ans = max(ans, rec(i));
+    cout << ans << "
+";
+    return 0;
+}
+```
+
+### Bottom-up Optimized C++ Code
+
+The original code in this section is the optimized left-to-right `tail` solution.
+
 
 
 ## Step-by-step optimized working
@@ -1414,7 +1798,31 @@ TC = O(n²)
 SC = O(n²)
 ```
 
+## Decision Tree
+
+```text
+Need minimum cuts/parts for a string?
+├── Last segment choice matters
+├── Need fast palindrome check? YES
+│   ├── Precompute pal[l][r]
+│   └── DP over prefix ending at i
+└── Transition = choose start j of last palindrome
+```
+
+## Step-by-Step Working
+
+```text
+1. Precompute pal[l][r] for all substrings.
+2. Let dp[i] = min parts for prefix s[0..i].
+3. For every end i, try every start j.
+4. If s[j..i] is palindrome, it can be the last part.
+5. Candidate = 1 if j == 0 else dp[j-1] + 1.
+6. Take minimum candidate.
+```
+
 ### 6. Code
+
+### Original / Primary C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1452,6 +1860,55 @@ int main() {
     return 0;
 }
 ```
+
+### Top-down C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+string s;
+int n;
+vector<vector<int>> pal;
+vector<int> dp;
+const int INF = 1e9;
+
+int rec(int i) {
+    if (i == n) return 0;
+    if (dp[i] != -1) return dp[i];
+
+    int ans = INF;
+    for (int j = i; j < n; j++) {
+        if (pal[i][j]) ans = min(ans, 1 + rec(j + 1));
+    }
+    return dp[i] = ans;
+}
+
+int main() {
+    cin >> s;
+    n = s.size();
+    pal.assign(n, vector<int>(n, 0));
+
+    for (int len = 1; len <= n; len++) {
+        for (int l = 0; l + len - 1 < n; l++) {
+            int r = l + len - 1;
+            if (len == 1) pal[l][r] = 1;
+            else if (len == 2) pal[l][r] = (s[l] == s[r]);
+            else pal[l][r] = (s[l] == s[r] && pal[l + 1][r - 1]);
+        }
+    }
+
+    dp.assign(n, -1);
+    cout << rec(0) << "
+";
+    return 0;
+}
+```
+
+### Bottom-up C++ Code
+
+The original code in this section is the standard bottom-up prefix DP.
+
 
 
 ## Top-down vs Bottom-up working
@@ -1587,7 +2044,29 @@ TC = O(nm)
 SC = O(nm)
 ```
 
+## Decision Tree
+
+```text
+Two strings and subsequence matching?
+├── Characters match? take both
+├── Characters do not match? skip one side
+└── State = (i, j), current positions in both strings
+```
+
+## Step-by-Step Working
+
+```text
+1. Compare s[i] and t[j].
+2. If equal, take this character and move both pointers.
+3. If not equal, try skipping s[i].
+4. Also try skipping t[j].
+5. Take maximum length.
+6. Stop when either string is exhausted.
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1627,6 +2106,33 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    string s, t;
+    cin >> s >> t;
+    int n = s.size(), m = t.size();
+
+    vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (s[i - 1] == t[j - 1]) dp[i][j] = 1 + dp[i - 1][j - 1];
+            else dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+        }
+    }
+
+    cout << dp[n][m] << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
@@ -1764,7 +2270,29 @@ TC = O(nm)
 SC = O(nm)
 ```
 
+## Decision Tree
+
+```text
+Two strings and conversion operations?
+├── If chars equal -> no operation
+├── Else try delete / insert / replace
+└── State = (i, j), suffixes still not processed
+```
+
+## Step-by-Step Working
+
+```text
+1. If s is exhausted, insert remaining chars of t.
+2. If t is exhausted, delete remaining chars of s.
+3. If s[i] == t[j], move both pointers free.
+4. Otherwise try delete, insert, replace.
+5. Add 1 operation cost.
+6. Take minimum.
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1806,6 +2334,41 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    string s, t;
+    cin >> s >> t;
+    int n = s.size(), m = t.size();
+
+    vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+
+    for (int i = 0; i <= n; i++) dp[i][0] = i;
+    for (int j = 0; j <= m; j++) dp[0][j] = j;
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (s[i - 1] == t[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+            else {
+                int del = dp[i - 1][j];
+                int ins = dp[i][j - 1];
+                int rep = dp[i - 1][j - 1];
+                dp[i][j] = 1 + min({del, ins, rep});
+            }
+        }
+    }
+
+    cout << dp[n][m] << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
@@ -1923,7 +2486,28 @@ TC = O(n²)
 SC = O(n²)
 ```
 
+## Decision Tree
+
+```text
+Need answer for every substring s[l..r]?
+├── Interval DP
+├── Outer chars must match
+└── Inner substring must already be palindrome
+```
+
+## Step-by-Step Working
+
+```text
+1. All length-1 substrings are palindrome.
+2. Length-2 substring is palindrome if both chars match.
+3. For length >= 3, compare outer chars.
+4. If outer chars match, check inner dp[l+1][r-1].
+5. Fill by increasing length.
+```
+
 ### 6. Code
+
+### Original / Primary C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1950,6 +2534,37 @@ int main() {
     return 0;
 }
 ```
+
+### Top-down C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+string s;
+int n;
+vector<vector<int>> dp;
+
+int rec(int l, int r) {
+    if (l >= r) return 1;
+    if (dp[l][r] != -1) return dp[l][r];
+    return dp[l][r] = (s[l] == s[r] && rec(l + 1, r - 1));
+}
+
+int main() {
+    cin >> s;
+    n = s.size();
+    dp.assign(n, vector<int>(n, -1));
+    cout << (rec(0, n - 1) ? "YES" : "NO") << "
+";
+    return 0;
+}
+```
+
+### Bottom-up C++ Code
+
+The original code in this section is the standard bottom-up interval DP.
+
 
 
 ## Top-down vs Bottom-up working
@@ -2089,7 +2704,29 @@ TC = O(n³)
 SC = O(n²)
 ```
 
+## Decision Tree
+
+```text
+Need best way to split/multiply interval?
+├── Interval DP
+├── State = matrix range [l..r]
+└── Transition = choose split k
+```
+
+## Step-by-Step Working
+
+```text
+1. A single matrix has cost 0.
+2. For interval [l..r], try every split k.
+3. Left side cost = dp[l][k].
+4. Right side cost = dp[k+1][r].
+5. Merge cost depends on dimensions.
+6. Take minimum over all splits.
+```
+
 ### 6. Code
+
+### Original / Primary C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2122,6 +2759,47 @@ int main() {
     return 0;
 }
 ```
+
+### Top-down C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> dim;
+vector<vector<int>> dp;
+const int INF = 1e9;
+
+int rec(int l, int r) {
+    if (l == r) return 0;
+    if (dp[l][r] != -1) return dp[l][r];
+
+    int ans = INF;
+    for (int k = l; k < r; k++) {
+        int cost = rec(l, k) + rec(k + 1, r) + dim[l] * dim[k + 1] * dim[r + 1];
+        ans = min(ans, cost);
+    }
+    return dp[l][r] = ans;
+}
+
+int main() {
+    int m;
+    cin >> m;
+    dim.resize(m);
+    for (int i = 0; i < m; i++) cin >> dim[i];
+    n = m - 1;
+    dp.assign(n, vector<int>(n, -1));
+    cout << rec(0, n - 1) << "
+";
+    return 0;
+}
+```
+
+### Bottom-up C++ Code
+
+The original code in this section is the standard bottom-up interval DP.
+
 
 
 ## Top-down vs Bottom-up working
@@ -2238,7 +2916,28 @@ TC = O(n * sqrt(n)) if divisors generated by scan
 SC = O(n)
 ```
 
+## Decision Tree
+
+```text
+Two players alternate turns?
+├── Current wins if any move makes opponent lose
+├── Current loses if all moves make opponent win
+└── State = current number x
+```
+
+## Step-by-Step Working
+
+```text
+1. Base: x=1 has no valid move, so lose.
+2. For current x, list valid divisors d.
+3. Move to x-d.
+4. If any child state is losing, current is winning.
+5. Otherwise current is losing.
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2278,6 +2977,36 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<int> dp(n + 1, 0); // 0 = LOSE, 1 = WIN
+
+    for (int x = 2; x <= n; x++) {
+        for (int d = 1; d * d <= x; d++) {
+            if (x % d != 0) continue;
+            vector<int> divisors = {d, x / d};
+            for (int move : divisors) {
+                if (move >= 1 && move < x && dp[x - move] == 0) {
+                    dp[x] = 1;
+                }
+            }
+        }
+    }
+
+    cout << (dp[n] ? "WIN" : "LOSE") << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
@@ -2398,7 +3127,28 @@ TC = O(nm)
 SC = O(nm)
 ```
 
+## Decision Tree
+
+```text
+Grid + move restrictions?
+├── Can move only right/down
+├── State = cell (r,c)
+└── Transition = right or down
+```
+
+## Step-by-Step Working
+
+```text
+1. At each cell, pay grid[r][c].
+2. Move right or down.
+3. Invalid outside-grid move returns INF.
+4. Destination returns its own cost.
+5. Current answer = current cost + min(right, down).
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2438,6 +3188,38 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> grid(n, vector<int>(m));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) cin >> grid[i][j];
+    }
+
+    const int INF = 1e9;
+    vector<vector<int>> dp(n + 1, vector<int>(m + 1, INF));
+    dp[n - 1][m - 1] = grid[n - 1][m - 1];
+
+    for (int r = n - 1; r >= 0; r--) {
+        for (int c = m - 1; c >= 0; c--) {
+            if (r == n - 1 && c == m - 1) continue;
+            dp[r][c] = grid[r][c] + min(dp[r + 1][c], dp[r][c + 1]);
+        }
+    }
+
+    cout << dp[0][0] << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
@@ -2563,7 +3345,30 @@ TC = O(2^n * n²)
 SC = O(2^n * n)
 ```
 
+## Decision Tree
+
+```text
+Need visit all nodes/cities exactly once?
+├── n is small, usually <= 20
+├── Need remember visited set
+│   └── State = (mask, last)
+└── Transition = go to unvisited next city
+```
+
+## Step-by-Step Working
+
+```text
+1. mask stores which cities are visited.
+2. last stores current city.
+3. Try every city not inside mask.
+4. Add travel cost from last to next.
+5. Mark next as visited using mask | (1<<next).
+6. When all cities are visited, return to city 0.
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2605,6 +3410,48 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<vector<int>> cost(n, vector<int>(n));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) cin >> cost[i][j];
+    }
+
+    const int INF = 1e9;
+    int FULL = (1 << n) - 1;
+    vector<vector<int>> dp(1 << n, vector<int>(n, INF));
+    dp[1][0] = 0;
+
+    for (int mask = 0; mask <= FULL; mask++) {
+        for (int last = 0; last < n; last++) {
+            if (dp[mask][last] == INF) continue;
+            for (int nxt = 0; nxt < n; nxt++) {
+                if (mask & (1 << nxt)) continue;
+                int nmask = mask | (1 << nxt);
+                dp[nmask][nxt] = min(dp[nmask][nxt], dp[mask][last] + cost[last][nxt]);
+            }
+        }
+    }
+
+    int ans = INF;
+    for (int last = 0; last < n; last++) {
+        ans = min(ans, dp[FULL][last] + cost[last][0]);
+    }
+
+    cout << ans << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
@@ -2737,7 +3584,30 @@ TC = O(n)
 SC = O(n)
 ```
 
+## Decision Tree
+
+```text
+Input is a tree and answer uses child subtrees?
+├── Root the tree anywhere
+├── DFS returns best downward height
+├── Node answer may combine two best children
+└── Global answer = max path through any node
+```
+
+## Step-by-Step Working
+
+```text
+1. Root tree at node 1.
+2. DFS into every child except parent.
+3. Each child returns its best downward height.
+4. Keep best two child heights.
+5. Diameter through current node = best1 + best2 + 2.
+6. Return best1 + 1 to parent.
+```
+
 ### 6. Code
+
+### Top-down C++ Code
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2787,6 +3657,71 @@ int main() {
     return 0;
 }
 ```
+
+### Bottom-up / Postorder C++ Code
+
+Tree DP bottom-up means **postorder DFS**: children are solved before parent. The original code already follows this bottom-up return style.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, diameter = 0;
+vector<vector<int>> g;
+vector<int> parent, order, height;
+
+int main() {
+    cin >> n;
+    g.assign(n + 1, {});
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    parent.assign(n + 1, 0);
+    height.assign(n + 1, 0);
+
+    stack<int> st;
+    st.push(1);
+    parent[1] = -1;
+
+    while (!st.empty()) {
+        int u = st.top();
+        st.pop();
+        order.push_back(u);
+        for (int v : g[u]) {
+            if (v == parent[u]) continue;
+            parent[v] = u;
+            st.push(v);
+        }
+    }
+
+    reverse(order.begin(), order.end()); // postorder-like processing
+
+    for (int u : order) {
+        int best1 = -1, best2 = -1;
+        for (int v : g[u]) {
+            if (parent[v] != u) continue;
+            int h = height[v];
+            if (h > best1) {
+                best2 = best1;
+                best1 = h;
+            } else if (h > best2) {
+                best2 = h;
+            }
+        }
+        diameter = max(diameter, best1 + best2 + 2);
+        height[u] = best1 + 1;
+    }
+
+    cout << diameter << "
+";
+    return 0;
+}
+```
+
 
 
 ## Top-down vs Bottom-up working
