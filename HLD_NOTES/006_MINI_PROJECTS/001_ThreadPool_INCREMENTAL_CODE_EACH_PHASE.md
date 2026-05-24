@@ -74,6 +74,8 @@ MiniRaft
 
 A thread pool is one of the most important internal building blocks in backend and distributed systems.
 
+This updated version is incremental: each phase contains its own complete Java code, driver class, run command, expected result, and dry run.
+
 Final system capabilities:
 
 ```text
@@ -760,35 +762,19 @@ Worker Thread
 task.run()
 ```
 
-## Step-By-Step Execution Details Before Code
-
-In this phase, we build the smallest working thread pool.
-
-Execution flow:
+## Step-by-Step Execution
 
 ```text
 Step 1: Main thread creates MiniThreadPool(3).
 Step 2: Constructor creates 3 worker threads.
-Step 3: Each worker starts and waits for a task.
-Step 4: Main thread calls submit(task).
-Step 5: submit() puts task into taskQueue.
+Step 3: Each worker starts and waits on taskQueue.take().
+Step 4: Main calls submit(task).
+Step 5: submit() places task into queue.
 Step 6: One worker wakes up and takes the task.
 Step 7: Worker executes task.run().
-Step 8: shutdown() changes running=false.
-Step 9: Workers are interrupted so they can exit if waiting.
-```
-
-Thread state intuition:
-
-```text
-Before task:
-worker is WAITING on queue.take()
-
-After submit:
-queue receives task
-worker becomes RUNNABLE
-worker executes task
-worker waits again
+Step 8: Worker goes back to waiting for next task.
+Step 9: Main calls shutdown().
+Step 10: Workers are interrupted and exit.
 ```
 
 ## Mermaid Sequence Diagram
@@ -815,23 +801,7 @@ sequenceDiagram
     Pool->>W2: interrupt()
 ```
 
-## Inline Commands To Run This Phase
-
-```bash
-mvn clean compile
-java -cp target/classes com.mini.threadpool.DemoPhase1
-```
-
-Expected output pattern:
-
-```text
-mini-worker-0 executing task 1
-mini-worker-1 executing task 2
-mini-worker-2 executing task 3
-...
-```
-
-## Phase 1 code
+## Phase 1 Complete Java Code
 
 ### MiniThreadPool.java
 
@@ -896,7 +866,9 @@ public class MiniThreadPool {
 }
 ```
 
-## Phase 1 driver
+## Phase 1 Driver Class
+
+### DemoPhase1.java
 
 ```java
 package com.mini.threadpool;
@@ -919,35 +891,42 @@ public class DemoPhase1 {
 }
 ```
 
-## Phase 1 dry run
+## Run Command
 
-```text
-Create pool with 3 workers
-
-Worker-0 starts and waits
-Worker-1 starts and waits
-Worker-2 starts and waits
-
-Submit task-1
-Task goes to queue
-Worker-0 takes task-1
-Worker-0 runs it
-
-Submit task-2
-Worker-1 takes task-2
-
-Submit task-3
-Worker-2 takes task-3
-
-Submit task-4
-If all workers busy, task waits in queue
+```bash
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoPhase1
 ```
 
-## Phase 1 issue
+## Expected Result
 
-`LinkedBlockingQueue` can grow very large.
+```text
+mini-worker-0 executing task 1
+mini-worker-1 executing task 2
+mini-worker-2 executing task 3
+...
+```
 
-That is dangerous.
+Thread order can vary.
+
+## Dry Run
+
+```text
+Create pool with 3 workers.
+Worker-0, Worker-1, Worker-2 wait on queue.
+Submit task-1.
+One worker wakes and executes task-1.
+Submit more tasks.
+Workers reuse themselves.
+shutdown() stops accepting work and interrupts waiting workers.
+```
+
+## Phase 1 Issue
+
+```text
+LinkedBlockingQueue can grow very large.
+That can cause memory pressure.
+```
 
 Next phase: bounded queue.
 
@@ -957,151 +936,267 @@ Next phase: bounded queue.
 
 ## What are we building?
 
-We replace unbounded queue with bounded queue.
+We upgrade Phase 1 from an unbounded queue to a bounded queue.
 
-```java
-ArrayBlockingQueue<>(queueCapacity)
+Phase 1 problem:
+
+```text
+LinkedBlockingQueue can grow forever.
+If producers submit too many tasks, memory can explode.
+```
+
+Phase 2 solution:
+
+```text
+Use ArrayBlockingQueue with fixed capacity.
+If queue is full, reject the task.
 ```
 
 ## Why this phase?
 
-Because real systems cannot accept infinite work.
-
-If queue is unbounded:
+Because real systems must protect themselves from overload.
 
 ```text
 Traffic spike
-Queue grows
-Memory grows
-GC pressure grows
-Application may crash
+    ↓
+Tasks arrive faster than workers process
+    ↓
+Queue fills
+    ↓
+System must apply backpressure
 ```
 
 ## What we care about
 
 ```text
-capacity control
-overload handling
+bounded memory
+queue capacity
+rejection
 backpressure
-queue full condition
+overload visibility
 ```
 
-## API
-
-```java
-MiniThreadPool pool = new MiniThreadPool(3, 100);
-```
-
-Meaning:
+## Phase 2 Architecture
 
 ```text
-3 workers
-100 queue capacity
+Producer Thread
+      |
+      v
+MiniThreadPool.submit(task)
+      |
+      v
+ArrayBlockingQueue(capacity = 3)
+      |
+      v
+Worker Threads
 ```
 
-## Step-By-Step Execution Details Before Code
-
-In Phase 1, the queue can grow without limit.
-
-In Phase 2, we protect memory using a bounded queue.
-
-Execution flow:
+## Step-by-Step Execution
 
 ```text
-Step 1: Main creates MiniThreadPool(2, 5).
+Step 1: Main creates MiniThreadPool(2, 3).
 Step 2: Pool creates 2 workers.
-Step 3: Queue capacity is fixed to 5.
-Step 4: Main submits many slow tasks.
-Step 5: 2 tasks are running.
-Step 6: 5 tasks are waiting in queue.
-Step 7: More tasks arrive.
-Step 8: Queue is full.
-Step 9: submit() rejects or applies rejection policy.
-```
-
-Why this matters:
-
-```text
-Unbounded queue hides overload.
-Bounded queue exposes overload early.
+Step 3: Pool creates bounded queue with capacity 3.
+Step 4: Main submits 10 slow tasks.
+Step 5: 2 tasks are picked by workers.
+Step 6: 3 tasks wait in queue.
+Step 7: Queue becomes full.
+Step 8: Remaining tasks are rejected.
+Step 9: Rejection tells us system is overloaded.
 ```
 
 ## Mermaid Sequence Diagram
 
 ```mermaid
 sequenceDiagram
-    participant Producer as Producer Thread
+    participant Main
     participant Pool as MiniThreadPool
-    participant Queue as Bounded Queue
-    participant Worker as Worker
+    participant Queue as ArrayBlockingQueue
+    participant W1 as Worker-1
+    participant W2 as Worker-2
 
-    Producer->>Pool: submit(task-1)
+    Main->>Pool: new MiniThreadPool(2, 3)
+    Pool->>W1: start()
+    Pool->>W2: start()
+    Main->>Pool: submit(task-1)
     Pool->>Queue: offer(task-1)
-    Queue-->>Worker: task-1
-    Worker->>Worker: execute slowly
-    Producer->>Pool: submit(task-2...task-7)
-    Pool->>Queue: fill queue
-    Producer->>Pool: submit(task-8)
-    Pool->>Queue: offer(task-8)
-    Queue-->>Pool: false, queue full
-    Pool-->>Producer: reject / backpressure
+    Queue-->>W1: task-1
+    W1->>W1: sleep/process
+    Main->>Pool: submit(task-2)
+    Queue-->>W2: task-2
+    W2->>W2: sleep/process
+    Main->>Pool: submit(task-3..5)
+    Pool->>Queue: queue fills
+    Main->>Pool: submit(task-6)
+    Pool->>Queue: offer(task-6)
+    Queue-->>Pool: false
+    Pool-->>Main: throw Task queue is full
 ```
 
-## Inline Commands To Run This Phase
+## Phase 2 Complete Java Code
 
-Create or run a backpressure demo, then:
-
-```bash
-mvn clean compile
-java -cp target/classes com.mini.threadpool.DemoBackpressure
-```
-
-Expected output pattern:
-
-```text
-mini-worker-0 processing slow task 1
-mini-worker-1 processing slow task 2
-Rejected task 6
-Rejected task 7
-...
-```
-
-## Phase 2 change
+### MiniThreadPool.java
 
 ```java
-private final BlockingQueue<Runnable> taskQueue;
-```
+package com.mini.threadpool;
 
-Constructor:
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
-```java
-this.taskQueue = new ArrayBlockingQueue<>(queueCapacity);
-```
+public class MiniThreadPool {
+    private final BlockingQueue<Runnable> taskQueue;
+    private final List<Thread> workers = new ArrayList<>();
+    private volatile boolean running = true;
 
-Submit:
+    public MiniThreadPool(int numberOfThreads, int queueCapacity) {
+        if (numberOfThreads <= 0) {
+            throw new IllegalArgumentException("numberOfThreads must be positive");
+        }
 
-```java
-boolean accepted = taskQueue.offer(task);
-if (!accepted) {
-    throw new IllegalStateException("Task queue is full");
+        if (queueCapacity <= 0) {
+            throw new IllegalArgumentException("queueCapacity must be positive");
+        }
+
+        this.taskQueue = new ArrayBlockingQueue<>(queueCapacity);
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            Thread worker = new Thread(() -> {
+                while (running || !taskQueue.isEmpty()) {
+                    try {
+                        Runnable task = taskQueue.take();
+                        task.run();
+                    } catch (InterruptedException e) {
+                        if (!running) {
+                            break;
+                        }
+                    } catch (RuntimeException e) {
+                        System.err.println("Task failed: " + e.getMessage());
+                    }
+                }
+            }, "mini-worker-" + i);
+
+            workers.add(worker);
+            worker.start();
+        }
+    }
+
+    public void submit(Runnable task) {
+        if (!running) {
+            throw new IllegalStateException("ThreadPool is shutting down");
+        }
+
+        if (task == null) {
+            throw new IllegalArgumentException("task cannot be null");
+        }
+
+        boolean accepted = taskQueue.offer(task);
+
+        if (!accepted) {
+            throw new IllegalStateException("Task queue is full");
+        }
+    }
+
+    public void shutdown() {
+        running = false;
+
+        for (Thread worker : workers) {
+            worker.interrupt();
+        }
+    }
 }
 ```
 
-## Backpressure example
+## Phase 2 Driver Class
+
+### DemoPhase2Backpressure.java
+
+```java
+package com.mini.threadpool;
+
+public class DemoPhase2Backpressure {
+    public static void main(String[] args) throws InterruptedException {
+        MiniThreadPool pool = new MiniThreadPool(2, 3);
+
+        for (int i = 1; i <= 10; i++) {
+            int taskId = i;
+
+            try {
+                pool.submit(() -> {
+                    System.out.println(Thread.currentThread().getName()
+                            + " processing slow task " + taskId);
+                    sleep(1000);
+                });
+
+                System.out.println("Submitted task " + taskId);
+
+            } catch (Exception e) {
+                System.out.println("Rejected task " + taskId + " because " + e.getMessage());
+            }
+        }
+
+        Thread.sleep(4000);
+        pool.shutdown();
+    }
+
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
+
+## Run Command
+
+```bash
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoPhase2Backpressure
+```
+
+## Expected Result
+
+Output pattern:
+
+```text
+Submitted task 1
+Submitted task 2
+Submitted task 3
+Submitted task 4
+Submitted task 5
+Rejected task 6 because Task queue is full
+Rejected task 7 because Task queue is full
+...
+mini-worker-0 processing slow task 1
+mini-worker-1 processing slow task 2
+```
+
+Exact accepted count can vary slightly because workers may take tasks while main is still submitting.
+
+## Dry Run
 
 ```text
 workers = 2
-queue size = 5
-submit 100 slow tasks
+queue capacity = 3
 
-2 running
-5 waiting
-93 rejected
+task-1 -> worker-0
+task-2 -> worker-1
+task-3 -> queue
+task-4 -> queue
+task-5 -> queue
+task-6 -> rejected
 ```
 
-This is good.
+## What We Learned
 
-It protects the system.
+```text
+Bounded queues protect memory.
+Queue full means system is overloaded.
+Rejection is a form of backpressure.
+```
 
 ---
 
@@ -1109,77 +1204,39 @@ It protects the system.
 
 ## What are we building?
 
-A proper shutdown mechanism.
-
-## Why this phase?
-
-In production, shutting down should not lose queued tasks.
-
-Expected behavior:
-
-```text
-1. Stop accepting new tasks
-2. Complete already queued tasks
-3. Stop workers after queue empty
-```
-
-## State model
-
-```text
-RUNNING
-   |
-shutdown()
-   v
-SHUTDOWN
-   |
-queue empty and workers done
-   v
-TERMINATED
-```
-
-## What we care about
-
-```text
-No new tasks after shutdown
-Existing tasks finish
-Workers exit cleanly
-Main thread can wait using awaitTermination
-```
-
-## Step-By-Step Execution Details Before Code
+We add a proper graceful shutdown mechanism.
 
 Graceful shutdown means:
 
 ```text
 Stop accepting new tasks.
-Finish already queued tasks.
-Then stop workers.
+Finish already submitted tasks.
+Then stop worker threads.
 ```
 
-Execution flow:
+## Why this phase?
+
+In production, you should not kill in-flight work suddenly.
+
+Examples:
 
 ```text
-Step 1: Pool is RUNNING.
+Kafka consumer should finish processing current message.
+API server should finish accepted request.
+File writer should finish flushing data.
+```
+
+## Step-by-Step Execution
+
+```text
+Step 1: Pool starts in RUNNING state.
 Step 2: Main submits tasks.
-Step 3: Some tasks run, some wait in queue.
-Step 4: Main calls shutdown().
-Step 5: Pool state becomes SHUTDOWN.
-Step 6: New submit() calls are rejected.
-Step 7: Workers continue processing queued tasks.
-Step 8: When queue becomes empty, workers exit.
-Step 9: Main calls awaitTermination() to wait.
-```
-
-Key condition:
-
-```java
-while (running || !taskQueue.isEmpty())
-```
-
-Why?
-
-```text
-Even after shutdown, queued tasks must finish.
+Step 3: Main calls shutdown().
+Step 4: running becomes false.
+Step 5: New tasks are rejected.
+Step 6: Workers continue processing queued tasks.
+Step 7: When queue becomes empty, workers exit.
+Step 8: Main waits using awaitTermination().
 ```
 
 ## Mermaid Sequence Diagram
@@ -1196,52 +1253,171 @@ sequenceDiagram
     Main->>Pool: submit(task-2)
     Pool->>Queue: offer(task-2)
     Main->>Pool: shutdown()
-    Pool->>Pool: state = SHUTDOWN
+    Pool->>Pool: running=false
     Main->>Pool: submit(task-3)
-    Pool-->>Main: reject new task
-    Worker->>Queue: poll task-1
+    Pool-->>Main: reject
+    Worker->>Queue: take task-1
     Worker->>Worker: run task-1
-    Worker->>Queue: poll task-2
+    Worker->>Queue: take task-2
     Worker->>Worker: run task-2
-    Worker->>Pool: queue empty, exit
+    Worker->>Worker: queue empty and running=false, exit
     Main->>Pool: awaitTermination()
 ```
 
-## Inline Commands To Run This Phase
+## Phase 3 Complete Java Code
+
+### MiniThreadPool.java
+
+```java
+package com.mini.threadpool;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+public class MiniThreadPool {
+    private final BlockingQueue<Runnable> taskQueue;
+    private final List<Thread> workers = new ArrayList<>();
+    private volatile boolean running = true;
+
+    public MiniThreadPool(int numberOfThreads, int queueCapacity) {
+        this.taskQueue = new ArrayBlockingQueue<>(queueCapacity);
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            Thread worker = new Thread(() -> {
+                while (running || !taskQueue.isEmpty()) {
+                    try {
+                        Runnable task = taskQueue.poll(200, TimeUnit.MILLISECONDS);
+
+                        if (task != null) {
+                            task.run();
+                        }
+
+                    } catch (InterruptedException e) {
+                        if (!running && taskQueue.isEmpty()) {
+                            break;
+                        }
+                    }
+                }
+            }, "mini-worker-" + i);
+
+            workers.add(worker);
+            worker.start();
+        }
+    }
+
+    public void submit(Runnable task) {
+        if (!running) {
+            throw new IllegalStateException("ThreadPool is shutting down");
+        }
+
+        if (task == null) {
+            throw new IllegalArgumentException("task cannot be null");
+        }
+
+        boolean accepted = taskQueue.offer(task);
+
+        if (!accepted) {
+            throw new IllegalStateException("Task queue is full");
+        }
+    }
+
+    public void shutdown() {
+        running = false;
+    }
+
+    public void awaitTermination() throws InterruptedException {
+        for (Thread worker : workers) {
+            worker.join();
+        }
+    }
+}
+```
+
+## Phase 3 Driver Class
+
+### DemoPhase3GracefulShutdown.java
+
+```java
+package com.mini.threadpool;
+
+public class DemoPhase3GracefulShutdown {
+    public static void main(String[] args) throws InterruptedException {
+        MiniThreadPool pool = new MiniThreadPool(2, 10);
+
+        for (int i = 1; i <= 5; i++) {
+            int taskId = i;
+            pool.submit(() -> {
+                System.out.println(Thread.currentThread().getName()
+                        + " started task " + taskId);
+                sleep(500);
+                System.out.println(Thread.currentThread().getName()
+                        + " completed task " + taskId);
+            });
+        }
+
+        System.out.println("Calling graceful shutdown...");
+        pool.shutdown();
+
+        try {
+            pool.submit(() -> System.out.println("Should not run"));
+        } catch (Exception e) {
+            System.out.println("Rejected new task after shutdown: " + e.getMessage());
+        }
+
+        pool.awaitTermination();
+        System.out.println("All queued tasks completed. Pool terminated.");
+    }
+
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
+
+## Run Command
 
 ```bash
-mvn test -Dtest=ShutdownTest
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoPhase3GracefulShutdown
 ```
 
-Expected behavior:
+## Expected Result
 
 ```text
-New task after shutdown throws IllegalStateException.
-Already queued tasks complete.
+Calling graceful shutdown...
+Rejected new task after shutdown: ThreadPool is shutting down
+mini-worker-0 started task 1
+mini-worker-1 started task 2
+...
+completed task 5
+All queued tasks completed. Pool terminated.
 ```
 
-## API
+## Dry Run
 
-```java
-pool.shutdown();
-pool.awaitTermination();
+```text
+5 tasks submitted.
+shutdown() called.
+task-6 rejected.
+worker threads continue task-1..task-5.
+queue becomes empty.
+workers exit.
 ```
 
-## Key logic
+## What We Learned
 
-Worker should run while:
-
-```java
-running || !taskQueue.isEmpty()
+```text
+Graceful shutdown is coordination.
+New work is blocked.
+Accepted work is completed.
 ```
-
-Not just:
-
-```java
-running
-```
-
-Because after shutdown there may still be tasks in queue.
 
 ---
 
@@ -1249,96 +1425,36 @@ Because after shutdown there may still be tasks in queue.
 
 ## What are we building?
 
-Immediate stop:
+We add immediate shutdown:
 
 ```java
-List<Runnable> remaining = pool.shutdownNow();
+List<Runnable> remainingTasks = pool.shutdownNow();
 ```
-
-## Why?
-
-Sometimes tasks are stuck or app must stop fast.
-
-## Behavior
-
-```text
-Stop accepting tasks
-Clear queued tasks
-Interrupt workers
-Return tasks not executed
-```
-
-## What we care about
-
-```text
-difference between graceful and force shutdown
-thread interruption
-remaining tasks
-```
-
-## Important note
-
-Java cannot safely kill a thread.
-
-It can only interrupt.
-
-Task code should cooperate:
-
-```java
-if (Thread.currentThread().isInterrupted()) {
-    return;
-}
-```
-
----
-
-# Part 9 — Phase 5: Rejection Policy
-
-## What are we building?
-
-Configurable behavior when queue is full.
 
 ## Why this phase?
 
-Different systems want different overload strategies.
+Sometimes graceful shutdown is too slow.
 
-## Policies
-
-| Policy | Behavior | Use case |
-|---|---|---|
-| AbortPolicy | throw exception | fail fast |
-| CallerRunsPolicy | caller executes task | slow down producer |
-| DiscardPolicy | drop task | low-value work |
-| BlockPolicy | wait for space | must not lose task |
-
-## Step-By-Step Execution Details Before Code
-
-Force shutdown means:
+Examples:
 
 ```text
-Stop immediately as much as possible.
-Return tasks that never started.
-Interrupt workers.
+application must stop now
+deployment timeout
+task is stuck
+system is unhealthy
 ```
 
-Execution flow:
+## Step-by-Step Execution
 
 ```text
-Step 1: Pool has running tasks and queued tasks.
-Step 2: Main calls shutdownNow().
-Step 3: Pool state becomes STOP.
-Step 4: Worker threads receive interrupt.
-Step 5: Queue is drained into remainingTasks list.
-Step 6: Remaining tasks are returned to caller.
-Step 7: Running tasks stop only if they handle interruption.
-```
-
-Important Java reality:
-
-```text
-Java cannot safely kill a thread.
-Interrupt is only a signal.
-Task must cooperate.
+Step 1: Some tasks are running.
+Step 2: Some tasks are waiting in queue.
+Step 3: Main calls shutdownNow().
+Step 4: Pool switches to stopped state.
+Step 5: Worker threads are interrupted.
+Step 6: Queued tasks are removed from queue.
+Step 7: Removed tasks are returned to caller.
+Step 8: Running tasks stop only if they respond to interruption.
 ```
 
 ## Mermaid Sequence Diagram
@@ -1350,34 +1466,248 @@ sequenceDiagram
     participant Queue
     participant Worker
 
-    Main->>Pool: submit(task-1)
-    Main->>Pool: submit(task-2)
+    Main->>Pool: submit(task-1..task-10)
+    Worker->>Queue: take task-1
+    Worker->>Worker: running task-1
     Main->>Pool: shutdownNow()
-    Pool->>Pool: state = STOP
+    Pool->>Pool: running=false, forceStop=true
     Pool->>Worker: interrupt()
     Pool->>Queue: drainTo(remainingTasks)
-    Queue-->>Pool: queued tasks
     Pool-->>Main: return remainingTasks
-    Worker->>Worker: exits if interrupted/cooperative
 ```
 
-## Inline Commands To Run This Phase
+## Phase 4 Complete Java Code
 
-Add a small driver:
+### MiniThreadPool.java
+
+```java
+package com.mini.threadpool;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+public class MiniThreadPool {
+    private final BlockingQueue<Runnable> taskQueue;
+    private final List<Thread> workers = new ArrayList<>();
+
+    private volatile boolean running = true;
+    private volatile boolean forceStop = false;
+
+    public MiniThreadPool(int numberOfThreads, int queueCapacity) {
+        this.taskQueue = new ArrayBlockingQueue<>(queueCapacity);
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            Thread worker = new Thread(() -> {
+                while (!forceStop && (running || !taskQueue.isEmpty())) {
+                    try {
+                        Runnable task = taskQueue.poll(200, TimeUnit.MILLISECONDS);
+
+                        if (task != null) {
+                            task.run();
+                        }
+
+                    } catch (InterruptedException e) {
+                        if (forceStop) {
+                            break;
+                        }
+                    }
+                }
+            }, "mini-worker-" + i);
+
+            workers.add(worker);
+            worker.start();
+        }
+    }
+
+    public void submit(Runnable task) {
+        if (!running) {
+            throw new IllegalStateException("ThreadPool is not running");
+        }
+
+        if (task == null) {
+            throw new IllegalArgumentException("task cannot be null");
+        }
+
+        boolean accepted = taskQueue.offer(task);
+
+        if (!accepted) {
+            throw new IllegalStateException("Task queue is full");
+        }
+    }
+
+    public void shutdown() {
+        running = false;
+    }
+
+    public List<Runnable> shutdownNow() {
+        running = false;
+        forceStop = true;
+
+        for (Thread worker : workers) {
+            worker.interrupt();
+        }
+
+        List<Runnable> remainingTasks = new ArrayList<>();
+        taskQueue.drainTo(remainingTasks);
+        return remainingTasks;
+    }
+
+    public void awaitTermination() throws InterruptedException {
+        for (Thread worker : workers) {
+            worker.join();
+        }
+    }
+}
+```
+
+## Phase 4 Driver Class
+
+### DemoPhase4ForceShutdown.java
+
+```java
+package com.mini.threadpool;
+
+import java.util.List;
+
+public class DemoPhase4ForceShutdown {
+    public static void main(String[] args) throws InterruptedException {
+        MiniThreadPool pool = new MiniThreadPool(2, 10);
+
+        for (int i = 1; i <= 10; i++) {
+            int taskId = i;
+            pool.submit(() -> {
+                System.out.println(Thread.currentThread().getName()
+                        + " started task " + taskId);
+
+                for (int j = 1; j <= 10; j++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        System.out.println("Task " + taskId + " interrupted");
+                        return;
+                    }
+                    sleep(100);
+                }
+
+                System.out.println(Thread.currentThread().getName()
+                        + " completed task " + taskId);
+            });
+        }
+
+        Thread.sleep(300);
+
+        List<Runnable> remaining = pool.shutdownNow();
+
+        System.out.println("Remaining queued tasks = " + remaining.size());
+
+        pool.awaitTermination();
+        System.out.println("Pool force stopped.");
+    }
+
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
+
+## Run Command
 
 ```bash
 mvn clean compile
-java -cp target/classes com.mini.threadpool.DemoForceShutdown
+java -cp target/classes com.mini.threadpool.DemoPhase4ForceShutdown
 ```
 
-Expected behavior:
+## Expected Result
 
 ```text
-Some queued tasks are returned as not executed.
-Running tasks may stop if they check interrupted status.
+mini-worker-0 started task 1
+mini-worker-1 started task 2
+Task 1 interrupted
+Task 2 interrupted
+Remaining queued tasks = 8
+Pool force stopped.
 ```
 
-## Interface
+Exact remaining count can vary.
+
+## What We Learned
+
+```text
+shutdownNow() is best effort.
+Queued tasks can be returned.
+Running tasks must cooperate with interruption.
+```
+
+---
+
+# Part 9 — Phase 5: Rejection Policy
+
+## What are we building?
+
+We replace hardcoded rejection with configurable rejection policies.
+
+Policies:
+
+```text
+AbortPolicy       -> throw exception
+CallerRunsPolicy  -> caller executes task
+DiscardPolicy     -> drop task
+BlockPolicy       -> wait for queue space
+```
+
+## Why this phase?
+
+Different systems need different overload behavior.
+
+```text
+Payment system        -> block or fail fast
+Analytics event       -> maybe discard
+API gateway overload  -> reject quickly
+Batch job             -> block until space
+```
+
+## Step-by-Step Execution
+
+```text
+Step 1: Producer calls submit(task).
+Step 2: Pool checks if queue has space.
+Step 3: If queue accepts, task is submitted.
+Step 4: If queue is full, pool calls rejectionPolicy.reject().
+Step 5: Policy decides what to do.
+```
+
+## Mermaid Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Producer
+    participant Pool
+    participant Queue
+    participant Policy
+
+    Producer->>Pool: submit(task)
+    Pool->>Queue: offer(task)
+    Queue-->>Pool: false
+    Pool->>Policy: reject(task, pool)
+    alt Abort
+        Policy-->>Producer: throw exception
+    else CallerRuns
+        Policy->>Producer: task.run()
+    else Discard
+        Policy-->>Producer: do nothing
+    else Block
+        Policy->>Queue: put(task)
+    end
+```
+
+## Phase 5 Complete Java Code
+
+### RejectionPolicy.java
 
 ```java
 package com.mini.threadpool;
@@ -1388,17 +1718,190 @@ public interface RejectionPolicy {
 }
 ```
 
-## Why CallerRunsPolicy is interesting
+### RejectionPolicies.java
 
-If queue is full:
+```java
+package com.mini.threadpool;
 
-```text
-submitter thread executes task itself
-submitter becomes slow
-incoming rate decreases naturally
+public final class RejectionPolicies {
+    private RejectionPolicies() {}
+
+    public static RejectionPolicy abortPolicy() {
+        return (task, pool) -> {
+            throw new IllegalStateException("Task rejected: queue is full");
+        };
+    }
+
+    public static RejectionPolicy discardPolicy() {
+        return (task, pool) -> {
+            // Intentionally discard.
+        };
+    }
+
+    public static RejectionPolicy callerRunsPolicy() {
+        return (task, pool) -> {
+            if (!pool.isShutdown()) {
+                task.run();
+            }
+        };
+    }
+
+    public static RejectionPolicy blockPolicy() {
+        return (task, pool) -> {
+            try {
+                pool.putTaskBlocking(task);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("Interrupted while waiting for queue space", e);
+            }
+        };
+    }
+}
 ```
 
-This is backpressure.
+### MiniThreadPool.java
+
+```java
+package com.mini.threadpool;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+public class MiniThreadPool {
+    private final BlockingQueue<Runnable> taskQueue;
+    private final List<Thread> workers = new ArrayList<>();
+    private final RejectionPolicy rejectionPolicy;
+
+    private volatile boolean running = true;
+    private volatile boolean forceStop = false;
+
+    public MiniThreadPool(int numberOfThreads, int queueCapacity, RejectionPolicy rejectionPolicy) {
+        this.taskQueue = new ArrayBlockingQueue<>(queueCapacity);
+        this.rejectionPolicy = rejectionPolicy;
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            Thread worker = new Thread(() -> {
+                while (!forceStop && (running || !taskQueue.isEmpty())) {
+                    try {
+                        Runnable task = taskQueue.poll(200, TimeUnit.MILLISECONDS);
+                        if (task != null) {
+                            task.run();
+                        }
+                    } catch (InterruptedException e) {
+                        if (forceStop) {
+                            break;
+                        }
+                    }
+                }
+            }, "mini-worker-" + i);
+
+            workers.add(worker);
+            worker.start();
+        }
+    }
+
+    public void submit(Runnable task) {
+        if (!running) {
+            throw new IllegalStateException("ThreadPool is not running");
+        }
+
+        boolean accepted = taskQueue.offer(task);
+
+        if (!accepted) {
+            rejectionPolicy.reject(task, this);
+        }
+    }
+
+    void putTaskBlocking(Runnable task) throws InterruptedException {
+        if (!running) {
+            throw new IllegalStateException("ThreadPool is not running");
+        }
+
+        taskQueue.put(task);
+    }
+
+    public boolean isShutdown() {
+        return !running;
+    }
+
+    public void shutdown() {
+        running = false;
+    }
+
+    public void awaitTermination() throws InterruptedException {
+        for (Thread worker : workers) {
+            worker.join();
+        }
+    }
+}
+```
+
+## Phase 5 Driver Class
+
+### DemoPhase5RejectionPolicy.java
+
+```java
+package com.mini.threadpool;
+
+public class DemoPhase5RejectionPolicy {
+    public static void main(String[] args) throws InterruptedException {
+        MiniThreadPool pool = new MiniThreadPool(
+                1,
+                2,
+                RejectionPolicies.callerRunsPolicy()
+        );
+
+        for (int i = 1; i <= 6; i++) {
+            int taskId = i;
+
+            pool.submit(() -> {
+                System.out.println(Thread.currentThread().getName()
+                        + " executing task " + taskId);
+                sleep(500);
+            });
+        }
+
+        pool.shutdown();
+        pool.awaitTermination();
+    }
+
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
+
+## Run Command
+
+```bash
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoPhase5RejectionPolicy
+```
+
+## Expected Result
+
+```text
+mini-worker-0 executing task 1
+main executing task 4
+main executing task 5
+...
+```
+
+When queue is full, `CallerRunsPolicy` makes the main thread execute the task.
+
+## What We Learned
+
+```text
+Rejection policy is backpressure strategy.
+CallerRunsPolicy slows down the producer naturally.
+```
 
 ---
 
@@ -1406,48 +1909,37 @@ This is backpressure.
 
 ## What are we building?
 
-Support task return values.
+We add support for:
 
 ```java
-MiniFuture<Integer> future = pool.submit(() -> 10);
+MiniFuture<Integer> future = pool.submit(() -> 42);
 Integer result = future.get();
 ```
 
 ## Why this phase?
 
-Real async systems need results.
+Runnable has no return value.
 
-Examples:
+Real async systems need return values:
 
 ```text
-Calculate checksum
-Fetch data from remote service
-Parse file and return count
-Run DB query
+parallel API calls
+file processing result
+checksum calculation
+database query result
 ```
 
-## Step-By-Step Execution Details Before Code
-
-Now tasks can return values.
-
-Execution flow:
+## Step-by-Step Execution
 
 ```text
-Step 1: Main calls pool.submit(Callable<T>).
+Step 1: Main submits Callable<T>.
 Step 2: Pool creates MiniFuture<T>.
 Step 3: Pool wraps Callable inside MiniCallableTask.
-Step 4: MiniCallableTask is submitted as Runnable.
-Step 5: Worker executes MiniCallableTask.run().
-Step 6: Callable returns result.
-Step 7: MiniFuture.complete(result) stores result.
-Step 8: future.get() returns result.
-```
-
-If callable throws exception:
-
-```text
-MiniFuture stores exception.
-future.get() rethrows it.
+Step 4: Worker executes MiniCallableTask.
+Step 5: Callable returns result.
+Step 6: MiniCallableTask stores result in MiniFuture.
+Step 7: Main calls future.get().
+Step 8: get() returns when result is ready.
 ```
 
 ## Mermaid Sequence Diagram
@@ -1456,72 +1948,168 @@ future.get() rethrows it.
 sequenceDiagram
     participant Main
     participant Pool
-    participant Future as MiniFuture
     participant Queue
     participant Worker
-    participant Callable
+    participant Future
 
     Main->>Pool: submit(Callable)
-    Pool->>Future: create
+    Pool->>Future: create future
     Pool->>Queue: offer(MiniCallableTask)
-    Pool-->>Main: return Future
-    Main->>Future: get()
-    Future-->>Main: wait until done
+    Pool-->>Main: return future
     Worker->>Queue: poll task
-    Worker->>Callable: call()
-    Callable-->>Worker: result
+    Worker->>Worker: callable.call()
     Worker->>Future: complete(result)
-    Future-->>Main: return result
+    Main->>Future: get()
+    Future-->>Main: result
 ```
 
-## Inline Commands To Run This Phase
+## Phase 6 Complete Java Code
+
+### MiniFuture.java
+
+```java
+package com.mini.threadpool;
+
+public class MiniFuture<T> {
+    private T result;
+    private Throwable exception;
+    private boolean done;
+
+    public synchronized T get() throws Exception {
+        while (!done) {
+            wait();
+        }
+
+        if (exception != null) {
+            if (exception instanceof Exception e) {
+                throw e;
+            }
+            throw new RuntimeException(exception);
+        }
+
+        return result;
+    }
+
+    public synchronized boolean isDone() {
+        return done;
+    }
+
+    synchronized void complete(T result) {
+        if (done) {
+            return;
+        }
+
+        this.result = result;
+        this.done = true;
+        notifyAll();
+    }
+
+    synchronized void completeExceptionally(Throwable exception) {
+        if (done) {
+            return;
+        }
+
+        this.exception = exception;
+        this.done = true;
+        notifyAll();
+    }
+}
+```
+
+### MiniCallableTask.java
+
+```java
+package com.mini.threadpool;
+
+import java.util.concurrent.Callable;
+
+public class MiniCallableTask<T> implements Runnable {
+    private final Callable<T> callable;
+    private final MiniFuture<T> future;
+
+    public MiniCallableTask(Callable<T> callable, MiniFuture<T> future) {
+        this.callable = callable;
+        this.future = future;
+    }
+
+    @Override
+    public void run() {
+        try {
+            T result = callable.call();
+            future.complete(result);
+        } catch (Throwable e) {
+            future.completeExceptionally(e);
+        }
+    }
+}
+```
+
+### MiniThreadPool.java Add Callable Submit
+
+Add this method to `MiniThreadPool`:
+
+```java
+public <T> MiniFuture<T> submit(java.util.concurrent.Callable<T> callable) {
+    if (callable == null) {
+        throw new IllegalArgumentException("callable cannot be null");
+    }
+
+    MiniFuture<T> future = new MiniFuture<>();
+    submit(new MiniCallableTask<>(callable, future));
+    return future;
+}
+```
+
+## Phase 6 Driver Class
+
+### DemoPhase6Future.java
+
+```java
+package com.mini.threadpool;
+
+public class DemoPhase6Future {
+    public static void main(String[] args) throws Exception {
+        MiniThreadPool pool = new MiniThreadPool(
+                2,
+                10,
+                RejectionPolicies.abortPolicy()
+        );
+
+        MiniFuture<Integer> future = pool.submit(() -> {
+            System.out.println(Thread.currentThread().getName() + " calculating result");
+            Thread.sleep(500);
+            return 42;
+        });
+
+        System.out.println("Main thread can do other work...");
+        System.out.println("Future result = " + future.get());
+
+        pool.shutdown();
+        pool.awaitTermination();
+    }
+}
+```
+
+## Run Command
 
 ```bash
-mvn test -Dtest=MiniFutureTest
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoPhase6Future
 ```
 
-Expected behavior:
+## Expected Result
 
 ```text
-Callable returns 42.
-future.get() returns 42.
+Main thread can do other work...
+mini-worker-0 calculating result
+Future result = 42
 ```
 
-## MiniFuture responsibilities
+## What We Learned
 
 ```text
-store result
-store exception
-track done status
-allow get() to wait
-notify waiting threads
-```
-
-## Flow
-
-```text
-Main submits Callable
-       |
-       v
-MiniCallableTask wraps Callable
-       |
-       v
-Worker executes wrapper
-       |
-       v
-Wrapper completes MiniFuture
-       |
-       v
-Main future.get() returns result
-```
-
-## What we care about
-
-```text
-wait/notify
-result completion
-exception propagation
-generic type T
+Future separates task submission from result retrieval.
+wait/notify can coordinate result availability.
 ```
 
 ---
@@ -1530,69 +2118,9 @@ generic type T
 
 ## What are we building?
 
-Runtime observability.
+We add runtime metrics.
 
-## Step-By-Step Execution Details Before Code
-
-Now we add observability.
-
-Execution flow:
-
-```text
-Step 1: submit() increments submittedTaskCount.
-Step 2: Queue full increments rejectedTaskCount.
-Step 3: Worker starts task and increments activeWorkerCount.
-Step 4: Task success increments completedTaskCount.
-Step 5: Task failure increments failedTaskCount.
-Step 6: Worker finishes and decrements activeWorkerCount.
-Step 7: getMetrics() shows current state.
-```
-
-Why this matters:
-
-```text
-Without metrics, you cannot debug production overload.
-```
-
-## Mermaid Sequence Diagram
-
-```mermaid
-sequenceDiagram
-    participant Main
-    participant Pool
-    participant Metrics
-    participant Worker
-
-    Main->>Pool: submit(task)
-    Pool->>Metrics: incrementSubmitted()
-    Worker->>Metrics: incrementActiveWorkers()
-    Worker->>Worker: task.run()
-    alt success
-        Worker->>Metrics: incrementCompleted()
-    else failure
-        Worker->>Metrics: incrementFailed()
-    end
-    Worker->>Metrics: decrementActiveWorkers()
-    Main->>Pool: getMetrics()
-    Pool-->>Main: metrics snapshot
-```
-
-## Inline Commands To Run This Phase
-
-Run final demo:
-
-```bash
-mvn clean compile
-java -cp target/classes com.mini.threadpool.DemoFinal
-```
-
-Expected output includes:
-
-```text
-ThreadPoolMetrics{submitted=..., completed=..., failed=..., rejected=..., activeWorkers=...}
-```
-
-## Metrics
+Metrics:
 
 ```text
 submittedTaskCount
@@ -1606,22 +2134,251 @@ poolSize
 
 ## Why this phase?
 
-In production:
+Production systems need observability.
+
+Without metrics:
 
 ```text
-If latency increases, check queue size
-If throughput drops, check active workers
-If errors increase, check failed count
-If overload happens, check rejected count
+You cannot know if queue is full.
+You cannot know if workers are busy.
+You cannot know if tasks are failing.
 ```
 
-## What we care about
+## Step-by-Step Execution
 
 ```text
-AtomicLong counters
-active worker tracking
-queue depth
-debuggability
+Step 1: submit() increments submitted counter.
+Step 2: queue full increments rejected counter.
+Step 3: worker starts task and increments active worker count.
+Step 4: successful task increments completed counter.
+Step 5: failed task increments failed counter.
+Step 6: worker decrements active worker count.
+Step 7: driver prints metrics snapshot.
+```
+
+## Mermaid Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Main
+    participant Pool
+    participant Metrics
+    participant Worker
+
+    Main->>Pool: submit(task)
+    Pool->>Metrics: submitted++
+    Worker->>Metrics: activeWorkers++
+    Worker->>Worker: task.run()
+    alt success
+        Worker->>Metrics: completed++
+    else failure
+        Worker->>Metrics: failed++
+    end
+    Worker->>Metrics: activeWorkers--
+    Main->>Pool: getMetrics()
+```
+
+## Phase 7 Complete Java Code
+
+### ThreadPoolMetrics.java
+
+```java
+package com.mini.threadpool;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class ThreadPoolMetrics {
+    private final AtomicLong submittedTaskCount = new AtomicLong();
+    private final AtomicLong completedTaskCount = new AtomicLong();
+    private final AtomicLong failedTaskCount = new AtomicLong();
+    private final AtomicLong rejectedTaskCount = new AtomicLong();
+    private final AtomicInteger activeWorkerCount = new AtomicInteger();
+
+    void incrementSubmitted() {
+        submittedTaskCount.incrementAndGet();
+    }
+
+    void incrementCompleted() {
+        completedTaskCount.incrementAndGet();
+    }
+
+    void incrementFailed() {
+        failedTaskCount.incrementAndGet();
+    }
+
+    void incrementRejected() {
+        rejectedTaskCount.incrementAndGet();
+    }
+
+    void incrementActiveWorkers() {
+        activeWorkerCount.incrementAndGet();
+    }
+
+    void decrementActiveWorkers() {
+        activeWorkerCount.decrementAndGet();
+    }
+
+    public long submittedTaskCount() {
+        return submittedTaskCount.get();
+    }
+
+    public long completedTaskCount() {
+        return completedTaskCount.get();
+    }
+
+    public long failedTaskCount() {
+        return failedTaskCount.get();
+    }
+
+    public long rejectedTaskCount() {
+        return rejectedTaskCount.get();
+    }
+
+    public int activeWorkerCount() {
+        return activeWorkerCount.get();
+    }
+
+    @Override
+    public String toString() {
+        return "ThreadPoolMetrics{" +
+                "submitted=" + submittedTaskCount() +
+                ", completed=" + completedTaskCount() +
+                ", failed=" + failedTaskCount() +
+                ", rejected=" + rejectedTaskCount() +
+                ", activeWorkers=" + activeWorkerCount() +
+                '}';
+    }
+}
+```
+
+### MiniThreadPool Metrics Changes
+
+Inside `MiniThreadPool`, add:
+
+```java
+private final ThreadPoolMetrics metrics = new ThreadPoolMetrics();
+
+public ThreadPoolMetrics getMetrics() {
+    return metrics;
+}
+
+public int getQueueSize() {
+    return taskQueue.size();
+}
+
+public int getPoolSize() {
+    return workers.size();
+}
+```
+
+Update `submit()`:
+
+```java
+boolean accepted = taskQueue.offer(task);
+
+if (accepted) {
+    metrics.incrementSubmitted();
+} else {
+    metrics.incrementRejected();
+    rejectionPolicy.reject(task, this);
+}
+```
+
+Update worker execution:
+
+```java
+metrics.incrementActiveWorkers();
+
+try {
+    task.run();
+    metrics.incrementCompleted();
+} catch (Throwable e) {
+    metrics.incrementFailed();
+} finally {
+    metrics.decrementActiveWorkers();
+}
+```
+
+## Phase 7 Driver Class
+
+### DemoPhase7Metrics.java
+
+```java
+package com.mini.threadpool;
+
+public class DemoPhase7Metrics {
+    public static void main(String[] args) throws Exception {
+        MiniThreadPool pool = new MiniThreadPool(
+                2,
+                3,
+                RejectionPolicies.abortPolicy()
+        );
+
+        for (int i = 1; i <= 6; i++) {
+            int taskId = i;
+
+            try {
+                pool.submit(() -> {
+                    System.out.println(Thread.currentThread().getName()
+                            + " running task " + taskId);
+
+                    if (taskId == 2) {
+                        throw new RuntimeException("intentional failure");
+                    }
+
+                    sleep(300);
+                });
+            } catch (Exception e) {
+                System.out.println("Rejected task " + taskId);
+            }
+        }
+
+        pool.shutdown();
+        pool.awaitTermination();
+
+        System.out.println(pool.getMetrics());
+        System.out.println("queueSize=" + pool.getQueueSize());
+        System.out.println("poolSize=" + pool.getPoolSize());
+    }
+
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
+
+## Run Command
+
+```bash
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoPhase7Metrics
+```
+
+## Expected Result
+
+```text
+mini-worker-0 running task 1
+mini-worker-1 running task 2
+Rejected task 6
+ThreadPoolMetrics{submitted=5, completed=4, failed=1, rejected=1, activeWorkers=0}
+queueSize=0
+poolSize=2
+```
+
+Exact counts may vary slightly depending on timing.
+
+## What We Learned
+
+```text
+Metrics show system health.
+Queue size shows overload.
+Rejected count shows backpressure.
+Failed count shows task errors.
 ```
 
 ---
@@ -1630,52 +2387,38 @@ debuggability
 
 ## What are we building?
 
-Delayed task execution.
+We build a scheduler on top of MiniThreadPool.
+
+API:
 
 ```java
-scheduledPool.schedule(task, 1000);
-```
-
-Meaning:
-
-```text
-Run task after 1000 milliseconds
+scheduler.schedule(task, delayMillis);
 ```
 
 ## Why this phase?
 
-Scheduled tasks are foundation for:
+Schedulers are used everywhere:
 
 ```text
 retry after delay
-timeout handling
-cron jobs
-cache cleanup
-heartbeat
+TTL cleanup
+heartbeats
+cache refresh
 metrics reporting
+timeout handling
 ```
 
-## Step-By-Step Execution Details Before Code
-
-Now we support delayed tasks.
-
-Execution flow:
+## Step-by-Step Execution
 
 ```text
 Step 1: Main creates MiniScheduledThreadPool.
-Step 2: Scheduler owns a PriorityBlockingQueue.
-Step 3: Main calls schedule(task, delayMillis).
-Step 4: Scheduler stores task with runAtMillis.
-Step 5: Scheduler thread checks earliest task.
-Step 6: If time not reached, scheduler sleeps briefly.
-Step 7: If time reached, scheduler submits task to MiniThreadPool.
-Step 8: Worker executes task normally.
-```
-
-Why this matters:
-
-```text
-Schedulers are used for retries, TTL cleanup, heartbeats, and timeout jobs.
+Step 2: Scheduler creates internal MiniThreadPool.
+Step 3: Scheduler creates PriorityBlockingQueue.
+Step 4: Main schedules task with delay.
+Step 5: Scheduler stores task with runAtMillis.
+Step 6: Scheduler thread checks earliest task.
+Step 7: If task is ready, scheduler submits it to worker pool.
+Step 8: Worker pool executes task.
 ```
 
 ## Mermaid Sequence Diagram
@@ -1683,62 +2426,186 @@ Schedulers are used for retries, TTL cleanup, heartbeats, and timeout jobs.
 ```mermaid
 sequenceDiagram
     participant Main
-    participant Scheduler as MiniScheduledThreadPool
-    participant DelayQ as Delayed Priority Queue
-    participant WorkerPool as MiniThreadPool
+    participant Scheduler
+    participant DelayQ as PriorityBlockingQueue
+    participant Pool as MiniThreadPool
     participant Worker
 
-    Main->>Scheduler: schedule(task, 1000ms)
-    Scheduler->>DelayQ: offer(runAtTime, task)
-    Scheduler->>DelayQ: peek earliest
-    Scheduler->>Scheduler: sleep until ready
-    Scheduler->>DelayQ: poll ready task
-    Scheduler->>WorkerPool: submit(task)
-    WorkerPool->>Worker: execute task
+    Main->>Scheduler: schedule(task, 1000)
+    Scheduler->>DelayQ: offer(ScheduledTask)
+    Scheduler->>DelayQ: peek()
+    Scheduler->>Scheduler: wait until runAtMillis
+    Scheduler->>DelayQ: poll()
+    Scheduler->>Pool: submit(task)
+    Pool->>Worker: execute task
 ```
 
-## Inline Commands To Run This Phase
+## Phase 8 Complete Java Code
+
+### MiniScheduledThreadPool.java
+
+```java
+package com.mini.threadpool;
+
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class MiniScheduledThreadPool {
+    private final MiniThreadPool workerPool;
+    private final PriorityBlockingQueue<ScheduledTask> delayedQueue = new PriorityBlockingQueue<>();
+    private final Thread schedulerThread;
+    private volatile boolean running = true;
+
+    public MiniScheduledThreadPool(int workers, int queueCapacity) {
+        this.workerPool = new MiniThreadPool(
+                workers,
+                queueCapacity,
+                RejectionPolicies.abortPolicy()
+        );
+
+        this.schedulerThread = new Thread(this::schedulerLoop, "mini-scheduler");
+        this.schedulerThread.start();
+    }
+
+    public void schedule(Runnable task, long delayMillis) {
+        if (!running) {
+            throw new IllegalStateException("Scheduler is stopped");
+        }
+
+        if (task == null) {
+            throw new IllegalArgumentException("task cannot be null");
+        }
+
+        if (delayMillis < 0) {
+            throw new IllegalArgumentException("delayMillis cannot be negative");
+        }
+
+        long runAt = System.currentTimeMillis() + delayMillis;
+        delayedQueue.offer(new ScheduledTask(runAt, task));
+    }
+
+    public void shutdown() {
+        running = false;
+        schedulerThread.interrupt();
+        workerPool.shutdown();
+    }
+
+    public void awaitTermination() throws InterruptedException {
+        schedulerThread.join();
+        workerPool.awaitTermination();
+    }
+
+    private void schedulerLoop() {
+        while (running || !delayedQueue.isEmpty()) {
+            try {
+                ScheduledTask next = delayedQueue.peek();
+
+                if (next == null) {
+                    Thread.sleep(50);
+                    continue;
+                }
+
+                long now = System.currentTimeMillis();
+
+                if (next.runAtMillis <= now) {
+                    delayedQueue.poll();
+                    workerPool.submit(next.task);
+                } else {
+                    long sleepTime = Math.min(50, next.runAtMillis - now);
+                    Thread.sleep(sleepTime);
+                }
+
+            } catch (InterruptedException e) {
+                if (!running) {
+                    break;
+                }
+            }
+        }
+    }
+
+    private static class ScheduledTask implements Comparable<ScheduledTask> {
+        private static final AtomicLong SEQUENCE = new AtomicLong();
+
+        private final long runAtMillis;
+        private final long sequence;
+        private final Runnable task;
+
+        private ScheduledTask(long runAtMillis, Runnable task) {
+            this.runAtMillis = runAtMillis;
+            this.task = task;
+            this.sequence = SEQUENCE.incrementAndGet();
+        }
+
+        @Override
+        public int compareTo(ScheduledTask other) {
+            int byTime = Long.compare(this.runAtMillis, other.runAtMillis);
+
+            if (byTime != 0) {
+                return byTime;
+            }
+
+            return Long.compare(this.sequence, other.sequence);
+        }
+    }
+}
+```
+
+## Phase 8 Driver Class
+
+### DemoPhase8ScheduledTasks.java
+
+```java
+package com.mini.threadpool;
+
+public class DemoPhase8ScheduledTasks {
+    public static void main(String[] args) throws InterruptedException {
+        MiniScheduledThreadPool scheduler = new MiniScheduledThreadPool(2, 10);
+
+        long start = System.currentTimeMillis();
+
+        scheduler.schedule(() -> {
+            System.out.println("Task A ran after "
+                    + (System.currentTimeMillis() - start) + " ms");
+        }, 1000);
+
+        scheduler.schedule(() -> {
+            System.out.println("Task B ran after "
+                    + (System.currentTimeMillis() - start) + " ms");
+        }, 2000);
+
+        Thread.sleep(3000);
+
+        scheduler.shutdown();
+        scheduler.awaitTermination();
+
+        System.out.println("Scheduler stopped.");
+    }
+}
+```
+
+## Run Command
 
 ```bash
 mvn clean compile
-java -cp target/classes com.mini.threadpool.DemoScheduled
+java -cp target/classes com.mini.threadpool.DemoPhase8ScheduledTasks
 ```
 
-Expected output:
+## Expected Result
 
 ```text
-Task after 1 second
-Task after 2 seconds
+Task A ran after 1000 ms
+Task B ran after 2000 ms
+Scheduler stopped.
 ```
 
-JUnit:
+Times may not be exact because thread scheduling is not precise.
 
-```bash
-mvn test -Dtest=MiniScheduledThreadPoolTest
-```
-
-## Internal design
+## What We Learned
 
 ```text
-Scheduled task has:
-    runAtTimeMillis
-    Runnable task
-
-PriorityBlockingQueue orders by runAtTimeMillis
-
-Scheduler thread:
-    look at earliest task
-    if time reached, submit to MiniThreadPool
-    else sleep briefly
-```
-
-## What we care about
-
-```text
-delayed queue idea
-priority ordering
-scheduler thread
-composition: scheduled pool uses normal pool
+Scheduled tasks use a delayed priority queue.
+A scheduler thread triggers tasks when time arrives.
+Actual execution is delegated to worker pool.
 ```
 
 ---
@@ -2671,164 +3538,3 @@ After completing this version, improve it with:
 10. README diagrams
 ```
 
-## Phase 2 Complete Incremental Code
-
-At this phase, do NOT jump to the final version. Build a separate runnable version:
-
-```text
-com.mini.threadpool.phase2.MiniThreadPoolPhase2
-com.mini.threadpool.phase2.DemoPhase2
-```
-
-### MiniThreadPoolPhase2.java
-
-```java
-package com.mini.threadpool.phase2;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-
-public class MiniThreadPoolPhase2 {
-    private final BlockingQueue<Runnable> taskQueue;
-    private final List<Thread> workers = new ArrayList<>();
-    private volatile boolean running = true;
-
-    public MiniThreadPoolPhase2(int numberOfThreads, int queueCapacity) {
-        if (numberOfThreads <= 0) {
-            throw new IllegalArgumentException("numberOfThreads must be positive");
-        }
-        if (queueCapacity <= 0) {
-            throw new IllegalArgumentException("queueCapacity must be positive");
-        }
-
-        this.taskQueue = new ArrayBlockingQueue<>(queueCapacity);
-
-        for (int i = 0; i < numberOfThreads; i++) {
-            Thread worker = new Thread(() -> {
-                while (running || !taskQueue.isEmpty()) {
-                    try {
-                        Runnable task = taskQueue.take();
-                        task.run();
-                    } catch (InterruptedException e) {
-                        if (!running) {
-                            break;
-                        }
-                    } catch (RuntimeException e) {
-                        System.err.println("Task failed: " + e.getMessage());
-                    }
-                }
-            }, "phase2-worker-" + i);
-
-            workers.add(worker);
-            worker.start();
-        }
-    }
-
-    public void submit(Runnable task) {
-        if (!running) {
-            throw new IllegalStateException("ThreadPool is shutting down");
-        }
-        if (task == null) {
-            throw new IllegalArgumentException("task cannot be null");
-        }
-
-        boolean accepted = taskQueue.offer(task);
-
-        if (!accepted) {
-            throw new IllegalStateException("Task queue is full");
-        }
-    }
-
-    public int queueSize() {
-        return taskQueue.size();
-    }
-
-    public void shutdown() {
-        running = false;
-
-        for (Thread worker : workers) {
-            worker.interrupt();
-        }
-    }
-
-    public void awaitTermination() throws InterruptedException {
-        for (Thread worker : workers) {
-            worker.join();
-        }
-    }
-}
-```
-
-### DemoPhase2.java
-
-```java
-package com.mini.threadpool.phase2;
-
-public class DemoPhase2 {
-    public static void main(String[] args) throws InterruptedException {
-        MiniThreadPoolPhase2 pool = new MiniThreadPoolPhase2(2, 3);
-
-        for (int i = 1; i <= 10; i++) {
-            int taskId = i;
-
-            try {
-                pool.submit(() -> {
-                    System.out.println(Thread.currentThread().getName()
-                            + " processing task " + taskId);
-                    sleep(1000);
-                });
-
-                System.out.println("submitted task " + taskId
-                        + ", queueSize=" + pool.queueSize());
-
-            } catch (IllegalStateException e) {
-                System.out.println("rejected task " + taskId
-                        + " because queue is full");
-            }
-        }
-
-        Thread.sleep(4000);
-        pool.shutdown();
-        pool.awaitTermination();
-    }
-
-    private static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-}
-```
-
-### Run Phase 2
-
-```bash
-mvn clean compile
-java -cp target/classes com.mini.threadpool.phase2.DemoPhase2
-```
-
-### Expected Result
-
-```text
-submitted task 1, queueSize=0
-submitted task 2, queueSize=0
-submitted task 3, queueSize=1
-submitted task 4, queueSize=2
-submitted task 5, queueSize=3
-rejected task 6 because queue is full
-...
-phase2-worker-0 processing task 1
-phase2-worker-1 processing task 2
-```
-
-### What You Learned
-
-```text
-Bounded queue protects memory.
-If producer is faster than workers, queue fills.
-When queue is full, system must reject or slow down producer.
-```
