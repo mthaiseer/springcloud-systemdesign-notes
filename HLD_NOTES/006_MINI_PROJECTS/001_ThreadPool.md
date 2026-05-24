@@ -760,6 +760,77 @@ Worker Thread
 task.run()
 ```
 
+## Step-By-Step Execution Details Before Code
+
+In this phase, we build the smallest working thread pool.
+
+Execution flow:
+
+```text
+Step 1: Main thread creates MiniThreadPool(3).
+Step 2: Constructor creates 3 worker threads.
+Step 3: Each worker starts and waits for a task.
+Step 4: Main thread calls submit(task).
+Step 5: submit() puts task into taskQueue.
+Step 6: One worker wakes up and takes the task.
+Step 7: Worker executes task.run().
+Step 8: shutdown() changes running=false.
+Step 9: Workers are interrupted so they can exit if waiting.
+```
+
+Thread state intuition:
+
+```text
+Before task:
+worker is WAITING on queue.take()
+
+After submit:
+queue receives task
+worker becomes RUNNABLE
+worker executes task
+worker waits again
+```
+
+## Mermaid Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Main as Main Thread
+    participant Pool as MiniThreadPool
+    participant Queue as BlockingQueue
+    participant W1 as Worker-1
+    participant W2 as Worker-2
+
+    Main->>Pool: new MiniThreadPool(3)
+    Pool->>W1: start()
+    Pool->>W2: start()
+    W1->>Queue: take() waits
+    W2->>Queue: take() waits
+    Main->>Pool: submit(task)
+    Pool->>Queue: offer(task)
+    Queue-->>W1: task available
+    W1->>W1: task.run()
+    Main->>Pool: shutdown()
+    Pool->>W1: interrupt()
+    Pool->>W2: interrupt()
+```
+
+## Inline Commands To Run This Phase
+
+```bash
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoPhase1
+```
+
+Expected output pattern:
+
+```text
+mini-worker-0 executing task 1
+mini-worker-1 executing task 2
+mini-worker-2 executing task 3
+...
+```
+
 ## Phase 1 code
 
 ### MiniThreadPool.java
@@ -928,6 +999,73 @@ Meaning:
 100 queue capacity
 ```
 
+## Step-By-Step Execution Details Before Code
+
+In Phase 1, the queue can grow without limit.
+
+In Phase 2, we protect memory using a bounded queue.
+
+Execution flow:
+
+```text
+Step 1: Main creates MiniThreadPool(2, 5).
+Step 2: Pool creates 2 workers.
+Step 3: Queue capacity is fixed to 5.
+Step 4: Main submits many slow tasks.
+Step 5: 2 tasks are running.
+Step 6: 5 tasks are waiting in queue.
+Step 7: More tasks arrive.
+Step 8: Queue is full.
+Step 9: submit() rejects or applies rejection policy.
+```
+
+Why this matters:
+
+```text
+Unbounded queue hides overload.
+Bounded queue exposes overload early.
+```
+
+## Mermaid Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Producer as Producer Thread
+    participant Pool as MiniThreadPool
+    participant Queue as Bounded Queue
+    participant Worker as Worker
+
+    Producer->>Pool: submit(task-1)
+    Pool->>Queue: offer(task-1)
+    Queue-->>Worker: task-1
+    Worker->>Worker: execute slowly
+    Producer->>Pool: submit(task-2...task-7)
+    Pool->>Queue: fill queue
+    Producer->>Pool: submit(task-8)
+    Pool->>Queue: offer(task-8)
+    Queue-->>Pool: false, queue full
+    Pool-->>Producer: reject / backpressure
+```
+
+## Inline Commands To Run This Phase
+
+Create or run a backpressure demo, then:
+
+```bash
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoBackpressure
+```
+
+Expected output pattern:
+
+```text
+mini-worker-0 processing slow task 1
+mini-worker-1 processing slow task 2
+Rejected task 6
+Rejected task 7
+...
+```
+
 ## Phase 2 change
 
 ```java
@@ -1006,6 +1144,80 @@ No new tasks after shutdown
 Existing tasks finish
 Workers exit cleanly
 Main thread can wait using awaitTermination
+```
+
+## Step-By-Step Execution Details Before Code
+
+Graceful shutdown means:
+
+```text
+Stop accepting new tasks.
+Finish already queued tasks.
+Then stop workers.
+```
+
+Execution flow:
+
+```text
+Step 1: Pool is RUNNING.
+Step 2: Main submits tasks.
+Step 3: Some tasks run, some wait in queue.
+Step 4: Main calls shutdown().
+Step 5: Pool state becomes SHUTDOWN.
+Step 6: New submit() calls are rejected.
+Step 7: Workers continue processing queued tasks.
+Step 8: When queue becomes empty, workers exit.
+Step 9: Main calls awaitTermination() to wait.
+```
+
+Key condition:
+
+```java
+while (running || !taskQueue.isEmpty())
+```
+
+Why?
+
+```text
+Even after shutdown, queued tasks must finish.
+```
+
+## Mermaid Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Main
+    participant Pool
+    participant Queue
+    participant Worker
+
+    Main->>Pool: submit(task-1)
+    Pool->>Queue: offer(task-1)
+    Main->>Pool: submit(task-2)
+    Pool->>Queue: offer(task-2)
+    Main->>Pool: shutdown()
+    Pool->>Pool: state = SHUTDOWN
+    Main->>Pool: submit(task-3)
+    Pool-->>Main: reject new task
+    Worker->>Queue: poll task-1
+    Worker->>Worker: run task-1
+    Worker->>Queue: poll task-2
+    Worker->>Worker: run task-2
+    Worker->>Pool: queue empty, exit
+    Main->>Pool: awaitTermination()
+```
+
+## Inline Commands To Run This Phase
+
+```bash
+mvn test -Dtest=ShutdownTest
+```
+
+Expected behavior:
+
+```text
+New task after shutdown throws IllegalStateException.
+Already queued tasks complete.
 ```
 
 ## API
@@ -1099,6 +1311,72 @@ Different systems want different overload strategies.
 | DiscardPolicy | drop task | low-value work |
 | BlockPolicy | wait for space | must not lose task |
 
+## Step-By-Step Execution Details Before Code
+
+Force shutdown means:
+
+```text
+Stop immediately as much as possible.
+Return tasks that never started.
+Interrupt workers.
+```
+
+Execution flow:
+
+```text
+Step 1: Pool has running tasks and queued tasks.
+Step 2: Main calls shutdownNow().
+Step 3: Pool state becomes STOP.
+Step 4: Worker threads receive interrupt.
+Step 5: Queue is drained into remainingTasks list.
+Step 6: Remaining tasks are returned to caller.
+Step 7: Running tasks stop only if they handle interruption.
+```
+
+Important Java reality:
+
+```text
+Java cannot safely kill a thread.
+Interrupt is only a signal.
+Task must cooperate.
+```
+
+## Mermaid Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Main
+    participant Pool
+    participant Queue
+    participant Worker
+
+    Main->>Pool: submit(task-1)
+    Main->>Pool: submit(task-2)
+    Main->>Pool: shutdownNow()
+    Pool->>Pool: state = STOP
+    Pool->>Worker: interrupt()
+    Pool->>Queue: drainTo(remainingTasks)
+    Queue-->>Pool: queued tasks
+    Pool-->>Main: return remainingTasks
+    Worker->>Worker: exits if interrupted/cooperative
+```
+
+## Inline Commands To Run This Phase
+
+Add a small driver:
+
+```bash
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoForceShutdown
+```
+
+Expected behavior:
+
+```text
+Some queued tasks are returned as not executed.
+Running tasks may stop if they check interrupted status.
+```
+
 ## Interface
 
 ```java
@@ -1148,6 +1426,67 @@ Parse file and return count
 Run DB query
 ```
 
+## Step-By-Step Execution Details Before Code
+
+Now tasks can return values.
+
+Execution flow:
+
+```text
+Step 1: Main calls pool.submit(Callable<T>).
+Step 2: Pool creates MiniFuture<T>.
+Step 3: Pool wraps Callable inside MiniCallableTask.
+Step 4: MiniCallableTask is submitted as Runnable.
+Step 5: Worker executes MiniCallableTask.run().
+Step 6: Callable returns result.
+Step 7: MiniFuture.complete(result) stores result.
+Step 8: future.get() returns result.
+```
+
+If callable throws exception:
+
+```text
+MiniFuture stores exception.
+future.get() rethrows it.
+```
+
+## Mermaid Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Main
+    participant Pool
+    participant Future as MiniFuture
+    participant Queue
+    participant Worker
+    participant Callable
+
+    Main->>Pool: submit(Callable)
+    Pool->>Future: create
+    Pool->>Queue: offer(MiniCallableTask)
+    Pool-->>Main: return Future
+    Main->>Future: get()
+    Future-->>Main: wait until done
+    Worker->>Queue: poll task
+    Worker->>Callable: call()
+    Callable-->>Worker: result
+    Worker->>Future: complete(result)
+    Future-->>Main: return result
+```
+
+## Inline Commands To Run This Phase
+
+```bash
+mvn test -Dtest=MiniFutureTest
+```
+
+Expected behavior:
+
+```text
+Callable returns 42.
+future.get() returns 42.
+```
+
 ## MiniFuture responsibilities
 
 ```text
@@ -1192,6 +1531,66 @@ generic type T
 ## What are we building?
 
 Runtime observability.
+
+## Step-By-Step Execution Details Before Code
+
+Now we add observability.
+
+Execution flow:
+
+```text
+Step 1: submit() increments submittedTaskCount.
+Step 2: Queue full increments rejectedTaskCount.
+Step 3: Worker starts task and increments activeWorkerCount.
+Step 4: Task success increments completedTaskCount.
+Step 5: Task failure increments failedTaskCount.
+Step 6: Worker finishes and decrements activeWorkerCount.
+Step 7: getMetrics() shows current state.
+```
+
+Why this matters:
+
+```text
+Without metrics, you cannot debug production overload.
+```
+
+## Mermaid Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Main
+    participant Pool
+    participant Metrics
+    participant Worker
+
+    Main->>Pool: submit(task)
+    Pool->>Metrics: incrementSubmitted()
+    Worker->>Metrics: incrementActiveWorkers()
+    Worker->>Worker: task.run()
+    alt success
+        Worker->>Metrics: incrementCompleted()
+    else failure
+        Worker->>Metrics: incrementFailed()
+    end
+    Worker->>Metrics: decrementActiveWorkers()
+    Main->>Pool: getMetrics()
+    Pool-->>Main: metrics snapshot
+```
+
+## Inline Commands To Run This Phase
+
+Run final demo:
+
+```bash
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoFinal
+```
+
+Expected output includes:
+
+```text
+ThreadPoolMetrics{submitted=..., completed=..., failed=..., rejected=..., activeWorkers=...}
+```
 
 ## Metrics
 
@@ -1254,6 +1653,68 @@ cron jobs
 cache cleanup
 heartbeat
 metrics reporting
+```
+
+## Step-By-Step Execution Details Before Code
+
+Now we support delayed tasks.
+
+Execution flow:
+
+```text
+Step 1: Main creates MiniScheduledThreadPool.
+Step 2: Scheduler owns a PriorityBlockingQueue.
+Step 3: Main calls schedule(task, delayMillis).
+Step 4: Scheduler stores task with runAtMillis.
+Step 5: Scheduler thread checks earliest task.
+Step 6: If time not reached, scheduler sleeps briefly.
+Step 7: If time reached, scheduler submits task to MiniThreadPool.
+Step 8: Worker executes task normally.
+```
+
+Why this matters:
+
+```text
+Schedulers are used for retries, TTL cleanup, heartbeats, and timeout jobs.
+```
+
+## Mermaid Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Main
+    participant Scheduler as MiniScheduledThreadPool
+    participant DelayQ as Delayed Priority Queue
+    participant WorkerPool as MiniThreadPool
+    participant Worker
+
+    Main->>Scheduler: schedule(task, 1000ms)
+    Scheduler->>DelayQ: offer(runAtTime, task)
+    Scheduler->>DelayQ: peek earliest
+    Scheduler->>Scheduler: sleep until ready
+    Scheduler->>DelayQ: poll ready task
+    Scheduler->>WorkerPool: submit(task)
+    WorkerPool->>Worker: execute task
+```
+
+## Inline Commands To Run This Phase
+
+```bash
+mvn clean compile
+java -cp target/classes com.mini.threadpool.DemoScheduled
+```
+
+Expected output:
+
+```text
+Task after 1 second
+Task after 2 seconds
+```
+
+JUnit:
+
+```bash
+mvn test -Dtest=MiniScheduledThreadPoolTest
 ```
 
 ## Internal design
