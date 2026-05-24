@@ -45,6 +45,8 @@
 
 Build a MiniKafka from scratch using Java 21.
 
+This updated version adds per-phase step-by-step build instructions, driver classes to test the logic, expected outputs, and verification checklists before/around dry runs.
+
 This is not a production Kafka replacement.
 
 This is a learning system to understand Kafka internals:
@@ -577,6 +579,103 @@ public class LogSegment {
 }
 ```
 
+## Step-By-Step: What We Are Building
+
+In this phase, we build the smallest Kafka-like storage unit:
+
+```text
+LogSegment = one append-only file
+```
+
+Step by step:
+
+```text
+Step 1: Create MessageRecord model.
+Step 2: Create LogSegment class.
+Step 3: On startup, create the log file if missing.
+Step 4: Recover nextOffset by scanning existing records.
+Step 5: append(key, value) writes one line at the end.
+Step 6: readAll() loads all records for testing.
+Step 7: Verify offsets increase monotonically.
+```
+
+What this teaches:
+
+```text
+Kafka's foundation is not a queue.
+It is a durable append-only log.
+```
+
+## Driver Class To Test Phase 1
+
+Create:
+
+```java
+package com.minikafka;
+
+import com.minikafka.common.MessageRecord;
+import com.minikafka.storage.LogSegment;
+
+public class Phase1AppendOnlyLogDriver {
+    public static void main(String[] args) throws Exception {
+        LogSegment segment = new LogSegment("data/phase1/orders-0.log");
+
+        long o1 = segment.append("order-1", "created");
+        long o2 = segment.append("order-2", "paid");
+
+        System.out.println("offset1=" + o1);
+        System.out.println("offset2=" + o2);
+
+        for (MessageRecord record : segment.readAll()) {
+            System.out.println(record);
+        }
+    }
+}
+```
+
+## Run Phase 1
+
+```bash
+mvn clean compile
+java -cp target/classes com.minikafka.Phase1AppendOnlyLogDriver
+```
+
+## Expected Output
+
+```text
+offset1=0
+offset2=1
+MessageRecord[offset=0, ... key=order-1, value=created]
+MessageRecord[offset=1, ... key=order-2, value=paid]
+```
+
+## What To Verify
+
+```text
+1. data/phase1/orders-0.log is created.
+2. Records are appended, not overwritten.
+3. Offset increases monotonically.
+4. Restarting the driver continues from next offset.
+```
+
+## Phase 1 JUnit Test
+
+```java
+@Test
+void phase1ShouldAppendAndReadRecords() throws Exception {
+    LogSegment segment = new LogSegment("data/test/phase1.log");
+
+    long offset = segment.append("k1", "v1");
+
+    var records = segment.readAll();
+
+    assertTrue(offset >= 0);
+    assertFalse(records.isEmpty());
+    assertEquals("k1", records.get(records.size() - 1).key());
+    assertEquals("v1", records.get(records.size() - 1).value());
+}
+```
+
 ## Dry run
 
 ```text
@@ -754,6 +853,105 @@ public class OffsetIndex {
 }
 ```
 
+## Step-By-Step: What We Are Building
+
+In Phase 1, one log file grows forever.
+
+In this phase, we introduce segment files:
+
+```text
+PartitionLog
+    ├── segment-0.log
+    ├── segment-1.log
+    └── segment-2.log
+```
+
+Step by step:
+
+```text
+Step 1: Define SegmentFile model.
+Step 2: Define maxSegmentBytes.
+Step 3: Keep one active segment.
+Step 4: Append records to active segment.
+Step 5: If active segment crosses size limit, roll to new segment.
+Step 6: New segment baseOffset = next record offset.
+Step 7: Later retention can delete old closed segments.
+```
+
+Why this matters:
+
+```text
+Kafka deletes old segment files.
+It does not delete individual consumed messages.
+```
+
+## Driver Class To Test Phase 2
+
+Create this once you implement `PartitionLog`:
+
+```java
+package com.minikafka;
+
+import com.minikafka.storage.PartitionLog;
+
+public class Phase2SegmentRollingDriver {
+    public static void main(String[] args) throws Exception {
+        PartitionLog log = new PartitionLog(
+                "data/phase2/orders-0",
+                100 // very small segment size for testing
+        );
+
+        for (int i = 1; i <= 20; i++) {
+            log.append("order-" + i, "event-" + i);
+        }
+
+        log.printSegments();
+    }
+}
+```
+
+## Run Phase 2
+
+```bash
+mvn clean compile
+java -cp target/classes com.minikafka.Phase2SegmentRollingDriver
+```
+
+## Expected Output
+
+```text
+segment baseOffset=0
+segment baseOffset=5
+segment baseOffset=10
+segment baseOffset=15
+```
+
+Exact numbers depend on record size.
+
+## What To Verify
+
+```text
+1. Multiple .log files are created.
+2. Old segment is no longer written after rolling.
+3. Active segment receives new records.
+4. Segment base offset matches first record in that segment.
+```
+
+## Phase 2 JUnit Test Idea
+
+```java
+@Test
+void phase2ShouldRollSegmentsWhenSizeLimitReached() throws Exception {
+    PartitionLog log = new PartitionLog("data/test/phase2", 100);
+
+    for (int i = 0; i < 50; i++) {
+        log.append("k" + i, "v" + i);
+    }
+
+    assertTrue(log.segmentCount() > 1);
+}
+```
+
 ## Dry run
 
 ```text
@@ -822,6 +1020,89 @@ public class PartitionRouter {
 
         return Math.floorMod(key.hashCode(), partitionCount);
     }
+}
+```
+
+## Step-By-Step: What We Are Building
+
+Now we create topic-partition routing.
+
+Step by step:
+
+```text
+Step 1: Define TopicPartition model.
+Step 2: Create PartitionRouter.
+Step 3: If key is null, send to default partition.
+Step 4: If key exists, calculate hash(key).
+Step 5: Convert hash to non-negative using Math.floorMod.
+Step 6: Choose partition = hash % partitionCount.
+Step 7: Same key always goes to same partition.
+```
+
+## Driver Class To Test Phase 4
+
+```java
+package com.minikafka;
+
+import com.minikafka.partition.PartitionRouter;
+
+public class Phase4PartitionRouterDriver {
+    public static void main(String[] args) {
+        PartitionRouter router = new PartitionRouter();
+
+        for (int i = 1; i <= 10; i++) {
+            String key = "user-" + i;
+            int partition = router.route(key, 3);
+            System.out.println(key + " -> partition-" + partition);
+        }
+
+        System.out.println("same key test:");
+        System.out.println(router.route("user-1", 3));
+        System.out.println(router.route("user-1", 3));
+    }
+}
+```
+
+## Run Phase 4
+
+```bash
+mvn clean compile
+java -cp target/classes com.minikafka.Phase4PartitionRouterDriver
+```
+
+## Expected Output
+
+```text
+user-1 -> partition-X
+user-2 -> partition-Y
+...
+same key test:
+X
+X
+```
+
+## What To Verify
+
+```text
+1. Same key maps to same partition.
+2. Partition is never negative.
+3. Partition is always less than partitionCount.
+4. Different keys may distribute across partitions.
+```
+
+## Phase 4 JUnit Test
+
+```java
+@Test
+void phase4ShouldRouteSameKeyToSamePartition() {
+    PartitionRouter router = new PartitionRouter();
+
+    int p1 = router.route("user-1", 3);
+    int p2 = router.route("user-1", 3);
+
+    assertEquals(p1, p2);
+    assertTrue(p1 >= 0);
+    assertTrue(p1 < 3);
 }
 ```
 
@@ -1230,6 +1511,93 @@ public class ConsumerGroupCoordinator {
 
         return assignment;
     }
+}
+```
+
+## Step-By-Step: What We Are Building
+
+Now we build a producer facade.
+
+Step by step:
+
+```text
+Step 1: Create MiniProducer.
+Step 2: MiniProducer receives broker reference.
+Step 3: Application calls send(topic, key, value).
+Step 4: Producer delegates to broker.
+Step 5: Broker routes key to partition.
+Step 6: Broker appends record to partition log.
+Step 7: Producer receives offset.
+```
+
+In real Kafka, producer also handles:
+
+```text
+buffering
+batching
+retries
+acks
+compression
+partition metadata
+```
+
+## Driver Class To Test Phase 5
+
+```java
+package com.minikafka;
+
+import com.minikafka.broker.MiniKafkaBroker;
+import com.minikafka.producer.MiniProducer;
+
+public class Phase5ProducerDriver {
+    public static void main(String[] args) throws Exception {
+        MiniKafkaBroker broker = new MiniKafkaBroker();
+        broker.createTopic("orders", 3);
+
+        MiniProducer producer = new MiniProducer(broker);
+
+        long offset = producer.send("orders", "order-1", "created");
+
+        System.out.println("produced offset=" + offset);
+    }
+}
+```
+
+## Run Phase 5
+
+```bash
+mvn clean compile
+java -cp target/classes com.minikafka.Phase5ProducerDriver
+```
+
+## Expected Output
+
+```text
+produced offset=0
+```
+
+## What To Verify
+
+```text
+1. Topic must exist before producing.
+2. Producer writes to one routed partition.
+3. Offset is returned.
+4. Data file under data/orders-X.log is updated.
+```
+
+## Phase 5 JUnit Test
+
+```java
+@Test
+void phase5ProducerShouldWriteMessage() throws Exception {
+    MiniKafkaBroker broker = new MiniKafkaBroker();
+    broker.createTopic("orders", 3);
+
+    MiniProducer producer = new MiniProducer(broker);
+
+    long offset = producer.send("orders", "order-1", "created");
+
+    assertTrue(offset >= 0);
 }
 ```
 
@@ -2136,74 +2504,79 @@ batching gives throughput
 page cache and zero-copy give performance
 ```
 
-## How To Test Phase 1
+## Step-By-Step: What We Are Building
 
-### Manual Driver
+Now we handle membership change.
 
-Create:
+Step by step:
+
+```text
+Step 1: Start with consumers c1 and c2.
+Step 2: Assign partitions.
+Step 3: Add c3 or remove c2.
+Step 4: Recalculate partition assignment.
+Step 5: Verify every partition is still assigned once.
+Step 6: Understand that rebalance pauses consumption.
+```
+
+## Driver Class To Test Phase 12
 
 ```java
 package com.minikafka;
 
-import com.minikafka.common.MessageRecord;
-import com.minikafka.storage.LogSegment;
+import com.minikafka.coordinator.ConsumerGroupCoordinator;
 
-public class Phase1AppendOnlyLogTestDriver {
-    public static void main(String[] args) throws Exception {
-        LogSegment segment = new LogSegment("data/phase1/orders-0.log");
+import java.util.List;
 
-        long o1 = segment.append("order-1", "created");
-        long o2 = segment.append("order-2", "paid");
+public class Phase12RebalanceDriver {
+    public static void main(String[] args) {
+        ConsumerGroupCoordinator coordinator = new ConsumerGroupCoordinator();
 
-        System.out.println("offset1=" + o1);
-        System.out.println("offset2=" + o2);
+        var before = coordinator.assignPartitions(List.of("c1", "c2"), 6);
+        var after = coordinator.assignPartitions(List.of("c1", "c2", "c3"), 6);
 
-        for (MessageRecord record : segment.readAll()) {
-            System.out.println(record);
-        }
+        System.out.println("before=" + before);
+        System.out.println("after=" + after);
     }
 }
 ```
 
-### Run
+## Run Phase 12
 
 ```bash
 mvn clean compile
-java -cp target/classes com.minikafka.Phase1AppendOnlyLogTestDriver
+java -cp target/classes com.minikafka.Phase12RebalanceDriver
 ```
 
-### Expected Output
+## Expected Output
 
 ```text
-offset1=0
-offset2=1
-MessageRecord[offset=0, ... key=order-1, value=created]
-MessageRecord[offset=1, ... key=order-2, value=paid]
+before={c1=[0, 2, 4], c2=[1, 3, 5]}
+after={c1=[0, 3], c2=[1, 4], c3=[2, 5]}
 ```
 
-### What To Verify
+## What To Verify
 
 ```text
-1. data/phase1/orders-0.log is created.
-2. Records are appended, not overwritten.
-3. Offset increases monotonically.
-4. Restarting the driver continues from next offset.
+1. Before and after both cover all partitions.
+2. Rebalance changes ownership.
+3. No duplicate partition assignment.
 ```
 
-### JUnit Test
+## Phase 12 JUnit Test Idea
 
 ```java
 @Test
-void phase1ShouldAppendAndReadRecords() throws Exception {
-    LogSegment segment = new LogSegment("data/test/phase1.log");
+void phase12RebalanceShouldNotLosePartitions() {
+    ConsumerGroupCoordinator coordinator = new ConsumerGroupCoordinator();
 
-    long offset = segment.append("k1", "v1");
+    var assignment = coordinator.assignPartitions(List.of("c1", "c2", "c3"), 6);
 
-    var records = segment.readAll();
+    Set<Integer> all = assignment.values()
+            .stream()
+            .flatMap(List::stream)
+            .collect(Collectors.toSet());
 
-    assertTrue(offset >= 0);
-    assertFalse(records.isEmpty());
-    assertEquals("k1", records.get(records.size() - 1).key());
-    assertEquals("v1", records.get(records.size() - 1).value());
+    assertEquals(Set.of(0,1,2,3,4,5), all);
 }
 ```
