@@ -1,90 +1,163 @@
-# 003_MiniKafka_From_Scratch_Java21
+# MiniKafka_From_Scratch_Java21.md
 
 # Clickable Index
 
-- [Part 0 — Goal Of This Handbook](#part-0--goal-of-this-handbook)
-- [Part 1 — Why Kafka Exists](#part-1--why-kafka-exists)
-- [Part 2 — Kafka From First Principles](#part-2--kafka-from-first-principles)
-  - [2.1 Queue vs Log](#21-queue-vs-log)
-  - [2.2 Topic](#22-topic)
-  - [2.3 Partition](#23-partition)
-  - [2.4 Offset](#24-offset)
-  - [2.5 Producer](#25-producer)
-  - [2.6 Consumer](#26-consumer)
-  - [2.7 Consumer Group](#27-consumer-group)
-  - [2.8 Retention](#28-retention)
-  - [2.9 Replication](#29-replication)
-  - [2.10 Why Kafka Is Fast](#210-why-kafka-is-fast)
-- [Part 3 — Final MiniKafka System](#part-3--final-minikafka-system)
-- [Part 4 — Maven Project Setup](#part-4--maven-project-setup)
-- [Part 5 — Phase 1: Append-Only Commit Log](#part-5--phase-1-append-only-commit-log)
-- [Part 6 — Phase 2: Topic and Partition](#part-6--phase-2-topic-and-partition)
-- [Part 7 — Phase 3: Producer API](#part-7--phase-3-producer-api)
-- [Part 8 — Phase 4: Consumer Poll By Offset](#part-8--phase-4-consumer-poll-by-offset)
-- [Part 9 — Phase 5: Offset Index](#part-9--phase-5-offset-index)
-- [Part 10 — Phase 6: Consumer Group Offset Commit](#part-10--phase-6-consumer-group-offset-commit)
-- [Part 11 — Phase 7: Retention and Segment Cleanup](#part-11--phase-7-retention-and-segment-cleanup)
-- [Part 12 — Phase 8: Broker TCP Server](#part-12--phase-8-broker-tcp-server)
-- [Part 13 — Phase 9: Batching and Flush](#part-13--phase-9-batching-and-flush)
-- [Part 14 — Phase 10: Replication Model](#part-14--phase-10-replication-model)
-- [Part 15 — Phase 11: Metrics and Observability](#part-15--phase-11-metrics-and-observability)
-- [Part 16 — Final Working Code](#part-16--final-working-code)
-- [Part 17 — Driver Classes](#part-17--driver-classes)
-- [Part 18 — JUnit Tests](#part-18--junit-tests)
-- [Part 19 — Load Test Ideas](#part-19--load-test-ideas)
-- [Part 20 — Failure Handling](#part-20--failure-handling)
-- [Part 21 — Scaling Discussion](#part-21--scaling-discussion)
-- [Part 22 — Interview Explanation](#part-22--interview-explanation)
-- [Part 23 — What This Teaches For Distributed Systems](#part-23--what-this-teaches-for-distributed-systems)
-- [Part 24 — Next Advanced Extensions](#part-24--next-advanced-extensions)
+- [Part 0 — Goal](#part-0--goal)
+- [Part 1 — Why Build MiniKafka](#part-1--why-build-minikafka)
+- [Part 2 — What Kafka Really Is](#part-2--what-kafka-really-is)
+- [Part 3 — Learning Model](#part-3--learning-model)
+- [Part 4 — Final MiniKafka Architecture](#part-4--final-minikafka-architecture)
+- [Part 5 — Core Kafka Concepts From First Principles](#part-5--core-kafka-concepts-from-first-principles)
+- [Part 6 — Final Folder Structure](#part-6--final-folder-structure)
+- [Part 7 — Maven Setup](#part-7--maven-setup)
+- [Part 8 — Phase 1: Append-Only Log](#part-8--phase-1-append-only-log)
+- [Part 9 — Phase 2: Segment Files](#part-9--phase-2-segment-files)
+- [Part 10 — Phase 3: Index File](#part-10--phase-3-index-file)
+- [Part 11 — Phase 4: Topic and Partition](#part-11--phase-4-topic-and-partition)
+- [Part 12 — Phase 5: Producer API](#part-12--phase-5-producer-api)
+- [Part 13 — Phase 6: Consumer API](#part-13--phase-6-consumer-api)
+- [Part 14 — Phase 7: Offset Manager](#part-14--phase-7-offset-manager)
+- [Part 15 — Phase 8: Batching](#part-15--phase-8-batching)
+- [Part 16 — Phase 9: Retention](#part-16--phase-9-retention)
+- [Part 17 — Phase 10: Backpressure](#part-17--phase-10-backpressure)
+- [Part 18 — Phase 11: Consumer Groups](#part-18--phase-11-consumer-groups)
+- [Part 19 — Phase 12: Rebalancing](#part-19--phase-12-rebalancing)
+- [Part 20 — Phase 13: Broker and Network API](#part-20--phase-13-broker-and-network-api)
+- [Part 21 — Phase 14: Replication](#part-21--phase-14-replication)
+- [Part 22 — Phase 15: Leader/Follower](#part-22--phase-15-leaderfollower)
+- [Part 23 — Phase 16: ISR and Ack Modes](#part-23--phase-16-isr-and-ack-modes)
+- [Part 24 — Phase 17: Page Cache, mmap, and Zero-Copy](#part-24--phase-17-page-cache-mmap-and-zero-copy)
+- [Part 25 — Phase 18: Metrics and Observability](#part-25--phase-18-metrics-and-observability)
+- [Part 26 — Phase 19: Load Testing](#part-26--phase-19-load-testing)
+- [Part 27 — Phase 20: Production Hardening](#part-27--phase-20-production-hardening)
+- [Part 28 — Complete Java Code Pack](#part-28--complete-java-code-pack)
+- [Part 29 — Driver Classes](#part-29--driver-classes)
+- [Part 30 — JUnit Tests](#part-30--junit-tests)
+- [Part 31 — Performance Tuning Playbook](#part-31--performance-tuning-playbook)
+- [Part 32 — Failure Handling](#part-32--failure-handling)
+- [Part 33 — Scaling Discussion](#part-33--scaling-discussion)
+- [Part 34 — Interview Explanation](#part-34--interview-explanation)
+- [Part 35 — What This Teaches For Distributed Systems](#part-35--what-this-teaches-for-distributed-systems)
 
 ---
 
-# Part 0 — Goal Of This Handbook
+# Part 0 — Goal
 
-We are building:
+Build a MiniKafka from scratch using Java 21.
 
-```text
-MiniKafka
-```
+This is not a production Kafka replacement.
 
-using:
+This is a learning system to understand Kafka internals:
 
 ```text
-Java 21
-Pure Java first
-No Spring Boot in the core engine
-No real Kafka dependency
-```
-
-Goal:
-
-```text
-Understand Kafka internals by building a small durable log broker.
-```
-
-We are not building full Apache Kafka.
-
-We are building the core mechanics:
-
-```text
-append-only log
-topic
-partition
-offset
-producer send
-consumer poll
-consumer group offset commit
-segment file
-offset index
-retention
+append-only logs
+segments
+indexes
+partitions
+producers
+consumers
+offsets
 batching
-broker server
-basic replication model
+retention
+backpressure
+consumer groups
+rebalance
+replication
+leader/follower
+ISR
+ack modes
+page cache
+zero-copy
 metrics
+load testing
+failure handling
 ```
 
-Learning model:
+Main goal:
+
+```text
+Understand WHY Kafka is designed this way.
+```
+
+---
+
+# Part 1 — Why Build MiniKafka
+
+Reading Kafka theory gives vocabulary.
+
+Building MiniKafka gives intuition.
+
+Before building:
+
+```text
+Kafka has topics and partitions.
+```
+
+After building:
+
+```text
+Partition exists because one log cannot scale writes and reads.
+Offset exists because Kafka does not remove consumed messages.
+Batching exists because syscall and network overhead dominate small writes.
+Replication exists because a broker can die.
+ISR exists because not every replica is safe to acknowledge.
+Consumer group exists because one consumer is too slow.
+```
+
+That is real system design understanding.
+
+---
+
+# Part 2 — What Kafka Really Is
+
+Kafka is fundamentally:
+
+```text
+A distributed append-only commit log.
+```
+
+Not just a queue.
+
+Traditional queue:
+
+```text
+Producer -> Queue -> Consumer
+message removed after consume
+```
+
+Kafka:
+
+```text
+Producer -> Append-only partition log -> Consumer reads by offset
+message remains until retention deletes it
+```
+
+Kafka mental model:
+
+```text
+Topic: orders
+
+Partition 0:
+offset 0 -> order-created
+offset 1 -> order-paid
+offset 2 -> order-shipped
+
+Partition 1:
+offset 0 -> payment-created
+offset 1 -> payment-confirmed
+```
+
+Key property:
+
+```text
+Ordering is guaranteed only inside a partition.
+```
+
+---
+
+# Part 3 — Learning Model
+
+Use this cycle in every phase:
 
 ```text
 BUILD SYSTEM
@@ -100,116 +173,80 @@ OPTIMIZE
 MEASURE AGAIN
 ```
 
----
-
-# Part 1 — Why Kafka Exists
-
-Before Kafka, systems often communicated directly:
+Example:
 
 ```text
-Order Service ---> Payment Service
-Order Service ---> Email Service
-Order Service ---> Inventory Service
-Order Service ---> Analytics Service
-```
-
-Problems:
-
-```text
-tight coupling
-slow downstream breaks upstream
-hard replay
-hard auditing
-hard fanout
-hard scaling
-```
-
-Kafka solves this using a durable event log:
-
-```text
-Producer writes event
-        ↓
-Kafka stores event durably
-        ↓
-Consumers read independently
-```
-
-Architecture:
-
-```text
-Producer
-   |
-   v
-+-------------------+
-| Kafka Topic       |
-| append-only log   |
-+-------------------+
-   |       |       |
-   v       v       v
-Consumer Consumer Consumer
-```
-
-Kafka is useful for:
-
-```text
-event-driven architecture
-async processing
-log aggregation
-streaming analytics
-audit logs
-CDC pipelines
-notification systems
-microservice decoupling
+Build single append-only log
+    ↓
+Load test 100k messages
+    ↓
+Observe slow reads after file grows
+    ↓
+Learn index file
+    ↓
+Add offset-to-position index
+    ↓
+Measure faster reads
 ```
 
 ---
 
-# Part 2 — Kafka From First Principles
-
-## 2.1 Queue vs Log
-
-Traditional queue:
+# Part 4 — Final MiniKafka Architecture
 
 ```text
-Message consumed once
-Then removed
+                    +------------------+
+                    |    Producer      |
+                    +---------+--------+
+                              |
+                              v
+                    +------------------+
+                    |  Producer Buffer |
+                    +---------+--------+
+                              |
+                              v
++------------------------------------------------------+
+|                    MiniKafka Broker                  |
+|------------------------------------------------------|
+| TopicManager                                         |
+| PartitionManager                                     |
+| LogStorageEngine                                     |
+| SegmentManager                                       |
+| OffsetIndex                                          |
+| RetentionManager                                     |
+| ConsumerGroupCoordinator                             |
+| ReplicationManager                                   |
+| MetricsRegistry                                      |
++----------------------+-------------------------------+
+                       |
+                       v
+              +------------------+
+              | Topic: orders    |
+              +------------------+
+               /        |       \
+              v         v        v
+       Partition-0 Partition-1 Partition-2
+          |           |          |
+          v           v          v
+       Segments    Segments   Segments
 ```
 
-Log:
+Broker cluster:
 
 ```text
-Message appended
-Consumers read by offset
-Message stays until retention deletes it
+Broker-1 leader for orders-0
+Broker-2 follower for orders-0
+
+Broker-2 leader for orders-1
+Broker-3 follower for orders-1
 ```
-
-Queue mental model:
-
-```text
-[ A ][ B ][ C ]
-consume A
-[ B ][ C ]
-```
-
-Kafka log mental model:
-
-```text
-offset 0 -> A
-offset 1 -> B
-offset 2 -> C
-
-consumer stores: nextOffset = 1
-```
-
-Kafka does not delete messages immediately after consumption.
-
-Consumers track offsets.
 
 ---
 
-## 2.2 Topic
+# Part 5 — Core Kafka Concepts From First Principles
 
-A topic is a named stream of records.
+## Topic
+
+Logical stream of events.
 
 Example:
 
@@ -220,313 +257,147 @@ driver-location
 logs
 ```
 
-Topic contains partitions.
+## Partition
 
-```text
-Topic: orders
-├── partition-0
-├── partition-1
-└── partition-2
-```
+Physical append-only log.
 
----
-
-## 2.3 Partition
-
-Partition is an ordered append-only log.
-
-```text
-partition-0
-offset 0 -> event A
-offset 1 -> event B
-offset 2 -> event C
-```
-
-Ordering guarantee:
-
-```text
-Kafka guarantees order inside a partition.
-Kafka does not guarantee global order across partitions.
-```
-
-Why partition exists:
+Why partition?
 
 ```text
 parallel writes
 parallel reads
-horizontal scalability
-ordering boundary
+horizontal scaling
+ordering per partition
+```
+
+## Offset
+
+Position of message inside partition.
+
+```text
+offset = 0, 1, 2, 3...
+```
+
+## Producer
+
+Writes messages.
+
+## Consumer
+
+Reads messages from offset.
+
+## Consumer Group
+
+Multiple consumers sharing partitions.
+
+## Broker
+
+Server that stores partitions.
+
+## Segment
+
+Large log file split into smaller files.
+
+Why?
+
+```text
+easier deletion
+faster recovery
+bounded file size
+```
+
+## Index
+
+Maps:
+
+```text
+offset -> byte position in log file
+```
+
+Why?
+
+```text
+fast seek to offset
+```
+
+## Replication
+
+Copies partition to multiple brokers.
+
+## ISR
+
+In-sync replicas.
+
+Only replicas caught up enough are safe.
+
+## Ack Mode
+
+Producer durability level:
+
+```text
+acks=0  -> no wait
+acks=1  -> leader written
+acks=all -> leader + ISR
 ```
 
 ---
 
-## 2.4 Offset
-
-Offset is the position of a record inside a partition.
-
-```text
-offset = 0
-offset = 1
-offset = 2
-```
-
-Consumer reads:
-
-```text
-poll(topic, partition, offset)
-```
-
-Offset gives:
-
-```text
-replay
-resume
-backtracking
-at-least-once processing
-```
-
----
-
-## 2.5 Producer
-
-Producer writes records to topic partition.
-
-```text
-send(topic, key, value)
-```
-
-Partitioning rule:
-
-```text
-partition = hash(key) % partitionCount
-```
-
-Why key matters:
-
-```text
-same key goes to same partition
-ordering preserved for that key
-```
-
-Example:
-
-```text
-orderId=101 -> partition-2
-orderId=102 -> partition-0
-orderId=101 -> partition-2 again
-```
-
----
-
-## 2.6 Consumer
-
-Consumer reads records from offset.
-
-```text
-poll(topic, partition, offset, maxRecords)
-```
-
-Consumer controls its own speed.
-
-Kafka uses pull model:
-
-```text
-consumer asks broker for messages
-broker returns available messages
-```
-
-Why pull model?
-
-```text
-consumer controls backpressure
-slow consumer does not get overwhelmed
-consumer can batch reads
-```
-
----
-
-## 2.7 Consumer Group
-
-Consumer group allows multiple consumers to share partitions.
-
-```text
-Group: notification-service
-
-Consumer A -> partition-0
-Consumer B -> partition-1
-Consumer C -> partition-2
-```
-
-Rule:
-
-```text
-One partition is consumed by only one consumer inside same group.
-```
-
-But different groups can read same topic independently.
-
-```text
-Group analytics reads all events
-Group email reads all events
-Group audit reads all events
-```
-
----
-
-## 2.8 Retention
-
-Kafka deletes old data by retention policy:
-
-```text
-time-based retention
-size-based retention
-```
-
-Important:
-
-```text
-consumption does not delete records
-retention deletes records
-```
-
----
-
-## 2.9 Replication
-
-Replication gives durability and availability.
-
-```text
-partition-0 leader: broker-1
-partition-0 follower: broker-2
-partition-0 follower: broker-3
-```
-
-Producer writes to leader.
-
-Follower copies from leader.
-
-If leader fails, follower can become leader.
-
----
-
-## 2.10 Why Kafka Is Fast
-
-Kafka is fast because of:
-
-```text
-append-only sequential writes
-OS page cache
-batching
-zero-copy
-partition parallelism
-consumer pull model
-minimal random disk IO
-```
-
-Disk myth:
-
-```text
-Random disk IO is slow.
-Sequential disk IO can be very fast.
-```
-
-MiniKafka will show this by writing records sequentially to log files.
-
----
-
-# Part 3 — Final MiniKafka System
-
-Architecture:
-
-```text
-Producer Client
-      |
-      v
-+-------------------+
-| MiniKafkaBroker   |
-|-------------------|
-| TopicManager      |
-| PartitionLog      |
-| OffsetIndex       |
-| ConsumerOffsets   |
-| RetentionManager  |
-| Metrics           |
-+-------------------+
-      |
-      v
-Disk Storage
-```
-
-Storage layout:
-
-```text
-data/
-└── topics/
-    └── orders/
-        ├── partition-0/
-        │   ├── log.data
-        │   └── offset.index
-        └── partition-1/
-            ├── log.data
-            └── offset.index
-```
-
-Record format:
-
-```text
-offset | timestamp | keyLength | valueLength | key | value
-```
-
-Core API:
-
-```java
-broker.createTopic("orders", 3);
-long offset = broker.send("orders", "order-1", "created");
-List<Record> records = broker.poll("orders", 0, 0, 10);
-broker.commitOffset("group-a", "orders", 0, 5);
-long next = broker.committedOffset("group-a", "orders", 0);
-```
-
----
-
-# Part 4 — Maven Project Setup
+# Part 6 — Final Folder Structure
 
 ```text
 mini-kafka/
 ├── pom.xml
-├── README.md
 ├── data/
 ├── src/main/java/com/minikafka/
+│   ├── Main.java
+│   ├── common/
+│   │   ├── MessageRecord.java
+│   │   ├── TopicPartition.java
+│   │   ├── MiniKafkaException.java
+│   │   └── Time.java
+│   ├── storage/
+│   │   ├── LogSegment.java
+│   │   ├── SegmentFile.java
+│   │   ├── OffsetIndex.java
+│   │   ├── PartitionLog.java
+│   │   └── RetentionManager.java
+│   ├── topic/
+│   │   ├── Topic.java
+│   │   └── TopicManager.java
+│   ├── partition/
+│   │   └── PartitionRouter.java
+│   ├── producer/
+│   │   ├── MiniProducer.java
+│   │   ├── ProducerConfig.java
+│   │   └── AckMode.java
+│   ├── consumer/
+│   │   ├── MiniConsumer.java
+│   │   └── ConsumerRecord.java
+│   ├── coordinator/
+│   │   ├── OffsetManager.java
+│   │   ├── ConsumerGroupCoordinator.java
+│   │   └── RebalanceStrategy.java
+│   ├── replication/
+│   │   ├── BrokerNode.java
+│   │   ├── ReplicaState.java
+│   │   ├── ReplicationManager.java
+│   │   └── InSyncReplicaSet.java
 │   ├── broker/
 │   │   ├── MiniKafkaBroker.java
-│   │   ├── TopicManager.java
-│   │   └── BrokerMetrics.java
-│   ├── model/
-│   │   ├── Record.java
-│   │   ├── ProduceResult.java
-│   │   └── TopicPartition.java
-│   ├── storage/
-│   │   ├── PartitionLog.java
-│   │   ├── OffsetIndex.java
-│   │   └── LogSegment.java
-│   ├── consumer/
-│   │   └── ConsumerOffsetStore.java
-│   ├── retention/
-│   │   └── RetentionManager.java
-│   ├── server/
-│   │   └── MiniKafkaTcpServer.java
-│   └── demo/
-│       ├── DemoProduceConsume.java
-│       ├── DemoConsumerGroup.java
-│       └── DemoThroughput.java
+│   │   └── BrokerConfig.java
+│   └── metrics/
+│       └── MetricsRegistry.java
 └── src/test/java/com/minikafka/
+    ├── LogSegmentTest.java
     ├── PartitionLogTest.java
-    ├── MiniKafkaBrokerTest.java
-    ├── OffsetIndexTest.java
-    └── ConsumerOffsetStoreTest.java
+    ├── ProducerConsumerTest.java
+    ├── OffsetManagerTest.java
+    └── ConsumerGroupCoordinatorTest.java
 ```
 
-## pom.xml
+---
+
+# Part 7 — Maven Setup
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -569,418 +440,36 @@ mini-kafka/
 
 ---
 
-# Part 5 — Phase 1: Append-Only Commit Log
+# Part 8 — Phase 1: Append-Only Log
 
 ## What are we building?
 
-A file-backed append-only log.
+A durable log file where records are only appended.
 
 ## Why?
 
-Kafka is fundamentally a durable log.
+Sequential disk writes are fast.
 
-Before topics, partitions, producers, and consumers, we need:
+Random updates are slower.
 
-```text
-append record
-read from offset
-persist to disk
-```
-
-## What we care about
-
-```text
-sequential writes
-durability
-offset assignment
-record encoding
-file position
-```
-
-Flow:
-
-```text
-append(key,value)
-    ↓
-assign next offset
-    ↓
-serialize record
-    ↓
-write to log.data
-    ↓
-return offset
-```
-
-Dry run:
-
-```text
-append A -> offset 0
-append B -> offset 1
-append C -> offset 2
-```
-
-Log:
-
-```text
-0 A
-1 B
-2 C
-```
-
----
-
-# Part 6 — Phase 2: Topic and Partition
-
-## What are we building?
-
-A topic with multiple partitions.
-
-```text
-orders
-├── partition-0
-├── partition-1
-└── partition-2
-```
-
-## Why?
-
-Single log cannot scale forever.
-
-Partitions give:
-
-```text
-parallel writes
-parallel reads
-key-based ordering
-horizontal scalability
-```
-
-Producer routing:
-
-```text
-partition = abs(hash(key)) % partitionCount
-```
-
----
-
-# Part 7 — Phase 3: Producer API
-
-## What are we building?
-
-A broker-level send API:
-
-```java
-send(topic, key, value)
-```
-
-## Why?
-
-Producer should not directly know storage files.
-
-Broker handles:
-
-```text
-topic lookup
-partition selection
-append
-metrics update
-result return
-```
-
-Flow:
+## Data flow
 
 ```text
 Producer
-   ↓
-Broker.send(topic,key,value)
-   ↓
-choose partition
-   ↓
-PartitionLog.append
-   ↓
-return topic, partition, offset
+   |
+   v
+append(record)
+   |
+   v
+log file
 ```
 
----
-
-# Part 8 — Phase 4: Consumer Poll By Offset
-
-## What are we building?
-
-Consumer read API:
+## MessageRecord.java
 
 ```java
-poll(topic, partition, offset, maxRecords)
-```
+package com.minikafka.common;
 
-## Why?
-
-Kafka consumers control their own progress.
-
-Consumer does not remove messages.
-
-Consumer reads from offset.
-
-Flow:
-
-```text
-Consumer has nextOffset=5
-    ↓
-poll(orders, partition-0, 5, 10)
-    ↓
-broker reads records from offset >= 5
-    ↓
-consumer processes
-    ↓
-consumer commits offset
-```
-
----
-
-# Part 9 — Phase 5: Offset Index
-
-## What are we building?
-
-A mapping:
-
-```text
-offset -> byte position in log file
-```
-
-## Why?
-
-Without index:
-
-```text
-poll from offset 500000
-    ↓
-scan from beginning
-    ↓
-slow
-```
-
-With index:
-
-```text
-offset 500000 -> file position 123456789
-seek directly
-```
-
-Mini index format:
-
-```text
-offset,position
-```
-
-Production Kafka uses sparse indexes and segments.
-
-MiniKafka can use in-memory plus file persisted index.
-
----
-
-# Part 10 — Phase 6: Consumer Group Offset Commit
-
-## What are we building?
-
-Store committed offset per group/topic/partition.
-
-Key:
-
-```text
-groupId + topic + partition
-```
-
-Value:
-
-```text
-next offset to read
-```
-
-Example:
-
-```text
-notification-service:orders:0 -> 12
-analytics-service:orders:0 -> 4
-```
-
-Why?
-
-Different applications process same topic independently.
-
----
-
-# Part 11 — Phase 7: Retention and Segment Cleanup
-
-## What are we building?
-
-Delete old records by size or time.
-
-Simplified MiniKafka retention:
-
-```text
-if log file bigger than maxBytes:
-    compact by keeping newest records
-```
-
-Better future design:
-
-```text
-log-000000.data
-log-001000.data
-log-002000.data
-```
-
-Then delete old segments.
-
-Why retention?
-
-```text
-disk is finite
-Kafka keeps records until retention
-not until consumption
-```
-
----
-
-# Part 12 — Phase 8: Broker TCP Server
-
-## What are we building?
-
-A simple TCP protocol.
-
-Commands:
-
-```text
-CREATE_TOPIC orders 3
-SEND orders key value
-POLL orders 0 0 10
-COMMIT group1 orders 0 5
-OFFSET group1 orders 0
-```
-
-Why?
-
-Real Kafka is a network broker.
-
-This teaches:
-
-```text
-client-server protocol
-request parsing
-thread-per-client model
-future Netty upgrade
-```
-
----
-
-# Part 13 — Phase 9: Batching and Flush
-
-## What are we building?
-
-Batch writes and controlled flush.
-
-Why?
-
-Writing one record and fsyncing every time is slow.
-
-Batching:
-
-```text
-collect records
-write together
-flush periodically
-```
-
-Tradeoff:
-
-```text
-higher throughput
-but slightly higher latency
-and possible data loss if not flushed
-```
-
-Kafka uses producer batching and broker IO optimization.
-
----
-
-# Part 14 — Phase 10: Replication Model
-
-## What are we building?
-
-A simplified leader-follower mental model.
-
-Not full replication code first.
-
-Model:
-
-```text
-Producer -> leader partition
-Follower fetches from leader
-Follower appends same records
-```
-
-Concepts:
-
-```text
-leader
-follower
-replication lag
-ISR
-acks=1
-acks=all
-leader failover
-```
-
-Mini implementation later:
-
-```text
-Leader broker exposes POLL
-Follower broker periodically polls leader from last offset
-```
-
----
-
-# Part 15 — Phase 11: Metrics and Observability
-
-Metrics:
-
-```text
-recordsProduced
-recordsConsumed
-bytesWritten
-bytesRead
-activeTopics
-activePartitions
-logSizeBytes
-produceErrors
-consumeErrors
-```
-
-Why?
-
-Without metrics, you cannot understand bottlenecks.
-
-Production systems need:
-
-```text
-throughput
-latency
-queue depth
-consumer lag
-disk usage
-error rate
-```
-
----
-
-# Part 16 — Final Working Code
-
-## Record.java
-
-```java
-package com.minikafka.model;
-
-public record Record(
+public record MessageRecord(
         long offset,
         long timestampMillis,
         String key,
@@ -989,93 +478,218 @@ public record Record(
 }
 ```
 
-## ProduceResult.java
+## LogSegment.java
 
 ```java
-package com.minikafka.model;
+package com.minikafka.storage;
 
-public record ProduceResult(
-        String topic,
-        int partition,
-        long offset
+import com.minikafka.common.MessageRecord;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+public class LogSegment {
+    private final File file;
+    private long nextOffset;
+
+    public LogSegment(String filePath) throws IOException {
+        this.file = new File(filePath);
+        File parent = file.getParentFile();
+
+        if (parent != null) {
+            parent.mkdirs();
+        }
+
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        this.nextOffset = recoverNextOffset();
+    }
+
+    public synchronized long append(String key, String value) throws IOException {
+        long offset = nextOffset++;
+
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8))) {
+
+            writer.write(offset + "|" + System.currentTimeMillis() + "|" + key + "|" + value);
+            writer.newLine();
+        }
+
+        return offset;
+    }
+
+    public synchronized List<MessageRecord> readAll() throws IOException {
+        List<MessageRecord> records = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|", 4);
+
+                if (parts.length == 4) {
+                    records.add(new MessageRecord(
+                            Long.parseLong(parts[0]),
+                            Long.parseLong(parts[1]),
+                            parts[2],
+                            parts[3]
+                    ));
+                }
+            }
+        }
+
+        return records;
+    }
+
+    public File file() {
+        return file;
+    }
+
+    public long nextOffset() {
+        return nextOffset;
+    }
+
+    private long recoverNextOffset() throws IOException {
+        long maxOffset = -1;
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|", 2);
+
+                if (parts.length > 0 && !parts[0].isBlank()) {
+                    maxOffset = Math.max(maxOffset, Long.parseLong(parts[0]));
+                }
+            }
+        }
+
+        return maxOffset + 1;
+    }
+}
+```
+
+## Dry run
+
+```text
+append("order-1", "created")
+    ↓
+offset = 0
+    ↓
+write line:
+0|timestamp|order-1|created
+
+append("order-2", "paid")
+    ↓
+offset = 1
+    ↓
+write line:
+1|timestamp|order-2|paid
+```
+
+## Bottleneck
+
+This version scans whole file to read.
+
+Next we need:
+
+```text
+segments
+index file
+```
+
+---
+
+# Part 9 — Phase 2: Segment Files
+
+## What are we building?
+
+Split one giant log into segment files.
+
+## Why?
+
+A single huge file is difficult to:
+
+```text
+delete
+recover
+compact
+search
+manage
+```
+
+Kafka uses log segments.
+
+## Segment layout
+
+```text
+orders-0/
+├── 00000000000000000000.log
+├── 00000000000000000000.index
+├── 00000000000000001000.log
+└── 00000000000000001000.index
+```
+
+## SegmentFile.java
+
+```java
+package com.minikafka.storage;
+
+import java.io.File;
+
+public record SegmentFile(
+        long baseOffset,
+        File logFile,
+        File indexFile
 ) {
 }
 ```
 
-## TopicPartition.java
+## Rolling rule
 
-```java
-package com.minikafka.model;
-
-public record TopicPartition(String topic, int partition) {
-    @Override
-    public String toString() {
-        return topic + "-" + partition;
-    }
-}
+```text
+if current segment size > maxSegmentBytes:
+    create new segment
 ```
 
-## BrokerMetrics.java
+## Production meaning
 
-```java
-package com.minikafka.broker;
+Segment rolling enables retention:
 
-import java.util.concurrent.atomic.AtomicLong;
+```text
+delete old segment files instead of deleting individual records
+```
 
-public class BrokerMetrics {
-    private final AtomicLong recordsProduced = new AtomicLong();
-    private final AtomicLong recordsConsumed = new AtomicLong();
-    private final AtomicLong bytesWritten = new AtomicLong();
-    private final AtomicLong bytesRead = new AtomicLong();
-    private final AtomicLong produceErrors = new AtomicLong();
-    private final AtomicLong consumeErrors = new AtomicLong();
+---
 
-    public void recordProduced(long bytes) {
-        recordsProduced.incrementAndGet();
-        bytesWritten.addAndGet(bytes);
-    }
+# Part 10 — Phase 3: Index File
 
-    public void recordConsumed(long bytes) {
-        recordsConsumed.incrementAndGet();
-        bytesRead.addAndGet(bytes);
-    }
+## What are we building?
 
-    public void produceError() {
-        produceErrors.incrementAndGet();
-    }
+An offset index.
 
-    public void consumeError() {
-        consumeErrors.incrementAndGet();
-    }
+## Why?
 
-    public long recordsProduced() {
-        return recordsProduced.get();
-    }
+Without index:
 
-    public long recordsConsumed() {
-        return recordsConsumed.get();
-    }
+```text
+read offset 900000
+    ↓
+scan from beginning
+```
 
-    public long bytesWritten() {
-        return bytesWritten.get();
-    }
+With index:
 
-    public long bytesRead() {
-        return bytesRead.get();
-    }
-
-    @Override
-    public String toString() {
-        return "BrokerMetrics{" +
-                "recordsProduced=" + recordsProduced.get() +
-                ", recordsConsumed=" + recordsConsumed.get() +
-                ", bytesWritten=" + bytesWritten.get() +
-                ", bytesRead=" + bytesRead.get() +
-                ", produceErrors=" + produceErrors.get() +
-                ", consumeErrors=" + consumeErrors.get() +
-                '}';
-    }
-}
+```text
+offset -> file byte position
 ```
 
 ## OffsetIndex.java
@@ -1083,830 +697,1441 @@ public class BrokerMetrics {
 ```java
 package com.minikafka.storage;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.io.*;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 public class OffsetIndex {
-    private final Map<Long, Long> offsetToPosition = new ConcurrentHashMap<>();
+    private final File file;
+    private final NavigableMap<Long, Long> offsetToPosition = new TreeMap<>();
 
-    public void add(long offset, long position) {
+    public OffsetIndex(File file) throws IOException {
+        this.file = file;
+
+        File parent = file.getParentFile();
+
+        if (parent != null) {
+            parent.mkdirs();
+        }
+
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        load();
+    }
+
+    public synchronized void append(long offset, long position) throws IOException {
         offsetToPosition.put(offset, position);
-    }
 
-    public Long position(long offset) {
-        return offsetToPosition.get(offset);
-    }
-
-    public int size() {
-        return offsetToPosition.size();
-    }
-}
-```
-
-## PartitionLog.java
-
-```java
-package com.minikafka.storage;
-
-import com.minikafka.model.Record;
-
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
-public class PartitionLog implements AutoCloseable {
-    private final Path dir;
-    private final Path logFile;
-    private final RandomAccessFile raf;
-    private final OffsetIndex index = new OffsetIndex();
-
-    private long nextOffset = 0;
-
-    public PartitionLog(Path dir) {
-        try {
-            this.dir = dir;
-            Files.createDirectories(dir);
-            this.logFile = dir.resolve("log.data");
-            this.raf = new RandomAccessFile(logFile.toFile(), "rw");
-            rebuildIndex();
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to create partition log: " + dir, e);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+            writer.write(offset + "," + position);
+            writer.newLine();
         }
     }
 
-    public synchronized long append(String key, String value) {
-        try {
-            long offset = nextOffset++;
-            long position = raf.length();
-            raf.seek(position);
-
-            byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-            byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
-
-            raf.writeLong(offset);
-            raf.writeLong(System.currentTimeMillis());
-            raf.writeInt(keyBytes.length);
-            raf.writeInt(valueBytes.length);
-            raf.write(keyBytes);
-            raf.write(valueBytes);
-
-            index.add(offset, position);
-            return offset;
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to append record", e);
-        }
+    public synchronized long positionFor(long offset) {
+        var entry = offsetToPosition.floorEntry(offset);
+        return entry == null ? 0L : entry.getValue();
     }
 
-    public synchronized List<Record> readFrom(long startOffset, int maxRecords) {
-        try {
-            List<Record> records = new ArrayList<>();
+    private void load() throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
 
-            Long position = index.position(startOffset);
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
 
-            if (position == null) {
-                position = findNearestPosition(startOffset);
-            }
-
-            if (position == null) {
-                return records;
-            }
-
-            raf.seek(position);
-
-            while (records.size() < maxRecords && raf.getFilePointer() < raf.length()) {
-                long offset = raf.readLong();
-                long timestamp = raf.readLong();
-                int keyLength = raf.readInt();
-                int valueLength = raf.readInt();
-
-                byte[] keyBytes = new byte[keyLength];
-                byte[] valueBytes = new byte[valueLength];
-
-                raf.readFully(keyBytes);
-                raf.readFully(valueBytes);
-
-                if (offset >= startOffset) {
-                    records.add(new Record(
-                            offset,
-                            timestamp,
-                            new String(keyBytes, StandardCharsets.UTF_8),
-                            new String(valueBytes, StandardCharsets.UTF_8)
-                    ));
+                if (parts.length == 2) {
+                    offsetToPosition.put(
+                            Long.parseLong(parts[0]),
+                            Long.parseLong(parts[1])
+                    );
                 }
             }
-
-            return records;
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to read records", e);
-        }
-    }
-
-    public synchronized long sizeBytes() {
-        try {
-            return raf.length();
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public synchronized long nextOffset() {
-        return nextOffset;
-    }
-
-    private void rebuildIndex() throws IOException {
-        raf.seek(0);
-
-        long position = 0;
-        long maxOffset = -1;
-
-        while (position < raf.length()) {
-            raf.seek(position);
-
-            long offset = raf.readLong();
-            raf.readLong(); // timestamp
-            int keyLength = raf.readInt();
-            int valueLength = raf.readInt();
-
-            index.add(offset, position);
-            maxOffset = Math.max(maxOffset, offset);
-
-            long recordSize = 8 + 8 + 4 + 4 + keyLength + valueLength;
-            position += recordSize;
-        }
-
-        nextOffset = maxOffset + 1;
-    }
-
-    private Long findNearestPosition(long startOffset) {
-        for (long offset = startOffset; offset >= 0; offset--) {
-            Long position = index.position(offset);
-            if (position != null) {
-                return position;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public void close() {
-        try {
-            raf.close();
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
         }
     }
 }
 ```
 
-## TopicManager.java
+## Dry run
+
+```text
+offset 0 -> file position 0
+offset 1 -> file position 37
+offset 2 -> file position 71
+```
+
+To read offset 2:
+
+```text
+find position 71
+seek there
+read forward
+```
+
+---
+
+# Part 11 — Phase 4: Topic and Partition
+
+## What are we building?
+
+Topic with multiple partitions.
+
+## Why?
+
+Single log cannot scale.
+
+Partitions provide:
+
+```text
+write parallelism
+read parallelism
+ordering per partition
+```
+
+## TopicPartition.java
 
 ```java
-package com.minikafka.broker;
+package com.minikafka.common;
 
-import com.minikafka.storage.PartitionLog;
-
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-public class TopicManager {
-    private final Path dataDir;
-    private final Map<String, PartitionLog[]> topics = new ConcurrentHashMap<>();
-
-    public TopicManager(Path dataDir) {
-        this.dataDir = dataDir;
-    }
-
-    public void createTopic(String topic, int partitions) {
-        if (topic == null || topic.isBlank()) {
-            throw new IllegalArgumentException("topic cannot be blank");
-        }
-
-        if (partitions <= 0) {
-            throw new IllegalArgumentException("partitions must be positive");
-        }
-
-        topics.computeIfAbsent(topic, t -> {
-            PartitionLog[] logs = new PartitionLog[partitions];
-
-            for (int p = 0; p < partitions; p++) {
-                Path partitionDir = dataDir
-                        .resolve("topics")
-                        .resolve(topic)
-                        .resolve("partition-" + p);
-
-                logs[p] = new PartitionLog(partitionDir);
-            }
-
-            return logs;
-        });
-    }
-
-    public PartitionLog partition(String topic, int partition) {
-        PartitionLog[] logs = topics.get(topic);
-
-        if (logs == null) {
-            throw new IllegalArgumentException("Unknown topic: " + topic);
-        }
-
-        if (partition < 0 || partition >= logs.length) {
-            throw new IllegalArgumentException("Invalid partition: " + partition);
-        }
-
-        return logs[partition];
-    }
-
-    public int partitionCount(String topic) {
-        PartitionLog[] logs = topics.get(topic);
-
-        if (logs == null) {
-            throw new IllegalArgumentException("Unknown topic: " + topic);
-        }
-
-        return logs.length;
+public record TopicPartition(
+        String topic,
+        int partition
+) {
+    public String id() {
+        return topic + "-" + partition;
     }
 }
 ```
 
-## ConsumerOffsetStore.java
+## PartitionRouter.java
+
+```java
+package com.minikafka.partition;
+
+public class PartitionRouter {
+    public int route(String key, int partitionCount) {
+        if (partitionCount <= 0) {
+            throw new IllegalArgumentException("partitionCount must be positive");
+        }
+
+        if (key == null) {
+            return 0;
+        }
+
+        return Math.floorMod(key.hashCode(), partitionCount);
+    }
+}
+```
+
+## Dry run
+
+```text
+key = user-101
+partitionCount = 3
+
+hash(user-101) % 3 = 1
+
+message goes to partition-1
+```
+
+## Tradeoff
+
+Same key always maps to same partition.
+
+Benefit:
+
+```text
+ordering per key
+```
+
+Risk:
+
+```text
+hot key creates hot partition
+```
+
+---
+
+# Part 12 — Phase 5: Producer API
+
+## What are we building?
+
+A MiniProducer with:
+
+```text
+send(topic, key, value)
+```
+
+## Why?
+
+Producer hides:
+
+```text
+partition routing
+batching
+backpressure
+ack handling
+```
+
+## ProducerConfig.java
+
+```java
+package com.minikafka.producer;
+
+public record ProducerConfig(
+        int bufferCapacity,
+        int batchSize,
+        AckMode ackMode
+) {
+}
+```
+
+## AckMode.java
+
+```java
+package com.minikafka.producer;
+
+public enum AckMode {
+    NONE,
+    LEADER,
+    ALL
+}
+```
+
+## MiniProducer.java
+
+```java
+package com.minikafka.producer;
+
+import com.minikafka.broker.MiniKafkaBroker;
+
+public class MiniProducer {
+    private final MiniKafkaBroker broker;
+
+    public MiniProducer(MiniKafkaBroker broker) {
+        this.broker = broker;
+    }
+
+    public long send(String topic, String key, String value) throws Exception {
+        return broker.produce(topic, key, value);
+    }
+}
+```
+
+## Flow
+
+```text
+Application
+   |
+producer.send()
+   |
+route key to partition
+   |
+append to partition log
+   |
+return offset
+```
+
+---
+
+# Part 13 — Phase 6: Consumer API
+
+## What are we building?
+
+A MiniConsumer that reads from topic partition by offset.
+
+## ConsumerRecord.java
 
 ```java
 package com.minikafka.consumer;
 
-import com.minikafka.model.TopicPartition;
+public record ConsumerRecord(
+        String topic,
+        int partition,
+        long offset,
+        String key,
+        String value
+) {
+}
+```
+
+## MiniConsumer.java
+
+```java
+package com.minikafka.consumer;
+
+import com.minikafka.broker.MiniKafkaBroker;
+
+import java.util.List;
+
+public class MiniConsumer {
+    private final MiniKafkaBroker broker;
+
+    public MiniConsumer(MiniKafkaBroker broker) {
+        this.broker = broker;
+    }
+
+    public List<ConsumerRecord> poll(String topic, int partition, long offset) throws Exception {
+        return broker.consume(topic, partition, offset);
+    }
+}
+```
+
+## Key idea
+
+Kafka consumer does not remove messages.
+
+Consumer controls progress using offset.
+
+---
+
+# Part 14 — Phase 7: Offset Manager
+
+## What are we building?
+
+A store for committed offsets.
+
+## Why?
+
+If consumer crashes, it must resume.
+
+## OffsetManager.java
+
+```java
+package com.minikafka.coordinator;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ConsumerOffsetStore {
+public class OffsetManager {
     private final Map<String, Long> offsets = new ConcurrentHashMap<>();
 
-    public void commit(String groupId, TopicPartition topicPartition, long nextOffset) {
-        offsets.put(key(groupId, topicPartition), nextOffset);
+    public void commit(String groupId, String topic, int partition, long nextOffset) {
+        offsets.put(key(groupId, topic, partition), nextOffset);
     }
 
-    public long committedOffset(String groupId, TopicPartition topicPartition) {
-        return offsets.getOrDefault(key(groupId, topicPartition), 0L);
+    public long committedOffset(String groupId, String topic, int partition) {
+        return offsets.getOrDefault(key(groupId, topic, partition), 0L);
     }
 
-    private String key(String groupId, TopicPartition tp) {
-        return groupId + ":" + tp.topic() + ":" + tp.partition();
+    private String key(String groupId, String topic, int partition) {
+        return groupId + ":" + topic + ":" + partition;
     }
 }
 ```
+
+## Delivery semantics
+
+If commit after processing:
+
+```text
+at-least-once
+```
+
+If commit before processing:
+
+```text
+at-most-once
+```
+
+Exactly-once needs more coordination.
+
+---
+
+# Part 15 — Phase 8: Batching
+
+## What are we building?
+
+Batch writes.
+
+## Why?
+
+Without batching:
+
+```text
+1 message = 1 write
+1 message = 1 flush
+```
+
+With batching:
+
+```text
+1000 messages = 1 write batch
+```
+
+## Batch flow
+
+```text
+Producer send
+   ↓
+buffer
+   ↓ when batch full or linger timeout
+flush batch
+```
+
+## Bottleneck solved
+
+```text
+syscall overhead
+disk flush overhead
+network packet overhead
+```
+
+## Tradeoff
+
+Batching improves throughput but can increase latency.
+
+---
+
+# Part 16 — Phase 9: Retention
+
+## What are we building?
+
+Delete old segment files.
+
+## Why?
+
+Kafka does not keep logs forever.
+
+Retention policies:
+
+```text
+time-based
+size-based
+```
+
+## RetentionManager.java
+
+```java
+package com.minikafka.storage;
+
+import java.io.File;
+
+public class RetentionManager {
+    private final long retentionMillis;
+
+    public RetentionManager(long retentionMillis) {
+        this.retentionMillis = retentionMillis;
+    }
+
+    public void cleanup(File partitionDir) {
+        File[] files = partitionDir.listFiles();
+
+        if (files == null) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+
+        for (File file : files) {
+            if (file.isFile() && now - file.lastModified() > retentionMillis) {
+                file.delete();
+            }
+        }
+    }
+}
+```
+
+## Production consideration
+
+Never delete active segment.
+
+Never delete data needed by consumers if retention policy promises availability.
+
+---
+
+# Part 17 — Phase 10: Backpressure
+
+## What are we building?
+
+Bounded producer buffer.
+
+## Why?
+
+Unbounded memory is dangerous.
+
+If producer writes faster than broker can persist:
+
+```text
+queue grows
+heap grows
+GC increases
+OOM risk
+```
+
+Backpressure strategies:
+
+```text
+block
+reject
+drop
+slow producer
+scale broker
+```
+
+## Production insight
+
+Backpressure protects the system.
+
+Without it, system fails catastrophically.
+
+---
+
+# Part 18 — Phase 11: Consumer Groups
+
+## What are we building?
+
+Group of consumers sharing partitions.
+
+## Why?
+
+One consumer may be too slow.
+
+Consumer group:
+
+```text
+group = order-service
+
+consumer-1 -> partition-0
+consumer-2 -> partition-1
+consumer-3 -> partition-2
+```
+
+Rule:
+
+```text
+One partition can be assigned to only one consumer inside same group.
+```
+
+## ConsumerGroupCoordinator.java
+
+```java
+package com.minikafka.coordinator;
+
+import java.util.*;
+
+public class ConsumerGroupCoordinator {
+    public Map<String, List<Integer>> assignPartitions(
+            List<String> consumerIds,
+            int partitionCount
+    ) {
+        Map<String, List<Integer>> assignment = new LinkedHashMap<>();
+
+        for (String consumer : consumerIds) {
+            assignment.put(consumer, new ArrayList<>());
+        }
+
+        for (int partition = 0; partition < partitionCount; partition++) {
+            String consumer = consumerIds.get(partition % consumerIds.size());
+            assignment.get(consumer).add(partition);
+        }
+
+        return assignment;
+    }
+}
+```
+
+## Dry run
+
+```text
+consumers = c1, c2
+partitions = 0,1,2,3
+
+c1 -> 0,2
+c2 -> 1,3
+```
+
+---
+
+# Part 19 — Phase 12: Rebalancing
+
+## What are we building?
+
+Reassign partitions when consumers join/leave.
+
+## Why?
+
+Consumer can die.
+
+New consumers can join.
+
+## Rebalance event
+
+```text
+consumer-3 joins
+    ↓
+coordinator recalculates assignment
+    ↓
+some partitions move
+```
+
+## Problem
+
+Rebalance pauses consumption.
+
+## Production concerns
+
+```text
+avoid frequent rebalance
+heartbeat
+session timeout
+sticky assignment
+cooperative rebalance
+```
+
+---
+
+# Part 20 — Phase 13: Broker and Network API
+
+## What are we building?
+
+Broker facade.
+
+For learning, first use in-process broker.
+
+Later expose TCP/HTTP.
 
 ## MiniKafkaBroker.java
 
 ```java
 package com.minikafka.broker;
 
-import com.minikafka.consumer.ConsumerOffsetStore;
-import com.minikafka.model.ProduceResult;
-import com.minikafka.model.Record;
-import com.minikafka.model.TopicPartition;
-import com.minikafka.storage.PartitionLog;
+import com.minikafka.common.MessageRecord;
+import com.minikafka.consumer.ConsumerRecord;
+import com.minikafka.partition.PartitionRouter;
+import com.minikafka.storage.LogSegment;
 
-import java.nio.file.Path;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MiniKafkaBroker {
-    private final TopicManager topicManager;
-    private final ConsumerOffsetStore offsetStore = new ConsumerOffsetStore();
-    private final BrokerMetrics metrics = new BrokerMetrics();
+    private final Map<String, List<LogSegment>> topics = new ConcurrentHashMap<>();
+    private final PartitionRouter router = new PartitionRouter();
 
-    public MiniKafkaBroker(Path dataDir) {
-        this.topicManager = new TopicManager(dataDir);
-    }
+    public void createTopic(String topic, int partitions) throws IOException {
+        List<LogSegment> logs = new ArrayList<>();
 
-    public void createTopic(String topic, int partitions) {
-        topicManager.createTopic(topic, partitions);
-    }
-
-    public ProduceResult send(String topic, String key, String value) {
-        try {
-            int partition = choosePartition(topic, key);
-            PartitionLog log = topicManager.partition(topic, partition);
-            long offset = log.append(key, value);
-
-            long bytes = key.length() + value.length();
-            metrics.recordProduced(bytes);
-
-            return new ProduceResult(topic, partition, offset);
-        } catch (RuntimeException e) {
-            metrics.produceError();
-            throw e;
+        for (int p = 0; p < partitions; p++) {
+            logs.add(new LogSegment("data/" + topic + "-" + p + ".log"));
         }
+
+        topics.put(topic, logs);
     }
 
-    public List<Record> poll(String topic, int partition, long offset, int maxRecords) {
-        try {
-            PartitionLog log = topicManager.partition(topic, partition);
-            List<Record> records = log.readFrom(offset, maxRecords);
+    public long produce(String topic, String key, String value) throws Exception {
+        List<LogSegment> partitions = topics.get(topic);
 
-            for (Record record : records) {
-                metrics.recordConsumed(record.key().length() + record.value().length());
+        if (partitions == null) {
+            throw new IllegalArgumentException("Unknown topic: " + topic);
+        }
+
+        int partition = router.route(key, partitions.size());
+
+        return partitions.get(partition).append(key, value);
+    }
+
+    public List<ConsumerRecord> consume(String topic, int partition, long offset) throws Exception {
+        List<LogSegment> partitions = topics.get(topic);
+
+        if (partitions == null) {
+            throw new IllegalArgumentException("Unknown topic: " + topic);
+        }
+
+        List<MessageRecord> records = partitions.get(partition).readAll();
+        List<ConsumerRecord> result = new ArrayList<>();
+
+        for (MessageRecord record : records) {
+            if (record.offset() >= offset) {
+                result.add(new ConsumerRecord(
+                        topic,
+                        partition,
+                        record.offset(),
+                        record.key(),
+                        record.value()
+                ));
             }
-
-            return records;
-        } catch (RuntimeException e) {
-            metrics.consumeError();
-            throw e;
         }
-    }
 
-    public void commitOffset(String groupId, String topic, int partition, long nextOffset) {
-        offsetStore.commit(groupId, new TopicPartition(topic, partition), nextOffset);
-    }
-
-    public long committedOffset(String groupId, String topic, int partition) {
-        return offsetStore.committedOffset(groupId, new TopicPartition(topic, partition));
-    }
-
-    public BrokerMetrics metrics() {
-        return metrics;
-    }
-
-    private int choosePartition(String topic, String key) {
-        int partitionCount = topicManager.partitionCount(topic);
-        return Math.abs(key.hashCode()) % partitionCount;
+        return result;
     }
 }
 ```
 
 ---
 
-# Part 17 — Driver Classes
+# Part 21 — Phase 14: Replication
 
-## DemoProduceConsume.java
+## What are we building?
+
+Leader writes and follower copies.
+
+## Why?
+
+Broker or disk can fail.
+
+Replication flow:
+
+```text
+Producer
+   ↓
+Leader partition
+   ↓
+Follower replicas
+   ↓
+Ack
+```
+
+## ReplicaState.java
 
 ```java
-package com.minikafka.demo;
+package com.minikafka.replication;
+
+public enum ReplicaState {
+    LEADER,
+    FOLLOWER
+}
+```
+
+## BrokerNode.java
+
+```java
+package com.minikafka.replication;
+
+public record BrokerNode(
+        String brokerId,
+        String host,
+        int port
+) {
+}
+```
+
+## ReplicationManager.java
+
+```java
+package com.minikafka.replication;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class ReplicationManager {
+    private final Set<String> inSyncReplicas = new HashSet<>();
+
+    public void markInSync(String brokerId) {
+        inSyncReplicas.add(brokerId);
+    }
+
+    public void markOutOfSync(String brokerId) {
+        inSyncReplicas.remove(brokerId);
+    }
+
+    public boolean isInSync(String brokerId) {
+        return inSyncReplicas.contains(brokerId);
+    }
+
+    public int isrSize() {
+        return inSyncReplicas.size();
+    }
+}
+```
+
+## Production reality
+
+Real replication needs:
+
+```text
+fetch requests
+replication offsets
+leader epoch
+high watermark
+failure detection
+```
+
+---
+
+# Part 22 — Phase 15: Leader/Follower
+
+## Why leader exists?
+
+If all replicas accept writes independently:
+
+```text
+conflicting logs
+split brain
+inconsistent ordering
+```
+
+So one leader accepts writes.
+
+Followers copy.
+
+```text
+Leader:
+accept produce
+
+Follower:
+replicate from leader
+```
+
+## Failure
+
+If leader dies:
+
+```text
+choose new leader from ISR
+```
+
+---
+
+# Part 23 — Phase 16: ISR and Ack Modes
+
+## ISR
+
+ISR = in-sync replicas.
+
+```text
+leader
+follower-1 caught up
+follower-2 lagging
+```
+
+ISR:
+
+```text
+leader, follower-1
+```
+
+Not ISR:
+
+```text
+follower-2
+```
+
+## Ack modes
+
+```text
+acks=0
+producer does not wait
+
+acks=1
+leader written
+
+acks=all
+leader and ISR written
+```
+
+## Tradeoff
+
+| Ack | Durability | Latency |
+|---|---|---|
+| 0 | low | lowest |
+| 1 | medium | medium |
+| all | high | highest |
+
+---
+
+# Part 24 — Phase 17: Page Cache, mmap, and Zero-Copy
+
+## Why Kafka is fast
+
+Kafka is fast because:
+
+```text
+append-only writes
+sequential IO
+batching
+OS page cache
+zero-copy transfer
+```
+
+## Normal copy path
+
+```text
+disk -> kernel page cache -> JVM heap -> socket buffer -> network
+```
+
+## Zero-copy path
+
+```text
+disk -> kernel page cache -> socket
+```
+
+## Java concepts
+
+```text
+FileChannel
+MappedByteBuffer
+transferTo()
+DirectByteBuffer
+```
+
+## Production insight
+
+Huge JVM heap is not always best.
+
+Kafka benefits from leaving memory for OS page cache.
+
+---
+
+# Part 25 — Phase 18: Metrics and Observability
+
+## MetricsRegistry.java
+
+```java
+package com.minikafka.metrics;
+
+import java.util.concurrent.atomic.AtomicLong;
+
+public class MetricsRegistry {
+    private final AtomicLong messagesIn = new AtomicLong();
+    private final AtomicLong messagesOut = new AtomicLong();
+    private final AtomicLong bytesIn = new AtomicLong();
+    private final AtomicLong bytesOut = new AtomicLong();
+    private final AtomicLong rejectedMessages = new AtomicLong();
+
+    public void recordIn(long bytes) {
+        messagesIn.incrementAndGet();
+        bytesIn.addAndGet(bytes);
+    }
+
+    public void recordOut(long bytes) {
+        messagesOut.incrementAndGet();
+        bytesOut.addAndGet(bytes);
+    }
+
+    public void recordRejected() {
+        rejectedMessages.incrementAndGet();
+    }
+
+    public String snapshot() {
+        return "messagesIn=" + messagesIn.get() +
+                ", messagesOut=" + messagesOut.get() +
+                ", bytesIn=" + bytesIn.get() +
+                ", bytesOut=" + bytesOut.get() +
+                ", rejected=" + rejectedMessages.get();
+    }
+}
+```
+
+Important metrics:
+
+```text
+messages/sec
+bytes/sec
+producer latency
+consumer lag
+replication lag
+queue depth
+disk usage
+segment count
+GC pause
+```
+
+Consumer lag:
+
+```text
+latestOffset - committedOffset
+```
+
+---
+
+# Part 26 — Phase 19: Load Testing
+
+## What to measure
+
+```text
+producer throughput
+consumer throughput
+p99 produce latency
+p99 consume latency
+disk MB/sec
+GC pauses
+queue depth
+consumer lag
+```
+
+## Simple load test idea
+
+```text
+1 producer
+1 topic
+3 partitions
+1 million messages
+```
+
+Then test:
+
+```text
+batch size 1
+batch size 100
+batch size 1000
+```
+
+Observe:
+
+```text
+batching improves throughput
+but may increase latency
+```
+
+---
+
+# Part 27 — Phase 20: Production Hardening
+
+Features to add:
+
+```text
+1. Binary record format instead of text lines
+2. CRC checksum per record
+3. Segment rolling by size
+4. Segment rolling by time
+5. Retention cleanup
+6. Sparse offset index
+7. Time index
+8. Compression
+9. TCP protocol
+10. Backpressure
+11. Replica fetcher thread
+12. Leader election
+13. High watermark
+14. Consumer group heartbeat
+15. Rebalance protocol
+16. Metrics endpoint
+17. Graceful shutdown
+18. Recovery after crash
+```
+
+---
+
+# Part 28 — Complete Java Code Pack
+
+This handbook already includes the core classes.
+
+Minimum working set:
+
+```text
+MessageRecord
+TopicPartition
+LogSegment
+OffsetIndex
+PartitionRouter
+MiniKafkaBroker
+MiniProducer
+MiniConsumer
+OffsetManager
+ConsumerGroupCoordinator
+ReplicationManager
+MetricsRegistry
+```
+
+This is enough to create a serious MiniKafka learning project.
+
+---
+
+# Part 29 — Driver Classes
+
+## MiniKafkaDemo.java
+
+```java
+package com.minikafka;
 
 import com.minikafka.broker.MiniKafkaBroker;
-import com.minikafka.model.ProduceResult;
-import com.minikafka.model.Record;
+import com.minikafka.consumer.ConsumerRecord;
+import com.minikafka.consumer.MiniConsumer;
+import com.minikafka.producer.MiniProducer;
 
-import java.nio.file.Path;
 import java.util.List;
 
-public class DemoProduceConsume {
-    public static void main(String[] args) {
-        MiniKafkaBroker broker = new MiniKafkaBroker(Path.of("data"));
+public class MiniKafkaDemo {
+    public static void main(String[] args) throws Exception {
+        MiniKafkaBroker broker = new MiniKafkaBroker();
         broker.createTopic("orders", 3);
 
-        ProduceResult r1 = broker.send("orders", "order-1", "created");
-        ProduceResult r2 = broker.send("orders", "order-2", "paid");
-        ProduceResult r3 = broker.send("orders", "order-1", "shipped");
+        MiniProducer producer = new MiniProducer(broker);
+        MiniConsumer consumer = new MiniConsumer(broker);
 
-        System.out.println(r1);
-        System.out.println(r2);
-        System.out.println(r3);
+        producer.send("orders", "order-1", "created");
+        producer.send("orders", "order-2", "paid");
+        producer.send("orders", "order-3", "shipped");
 
         for (int partition = 0; partition < 3; partition++) {
-            List<Record> records = broker.poll("orders", partition, 0, 10);
-            System.out.println("partition=" + partition + ", records=" + records);
-        }
+            List<ConsumerRecord> records =
+                    consumer.poll("orders", partition, 0);
 
-        System.out.println(broker.metrics());
+            for (ConsumerRecord record : records) {
+                System.out.println(record);
+            }
+        }
     }
 }
 ```
 
-## DemoConsumerGroup.java
+## ConsumerGroupDemo.java
 
 ```java
-package com.minikafka.demo;
+package com.minikafka;
 
-import com.minikafka.broker.MiniKafkaBroker;
-import com.minikafka.model.Record;
+import com.minikafka.coordinator.ConsumerGroupCoordinator;
 
-import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
-public class DemoConsumerGroup {
+public class ConsumerGroupDemo {
     public static void main(String[] args) {
-        MiniKafkaBroker broker = new MiniKafkaBroker(Path.of("data-consumer-group"));
-        broker.createTopic("payments", 2);
+        ConsumerGroupCoordinator coordinator =
+                new ConsumerGroupCoordinator();
 
-        for (int i = 1; i <= 5; i++) {
-            broker.send("payments", "payment-" + i, "amount=" + (i * 100));
-        }
+        Map<String, List<Integer>> assignment =
+                coordinator.assignPartitions(
+                        List.of("consumer-1", "consumer-2"),
+                        6
+                );
 
-        String group = "billing-service";
-        int partition = 0;
-
-        long offset = broker.committedOffset(group, "payments", partition);
-        List<Record> records = broker.poll("payments", partition, offset, 10);
-
-        for (Record record : records) {
-            System.out.println("Processing " + record);
-            broker.commitOffset(group, "payments", partition, record.offset() + 1);
-        }
-
-        System.out.println("Next offset = " + broker.committedOffset(group, "payments", partition));
-    }
-}
-```
-
-## DemoThroughput.java
-
-```java
-package com.minikafka.demo;
-
-import com.minikafka.broker.MiniKafkaBroker;
-
-import java.nio.file.Path;
-
-public class DemoThroughput {
-    public static void main(String[] args) {
-        MiniKafkaBroker broker = new MiniKafkaBroker(Path.of("data-throughput"));
-        broker.createTopic("logs", 4);
-
-        int records = 100_000;
-        long start = System.nanoTime();
-
-        for (int i = 0; i < records; i++) {
-            broker.send("logs", "key-" + i, "log-message-" + i);
-        }
-
-        long elapsedMs = (System.nanoTime() - start) / 1_000_000;
-
-        System.out.println("records=" + records);
-        System.out.println("elapsedMs=" + elapsedMs);
-        System.out.println("records/sec=" + (records * 1000L / Math.max(1, elapsedMs)));
-        System.out.println(broker.metrics());
+        System.out.println(assignment);
     }
 }
 ```
 
 ---
 
-# Part 18 — JUnit Tests
+# Part 30 — JUnit Tests
 
-## PartitionLogTest.java
+## LogSegmentTest.java
 
 ```java
 package com.minikafka;
 
-import com.minikafka.model.Record;
-import com.minikafka.storage.PartitionLog;
+import com.minikafka.common.MessageRecord;
+import com.minikafka.storage.LogSegment;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class PartitionLogTest {
+public class LogSegmentTest {
+
     @Test
     void shouldAppendAndReadRecords() throws Exception {
-        Path dir = Files.createTempDirectory("partition-log-test");
+        LogSegment segment =
+                new LogSegment("data/test-log-segment.log");
 
-        try (PartitionLog log = new PartitionLog(dir)) {
-            long o1 = log.append("k1", "v1");
-            long o2 = log.append("k2", "v2");
+        long offset = segment.append("k1", "v1");
 
-            assertEquals(0, o1);
-            assertEquals(1, o2);
+        List<MessageRecord> records = segment.readAll();
 
-            List<Record> records = log.readFrom(0, 10);
-
-            assertEquals(2, records.size());
-            assertEquals("k1", records.get(0).key());
-            assertEquals("v2", records.get(1).value());
-        }
-    }
-}
-```
-
-## MiniKafkaBrokerTest.java
-
-```java
-package com.minikafka;
-
-import com.minikafka.broker.MiniKafkaBroker;
-import com.minikafka.model.ProduceResult;
-import com.minikafka.model.Record;
-import org.junit.jupiter.api.Test;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class MiniKafkaBrokerTest {
-    @Test
-    void shouldProduceAndConsume() throws Exception {
-        Path dir = Files.createTempDirectory("broker-test");
-        MiniKafkaBroker broker = new MiniKafkaBroker(dir);
-
-        broker.createTopic("orders", 2);
-
-        ProduceResult result = broker.send("orders", "order-1", "created");
-
-        List<Record> records = broker.poll("orders", result.partition(), 0, 10);
-
+        assertTrue(offset >= 0);
         assertFalse(records.isEmpty());
-        assertTrue(records.stream().anyMatch(r -> r.value().equals("created")));
+        assertEquals("k1", records.get(records.size() - 1).key());
     }
 }
 ```
 
-## ConsumerOffsetStoreTest.java
+## PartitionRouterTest.java
 
 ```java
 package com.minikafka;
 
-import com.minikafka.consumer.ConsumerOffsetStore;
-import com.minikafka.model.TopicPartition;
+import com.minikafka.partition.PartitionRouter;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ConsumerOffsetStoreTest {
+public class PartitionRouterTest {
+
     @Test
-    void shouldCommitOffset() {
-        ConsumerOffsetStore store = new ConsumerOffsetStore();
-        TopicPartition tp = new TopicPartition("orders", 0);
+    void shouldRouteKeyToValidPartition() {
+        PartitionRouter router = new PartitionRouter();
 
-        assertEquals(0, store.committedOffset("group-a", tp));
+        int partition = router.route("user-1", 3);
 
-        store.commit("group-a", tp, 10);
-
-        assertEquals(10, store.committedOffset("group-a", tp));
+        assertTrue(partition >= 0);
+        assertTrue(partition < 3);
     }
 }
 ```
 
-## OffsetIndexTest.java
+## OffsetManagerTest.java
 
 ```java
 package com.minikafka;
 
-import com.minikafka.storage.OffsetIndex;
+import com.minikafka.coordinator.OffsetManager;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class OffsetIndexTest {
+public class OffsetManagerTest {
+
     @Test
-    void shouldMapOffsetToPosition() {
-        OffsetIndex index = new OffsetIndex();
+    void shouldCommitAndReadOffset() {
+        OffsetManager manager = new OffsetManager();
 
-        index.add(10, 500);
+        manager.commit("group-a", "orders", 0, 100);
 
-        assertEquals(500, index.position(10));
+        assertEquals(100, manager.committedOffset("group-a", "orders", 0));
+    }
+}
+```
+
+## ConsumerGroupCoordinatorTest.java
+
+```java
+package com.minikafka;
+
+import com.minikafka.coordinator.ConsumerGroupCoordinator;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class ConsumerGroupCoordinatorTest {
+
+    @Test
+    void shouldAssignPartitionsToConsumers() {
+        ConsumerGroupCoordinator coordinator =
+                new ConsumerGroupCoordinator();
+
+        Map<String, List<Integer>> assignment =
+                coordinator.assignPartitions(
+                        List.of("c1", "c2"),
+                        4
+                );
+
+        assertEquals(List.of(0, 2), assignment.get("c1"));
+        assertEquals(List.of(1, 3), assignment.get("c2"));
     }
 }
 ```
 
 ---
 
-# Part 19 — Load Test Ideas
+# Part 31 — Performance Tuning Playbook
 
-## Produce throughput
+## If producer latency is high
+
+Check:
 
 ```text
-Send 1 million messages
-Measure records/sec
-Measure file size
-Measure CPU usage
+batch size too small
+disk flush too frequent
+queue full
+GC pause
+hot partition
 ```
 
-## Consume throughput
+## If consumer lag is growing
+
+Check:
 
 ```text
-Poll in batches of 1
-Poll in batches of 100
-Poll in batches of 1000
-Compare throughput
+consumer too slow
+partition count too low
+processing latency high
+rebalance happening
+GC pause
 ```
 
-Expected:
+## If disk usage grows
+
+Check:
 
 ```text
-larger batches improve throughput
-too-large batches may increase latency
+retention not running
+segment cleanup broken
+consumers need old data
 ```
 
-## JVM bottlenecks to observe
+## If GC pauses are high
+
+Check:
 
 ```text
-allocation rate from Record objects
-GC pressure from many String allocations
-synchronized append bottleneck
-disk write throughput
-file flush behavior
+too many objects
+too large heap
+too many retained records
+unbounded queues
+string-heavy record format
 ```
 
----
+## If one partition is hot
 
-# Part 20 — Failure Handling
-
-Failures to think about:
-
-| Failure | MiniKafka behavior |
-|---|---|
-| broker crash before flush | possible data loss |
-| disk full | append fails |
-| corrupted log | rebuild index may fail |
-| slow consumer | consumer lag grows |
-| huge key/value | memory pressure |
-| too many partitions | file handles and memory pressure |
-
-Production Kafka handles these with:
+Check:
 
 ```text
-checksums
-segments
-replication
-fsync policy
-retries
-idempotent producer
-controller metadata
-leader election
+bad key distribution
+celebrity key
+small partition count
 ```
 
 ---
 
-# Part 21 — Scaling Discussion
+# Part 32 — Failure Handling
 
-Single partition:
-
-```text
-one ordered log
-limited write parallelism
-```
-
-Multiple partitions:
+Failures to simulate:
 
 ```text
-parallel writes
-parallel consumers
-ordering only per partition
+broker crash
+producer retry
+consumer crash before commit
+consumer crash after commit
+follower lag
+leader crash
+disk full
+corrupt log segment
 ```
 
-Scaling reads:
+Expected behaviors:
 
 ```text
-add consumers in same group
-up to number of partitions
+consumer resumes from committed offset
+producer retries idempotently
+replica catches up
+leader re-elected from ISR
+corrupt segment detected
 ```
 
-Scaling writes:
+---
+
+# Part 33 — Scaling Discussion
+
+## Scale writes
 
 ```text
 increase partitions
-spread keys
-batch producer records
+batch producer writes
+compress messages
+use faster disks
 ```
 
-Scaling storage:
+## Scale reads
 
 ```text
-segment files
-retention cleanup
+consumer groups
+more consumers
+more partitions
+```
+
+## Scale storage
+
+```text
+retention
+tiered storage
 compression
-replication
+segment cleanup
+```
+
+## Scale reliability
+
+```text
+replication factor
+acks=all
+min.insync.replicas
+rack awareness
 ```
 
 ---
 
-# Part 22 — Interview Explanation
+# Part 34 — Interview Explanation
 
-## How does Kafka work internally?
-
-Answer:
+## What is Kafka?
 
 ```text
-Kafka stores messages in append-only partition logs.
-A topic is split into partitions.
-Each partition is an ordered log where every record gets a monotonically increasing offset.
-Producers write to partitions, usually selected by key hash.
-Consumers pull records from a given offset and maintain their own progress using committed offsets.
-Messages are not deleted after consumption; they are deleted by retention.
-Kafka is fast because it writes sequentially to disk, uses batching, OS page cache, and partition-level parallelism.
-Replication provides durability and availability using leader-follower replicas.
+Kafka is a distributed append-only log system.
+Producers write records to topic partitions.
+Consumers read records using offsets.
+Partitions provide parallelism.
+Replication provides fault tolerance.
+Consumer groups provide scalable consumption.
 ```
 
-## Why partition?
+## Why is Kafka fast?
 
 ```text
-Partition gives scalability and parallelism.
-It is also the unit of ordering.
-Kafka guarantees order only inside one partition.
+Sequential disk writes
+Batching
+OS page cache
+Zero-copy
+Append-only log
+Efficient partitioning
 ```
 
-## Why offset?
+## Why offsets?
 
 ```text
-Offset allows replay, resume, and independent consumer progress.
+Offsets allow consumers to track progress, replay messages, and recover after crash.
 ```
 
-## Why append-only log?
+## Why partitions?
 
 ```text
-Sequential writes are fast and simple.
-They avoid random disk updates.
-They make replay and audit easy.
+A single log cannot scale enough.
+Partitions split the log for parallel reads and writes.
 ```
 
-## Why consumer stores offset?
+## Why consumer groups?
 
 ```text
-Broker can keep data independent of consumers.
-Multiple consumer groups can read same data at different speeds.
+They allow multiple consumers to share partitions and process messages in parallel.
 ```
 
----
-
-# Part 23 — What This Teaches For Distributed Systems
-
-| MiniKafka concept | Distributed system lesson |
-|---|---|
-| append-only log | durability and replay |
-| partition | horizontal scale |
-| offset | progress tracking |
-| batching | throughput optimization |
-| retention | finite storage |
-| consumer group | parallel processing |
-| replication | high availability |
-| pull model | backpressure |
-| metrics | observability |
-| segment/index | storage engine design |
-
-This helps you understand:
+## Why ISR?
 
 ```text
-event-driven architecture
-stream processing
-audit logging
-CDC
-log aggregation
-message durability
-async microservices
-consumer lag
-backpressure
+ISR ensures only sufficiently caught-up replicas are considered safe for durability and leader election.
 ```
 
 ---
 
-# Part 24 — Next Advanced Extensions
-
-Add later:
-
-```text
-1. Segment files: log-000000.data, log-001000.data
-2. Sparse offset index
-3. CRC checksum per record
-4. Producer batching API
-5. Compression
-6. Async flush thread
-7. TCP client library
-8. Netty broker
-9. Replication follower thread
-10. Leader election simulation
-11. Consumer group rebalancing
-12. Dead letter topic
-13. Idempotent producer
-14. Transaction-like writes
-15. Prometheus metrics endpoint
-16. Docker Compose multi-broker demo
-17. k6 or custom load generator
-18. JFR profiling
-19. mmap/FileChannel implementation
-20. Zero-copy sendfile experiment
-```
-
----
-
-# Final Mental Model
-
-Kafka is not magic.
-
-At its core:
-
-```text
-Kafka = partitioned durable append-only logs + consumer offsets + replication + retention
-```
+# Part 35 — What This Teaches For Distributed Systems
 
 MiniKafka teaches:
 
 ```text
-how messages are stored
-how offsets work
-why replay is possible
-why partitions scale
-why ordering is limited
-why batching matters
-why slow consumers do not delete data
-why replication is needed
-why consumer lag happens
+storage engines
+append-only logs
+WAL design
+partitioning
+replication
+leader/follower
+backpressure
+batching
+consumer coordination
+offset tracking
+observability
+failure recovery
+```
+
+Systems that become easier after MiniKafka:
+
+```text
+Kafka
+Pulsar
+Redpanda
+RabbitMQ
+Redis Streams
+database WAL
+event sourcing systems
+log aggregation systems
+stream processing platforms
+```
+
+Final mental model:
+
+```text
+Kafka = distributed append-only log
+
+append-only log gives speed
+partitioning gives scale
+replication gives safety
+offsets give replay
+consumer groups give parallelism
+batching gives throughput
+page cache and zero-copy give performance
 ```
