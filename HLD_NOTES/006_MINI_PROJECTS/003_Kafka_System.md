@@ -2135,3 +2135,75 @@ consumer groups give parallelism
 batching gives throughput
 page cache and zero-copy give performance
 ```
+
+## How To Test Phase 1
+
+### Manual Driver
+
+Create:
+
+```java
+package com.minikafka;
+
+import com.minikafka.common.MessageRecord;
+import com.minikafka.storage.LogSegment;
+
+public class Phase1AppendOnlyLogTestDriver {
+    public static void main(String[] args) throws Exception {
+        LogSegment segment = new LogSegment("data/phase1/orders-0.log");
+
+        long o1 = segment.append("order-1", "created");
+        long o2 = segment.append("order-2", "paid");
+
+        System.out.println("offset1=" + o1);
+        System.out.println("offset2=" + o2);
+
+        for (MessageRecord record : segment.readAll()) {
+            System.out.println(record);
+        }
+    }
+}
+```
+
+### Run
+
+```bash
+mvn clean compile
+java -cp target/classes com.minikafka.Phase1AppendOnlyLogTestDriver
+```
+
+### Expected Output
+
+```text
+offset1=0
+offset2=1
+MessageRecord[offset=0, ... key=order-1, value=created]
+MessageRecord[offset=1, ... key=order-2, value=paid]
+```
+
+### What To Verify
+
+```text
+1. data/phase1/orders-0.log is created.
+2. Records are appended, not overwritten.
+3. Offset increases monotonically.
+4. Restarting the driver continues from next offset.
+```
+
+### JUnit Test
+
+```java
+@Test
+void phase1ShouldAppendAndReadRecords() throws Exception {
+    LogSegment segment = new LogSegment("data/test/phase1.log");
+
+    long offset = segment.append("k1", "v1");
+
+    var records = segment.readAll();
+
+    assertTrue(offset >= 0);
+    assertFalse(records.isEmpty());
+    assertEquals("k1", records.get(records.size() - 1).key());
+    assertEquals("v1", records.get(records.size() - 1).value());
+}
+```
