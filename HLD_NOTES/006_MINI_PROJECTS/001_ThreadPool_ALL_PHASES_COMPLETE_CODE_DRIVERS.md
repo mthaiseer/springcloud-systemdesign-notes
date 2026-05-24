@@ -919,36 +919,6 @@ public class DemoPhase1 {
 }
 ```
 
-## Phase 1 Result
-
-Run:
-
-```bash
-mvn clean compile
-java -cp target/classes com.mini.threadpool.DemoPhase1
-```
-
-Expected result:
-
-```text
-mini-worker-0 executing task 1
-mini-worker-1 executing task 2
-mini-worker-2 executing task 3
-mini-worker-0 executing task 4
-...
-```
-
-Exact order is not guaranteed because multiple workers run concurrently.
-
-What this proves:
-
-```text
-1. Workers are created once.
-2. Tasks are submitted into queue.
-3. Workers reuse themselves to execute multiple tasks.
-4. Basic thread pool works.
-```
-
 ## Phase 1 dry run
 
 ```text
@@ -2701,28 +2671,34 @@ After completing this version, improve it with:
 10. README diagrams
 ```
 
-## Phase 2 Complete Java Code
+## Phase 2 Complete Incremental Code
 
-### MiniThreadPool.java
+At this phase, do NOT jump to the final version. Build a separate runnable version:
+
+```text
+com.mini.threadpool.phase2.MiniThreadPoolPhase2
+com.mini.threadpool.phase2.DemoPhase2
+```
+
+### MiniThreadPoolPhase2.java
 
 ```java
-package com.mini.threadpool;
+package com.mini.threadpool.phase2;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-public class MiniThreadPool {
+public class MiniThreadPoolPhase2 {
     private final BlockingQueue<Runnable> taskQueue;
     private final List<Thread> workers = new ArrayList<>();
     private volatile boolean running = true;
 
-    public MiniThreadPool(int numberOfThreads, int queueCapacity) {
+    public MiniThreadPoolPhase2(int numberOfThreads, int queueCapacity) {
         if (numberOfThreads <= 0) {
             throw new IllegalArgumentException("numberOfThreads must be positive");
         }
-
         if (queueCapacity <= 0) {
             throw new IllegalArgumentException("queueCapacity must be positive");
         }
@@ -2743,7 +2719,7 @@ public class MiniThreadPool {
                         System.err.println("Task failed: " + e.getMessage());
                     }
                 }
-            }, "mini-worker-" + i);
+            }, "phase2-worker-" + i);
 
             workers.add(worker);
             worker.start();
@@ -2754,7 +2730,6 @@ public class MiniThreadPool {
         if (!running) {
             throw new IllegalStateException("ThreadPool is shutting down");
         }
-
         if (task == null) {
             throw new IllegalArgumentException("task cannot be null");
         }
@@ -2766,6 +2741,10 @@ public class MiniThreadPool {
         }
     }
 
+    public int queueSize() {
+        return taskQueue.size();
+    }
+
     public void shutdown() {
         running = false;
 
@@ -2773,17 +2752,23 @@ public class MiniThreadPool {
             worker.interrupt();
         }
     }
+
+    public void awaitTermination() throws InterruptedException {
+        for (Thread worker : workers) {
+            worker.join();
+        }
+    }
 }
 ```
 
-### DemoPhase2BoundedQueue.java
+### DemoPhase2.java
 
 ```java
-package com.mini.threadpool;
+package com.mini.threadpool.phase2;
 
-public class DemoPhase2BoundedQueue {
+public class DemoPhase2 {
     public static void main(String[] args) throws InterruptedException {
-        MiniThreadPool pool = new MiniThreadPool(2, 3);
+        MiniThreadPoolPhase2 pool = new MiniThreadPoolPhase2(2, 3);
 
         for (int i = 1; i <= 10; i++) {
             int taskId = i;
@@ -2791,19 +2776,22 @@ public class DemoPhase2BoundedQueue {
             try {
                 pool.submit(() -> {
                     System.out.println(Thread.currentThread().getName()
-                            + " processing slow task " + taskId);
+                            + " processing task " + taskId);
                     sleep(1000);
                 });
 
-                System.out.println("submitted task " + taskId);
+                System.out.println("submitted task " + taskId
+                        + ", queueSize=" + pool.queueSize());
 
             } catch (IllegalStateException e) {
-                System.out.println("rejected task " + taskId + " because queue is full");
+                System.out.println("rejected task " + taskId
+                        + " because queue is full");
             }
         }
 
         Thread.sleep(4000);
         pool.shutdown();
+        pool.awaitTermination();
     }
 
     private static void sleep(long millis) {
@@ -2816,35 +2804,31 @@ public class DemoPhase2BoundedQueue {
 }
 ```
 
-### Run Command
+### Run Phase 2
 
 ```bash
 mvn clean compile
-java -cp target/classes com.mini.threadpool.DemoPhase2BoundedQueue
+java -cp target/classes com.mini.threadpool.phase2.DemoPhase2
 ```
 
 ### Expected Result
 
 ```text
-submitted task 1
-submitted task 2
-submitted task 3
-submitted task 4
-submitted task 5
+submitted task 1, queueSize=0
+submitted task 2, queueSize=0
+submitted task 3, queueSize=1
+submitted task 4, queueSize=2
+submitted task 5, queueSize=3
 rejected task 6 because queue is full
-rejected task 7 because queue is full
 ...
-mini-worker-0 processing slow task 1
-mini-worker-1 processing slow task 2
+phase2-worker-0 processing task 1
+phase2-worker-1 processing task 2
 ```
 
-Exact order may differ because threads run concurrently.
-
-### What This Result Proves
+### What You Learned
 
 ```text
-1. Only 2 tasks can run immediately.
-2. Only 3 tasks can wait in queue.
-3. Extra tasks are rejected.
-4. Bounded queue protects memory.
+Bounded queue protects memory.
+If producer is faster than workers, queue fills.
+When queue is full, system must reject or slow down producer.
 ```
