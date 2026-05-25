@@ -11,9 +11,7 @@ Topic ordersTopic = new Topic("orders", 3);
 ordersTopic.append("customer-1", "order-created");
 ```
 
-But real Kafka clients do not directly manage topic objects.
-
-They talk to a broker.
+But real Kafka clients talk to a broker.
 
 In this step, we introduce:
 
@@ -67,32 +65,6 @@ Partition
 LogSegment
 ```
 
-The broker becomes the central entry point.
-
----
-
-# Why Broker API Exists
-
-Kafka broker is responsible for:
-
-```text
-topic creation
-topic registry
-message publishing
-message fetching
-partition routing
-metadata lookup
-```
-
-In real Kafka:
-
-```text
-Producer -> Kafka Broker -> Topic -> Partition -> Log
-Consumer -> Kafka Broker -> Topic -> Partition -> Log
-```
-
-Our MiniKafka will follow the same architecture.
-
 ---
 
 # Architecture Mermaid Diagram
@@ -100,6 +72,7 @@ Our MiniKafka will follow the same architecture.
 ```mermaid
 flowchart TD
     A[Producer / Driver] --> B[Broker]
+    K[Consumer / Driver] --> B
 
     B --> C[Topic Registry]
     C --> D[Topic: orders]
@@ -111,8 +84,6 @@ flowchart TD
     E --> H[orders-0.log]
     F --> I[orders-1.log]
     G --> J[orders-2.log]
-
-    K[Consumer / Driver] --> B
 ```
 
 ---
@@ -138,7 +109,7 @@ sequenceDiagram
     Partition->>LogSegment: append(key, value)
     LogSegment->>File: write record
 
-    Client->>Broker: read("orders", partitionId)
+    Client->>Broker: readPartition("orders", partitionId)
     Broker->>Topic: readFromPartition(partitionId)
     Topic->>Partition: readAll()
     Partition->>LogSegment: readAll()
@@ -171,37 +142,9 @@ MiniKafka/
                         └── Step10Driver.java
 ```
 
-## Folder Mermaid Diagram
-
-```mermaid
-flowchart TD
-    A[MiniKafka] --> B[data]
-    B --> C[phase1]
-    C --> D[orders-0.log]
-    C --> E[orders-1.log]
-    C --> F[orders-2.log]
-
-    A --> G[src]
-    G --> H[main]
-    H --> I[java]
-    I --> J[com]
-    J --> K[minikafka]
-    K --> L[step10]
-
-    L --> M[MessageRecord.java]
-    L --> N[RecordSerializer.java]
-    L --> O[LogSegment.java]
-    L --> P[Partition.java]
-    L --> Q[Topic.java]
-    L --> R[Broker.java]
-    L --> S[Step10Driver.java]
-```
-
 ---
 
 # Broker Responsibilities
-
-The `Broker` class should handle:
 
 ```text
 [yes] create topic
@@ -264,11 +207,7 @@ package com.minikafka.step10;
 public class RecordSerializer {
 
     public static String serialize(MessageRecord record) {
-        return record.getOffset()
-                + "|"
-                + record.getKey()
-                + "|"
-                + record.getValue();
+        return record.getOffset() + "|" + record.getKey() + "|" + record.getValue();
     }
 
     public static MessageRecord deserialize(String line) {
@@ -312,64 +251,42 @@ public class LogSegment {
         }
     }
 
-    public long append(String key, String value)
-            throws IOException {
-
+    public long append(String key, String value) throws IOException {
         long offset = countLines();
 
-        MessageRecord record =
-                new MessageRecord(offset, key, value);
+        MessageRecord record = new MessageRecord(offset, key, value);
+        String line = RecordSerializer.serialize(record);
 
-        String line =
-                RecordSerializer.serialize(record);
-
-        Files.writeString(
-                logPath,
-                line + System.lineSeparator(),
-                StandardOpenOption.APPEND
-        );
+        Files.writeString(logPath, line + System.lineSeparator(), StandardOpenOption.APPEND);
 
         return offset;
     }
 
-    public List<MessageRecord> readAll()
-            throws IOException {
-
-        List<MessageRecord> result =
-                new ArrayList<>();
-
-        List<String> lines =
-                Files.readAllLines(logPath);
+    public List<MessageRecord> readAll() throws IOException {
+        List<MessageRecord> result = new ArrayList<>();
+        List<String> lines = Files.readAllLines(logPath);
 
         for (String line : lines) {
             if (line.isBlank()) {
                 continue;
             }
 
-            result.add(
-                    RecordSerializer.deserialize(line)
-            );
+            result.add(RecordSerializer.deserialize(line));
         }
 
         return result;
     }
 
-    public List<MessageRecord> readFromOffset(long startOffset)
-            throws IOException {
-
-        List<MessageRecord> result =
-                new ArrayList<>();
-
-        List<String> lines =
-                Files.readAllLines(logPath);
+    public List<MessageRecord> readFromOffset(long startOffset) throws IOException {
+        List<MessageRecord> result = new ArrayList<>();
+        List<String> lines = Files.readAllLines(logPath);
 
         for (String line : lines) {
             if (line.isBlank()) {
                 continue;
             }
 
-            MessageRecord record =
-                    RecordSerializer.deserialize(line);
+            MessageRecord record = RecordSerializer.deserialize(line);
 
             if (record.getOffset() >= startOffset) {
                 result.add(record);
@@ -379,15 +296,9 @@ public class LogSegment {
         return result;
     }
 
-    private long countLines()
-            throws IOException {
-
-        try (Stream<String> lines =
-                     Files.lines(logPath)) {
-
-            return lines
-                    .filter(line -> !line.isBlank())
-                    .count();
+    private long countLines() throws IOException {
+        try (Stream<String> lines = Files.lines(logPath)) {
+            return lines.filter(line -> !line.isBlank()).count();
         }
     }
 }
@@ -408,36 +319,22 @@ public class Partition {
     private final int partitionId;
     private final LogSegment segment;
 
-    public Partition(String topicName, int partitionId)
-            throws IOException {
-
+    public Partition(String topicName, int partitionId) throws IOException {
         this.partitionId = partitionId;
 
-        String filePath =
-                "data/phase1/"
-                        + topicName
-                        + "-"
-                        + partitionId
-                        + ".log";
-
+        String filePath = "data/phase1/" + topicName + "-" + partitionId + ".log";
         this.segment = new LogSegment(filePath);
     }
 
-    public long append(String key, String value)
-            throws IOException {
-
+    public long append(String key, String value) throws IOException {
         return segment.append(key, value);
     }
 
-    public List<MessageRecord> readAll()
-            throws IOException {
-
+    public List<MessageRecord> readAll() throws IOException {
         return segment.readAll();
     }
 
-    public List<MessageRecord> readFromOffset(long offset)
-            throws IOException {
-
+    public List<MessageRecord> readFromOffset(long offset) throws IOException {
         return segment.readFromOffset(offset);
     }
 
@@ -463,71 +360,39 @@ public class Topic {
     private final String name;
     private final List<Partition> partitions;
 
-    public Topic(String name, int partitionCount)
-            throws IOException {
-
+    public Topic(String name, int partitionCount) throws IOException {
         if (partitionCount <= 0) {
-            throw new IllegalArgumentException(
-                    "partitionCount must be > 0"
-            );
+            throw new IllegalArgumentException("partitionCount must be > 0");
         }
 
         this.name = name;
         this.partitions = new ArrayList<>();
 
-        for (int partitionId = 0;
-             partitionId < partitionCount;
-             partitionId++) {
-
-            partitions.add(
-                    new Partition(name, partitionId)
-            );
+        for (int partitionId = 0; partitionId < partitionCount; partitionId++) {
+            partitions.add(new Partition(name, partitionId));
         }
     }
 
-    public long append(String key, String value)
-            throws IOException {
-
+    public long append(String key, String value) throws IOException {
         int partitionId = calculatePartitionId(key);
 
         System.out.println(
-                "Topic '"
-                        + name
-                        + "' routed key='"
-                        + key
-                        + "' to partition "
-                        + partitionId
+                "Topic '" + name + "' routed key='" + key + "' to partition " + partitionId
         );
 
-        return appendToPartition(
-                partitionId,
-                key,
-                value
-        );
+        return appendToPartition(partitionId, key, value);
     }
 
-    public long appendToPartition(int partitionId,
-                                  String key,
-                                  String value)
-            throws IOException {
-
-        return getPartition(partitionId)
-                .append(key, value);
+    public long appendToPartition(int partitionId, String key, String value) throws IOException {
+        return getPartition(partitionId).append(key, value);
     }
 
-    public List<MessageRecord> readFromPartition(int partitionId)
-            throws IOException {
-
+    public List<MessageRecord> readFromPartition(int partitionId) throws IOException {
         return getPartition(partitionId).readAll();
     }
 
-    public List<MessageRecord> readFromPartitionOffset(
-            int partitionId,
-            long offset)
-            throws IOException {
-
-        return getPartition(partitionId)
-                .readFromOffset(offset);
+    public List<MessageRecord> readFromPartitionOffset(int partitionId, long offset) throws IOException {
+        return getPartition(partitionId).readFromOffset(offset);
     }
 
     private int calculatePartitionId(String key) {
@@ -536,13 +401,8 @@ public class Topic {
     }
 
     public Partition getPartition(int partitionId) {
-        if (partitionId < 0
-                || partitionId >= partitions.size()) {
-
-            throw new IllegalArgumentException(
-                    "Invalid partition id: "
-                            + partitionId
-            );
+        if (partitionId < 0 || partitionId >= partitions.size()) {
+            throw new IllegalArgumentException("Invalid partition id: " + partitionId);
         }
 
         return partitions.get(partitionId);
@@ -562,8 +422,6 @@ public class Topic {
 
 # Broker.java
 
-This is the new class in Step 10.
-
 ```java
 package com.minikafka.step10;
 
@@ -580,73 +438,43 @@ public class Broker {
         this.topics = new HashMap<>();
     }
 
-    public void createTopic(String topicName,
-                            int partitionCount)
-            throws IOException {
-
+    public void createTopic(String topicName, int partitionCount) throws IOException {
         if (topics.containsKey(topicName)) {
-            throw new IllegalArgumentException(
-                    "Topic already exists: "
-                            + topicName
-            );
+            throw new IllegalArgumentException("Topic already exists: " + topicName);
         }
 
-        Topic topic =
-                new Topic(topicName, partitionCount);
-
+        Topic topic = new Topic(topicName, partitionCount);
         topics.put(topicName, topic);
 
         System.out.println(
-                "Broker created topic: "
-                        + topicName
-                        + " with partitions: "
-                        + partitionCount
+                "Broker created topic: " + topicName + " with partitions: " + partitionCount
         );
     }
 
-    public long send(String topicName,
-                     String key,
-                     String value)
-            throws IOException {
-
+    public long send(String topicName, String key, String value) throws IOException {
         Topic topic = getTopic(topicName);
-
         return topic.append(key, value);
     }
 
-    public List<MessageRecord> readPartition(
-            String topicName,
-            int partitionId)
-            throws IOException {
-
+    public List<MessageRecord> readPartition(String topicName, int partitionId) throws IOException {
         Topic topic = getTopic(topicName);
-
         return topic.readFromPartition(partitionId);
     }
 
     public List<MessageRecord> readPartitionFromOffset(
             String topicName,
             int partitionId,
-            long offset)
-            throws IOException {
-
+            long offset
+    ) throws IOException {
         Topic topic = getTopic(topicName);
-
-        return topic.readFromPartitionOffset(
-                partitionId,
-                offset
-        );
+        return topic.readFromPartitionOffset(partitionId, offset);
     }
 
     public Topic getTopic(String topicName) {
-
         Topic topic = topics.get(topicName);
 
         if (topic == null) {
-            throw new IllegalArgumentException(
-                    "Topic not found: "
-                            + topicName
-            );
+            throw new IllegalArgumentException("Topic not found: " + topicName);
         }
 
         return topic;
@@ -673,135 +501,46 @@ import java.util.List;
 
 public class Step10Driver {
 
-    public static void main(String[] args)
-            throws Exception {
-
+    public static void main(String[] args) throws Exception {
         Broker broker = new Broker();
 
         broker.createTopic("orders", 3);
 
         System.out.println();
 
-        broker.send(
-                "orders",
-                "customer-1",
-                "order-1-created"
-        );
-
-        broker.send(
-                "orders",
-                "customer-2",
-                "order-2-created"
-        );
-
-        broker.send(
-                "orders",
-                "customer-1",
-                "order-1-paid"
-        );
-
-        broker.send(
-                "orders",
-                "customer-3",
-                "order-3-created"
-        );
-
-        broker.send(
-                "orders",
-                "customer-2",
-                "order-2-shipped"
-        );
+        broker.send("orders", "customer-1", "order-1-created");
+        broker.send("orders", "customer-2", "order-2-created");
+        broker.send("orders", "customer-1", "order-1-paid");
+        broker.send("orders", "customer-3", "order-3-created");
+        broker.send("orders", "customer-2", "order-2-shipped");
 
         printPartition(broker, "orders", 0);
         printPartition(broker, "orders", 1);
         printPartition(broker, "orders", 2);
 
         System.out.println();
-        System.out.println(
-                "---- READ PARTITION 0 FROM OFFSET 1 ----"
-        );
+        System.out.println("---- READ PARTITION 0 FROM OFFSET 1 ----");
 
-        List<MessageRecord> records =
-                broker.readPartitionFromOffset(
-                        "orders",
-                        0,
-                        1
-                );
+        List<MessageRecord> records = broker.readPartitionFromOffset("orders", 0, 1);
 
         for (MessageRecord record : records) {
             System.out.println(record);
         }
     }
 
-    private static void printPartition(Broker broker,
-                                       String topicName,
-                                       int partitionId)
+    private static void printPartition(Broker broker, String topicName, int partitionId)
             throws Exception {
 
         System.out.println();
-        System.out.println(
-                "---- "
-                        + topicName
-                        + " PARTITION "
-                        + partitionId
-                        + " ----"
-        );
+        System.out.println("---- " + topicName + " PARTITION " + partitionId + " ----");
 
-        List<MessageRecord> records =
-                broker.readPartition(
-                        topicName,
-                        partitionId
-                );
+        List<MessageRecord> records = broker.readPartition(topicName, partitionId);
 
         for (MessageRecord record : records) {
             System.out.println(record);
         }
     }
 }
-```
-
----
-
-# What Happens Internally?
-
-When we call:
-
-```java
-broker.createTopic("orders", 3);
-```
-
-Broker creates:
-
-```text
-Topic: orders
-   |
-   +--> Partition 0
-   +--> Partition 1
-   +--> Partition 2
-```
-
-When we call:
-
-```java
-broker.send("orders", "customer-1", "order-1-created");
-```
-
-Flow:
-
-```text
-Broker finds topic "orders"
-        |
-        v
-Topic hashes key
-        |
-        v
-Topic selects partition
-        |
-        v
-Partition appends record
-        |
-        v
-LogSegment writes to file
 ```
 
 ---
@@ -815,14 +554,6 @@ flowchart TD
     B --> D["payments -> Topic payments"]
     B --> E["notifications -> Topic notifications"]
 ```
-
-In this step, we create only:
-
-```text
-orders
-```
-
-But the broker can now manage many topics.
 
 ---
 
@@ -840,8 +571,6 @@ java -cp out com.minikafka.step10.Step10Driver
 
 Exact partition numbers can vary because of Java hash values.
 
-Expected pattern:
-
 ```text
 Broker created topic: orders with partitions: 3
 
@@ -857,26 +586,6 @@ Important:
 ```text
 same key routes to same partition
 broker hides topic internals from client
-```
-
----
-
-# Why This Step Is Important
-
-We now have a real Kafka-like layer:
-
-```text
-Client -> Broker -> Topic -> Partition -> LogSegment -> File
-```
-
-This allows us to build:
-
-```text
-Producer API
-Consumer API
-Broker networking
-Topic metadata
-Cluster metadata
 ```
 
 ---
@@ -946,18 +655,3 @@ Next we build:
 ```text
 011_Producer_API
 ```
-
-Currently the driver calls:
-
-```java
-broker.send(...)
-```
-
-Next we add:
-
-```java
-Producer producer = new Producer(broker);
-producer.send("orders", key, value);
-```
-
-This gives us a cleaner Kafka-like producer abstraction.
