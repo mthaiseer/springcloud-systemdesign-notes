@@ -599,10 +599,8 @@ public class SlidingWindowLogRateLimiter {
                 currentTimeMillis - windowSizeMillis;
 
         // Sliding window cleanup.
-        while (
-                !requestQueue.isEmpty() &&
-                requestQueue.peekFirst() <= windowStartTime
-        ) {
+        while (!requestQueue.isEmpty() &&
+               requestQueue.peekFirst() <= windowStartTime) {
 
             // Remove oldest timestamp.
             requestQueue.removeFirst();
@@ -666,8 +664,8 @@ public class Step2Driver {
             System.out.println(
                     "request=" + (i + 1) +
                     ", time=" + timestamp +
-                    ", result=" + result
-            );
+                    ", result=" + result);
+
         }
 
         System.out.println();
@@ -751,10 +749,8 @@ public class SlidingWindowCP {
         for (long currentTime : requests) {
 
             // Remove expired timestamps.
-            while (
-                    !window.isEmpty() &&
-                    window.peekFirst() <= currentTime - windowSize
-            ) {
+            while (!window.isEmpty() &&
+                   window.peekFirst() <= currentTime - windowSize) {
 
                 window.removeFirst();
             }
