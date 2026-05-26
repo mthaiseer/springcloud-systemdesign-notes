@@ -24,6 +24,39 @@ ConsumerGroup
 
 Now multiple consumers can belong to the same group and share the same committed offsets.
 
+
+---
+
+# Delta From Step 13
+
+```text
+Step 13:
+OffsetKey = topic + partition
+
+Step 14:
+GroupOffsetKey = groupId + topic + partition
+```
+
+New classes added:
+
+```text
+GroupOffsetKey
+GroupOffsetStore
+ConsumerGroup
+```
+
+Modified class:
+
+```text
+Consumer now belongs to ConsumerGroup
+```
+
+Main learning:
+
+```text
+Offsets belong to a consumer group, not to an individual consumer.
+```
+
 ---
 
 # Big Picture
@@ -532,6 +565,10 @@ package com.minikafka.step14;
 
 import java.util.Objects;
 
+// DELTA from Step 13:
+// Step 13 used OffsetKey = topicName + partitionId.
+// Step 14 adds groupId because Kafka offsets belong to a consumer group.
+// New key = groupId + topicName + partitionId.
 public class GroupOffsetKey {
 
     private final String groupId;
@@ -556,6 +593,9 @@ public class GroupOffsetKey {
 
         GroupOffsetKey that = (GroupOffsetKey) other;
 
+        // DELTA from Step 13:
+        // Equality now includes groupId.
+        // Two offsets are same only if group + topic + partition are same.
         return partitionId == that.partitionId
                 && Objects.equals(groupId, that.groupId)
                 && Objects.equals(topicName, that.topicName);
@@ -563,6 +603,9 @@ public class GroupOffsetKey {
 
     @Override
     public int hashCode() {
+        // DELTA from Step 13:
+        // Hash now includes groupId also.
+        // This allows different groups to keep independent offsets.
         return Objects.hash(groupId, topicName, partitionId);
     }
 
@@ -583,8 +626,15 @@ package com.minikafka.step14;
 import java.util.HashMap;
 import java.util.Map;
 
+// DELTA from Step 13:
+// Step 13 had OffsetStore for one consumer-style offset tracking.
+// Step 14 upgrades it to GroupOffsetStore.
+// Now offsets are stored per consumer group.
 public class GroupOffsetStore {
 
+    // DELTA from Step 13:
+    // Old key: OffsetKey(topicName, partitionId)
+    // New key: GroupOffsetKey(groupId, topicName, partitionId)
     private final Map<GroupOffsetKey, Long> committedOffsets;
 
     public GroupOffsetStore() {
@@ -594,12 +644,17 @@ public class GroupOffsetStore {
     public long getCommittedOffset(String groupId, String topicName, int partitionId) {
         GroupOffsetKey key = new GroupOffsetKey(groupId, topicName, partitionId);
 
+        // Same behavior as Step 13:
+        // If group has never consumed this partition, start from offset 0.
         return committedOffsets.getOrDefault(key, 0L);
     }
 
     public void commit(String groupId, String topicName, int partitionId, long nextOffset) {
         GroupOffsetKey key = new GroupOffsetKey(groupId, topicName, partitionId);
 
+        // DELTA from Step 13:
+        // Commit is now group-specific.
+        // Another group can commit a different offset for the same topic partition.
         committedOffsets.put(key, nextOffset);
 
         System.out.println("Committed offset: " + key + " -> " + nextOffset);
@@ -614,9 +669,16 @@ public class GroupOffsetStore {
 ```java
 package com.minikafka.step14;
 
+// DELTA from Step 13:
+// New abstraction added.
+// Step 13 had Consumer + OffsetStore directly.
+// Step 14 introduces ConsumerGroup so multiple consumers can share group offsets.
 public class ConsumerGroup {
 
     private final String groupId;
+
+    // Shared offset store for this consumer group.
+    // All consumers in the same group use this store.
     private final GroupOffsetStore offsetStore;
 
     public ConsumerGroup(String groupId, GroupOffsetStore offsetStore) {
@@ -646,8 +708,16 @@ import java.util.List;
 
 public class Consumer {
 
+    // DELTA from Step 13:
+    // New field added so we can identify which consumer is processing.
+    // This helps when multiple consumers are in the same group.
     private final String consumerId;
+
     private final Broker broker;
+
+    // DELTA from Step 13:
+    // Instead of directly owning OffsetStore,
+    // consumer now belongs to a ConsumerGroup.
     private final ConsumerGroup consumerGroup;
 
     public Consumer(String consumerId, Broker broker, ConsumerGroup consumerGroup) {
@@ -657,6 +727,8 @@ public class Consumer {
     }
 
     public List<MessageRecord> poll(String topicName, int partitionId) throws IOException {
+        // DELTA from Step 13:
+        // Offset lookup now includes groupId.
         String groupId = consumerGroup.getGroupId();
 
         long committedOffset =
@@ -670,12 +742,16 @@ public class Consumer {
                         ", committedOffset=" + committedOffset
         );
 
+        // Same as Step 13:
+        // Read from the committed offset.
         return broker.readPartitionFromOffset(topicName, partitionId, committedOffset);
     }
 
     public void commit(String topicName, int partitionId, long nextOffset) {
         String groupId = consumerGroup.getGroupId();
 
+        // DELTA from Step 13:
+        // Commit offset for this group, not just topic + partition.
         consumerGroup.getOffsetStore()
                 .commit(groupId, topicName, partitionId, nextOffset);
     }
@@ -703,9 +779,17 @@ public class Step14Driver {
 
         Producer producer = new Producer(broker);
 
+        // DELTA from Step 13:
+        // Offset store is now group-aware.
         GroupOffsetStore offsetStore = new GroupOffsetStore();
+
+        // DELTA from Step 13:
+        // Create a consumer group.
+        // All consumers inside this group share committed offsets.
         ConsumerGroup orderServiceGroup = new ConsumerGroup("order-service", offsetStore);
 
+        // DELTA from Step 13:
+        // We now create two consumers in the same group.
         Consumer consumerA = new Consumer("consumer-A", broker, orderServiceGroup);
         Consumer consumerB = new Consumer("consumer-B", broker, orderServiceGroup);
 
@@ -720,6 +804,8 @@ public class Step14Driver {
         System.out.println();
         System.out.println("---- CONSUMER GROUP POLL ----");
 
+        // Manual assignment for now.
+        // Step 15 will make partition assignment automatic.
         pollProcessCommit(consumerA, "orders", 0);
         pollProcessCommit(consumerB, "orders", 1);
         pollProcessCommit(consumerA, "orders", 2);
@@ -727,6 +813,8 @@ public class Step14Driver {
         System.out.println();
         System.out.println("---- SECOND POLL AFTER COMMIT ----");
 
+        // Same group polls again.
+        // It should resume from committed offsets.
         pollProcessCommit(consumerA, "orders", 0);
         pollProcessCommit(consumerB, "orders", 1);
         pollProcessCommit(consumerA, "orders", 2);
@@ -741,6 +829,7 @@ public class Step14Driver {
         List<MessageRecord> records = consumer.poll(topicName, partitionId);
         long nextOffset = processRecords(consumer, records);
 
+        // Commit next offset after processing.
         consumer.commit(topicName, partitionId, nextOffset);
     }
 
@@ -749,6 +838,9 @@ public class Step14Driver {
 
         for (MessageRecord record : records) {
             System.out.println(consumer.getConsumerId() + " processing: " + record);
+
+            // Kafka convention:
+            // commit the NEXT offset to read.
             nextOffset = record.getOffset() + 1;
         }
 
