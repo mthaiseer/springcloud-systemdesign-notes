@@ -549,9 +549,12 @@ public class Step1Driver {
         // Fixed window size = 60 seconds.
         long windowSizeMillis = 60_000;
 
-        // Create fixed window rate limiter.
+        // Create fixed window rate limiter instance.
         FixedWindowRateLimiter rateLimiter =
-                new FixedWindowRateLimiter(limit, windowSizeMillis);
+                new FixedWindowRateLimiter(
+                        limit,
+                        windowSizeMillis
+                );
 
         // Test user id.
         String userId = "user-1";
@@ -559,14 +562,19 @@ public class Step1Driver {
         // Fixed timestamp so all requests stay in same window.
         long fixedTime = 0;
 
-        System.out.println("---- SAME WINDOW REQUESTS ----");
+        System.out.println(
+                "---- SAME WINDOW REQUESTS ----"
+        );
 
         // Send 7 requests in same window.
         for (int i = 1; i <= 7; i++) {
 
             // Process request through rate limiter.
             RateLimitResult result =
-                    rateLimiter.allowRequest(userId, fixedTime);
+                    rateLimiter.allowRequest(
+                            userId,
+                            fixedTime
+                    );
 
             System.out.println(
                     "request=" + i +
@@ -575,14 +583,20 @@ public class Step1Driver {
         }
 
         System.out.println();
-        System.out.println("---- NEXT WINDOW REQUEST ----");
+
+        System.out.println(
+                "---- NEXT WINDOW REQUEST ----"
+        );
 
         // Move to next fixed window.
         long nextWindowTime = 60_000;
 
         // Request should now be allowed again.
         RateLimitResult nextWindowResult =
-                rateLimiter.allowRequest(userId, nextWindowTime);
+                rateLimiter.allowRequest(
+                        userId,
+                        nextWindowTime
+                );
 
         System.out.println(
                 "request in next window, result=" +
@@ -590,10 +604,15 @@ public class Step1Driver {
         );
 
         System.out.println();
-        System.out.println("---- COUNTERS SNAPSHOT ----");
+
+        System.out.println(
+                "---- COUNTERS SNAPSHOT ----"
+        );
 
         // Print internal HashMap state.
-        System.out.println(rateLimiter.getCountersSnapshot());
+        System.out.println(
+                rateLimiter.getCountersSnapshot()
+        );
     }
 }
 ```
@@ -1023,3 +1042,80 @@ userId -> queue of timestamps
 ```
 
 This removes the fixed-window boundary burst problem.
+
+
+---
+
+# Compact Kafka-Style Formatting Example
+
+```java
+public class FixedWindowRateLimiter {
+
+    // Maximum allowed requests per window.
+    private final int limit;
+
+    // Fixed window duration in milliseconds.
+    private final long windowSizeMillis;
+
+    // key:
+    // userId:windowId
+    //
+    // value:
+    // request count
+    private final Map<String, Integer> counters;
+
+    public FixedWindowRateLimiter(int limit, long windowSizeMillis) {
+
+        if (limit <= 0) {
+            throw new IllegalArgumentException("limit must be > 0");
+        }
+
+        if (windowSizeMillis <= 0) {
+            throw new IllegalArgumentException(
+                    "windowSizeMillis must be > 0"
+            );
+        }
+
+        this.limit = limit;
+        this.windowSizeMillis = windowSizeMillis;
+
+        this.counters = new HashMap<>();
+    }
+
+    public RateLimitResult allowRequest(
+            String userId,
+            long currentTimeMillis
+    ) {
+
+        // Calculate current time bucket.
+        long windowId =
+                getWindowId(currentTimeMillis);
+
+        // Build composite counter key.
+        String counterKey =
+                buildCounterKey(userId, windowId);
+
+        // Get current request count.
+        int currentCount =
+                counters.getOrDefault(counterKey, 0);
+
+        // Increment request count.
+        int newCount = currentCount + 1;
+
+        counters.put(counterKey, newCount);
+
+        // Decide allow/reject.
+        boolean allowed = newCount <= limit;
+
+        int remaining =
+                Math.max(0, limit - newCount);
+
+        return new RateLimitResult(
+                allowed,
+                limit,
+                newCount,
+                remaining
+        );
+    }
+}
+```
