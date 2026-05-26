@@ -391,9 +391,16 @@ package com.miniratelimiter.step1;
 
 public class RateLimitResult {
 
+    // True if request is allowed.
     private final boolean allowed;
+
+    // Maximum allowed requests per window.
     private final int limit;
+
+    // Current request count in this window.
     private final int currentCount;
+
+    // Remaining allowed requests in current window.
     private final int remaining;
 
     public RateLimitResult(
@@ -454,10 +461,9 @@ public class FixedWindowRateLimiter {
     // Fixed window duration in milliseconds.
     private final long windowSizeMillis;
 
-    // CP/DSA concept:
     // HashMap frequency counter.
     //
-    // key format:
+    // key:
     // userId:windowId
     //
     // value:
@@ -465,40 +471,64 @@ public class FixedWindowRateLimiter {
     private final Map<String, Integer> counters;
 
     public FixedWindowRateLimiter(int limit, long windowSizeMillis) {
+
+        // Validate limit.
         if (limit <= 0) {
             throw new IllegalArgumentException("limit must be > 0");
         }
 
+        // Validate window size.
         if (windowSizeMillis <= 0) {
             throw new IllegalArgumentException("windowSizeMillis must be > 0");
         }
 
+        // Initialize configuration.
         this.limit = limit;
         this.windowSizeMillis = windowSizeMillis;
+
+        // Initialize counter store.
         this.counters = new HashMap<>();
     }
 
     public RateLimitResult allowRequest(String userId) {
+
+        // Get current system time.
         long currentTimeMillis = System.currentTimeMillis();
 
+        // Delegate to overloaded method.
         return allowRequest(userId, currentTimeMillis);
     }
 
-    public RateLimitResult allowRequest(String userId, long currentTimeMillis) {
+    public RateLimitResult allowRequest(
+            String userId,
+            long currentTimeMillis
+    ) {
+
+        // Calculate current fixed window id.
         long windowId = getWindowId(currentTimeMillis);
 
-        String counterKey = buildCounterKey(userId, windowId);
+        // Build composite counter key.
+        String counterKey =
+                buildCounterKey(userId, windowId);
 
-        int currentCount = counters.getOrDefault(counterKey, 0);
+        // Get existing request count.
+        int currentCount =
+                counters.getOrDefault(counterKey, 0);
 
+        // Increment request count.
         int newCount = currentCount + 1;
 
+        // Store updated request count.
         counters.put(counterKey, newCount);
 
+        // Decide whether request is allowed.
         boolean allowed = newCount <= limit;
 
-        int remaining = Math.max(0, limit - newCount);
+        // Calculate remaining allowed requests.
+        int remaining =
+                Math.max(0, limit - newCount);
 
+        // Return rate limit decision.
         return new RateLimitResult(
                 allowed,
                 limit,
@@ -508,25 +538,30 @@ public class FixedWindowRateLimiter {
     }
 
     private long getWindowId(long currentTimeMillis) {
+
         // CP/DSA concept:
         // Bucketization using integer division.
         //
         // Example:
-        // windowSizeMillis = 60000
         // currentTimeMillis = 125000
-        // windowId = 125000 / 60000 = 2
+        // windowSizeMillis = 60000
+        // windowId = 2
         return currentTimeMillis / windowSizeMillis;
     }
 
-    private String buildCounterKey(String userId, long windowId) {
-        // CP/DSA concept:
-        // Composite key.
-        //
-        // userId + windowId uniquely identifies one counter.
+    private String buildCounterKey(
+            String userId,
+            long windowId
+    ) {
+
+        // Build composite key:
+        // userId:windowId
         return userId + ":" + windowId;
     }
 
     public Map<String, Integer> getCountersSnapshot() {
+
+        // Return defensive copy.
         return new HashMap<>(counters);
     }
 }
@@ -549,12 +584,9 @@ public class Step1Driver {
         // Fixed window size = 60 seconds.
         long windowSizeMillis = 60_000;
 
-        // Create fixed window rate limiter instance.
+        // Create fixed window rate limiter.
         FixedWindowRateLimiter rateLimiter =
-                new FixedWindowRateLimiter(
-                        limit,
-                        windowSizeMillis
-                );
+                new FixedWindowRateLimiter(limit, windowSizeMillis);
 
         // Test user id.
         String userId = "user-1";
@@ -562,20 +594,16 @@ public class Step1Driver {
         // Fixed timestamp so all requests stay in same window.
         long fixedTime = 0;
 
-        System.out.println(
-                "---- SAME WINDOW REQUESTS ----"
-        );
+        System.out.println("---- SAME WINDOW REQUESTS ----");
 
         // Send 7 requests in same window.
         for (int i = 1; i <= 7; i++) {
 
             // Process request through rate limiter.
             RateLimitResult result =
-                    rateLimiter.allowRequest(
-                            userId,
-                            fixedTime
-                    );
+                    rateLimiter.allowRequest(userId, fixedTime);
 
+            // Print request result.
             System.out.println(
                     "request=" + i +
                     ", result=" + result
@@ -583,20 +611,14 @@ public class Step1Driver {
         }
 
         System.out.println();
-
-        System.out.println(
-                "---- NEXT WINDOW REQUEST ----"
-        );
+        System.out.println("---- NEXT WINDOW REQUEST ----");
 
         // Move to next fixed window.
         long nextWindowTime = 60_000;
 
         // Request should now be allowed again.
         RateLimitResult nextWindowResult =
-                rateLimiter.allowRequest(
-                        userId,
-                        nextWindowTime
-                );
+                rateLimiter.allowRequest(userId, nextWindowTime);
 
         System.out.println(
                 "request in next window, result=" +
@@ -604,15 +626,10 @@ public class Step1Driver {
         );
 
         System.out.println();
-
-        System.out.println(
-                "---- COUNTERS SNAPSHOT ----"
-        );
+        System.out.println("---- COUNTERS SNAPSHOT ----");
 
         // Print internal HashMap state.
-        System.out.println(
-                rateLimiter.getCountersSnapshot()
-        );
+        System.out.println(rateLimiter.getCountersSnapshot());
     }
 }
 ```
@@ -860,17 +877,30 @@ public class FixedWindowCounterCP {
                 new Request("user-2", 13_000)
         };
 
+        // Frequency counter:
+        // key   -> userId:bucket
+        // value -> request count
         Map<String, Integer> freq = new HashMap<>();
 
+        // Process all requests.
         for (Request request : requests) {
-            long bucket = request.timestampMillis / windowSizeMillis;
 
-            String key = request.userId + ":" + bucket;
+            // Calculate time bucket.
+            long bucket =
+                    request.timestampMillis / windowSizeMillis;
 
-            int count = freq.getOrDefault(key, 0) + 1;
+            // Build composite key.
+            String key =
+                    request.userId + ":" + bucket;
 
+            // Increment request count.
+            int count =
+                    freq.getOrDefault(key, 0) + 1;
+
+            // Store updated count.
             freq.put(key, count);
 
+            // Decide allow/reject.
             boolean allowed = count <= limit;
 
             System.out.println(
@@ -1042,80 +1072,3 @@ userId -> queue of timestamps
 ```
 
 This removes the fixed-window boundary burst problem.
-
-
----
-
-# Compact Kafka-Style Formatting Example
-
-```java
-public class FixedWindowRateLimiter {
-
-    // Maximum allowed requests per window.
-    private final int limit;
-
-    // Fixed window duration in milliseconds.
-    private final long windowSizeMillis;
-
-    // key:
-    // userId:windowId
-    //
-    // value:
-    // request count
-    private final Map<String, Integer> counters;
-
-    public FixedWindowRateLimiter(int limit, long windowSizeMillis) {
-
-        if (limit <= 0) {
-            throw new IllegalArgumentException("limit must be > 0");
-        }
-
-        if (windowSizeMillis <= 0) {
-            throw new IllegalArgumentException(
-                    "windowSizeMillis must be > 0"
-            );
-        }
-
-        this.limit = limit;
-        this.windowSizeMillis = windowSizeMillis;
-
-        this.counters = new HashMap<>();
-    }
-
-    public RateLimitResult allowRequest(
-            String userId,
-            long currentTimeMillis
-    ) {
-
-        // Calculate current time bucket.
-        long windowId =
-                getWindowId(currentTimeMillis);
-
-        // Build composite counter key.
-        String counterKey =
-                buildCounterKey(userId, windowId);
-
-        // Get current request count.
-        int currentCount =
-                counters.getOrDefault(counterKey, 0);
-
-        // Increment request count.
-        int newCount = currentCount + 1;
-
-        counters.put(counterKey, newCount);
-
-        // Decide allow/reject.
-        boolean allowed = newCount <= limit;
-
-        int remaining =
-                Math.max(0, limit - newCount);
-
-        return new RateLimitResult(
-                allowed,
-                limit,
-                newCount,
-                remaining
-        );
-    }
-}
-```
