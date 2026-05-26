@@ -451,12 +451,7 @@ public class RateLimitResult {
     // Remaining allowed requests.
     private final int remaining;
 
-    public RateLimitResult(
-            boolean allowed,
-            int limit,
-            int currentCount,
-            int remaining
-    ) {
+    public RateLimitResult(boolean allowed, int limit, int currentCount, int remaining) {
 
         this.allowed = allowed;
         this.limit = limit;
@@ -560,10 +555,7 @@ public class SlidingWindowLogRateLimiter {
                 );
 
         // Remove expired timestamps.
-        cleanupExpiredRequests(
-                requestQueue,
-                currentTimeMillis
-        );
+        cleanupExpiredRequests(requestQueue, currentTimeMillis);
 
         // Current active requests.
         int currentCount = requestQueue.size();
@@ -607,10 +599,8 @@ public class SlidingWindowLogRateLimiter {
                 currentTimeMillis - windowSizeMillis;
 
         // Sliding window cleanup.
-        while (
-                !requestQueue.isEmpty() &&
-                requestQueue.peekFirst() <= windowStartTime
-        ) {
+        while (!requestQueue.isEmpty() &&
+               requestQueue.peekFirst() <= windowStartTime) {
 
             // Remove oldest timestamp.
             requestQueue.removeFirst();
@@ -644,10 +634,7 @@ public class Step2Driver {
 
         // Create sliding window limiter.
         SlidingWindowLogRateLimiter rateLimiter =
-                new SlidingWindowLogRateLimiter(
-                        limit,
-                        windowSizeMillis
-                );
+                new SlidingWindowLogRateLimiter(limit, windowSizeMillis);
 
         String userId = "user-1";
 
@@ -672,16 +659,13 @@ public class Step2Driver {
             long timestamp = timestamps[i];
 
             RateLimitResult result =
-                    rateLimiter.allowRequest(
-                            userId,
-                            timestamp
-                    );
+                    rateLimiter.allowRequest(userId, timestamp);
 
             System.out.println(
                     "request=" + (i + 1) +
                     ", time=" + timestamp +
-                    ", result=" + result
-            );
+                    ", result=" + result);
+
         }
 
         System.out.println();
@@ -694,10 +678,7 @@ public class Step2Driver {
         long nextTimestamp = 70_000;
 
         RateLimitResult result =
-                rateLimiter.allowRequest(
-                        userId,
-                        nextTimestamp
-                );
+                rateLimiter.allowRequest(userId, nextTimestamp);
 
         System.out.println(
                 "time=" + nextTimestamp +
@@ -768,10 +749,8 @@ public class SlidingWindowCP {
         for (long currentTime : requests) {
 
             // Remove expired timestamps.
-            while (
-                    !window.isEmpty() &&
-                    window.peekFirst() <= currentTime - windowSize
-            ) {
+            while (!window.isEmpty() &&
+                   window.peekFirst() <= currentTime - windowSize) {
 
                 window.removeFirst();
             }
