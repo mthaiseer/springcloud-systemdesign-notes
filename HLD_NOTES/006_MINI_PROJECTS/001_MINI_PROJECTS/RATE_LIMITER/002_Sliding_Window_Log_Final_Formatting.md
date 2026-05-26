@@ -451,12 +451,7 @@ public class RateLimitResult {
     // Remaining allowed requests.
     private final int remaining;
 
-    public RateLimitResult(
-            boolean allowed,
-            int limit,
-            int currentCount,
-            int remaining
-    ) {
+    public RateLimitResult(boolean allowed, int limit, int currentCount, int remaining) {
 
         this.allowed = allowed;
         this.limit = limit;
