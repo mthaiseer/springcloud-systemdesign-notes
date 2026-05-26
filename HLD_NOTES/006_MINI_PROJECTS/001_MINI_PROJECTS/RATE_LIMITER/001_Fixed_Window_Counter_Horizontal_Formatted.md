@@ -549,12 +549,9 @@ public class Step1Driver {
         // Fixed window size = 60 seconds.
         long windowSizeMillis = 60_000;
 
-        // Create fixed window rate limiter instance.
+        // Create fixed window rate limiter.
         FixedWindowRateLimiter rateLimiter =
-                new FixedWindowRateLimiter(
-                        limit,
-                        windowSizeMillis
-                );
+                new FixedWindowRateLimiter(limit, windowSizeMillis);
 
         // Test user id.
         String userId = "user-1";
@@ -562,19 +559,14 @@ public class Step1Driver {
         // Fixed timestamp so all requests stay in same window.
         long fixedTime = 0;
 
-        System.out.println(
-                "---- SAME WINDOW REQUESTS ----"
-        );
+        System.out.println("---- SAME WINDOW REQUESTS ----");
 
         // Send 7 requests in same window.
         for (int i = 1; i <= 7; i++) {
 
             // Process request through rate limiter.
             RateLimitResult result =
-                    rateLimiter.allowRequest(
-                            userId,
-                            fixedTime
-                    );
+                    rateLimiter.allowRequest(userId, fixedTime);
 
             System.out.println(
                     "request=" + i +
@@ -583,20 +575,14 @@ public class Step1Driver {
         }
 
         System.out.println();
-
-        System.out.println(
-                "---- NEXT WINDOW REQUEST ----"
-        );
+        System.out.println("---- NEXT WINDOW REQUEST ----");
 
         // Move to next fixed window.
         long nextWindowTime = 60_000;
 
         // Request should now be allowed again.
         RateLimitResult nextWindowResult =
-                rateLimiter.allowRequest(
-                        userId,
-                        nextWindowTime
-                );
+                rateLimiter.allowRequest(userId, nextWindowTime);
 
         System.out.println(
                 "request in next window, result=" +
@@ -604,15 +590,10 @@ public class Step1Driver {
         );
 
         System.out.println();
-
-        System.out.println(
-                "---- COUNTERS SNAPSHOT ----"
-        );
+        System.out.println("---- COUNTERS SNAPSHOT ----");
 
         // Print internal HashMap state.
-        System.out.println(
-                rateLimiter.getCountersSnapshot()
-        );
+        System.out.println(rateLimiter.getCountersSnapshot());
     }
 }
 ```
