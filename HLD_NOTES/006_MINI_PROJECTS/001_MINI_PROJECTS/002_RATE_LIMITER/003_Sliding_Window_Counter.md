@@ -2,6 +2,36 @@
 
 # MiniRateLimiter Step 3 — Sliding Window Counter
 
+---
+
+# Clickable Index
+
+1. Goal  
+2. Delta From Step 2  
+3. Why Sliding Window Counter?  
+4. Core Formula  
+5. Example  
+6. Architecture Mermaid Diagram  
+7. Counter State Mermaid Diagram  
+8. Detailed Steps Before Code  
+9. CP/DSA Concepts Used  
+10. Time Complexity  
+11. Space Complexity  
+12. Fixed Window vs Sliding Window Log vs Sliding Window Counter  
+13. Folder Structure  
+14. Complete Java Code  
+15. CP/DSA Pattern Code  
+16. Dry Run  
+17. Run Command  
+18. Expected Output Pattern  
+19. Important Observation  
+20. Current MiniRateLimiter State  
+21. Step 3 Completion Checklist  
+22. Final Mental Model  
+23. Next Step  
+
+---
+
 ## Goal
 
 In Step 2, we built Sliding Window Log.
@@ -394,6 +424,20 @@ public class RateLimitResult {
 ```java
 package com.miniratelimiter.step3;
 
+/*
+ * Logic:
+ *
+ * 1. Store current window request count.
+ * 2. Store previous window request count.
+ * 3. Shift counters when window changes.
+ * 4. Support rolling sliding-window calculation.
+ *
+ * Time Complexity:
+ * O(1)
+ *
+ * Space Complexity:
+ * O(1)
+ */
 public class WindowCounter {
 
     // Current fixed window id.
@@ -461,6 +505,29 @@ package com.miniratelimiter.step3;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * Logic:
+ *
+ * 1. Calculate current window id.
+ * 2. Get user counter state from HashMap.
+ * 3. Detect window movement.
+ * 4. Shift current count -> previous count.
+ * 5. Calculate overlap ratio.
+ * 6. Estimate active request count.
+ * 7. Reject if estimated count exceeds limit.
+ * 8. Otherwise increment current counter.
+ *
+ * Core Formula:
+ *
+ * estimatedCount =
+ * currentCount + previousCount * overlapRatio
+ *
+ * Time Complexity:
+ * O(1)
+ *
+ * Space Complexity:
+ * O(active users)
+ */
 public class SlidingWindowCounterRateLimiter {
 
     // Maximum allowed requests in sliding window.
