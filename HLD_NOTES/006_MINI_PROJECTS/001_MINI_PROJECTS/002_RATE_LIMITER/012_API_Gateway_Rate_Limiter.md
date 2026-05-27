@@ -379,10 +379,7 @@ public class GatewayRequest {
 
     private final String clientId;
 
-    public GatewayRequest(
-            String route,
-            String clientId
-    ) {
+    public GatewayRequest(String route, String clientId) {
 
         this.route = route;
         this.clientId = clientId;
@@ -421,10 +418,7 @@ public class GatewayResponse {
 
     private final String body;
 
-    public GatewayResponse(
-            int statusCode,
-            String body
-    ) {
+    public GatewayResponse(int statusCode, String body) {
 
         this.statusCode = statusCode;
         this.body = body;
@@ -487,9 +481,7 @@ public class GatewayRateLimiter {
         this.counters = new HashMap<>();
     }
 
-    public synchronized boolean allowRequest(
-            String clientId
-    ) {
+    public synchronized boolean allowRequest(String clientId) {
 
         int count =
                 counters.getOrDefault(clientId, 0);
@@ -530,9 +522,7 @@ public class ServiceHandler {
         this.serviceName = serviceName;
     }
 
-    public GatewayResponse handle(
-            GatewayRequest request
-    ) {
+    public GatewayResponse handle(GatewayRequest request) {
 
         return new GatewayResponse(
                 200,
@@ -578,38 +568,25 @@ public class ApiGateway {
     // route -> service handler
     private final Map<String, ServiceHandler> routes;
 
-    public ApiGateway(
-            GatewayRateLimiter rateLimiter
-    ) {
+    public ApiGateway(GatewayRateLimiter rateLimiter) {
 
         this.rateLimiter = rateLimiter;
 
         this.routes = new HashMap<>();
     }
 
-    public void registerRoute(
-            String route,
-            ServiceHandler serviceHandler
-    ) {
+    public void registerRoute(String route, ServiceHandler serviceHandler) {
 
         routes.put(route, serviceHandler);
     }
 
-    public GatewayResponse handleRequest(
-            GatewayRequest request
-    ) {
+    public GatewayResponse handleRequest(GatewayRequest request) {
 
-        boolean allowed =
-                rateLimiter.allowRequest(
-                        request.getClientId()
-                );
+        boolean allowed = rateLimiter.allowRequest(request.getClientId());
 
         if (!allowed) {
 
-            return new GatewayResponse(
-                    429,
-                    "Too Many Requests"
-            );
+            return new GatewayResponse(429, "Too Many Requests");
         }
 
         ServiceHandler serviceHandler =
@@ -677,10 +654,7 @@ public class Step12Driver {
                     : "/payments";
 
             GatewayRequest request =
-                    new GatewayRequest(
-                            route,
-                            clientId
-                    );
+                    new GatewayRequest(route, clientId);
 
             GatewayResponse response =
                     gateway.handleRequest(request);
