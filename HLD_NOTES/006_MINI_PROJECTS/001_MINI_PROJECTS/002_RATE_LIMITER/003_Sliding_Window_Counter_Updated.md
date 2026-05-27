@@ -6,30 +6,31 @@
 
 # Clickable Index
 
-1. Goal
-2. Delta From Step 2
-3. Why Sliding Window Counter?
-4. Core Formula
-5. Example
-6. Architecture Mermaid Diagram
-7. Counter State Mermaid Diagram
-8. Detailed Steps Before Code
-9. CP/DSA Concepts Used
-10. Time Complexity
-11. Space Complexity
-12. Algorithm Comparison
-13. Folder Structure
-14. Complete Java Code
-15. CP/DSA Pattern Code
-16. Dry Run
-17. Run Command
-18. Expected Output Pattern
-19. Important Observation
-20. Current MiniRateLimiter State
-21. Step 3 Completion Checklist
-22. Final Mental Model
-23. Next Step
+1. Goal  
+2. Delta From Step 2  
+3. Why Sliding Window Counter?  
+4. Core Formula  
+5. Example  
+6. Architecture Mermaid Diagram  
+7. Counter State Mermaid Diagram  
+8. Detailed Steps Before Code  
+9. CP/DSA Concepts Used  
+10. Time Complexity  
+11. Space Complexity  
+12. Fixed Window vs Sliding Window Log vs Sliding Window Counter  
+13. Folder Structure  
+14. Complete Java Code  
+15. CP/DSA Pattern Code  
+16. Dry Run  
+17. Run Command  
+18. Expected Output Pattern  
+19. Important Observation  
+20. Current MiniRateLimiter State  
+21. Step 3 Completion Checklist  
+22. Final Mental Model  
+23. Next Step  
 
+---
 
 ## Goal
 
