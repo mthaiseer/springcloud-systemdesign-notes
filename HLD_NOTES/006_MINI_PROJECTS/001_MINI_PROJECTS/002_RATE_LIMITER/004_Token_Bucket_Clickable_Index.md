@@ -6,29 +6,29 @@
 
 # Clickable Index
 
-1. Goal  
-2. Delta From Step 3  
-3. Why Token Bucket?  
-4. Core Idea  
-5. Architecture Mermaid Diagram  
-6. Token Bucket Visualization  
-7. Detailed Steps Before Code  
-8. CP/DSA Concepts Used  
-9. Time Complexity  
-10. Space Complexity  
-11. Sliding Window Counter vs Token Bucket  
-12. Folder Structure  
-13. Folder Mermaid Diagram  
-14. Complete Java Code  
-15. CP/DSA Pattern Code  
-16. Dry Run  
-17. Run Command  
-18. Expected Output Pattern  
-19. Important Observation  
-20. Current MiniRateLimiter State  
-21. Step 4 Completion Checklist  
-22. Final Mental Model  
-23. Next Step  
+1. [Goal](#goal)  
+2. [Delta From Step 3](#delta-from-step-3)  
+3. [Why Token Bucket?](#why-token-bucket)  
+4. [Core Idea](#core-idea)  
+5. [Architecture Mermaid Diagram](#architecture-mermaid-diagram)  
+6. [Token Bucket Visualization](#token-bucket-visualization)  
+7. [Detailed Steps Before Code](#detailed-steps-before-code)  
+8. [CP/DSA Concepts Used](#cpdsa-concepts-used)  
+9. [Time Complexity](#time-complexity)  
+10. [Space Complexity](#space-complexity)  
+11. [Sliding Window Counter vs Token Bucket](#sliding-window-counter-vs-token-bucket)  
+12. [Folder Structure](#folder-structure)  
+13. [Folder Mermaid Diagram](#folder-mermaid-diagram)  
+14. [Complete Java Code](#complete-java-code)  
+15. [CP/DSA Pattern Code](#cpdsa-pattern-code)  
+16. [Dry Run](#dry-run)  
+17. [Run Command](#run-command)  
+18. [Expected Output Pattern](#expected-output-pattern)  
+19. [Important Observation](#important-observation)  
+20. [Current MiniRateLimiter State](#current-miniratelimiter-state)  
+21. [Step 4 Completion Checklist](#step-4-completion-checklist)  
+22. [Final Mental Model](#final-mental-model)  
+23. [Next Step](#next-step)  
 
 ---
 
