@@ -2,6 +2,36 @@
 
 # MiniRateLimiter Step 4 — Token Bucket
 
+---
+
+# Clickable Index
+
+1. [Goal](#goal)  
+2. [Delta From Step 3](#delta-from-step-3)  
+3. [Why Token Bucket?](#why-token-bucket)  
+4. [Core Idea](#core-idea)  
+5. [Architecture Mermaid Diagram](#architecture-mermaid-diagram)  
+6. [Token Bucket Visualization](#token-bucket-visualization)  
+7. [Detailed Steps Before Code](#detailed-steps-before-code)  
+8. [CP/DSA Concepts Used](#cpdsa-concepts-used)  
+9. [Time Complexity](#time-complexity)  
+10. [Space Complexity](#space-complexity)  
+11. [Sliding Window Counter vs Token Bucket](#sliding-window-counter-vs-token-bucket)  
+12. [Folder Structure](#folder-structure)  
+13. [Folder Mermaid Diagram](#folder-mermaid-diagram)  
+14. [Complete Java Code](#complete-java-code)  
+15. [CP/DSA Pattern Code](#cpdsa-pattern-code)  
+16. [Dry Run](#dry-run)  
+17. [Run Command](#run-command)  
+18. [Expected Output Pattern](#expected-output-pattern)  
+19. [Important Observation](#important-observation)  
+20. [Current MiniRateLimiter State](#current-miniratelimiter-state)  
+21. [Step 4 Completion Checklist](#step-4-completion-checklist)  
+22. [Final Mental Model](#final-mental-model)  
+23. [Next Step](#next-step)  
+
+---
+
 ## Goal
 
 In Step 3, we built:
@@ -331,6 +361,20 @@ flowchart TD
 ```java
 package com.miniratelimiter.step4;
 
+/*
+ * Logic:
+ *
+ * 1. Store whether request was allowed.
+ * 2. Store bucket capacity as limit.
+ * 3. Store available tokens after decision.
+ * 4. Store retry-after time when request is rejected.
+ *
+ * Time Complexity:
+ * O(1)
+ *
+ * Space Complexity:
+ * O(1)
+ */
 public class RateLimitResult {
 
     // True if request is allowed.
@@ -387,6 +431,26 @@ public class RateLimitResult {
 ```java
 package com.miniratelimiter.step4;
 
+/*
+ * Logic:
+ *
+ * 1. Store maximum bucket capacity.
+ * 2. Store currently available tokens.
+ * 3. Store last refill timestamp.
+ * 4. Refill tokens based on elapsed time.
+ * 5. Consume one token when request is allowed.
+ *
+ * Core Rule:
+ *
+ * availableTokens =
+ * min(capacity, availableTokens + tokensToAdd)
+ *
+ * Time Complexity:
+ * O(1)
+ *
+ * Space Complexity:
+ * O(1)
+ */
 public class TokenBucket {
 
     // Maximum tokens bucket can hold.
@@ -450,6 +514,28 @@ package com.miniratelimiter.step4;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * Logic:
+ *
+ * 1. Get user bucket from HashMap.
+ * 2. Create bucket if user is new.
+ * 3. Refill bucket based on elapsed time.
+ * 4. Check if at least one token is available.
+ * 5. If no token exists, reject request.
+ * 6. If token exists, consume one token.
+ * 7. Return allow/reject result.
+ *
+ * Core Idea:
+ *
+ * 1 request costs 1 token.
+ * Tokens refill continuously over time.
+ *
+ * Time Complexity:
+ * O(1) per request
+ *
+ * Space Complexity:
+ * O(active users)
+ */
 public class TokenBucketRateLimiter {
 
     // Maximum burst size.
@@ -521,6 +607,17 @@ public class TokenBucketRateLimiter {
 ```java
 package com.miniratelimiter.step4;
 
+/*
+ * Logic:
+ *
+ * 1. Create token bucket limiter.
+ * 2. Send burst requests at same timestamp.
+ * 3. Observe first capacity requests allowed.
+ * 4. Observe extra requests rejected.
+ * 5. Move time forward.
+ * 6. Observe tokens refilled.
+ * 7. Send requests again after refill.
+ */
 public class Step4Driver {
 
     public static void main(String[] args) {
