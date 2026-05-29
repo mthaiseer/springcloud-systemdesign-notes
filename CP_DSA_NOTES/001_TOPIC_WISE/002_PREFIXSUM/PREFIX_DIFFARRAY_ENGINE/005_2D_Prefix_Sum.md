@@ -462,13 +462,95 @@ for (int r = 1; r <= rows; r++) {
 
 ### Problem
 
-Answer many rectangle sum queries.
+Given a static matrix, answer many queries:
+
+```text
+sumRegion(r1, c1, r2, c2)
+```
+
+Each query asks:
+
+```text
+sum of all cells inside rectangle from top-left (r1,c1)
+to bottom-right (r2,c2)
+```
+
+---
 
 ### Pattern
 
 ```text
-2D prefix sum
+Static matrix + many rectangle sum queries
+=> 2D Prefix Sum
 ```
+
+---
+
+### Step-by-Step Working
+
+Matrix:
+
+```text
+1 2 3
+4 5 6
+7 8 9
+```
+
+Query:
+
+```text
+sumRegion(1,1,2,2)
+```
+
+This rectangle is:
+
+```text
+5 6
+8 9
+```
+
+Manual sum:
+
+```text
+5 + 6 + 8 + 9 = 28
+```
+
+Build 2D prefix:
+
+```text
+pref =
+0  0  0  0
+0  1  3  6
+0  5 12 21
+0 12 27 45
+```
+
+Use formula:
+
+```text
+answer =
+pref[r2+1][c2+1]
+- pref[r1][c2+1]
+- pref[r2+1][c1]
++ pref[r1][c1]
+```
+
+Substitute:
+
+```text
+answer =
+pref[3][3]
+- pref[1][3]
+- pref[3][1]
++ pref[1][1]
+```
+
+```text
+= 45 - 6 - 12 + 1
+= 28
+```
+
+---
 
 ### Commented C++ Code
 
@@ -482,53 +564,70 @@ private:
 
 public:
     NumMatrix(vector<vector<int>>& matrix) {
-
         int rows = matrix.size();
         int cols = matrix[0].size();
 
-        pref.assign(rows + 1,
-                    vector<long long>(cols + 1, 0));
+        // 1-indexed prefix matrix.
+        // pref[r][c] = sum of rectangle (0,0) to (r-1,c-1)
+        pref.assign(rows + 1, vector<long long>(cols + 1, 0));
 
         for (int r = 1; r <= rows; r++) {
             for (int c = 1; c <= cols; c++) {
 
+                // top + left - overlap + current cell
                 pref[r][c]
-                =
-                pref[r - 1][c]
-                +
-                pref[r][c - 1]
-                -
-                pref[r - 1][c - 1]
-                +
-                matrix[r - 1][c - 1];
+                    = pref[r - 1][c]
+                    + pref[r][c - 1]
+                    - pref[r - 1][c - 1]
+                    + matrix[r - 1][c - 1];
             }
         }
     }
 
     long long sumRegion(int r1, int c1, int r2, int c2) {
-
+        // big rectangle
+        // - top strip
+        // - left strip
+        // + overlap removed twice
         return
-        pref[r2 + 1][c2 + 1]
-        - pref[r1][c2 + 1]
-        - pref[r2 + 1][c1]
-        + pref[r1][c1];
+            pref[r2 + 1][c2 + 1]
+            - pref[r1][c2 + 1]
+            - pref[r2 + 1][c1]
+            + pref[r1][c1];
     }
 };
 
 int main() {
-
     vector<vector<int>> matrix = {
-        {1,2,3},
-        {4,5,6},
-        {7,8,9}
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
     };
 
-    NumMatrix obj(matrix);
+    NumMatrix nm(matrix);
 
-    cout << obj.sumRegion(1,1,2,2) << endl;
+    cout << nm.sumRegion(1, 1, 2, 2) << "\n"; // 28
+    cout << nm.sumRegion(0, 0, 2, 2) << "\n"; // 45
+    cout << nm.sumRegion(0, 1, 1, 2) << "\n"; // 16
 
     return 0;
 }
+```
+
+---
+
+### Complexity
+
+Build:
+
+```text
+O(rows * cols)
+```
+
+Each query:
+
+```text
+O(1)
 ```
 
 ---
@@ -537,11 +636,25 @@ int main() {
 
 ### Problem
 
-For every cell:
+For every cell `(i, j)` in a matrix, compute the sum of all cells inside distance `k`.
+
+That means for each cell, we need rectangle:
 
 ```text
-compute sum of nearby k-distance block
+row range = [i-k, i+k]
+col range = [j-k, j+k]
 ```
+
+But because the rectangle can go outside matrix boundary, we clamp it:
+
+```text
+r1 = max(0, i-k)
+c1 = max(0, j-k)
+r2 = min(rows-1, i+k)
+c2 = min(cols-1, j+k)
+```
+
+---
 
 ### Pattern
 
@@ -549,15 +662,333 @@ compute sum of nearby k-distance block
 many rectangle queries
 ```
 
-### Idea
+For every cell, we ask:
 
-Each block query becomes:
+```text
+What is the sum of this rectangle?
+```
+
+So this becomes:
+
+```text
+2D Prefix Sum + Rectangle Query
+```
+
+---
+
+### Why Brute Force Is Slow
+
+For each cell:
+
+```text
+scan all cells inside k-distance block
+```
+
+If matrix size is:
+
+```text
+rows * cols
+```
+
+and block area is roughly:
+
+```text
+(2k+1) * (2k+1)
+```
+
+Then brute force is:
+
+```text
+O(rows * cols * k^2)
+```
+
+Too slow for large grid.
+
+With 2D prefix:
+
+```text
+Build prefix once: O(rows * cols)
+Each block query: O(1)
+Total: O(rows * cols)
+```
+
+---
+
+### Step-by-Step Working
+
+Matrix:
+
+```text
+mat =
+1 2 3
+4 5 6
+7 8 9
+```
+
+Let:
+
+```text
+k = 1
+```
+
+For cell:
+
+```text
+(i,j) = (1,1)
+```
+
+This is center cell value `5`.
+
+Block range:
+
+```text
+rows = [1-1, 1+1] = [0,2]
+cols = [1-1, 1+1] = [0,2]
+```
+
+So rectangle is the whole matrix:
+
+```text
+1 2 3
+4 5 6
+7 8 9
+```
+
+Sum:
+
+```text
+45
+```
+
+For cell:
+
+```text
+(i,j) = (0,0)
+```
+
+Top-left corner.
+
+Raw block:
+
+```text
+rows = [-1,1]
+cols = [-1,1]
+```
+
+Clamp inside matrix:
+
+```text
+rows = [0,1]
+cols = [0,1]
+```
+
+Rectangle:
+
+```text
+1 2
+4 5
+```
+
+Sum:
+
+```text
+12
+```
+
+So result at `(0,0)` is:
+
+```text
+12
+```
+
+---
+
+### Rectangle Query Formula
+
+Using 1-indexed 2D prefix:
+
+```text
+sum(r1,c1,r2,c2)
+=
+pref[r2+1][c2+1]
+- pref[r1][c2+1]
+- pref[r2+1][c1]
++ pref[r1][c1]
+```
+
+---
+
+### Example Output For k = 1
+
+Input:
+
+```text
+1 2 3
+4 5 6
+7 8 9
+```
+
+Output block sums:
+
+```text
+12 21 16
+27 45 33
+24 39 28
+```
+
+Why?
+
+```text
+cell (0,0) -> 1+2+4+5 = 12
+cell (0,1) -> 1+2+3+4+5+6 = 21
+cell (1,1) -> whole matrix = 45
+cell (2,2) -> 5+6+8+9 = 28
+```
+
+---
+
+### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class MatrixBlockSum {
+private:
+    vector<vector<long long>> pref;
+    int rows;
+    int cols;
+
+public:
+    MatrixBlockSum(vector<vector<int>>& mat) {
+        rows = mat.size();
+        cols = mat[0].size();
+
+        // 1-indexed prefix matrix.
+        // pref[r][c] stores sum of rectangle:
+        // (0,0) to (r-1,c-1)
+        pref.assign(rows + 1, vector<long long>(cols + 1, 0));
+
+        for (int r = 1; r <= rows; r++) {
+            for (int c = 1; c <= cols; c++) {
+
+                pref[r][c]
+                    = pref[r - 1][c]
+                    + pref[r][c - 1]
+                    - pref[r - 1][c - 1]
+                    + mat[r - 1][c - 1];
+            }
+        }
+    }
+
+    long long rectangleSum(int r1, int c1, int r2, int c2) {
+        return
+            pref[r2 + 1][c2 + 1]
+            - pref[r1][c2 + 1]
+            - pref[r2 + 1][c1]
+            + pref[r1][c1];
+    }
+
+    vector<vector<long long>> buildBlockSum(int k) {
+        vector<vector<long long>> ans(rows, vector<long long>(cols, 0));
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+
+                // Clamp block boundaries inside matrix.
+                int r1 = max(0, i - k);
+                int c1 = max(0, j - k);
+                int r2 = min(rows - 1, i + k);
+                int c2 = min(cols - 1, j + k);
+
+                // Each block sum is one O(1) rectangle query.
+                ans[i][j] = rectangleSum(r1, c1, r2, c2);
+            }
+        }
+
+        return ans;
+    }
+};
+
+int main() {
+    vector<vector<int>> mat = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
+    };
+
+    int k = 1;
+
+    MatrixBlockSum solver(mat);
+
+    vector<vector<long long>> ans = solver.buildBlockSum(k);
+
+    for (auto &row : ans) {
+        for (long long x : row) {
+            cout << x << " ";
+        }
+        cout << "\n";
+    }
+
+    return 0;
+}
+```
+
+---
+
+### Complexity
+
+Build prefix:
+
+```text
+O(rows * cols)
+```
+
+For every cell query:
 
 ```text
 O(1)
 ```
 
-with 2D prefix.
+Total:
+
+```text
+O(rows * cols)
+```
+
+Space:
+
+```text
+O(rows * cols)
+```
+
+---
+
+### CP / FAANG Recognition
+
+Use this pattern when the problem says:
+
+```text
+For every cell, compute sum around it
+```
+
+or:
+
+```text
+sum of submatrix centered at each cell
+```
+
+or:
+
+```text
+many rectangle sum queries on static matrix
+```
+
+This is exactly:
+
+```text
+2D Prefix Sum
+```
 
 ---
 
@@ -565,17 +996,20 @@ with 2D prefix.
 
 ### Problem
 
-Grid stores traffic:
+You have a 2D grid where each cell stores traffic count:
 
 ```text
-users per region
+traffic[r][c] = number of requests from this region
 ```
 
-Need:
+You need to answer queries:
 
 ```text
-total users inside rectangle region
+How much traffic came from rectangular region:
+(r1,c1) -> (r2,c2)?
 ```
+
+---
 
 ### Pattern
 
@@ -583,13 +1017,130 @@ total users inside rectangle region
 2D range aggregation
 ```
 
-### Example
+This is the same as:
 
 ```text
-north-west city block traffic
+Rectangle Sum Query
 ```
 
-This maps naturally to 2D prefix.
+---
+
+### Step-by-Step Working
+
+Traffic grid:
+
+```text
+10 20 30
+40 50 60
+70 80 90
+```
+
+Query:
+
+```text
+region (0,1) -> (1,2)
+```
+
+Rectangle:
+
+```text
+20 30
+50 60
+```
+
+Manual sum:
+
+```text
+20 + 30 + 50 + 60 = 160
+```
+
+2D prefix:
+
+```text
+pref =
+0   0   0   0
+0  10  30  60
+0  50 120 210
+0 120 270 450
+```
+
+Formula:
+
+```text
+pref[2][3] - pref[0][3] - pref[2][1] + pref[0][1]
+= 210 - 0 - 50 + 0
+= 160
+```
+
+---
+
+### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class HeatmapAggregator {
+private:
+    vector<vector<long long>> pref;
+
+public:
+    HeatmapAggregator(vector<vector<int>>& traffic) {
+        int rows = traffic.size();
+        int cols = traffic[0].size();
+
+        pref.assign(rows + 1, vector<long long>(cols + 1, 0));
+
+        for (int r = 1; r <= rows; r++) {
+            for (int c = 1; c <= cols; c++) {
+
+                // Build cumulative traffic from top-left.
+                pref[r][c]
+                    = pref[r - 1][c]
+                    + pref[r][c - 1]
+                    - pref[r - 1][c - 1]
+                    + traffic[r - 1][c - 1];
+            }
+        }
+    }
+
+    long long queryTraffic(int r1, int c1, int r2, int c2) {
+        return
+            pref[r2 + 1][c2 + 1]
+            - pref[r1][c2 + 1]
+            - pref[r2 + 1][c1]
+            + pref[r1][c1];
+    }
+};
+
+int main() {
+    vector<vector<int>> traffic = {
+        {10, 20, 30},
+        {40, 50, 60},
+        {70, 80, 90}
+    };
+
+    HeatmapAggregator agg(traffic);
+
+    cout << agg.queryTraffic(0, 1, 1, 2) << "\n"; // 160
+
+    return 0;
+}
+```
+
+---
+
+### Real System Mapping
+
+This pattern maps to:
+
+```text
+CDN traffic heatmaps
+geo traffic dashboards
+user density maps
+API request concentration maps
+monitoring heatmaps
+```
 
 ---
 
@@ -597,25 +1148,143 @@ This maps naturally to 2D prefix.
 
 ### Problem
 
-Image pixels:
+An image is represented as a matrix.
+
+Each cell contains brightness:
 
 ```text
-brightness values
+image[r][c] = pixel brightness
 ```
 
-Need:
+Answer queries:
 
 ```text
-sum brightness inside rectangle
+total brightness inside rectangle
 ```
+
+---
 
 ### Pattern
 
 ```text
-integral image / summed area table
+2D prefix sum
 ```
 
-2D prefix is heavily used in image processing.
+In image processing, this is also called:
+
+```text
+Integral Image
+Summed Area Table
+```
+
+---
+
+### Step-by-Step Working
+
+Image:
+
+```text
+5  10 15
+20 25 30
+35 40 45
+```
+
+Query:
+
+```text
+brightness inside (1,0) -> (2,1)
+```
+
+Rectangle:
+
+```text
+20 25
+35 40
+```
+
+Manual sum:
+
+```text
+20 + 25 + 35 + 40 = 120
+```
+
+Use 2D prefix query:
+
+```text
+sum = pref[3][2] - pref[1][2] - pref[3][0] + pref[1][0]
+```
+
+Because `c1 = 0`, left strip is zero automatically using 1-indexed prefix.
+
+---
+
+### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class ImageBrightnessQuery {
+private:
+    vector<vector<long long>> pref;
+
+public:
+    ImageBrightnessQuery(vector<vector<int>>& image) {
+        int rows = image.size();
+        int cols = image[0].size();
+
+        pref.assign(rows + 1, vector<long long>(cols + 1, 0));
+
+        for (int r = 1; r <= rows; r++) {
+            for (int c = 1; c <= cols; c++) {
+
+                // Integral image construction.
+                pref[r][c]
+                    = pref[r - 1][c]
+                    + pref[r][c - 1]
+                    - pref[r - 1][c - 1]
+                    + image[r - 1][c - 1];
+            }
+        }
+    }
+
+    long long brightness(int r1, int c1, int r2, int c2) {
+        return
+            pref[r2 + 1][c2 + 1]
+            - pref[r1][c2 + 1]
+            - pref[r2 + 1][c1]
+            + pref[r1][c1];
+    }
+};
+
+int main() {
+    vector<vector<int>> image = {
+        {5, 10, 15},
+        {20, 25, 30},
+        {35, 40, 45}
+    };
+
+    ImageBrightnessQuery q(image);
+
+    cout << q.brightness(1, 0, 2, 1) << "\n"; // 120
+
+    return 0;
+}
+```
+
+---
+
+### Real System Mapping
+
+This appears in:
+
+```text
+image processing
+computer vision
+object detection pre-processing
+brightness/contrast analysis
+fast patch statistics
+```
 
 ---
 
@@ -623,26 +1292,141 @@ integral image / summed area table
 
 ### Problem
 
-Population map:
+A grid stores population count per cell.
 
 ```text
-people per cell
+population[r][c]
 ```
 
-Need:
+Answer:
 
 ```text
-population inside district rectangle
-```
-
-### Pattern
-
-```text
-rectangle aggregation
+total population inside rectangular district
 ```
 
 ---
 
+### Pattern
+
+```text
+static grid + many rectangular population queries
+=> 2D prefix sum
+```
+
+---
+
+### Step-by-Step Working
+
+Population grid:
+
+```text
+100 200 300
+400 500 600
+700 800 900
+```
+
+Query:
+
+```text
+district (1,1) -> (2,2)
+```
+
+Rectangle:
+
+```text
+500 600
+800 900
+```
+
+Manual sum:
+
+```text
+500 + 600 + 800 + 900 = 2800
+```
+
+2D prefix formula:
+
+```text
+answer =
+pref[3][3]
+- pref[1][3]
+- pref[3][1]
++ pref[1][1]
+```
+
+The same rectangle query formula works for any grid values.
+
+---
+
+### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class PopulationGrid {
+private:
+    vector<vector<long long>> pref;
+
+public:
+    PopulationGrid(vector<vector<int>>& population) {
+        int rows = population.size();
+        int cols = population[0].size();
+
+        pref.assign(rows + 1, vector<long long>(cols + 1, 0));
+
+        for (int r = 1; r <= rows; r++) {
+            for (int c = 1; c <= cols; c++) {
+
+                pref[r][c]
+                    = pref[r - 1][c]
+                    + pref[r][c - 1]
+                    - pref[r - 1][c - 1]
+                    + population[r - 1][c - 1];
+            }
+        }
+    }
+
+    long long districtPopulation(int r1, int c1, int r2, int c2) {
+        return
+            pref[r2 + 1][c2 + 1]
+            - pref[r1][c2 + 1]
+            - pref[r2 + 1][c1]
+            + pref[r1][c1];
+    }
+};
+
+int main() {
+    vector<vector<int>> population = {
+        {100, 200, 300},
+        {400, 500, 600},
+        {700, 800, 900}
+    };
+
+    PopulationGrid grid(population);
+
+    cout << grid.districtPopulation(1, 1, 2, 2) << "\n"; // 2800
+
+    return 0;
+}
+```
+
+---
+
+### Real System Mapping
+
+This maps to:
+
+```text
+population dashboards
+regional analytics
+city planning
+delivery coverage estimation
+driver/rider density grid
+resource density query
+```
+
+---
 ## 17. Real World Model 1 — CDN Traffic Heatmap
 
 Imagine a world map divided into cells.
