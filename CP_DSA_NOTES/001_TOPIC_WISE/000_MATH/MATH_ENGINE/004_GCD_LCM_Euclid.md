@@ -745,39 +745,612 @@ gcd(abs(a), abs(b))
 
 # 20. CP / FAANG Problem Forms
 
+This section is upgraded with:
+
+```text
+Problem
+→ Pattern
+→ Step-by-step working
+→ C++ code
+```
+
+---
+
 ## Form 1 — GCD Of Array
 
-Very common.
+### Problem
+
+Given an array:
+
+```cpp
+arr = [24, 36, 60]
+```
+
+Find the GCD of all numbers.
+
+---
+
+### Pattern
+
+Use:
+
+```cpp
+gcd(gcd(gcd(a1,a2),a3),a4...)
+```
+
+Mental model:
+
+```text
+Keep compressing common divisibility.
+```
+
+---
+
+### Step-by-Step Working
+
+```text
+answer = 24
+
+gcd(24,36) = 12
+answer = 12
+
+gcd(12,60) = 12
+answer = 12
+```
+
+Final answer:
+
+```cpp
+12
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+ll gcdValue(ll a, ll b) {
+
+    while (b != 0) {
+
+        ll rem = a % b;
+
+        a = b;
+        b = rem;
+    }
+
+    return a;
+}
+
+ll gcdOfArray(vector<ll>& arr) {
+
+    // Step 1:
+    // Start with first number
+    ll answer = arr[0];
+
+    // Step 2:
+    // Keep taking gcd with next number
+    for (int i = 1; i < arr.size(); i++) {
+
+        answer = gcdValue(answer, arr[i]);
+    }
+
+    return answer;
+}
+
+int main() {
+
+    vector<ll> arr = {24, 36, 60};
+
+    cout << gcdOfArray(arr) << "\n";
+
+    return 0;
+}
+```
 
 ---
 
 ## Form 2 — Fraction Simplification
 
-Use gcd.
+### Problem
+
+Simplify:
+
+```cpp
+20 / 30
+```
+
+---
+
+### Pattern
+
+Divide numerator and denominator by:
+
+```cpp
+gcd(numerator, denominator)
+```
+
+---
+
+### Step-by-Step Working
+
+```text
+numerator = 20
+denominator = 30
+
+gcd(20,30) = 10
+
+20 / 10 = 2
+30 / 10 = 3
+```
+
+Final simplified fraction:
+
+```cpp
+2/3
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+ll gcdValue(ll a, ll b) {
+
+    while (b != 0) {
+
+        ll rem = a % b;
+
+        a = b;
+        b = rem;
+    }
+
+    return a;
+}
+
+void simplifyFraction(ll numerator, ll denominator) {
+
+    // Step 1:
+    // Find common divisor
+    ll g = gcdValue(numerator, denominator);
+
+    // Step 2:
+    // Divide both by gcd
+    numerator /= g;
+    denominator /= g;
+
+    cout << numerator << "/" << denominator << "\n";
+}
+
+int main() {
+
+    simplifyFraction(20, 30);
+
+    return 0;
+}
+```
 
 ---
 
 ## Form 3 — Synchronization Problems
 
-Use LCM.
+### Problem
+
+Task A runs every:
+
+```text
+6 seconds
+```
+
+Task B runs every:
+
+```text
+8 seconds
+```
+
+Find when both run together again.
+
+---
+
+### Pattern
+
+Use:
+
+```cpp
+LCM
+```
+
+Because LCM gives first common repeating point.
+
+---
+
+### Step-by-Step Working
+
+```text
+Multiples of 6:
+6, 12, 18, 24
+
+Multiples of 8:
+8, 16, 24
+```
+
+First common time:
+
+```cpp
+24 seconds
+```
+
+Formula:
+
+```cpp
+lcm(6,8) = (6 / gcd(6,8)) * 8
+```
+
+```cpp
+gcd(6,8)=2
+
+lcm = (6/2)*8
+    = 3*8
+    = 24
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+ll gcdValue(ll a, ll b) {
+
+    while (b != 0) {
+
+        ll rem = a % b;
+
+        a = b;
+        b = rem;
+    }
+
+    return a;
+}
+
+ll lcmValue(ll a, ll b) {
+
+    // Step 1:
+    // Divide first to reduce overflow risk
+    return (a / gcdValue(a, b)) * b;
+}
+
+int main() {
+
+    ll taskA = 6;
+    ll taskB = 8;
+
+    cout << lcmValue(taskA, taskB) << "\n";
+
+    return 0;
+}
+```
 
 ---
 
 ## Form 4 — Coprime Counting
 
-Use gcd.
+### Problem
+
+Given:
+
+```cpp
+n = 10
+```
+
+Count numbers from `1` to `n` that are coprime with `n`.
+
+---
+
+### Pattern
+
+A number `x` is coprime with `n` if:
+
+```cpp
+gcd(x,n)=1
+```
+
+---
+
+### Step-by-Step Working
+
+For:
+
+```cpp
+n = 10
+```
+
+Check:
+
+```text
+gcd(1,10)=1  yes
+gcd(2,10)=2  no
+gcd(3,10)=1  yes
+gcd(4,10)=2  no
+gcd(5,10)=5  no
+gcd(6,10)=2  no
+gcd(7,10)=1  yes
+gcd(8,10)=2  no
+gcd(9,10)=1  yes
+gcd(10,10)=10 no
+```
+
+Coprime numbers:
+
+```cpp
+1, 3, 7, 9
+```
+
+Count:
+
+```cpp
+4
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+ll gcdValue(ll a, ll b) {
+
+    while (b != 0) {
+
+        ll rem = a % b;
+
+        a = b;
+        b = rem;
+    }
+
+    return a;
+}
+
+int countCoprime(ll n) {
+
+    int count = 0;
+
+    // Step 1:
+    // Check every number from 1 to n
+    for (ll x = 1; x <= n; x++) {
+
+        // Step 2:
+        // If gcd is 1, x is coprime with n
+        if (gcdValue(x, n) == 1) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int main() {
+
+    cout << countCoprime(10) << "\n";
+
+    return 0;
+}
+```
+
+> Later this becomes:
+>
+> ```text
+> Euler Phi Function
+> ```
+>
+> which counts coprimes efficiently.
 
 ---
 
 ## Form 5 — Divisibility Queries
 
-Use gcd properties.
+### Problem
+
+Given two numbers:
+
+```cpp
+a = 12
+b = 18
+```
+
+Find the largest number that can divide both.
 
 ---
 
-## Form 6 — CRT / Modular Inverse
+### Pattern
 
-Require coprime intuition.
+This is directly:
+
+```cpp
+gcd(a,b)
+```
+
+---
+
+### Step-by-Step Working
+
+```text
+Divisors of 12:
+1, 2, 3, 4, 6, 12
+
+Divisors of 18:
+1, 2, 3, 6, 9, 18
+
+Common:
+1, 2, 3, 6
+```
+
+Largest:
+
+```cpp
+6
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+ll gcdValue(ll a, ll b) {
+
+    while (b != 0) {
+
+        ll rem = a % b;
+
+        a = b;
+        b = rem;
+    }
+
+    return a;
+}
+
+int main() {
+
+    ll a = 12;
+    ll b = 18;
+
+    cout << gcdValue(a, b) << "\n";
+
+    return 0;
+}
+```
+
+---
+
+## Form 6 — CRT / Modular Inverse Foundation
+
+### Problem
+
+Check whether modular inverse exists for:
+
+```cpp
+a = 3
+MOD = 7
+```
+
+---
+
+### Pattern
+
+Inverse exists if:
+
+```cpp
+gcd(a, MOD) = 1
+```
+
+This is the bridge between:
+
+```text
+GCD
+→ Modular Inverse
+→ CRT
+```
+
+---
+
+### Step-by-Step Working
+
+```cpp
+gcd(3,7)=1
+```
+
+So inverse exists.
+
+Find `x` such that:
+
+```cpp
+3*x % 7 = 1
+```
+
+Try:
+
+```text
+x=1 => 3%7=3
+x=2 => 6%7=6
+x=3 => 9%7=2
+x=4 => 12%7=5
+x=5 => 15%7=1
+```
+
+So:
+
+```cpp
+inverse(3)=5
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+ll gcdValue(ll a, ll b) {
+
+    while (b != 0) {
+
+        ll rem = a % b;
+
+        a = b;
+        b = rem;
+    }
+
+    return a;
+}
+
+bool inverseExists(ll a, ll mod) {
+
+    // Step:
+    // inverse exists only if a and mod are coprime
+    return gcdValue(a, mod) == 1;
+}
+
+int main() {
+
+    ll a = 3;
+    ll mod = 7;
+
+    if (inverseExists(a, mod)) {
+        cout << "Inverse exists\n";
+    }
+    else {
+        cout << "Inverse does not exist\n";
+    }
+
+    return 0;
+}
+```
 
 ---
 
