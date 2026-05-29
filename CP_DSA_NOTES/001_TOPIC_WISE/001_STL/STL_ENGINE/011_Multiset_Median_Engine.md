@@ -424,8 +424,25 @@ int main() {
 ## Problem Type
 
 ```text
-Median for every sliding window.
+Median for every sliding window of size K.
 ```
+
+Example:
+
+```text
+nums = [1, 3, -1, -3, 5, 3, 6, 7]
+k = 3
+
+windows:
+[1, 3, -1]  -> median = 1
+[3, -1, -3] -> median = -1
+[-1, -3, 5] -> median = -1
+[-3, 5, 3]  -> median = 3
+[5, 3, 6]   -> median = 5
+[3, 6, 7]   -> median = 6
+```
+
+---
 
 ## Core Idea
 
@@ -444,6 +461,367 @@ ordered duplicates
 ```
 
 very naturally.
+
+But there is one important issue:
+
+```text
+finding middle by next(ms.begin(), k/2) every time can be O(K)
+```
+
+For learning, this version is simple and clear.
+
+For advanced FAANG/CP optimization, use:
+
+```text
+two multisets
+or
+two heaps + lazy deletion
+```
+
+---
+
+## Simple Multiset Version
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<double> slidingWindowMedianSimple(
+    vector<int>& nums,
+    int k
+) {
+    multiset<int> window;
+
+    vector<double> answer;
+
+    for (int i = 0; i < (int)nums.size(); i++) {
+
+        // Step 1:
+        // Insert current element into ordered window.
+        window.insert(nums[i]);
+
+        // Step 2:
+        // If window size becomes greater than k,
+        // remove the expired element nums[i-k].
+        if ((int)window.size() > k) {
+
+            auto it = window.find(nums[i - k]);
+
+            // IMPORTANT:
+            // erase(value) removes all duplicates.
+            // erase(iterator) removes only one occurrence.
+            window.erase(it);
+        }
+
+        // Step 3:
+        // Once first full window is formed,
+        // compute median.
+        if (i >= k - 1) {
+
+            auto midRight =
+                next(window.begin(), k / 2);
+
+            if (k % 2 == 1) {
+
+                // Odd window size:
+                // median is middle element.
+                answer.push_back(*midRight);
+
+            } else {
+
+                // Even window size:
+                // median is average of two middle elements.
+                auto midLeft = prev(midRight);
+
+                double median =
+                    ((double)*midLeft + (double)*midRight) / 2.0;
+
+                answer.push_back(median);
+            }
+        }
+    }
+
+    return answer;
+}
+
+int main() {
+
+    vector<int> nums = {
+        1, 3, -1, -3, 5, 3, 6, 7
+    };
+
+    int k = 3;
+
+    vector<double> ans =
+        slidingWindowMedianSimple(nums, k);
+
+    for (double x : ans) {
+        cout << x << " ";
+    }
+
+    return 0;
+}
+```
+
+---
+
+## Dry Run
+
+Input:
+
+```text
+nums = [1, 3, -1, -3, 5]
+k = 3
+```
+
+### i = 0
+
+```text
+insert 1
+window = [1]
+not full yet
+```
+
+### i = 1
+
+```text
+insert 3
+window = [1, 3]
+not full yet
+```
+
+### i = 2
+
+```text
+insert -1
+window = [-1, 1, 3]
+full window formed
+
+middle = 1
+answer = [1]
+```
+
+### i = 3
+
+```text
+insert -3
+window = [-3, -1, 1, 3]
+
+remove expired nums[0] = 1
+window = [-3, -1, 3]
+
+middle = -1
+answer = [1, -1]
+```
+
+### i = 4
+
+```text
+insert 5
+window = [-3, -1, 3, 5]
+
+remove expired nums[1] = 3
+window = [-3, -1, 5]
+
+middle = -1
+answer = [1, -1, -1]
+```
+
+---
+
+## Optimized Two-Multiset Version
+
+This is better for interviews.
+
+Maintain:
+
+```text
+left  = smaller half
+right = larger half
+```
+
+Rules:
+
+```text
+left.size() >= right.size()
+left contains median for odd K
+max(left) <= min(right)
+```
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class SlidingMedianEngine {
+private:
+    multiset<int> leftHalf;
+    multiset<int> rightHalf;
+
+    void rebalance() {
+
+        // Keep leftHalf size >= rightHalf size
+        // and size difference at most 1.
+        while (leftHalf.size() > rightHalf.size() + 1) {
+
+            auto it = prev(leftHalf.end());
+
+            rightHalf.insert(*it);
+
+            leftHalf.erase(it);
+        }
+
+        while (rightHalf.size() > leftHalf.size()) {
+
+            auto it = rightHalf.begin();
+
+            leftHalf.insert(*it);
+
+            rightHalf.erase(it);
+        }
+    }
+
+public:
+    void add(int x) {
+
+        // Insert into correct half.
+        if (leftHalf.empty() || x <= *prev(leftHalf.end())) {
+            leftHalf.insert(x);
+        } else {
+            rightHalf.insert(x);
+        }
+
+        rebalance();
+    }
+
+    void remove(int x) {
+
+        // Remove one occurrence from whichever half contains it.
+        auto itLeft = leftHalf.find(x);
+
+        if (itLeft != leftHalf.end()) {
+            leftHalf.erase(itLeft);
+        } else {
+            auto itRight = rightHalf.find(x);
+
+            if (itRight != rightHalf.end()) {
+                rightHalf.erase(itRight);
+            }
+        }
+
+        rebalance();
+    }
+
+    double median(int k) {
+
+        if (k % 2 == 1) {
+
+            // Odd:
+            // largest element in left half is median.
+            return *prev(leftHalf.end());
+        }
+
+        // Even:
+        // average of max(left) and min(right).
+        return (
+            (double)*prev(leftHalf.end()) +
+            (double)*rightHalf.begin()
+        ) / 2.0;
+    }
+};
+
+vector<double> slidingWindowMedian(
+    vector<int>& nums,
+    int k
+) {
+    SlidingMedianEngine engine;
+
+    vector<double> answer;
+
+    for (int i = 0; i < (int)nums.size(); i++) {
+
+        engine.add(nums[i]);
+
+        if (i >= k) {
+            engine.remove(nums[i - k]);
+        }
+
+        if (i >= k - 1) {
+            answer.push_back(engine.median(k));
+        }
+    }
+
+    return answer;
+}
+
+int main() {
+
+    vector<int> nums = {
+        1, 3, -1, -3, 5, 3, 6, 7
+    };
+
+    int k = 3;
+
+    vector<double> ans =
+        slidingWindowMedian(nums, k);
+
+    for (double x : ans) {
+        cout << x << " ";
+    }
+
+    return 0;
+}
+```
+
+---
+
+## Complexity
+
+Simple multiset version:
+
+```text
+insert = O(log K)
+remove = O(log K)
+median using next(begin, k/2) = O(K)
+
+Total = O(N * K) worst-case due to median iterator movement
+```
+
+Two-multiset version:
+
+```text
+insert = O(log K)
+remove = O(log K)
+median = O(1)
+
+Total = O(N log K)
+```
+
+---
+
+## Pattern Recognition
+
+Use this when problem says:
+
+```text
+median in every window
+dynamic ordered window
+remove expired element
+duplicates exist
+sliding window with order statistic
+```
+
+Real-system mapping:
+
+```text
+latency median over last 5 minutes
+stock median over rolling window
+CPU usage median dashboard
+real-time monitoring percentile engine
+```
 
 ---
 
