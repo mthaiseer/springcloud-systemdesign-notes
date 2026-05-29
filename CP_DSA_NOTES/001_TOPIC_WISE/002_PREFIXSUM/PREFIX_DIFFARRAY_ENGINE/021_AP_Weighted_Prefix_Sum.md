@@ -145,7 +145,11 @@ Arithmetic progression:
 
 Common AP sum:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"1+2+3+\\dots+n=\\frac{n(n+1)}{2}"}}
+
+$$
+1 + 2 + 3 + \dots + n = \frac{n(n+1)}{2}
+$$
+
 
 Weighted prefix naturally creates AP-style coefficients.
 
