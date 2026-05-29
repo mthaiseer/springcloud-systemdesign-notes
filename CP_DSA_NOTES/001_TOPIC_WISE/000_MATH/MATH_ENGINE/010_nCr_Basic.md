@@ -796,7 +796,7 @@ This section includes:
 Problem
 → Pattern
 → Step-by-step working
-→ C++ code
+→ C++ code with comments
 ```
 
 ---
@@ -805,17 +805,37 @@ Problem
 
 ### Problem
 
-Choose:
+There are:
 
 ```text
-3 members from 8 people
+8 people
 ```
+
+You need to choose:
+
+```text
+3 members
+```
+
+How many different teams can be formed?
 
 ---
 
 ### Pattern
 
-Combination.
+This is:
+
+```text
+choose 3 from 8
+```
+
+Order does not matter.
+
+So use:
+
+```cpp
+8C3
+```
 
 ---
 
@@ -823,9 +843,25 @@ Combination.
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"{8 \\choose 3} = \\frac{8!}{3!5!}"}}
+```cpp
+8C3 = 8! / (3! * 5!)
+```
+
+Instead of calculating full factorials:
+
+```text
+8C3 = (8 * 7 * 6) / (3 * 2 * 1)
+```
 
 Compute:
+
+```text
+8 * 7 * 6 = 336
+3 * 2 * 1 = 6
+336 / 6 = 56
+```
+
+Answer:
 
 ```cpp
 56
@@ -841,15 +877,31 @@ using namespace std;
 
 using ll = long long;
 
+// ---------------------------------------------------
+// Compute nCr using product form
+//
+// Why product form?
+// It avoids very large factorial values.
+// ---------------------------------------------------
 ll nCr(ll n, ll r) {
 
-    r = min(r, n-r);
+    // Impossible case
+    if (r > n)
+        return 0;
+
+    // nCr = nC(n-r)
+    // Use smaller r to reduce loop work
+    r = min(r, n - r);
 
     ll result = 1;
 
+    // Example:
+    // 8C3 = (6*7*8)/(1*2*3)
     for (ll i = 1; i <= r; i++) {
 
-        result = result * (n-r+i) / i;
+        result = result * (n - r + i);
+
+        result = result / i;
     }
 
     return result;
@@ -857,7 +909,10 @@ ll nCr(ll n, ll r) {
 
 int main() {
 
-    cout << nCr(8,3) << "\n";
+    ll n = 8;
+    ll r = 3;
+
+    cout << nCr(n, r) << "\n";
 
     return 0;
 }
@@ -869,21 +924,27 @@ int main() {
 
 ### Problem
 
+Given an array of size:
+
+```cpp
+10
+```
+
 How many subsets of size:
 
 ```cpp
 4
 ```
 
-exist in array of size:
-
-```cpp
-10
-```
+can be selected?
 
 ---
 
 ### Pattern
+
+A subset does not care about order.
+
+So this is:
 
 ```cpp
 10C4
@@ -896,13 +957,69 @@ exist in array of size:
 Formula:
 
 ```cpp
-10!/(4!*6!)
+10C4 = 10! / (4! * 6!)
+```
+
+Product form:
+
+```text
+10C4 = (10 * 9 * 8 * 7) / (4 * 3 * 2 * 1)
+```
+
+Compute:
+
+```text
+10 * 9 * 8 * 7 = 5040
+4 * 3 * 2 * 1 = 24
+5040 / 24 = 210
 ```
 
 Answer:
 
 ```cpp
 210
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+ll nCr(ll n, ll r) {
+
+    if (r > n)
+        return 0;
+
+    r = min(r, n - r);
+
+    ll answer = 1;
+
+    for (ll i = 1; i <= r; i++) {
+
+        // Pick next numerator term
+        answer *= (n - r + i);
+
+        // Divide by denominator term
+        answer /= i;
+    }
+
+    return answer;
+}
+
+int main() {
+
+    int arraySize = 10;
+    int subsetSize = 4;
+
+    cout << nCr(arraySize, subsetSize) << "\n";
+
+    return 0;
+}
 ```
 
 ---
@@ -917,28 +1034,103 @@ Find:
 7C3
 ```
 
-using DP.
+using Pascal triangle DP.
 
 ---
 
 ### Pattern
 
-Pascal recurrence.
+Use Pascal recurrence:
+
+```cpp
+nCr = (n-1)C(r-1) + (n-1)Cr
+```
+
+Meaning:
+
+```text
+Either choose current item
+or do not choose current item.
+```
 
 ---
 
 ### Step-by-Step Working
 
-Use:
+```cpp
+7C3 = 6C2 + 6C3
+```
+
+Known values:
 
 ```cpp
-7C3
-=
-6C2 + 6C3
-=
-15 + 20
-=
+6C2 = 15
+6C3 = 20
+```
+
+So:
+
+```cpp
+7C3 = 15 + 20 = 35
+```
+
+Answer:
+
+```cpp
 35
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+// ---------------------------------------------------
+// Build Pascal DP table
+//
+// dp[n][r] = nCr
+// ---------------------------------------------------
+vector<vector<ll>> buildNcrTable(int maxN) {
+
+    vector<vector<ll>> dp(
+        maxN + 1,
+        vector<ll>(maxN + 1, 0)
+    );
+
+    for (int n = 0; n <= maxN; n++) {
+
+        // Base cases:
+        // nC0 = 1
+        // nCn = 1
+        dp[n][0] = 1;
+        dp[n][n] = 1;
+
+        for (int r = 1; r < n; r++) {
+
+            // Pascal recurrence
+            dp[n][r] =
+                dp[n - 1][r - 1]
+                +
+                dp[n - 1][r];
+        }
+    }
+
+    return dp;
+}
+
+int main() {
+
+    auto dp = buildNcrTable(10);
+
+    cout << dp[7][3] << "\n";
+
+    return 0;
+}
 ```
 
 ---
@@ -947,13 +1139,33 @@ Use:
 
 ### Problem
 
-Choose 2 cards from 52 cards.
+From a deck of:
+
+```cpp
+52 cards
+```
+
+How many ways can you choose:
+
+```cpp
+2 cards
+```
+
+?
 
 ---
 
 ### Pattern
 
-Combination.
+Order does not matter.
+
+Choosing card A then B is same as choosing B then A.
+
+So use:
+
+```cpp
+52C2
+```
 
 ---
 
@@ -962,13 +1174,66 @@ Combination.
 Formula:
 
 ```cpp
-52C2
+52C2 = 52! / (2! * 50!)
 ```
 
-Result:
+Product form:
+
+```text
+52C2 = (52 * 51) / 2
+```
+
+Compute:
+
+```text
+52 * 51 = 2652
+2652 / 2 = 1326
+```
+
+Answer:
 
 ```cpp
 1326
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+ll nCr(ll n, ll r) {
+
+    if (r > n)
+        return 0;
+
+    r = min(r, n - r);
+
+    ll result = 1;
+
+    for (ll i = 1; i <= r; i++) {
+
+        result *= (n - r + i);
+
+        result /= i;
+    }
+
+    return result;
+}
+
+int main() {
+
+    ll totalCards = 52;
+    ll chooseCards = 2;
+
+    cout << nCr(totalCards, chooseCards) << "\n";
+
+    return 0;
+}
 ```
 
 ---
@@ -977,38 +1242,41 @@ Result:
 
 ### Problem
 
-Move from:
+You are in a:
 
 ```text
-top-left to bottom-right
+3 x 3 grid
 ```
 
-in grid using:
+Start:
 
 ```text
-only right/down
+top-left
 ```
+
+End:
+
+```text
+bottom-right
+```
+
+Allowed moves:
+
+```text
+Right or Down only
+```
+
+How many paths exist?
 
 ---
 
 ### Pattern
 
-Combination.
-
----
-
-### Step-by-Step Working
-
-For grid:
-
-```cpp
-3x3
-```
-
-Need:
+To move from top-left to bottom-right in `3x3` grid:
 
 ```text
-2 right + 2 down
+Need 2 Right moves
+Need 2 Down moves
 ```
 
 Total moves:
@@ -1017,13 +1285,287 @@ Total moves:
 4
 ```
 
-Choose positions of 2 rights:
+Choose positions of Right moves:
 
 ```cpp
+4C2
+```
+
+or choose positions of Down moves:
+
+```cpp
+4C2
+```
+
+---
+
+### Step-by-Step Working
+
+Moves are:
+
+```text
+R R D D
+```
+
+Any ordering of these 4 moves is valid.
+
+Number of unique arrangements:
+
+```cpp
+4! / (2! * 2!)
+```
+
+Same as:
+
+```cpp
+4C2
+```
+
+Compute:
+
+```text
 4C2 = 6
 ```
 
-Very important pattern.
+Possible paths:
+
+```text
+RRDD
+RDRD
+RDDR
+DRRD
+DRDR
+DDRR
+```
+
+Answer:
+
+```cpp
+6
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+ll nCr(ll n, ll r) {
+
+    if (r > n)
+        return 0;
+
+    r = min(r, n - r);
+
+    ll result = 1;
+
+    for (ll i = 1; i <= r; i++) {
+
+        result *= (n - r + i);
+
+        result /= i;
+    }
+
+    return result;
+}
+
+// ---------------------------------------------------
+// Count paths in rows x cols grid
+//
+// Need:
+// rows-1 down moves
+// cols-1 right moves
+//
+// Total moves:
+// rows+cols-2
+//
+// Choose down positions:
+// totalMoves C downMoves
+// ---------------------------------------------------
+ll countGridPaths(int rows, int cols) {
+
+    int downMoves = rows - 1;
+    int rightMoves = cols - 1;
+
+    int totalMoves = downMoves + rightMoves;
+
+    return nCr(totalMoves, downMoves);
+}
+
+int main() {
+
+    cout << countGridPaths(3, 3) << "\n";
+
+    return 0;
+}
+```
+
+---
+
+## Form 6 — Number Of Pairs
+
+### Problem
+
+Given:
+
+```cpp
+n = 6
+```
+
+How many unordered pairs can be formed?
+
+---
+
+### Pattern
+
+Choose 2 people/items from `n`.
+
+Use:
+
+```cpp
+nC2
+```
+
+---
+
+### Step-by-Step Working
+
+For:
+
+```cpp
+6C2
+```
+
+Formula:
+
+```text
+6 * 5 / 2 = 15
+```
+
+Answer:
+
+```cpp
+15
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+// ---------------------------------------------------
+// Number of unordered pairs from n items
+//
+// Formula:
+// nC2 = n*(n-1)/2
+// ---------------------------------------------------
+ll countPairs(ll n) {
+
+    return n * (n - 1) / 2;
+}
+
+int main() {
+
+    cout << countPairs(6) << "\n";
+
+    return 0;
+}
+```
+
+---
+
+## Form 7 — Number Of Triplets
+
+### Problem
+
+Given:
+
+```cpp
+n = 5
+```
+
+How many unordered triplets can be formed?
+
+---
+
+### Pattern
+
+Choose 3 items.
+
+Use:
+
+```cpp
+nC3
+```
+
+---
+
+### Step-by-Step Working
+
+For:
+
+```cpp
+5C3
+```
+
+Formula:
+
+```text
+5 * 4 * 3 / (3 * 2 * 1)
+```
+
+Compute:
+
+```text
+60 / 6 = 10
+```
+
+Answer:
+
+```cpp
+10
+```
+
+---
+
+### C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+// ---------------------------------------------------
+// Number of unordered triplets
+//
+// Formula:
+// nC3 = n*(n-1)*(n-2)/6
+// ---------------------------------------------------
+ll countTriplets(ll n) {
+
+    if (n < 3)
+        return 0;
+
+    return n * (n - 1) * (n - 2) / 6;
+}
+
+int main() {
+
+    cout << countTriplets(5) << "\n";
+
+    return 0;
+}
+```
 
 ---
 
