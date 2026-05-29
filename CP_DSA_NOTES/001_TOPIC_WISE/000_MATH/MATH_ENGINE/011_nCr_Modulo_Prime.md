@@ -1039,6 +1039,13 @@ Use:
 factorial + inverse factorial precomputation
 ```
 
+Because:
+
+```cpp
+nCr % MOD =
+fact[n] * invFact[r] * invFact[n-r] % MOD
+```
+
 ---
 
 ### Step-by-Step Working
@@ -1046,14 +1053,20 @@ factorial + inverse factorial precomputation
 Precompute once:
 
 ```text
-fact[i]
-invFact[i]
+fact[i]    = i! % MOD
+invFact[i] = inverse(i!) % MOD
 ```
 
-Then:
+For query:
 
 ```cpp
-nCr(n,r)=fact[n]*invFact[r]*invFact[n-r]
+10C3
+```
+
+Use:
+
+```cpp
+fact[10] * invFact[3] * invFact[7] % MOD
 ```
 
 Each query becomes:
@@ -1062,13 +1075,111 @@ Each query becomes:
 O(1)
 ```
 
+Precomputation:
+
+```text
+O(MAXN + log MOD)
+```
+
 ---
 
-### C++ Code
+### C++ Code With Comments
 
 ```cpp
-// See Code 4 — Many nCr Queries above.
-// Use same engine for all such problems.
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+const ll MOD = 1e9 + 7;
+const int MAXN = 1000000;
+
+vector<ll> fact(MAXN + 1);
+vector<ll> invFact(MAXN + 1);
+
+// ---------------------------------------------------
+// Fast power:
+// computes base^exp % MOD
+// Used for modular inverse.
+// ---------------------------------------------------
+ll modPower(ll base, ll exp) {
+
+    ll result = 1;
+    base %= MOD;
+
+    while (exp > 0) {
+
+        // If current bit is set,
+        // multiply current base into answer.
+        if (exp & 1) {
+            result = result * base % MOD;
+        }
+
+        // Square base for next bit.
+        base = base * base % MOD;
+
+        // Move to next exponent bit.
+        exp >>= 1;
+    }
+
+    return result;
+}
+
+// ---------------------------------------------------
+// Precompute factorial and inverse factorial.
+// ---------------------------------------------------
+void precompute() {
+
+    // Step 1:
+    // fact[0] = 1 because 0! = 1
+    fact[0] = 1;
+
+    // Step 2:
+    // Build factorial array.
+    for (int i = 1; i <= MAXN; i++) {
+        fact[i] = fact[i - 1] * i % MOD;
+    }
+
+    // Step 3:
+    // invFact[MAXN] = inverse(fact[MAXN])
+    invFact[MAXN] = modPower(fact[MAXN], MOD - 2);
+
+    // Step 4:
+    // Build inverse factorial backward:
+    // invFact[i] = invFact[i+1] * (i+1)
+    for (int i = MAXN - 1; i >= 0; i--) {
+        invFact[i] = invFact[i + 1] * (i + 1) % MOD;
+    }
+}
+
+// ---------------------------------------------------
+// O(1) nCr query after precomputation.
+// ---------------------------------------------------
+ll nCr(int n, int r) {
+
+    // Invalid selection.
+    if (r < 0 || r > n)
+        return 0;
+
+    return fact[n] * invFact[r] % MOD * invFact[n - r] % MOD;
+}
+
+int main() {
+
+    precompute();
+
+    vector<pair<int,int>> queries = {
+        {5, 2},
+        {10, 3},
+        {100, 50}
+    };
+
+    for (auto [n, r] : queries) {
+        cout << nCr(n, r) << "\n";
+    }
+
+    return 0;
+}
 ```
 
 ---
@@ -1083,37 +1194,171 @@ Find number of paths in large grid:
 1000 x 1000
 ```
 
-Only right/down moves.
+Allowed moves:
+
+```text
+Right or Down only
+```
+
+Return answer modulo:
+
+```cpp
+1e9+7
+```
 
 ---
 
 ### Pattern
 
-Use:
+For `rows x cols` grid:
+
+```text
+down moves  = rows - 1
+right moves = cols - 1
+total moves = down + right
+```
+
+Answer:
 
 ```cpp
-(totalMoves) C (downMoves)
+totalMoves C downMoves
 ```
 
 ---
 
 ### Step-by-Step Working
 
+For:
+
 ```text
-down = rows-1
-right = cols-1
-total = down+right
-answer = total C down
+3 x 3 grid
 ```
 
-Use nCr modulo prime.
+Need:
+
+```text
+2 down moves
+2 right moves
+```
+
+Total:
+
+```text
+4 moves
+```
+
+Choose positions of down moves:
+
+```cpp
+4C2 = 6
+```
+
+For:
+
+```text
+1000 x 1000
+```
+
+Need:
+
+```text
+999 down
+999 right
+1998 total
+```
+
+Answer:
+
+```cpp
+1998C999 % MOD
+```
 
 ---
 
-### C++ Code
+### C++ Code With Comments
 
 ```cpp
-// See Code 5 — Grid Paths Under MOD above.
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+const ll MOD = 1e9 + 7;
+const int MAXN = 2000000;
+
+vector<ll> fact(MAXN + 1);
+vector<ll> invFact(MAXN + 1);
+
+ll modPower(ll base, ll exp) {
+
+    ll result = 1;
+    base %= MOD;
+
+    while (exp > 0) {
+
+        if (exp & 1) {
+            result = result * base % MOD;
+        }
+
+        base = base * base % MOD;
+        exp >>= 1;
+    }
+
+    return result;
+}
+
+void precompute() {
+
+    fact[0] = 1;
+
+    for (int i = 1; i <= MAXN; i++) {
+        fact[i] = fact[i - 1] * i % MOD;
+    }
+
+    invFact[MAXN] = modPower(fact[MAXN], MOD - 2);
+
+    for (int i = MAXN - 1; i >= 0; i--) {
+        invFact[i] = invFact[i + 1] * (i + 1) % MOD;
+    }
+}
+
+ll nCr(int n, int r) {
+
+    if (r < 0 || r > n)
+        return 0;
+
+    return fact[n] * invFact[r] % MOD * invFact[n - r] % MOD;
+}
+
+// ---------------------------------------------------
+// Count paths in rows x cols grid.
+//
+// Need:
+// rows-1 down moves
+// cols-1 right moves
+//
+// Total unique sequences:
+// (down + right) C down
+// ---------------------------------------------------
+ll countGridPaths(int rows, int cols) {
+
+    int down = rows - 1;
+    int right = cols - 1;
+
+    int totalMoves = down + right;
+
+    return nCr(totalMoves, down);
+}
+
+int main() {
+
+    precompute();
+
+    cout << countGridPaths(3, 3) << "\n";
+    cout << countGridPaths(1000, 1000) << "\n";
+
+    return 0;
+}
 ```
 
 ---
@@ -1122,12 +1367,21 @@ Use nCr modulo prime.
 
 ### Problem
 
+There are:
+
+```text
+5 boys
+4 girls
+```
+
 Choose:
 
 ```text
-2 boys from 5
-1 girl from 4
+2 boys
+1 girl
 ```
+
+How many teams can be formed modulo `MOD`?
 
 ---
 
@@ -1143,18 +1397,110 @@ Independent choices multiply:
 
 ### Step-by-Step Working
 
-```text
+Choose boys:
+
+```cpp
 5C2 = 10
+```
+
+Choose girls:
+
+```cpp
 4C1 = 4
-answer = 10 * 4 = 40
+```
+
+Total:
+
+```cpp
+10 * 4 = 40
+```
+
+Under MOD:
+
+```cpp
+40
 ```
 
 ---
 
-### C++ Code
+### C++ Code With Comments
 
 ```cpp
-// See Code 6 — Count Teams With Constraints above.
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+const ll MOD = 1e9 + 7;
+const int MAXN = 1000000;
+
+vector<ll> fact(MAXN + 1);
+vector<ll> invFact(MAXN + 1);
+
+ll modPower(ll base, ll exp) {
+
+    ll result = 1;
+    base %= MOD;
+
+    while (exp > 0) {
+
+        if (exp & 1) {
+            result = result * base % MOD;
+        }
+
+        base = base * base % MOD;
+        exp >>= 1;
+    }
+
+    return result;
+}
+
+void precompute() {
+
+    fact[0] = 1;
+
+    for (int i = 1; i <= MAXN; i++) {
+        fact[i] = fact[i - 1] * i % MOD;
+    }
+
+    invFact[MAXN] = modPower(fact[MAXN], MOD - 2);
+
+    for (int i = MAXN - 1; i >= 0; i--) {
+        invFact[i] = invFact[i + 1] * (i + 1) % MOD;
+    }
+}
+
+ll nCr(int n, int r) {
+
+    if (r < 0 || r > n)
+        return 0;
+
+    return fact[n] * invFact[r] % MOD * invFact[n - r] % MOD;
+}
+
+int main() {
+
+    precompute();
+
+    int boys = 5;
+    int girls = 4;
+
+    // Step 1:
+    // Choose 2 boys from 5.
+    ll chooseBoys = nCr(boys, 2);
+
+    // Step 2:
+    // Choose 1 girl from 4.
+    ll chooseGirls = nCr(girls, 1);
+
+    // Step 3:
+    // Independent choices multiply.
+    ll totalWays = chooseBoys * chooseGirls % MOD;
+
+    cout << totalWays << "\n";
+
+    return 0;
+}
 ```
 
 ---
@@ -1163,7 +1509,7 @@ answer = 10 * 4 = 40
 
 ### Problem
 
-Array size:
+Given array size:
 
 ```cpp
 n = 100000
@@ -1175,25 +1521,116 @@ Count subsets of size:
 k = 500
 ```
 
+Return answer modulo:
+
+```cpp
+1e9+7
+```
+
 ---
 
 ### Pattern
 
-Use:
+A subset ignores order.
+
+So answer is:
 
 ```cpp
 nCk % MOD
 ```
 
-with factorial precomputation.
+Use factorial and inverse factorial.
 
 ---
 
 ### Step-by-Step Working
 
-```text
-precompute fact up to 100000
-answer = fact[n] * invFact[k] * invFact[n-k]
+Precompute up to:
+
+```cpp
+100000
+```
+
+Then:
+
+```cpp
+answer = fact[n] * invFact[k] * invFact[n-k] % MOD
+```
+
+For this problem:
+
+```cpp
+answer = fact[100000] * invFact[500] * invFact[99500] % MOD
+```
+
+---
+
+### C++ Code With Comments
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+const ll MOD = 1e9 + 7;
+const int MAXN = 100000;
+
+vector<ll> fact(MAXN + 1);
+vector<ll> invFact(MAXN + 1);
+
+ll modPower(ll base, ll exp) {
+
+    ll result = 1;
+    base %= MOD;
+
+    while (exp > 0) {
+
+        if (exp & 1) {
+            result = result * base % MOD;
+        }
+
+        base = base * base % MOD;
+        exp >>= 1;
+    }
+
+    return result;
+}
+
+void precompute() {
+
+    fact[0] = 1;
+
+    for (int i = 1; i <= MAXN; i++) {
+        fact[i] = fact[i - 1] * i % MOD;
+    }
+
+    invFact[MAXN] = modPower(fact[MAXN], MOD - 2);
+
+    for (int i = MAXN - 1; i >= 0; i--) {
+        invFact[i] = invFact[i + 1] * (i + 1) % MOD;
+    }
+}
+
+ll nCr(int n, int r) {
+
+    if (r < 0 || r > n)
+        return 0;
+
+    return fact[n] * invFact[r] % MOD * invFact[n - r] % MOD;
+}
+
+int main() {
+
+    precompute();
+
+    int n = 100000;
+    int k = 500;
+
+    cout << nCr(n, k) << "\n";
+
+    return 0;
+}
 ```
 
 ---
@@ -1202,28 +1639,278 @@ answer = fact[n] * invFact[k] * invFact[n-k]
 
 ### Problem
 
-Probability:
+There are:
 
 ```text
-favorable / total
+10 total outcomes
+3 favorable outcomes
 ```
 
-under MOD.
+Find probability under modulo:
+
+```cpp
+MOD = 1e9+7
+```
 
 ---
 
 ### Pattern
 
-Use modular inverse:
+Probability:
+
+```cpp
+favorable / total
+```
+
+Under modulo:
 
 ```cpp
 favorable * inverse(total) % MOD
 ```
 
-If favorable/total comes from combinations:
+---
 
-```text
-use nCr for favorable and total
+### Step-by-Step Working
+
+Normal probability:
+
+```cpp
+3 / 10
+```
+
+Modulo version:
+
+```cpp
+3 * inverse(10) % MOD
+```
+
+Since MOD is prime:
+
+```cpp
+inverse(10) = 10^(MOD-2) % MOD
+```
+
+Final answer:
+
+```cpp
+3 * modInverse(10) % MOD
+```
+
+---
+
+### C++ Code With Comments
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+const ll MOD = 1e9 + 7;
+
+// ---------------------------------------------------
+// Fast power for modular inverse.
+// ---------------------------------------------------
+ll modPower(ll base, ll exp) {
+
+    ll result = 1;
+    base %= MOD;
+
+    while (exp > 0) {
+
+        if (exp & 1) {
+            result = result * base % MOD;
+        }
+
+        base = base * base % MOD;
+        exp >>= 1;
+    }
+
+    return result;
+}
+
+// ---------------------------------------------------
+// Fermat inverse:
+// inverse(x) = x^(MOD-2)
+// because MOD is prime.
+// ---------------------------------------------------
+ll modInverse(ll x) {
+
+    return modPower(x, MOD - 2);
+}
+
+// ---------------------------------------------------
+// Probability under MOD:
+// favorable / total
+// becomes:
+// favorable * inverse(total) % MOD
+// ---------------------------------------------------
+ll probabilityMod(ll favorable, ll total) {
+
+    return favorable % MOD * modInverse(total) % MOD;
+}
+
+int main() {
+
+    ll favorable = 3;
+    ll total = 10;
+
+    cout << probabilityMod(favorable, total) << "\n";
+
+    return 0;
+}
+```
+
+---
+
+## Form 6 — Probability Using Combinations
+
+### Problem
+
+From 5 items, randomly choose 2.
+
+What is the probability that both chosen items come from a special group of 3?
+
+Return answer modulo `MOD`.
+
+---
+
+### Pattern
+
+Favorable outcomes:
+
+```cpp
+3C2
+```
+
+Total outcomes:
+
+```cpp
+5C2
+```
+
+Probability:
+
+```cpp
+3C2 / 5C2
+```
+
+Modulo:
+
+```cpp
+3C2 * inverse(5C2) % MOD
+```
+
+---
+
+### Step-by-Step Working
+
+Compute favorable:
+
+```cpp
+3C2 = 3
+```
+
+Compute total:
+
+```cpp
+5C2 = 10
+```
+
+Probability:
+
+```cpp
+3 / 10
+```
+
+Modulo:
+
+```cpp
+3 * inverse(10) % MOD
+```
+
+---
+
+### C++ Code With Comments
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+const ll MOD = 1e9 + 7;
+const int MAXN = 100000;
+
+vector<ll> fact(MAXN + 1);
+vector<ll> invFact(MAXN + 1);
+
+ll modPower(ll base, ll exp) {
+
+    ll result = 1;
+    base %= MOD;
+
+    while (exp > 0) {
+
+        if (exp & 1) {
+            result = result * base % MOD;
+        }
+
+        base = base * base % MOD;
+        exp >>= 1;
+    }
+
+    return result;
+}
+
+ll modInverse(ll x) {
+
+    return modPower(x, MOD - 2);
+}
+
+void precompute() {
+
+    fact[0] = 1;
+
+    for (int i = 1; i <= MAXN; i++) {
+        fact[i] = fact[i - 1] * i % MOD;
+    }
+
+    invFact[MAXN] = modInverse(fact[MAXN]);
+
+    for (int i = MAXN - 1; i >= 0; i--) {
+        invFact[i] = invFact[i + 1] * (i + 1) % MOD;
+    }
+}
+
+ll nCr(int n, int r) {
+
+    if (r < 0 || r > n)
+        return 0;
+
+    return fact[n] * invFact[r] % MOD * invFact[n - r] % MOD;
+}
+
+int main() {
+
+    precompute();
+
+    // Step 1:
+    // Favorable ways = choose 2 from special group of 3.
+    ll favorable = nCr(3, 2);
+
+    // Step 2:
+    // Total ways = choose 2 from all 5.
+    ll total = nCr(5, 2);
+
+    // Step 3:
+    // favorable / total under MOD.
+    ll answer = favorable * modInverse(total) % MOD;
+
+    cout << answer << "\n";
+
+    return 0;
+}
 ```
 
 ---
