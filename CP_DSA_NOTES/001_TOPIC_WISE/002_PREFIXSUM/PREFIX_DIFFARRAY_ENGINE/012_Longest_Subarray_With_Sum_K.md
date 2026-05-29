@@ -1557,82 +1557,591 @@ int longestBalanced01(vector<int>& nums) {
 
 ## 25. CP / FAANG Problem Forms
 
+---
+
 ### Problem 1 — Longest Subarray Sum K
 
-Recognition:
+#### Recognition
 
 ```text
 maximum length continuous subarray with sum K
 ```
 
-Pattern:
+Typical statement:
 
 ```text
-prefix + earliest index
+Given nums[] and integer K, return length of the longest subarray whose sum is K.
+```
+
+---
+
+#### Pattern
+
+```text
+Prefix Sum + Earliest Index HashMap
+```
+
+---
+
+#### Step-by-Step Working
+
+Input:
+
+```text
+nums = [1, -1, 5, -2, 3]
+K = 3
+```
+
+Initialize:
+
+```text
+firstIndex[0] = -1
+prefix = 0
+best = 0
+```
+
+At each index:
+
+```text
+prefix += nums[i]
+need = prefix - K
+```
+
+If `need` was seen before:
+
+```text
+candidateLength = i - firstIndex[need]
+best = max(best, candidateLength)
+```
+
+Important:
+
+```text
+Store prefix only if it is not already present.
+```
+
+Because earliest index gives longest length.
+
+Dry run important point:
+
+```text
+At i = 3:
+prefix = 3
+need = 0
+firstIndex[0] = -1
+length = 3 - (-1) = 4
+```
+
+Subarray:
+
+```text
+[1, -1, 5, -2]
+```
+
+Answer:
+
+```text
+4
+```
+
+---
+
+#### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int longestSubarraySumK(vector<int>& nums, int k) {
+    unordered_map<long long, int> firstIndex;
+
+    // Empty prefix sum exists before array starts.
+    // This handles subarrays starting from index 0.
+    firstIndex[0] = -1;
+
+    long long prefix = 0;
+    int best = 0;
+
+    for (int i = 0; i < nums.size(); i++) {
+        prefix += nums[i];
+
+        // We need a previous prefix such that:
+        // prefix - previousPrefix = k
+        long long need = prefix - k;
+
+        if (firstIndex.count(need)) {
+            int length = i - firstIndex[need];
+            best = max(best, length);
+        }
+
+        // Store only earliest occurrence.
+        // Do NOT overwrite because earliest gives maximum length.
+        if (!firstIndex.count(prefix)) {
+            firstIndex[prefix] = i;
+        }
+    }
+
+    return best;
+}
+
+int main() {
+    vector<int> nums = {1, -1, 5, -2, 3};
+    int k = 3;
+
+    cout << longestSubarraySumK(nums, k) << "\n";
+
+    return 0;
+}
 ```
 
 ---
 
 ### Problem 2 — Longest Zero Sum Subarray
 
-Recognition:
+#### Recognition
 
 ```text
-longest subarray sum 0
+longest subarray whose sum is 0
 ```
 
-Pattern:
+Typical statement:
 
 ```text
-repeated prefix sum
+Given an integer array, find the length of the longest subarray with sum 0.
+```
+
+---
+
+#### Pattern
+
+```text
+Repeated Prefix Sum
+```
+
+If the same prefix sum appears twice:
+
+```text
+prefix[i] == prefix[j]
+```
+
+then:
+
+```text
+sum(i+1 ... j) = 0
+```
+
+---
+
+#### Step-by-Step Working
+
+Input:
+
+```text
+nums = [15, -2, 2, -8, 1, 7, 10, 23]
+```
+
+Prefix sequence:
+
+```text
+before start: 0 at index -1
+
+i=0: 15
+i=1: 13
+i=2: 15
+i=3: 7
+i=4: 8
+i=5: 15
+i=6: 25
+i=7: 48
+```
+
+Prefix `15` appears first at index `0`, then again at index `5`.
+
+So subarray:
+
+```text
+index 1..5 = [-2, 2, -8, 1, 7]
+```
+
+Sum:
+
+```text
+0
+```
+
+Length:
+
+```text
+5
+```
+
+Answer:
+
+```text
+5
+```
+
+---
+
+#### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int longestZeroSumSubarray(vector<int>& nums) {
+    unordered_map<long long, int> firstIndex;
+
+    // Empty prefix at index -1.
+    firstIndex[0] = -1;
+
+    long long prefix = 0;
+    int best = 0;
+
+    for (int i = 0; i < nums.size(); i++) {
+        prefix += nums[i];
+
+        // If same prefix occurred before,
+        // subarray between previous index+1 and i has sum 0.
+        if (firstIndex.count(prefix)) {
+            int length = i - firstIndex[prefix];
+            best = max(best, length);
+        } else {
+            // Store earliest index only.
+            firstIndex[prefix] = i;
+        }
+    }
+
+    return best;
+}
+
+int main() {
+    vector<int> nums = {15, -2, 2, -8, 1, 7, 10, 23};
+
+    cout << longestZeroSumSubarray(nums) << "\n";
+
+    return 0;
+}
 ```
 
 ---
 
 ### Problem 3 — Contiguous Array
 
-Recognition:
+#### Recognition
 
 ```text
 equal number of 0 and 1
 ```
 
-Pattern:
+Typical statement:
 
 ```text
-0 -> -1, 1 -> +1
+Given a binary array, find the maximum length of a contiguous subarray
+with equal number of 0 and 1.
+```
+
+---
+
+#### Pattern
+
+```text
+Transform 0 -> -1
+Transform 1 -> +1
+Then find longest zero-sum subarray
+```
+
+---
+
+#### Step-by-Step Working
+
+Input:
+
+```text
+nums = [0, 1, 0, 1, 1, 0, 0]
+```
+
+Transform:
+
+```text
+0 -> -1
+1 -> +1
+```
+
+Converted array:
+
+```text
+[-1, +1, -1, +1, +1, -1, -1]
+```
+
+Now we need:
+
+```text
+longest subarray sum = 0
+```
+
+Because equal number of `0`s and `1`s means:
+
+```text
+count(1) - count(0) = 0
+```
+
+Use repeated prefix sum.
+
+---
+
+#### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int findMaxLength(vector<int>& nums) {
+    unordered_map<int, int> firstIndex;
+
+    // Prefix balance 0 before array starts.
+    firstIndex[0] = -1;
+
+    int balance = 0;
+    int best = 0;
+
+    for (int i = 0; i < nums.size(); i++) {
+        // Convert 0 to -1 and 1 to +1.
+        if (nums[i] == 0) {
+            balance -= 1;
+        } else {
+            balance += 1;
+        }
+
+        // Same balance means equal number of 0 and 1 in between.
+        if (firstIndex.count(balance)) {
+            int length = i - firstIndex[balance];
+            best = max(best, length);
+        } else {
+            firstIndex[balance] = i;
+        }
+    }
+
+    return best;
+}
+
+int main() {
+    vector<int> nums = {0, 1, 0, 1, 1, 0, 0};
+
+    cout << findMaxLength(nums) << "\n";
+
+    return 0;
+}
 ```
 
 ---
 
 ### Problem 4 — Longest Stable Metric Window
 
-Recognition:
+#### Recognition
 
 ```text
 net delta over window equals target
 ```
 
-Pattern:
+Typical real-world / FAANG-style wording:
 
 ```text
-prefix index map
+Given metric deltas over time, find the longest continuous time window
+whose net change equals target K.
+```
+
+---
+
+#### Pattern
+
+```text
+Longest subarray sum K
+```
+
+---
+
+#### Step-by-Step Working
+
+Metric deltas:
+
+```text
+deltas = [5, -2, -3, 4, -1, -3]
+K = 0
+```
+
+The first three values:
+
+```text
+5 - 2 - 3 = 0
+```
+
+So a stable window exists:
+
+```text
+index 0..2
+length = 3
+```
+
+Algorithm:
+
+```text
+prefix += deltas[i]
+need = prefix - K
+if need appeared before:
+    update longest length
+store earliest prefix
+```
+
+---
+
+#### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int longestStableMetricWindow(vector<int>& deltas, int target) {
+    unordered_map<long long, int> firstIndex;
+
+    firstIndex[0] = -1;
+
+    long long prefix = 0;
+    int best = 0;
+
+    for (int i = 0; i < deltas.size(); i++) {
+        prefix += deltas[i];
+
+        long long need = prefix - target;
+
+        if (firstIndex.count(need)) {
+            best = max(best, i - firstIndex[need]);
+        }
+
+        if (!firstIndex.count(prefix)) {
+            firstIndex[prefix] = i;
+        }
+    }
+
+    return best;
+}
+
+int main() {
+    vector<int> deltas = {5, -2, -3, 4, -1, -3};
+
+    cout << longestStableMetricWindow(deltas, 0) << "\n";
+
+    return 0;
+}
 ```
 
 ---
 
 ### Problem 5 — Positive-Only Longest Sum K
 
-Recognition:
+#### Recognition
 
 ```text
 all positive values
 ```
 
-Pattern:
+Typical statement:
 
 ```text
-sliding window
+Given an array of positive integers, find the longest subarray with sum K.
+```
+
+---
+
+#### Pattern
+
+```text
+Sliding Window
+```
+
+This is different from the general mixed-value version.
+
+Because all numbers are positive:
+
+```text
+expanding right increases sum
+shrinking left decreases sum
+```
+
+So the window is monotonic.
+
+---
+
+#### Step-by-Step Working
+
+Input:
+
+```text
+nums = [1, 2, 1, 1, 1, 3]
+K = 4
+```
+
+Window process:
+
+```text
+right=0 sum=1
+right=1 sum=3
+right=2 sum=4 -> length 3: [1,2,1]
+right=3 sum=5 -> shrink left
+right=4 sum=4 -> length 4: [2? after shrink adjusted]
+```
+
+Longest valid window:
+
+```text
+[1,1,1,1]
+```
+
+Length:
+
+```text
+4
+```
+
+---
+
+#### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int longestPositiveSubarraySumK(vector<int>& nums, int k) {
+    int left = 0;
+    long long sum = 0;
+    int best = 0;
+
+    for (int right = 0; right < nums.size(); right++) {
+        sum += nums[right];
+
+        // Since all numbers are positive,
+        // shrinking from left reduces the sum.
+        while (sum > k && left <= right) {
+            sum -= nums[left];
+            left++;
+        }
+
+        if (sum == k) {
+            best = max(best, right - left + 1);
+        }
+    }
+
+    return best;
+}
+
+int main() {
+    vector<int> nums = {1, 1, 1, 1, 3};
+    int k = 4;
+
+    cout << longestPositiveSubarraySumK(nums, k) << "\n";
+
+    return 0;
+}
 ```
 
 ---
