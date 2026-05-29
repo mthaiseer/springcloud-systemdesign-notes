@@ -60,32 +60,6 @@
 26. [CP / FAANG Problem Forms](#cp--faang-problem-forms)
 27. [Practice Checklist](#practice-checklist)
 28. [Next Step](#next-step)
-4. Geometric Progression Refresher
-5. GP Sum Formula
-6. Why GP Weighting Exists
-7. Basic GP Weighted Prefix Formula
-8. Modular GP Weighting
-9. Prefix Powers Technique
-10. Inverse Powers Technique
-11. Step-by-Step Dry Run — GP Prefix
-12. Step-by-Step Dry Run — Rolling Hash
-13. Problem Form 1 — Exponential Weighted Sum
-14. Problem Form 2 — Polynomial Rolling Hash
-15. Problem Form 3 — Weighted Decay Analytics
-16. Problem Form 4 — Modular GP Prefix Queries
-17. Problem Form 5 — Contribution With Powers
-18. Real World Model 1 — Search Ranking Decay
-19. Real World Model 2 — Streaming Recommendation Weight
-20. Real World Model 3 — Time Decay Event Scoring
-21. Real World Model 4 — Distributed Log Fingerprinting
-22. Decision Tree
-23. Common Mistakes
-24. Complexity
-25. Reusable C++ Templates
-26. CP / FAANG Problem Forms
-27. Practice Checklist
-28. Next Step
-
 ---
 
 # 1. What Is GP Weighted Prefix Sum?
