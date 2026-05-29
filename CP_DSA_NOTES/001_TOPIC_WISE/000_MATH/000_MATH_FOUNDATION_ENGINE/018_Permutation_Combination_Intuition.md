@@ -122,7 +122,9 @@ r items from n items
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"{}_nP_r = \\frac{n!}{(n-r)!}"}}
+```text
+nPr = n! / (n - r)!
+```
 
 ---
 
@@ -136,7 +138,9 @@ r items from n items
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"{}_nC_r = \\frac{n!}{r!(n-r)!}"}}
+```text
+nCr = n! / (r! * (n - r)!)
+```
 
 ---
 
@@ -155,7 +159,9 @@ But permutations count all orderings.
 
 Thus divide by:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"r!"}}
+```text
+r!
+```
 
 to remove duplicates.
 
@@ -171,7 +177,9 @@ total arrangements
 
 Definition:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"n! = n \\times (n-1) \\times (n-2) \\dots 1"}}
+```text
+n! = n * (n - 1) * (n - 2) * ... * 1
+```
 
 ---
 
@@ -227,7 +235,9 @@ CBA
 
 Total:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"3! = 6"}}
+```text
+3! = 6
+```
 
 ---
 
@@ -258,7 +268,9 @@ Choose 2 people from 5.
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"{}_5C_2 = \\frac{5!}{2!3!} = 10"}}
+```text
+5C2 = 5! / (2! * 3!) = 10
+```
 
 ---
 
@@ -272,7 +284,9 @@ Each element:
 
 Thus subsets:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"2^n"}}
+```text
+2^n
+```
 
 Very important counting observation.
 
@@ -282,7 +296,9 @@ Very important counting observation.
 
 Important identity:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"{}_nC_r = {}_{n-1}C_{r-1} + {}_{n-1}C_r"}}
+```text
+nCr = (n-1)C(r-1) + (n-1)Cr
+```
 
 Interpretation:
 
@@ -309,7 +325,9 @@ for each position
 
 Total:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"n^r"}}
+```text
+n^r
+```
 
 ---
 
@@ -320,7 +338,9 @@ Total:
 
 Total:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"10^3 = 1000"}}
+```text
+10^3 = 1000
+```
 
 ---
 
@@ -328,7 +348,9 @@ Total:
 
 Circular arrangements:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"(n-1)!"}}
+```text
+(n - 1)!
+```
 
 because rotations become identical.
 
@@ -354,7 +376,9 @@ Permutation of all elements.
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"n!"}}
+```text
+n!
+```
 
 ---
 
@@ -419,7 +443,9 @@ Combination.
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"{}_nC_r"}}
+```text
+nCr
+```
 
 ---
 
@@ -485,7 +511,9 @@ Order matters.
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"{}_nP_r"}}
+```text
+nPr
+```
 
 ---
 
@@ -528,7 +556,9 @@ Each element:
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"2^n"}}
+```text
+2^n
+```
 
 ---
 
@@ -606,7 +636,9 @@ Rotations identical.
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"(n-1)!"}}
+```text
+(n - 1)!
+```
 
 ---
 
@@ -645,7 +677,9 @@ Every position independent.
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"n^r"}}
+```text
+n^r
+```
 
 ---
 
