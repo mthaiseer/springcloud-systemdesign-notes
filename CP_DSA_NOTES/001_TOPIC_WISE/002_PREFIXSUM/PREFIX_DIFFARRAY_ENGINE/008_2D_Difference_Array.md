@@ -369,55 +369,117 @@ Now `diff` becomes final matrix.
 
 ### Problem
 
-Apply many updates:
+You are given a matrix of size:
 
 ```text
-add X inside rectangle
+rows x cols
 ```
 
-Need final matrix.
+Initially all cells are zero.
+
+You are given many updates:
+
+```text
+(r1, c1, r2, c2, val)
+```
+
+Each update means:
+
+```text
+add val to every cell inside rectangle (r1,c1) -> (r2,c2)
+```
+
+Return the final matrix.
 
 ---
 
 ### Pattern
 
 ```text
-2D Difference Array
+Offline rectangle updates
+=> 2D Difference Array
 ```
 
 ---
 
-### Step-by-Step Working
+### Problem Simulation
 
 Grid:
 
 ```text
-3 x 3
-all zeros
+rows = 3
+cols = 4
+
+initial =
+0 0 0 0
+0 0 0 0
+0 0 0 0
 ```
+
+Updates:
+
+```text
+1) add +5 on (1,1)->(2,3)
+2) add +2 on (0,0)->(1,1)
+```
+
+---
+
+### Step 1 — Apply Update 1
 
 Update:
 
 ```text
-+4 on rectangle:
-(0,1)->(2,2)
++5 on (1,1)->(2,3)
 ```
 
-Apply:
+Four-corner marking:
 
 ```text
-diff[0][1]+=4
-diff[0][3]-=4
-diff[3][1]-=4
-diff[3][3]+=4
+diff[1][1] += 5
+diff[1][4] -= 5
+diff[3][1] -= 5
+diff[3][4] += 5
 ```
 
-2D prefix rebuild gives:
+---
+
+### Step 2 — Apply Update 2
+
+Update:
 
 ```text
-0 4 4
-0 4 4
-0 4 4
++2 on (0,0)->(1,1)
+```
+
+Four-corner marking:
+
+```text
+diff[0][0] += 2
+diff[0][2] -= 2
+diff[2][0] -= 2
+diff[2][2] += 2
+```
+
+---
+
+### Step 3 — Rebuild With 2D Prefix
+
+After all updates, rebuild using:
+
+```text
+cell = diff[r][c]
+     + top
+     + left
+     - overlap
+```
+
+Final matrix:
+
+```text
+2 2 0 0
+2 7 5 5
+0 5 5 5
 ```
 
 ---
@@ -428,27 +490,37 @@ diff[3][3]+=4
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
+void addRectangle(vector<vector<long long>>& diff,
+                  int r1, int c1,
+                  int r2, int c2,
+                  long long val) {
 
+    // Start adding val from top-left corner.
+    diff[r1][c1] += val;
+
+    // Stop val after right boundary.
+    diff[r1][c2 + 1] -= val;
+
+    // Stop val after bottom boundary.
+    diff[r2 + 1][c1] -= val;
+
+    // Add back overlap that was removed twice.
+    diff[r2 + 1][c2 + 1] += val;
+}
+
+int main() {
     int rows = 3;
-    int cols = 3;
+    int cols = 4;
 
     vector<vector<long long>> diff(
         rows + 1,
         vector<long long>(cols + 1, 0)
     );
 
-    // Add +4 to rectangle (0,1)->(2,2)
-    int r1 = 0, c1 = 1;
-    int r2 = 2, c2 = 2;
-    int val = 4;
+    addRectangle(diff, 1, 1, 2, 3, 5);
+    addRectangle(diff, 0, 0, 1, 1, 2);
 
-    diff[r1][c1] += val;
-    diff[r1][c2 + 1] -= val;
-    diff[r2 + 1][c1] -= val;
-    diff[r2 + 1][c2 + 1] += val;
-
-    // Rebuild final matrix using 2D prefix.
+    // Rebuild final matrix using 2D prefix accumulation.
     for (int r = 0; r < rows; r++) {
         for (int c = 0; c < cols; c++) {
 
@@ -463,7 +535,6 @@ int main() {
         }
     }
 
-    // Print final matrix.
     for (int r = 0; r < rows; r++) {
         for (int c = 0; c < cols; c++) {
             cout << diff[r][c] << " ";
@@ -481,83 +552,85 @@ int main() {
 
 ### Problem
 
-Paint many rectangles on a canvas.
+A canvas is represented as a grid.
 
-Need final color/intensity grid.
+Each operation paints a rectangle and increases the paint intensity by `1`.
+
+After all painting operations, find:
+
+```text
+how many coats of paint each cell received
+```
 
 ---
 
 ### Pattern
 
 ```text
-2D Difference Array
+Rectangle increment updates
+=> 2D Difference Array
 ```
 
 ---
 
-### Example
+### Problem Simulation
 
-Operations:
+Canvas:
 
 ```text
-Paint rectangle A with +1
-Paint rectangle B with +1
+4 x 4
 ```
 
-Final prefix rebuild tells:
+Paint operations:
 
 ```text
-how many coats each cell received
+1) paint (0,0)->(1,1)
+2) paint (1,1)->(3,3)
+3) paint (2,0)->(3,2)
 ```
 
----
-
-### Real Mapping
+Initial:
 
 ```text
-image processing
-canvas painting
-tile updates
-pixel overlays
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
 ```
 
----
-
-## 14. Problem Form 3 — Heatmap Updates
-
-### Problem
-
-Many geo regions receive traffic boosts.
-
-Need final heatmap.
-
----
-
-### Pattern
+After all operations, final coats:
 
 ```text
-Rectangle updates on grid
+1 1 0 0
+1 2 1 1
+1 2 2 1
+1 2 2 1
 ```
 
 ---
 
-### Step-by-Step Working
+### Step-by-Step Logic
 
-Region update:
-
-```text
-+100 traffic on city block rectangle
-```
-
-Mark only 4 corners.
-
-After all updates:
+Each paint operation is:
 
 ```text
-2D prefix rebuild
+add +1 to rectangle
 ```
 
-gives final traffic density map.
+So each operation uses four-corner update:
+
+```text
+diff[r1][c1] += 1
+diff[r1][c2+1] -= 1
+diff[r2+1][c1] -= 1
+diff[r2+1][c2+1] += 1
+```
+
+After all paint operations:
+
+```text
+2D prefix rebuild gives final paint count
+```
 
 ---
 
@@ -567,33 +640,28 @@ gives final traffic density map.
 #include <bits/stdc++.h>
 using namespace std;
 
-class Heatmap {
+class MatrixPainter {
 private:
-    vector<vector<long long>> diff;
     int rows, cols;
+    vector<vector<int>> diff;
 
 public:
-    Heatmap(int r, int c) {
+    MatrixPainter(int r, int c) {
         rows = r;
         cols = c;
 
-        diff.assign(rows + 1,
-                    vector<long long>(cols + 1, 0));
+        diff.assign(rows + 1, vector<int>(cols + 1, 0));
     }
 
-    void addTraffic(
-        int r1, int c1,
-        int r2, int c2,
-        long long val
-    ) {
-
-        diff[r1][c1] += val;
-        diff[r1][c2 + 1] -= val;
-        diff[r2 + 1][c1] -= val;
-        diff[r2 + 1][c2 + 1] += val;
+    void paint(int r1, int c1, int r2, int c2) {
+        diff[r1][c1] += 1;
+        diff[r1][c2 + 1] -= 1;
+        diff[r2 + 1][c1] -= 1;
+        diff[r2 + 1][c2 + 1] += 1;
     }
 
-    vector<vector<long long>> build() {
+    vector<vector<int>> buildFinalCanvas() {
+        vector<vector<int>> canvas(rows, vector<int>(cols, 0));
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
@@ -606,23 +674,169 @@ public:
 
                 if (r > 0 && c > 0)
                     diff[r][c] -= diff[r - 1][c - 1];
+
+                canvas[r][c] = diff[r][c];
             }
         }
 
-        vector<vector<long long>> ans(
-            rows,
-            vector<long long>(cols)
-        );
+        return canvas;
+    }
+};
+
+int main() {
+    MatrixPainter painter(4, 4);
+
+    painter.paint(0, 0, 1, 1);
+    painter.paint(1, 1, 3, 3);
+    painter.paint(2, 0, 3, 2);
+
+    vector<vector<int>> canvas = painter.buildFinalCanvas();
+
+    for (auto &row : canvas) {
+        for (int x : row) cout << x << " ";
+        cout << "\n";
+    }
+
+    return 0;
+}
+```
+
+---
+
+## 14. Problem Form 3 — Heatmap Updates
+
+### Problem
+
+A heatmap grid stores traffic or user activity.
+
+Each region update increases traffic count in a rectangle.
+
+After many updates, build the final heatmap.
+
+---
+
+### Pattern
+
+```text
+Region boost updates
+=> 2D Difference Array
+```
+
+---
+
+### Problem Simulation
+
+Heatmap:
+
+```text
+5 x 5
+```
+
+Traffic campaigns:
+
+```text
+1) +100 on region (1,1)->(3,3)
+2) +50 on region (0,0)->(2,2)
+3) +30 on region (2,2)->(4,4)
+```
+
+Final heatmap conceptually:
+
+```text
+cells inside overlapping regions accumulate all boosts
+```
+
+For example:
+
+```text
+cell (2,2) receives:
++100
++50
++30
+= 180
+```
+
+---
+
+### Step-by-Step Logic
+
+Each traffic boost is:
+
+```text
+rectangle add
+```
+
+So we mark four corners for each campaign.
+
+Then one 2D prefix pass gives final traffic density.
+
+---
+
+### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class HeatmapDiff {
+private:
+    int rows, cols;
+    vector<vector<long long>> diff;
+
+public:
+    HeatmapDiff(int r, int c) {
+        rows = r;
+        cols = c;
+
+        diff.assign(rows + 1, vector<long long>(cols + 1, 0));
+    }
+
+    void addRegionTraffic(int r1, int c1, int r2, int c2, long long traffic) {
+        diff[r1][c1] += traffic;
+        diff[r1][c2 + 1] -= traffic;
+        diff[r2 + 1][c1] -= traffic;
+        diff[r2 + 1][c2 + 1] += traffic;
+    }
+
+    vector<vector<long long>> buildHeatmap() {
+        vector<vector<long long>> heat(rows, vector<long long>(cols, 0));
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-                ans[r][c] = diff[r][c];
+
+                if (r > 0)
+                    diff[r][c] += diff[r - 1][c];
+
+                if (c > 0)
+                    diff[r][c] += diff[r][c - 1];
+
+                if (r > 0 && c > 0)
+                    diff[r][c] -= diff[r - 1][c - 1];
+
+                heat[r][c] = diff[r][c];
             }
         }
 
-        return ans;
+        return heat;
     }
 };
+
+int main() {
+    HeatmapDiff heatmap(5, 5);
+
+    heatmap.addRegionTraffic(1, 1, 3, 3, 100);
+    heatmap.addRegionTraffic(0, 0, 2, 2, 50);
+    heatmap.addRegionTraffic(2, 2, 4, 4, 30);
+
+    vector<vector<long long>> result = heatmap.buildHeatmap();
+
+    for (auto &row : result) {
+        for (long long x : row) cout << x << " ";
+        cout << "\n";
+    }
+
+    return 0;
+}
 ```
 
 ---
@@ -631,48 +845,120 @@ public:
 
 ### Problem
 
-Game attacks affect rectangles.
+A game map is a grid.
 
-Need final HP reduction grid.
+Each attack damages a rectangular area.
+
+After all attacks, find total damage received by each cell.
 
 ---
 
 ### Pattern
 
 ```text
-2D Difference Array
+Area-of-effect rectangle updates
+=> 2D Difference Array
 ```
 
 ---
 
-### Example
+### Problem Simulation
 
-Attack:
-
-```text
-rectangle:
-(1,1)->(3,3)
-damage = 50
-```
-
-Instead of damaging every cell:
+Grid:
 
 ```text
-mark boundaries
+4 x 5
 ```
 
-Then one rebuild computes all damages.
+Attacks:
+
+```text
+1) damage 50 on (1,1)->(2,3)
+2) damage 20 on (0,2)->(3,4)
+3) heal -10 on (2,0)->(3,1)
+```
+
+Cell `(2,2)` receives:
+
+```text
+50 from attack 1
+20 from attack 2
+= 70 damage
+```
+
+Cell `(3,0)` receives:
+
+```text
+-10 heal
+```
 
 ---
 
-### Real Mapping
+### Commented C++ Code
 
-```text
-strategy games
-simulation engines
-physics grids
-AoE attacks
-terrain modification
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class GridDamage {
+private:
+    int rows, cols;
+    vector<vector<long long>> diff;
+
+public:
+    GridDamage(int r, int c) {
+        rows = r;
+        cols = c;
+
+        diff.assign(rows + 1, vector<long long>(cols + 1, 0));
+    }
+
+    void applyEffect(int r1, int c1, int r2, int c2, long long damage) {
+        diff[r1][c1] += damage;
+        diff[r1][c2 + 1] -= damage;
+        diff[r2 + 1][c1] -= damage;
+        diff[r2 + 1][c2 + 1] += damage;
+    }
+
+    vector<vector<long long>> buildDamageGrid() {
+        vector<vector<long long>> damage(rows, vector<long long>(cols, 0));
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+
+                if (r > 0)
+                    diff[r][c] += diff[r - 1][c];
+
+                if (c > 0)
+                    diff[r][c] += diff[r][c - 1];
+
+                if (r > 0 && c > 0)
+                    diff[r][c] -= diff[r - 1][c - 1];
+
+                damage[r][c] = diff[r][c];
+            }
+        }
+
+        return damage;
+    }
+};
+
+int main() {
+    GridDamage sim(4, 5);
+
+    sim.applyEffect(1, 1, 2, 3, 50);
+    sim.applyEffect(0, 2, 3, 4, 20);
+    sim.applyEffect(2, 0, 3, 1, -10);
+
+    vector<vector<long long>> damage = sim.buildDamageGrid();
+
+    for (auto &row : damage) {
+        for (long long x : row) cout << x << " ";
+        cout << "\n";
+    }
+
+    return 0;
+}
 ```
 
 ---
@@ -681,33 +967,96 @@ terrain modification
 
 ### Problem
 
-Many rectangle increments.
+Given a grid and many queries:
 
-Need final grid.
+```text
+r1 c1 r2 c2
+```
+
+Each query increments the rectangle by `1`.
+
+Return the final grid.
 
 ---
 
 ### Pattern
 
 ```text
-offline rectangle updates
+2D Difference Array with val = 1
 ```
 
 ---
 
-### Recognition
+### Problem Simulation
 
-If problem says:
+Grid:
 
 ```text
-apply many rectangle operations
-print final matrix
+3 x 3
 ```
 
-Think:
+Queries:
 
 ```text
-2D Difference Array
+(0,0)->(1,1)
+(1,1)->(2,2)
+(0,2)->(2,2)
+```
+
+Final grid:
+
+```text
+1 1 1
+1 2 2
+0 1 2
+```
+
+---
+
+### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int rows = 3;
+    int cols = 3;
+
+    vector<vector<int>> queries = {
+        {0, 0, 1, 1},
+        {1, 1, 2, 2},
+        {0, 2, 2, 2}
+    };
+
+    vector<vector<int>> diff(rows + 1, vector<int>(cols + 1, 0));
+
+    for (auto &q : queries) {
+        int r1 = q[0];
+        int c1 = q[1];
+        int r2 = q[2];
+        int c2 = q[3];
+
+        diff[r1][c1] += 1;
+        diff[r1][c2 + 1] -= 1;
+        diff[r2 + 1][c1] -= 1;
+        diff[r2 + 1][c2 + 1] += 1;
+    }
+
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+
+            if (r > 0) diff[r][c] += diff[r - 1][c];
+            if (c > 0) diff[r][c] += diff[r][c - 1];
+            if (r > 0 && c > 0) diff[r][c] -= diff[r - 1][c - 1];
+
+            cout << diff[r][c] << " ";
+        }
+        cout << "\n";
+    }
+
+    return 0;
+}
 ```
 
 ---
@@ -716,36 +1065,103 @@ Think:
 
 ### Scenario
 
-Traffic spikes occur in geo regions.
+A system divides the world map into a grid.
 
-Example:
+Each cell stores traffic pressure.
 
-```text
-+100 requests/sec in Europe region
-+50 requests/sec in US-East region
-```
-
-Represent world as grid.
-
-Rectangle updates inject load into regions.
-
-2D difference array stores:
+Regional events inject extra traffic:
 
 ```text
-where traffic increase starts/stops
-```
+Event A:
++100 traffic in rectangle (1,1)->(3,3)
 
-2D prefix rebuild gives final geo traffic map.
+Event B:
++60 traffic in rectangle (0,2)->(2,4)
+```
 
 ---
 
-### Backend Mapping
+### Problem Simulation
+
+Initial geo traffic:
 
 ```text
-CDN planning
-regional traffic estimation
-network balancing
-geo analytics
+0 0 0 0 0
+0 0 0 0 0
+0 0 0 0 0
+0 0 0 0 0
+```
+
+After region boosts, overlapping cells accumulate both values.
+
+Cell `(2,3)` receives:
+
+```text
++100 from Event A
++60 from Event B
+= 160
+```
+
+---
+
+### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class GeoTrafficGrid {
+private:
+    int rows, cols;
+    vector<vector<long long>> diff;
+
+public:
+    GeoTrafficGrid(int r, int c) {
+        rows = r;
+        cols = c;
+        diff.assign(rows + 1, vector<long long>(cols + 1, 0));
+    }
+
+    void injectTraffic(int r1, int c1, int r2, int c2, long long value) {
+        diff[r1][c1] += value;
+        diff[r1][c2 + 1] -= value;
+        diff[r2 + 1][c1] -= value;
+        diff[r2 + 1][c2 + 1] += value;
+    }
+
+    vector<vector<long long>> materialize() {
+        vector<vector<long long>> grid(rows, vector<long long>(cols));
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+
+                if (r > 0) diff[r][c] += diff[r - 1][c];
+                if (c > 0) diff[r][c] += diff[r][c - 1];
+                if (r > 0 && c > 0) diff[r][c] -= diff[r - 1][c - 1];
+
+                grid[r][c] = diff[r][c];
+            }
+        }
+
+        return grid;
+    }
+};
+
+int main() {
+    GeoTrafficGrid grid(4, 5);
+
+    grid.injectTraffic(1, 1, 3, 3, 100);
+    grid.injectTraffic(0, 2, 2, 4, 60);
+
+    auto result = grid.materialize();
+
+    for (auto &row : result) {
+        for (auto x : row) cout << x << " ";
+        cout << "\n";
+    }
+
+    return 0;
+}
 ```
 
 ---
@@ -754,39 +1170,96 @@ geo analytics
 
 ### Scenario
 
-A CDN tracks:
+A CDN provider tracks traffic density over regions.
+
+Multiple campaigns and live events create traffic pressure in rectangular zones.
+
+Need final heatmap for scaling decisions.
+
+---
+
+### Problem Simulation
+
+CDN grid:
 
 ```text
-request density across regions
+rows = 5
+cols = 5
 ```
 
-Many campaigns increase traffic in rectangular zones.
-
-Instead of updating every cell:
+Events:
 
 ```text
-store compact rectangle deltas
+sports event: +500 on (1,1)->(3,3)
+concert:      +300 on (2,2)->(4,4)
+news spike:   +200 on (0,0)->(1,4)
 ```
 
-Later:
+Important overlap:
 
 ```text
-materialize heatmap
+cell (2,2):
+sports + concert = 800
+```
+
+cell `(1,2)`:
+
+```text
+sports + news = 700
 ```
 
 ---
 
-### Distributed Systems Insight
+### Commented C++ Code
 
-Large systems often prefer:
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-```text
-compact delta operations
+struct Event {
+    int r1, c1, r2, c2;
+    long long load;
+};
+
+int main() {
+    int rows = 5, cols = 5;
+
+    vector<Event> events = {
+        {1, 1, 3, 3, 500},
+        {2, 2, 4, 4, 300},
+        {0, 0, 1, 4, 200}
+    };
+
+    vector<vector<long long>> diff(rows + 1, vector<long long>(cols + 1, 0));
+
+    for (auto &e : events) {
+        diff[e.r1][e.c1] += e.load;
+        diff[e.r1][e.c2 + 1] -= e.load;
+        diff[e.r2 + 1][e.c1] -= e.load;
+        diff[e.r2 + 1][e.c2 + 1] += e.load;
+    }
+
+    long long maxLoad = 0;
+
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+
+            if (r > 0) diff[r][c] += diff[r - 1][c];
+            if (c > 0) diff[r][c] += diff[r][c - 1];
+            if (r > 0 && c > 0) diff[r][c] -= diff[r - 1][c - 1];
+
+            maxLoad = max(maxLoad, diff[r][c]);
+
+            cout << diff[r][c] << " ";
+        }
+        cout << "\n";
+    }
+
+    cout << "Peak CDN load = " << maxLoad << "\n";
+
+    return 0;
+}
 ```
-
-instead of eagerly updating huge grids.
-
-2D difference array teaches exactly this mindset.
 
 ---
 
@@ -794,34 +1267,90 @@ instead of eagerly updating huge grids.
 
 ### Scenario
 
-Streaming platform tracks:
-
-```text
-viewer concentration
-```
-
-across geo regions.
+A streaming platform tracks load across geographic edge zones.
 
 Events:
 
 ```text
-sports event increases viewers in region
-concert increases viewers elsewhere
+football match
+concert stream
+breaking news
 ```
 
-Each event becomes rectangle update.
+Each event increases demand over a region.
 
-Final load grid reconstructed via 2D prefix.
+Need:
+
+```text
+final edge-cache pressure map
+```
 
 ---
 
-### Backend Mapping
+### Problem Simulation
+
+Grid:
 
 ```text
-video CDN scaling
-regional cache pressure
-stream replication planning
-edge load estimation
+4 x 4
+```
+
+Events:
+
+```text
+football +1000 on (0,0)->(2,2)
+concert  +700  on (1,1)->(3,3)
+```
+
+Overlap:
+
+```text
+(1,1), (1,2), (2,1), (2,2)
+```
+
+receive:
+
+```text
+1700
+```
+
+---
+
+### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int rows = 4, cols = 4;
+
+    vector<vector<long long>> diff(rows + 1, vector<long long>(cols + 1, 0));
+
+    auto addLoad = [&](int r1, int c1, int r2, int c2, long long load) {
+        diff[r1][c1] += load;
+        diff[r1][c2 + 1] -= load;
+        diff[r2 + 1][c1] -= load;
+        diff[r2 + 1][c2 + 1] += load;
+    };
+
+    addLoad(0, 0, 2, 2, 1000);
+    addLoad(1, 1, 3, 3, 700);
+
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+
+            if (r > 0) diff[r][c] += diff[r - 1][c];
+            if (c > 0) diff[r][c] += diff[r][c - 1];
+            if (r > 0 && c > 0) diff[r][c] -= diff[r - 1][c - 1];
+
+            cout << diff[r][c] << " ";
+        }
+        cout << "\n";
+    }
+
+    return 0;
+}
 ```
 
 ---
@@ -830,50 +1359,100 @@ edge load estimation
 
 ### Scenario
 
-Large simulation engine maintains:
+A game/simulation world is a huge grid.
+
+Events affect rectangle areas:
 
 ```text
-world grid
+rain increases water level
+fire reduces health
+pollution spreads
+resource grows
 ```
 
-Events affect rectangular areas:
-
-```text
-weather
-damage
-resource growth
-pollution spread
-```
-
-Instead of updating every cell immediately:
-
-```text
-store rectangle deltas
-```
-
-Then batch rebuild world state.
+Updating every affected cell immediately can be expensive.
 
 ---
 
-### System Insight
+### Problem Simulation
 
-This is:
+World grid:
 
 ```text
-lazy bulk update thinking
+5 x 5
 ```
 
-Very important for:
+Events:
 
 ```text
-distributed simulations
-game engines
-physics systems
-grid analytics
+rain +10 on (0,0)->(4,4)
+fire -30 on (1,1)->(3,3)
+resource +5 on (2,0)->(4,2)
+```
+
+Cell `(2,2)` receives:
+
+```text
++10 rain
+-30 fire
++5 resource
+= -15
 ```
 
 ---
 
+### Commented C++ Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct RectEvent {
+    int r1, c1, r2, c2;
+    long long delta;
+};
+
+int main() {
+    int rows = 5, cols = 5;
+
+    vector<RectEvent> events = {
+        {0, 0, 4, 4, 10},
+        {1, 1, 3, 3, -30},
+        {2, 0, 4, 2, 5}
+    };
+
+    vector<vector<long long>> diff(rows + 1, vector<long long>(cols + 1, 0));
+
+    for (auto &e : events) {
+        diff[e.r1][e.c1] += e.delta;
+        diff[e.r1][e.c2 + 1] -= e.delta;
+        diff[e.r2 + 1][e.c1] -= e.delta;
+        diff[e.r2 + 1][e.c2 + 1] += e.delta;
+    }
+
+    vector<vector<long long>> world(rows, vector<long long>(cols, 0));
+
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+
+            if (r > 0) diff[r][c] += diff[r - 1][c];
+            if (c > 0) diff[r][c] += diff[r][c - 1];
+            if (r > 0 && c > 0) diff[r][c] -= diff[r - 1][c - 1];
+
+            world[r][c] = diff[r][c];
+        }
+    }
+
+    for (auto &row : world) {
+        for (long long x : row) cout << x << " ";
+        cout << "\n";
+    }
+
+    return 0;
+}
+```
+
+---
 ## 21. Decision Tree
 
 ```text
