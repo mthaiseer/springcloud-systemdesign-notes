@@ -1,4002 +1,1591 @@
-# 011_Subarray_Sum_Equal_K.md
+# 011_Subarray_Sum_Equal_K.md — MiniPrefixSumDifferenceEngine
+
+# Subarray Sum Equal K
+
+> This is one of the most important Prefix Sum + HashMap patterns for FAANG and CP.
+>
+> Core idea:
+>
+> ```text
+> currentPrefix - previousPrefix = K
+> ```
+>
+> So:
+>
+> ```text
+> previousPrefix = currentPrefix - K
+> ```
+
+---
+
+## Clickable Index
+
+1. [What Is Subarray Sum Equal K?](#1-what-is-subarray-sum-equal-k)
+2. [Why This Topic Matters](#2-why-this-topic-matters)
+3. [Core Problem Form](#3-core-problem-form)
+4. [Brute Force Approach](#4-brute-force-approach)
+5. [Prefix Sum Algebra](#5-prefix-sum-algebra)
+6. [HashMap Frequency Idea](#6-hashmap-frequency-idea)
+7. [Why `freq[0] = 1` Is Needed](#7-why-freq0--1-is-needed)
+8. [Step-by-Step Dry Run 1 — Positive Numbers](#8-step-by-step-dry-run-1--positive-numbers)
+9. [Step-by-Step Dry Run 2 — Negative Numbers](#9-step-by-step-dry-run-2--negative-numbers)
+10. [Sliding Window vs Prefix HashMap](#10-sliding-window-vs-prefix-hashmap)
+11. [Problem Form 1 — Count Subarrays Equal K](#11-problem-form-1--count-subarrays-equal-k)
+12. [Problem Form 2 — Array With Negative Numbers](#12-problem-form-2--array-with-negative-numbers)
+13. [Problem Form 3 — Binary Array Sum Goal](#13-problem-form-3--binary-array-sum-goal)
+14. [Problem Form 4 — Count Zero Sum Subarrays](#14-problem-form-4--count-zero-sum-subarrays)
+15. [Problem Form 5 — Count Net Balance Windows](#15-problem-form-5--count-net-balance-windows)
+16. [Real World Model 1 — Financial Transaction Windows](#16-real-world-model-1--financial-transaction-windows)
+17. [Real World Model 2 — Kafka Event Delta Stream](#17-real-world-model-2--kafka-event-delta-stream)
+18. [Real World Model 3 — Metrics Threshold Window](#18-real-world-model-3--metrics-threshold-window)
+19. [Real World Model 4 — User Activity Score Window](#19-real-world-model-4--user-activity-score-window)
+20. [Decision Tree](#20-decision-tree)
+21. [Common Mistakes](#21-common-mistakes)
+22. [Complexity](#22-complexity)
+23. [Reusable C++ Templates](#23-reusable-c-templates)
+24. [CP / FAANG Problem Forms](#24-cp--faang-problem-forms)
+25. [Practice Checklist](#25-practice-checklist)
+26. [Next Step](#26-next-step)
 
-Detailed content.
+---
 
-Detailed content.
+## 1. What Is Subarray Sum Equal K?
 
-Detailed content.
+Given an array:
 
-Detailed content.
+```text
+nums[]
+```
 
-Detailed content.
+Count how many continuous subarrays have sum exactly:
 
-Detailed content.
+```text
+K
+```
 
-Detailed content.
+Example:
 
-Detailed content.
+```text
+nums = [1, 1, 1]
+K = 2
+```
 
-Detailed content.
+Valid subarrays:
 
-Detailed content.
+```text
+[1,1] at index 0..1
+[1,1] at index 1..2
+```
 
-Detailed content.
+Answer:
 
-Detailed content.
+```text
+2
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 2. Why This Topic Matters
 
-Detailed content.
+This is a high-frequency pattern because it combines:
 
-Detailed content.
+```text
+prefix sum
+hashmap
+subarray transformation
+negative number handling
+counting previous states
+```
 
-Detailed content.
+It appears in:
 
-Detailed content.
+```text
+LeetCode
+Google OA
+Meta OA
+Amazon OA
+Codeforces C/D
+AtCoder
+financial transaction windows
+event stream analysis
+metrics window detection
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 3. Core Problem Form
 
-Detailed content.
+Problem usually says:
 
-Detailed content.
+```text
+count subarrays with sum equal to k
+```
 
-Detailed content.
+or:
 
-Detailed content.
+```text
+find number of continuous windows where total is target
+```
 
-Detailed content.
+Important signal:
 
-Detailed content.
+```text
+array may contain negative numbers
+```
 
-Detailed content.
+If negative numbers exist, sliding window usually fails.
 
-Detailed content.
+Use:
 
-Detailed content.
+```text
+Prefix Sum + HashMap
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 4. Brute Force Approach
 
-Detailed content.
+Try all subarrays:
 
-Detailed content.
+```cpp
+for (int i = 0; i < n; i++) {
+    int sum = 0;
 
-Detailed content.
+    for (int j = i; j < n; j++) {
+        sum += nums[j];
 
-Detailed content.
+        if (sum == k) {
+            answer++;
+        }
+    }
+}
+```
 
-Detailed content.
+Complexity:
 
-Detailed content.
+```text
+O(N^2)
+```
 
-Detailed content.
+This may pass small constraints, but not large ones.
 
-Detailed content.
+---
 
-Detailed content.
+## 5. Prefix Sum Algebra
 
-Detailed content.
+Let:
 
-Detailed content.
+```text
+prefix[j] = nums[0] + nums[1] + ... + nums[j]
+```
 
-Detailed content.
+Sum of subarray:
 
-Detailed content.
+```text
+i..j
+```
 
-Detailed content.
+is:
 
-Detailed content.
+```text
+prefix[j] - prefix[i-1]
+```
 
-Detailed content.
+We want:
 
-Detailed content.
+```text
+prefix[j] - prefix[i-1] = K
+```
 
-Detailed content.
+Rearrange:
 
-Detailed content.
+```text
+prefix[i-1] = prefix[j] - K
+```
 
-Detailed content.
+So while standing at current index `j`, if we know:
 
-Detailed content.
+```text
+how many previous prefix sums equal currentPrefix - K
+```
 
-Detailed content.
+then we know how many valid subarrays end at `j`.
 
-Detailed content.
+---
 
-Detailed content.
+## 6. HashMap Frequency Idea
 
-Detailed content.
+Maintain:
 
-Detailed content.
+```text
+freq[prefixSum] = how many times this prefix sum appeared before
+```
 
-Detailed content.
+At each element:
 
-Detailed content.
+```text
+currentPrefix += nums[i]
+need = currentPrefix - K
+answer += freq[need]
+freq[currentPrefix]++
+```
 
-Detailed content.
+Why frequency?
 
-Detailed content.
+Because the same prefix sum may appear multiple times.
 
-Detailed content.
+Each previous occurrence can create a valid subarray.
 
-Detailed content.
+---
 
-Detailed content.
+## 7. Why `freq[0] = 1` Is Needed
 
-Detailed content.
+Before reading any element:
 
-Detailed content.
+```text
+prefix = 0
+```
 
-Detailed content.
+This represents the empty prefix.
 
-Detailed content.
+Example:
 
-Detailed content.
+```text
+nums = [3]
+K = 3
+```
 
-Detailed content.
+At index 0:
 
-Detailed content.
+```text
+prefix = 3
+need = prefix - K = 0
+```
 
-Detailed content.
+If:
 
-Detailed content.
+```text
+freq[0] = 1
+```
 
-Detailed content.
+then we count subarray:
 
-Detailed content.
+```text
+[3]
+```
 
-Detailed content.
+Without `freq[0] = 1`, subarrays starting at index 0 are missed.
 
-Detailed content.
+---
 
-Detailed content.
+## 8. Step-by-Step Dry Run 1 — Positive Numbers
 
-Detailed content.
+Input:
 
-Detailed content.
+```text
+nums = [1, 1, 1]
+K = 2
+```
 
-Detailed content.
+Initialize:
 
-Detailed content.
+```text
+freq = {0:1}
+prefix = 0
+answer = 0
+```
 
-Detailed content.
+---
 
-Detailed content.
+### i = 0
 
-Detailed content.
+```text
+x = 1
+prefix = 0 + 1 = 1
+need = 1 - 2 = -1
+freq[-1] = 0
+answer = 0
+freq[1]++
+```
 
-Detailed content.
+State:
 
-Detailed content.
+```text
+freq = {0:1, 1:1}
+answer = 0
+```
 
-Detailed content.
+---
 
-Detailed content.
+### i = 1
 
-Detailed content.
+```text
+x = 1
+prefix = 1 + 1 = 2
+need = 2 - 2 = 0
+freq[0] = 1
+answer += 1
+```
 
-Detailed content.
+Valid subarray:
 
-Detailed content.
+```text
+[1,1] from 0..1
+```
 
-Detailed content.
+Update:
 
-Detailed content.
+```text
+freq[2]++
+```
 
-Detailed content.
+State:
 
-Detailed content.
+```text
+freq = {0:1, 1:1, 2:1}
+answer = 1
+```
 
-Detailed content.
+---
 
-Detailed content.
+### i = 2
 
-Detailed content.
+```text
+x = 1
+prefix = 2 + 1 = 3
+need = 3 - 2 = 1
+freq[1] = 1
+answer += 1
+```
 
-Detailed content.
+Valid subarray:
 
-Detailed content.
+```text
+[1,1] from 1..2
+```
 
-Detailed content.
+Final:
 
-Detailed content.
+```text
+answer = 2
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 9. Step-by-Step Dry Run 2 — Negative Numbers
 
-Detailed content.
+Input:
 
-Detailed content.
+```text
+nums = [1, -1, 1, -1, 1]
+K = 0
+```
 
-Detailed content.
+Initialize:
 
-Detailed content.
+```text
+freq = {0:1}
+prefix = 0
+answer = 0
+```
 
-Detailed content.
+Prefix sequence:
 
-Detailed content.
+```text
+i=0: prefix=1
+i=1: prefix=0
+i=2: prefix=1
+i=3: prefix=0
+i=4: prefix=1
+```
 
-Detailed content.
+Whenever:
 
-Detailed content.
+```text
+currentPrefix - K = currentPrefix
+```
 
-Detailed content.
+has appeared before, we found zero-sum subarrays.
 
-Detailed content.
+---
 
-Detailed content.
+### Detailed Table
 
-Detailed content.
+| i | nums[i] | prefix | need | freq[need] before | answer added |
+|---|---:|---:|---:|---:|---:|
+| 0 | 1  | 1 | 1 | 0 | 0 |
+| 1 | -1 | 0 | 0 | 1 | 1 |
+| 2 | 1  | 1 | 1 | 1 | 1 |
+| 3 | -1 | 0 | 0 | 2 | 2 |
+| 4 | 1  | 1 | 1 | 2 | 2 |
 
-Detailed content.
+Total:
 
-Detailed content.
+```text
+answer = 6
+```
 
-Detailed content.
+This shows why frequency matters.
 
-Detailed content.
+---
 
-Detailed content.
+## 10. Sliding Window vs Prefix HashMap
 
-Detailed content.
+### Sliding Window Works When
 
-Detailed content.
+```text
+all numbers are non-negative
+```
 
-Detailed content.
+because increasing right pointer increases sum.
 
-Detailed content.
+---
 
-Detailed content.
+### Sliding Window Fails When
 
-Detailed content.
+```text
+negative numbers exist
+```
 
-Detailed content.
+because adding a number can decrease the sum.
 
-Detailed content.
+Example:
 
-Detailed content.
+```text
+[1, -1, 1]
+```
 
-Detailed content.
+The sum is not monotonic.
 
-Detailed content.
+---
 
-Detailed content.
+### Prefix HashMap Works With
 
-Detailed content.
+```text
+positive numbers
+negative numbers
+zero
+mixed values
+```
 
-Detailed content.
+So for general subarray sum equals K:
 
-Detailed content.
+```text
+use Prefix Sum + HashMap
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 11. Problem Form 1 — Count Subarrays Equal K
 
-Detailed content.
+### Problem
 
-Detailed content.
+Count subarrays with sum equal to `K`.
 
-Detailed content.
+Input:
 
-Detailed content.
+```text
+nums = [1, 2, 3]
+K = 3
+```
 
-Detailed content.
+Valid subarrays:
 
-Detailed content.
+```text
+[1,2]
+[3]
+```
 
-Detailed content.
+Answer:
 
-Detailed content.
+```text
+2
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Pattern Recognition
 
-Detailed content.
+```text
+count subarrays
+sum equals target
+array may contain any integer
+```
 
-Detailed content.
+Use:
 
-Detailed content.
+```text
+Prefix Sum + HashMap Frequency
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Step-by-Step Working
 
-Detailed content.
+Initialize:
 
-Detailed content.
+```text
+freq[0] = 1
+prefix = 0
+answer = 0
+```
 
-Detailed content.
+At index 0:
 
-Detailed content.
+```text
+prefix = 1
+need = -2
+not found
+freq[1]++
+```
 
-Detailed content.
+At index 1:
 
-Detailed content.
+```text
+prefix = 3
+need = 0
+freq[0] = 1
+answer = 1
+freq[3]++
+```
 
-Detailed content.
+At index 2:
 
-Detailed content.
+```text
+prefix = 6
+need = 3
+freq[3] = 1
+answer = 2
+freq[6]++
+```
 
-Detailed content.
+Final:
 
-Detailed content.
+```text
+2
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Commented C++ Code
 
-Detailed content.
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-Detailed content.
+int subarraySum(vector<int>& nums, int k) {
+    unordered_map<long long, int> freq;
 
-Detailed content.
+    // Empty prefix exists once.
+    freq[0] = 1;
 
-Detailed content.
+    long long prefix = 0;
+    int answer = 0;
 
-Detailed content.
+    for (int x : nums) {
+        prefix += x;
 
-Detailed content.
+        // Need previousPrefix = currentPrefix - k.
+        long long need = prefix - k;
 
-Detailed content.
+        if (freq.count(need)) {
+            answer += freq[need];
+        }
 
-Detailed content.
+        // Store current prefix for future subarrays.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return answer;
+}
 
-Detailed content.
+int main() {
+    vector<int> nums = {1, 2, 3};
+    int k = 3;
 
-Detailed content.
+    cout << subarraySum(nums, k) << "\n";
 
-Detailed content.
+    return 0;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 12. Problem Form 2 — Array With Negative Numbers
 
-Detailed content.
+### Problem
 
-Detailed content.
+Count subarrays with sum equal to target when array has negatives.
 
-Detailed content.
+Input:
 
-Detailed content.
+```text
+nums = [1, -1, 1, -1, 1]
+K = 0
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Why This Is Important
 
-Detailed content.
+Sliding window fails because values can decrease.
 
-Detailed content.
+Prefix hash works.
 
-Detailed content.
+---
 
-Detailed content.
+### Simulation
 
-Detailed content.
+Prefix values:
 
-Detailed content.
+```text
+0 initially
+1
+0
+1
+0
+1
+```
 
-Detailed content.
+Equal prefix sums mean:
 
-Detailed content.
+```text
+subarray between them has sum 0
+```
 
-Detailed content.
+Answer:
 
-Detailed content.
+```text
+6
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Commented C++ Code
 
-Detailed content.
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-Detailed content.
+int countZeroTarget(vector<int>& nums, int k) {
+    unordered_map<long long, int> freq;
 
-Detailed content.
+    freq[0] = 1;
 
-Detailed content.
+    long long prefix = 0;
+    int ans = 0;
 
-Detailed content.
+    for (int x : nums) {
+        prefix += x;
 
-Detailed content.
+        ans += freq[prefix - k];
 
-Detailed content.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return ans;
+}
 
-Detailed content.
+int main() {
+    vector<int> nums = {1, -1, 1, -1, 1};
 
-Detailed content.
+    cout << countZeroTarget(nums, 0) << "\n";
 
-Detailed content.
+    return 0;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 13. Problem Form 3 — Binary Array Sum Goal
 
-Detailed content.
+### Problem
 
-Detailed content.
+Given binary array:
 
-Detailed content.
+```text
+nums = [1, 0, 1, 0, 1]
+goal = 2
+```
 
-Detailed content.
+Count subarrays with sum equal to `goal`.
 
-Detailed content.
+---
 
-Detailed content.
+### Pattern
 
-Detailed content.
+```text
+Prefix Sum + HashMap
+```
 
-Detailed content.
+Because binary sum still creates prefix states.
 
-Detailed content.
+---
 
-Detailed content.
+### Simulation
 
-Detailed content.
+Valid subarrays with two ones include:
 
-Detailed content.
+```text
+[1,0,1]
+[1,0,1,0]
+[0,1,0,1]
+[1,0,1]
+```
 
-Detailed content.
+Answer:
 
-Detailed content.
+```text
+4
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Commented C++ Code
 
-Detailed content.
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-Detailed content.
+int numSubarraysWithSum(vector<int>& nums, int goal) {
+    unordered_map<int, int> freq;
 
-Detailed content.
+    freq[0] = 1;
 
-Detailed content.
+    int prefix = 0;
+    int ans = 0;
 
-Detailed content.
+    for (int x : nums) {
+        prefix += x;
 
-Detailed content.
+        ans += freq[prefix - goal];
 
-Detailed content.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return ans;
+}
 
-Detailed content.
+int main() {
+    vector<int> nums = {1, 0, 1, 0, 1};
+    int goal = 2;
 
-Detailed content.
+    cout << numSubarraysWithSum(nums, goal) << "\n";
 
-Detailed content.
+    return 0;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 14. Problem Form 4 — Count Zero Sum Subarrays
 
-Detailed content.
+### Problem
 
-Detailed content.
+Count subarrays whose sum is zero.
 
-Detailed content.
+Input:
 
-Detailed content.
+```text
+nums = [3, 4, -7, 1, 3, -4]
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Pattern
 
-Detailed content.
+```text
+same prefix sum repeated
+```
 
-Detailed content.
+If:
 
-Detailed content.
+```text
+prefix[i] == prefix[j]
+```
 
-Detailed content.
+then:
 
-Detailed content.
+```text
+sum(i+1..j) = 0
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Simulation
 
-Detailed content.
+Prefix:
 
-Detailed content.
+```text
+0
+3
+7
+0
+1
+4
+0
+```
 
-Detailed content.
+Prefix `0` appears 3 times.
 
-Detailed content.
+That alone contributes:
 
-Detailed content.
+```text
+C(3,2) = 3
+```
 
-Detailed content.
+Other repeated values also contribute.
 
-Detailed content.
+---
 
-Detailed content.
+### Commented C++ Code
 
-Detailed content.
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-Detailed content.
+long long countZeroSumSubarrays(vector<int>& nums) {
+    unordered_map<long long, long long> freq;
 
-Detailed content.
+    freq[0] = 1;
 
-Detailed content.
+    long long prefix = 0;
+    long long ans = 0;
 
-Detailed content.
+    for (int x : nums) {
+        prefix += x;
 
-Detailed content.
+        // If same prefix appeared before,
+        // subarray between old index and current has sum zero.
+        ans += freq[prefix];
 
-Detailed content.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return ans;
+}
 
-Detailed content.
+int main() {
+    vector<int> nums = {3, 4, -7, 1, 3, -4};
 
-Detailed content.
+    cout << countZeroSumSubarrays(nums) << "\n";
 
-Detailed content.
+    return 0;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 15. Problem Form 5 — Count Net Balance Windows
 
-Detailed content.
+### Problem
 
-Detailed content.
+Given transaction deltas:
 
-Detailed content.
+```text
++income
+-expense
+```
 
-Detailed content.
+Count windows whose net balance change equals target.
 
-Detailed content.
+Example:
 
-Detailed content.
+```text
+transactions = [100, -20, -30, 50, -100]
+target = 50
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Pattern
 
-Detailed content.
+```text
+Prefix Sum + HashMap
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Simulation
 
-Detailed content.
+We need intervals where:
 
-Detailed content.
+```text
+sum = 50
+```
 
-Detailed content.
+This could be:
 
-Detailed content.
+```text
+[100, -20, -30] = 50
+[50] = 50
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Commented C++ Code
 
-Detailed content.
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-Detailed content.
+long long countTransactionWindows(vector<int>& tx, int target) {
+    unordered_map<long long, long long> freq;
 
-Detailed content.
+    freq[0] = 1;
 
-Detailed content.
+    long long prefix = 0;
+    long long ans = 0;
 
-Detailed content.
+    for (int delta : tx) {
+        prefix += delta;
 
-Detailed content.
+        ans += freq[prefix - target];
 
-Detailed content.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return ans;
+}
 
-Detailed content.
+int main() {
+    vector<int> tx = {100, -20, -30, 50, -100};
+    int target = 50;
 
-Detailed content.
+    cout << countTransactionWindows(tx, target) << "\n";
 
-Detailed content.
+    return 0;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 16. Real World Model 1 — Financial Transaction Windows
 
-Detailed content.
+### Scenario
 
-Detailed content.
+A banking or fintech system stores transaction deltas:
 
-Detailed content.
+```text
++100 deposit
+-40 purchase
++20 refund
+-80 withdrawal
+```
 
-Detailed content.
+Question:
 
-Detailed content.
+```text
+How many continuous transaction windows have net change K?
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Simulation
 
-Detailed content.
+Transactions:
 
-Detailed content.
+```text
+[100, -40, 20, -80, 50]
+K = 60
+```
 
-Detailed content.
+Window:
 
-Detailed content.
+```text
+100 - 40 = 60
+```
 
-Detailed content.
+Another possible window may appear later.
 
-Detailed content.
+This is the same as:
 
-Detailed content.
+```text
+Subarray Sum Equal K
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Backend Mapping
 
-Detailed content.
+This can model:
 
-Detailed content.
+```text
+fraud detection windows
+net spending target
+cash-flow segment analysis
+ledger interval queries
+transaction anomaly detection
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Commented C++ Model
 
-Detailed content.
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-Detailed content.
+long long countNetChangeWindows(vector<int>& transactions, int target) {
+    unordered_map<long long, long long> freq;
 
-Detailed content.
+    freq[0] = 1;
 
-Detailed content.
+    long long prefix = 0;
+    long long count = 0;
 
-Detailed content.
+    for (int delta : transactions) {
+        prefix += delta;
 
-Detailed content.
+        count += freq[prefix - target];
 
-Detailed content.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return count;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 17. Real World Model 2 — Kafka Event Delta Stream
 
-Detailed content.
+### Scenario
 
-Detailed content.
+A Kafka topic stores event deltas:
 
-Detailed content.
+```text
++5 users joined
+-2 users left
++3 users joined
+```
 
-Detailed content.
+Question:
 
-Detailed content.
+```text
+How many continuous event segments changed active users by exactly K?
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Simulation
 
-Detailed content.
+Events:
 
-Detailed content.
+```text
+[5, -2, 3, -1, 2]
+K = 6
+```
 
-Detailed content.
+Segment:
 
-Detailed content.
+```text
+5 - 2 + 3 = 6
+```
 
-Detailed content.
+This is:
 
-Detailed content.
+```text
+subarray sum equal K over event deltas
+```
 
-Detailed content.
+---
 
-Detailed content.
+### System Mapping
 
-Detailed content.
+Useful for:
 
-Detailed content.
+```text
+event stream analytics
+state delta analysis
+consumer lag patterns
+windowed stream inspection
+incident replay
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Commented C++ Model
 
-Detailed content.
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-Detailed content.
+long long countEventDeltaWindows(vector<int>& events, int targetDelta) {
+    unordered_map<long long, long long> freq;
 
-Detailed content.
+    freq[0] = 1;
 
-Detailed content.
+    long long prefix = 0;
+    long long ans = 0;
 
-Detailed content.
+    for (int delta : events) {
+        prefix += delta;
 
-Detailed content.
+        ans += freq[prefix - targetDelta];
 
-Detailed content.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return ans;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 18. Real World Model 3 — Metrics Threshold Window
 
-Detailed content.
+### Scenario
 
-Detailed content.
+A monitoring system records metric deltas per minute:
 
-Detailed content.
+```text
+CPU score changes
+error count changes
+request load deltas
+```
 
-Detailed content.
+Question:
 
-Detailed content.
+```text
+How many continuous time windows accumulate exactly threshold K?
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Simulation
 
-Detailed content.
+Metric deltas:
 
-Detailed content.
+```text
+[2, 3, -1, 4, -2]
+K = 4
+```
 
-Detailed content.
+Valid windows:
 
-Detailed content.
+```text
+[4]
+[3,-1,4,-2]
+```
 
-Detailed content.
+---
 
-Detailed content.
+### System Mapping
 
-Detailed content.
+Used in:
 
-Detailed content.
+```text
+monitoring analytics
+alert window analysis
+error burst detection
+capacity planning
+SLO burn-rate investigation
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Commented C++ Model
 
-Detailed content.
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-Detailed content.
+long long countMetricWindows(vector<int>& deltas, int threshold) {
+    unordered_map<long long, long long> freq;
 
-Detailed content.
+    freq[0] = 1;
 
-Detailed content.
+    long long prefix = 0;
+    long long ans = 0;
 
-Detailed content.
+    for (int d : deltas) {
+        prefix += d;
 
-Detailed content.
+        ans += freq[prefix - threshold];
 
-Detailed content.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return ans;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 19. Real World Model 4 — User Activity Score Window
 
-Detailed content.
+### Scenario
 
-Detailed content.
+A product analytics system assigns user activity scores:
 
-Detailed content.
+```text
+login = +1
+purchase = +5
+refund = -3
+logout = -1
+```
 
-Detailed content.
+Question:
 
-Detailed content.
+```text
+How many continuous sessions/windows have activity score K?
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Simulation
 
-Detailed content.
+Activity stream:
 
-Detailed content.
+```text
+[1, 5, -3, -1, 2]
+K = 3
+```
 
-Detailed content.
+Window:
 
-Detailed content.
+```text
+5 - 3 + 1? 
+```
 
-Detailed content.
+The exact detection is handled by prefix hashmap.
 
-Detailed content.
+---
 
-Detailed content.
+### Product Mapping
 
-Detailed content.
+This helps model:
 
-Detailed content.
+```text
+engagement windows
+session scoring
+risk scoring intervals
+behavior analytics
+conversion journey analysis
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Commented C++ Model
 
-Detailed content.
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-Detailed content.
+long long countActivityScoreWindows(vector<int>& activity, int score) {
+    unordered_map<long long, long long> freq;
 
-Detailed content.
+    freq[0] = 1;
 
-Detailed content.
+    long long prefix = 0;
+    long long ans = 0;
 
-Detailed content.
+    for (int x : activity) {
+        prefix += x;
 
-Detailed content.
+        ans += freq[prefix - score];
 
-Detailed content.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return ans;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 20. Decision Tree
 
-Detailed content.
+```text
+Subarray problem?
+|
++-- Need sum exactly K?
+|   |
+|   +-- Array has negative/zero/mixed values?
+|       |
+|       +-- Prefix Sum + HashMap
+|
++-- All values positive and need shortest/longest?
+|   |
+|   +-- Sliding Window may work
+|
++-- Need count of subarrays?
+|   |
+|   +-- HashMap frequency
+|
++-- Need existence only?
+    |
+    +-- HashSet of previous prefixes may work
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 21. Common Mistakes
 
-Detailed content.
+### Mistake 1 — Forgetting `freq[0] = 1`
 
-Detailed content.
+Without it, subarrays starting at index 0 are missed.
 
-Detailed content.
+---
 
-Detailed content.
+### Mistake 2 — Updating Frequency Before Counting
 
-Detailed content.
+Wrong order:
 
-Detailed content.
+```cpp
+freq[prefix]++;
+ans += freq[prefix - k];
+```
 
-Detailed content.
+Correct order:
 
-Detailed content.
+```cpp
+ans += freq[prefix - k];
+freq[prefix]++;
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Mistake 3 — Using Sliding Window With Negatives
 
-Detailed content.
+Sliding window can fail if numbers are negative.
 
-Detailed content.
+Use prefix hashmap.
 
-Detailed content.
+---
 
-Detailed content.
+### Mistake 4 — Using `int` For Large Prefix
 
-Detailed content.
+Use:
 
-Detailed content.
+```cpp
+long long
+```
 
-Detailed content.
+when values are large.
 
-Detailed content.
+---
 
-Detailed content.
+### Mistake 5 — Storing Only Seen Prefix Instead Of Frequency
 
-Detailed content.
+For counting, we need:
 
-Detailed content.
+```text
+frequency
+```
 
-Detailed content.
+not just existence.
 
-Detailed content.
+---
 
-Detailed content.
+## 22. Complexity
 
-Detailed content.
+Time:
 
-Detailed content.
+```text
+O(N)
+```
 
-Detailed content.
+Space:
 
-Detailed content.
+```text
+O(N)
+```
 
-Detailed content.
+Because hashmap can store many prefix sums.
 
-Detailed content.
+---
 
-Detailed content.
+## 23. Reusable C++ Templates
 
-Detailed content.
+### Template 1 — Count Subarrays Equal K
 
-Detailed content.
+```cpp
+long long countSubarraysEqualK(vector<int>& nums, int k) {
+    unordered_map<long long, long long> freq;
 
-Detailed content.
+    freq[0] = 1;
 
-Detailed content.
+    long long prefix = 0;
+    long long ans = 0;
 
-Detailed content.
+    for (int x : nums) {
+        prefix += x;
 
-Detailed content.
+        ans += freq[prefix - k];
 
-Detailed content.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return ans;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Template 2 — Count Zero Sum Subarrays
 
-Detailed content.
+```cpp
+long long countZeroSum(vector<int>& nums) {
+    unordered_map<long long, long long> freq;
 
-Detailed content.
+    freq[0] = 1;
 
-Detailed content.
+    long long prefix = 0;
+    long long ans = 0;
 
-Detailed content.
+    for (int x : nums) {
+        prefix += x;
 
-Detailed content.
+        ans += freq[prefix];
 
-Detailed content.
+        freq[prefix]++;
+    }
 
-Detailed content.
+    return ans;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Template 3 — Existence Of Subarray Sum K
 
-Detailed content.
+```cpp
+bool existsSubarraySumK(vector<int>& nums, int k) {
+    unordered_set<long long> seen;
 
-Detailed content.
+    seen.insert(0);
 
-Detailed content.
+    long long prefix = 0;
 
-Detailed content.
+    for (int x : nums) {
+        prefix += x;
 
-Detailed content.
+        if (seen.count(prefix - k)) {
+            return true;
+        }
 
-Detailed content.
+        seen.insert(prefix);
+    }
 
-Detailed content.
+    return false;
+}
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 24. CP / FAANG Problem Forms
 
-Detailed content.
+### Problem 1 — Subarray Sum Equals K
 
-Detailed content.
+Recognition:
 
-Detailed content.
+```text
+count continuous subarrays with sum k
+```
 
-Detailed content.
+Pattern:
 
-Detailed content.
+```text
+prefix sum + hashmap frequency
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Problem 2 — Zero Sum Subarrays
 
-Detailed content.
+Recognition:
 
-Detailed content.
+```text
+subarray sum equals 0
+```
 
-Detailed content.
+Pattern:
 
-Detailed content.
+```text
+same prefix repeated
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Problem 3 — Binary Subarray With Sum
 
-Detailed content.
+Recognition:
 
-Detailed content.
+```text
+binary array, count subarrays with goal
+```
 
-Detailed content.
+Pattern:
 
-Detailed content.
+```text
+prefix count
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Problem 4 — Event Delta Window
 
-Detailed content.
+Recognition:
 
-Detailed content.
+```text
+continuous event segment has target total
+```
 
-Detailed content.
+Pattern:
 
-Detailed content.
+```text
+prefix delta hashmap
+```
 
-Detailed content.
+---
 
-Detailed content.
+### Problem 5 — Financial Net Change Window
 
-Detailed content.
+Recognition:
 
-Detailed content.
+```text
+transaction interval sum equals target
+```
 
-Detailed content.
+Pattern:
 
-Detailed content.
+```text
+prefix sum + hashmap
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 25. Practice Checklist
 
-Detailed content.
+Before coding:
 
-Detailed content.
+```text
+1. Is it a subarray problem?
+2. Need sum exactly K?
+3. Need count, not just existence?
+4. Are negatives possible?
+5. Did I initialize freq[0] = 1?
+6. Did I compute need = prefix - K?
+7. Did I count before inserting current prefix?
+8. Should prefix be long long?
+9. Is sliding window invalid here?
+10. Did I test K = 0?
+```
 
-Detailed content.
+---
 
-Detailed content.
+## 26. Next Step
 
-Detailed content.
+```text
+012_Longest_Subarray_With_Sum_K.md
+```
 
-Detailed content.
+Next file covers:
 
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
-Detailed content.
-
+```text
+longest length
+earliest prefix index
+hashmap storing first occurrence
+positive-only vs mixed-number logic
