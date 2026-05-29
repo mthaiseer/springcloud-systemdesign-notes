@@ -139,7 +139,9 @@ VERY common CP pattern.
 
 Number of unordered pairs from n elements:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"\\frac{n(n-1)}{2}"}}
+```text
+n(n - 1) / 2
+```
 
 ---
 
@@ -185,7 +187,9 @@ long long pairCount(long long n) {
 
 Number of subarrays:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"\\frac{n(n+1)}{2}"}}
+```text
+n(n + 1) / 2
+```
 
 because:
 - choose start
@@ -241,7 +245,9 @@ Each element:
 
 Thus total subsets:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"2^n"}}
+```text
+2^n
+```
 
 ---
 
@@ -305,7 +311,9 @@ Example:
 
 Need check only till:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"\\sqrt{n}"}}
+```text
+sqrt(n)
+```
 
 ---
 
@@ -474,7 +482,9 @@ Choose any 2 elements.
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"\\frac{n(n-1)}{2}"}}
+```text
+n(n - 1) / 2
+```
 
 ---
 
@@ -526,7 +536,9 @@ Choose:
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"\\frac{n(n+1)}{2}"}}
+```text
+n(n + 1) / 2
+```
 
 ---
 
@@ -562,7 +574,9 @@ Each element:
 
 Formula:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"2^n"}}
+```text
+2^n
+```
 
 ---
 
@@ -594,7 +608,9 @@ Divisors appear in pairs.
 
 Check till:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"\\sqrt{n}"}}
+```text
+sqrt(n)
+```
 
 ---
 
@@ -723,7 +739,9 @@ Find edges from degrees.
 
 Sum of degrees:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"2E"}}
+```text
+2E
+```
 
 ---
 
