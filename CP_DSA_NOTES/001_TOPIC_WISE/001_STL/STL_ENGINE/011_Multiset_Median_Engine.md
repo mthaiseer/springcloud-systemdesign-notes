@@ -482,6 +482,31 @@ two heaps + lazy deletion
 
 ## Simple Multiset Version
 
+### Step-by-Step Approach Before Code
+
+```text
+Step 1: Create a multiset to store current window values in sorted order.
+
+Step 2: Traverse nums from left to right.
+
+Step 3: Insert nums[i] into the multiset.
+
+Step 4: If window size becomes greater than k:
+        remove the expired element nums[i-k].
+
+Step 5: When i >= k-1, full window is ready.
+
+Step 6: Find middle element from sorted multiset.
+
+Step 7: If k is odd:
+        median = middle element.
+
+Step 8: If k is even:
+        median = average of two middle elements.
+
+Step 9: Store median in answer.
+```
+
 ### C++ Code
 
 ```cpp
@@ -634,6 +659,47 @@ answer = [1, -1, -1]
 ## Optimized Two-Multiset Version
 
 This is better for interviews.
+
+### Step-by-Step Approach Before Code
+
+```text
+Step 1: Maintain two multisets:
+        leftHalf  = smaller half
+        rightHalf = larger half
+
+Step 2: Keep this invariant:
+        every value in leftHalf <= every value in rightHalf.
+
+Step 3: Keep size balance:
+        leftHalf.size() >= rightHalf.size()
+        size difference at most 1.
+
+Step 4: When adding x:
+        if x <= max(leftHalf), insert into leftHalf.
+        otherwise insert into rightHalf.
+
+Step 5: Rebalance after insert:
+        if leftHalf too large, move max(leftHalf) to rightHalf.
+        if rightHalf larger, move min(rightHalf) to leftHalf.
+
+Step 6: When removing expired x:
+        find x in leftHalf or rightHalf.
+        erase only one occurrence.
+        rebalance again.
+
+Step 7: Median query:
+        if k is odd:
+            median = max(leftHalf)
+        else:
+            median = average(max(leftHalf), min(rightHalf))
+
+Step 8: Slide window:
+        add nums[i]
+        remove nums[i-k] when i >= k
+        record median when i >= k-1
+```
+
+
 
 Maintain:
 
