@@ -32,9 +32,34 @@
 
 # Clickable Index
 
-1. What Is GP Weighted Prefix Sum?
-2. Why This Topic Matters
-3. Core Mental Model
+1. [What Is GP Weighted Prefix Sum?](#what-is-gp-weighted-prefix-sum?)
+2. [Why This Topic Matters](#why-this-topic-matters)
+3. [Core Mental Model](#core-mental-model)
+4. [Geometric Progression Refresher](#geometric-progression-refresher)
+5. [GP Sum Formula](#gp-sum-formula)
+6. [Why GP Weighting Exists](#why-gp-weighting-exists)
+7. [Basic GP Weighted Prefix Formula](#basic-gp-weighted-prefix-formula)
+8. [Modular GP Weighting](#modular-gp-weighting)
+9. [Prefix Powers Technique](#prefix-powers-technique)
+10. [Inverse Powers Technique](#inverse-powers-technique)
+11. [Step-by-Step Dry Run — GP Prefix](#step-by-step-dry-run--gp-prefix)
+12. [Step-by-Step Dry Run — Rolling Hash](#step-by-step-dry-run--rolling-hash)
+13. [Problem Form 1 — Exponential Weighted Sum](#problem-form-1--exponential-weighted-sum)
+14. [Problem Form 2 — Polynomial Rolling Hash](#problem-form-2--polynomial-rolling-hash)
+15. [Problem Form 3 — Weighted Decay Analytics](#problem-form-3--weighted-decay-analytics)
+16. [Problem Form 4 — Modular GP Prefix Queries](#problem-form-4--modular-gp-prefix-queries)
+17. [Problem Form 5 — Contribution With Powers](#problem-form-5--contribution-with-powers)
+18. [Real World Model 1 — Search Ranking Decay](#real-world-model-1--search-ranking-decay)
+19. [Real World Model 2 — Streaming Recommendation Weight](#real-world-model-2--streaming-recommendation-weight)
+20. [Real World Model 3 — Time Decay Event Scoring](#real-world-model-3--time-decay-event-scoring)
+21. [Real World Model 4 — Distributed Log Fingerprinting](#real-world-model-4--distributed-log-fingerprinting)
+22. [Decision Tree](#decision-tree)
+23. [Common Mistakes](#common-mistakes)
+24. [Complexity](#complexity)
+25. [Reusable C++ Templates](#reusable-c++-templates)
+26. [CP / FAANG Problem Forms](#cp--faang-problem-forms)
+27. [Practice Checklist](#practice-checklist)
+28. [Next Step](#next-step)
 4. Geometric Progression Refresher
 5. GP Sum Formula
 6. Why GP Weighting Exists
@@ -167,11 +192,13 @@ Ratio:
 
 GP sum:
 
-$$
+
+```math
 1 + r + r^2 + \dots + r^n
 =
 \frac{r^{n+1}-1}{r-1}
-$$
+```
+
 
 Special case:
 
@@ -179,11 +206,13 @@ Special case:
 r = 2
 ```
 
-$$
+
+```math
 1 + 2 + 4 + 8 + \dots + 2^n
 =
 2^{n+1}-1
-$$
+```
+
 
 ---
 
