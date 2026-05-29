@@ -1105,90 +1105,642 @@ int main() {
 
 ## 18. Real World Model 1 — Traffic Burst Timeline
 
-Suppose a system receives traffic boosts:
+### Scenario
+
+Imagine an ad-tech or CDN platform.
+
+Marketing campaigns temporarily increase traffic:
 
 ```text
-campaign A increases traffic by 100 req/s from t=10 to t=20
-campaign B increases traffic by 50 req/s from t=15 to t=25
+Campaign A:
++100 requests/sec from t=10 to t=20
+
+Campaign B:
++50 requests/sec from t=15 to t=25
 ```
 
-Use diff:
+We want to know:
+
+```text
+Total additional traffic at every second.
+```
+
+---
+
+### Naive Approach
+
+For every campaign:
+
+```text
+loop from start to end
+add traffic
+```
+
+If:
+
+```text
+millions of campaigns
+large timeline
+```
+
+this becomes expensive.
+
+---
+
+### Difference Array Mental Model
+
+Instead of updating every second:
+
+```text
+Mark when traffic starts
+Mark when traffic stops
+```
+
+For Campaign A:
 
 ```text
 diff[10] += 100
 diff[21] -= 100
+```
+
+For Campaign B:
+
+```text
 diff[15] += 50
 diff[26] -= 50
 ```
 
-Prefix gives total added traffic at each time.
+---
+
+### Step-by-Step Timeline Build
+
+Initial diff:
+
+```text
+all zeros
+```
+
+After A:
+
+```text
+time 10 -> +100
+time 21 -> -100
+```
+
+After B:
+
+```text
+time 15 -> +50
+time 26 -> -50
+```
+
+Now take prefix sum.
+
+---
+
+### Prefix Accumulation
+
+At time:
+
+```text
+0..9 -> 0
+10..14 -> 100
+15..20 -> 150
+21..25 -> 50
+26+ -> 0
+```
+
+Final traffic contribution:
+
+```text
+0   0   0 ...
+100 100 ...
+150 150 ...
+50  50 ...
+0
+```
+
+---
+
+### Backend System Mapping
+
+This pattern appears in:
+
+```text
+traffic forecasting
+CDN load estimation
+API request modeling
+campaign analytics
+capacity planning
+autoscaling prediction
+```
+
+---
+
+### Why This Is Powerful
+
+Instead of:
+
+```text
+O(number_of_intervals * interval_length)
+```
+
+we get:
+
+```text
+O(number_of_intervals + timeline_size)
+```
+
+This is huge for large-scale systems.
+
+---
+
+### Production Insight
+
+Many monitoring systems internally process:
+
+```text
+state changes
+```
+
+instead of continuously storing full values.
+
+Difference-array thinking is:
+
+```text
+store deltas
+then reconstruct state
+```
+
+This idea appears everywhere in distributed systems.
 
 ---
 
 ## 19. Real World Model 2 — Kafka-Style Event Delta Accumulation
 
-In event systems, we often store changes:
+### Scenario
+
+Suppose a Kafka-like event system stores events:
 
 ```text
-+10 at time t1
--10 at time t2
++10 active users
+-3 active users
++7 active users
 ```
 
-Then cumulative processing reconstructs state over time.
-
-This is the same mental model as difference array:
+Instead of storing:
 
 ```text
-events are deltas
-prefix accumulation gives state
+complete system state every second
 ```
+
+the system stores:
+
+```text
+changes (deltas)
+```
+
+---
+
+### Core Mental Model
+
+Difference array is exactly:
+
+```text
+delta storage
+```
+
+Prefix accumulation is:
+
+```text
+state reconstruction
+```
+
+---
+
+### Event Stream Example
+
+Kafka topic events:
+
+```text
+t=1 : +5
+t=3 : +2
+t=5 : -4
+```
+
+Diff representation:
+
+```text
+diff[1] += 5
+diff[3] += 2
+diff[5] -= 4
+```
+
+Prefix reconstruction:
+
+```text
+time 0 -> 0
+time 1 -> 5
+time 2 -> 5
+time 3 -> 7
+time 4 -> 7
+time 5 -> 3
+```
+
+---
+
+### Why Event Systems Prefer Deltas
+
+Storing full state repeatedly is expensive.
+
+Instead systems often store:
+
+```text
+changes only
+```
+
+Advantages:
+
+```text
+1. smaller storage
+2. append-only log
+3. replay capability
+4. event sourcing
+5. timeline reconstruction
+```
+
+---
+
+### Mapping To Distributed Systems
+
+This mental model maps to:
+
+```text
+Kafka event streams
+CDC logs
+event sourcing systems
+time-series deltas
+metrics accumulation
+distributed counters
+```
+
+---
+
+### Event Sourcing Parallel
+
+In event sourcing:
+
+```text
+current state
+=
+all past events replayed
+```
+
+Difference array works similarly:
+
+```text
+final values
+=
+prefix accumulation of deltas
+```
+
+---
+
+### Backend Engineering Insight
+
+This is why understanding difference arrays is valuable beyond CP:
+
+```text
+It teaches delta-based thinking.
+```
+
+Many scalable systems avoid rewriting entire state.
+
+Instead they store:
+
+```text
+incremental changes
+```
+
+and rebuild when needed.
 
 ---
 
 ## 20. Real World Model 3 — Batch Price Update
 
-E-commerce system:
+### Scenario
+
+E-commerce platform:
 
 ```text
-Increase prices of products in ID range [L,R] by X
+Increase prices of products in category range [L,R] by X
 ```
 
-If product IDs are dense and updates are batched:
+Example:
+
+```text
+Products 1000 to 5000
+increase price by 3%
+```
+
+If there are many batch updates:
+
+```text
+Black Friday
+regional adjustments
+tax updates
+currency correction
+discount campaigns
+```
+
+naive updates become expensive.
+
+---
+
+### Naive Approach
+
+For every update:
+
+```text
+loop over all products in range
+```
+
+Complexity becomes huge.
+
+---
+
+### Difference Array Solution
+
+Store only:
+
+```text
+where increment starts
+where increment stops
+```
+
+For update:
+
+```text
+[L,R,+X]
+```
+
+do:
 
 ```text
 diff[L] += X
 diff[R+1] -= X
 ```
 
-Then one pass materializes final prices.
+Later:
+
+```text
+prefix rebuild => final adjustment per product
+```
+
+---
+
+### Step-by-Step Example
+
+Suppose:
+
+```text
+5 products
+all price adjustments initially 0
+```
+
+Updates:
+
+```text
+[1,3,+2]
+[2,4,+3]
+```
+
+Diff after updates:
+
+```text
+[0,2,3,0,-2,-3]
+```
+
+Prefix rebuild:
+
+```text
+0
+2
+5
+5
+3
+```
+
+Meaning:
+
+```text
+product0 -> +0
+product1 -> +2
+product2 -> +5
+product3 -> +5
+product4 -> +3
+```
+
+---
+
+### Backend System Mapping
+
+This idea maps to:
+
+```text
+bulk product updates
+inventory adjustment
+mass pricing changes
+regional pricing rules
+promotion systems
+batch billing corrections
+```
+
+---
+
+### Distributed Systems Insight
+
+Large systems often avoid:
+
+```text
+touching every row immediately
+```
+
+Instead they:
+
+```text
+store compact delta operations
+```
+
+and later:
+
+```text
+materialize final state
+```
+
+Difference arrays teach this exact optimization mindset.
 
 ---
 
 ## 21. Real World Model 4 — Calendar Booking Load
 
-Calendar events:
+### Scenario
+
+Meeting rooms receive bookings:
 
 ```text
-meeting from start to end
+Meeting A:
+10:00 -> 11:00
+
+Meeting B:
+10:30 -> 12:00
+
+Meeting C:
+11:00 -> 11:30
 ```
 
-To compute room load:
+Need:
 
 ```text
-+1 at start
--1 at end
+How many active meetings at each time?
 ```
 
-Prefix gives:
+or:
 
 ```text
-number of active meetings
+Did room capacity exceed limit?
 ```
-
-This is difference array / sweep line.
 
 ---
 
+### Difference Array Mental Model
+
+For each meeting:
+
+```text
++1 when meeting starts
+-1 when meeting ends
+```
+
+---
+
+### Step-by-Step Example
+
+Meetings:
+
+```text
+A: [10,11]
+B: [10,12]
+C: [11,11]
+```
+
+Diff timeline:
+
+```text
+diff[10] += 1
+diff[12] -= 1
+
+diff[10] += 1
+diff[13] -= 1
+
+diff[11] += 1
+diff[12] -= 1
+```
+
+Now prefix accumulate.
+
+---
+
+### Timeline Reconstruction
+
+At time:
+
+```text
+10 -> 2 meetings
+11 -> 3 meetings
+12 -> 0 meetings
+```
+
+Peak load:
+
+```text
+3
+```
+
+---
+
+### Why This Matters
+
+This is a classic:
+
+```text
+sweep line / interval overlap
+```
+
+problem.
+
+Difference arrays are one of the cleanest ways to solve it.
+
+---
+
+### Real Backend Mapping
+
+This maps to:
+
+```text
+calendar scheduling
+room booking systems
+resource allocation
+CPU load timeline
+active user sessions
+video stream concurrency
+ride-sharing trip overlap
+```
+
+---
+
+### Scaling Insight
+
+Instead of storing:
+
+```text
+active state at every moment
+```
+
+systems store:
+
+```text
+state transitions
+```
+
+Then reconstruct load using cumulative accumulation.
+
+This is exactly:
+
+```text
+difference array + prefix sum
+```
+
+---
+
+### Connection To Sweep Line
+
+Sweep line problems are essentially:
+
+```text
+difference arrays over coordinates/time
+```
+
+Very important for:
+
+```text
+interval problems
+timeline analytics
+concurrency estimation
+resource scheduling
+```
+
+---
 ## 22. Decision Tree
 
 ```text
