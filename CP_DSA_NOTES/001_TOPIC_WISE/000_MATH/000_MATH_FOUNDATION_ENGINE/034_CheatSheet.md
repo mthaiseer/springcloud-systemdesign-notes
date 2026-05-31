@@ -428,3 +428,117 @@ for (int i = 2; i * i <= n; i++) {
 ---
 
 # END
+
+
+---
+
+# 25. nCr / nPr C++ Code
+
+## nCr Using Factorial
+
+```cpp
+long long factorial(long long n) {
+
+    long long ans = 1;
+
+    for (long long i = 2; i <= n; i++) {
+        ans *= i;
+    }
+
+    return ans;
+}
+
+long long nCr(long long n, long long r) {
+
+    if (r > n)
+        return 0;
+
+    return factorial(n)
+         / (factorial(r)
+         * factorial(n - r));
+}
+```
+
+---
+
+## nPr Using Factorial
+
+```cpp
+long long factorial(long long n) {
+
+    long long ans = 1;
+
+    for (long long i = 2; i <= n; i++) {
+        ans *= i;
+    }
+
+    return ans;
+}
+
+long long nPr(long long n, long long r) {
+
+    if (r > n)
+        return 0;
+
+    return factorial(n)
+         / factorial(n - r);
+}
+```
+
+---
+
+## nCr Mod Prime
+
+```cpp
+const long long MOD = 1e9 + 7;
+
+long long modpow(long long a,
+                 long long b) {
+
+    long long ans = 1;
+
+    while (b > 0) {
+
+        if (b & 1)
+            ans = (ans * a) % MOD;
+
+        a = (a * a) % MOD;
+
+        b >>= 1;
+    }
+
+    return ans;
+}
+
+long long modInverse(long long x) {
+    return modpow(x, MOD - 2);
+}
+
+long long nCrModPrime(long long n,
+                      long long r) {
+
+    if (r > n)
+        return 0;
+
+    vector<long long> fact(n + 1);
+
+    fact[0] = 1;
+
+    for (int i = 1; i <= n; i++) {
+
+        fact[i] =
+        (fact[i - 1] * i) % MOD;
+    }
+
+    long long numerator = fact[n];
+
+    long long denominator =
+        (fact[r] *
+         fact[n - r]) % MOD;
+
+    return (numerator *
+           modInverse(denominator))
+           % MOD;
+}
+```
+
