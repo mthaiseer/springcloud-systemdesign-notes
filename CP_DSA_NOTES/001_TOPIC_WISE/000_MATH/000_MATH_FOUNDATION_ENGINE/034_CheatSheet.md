@@ -8,32 +8,33 @@
 
 # Table Of Contents
 
-1. Algebra Basics
-2. Bounds Thinking
-3. Absolute Value
-4. Powers & Logarithms
-5. GCD / LCM
-6. Divisibility
-7. Floor / Ceil
-8. Parity
-9. Invariants
-10. Modulo
-11. Counting
-12. Combinations
-13. Pigeonhole Principle
-14. Inclusion Exclusion
-15. Probability
-16. Expected Value
-17. Binary & Bitwise
-18. XOR Observations
-19. Geometry
-20. CP Math Patterns
-21. FAANG Math Patterns
-22. Common Traps
-23. Final Checklist
-24. Ultimate C++ Templates
+1. [Algebra Basics](#1-algebra-basics)
+2. [Bounds Thinking](#2-bounds-thinking)
+3. [Absolute Value](#3-absolute-value)
+4. [Powers & Logarithms](#4-powers-and-logarithms)
+5. [GCD / LCM](#5-gcd--lcm)
+6. [Divisibility](#6-divisibility-rules)
+7. [Floor / Ceil](#7-floor--ceil)
+8. [Parity](#8-odd-even-parity)
+9. [Invariants](#9-invariants)
+10. [Modulo](#10-modulo)
+11. [Counting](#11-counting-basics)
+12. [Combinations](#12-pigeonhole-principle)
+13. [Pigeonhole Principle](#12-pigeonhole-principle)
+14. [Inclusion Exclusion](#13-inclusion-exclusion)
+15. [Probability](#14-probability)
+16. [Expected Value](#15-expected-value)
+17. [Binary & Bitwise](#16-binary-number-system)
+18. [XOR Observations](#18-xor-observations)
+19. [Geometry](#19-geometry-basics)
+20. [CP Math Patterns](#20-cp-math-patterns)
+21. [FAANG Math Patterns](#21-faang-math-patterns)
+22. [Common Traps](#22-common-traps)
+23. [Final Checklist](#23-final-checklist)
+24. [Ultimate C++ Templates](#24-ultimate-c-templates)
 
 ---
+
 
 # 1. Algebra Basics
 
