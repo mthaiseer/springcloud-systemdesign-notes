@@ -8,33 +8,32 @@
 
 # Table Of Contents
 
-1. [Algebra Basics](#1-algebra-basics)
-2. [Bounds Thinking](#2-bounds-thinking)
-3. [Absolute Value](#3-absolute-value)
-4. [Powers & Logarithms](#4-powers-and-logarithms)
-5. [GCD / LCM](#5-gcd--lcm)
-6. [Divisibility](#6-divisibility-rules)
-7. [Floor / Ceil](#7-floor--ceil)
-8. [Parity](#8-odd-even-parity)
-9. [Invariants](#9-invariants)
-10. [Modulo](#10-modulo)
-11. [Counting](#11-counting-basics)
-12. [Combinations](#12-pigeonhole-principle)
-13. [Pigeonhole Principle](#12-pigeonhole-principle)
-14. [Inclusion Exclusion](#13-inclusion-exclusion)
-15. [Probability](#14-probability)
-16. [Expected Value](#15-expected-value)
-17. [Binary & Bitwise](#16-binary-number-system)
-18. [XOR Observations](#18-xor-observations)
-19. [Geometry](#19-geometry-basics)
-20. [CP Math Patterns](#20-cp-math-patterns)
-21. [FAANG Math Patterns](#21-faang-math-patterns)
-22. [Common Traps](#22-common-traps)
-23. [Final Checklist](#23-final-checklist)
-24. [Ultimate C++ Templates](#24-ultimate-c-templates)
+- [1. Algebra Basics](#1-algebra-basics)
+- [2. Bounds Thinking](#2-bounds-thinking)
+- [3. Absolute Value](#3-absolute-value)
+- [4. Powers And Logarithms](#4-powers-and-logarithms)
+- [5. GCD / LCM](#5-gcd--lcm)
+- [6. Divisibility Rules](#6-divisibility-rules)
+- [7. Floor / Ceil](#7-floor--ceil)
+- [8. Odd Even Parity](#8-odd-even-parity)
+- [9. Invariants](#9-invariants)
+- [10. Modulo](#10-modulo)
+- [11. Counting Basics](#11-counting-basics)
+- [12. Pigeonhole Principle](#12-pigeonhole-principle)
+- [13. Inclusion Exclusion](#13-inclusion-exclusion)
+- [14. Probability](#14-probability)
+- [15. Expected Value](#15-expected-value)
+- [16. Binary Number System](#16-binary-number-system)
+- [17. Bitwise Observations](#17-bitwise-observations)
+- [18. XOR Observations](#18-xor-observations)
+- [19. Geometry Basics](#19-geometry-basics)
+- [20. CP Math Patterns](#20-cp-math-patterns)
+- [21. FAANG Math Patterns](#21-faang-math-patterns)
+- [22. Common Traps](#22-common-traps)
+- [23. Final Checklist](#23-final-checklist)
+- [24. Ultimate C++ Templates](#24-ultimate-c-templates)
 
 ---
-
 
 # 1. Algebra Basics
 
@@ -52,13 +51,6 @@
 = n(n+1)(2n+1)/6
 ```
 
-## Geometric Progression
-
-```text
-1 + r + r² + ... + r^(n-1)
-= (r^n - 1)/(r - 1)
-```
-
 ---
 
 # 2. Bounds Thinking
@@ -68,8 +60,6 @@
 ```text
 Minimum = n
 ```
-
-Because smallest positive integer is 1.
 
 ## Interval Overlap
 
