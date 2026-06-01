@@ -283,27 +283,41 @@ import java.util.Collections;
 import java.util.List;
 
 public class Command {
+    // Redis command name, for example: PING, SET, GET, DEL
     private final String name;
+
+    // Command arguments, for example: SET name mohamed -> args = [name, mohamed]
     private final List<String> args;
 
     public Command(String name, List<String> args) {
+        // Every Redis command must have a valid command name.
+        // Empty command like "" or null is invalid.
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Command name cannot be empty");
         }
+
+        // Redis commands are case-insensitive.
+        // So set, Set, SET should all become SET internally.
         this.name = name.toUpperCase();
+
+        // Create a defensive copy so outside code cannot modify our internal list.
         this.args = new ArrayList<>(args);
     }
 
     public String getName() {
+        // Return command name, for example: SET
         return name;
     }
 
     public List<String> getArgs() {
+        // Return read-only arguments.
+        // This protects Command object from accidental modification.
         return Collections.unmodifiableList(args);
     }
 
     @Override
     public String toString() {
+        // Helpful debug format when printing parsed command object.
         return "Command{" +
                 "name='" + name + '\'' +
                 ", args=" + args +
@@ -327,85 +341,133 @@ import java.util.List;
 public class RespParser {
 
     public Command parse(BufferedReader reader) throws IOException {
+        // Read the first line from TCP input stream.
+        // Example inline command: SET name mohamed
+        // Example RESP command: *3
         String firstLine = reader.readLine();
 
+        // If firstLine is null, client closed the connection.
         if (firstLine == null) {
             throw new IOException("Client disconnected");
         }
 
+        // Empty command is invalid.
         if (firstLine.isBlank()) {
             throw new IllegalArgumentException("Empty command");
         }
 
+        // RESP array starts with '*'.
+        // Redis commands usually come as array of bulk strings.
+        // Example: *3 $3 SET $4 name $7 mohamed
         if (firstLine.startsWith("*")) {
             return parseArrayOfBulkStrings(firstLine, reader);
         }
 
+        // If it does not start with '*', treat it as simple inline command.
+        // Example: SET name mohamed
         return parseInlineCommand(firstLine);
     }
 
     private Command parseInlineCommand(String line) {
-        String[] parts = line.trim().split("\\s+");
+        // Split by one or more spaces.
+        // Example: "SET name mohamed" -> [SET, name, mohamed]
+        String[] parts = line.trim().split("\s+");
 
+        // After trim + split, there must be at least one command token.
         if (parts.length == 0) {
             throw new IllegalArgumentException("Invalid inline command");
         }
 
+        // First token is command name.
         String commandName = parts[0];
+
+        // Remaining tokens are arguments.
         List<String> args = new ArrayList<>();
 
+        // Start from index 1 because index 0 is command name.
         for (int i = 1; i < parts.length; i++) {
             args.add(parts[i]);
         }
 
+        // Build final Command object.
         return new Command(commandName, args);
     }
 
     private Command parseArrayOfBulkStrings(String firstLine, BufferedReader reader) throws IOException {
+        // First line tells how many bulk strings are inside the RESP array.
+        // Example: *3 means there are 3 items: SET, name, mohamed.
         int arrayLength = parseLength(firstLine, '*');
+
+        // Store all parsed strings temporarily.
+        // Example final tokens: [SET, name, mohamed]
         List<String> tokens = new ArrayList<>();
 
+        // Read each bulk string from the stream.
         for (int i = 0; i < arrayLength; i++) {
+            // Bulk string header looks like: $3, $4, $7
             String bulkHeader = reader.readLine();
 
+            // If stream ends before header, RESP message is incomplete.
             if (bulkHeader == null) {
                 throw new IOException("Unexpected end of stream while reading bulk header");
             }
 
+            // In this phase we only support bulk strings inside array.
+            // So every item header must start with '$'.
             if (!bulkHeader.startsWith("$")) {
                 throw new IllegalArgumentException("Expected bulk string header, got: " + bulkHeader);
             }
 
+            // Parse length from header.
+            // Example: $7 -> length = 7
             int bulkLength = parseLength(bulkHeader, '$');
+
+            // Read actual string value from next line.
+            // Example after $7, value should be "mohamed".
             String value = reader.readLine();
 
+            // If stream ends before value, RESP message is incomplete.
             if (value == null) {
                 throw new IOException("Unexpected end of stream while reading bulk value");
             }
 
+            // Validate declared length with actual value length.
+            // Example: $7 must match "mohamed" length 7.
             if (value.length() != bulkLength) {
                 throw new IllegalArgumentException(
                         "Invalid bulk string length. Expected " + bulkLength + " but got " + value.length()
                 );
             }
 
+            // Add parsed value to tokens list.
             tokens.add(value);
         }
 
+        // A Redis command array cannot be empty.
+        // Example invalid input: *0
         if (tokens.isEmpty()) {
             throw new IllegalArgumentException("Command array cannot be empty");
         }
 
+        // First token is command name.
+        // Example: [SET, name, mohamed] -> commandName = SET
         String commandName = tokens.get(0);
+
+        // Remaining tokens are command arguments.
+        // Example: [SET, name, mohamed] -> args = [name, mohamed]
         List<String> args = tokens.subList(1, tokens.size());
 
+        // Build final Command object.
         return new Command(commandName, args);
     }
 
     private int parseLength(String line, char prefix) {
         try {
+            // Remove prefix character and parse the remaining number.
+            // Example: *3 -> 3, $7 -> 7
             return Integer.parseInt(line.substring(1));
         } catch (NumberFormatException ex) {
+            // If length is not a valid number, protocol is invalid.
             throw new IllegalArgumentException("Invalid length header: " + line);
         }
     }
@@ -429,9 +491,15 @@ import java.io.StringReader;
 
 public class Phase002RespParserDriver {
     public static void main(String[] args) throws Exception {
+        // Create parser object.
         RespParser parser = new RespParser();
 
+        // Inline command style.
+        // This is easy for humans to type manually.
         String inlineInput = "SET name mohamed\r\n";
+
+        // StringReader simulates network input for testing.
+        // BufferedReader gives readLine() support.
         Command inlineCommand = parser.parse(
                 new BufferedReader(new StringReader(inlineInput))
         );
@@ -439,6 +507,9 @@ public class Phase002RespParserDriver {
         System.out.println("Inline command:");
         System.out.println(inlineCommand);
 
+        // RESP command style.
+        // *3 means array has 3 bulk strings.
+        // $3 SET, $4 name, $7 mohamed.
         String respInput = "*3\r\n" +
                 "$3\r\n" +
                 "SET\r\n" +
@@ -447,6 +518,7 @@ public class Phase002RespParserDriver {
                 "$7\r\n" +
                 "mohamed\r\n";
 
+        // Parse RESP input into same Command object format.
         Command respCommand = parser.parse(
                 new BufferedReader(new StringReader(respInput))
         );
