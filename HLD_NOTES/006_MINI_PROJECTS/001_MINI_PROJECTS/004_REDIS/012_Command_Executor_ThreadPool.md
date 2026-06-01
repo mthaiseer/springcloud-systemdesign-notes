@@ -209,13 +209,36 @@ For this phase, keep only the needed packages.
 
 ## 8.1 `MiniRedisServer.java`
 
-### Logic before this class
+### Class Summary
 
-The server accepts clients.
+`MiniRedisServer` is the main TCP server for this phase.
 
-In this phase, every client is handled without blocking all other clients.
+It has two separate responsibilities:
 
-For thread-pool phase, command work is submitted to `ExecutorService`.
+```text
+1. Accept client connections.
+2. Submit each command to a bounded worker pool.
+```
+
+Important mental model:
+
+```text
+clientPool   = handles connected clients
+commandPool  = handles actual command execution
+```
+
+Why this design matters:
+
+```text
+Without commandPool:
+client thread does everything.
+
+With commandPool:
+client thread reads input,
+worker thread executes command.
+```
+
+This is the first step toward controlled concurrency and backpressure.
 
 ```java
 package com.miniredis.server;
@@ -227,8 +250,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MiniRedisServer {
+
+    // TCP port where MiniRedis listens.
+    // Redis default port is 6379, so we use the same for learning.
     private final int port;
+
+    // This pool accepts many client connections.
+    // cachedThreadPool creates threads when needed and reuses idle threads.
+    // Mental model:
+    // each connected client gets one handler task.
     private final ExecutorService clientPool = Executors.newCachedThreadPool();
+
+    // This pool executes actual Redis commands.
+    // Fixed size means only 4 commands execute at the same time.
+    // Extra commands wait in the internal queue.
+    // This prevents unlimited command execution threads.
     private final ExecutorService commandPool = Executors.newFixedThreadPool(4);
 
     public MiniRedisServer(int port) {
@@ -236,59 +272,146 @@ public class MiniRedisServer {
     }
 
     public void start() throws IOException {
+
+        // ServerSocket opens a TCP server port.
+        // Clients can connect using telnet, nc, or a Redis client later.
         try (ServerSocket serverSocket = new ServerSocket(port)) {
+
             System.out.println("MiniRedis server started on port " + port);
 
+            // Server should keep running forever.
+            // Each accept() waits until a new client connects.
             while (true) {
+
+                // Blocking call:
+                // waits for a new client TCP connection.
                 Socket client = serverSocket.accept();
+
+                // Do NOT handle client in the main server thread.
+                // Submit it to clientPool so the server can quickly return
+                // to accept more clients.
                 clientPool.submit(() -> handleClient(client));
             }
         }
     }
 
     private void handleClient(Socket client) {
+
+        // Each client has its own input stream and output stream.
+        // reader reads commands from client.
+        // writer sends response back to same client.
         try (
-            BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            PrintWriter writer = new PrintWriter(client.getOutputStream(), true)
+            BufferedReader reader = new BufferedReader(
+                new InputStreamReader(client.getInputStream())
+            );
+            PrintWriter writer = new PrintWriter(
+                client.getOutputStream(),
+                true // autoFlush=true, so response is sent immediately
+            )
         ) {
             String line;
 
+            // One client can send many commands over same connection.
+            // Example:
+            // PING
+            // SET name mohamed
+            // GET name
             while ((line = reader.readLine()) != null) {
+
+                // Must copy line into effectively-final variable
+                // because lambda uses it inside commandPool.submit().
                 String commandLine = line;
 
+                // Submit command execution to bounded worker pool.
+                // This separates IO handling from CPU/command work.
                 commandPool.submit(() -> {
+
+                    // Worker thread executes command.
                     String response = execute(commandLine);
+
+                    // Same worker writes result back to the client socket.
+                    // In production, writing from multiple workers to same writer
+                    // may need ordering guarantees.
                     writer.println(response);
                 });
             }
+
         } catch (IOException e) {
+            // Client disconnected, network failed, or stream closed.
+            // Server should not crash because one client failed.
             System.err.println("Client error: " + e.getMessage());
         }
     }
 
     private String execute(String commandLine) {
+
+        // Very small command executor for this phase.
+        // Later phases will replace this with real parser + command classes.
         if (commandLine.equalsIgnoreCase("PING")) {
             return "PONG";
         }
 
+        // For now, echo command back to prove the worker executed it.
         return "OK received: " + commandLine;
     }
 
     public static void main(String[] args) throws Exception {
+
+        // Start server on Redis-like port.
         new MiniRedisServer(6379).start();
     }
 }
+```
+
+### In-Memory Meaning Of This Class
+
+```text
+Main Thread
+  owns ServerSocket
+  accepts clients
+
+Client Handler Threads
+  read commands from each socket
+
+Command Worker Threads
+  execute commands from queue
+```
+
+Diagram:
+
+```text
+Client A ---- socket ----> clientPool thread A ----+
+                                                     |
+Client B ---- socket ----> clientPool thread B ----+----> commandPool queue
+                                                     |
+Client C ---- socket ----> clientPool thread C ----+
+
+commandPool queue:
+[PING from A] [SET x 1 from B] [GET x from C]
+
+Workers:
+Worker-1 executes PING
+Worker-2 executes SET
+Worker-3 executes GET
+Worker-4 idle or executes next command
 ```
 
 ---
 
 ## 8.2 `Phase012Driver.java`
 
-### Logic before this class
+### Class Summary
 
-The server itself has the main method.
+`Phase012Driver` is only a small launcher class.
 
-Run it, then connect using telnet or netcat.
+Its job:
+
+```text
+create MiniRedisServer
+start it on port 6379
+```
+
+It keeps the learning phase clean because you can run this driver directly.
 
 ```java
 package com.miniredis.driver;
@@ -296,14 +419,34 @@ package com.miniredis.driver;
 import com.miniredis.server.MiniRedisServer;
 
 public class Phase012Driver {
+
     public static void main(String[] args) throws Exception {
+
+        // Create and start the MiniRedis TCP server.
+        // The program will keep running because server.start()
+        // contains an infinite accept loop.
         new MiniRedisServer(6379).start();
     }
 }
 ```
 
+### In-Memory Meaning Of This Class
 
----
+```text
+JVM starts
+  |
+  v
+main() runs
+  |
+  v
+MiniRedisServer object created
+  |
+  v
+server.start()
+  |
+  v
+ServerSocket waits for clients
+```
 
 # 9. How To Run
 
@@ -326,50 +469,309 @@ If your shell does not expand `**`, compile individual files or use IntelliJ.
 
 # 10. Step-by-Step Dry Run
 
-Example commands:
+This phase is about separating:
 
 ```text
-submit command task
-worker executes
-response returned
+client connection handling
+from
+command execution
 ```
 
-Internal flow:
+Before this phase:
 
 ```text
-1. Client/driver creates input command.
-2. Parser converts raw input into Command object.
-3. CommandExecutor validates command name and arguments.
-4. Executor calls the correct storage/service method.
-5. Data structure is updated or queried.
-6. Response is returned.
+Client Thread
+  -> read command
+  -> execute command
+  -> write response
 ```
 
-State transition:
+Problem:
 
 ```text
-Before:
-previous phase capability only
-
-Operation:
-Command Executor ThreadPool
-
-After:
-new Redis-like behavior is available
+If command is slow,
+that client thread is stuck doing command work.
 ```
 
-Visual execution:
+After this phase:
 
 ```text
-Command
-  -> validate
-  -> execute
-  -> update internal state
-  -> return response
-```
+Client Thread
+  -> read command
+  -> submit command to commandPool
 
+Worker Thread
+  -> execute command
+  -> write response
+```
 
 ---
+
+## Dry Run 1 — Server Startup
+
+Run:
+
+```bash
+java -cp out com.miniredis.driver.Phase012Driver
+```
+
+Memory state:
+
+```text
+JVM memory
+
+MiniRedisServer object
+├── port = 6379
+├── clientPool = cached thread pool
+└── commandPool = fixed thread pool with 4 workers
+```
+
+Execution:
+
+```text
+main()
+  -> new MiniRedisServer(6379)
+  -> start()
+  -> new ServerSocket(6379)
+  -> while(true) accept clients
+```
+
+Diagram:
+
+```text
++-------------------+
+| Main Thread       |
+| ServerSocket 6379 |
+| accept() loop     |
++---------+---------+
+          |
+          v
+ waits for client connection
+```
+
+---
+
+## Dry Run 2 — Client A Connects
+
+Client A:
+
+```bash
+nc localhost 6379
+```
+
+Server flow:
+
+```text
+serverSocket.accept()
+  -> returns Socket(Client A)
+  -> clientPool.submit(handleClient(Client A))
+```
+
+Memory diagram:
+
+```text
+clientPool
+└── ClientHandler-A thread
+    ├── reader = Client A input stream
+    └── writer = Client A output stream
+```
+
+Important:
+
+```text
+Main server thread is free again.
+It can accept Client B immediately.
+```
+
+---
+
+## Dry Run 3 — Client A Sends PING
+
+Input:
+
+```text
+PING
+```
+
+Client handler reads:
+
+```java
+line = "PING"
+```
+
+Then submits task:
+
+```text
+commandPool.submit(() -> execute("PING"))
+```
+
+Queue state:
+
+```text
+commandPool queue
+└── Task-1: execute("PING") for Client A
+```
+
+Worker executes:
+
+```text
+Worker-1 takes Task-1
+  -> execute("PING")
+  -> returns "PONG"
+  -> writer.println("PONG")
+```
+
+Client sees:
+
+```text
+PONG
+```
+
+Diagram:
+
+```text
+Client A
+  |
+  | PING
+  v
+ClientHandler-A
+  |
+  | submit task
+  v
+commandPool queue
+  |
+  | Worker-1 picks
+  v
+execute("PING")
+  |
+  v
+PONG returned to Client A
+```
+
+---
+
+## Dry Run 4 — Multiple Clients Together
+
+Suppose three clients send commands at almost same time.
+
+```text
+Client A sends: PING
+Client B sends: SET name mohamed
+Client C sends: GET name
+```
+
+Client handler threads:
+
+```text
+ClientHandler-A reads PING
+ClientHandler-B reads SET name mohamed
+ClientHandler-C reads GET name
+```
+
+They submit tasks:
+
+```text
+commandPool queue
+├── Task-1: PING from Client A
+├── Task-2: SET name mohamed from Client B
+└── Task-3: GET name from Client C
+```
+
+Workers process:
+
+```text
+Worker-1 -> Task-1 -> PONG
+Worker-2 -> Task-2 -> OK received: SET name mohamed
+Worker-3 -> Task-3 -> OK received: GET name
+Worker-4 -> idle
+```
+
+Diagram:
+
+```text
+          +----------------+
+Client A -> ClientHandlerA | -- Task-1 --+
+          +----------------+            |
+                                        v
+          +----------------+     +-------------------+
+Client B -> ClientHandlerB | --> | commandPool queue |
+          +----------------+     +---------+---------+
+                                        |
+          +----------------+            v
+Client C -> ClientHandlerC |     +-------------------+
+          +----------------+     | 4 Worker Threads  |
+                                 +-------------------+
+```
+
+---
+
+## Dry Run 5 — Why ThreadPool Helps
+
+Without bounded command pool:
+
+```text
+1000 clients
+-> 1000 client threads
+-> each may execute heavy command
+-> CPU overload
+-> memory pressure
+-> unstable server
+```
+
+With command pool:
+
+```text
+1000 clients
+-> many client handlers can read input
+-> only 4 commands execute at once
+-> extra commands wait in queue
+```
+
+This gives controlled concurrency:
+
+```text
+more stable server
+predictable CPU usage
+first step toward backpressure
+```
+
+---
+
+## Important Bug Awareness
+
+This phase has one important production warning:
+
+```text
+Multiple command tasks from the same client may execute out of order.
+```
+
+Example:
+
+```text
+Client sends:
+SET x 1
+GET x
+```
+
+If submitted separately to a pool:
+
+```text
+GET x might run before SET x 1
+```
+
+For learning, this is okay.
+
+For production Redis-like behavior, you need:
+
+```text
+per-client ordering
+or
+single event loop
+or
+ordered command queue per connection
+```
+
+That is why real Redis uses an event-loop model instead of random parallel command execution.
 
 # 11. Test Commands
 
