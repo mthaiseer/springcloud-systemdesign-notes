@@ -431,28 +431,503 @@ SAVE
 LOAD
 ```
 
-Internal flow:
+We will dry run the exact driver flow from `Phase008Driver.java`.
 
-```text
-1. Client/driver creates input command.
-2. Parser converts raw input into Command object.
-3. CommandExecutor validates command name and arguments.
-4. Executor calls the correct storage/service method.
-5. Data structure is updated or queried.
-6. Response is returned.
+---
+
+## 10.1 Initial State
+
+When the driver starts:
+
+```java
+RedisStore store = new RedisStore();
+RdbSnapshot snapshot = new RdbSnapshot("data/miniredis.rdb");
+AofLog aof = new AofLog("data/miniredis.aof");
 ```
 
-State transition:
+Memory state:
 
 ```text
-Before:
-previous phase capability only
+store = {}
+```
 
-Operation:
-RDB Snapshot
+Disk state:
 
-After:
-new Redis-like behavior is available
+```text
+data/miniredis.rdb  -> not created yet or old snapshot
+data/miniredis.aof  -> not created yet or old log
+```
+
+Mental model:
+
+```text
+RedisStore = RAM
+RdbSnapshot = full memory photo
+AofLog = write command diary
+```
+
+---
+
+## 10.2 Step 1 — SET name mohamed
+
+Driver executes:
+
+```java
+store.set("name", "mohamed");
+aof.append("SET name mohamed");
+```
+
+What happens in memory:
+
+```java
+data.put("name", "mohamed");
+```
+
+Memory after operation:
+
+```text
+{
+  "name": "mohamed"
+}
+```
+
+What happens in AOF:
+
+```text
+SET name mohamed
+```
+
+So now:
+
+```text
+RAM has latest value
+AOF has write history
+RDB still not saved yet
+```
+
+Important observation:
+
+```text
+SET updates memory first.
+AOF records the command so it can be replayed later.
+```
+
+---
+
+## 10.3 Step 2 — SET city bucharest
+
+Driver executes:
+
+```java
+store.set("city", "bucharest");
+aof.append("SET city bucharest");
+```
+
+What happens in memory:
+
+```java
+data.put("city", "bucharest");
+```
+
+Memory after operation:
+
+```text
+{
+  "name": "mohamed",
+  "city": "bucharest"
+}
+```
+
+AOF file after operation:
+
+```text
+SET name mohamed
+SET city bucharest
+```
+
+Now AOF can rebuild the store by replaying commands from top to bottom.
+
+Replay idea:
+
+```text
+Start with empty map
+Replay SET name mohamed
+Replay SET city bucharest
+Final map is restored
+```
+
+---
+
+## 10.4 Step 3 — SAVE snapshot
+
+Driver executes:
+
+```java
+snapshot.save(store);
+```
+
+Inside `save()`:
+
+```java
+try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+    out.writeObject(store.snapshot());
+}
+```
+
+Now check `store.snapshot()`:
+
+```java
+public Map<String, String> snapshot() {
+    return new HashMap<>(data);
+}
+```
+
+Why return new HashMap?
+
+```text
+To create a safe copy of current memory state.
+```
+
+Current memory:
+
+```text
+{
+  "name": "mohamed",
+  "city": "bucharest"
+}
+```
+
+Snapshot copy:
+
+```text
+{
+  "name": "mohamed",
+  "city": "bucharest"
+}
+```
+
+Then Java serializes this copied map into:
+
+```text
+data/miniredis.rdb
+```
+
+After SAVE:
+
+```text
+RAM:
+{
+  "name": "mohamed",
+  "city": "bucharest"
+}
+
+RDB:
+snapshot of full map
+
+AOF:
+SET name mohamed
+SET city bucharest
+```
+
+Mental model:
+
+```text
+RDB = photo of final memory
+AOF = diary of how memory reached that state
+```
+
+---
+
+## 10.5 Step 4 — Recover from RDB snapshot
+
+Driver creates a new empty store:
+
+```java
+RedisStore recoveredFromSnapshot = new RedisStore();
+```
+
+Initial recovered store:
+
+```text
+{}
+```
+
+Then driver executes:
+
+```java
+snapshot.load(recoveredFromSnapshot);
+```
+
+Inside `load()`:
+
+```java
+if (!file.exists()) {
+    return;
+}
+```
+
+If snapshot file exists, Java reads the saved map:
+
+```java
+Map<String, String> restored = (HashMap<String, String>) in.readObject();
+```
+
+Restored map from disk:
+
+```text
+{
+  "name": "mohamed",
+  "city": "bucharest"
+}
+```
+
+Then:
+
+```java
+store.load(restored);
+```
+
+Inside `RedisStore.load()`:
+
+```java
+data.clear();
+data.putAll(restored);
+```
+
+So recovered store becomes:
+
+```text
+{
+  "name": "mohamed",
+  "city": "bucharest"
+}
+```
+
+Driver prints:
+
+```java
+System.out.println("Snapshot name = " + recoveredFromSnapshot.get("name"));
+```
+
+Output:
+
+```text
+Snapshot name = mohamed
+```
+
+Important observation:
+
+```text
+RDB recovery does not replay commands.
+It directly loads the final saved state.
+```
+
+---
+
+## 10.6 Step 5 — Recover from AOF
+
+Driver creates another empty store:
+
+```java
+RedisStore recoveredFromAof = new RedisStore();
+```
+
+Initial recovered store:
+
+```text
+{}
+```
+
+Then:
+
+```java
+aof.recover(recoveredFromAof);
+```
+
+Inside `recover()`:
+
+```java
+while ((line = reader.readLine()) != null) {
+    String[] parts = line.split("\\s+");
+
+    if (parts[0].equalsIgnoreCase("SET")) {
+        store.set(parts[1], parts[2]);
+    } else if (parts[0].equalsIgnoreCase("DEL")) {
+        store.delete(parts[1]);
+    }
+}
+```
+
+AOF line 1:
+
+```text
+SET name mohamed
+```
+
+Parsed as:
+
+```text
+parts[0] = SET
+parts[1] = name
+parts[2] = mohamed
+```
+
+Apply:
+
+```java
+store.set("name", "mohamed");
+```
+
+Recovered AOF store:
+
+```text
+{
+  "name": "mohamed"
+}
+```
+
+AOF line 2:
+
+```text
+SET city bucharest
+```
+
+Parsed as:
+
+```text
+parts[0] = SET
+parts[1] = city
+parts[2] = bucharest
+```
+
+Apply:
+
+```java
+store.set("city", "bucharest");
+```
+
+Recovered AOF store:
+
+```text
+{
+  "name": "mohamed",
+  "city": "bucharest"
+}
+```
+
+Driver prints:
+
+```java
+System.out.println("AOF city = " + recoveredFromAof.get("city"));
+```
+
+Output:
+
+```text
+AOF city = bucharest
+```
+
+Important observation:
+
+```text
+AOF recovery rebuilds memory by replaying write commands.
+```
+
+---
+
+## 10.7 Full Execution Timeline
+
+```text
+Start
+  |
+  v
+Create empty RedisStore
+  |
+  v
+SET name mohamed
+  |
+  +--> RAM: name=mohamed
+  +--> AOF: append SET name mohamed
+  |
+  v
+SET city bucharest
+  |
+  +--> RAM: city=bucharest
+  +--> AOF: append SET city bucharest
+  |
+  v
+SAVE RDB
+  |
+  +--> RDB stores full map snapshot
+  |
+  v
+Create new empty store
+  |
+  v
+LOAD RDB
+  |
+  +--> memory restored directly from snapshot
+  |
+  v
+Create another empty store
+  |
+  v
+Replay AOF
+  |
+  +--> memory restored command by command
+```
+
+---
+
+## 10.8 RDB vs AOF In This File
+
+| Feature | RDB Snapshot | AOF Log |
+|---|---|---|
+| Stores | Full final map | Every write command |
+| Recovery | Load saved map | Replay commands |
+| File style | Snapshot file | Log file |
+| Faster recovery | Usually yes | Can be slower if log is big |
+| Data loss risk | Higher between snapshots | Lower if appended frequently |
+| MiniRedis method | `snapshot.save()` / `snapshot.load()` | `aof.append()` / `aof.recover()` |
+
+---
+
+## 10.9 Final Output
+
+Expected output from this driver:
+
+```text
+Snapshot name = mohamed
+AOF city = bucharest
+```
+
+Why?
+
+```text
+RDB restored name from the saved full snapshot.
+AOF restored city by replaying SET city bucharest.
+```
+
+---
+
+## 10.10 Key Interview Explanation
+
+You can explain this phase like this:
+
+```text
+In MiniRedis, RDB is implemented as a full HashMap snapshot written to disk.
+On load, we deserialize the map and replace the in-memory state.
+
+AOF is implemented as an append-only command log.
+Every write command is appended to disk.
+On recovery, we replay each command to rebuild the HashMap.
+```
+
+This gives the same mental model as Redis:
+
+```text
+RDB = periodic checkpoint
+AOF = write-ahead command history
 ```
 
 Visual execution:
@@ -460,8 +935,9 @@ Visual execution:
 ```text
 Command
   -> validate
-  -> execute
-  -> update internal state
+  -> execute in memory
+  -> persist using RDB or AOF
+  -> recover by snapshot load or command replay
   -> return response
 ```
 
