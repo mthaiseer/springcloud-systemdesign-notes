@@ -209,15 +209,38 @@ For this phase, keep only the needed packages.
 
 ## 8.1 `EvictionCache.java`
 
-### Logic before this class
+### Logic Summary before this class
 
-Redis cannot keep infinite keys.
+`EvictionCache` is the core in-memory cache component.
 
-Eviction chooses which key to remove when memory is full.
+It has one main job:
 
-LRU removes the least recently used key.
+```text
+Keep only a limited number of keys in memory.
+When capacity is full, remove the key that is least useful.
+```
 
-LFU removes the least frequently used key.
+For LRU:
+
+```text
+Least Recently Used = key that was not accessed for the longest time.
+```
+
+Implementation idea:
+
+```text
+HashMap gives O(1) lookup.
+LinkedHashMap with accessOrder=true keeps keys ordered by recent access.
+First key = least recently used.
+Last key = most recently used.
+```
+
+Why this matters in MiniRedis:
+
+```text
+Without eviction, keys grow forever and JVM memory can crash.
+With eviction, Redis can keep serving requests within memory limit.
+```
 
 ```java
 package com.miniredis.eviction;
@@ -225,45 +248,96 @@ package com.miniredis.eviction;
 import java.util.*;
 
 public class EvictionCache {
+
+    // Maximum number of keys allowed in memory.
+    // Example: capacity = 2 means cache can store only 2 keys.
     private final int capacity;
+
+    // LinkedHashMap gives HashMap + linked-list ordering.
+    // accessOrder = true means:
+    // - whenever get(key) happens, that key moves to the end
+    // - whenever put(key) happens, that key also becomes recently used
+    // So iteration order becomes:
+    // least recently used -> most recently used
     private final LinkedHashMap<String, String> lru;
+
+    // Extra map to count how many times each key is accessed.
+    // This is used only to demonstrate LFU also.
+    // LFU = Least Frequently Used.
     private final Map<String, Integer> frequency = new HashMap<>();
 
     public EvictionCache(int capacity) {
+        // Store the maximum allowed cache size.
         this.capacity = capacity;
+
+        // Constructor arguments:
+        // 16     = initial bucket size
+        // 0.75f  = load factor
+        // true   = access-order mode
+        //
+        // access-order mode is the key idea for LRU.
         this.lru = new LinkedHashMap<>(16, 0.75f, true);
     }
 
     public void set(String key, String value) {
+        // Case 1:
+        // This is a NEW key and cache is already full.
+        // We must remove one old key before inserting the new one.
         if (!lru.containsKey(key) && lru.size() >= capacity) {
             evictLru();
         }
 
+        // Insert or update the key.
+        // Because LinkedHashMap uses accessOrder=true,
+        // this key becomes the most recently used key.
         lru.put(key, value);
+
+        // Increase access frequency.
+        // For SET, we count it as one access/write touch.
         frequency.put(key, frequency.getOrDefault(key, 0) + 1);
     }
 
     public String get(String key) {
+        // lru.get(key) does two things:
+        // 1. returns the value
+        // 2. moves the key to the end because accessOrder=true
+        //
+        // End of LinkedHashMap = most recently used.
         String value = lru.get(key);
 
+        // If key exists, increase frequency count.
         if (value != null) {
             frequency.put(key, frequency.getOrDefault(key, 0) + 1);
         }
 
+        // If key does not exist, returns null.
         return value;
     }
 
     private void evictLru() {
+        // In access-order LinkedHashMap:
+        // first key = least recently used key.
         String victim = lru.keySet().iterator().next();
+
+        // Remove victim from cache data.
         lru.remove(victim);
+
+        // Remove victim from frequency tracking also.
         frequency.remove(victim);
+
+        // Print so we can see eviction during dry run.
         System.out.println("LRU evicted: " + victim);
     }
 
     public void evictLfu() {
+        // victim will store the least frequently used key.
         String victim = null;
+
+        // Start with infinity so any real frequency is smaller.
         int minFreq = Integer.MAX_VALUE;
 
+        // Scan all frequency entries.
+        // This is O(n), unlike LRU which is O(1) using LinkedHashMap ordering.
         for (Map.Entry<String, Integer> entry : frequency.entrySet()) {
             if (entry.getValue() < minFreq) {
                 minFreq = entry.getValue();
@@ -271,6 +345,7 @@ public class EvictionCache {
             }
         }
 
+        // If we found a key, remove it from both structures.
         if (victim != null) {
             lru.remove(victim);
             frequency.remove(victim);
@@ -279,7 +354,12 @@ public class EvictionCache {
     }
 
     public void printState() {
+        // Prints current cache order.
+        // Important:
+        // order is least recently used -> most recently used.
         System.out.println("cache=" + lru);
+
+        // Prints access count of each key.
         System.out.println("freq=" + frequency);
     }
 }
@@ -289,11 +369,30 @@ public class EvictionCache {
 
 ## 8.2 `Phase013Driver.java`
 
-### Logic before this class
+### Logic Summary before this class
 
-The driver creates a tiny cache with capacity 2.
+`Phase013Driver` is a small demo program.
 
-Then it accesses keys to show how eviction decisions happen.
+It does not implement Redis logic itself.
+
+Its job is to prove that `EvictionCache` works correctly.
+
+Dry-run purpose:
+
+```text
+1. Create cache with capacity = 2.
+2. Insert a and b.
+3. Access a, so a becomes recently used.
+4. Insert c.
+5. Since cache is full, b is evicted because b is least recently used.
+```
+
+Expected final LRU state:
+
+```text
+a and c remain in cache.
+b is removed.
+```
 
 ```java
 package com.miniredis.driver;
@@ -302,18 +401,41 @@ import com.miniredis.eviction.EvictionCache;
 
 public class Phase013Driver {
     public static void main(String[] args) {
+
+        // Create cache with capacity 2.
+        // So only 2 keys can stay in memory at a time.
         EvictionCache cache = new EvictionCache(2);
 
+        // Insert key a.
+        // Cache order: a
         cache.set("a", "1");
+
+        // Insert key b.
+        // Cache order: a -> b
+        // a is least recently used, b is most recently used.
         cache.set("b", "2");
 
+        // Access key a.
+        // Because a is accessed now, it moves to the end.
+        // Cache order becomes: b -> a
+        // b is now least recently used.
         cache.get("a");
 
+        // Insert key c.
+        // Cache is full, so remove least recently used key.
+        // Current LRU key = b.
+        // b is evicted, c is inserted.
+        // Cache order becomes: a -> c
         cache.set("c", "3");
 
+        // Print current cache and frequency maps.
         cache.printState();
 
+        // Demonstrate LFU separately.
+        // It removes the key with smallest access count.
         cache.evictLfu();
+
+        // Print final state after LFU eviction.
         cache.printState();
     }
 }
@@ -343,46 +465,204 @@ If your shell does not expand `**`, compile individual files or use IntelliJ.
 
 # 10. Step-by-Step Dry Run
 
-Example commands:
+Cache capacity:
 
 ```text
-SET
-GET
-evict least recently used
+capacity = 2
 ```
 
-Internal flow:
+Important rule:
 
 ```text
-1. Client/driver creates input command.
-2. Parser converts raw input into Command object.
-3. CommandExecutor validates command name and arguments.
-4. Executor calls the correct storage/service method.
-5. Data structure is updated or queried.
-6. Response is returned.
+Left side  = least recently used
+Right side = most recently used
 ```
 
-State transition:
+---
 
-```text
-Before:
-previous phase capability only
+## Step 1 — SET a 1
 
-Operation:
-LRU Eviction
-
-After:
-new Redis-like behavior is available
+```java
+cache.set("a", "1");
 ```
 
-Visual execution:
+Memory state:
 
 ```text
-Command
-  -> validate
-  -> execute
-  -> update internal state
-  -> return response
+LRU order:
+[a]
+
+frequency:
+a -> 1
+```
+
+Explanation:
+
+```text
+a is inserted.
+Only one key exists.
+a is both least recent and most recent.
+```
+
+---
+
+## Step 2 — SET b 2
+
+```java
+cache.set("b", "2");
+```
+
+Memory state:
+
+```text
+LRU order:
+[a] -> [b]
+
+frequency:
+a -> 1
+b -> 1
+```
+
+Explanation:
+
+```text
+b is newly inserted.
+b becomes most recently used.
+a becomes least recently used.
+```
+
+---
+
+## Step 3 — GET a
+
+```java
+cache.get("a");
+```
+
+Before GET:
+
+```text
+[a] -> [b]
+```
+
+After GET:
+
+```text
+[b] -> [a]
+```
+
+Frequency:
+
+```text
+a -> 2
+b -> 1
+```
+
+Explanation:
+
+```text
+Accessing a makes a recently used.
+LinkedHashMap automatically moves a to the end.
+Now b is least recently used.
+```
+
+---
+
+## Step 4 — SET c 3
+
+```java
+cache.set("c", "3");
+```
+
+Before insert:
+
+```text
+Cache full because capacity = 2
+
+[b] -> [a]
+```
+
+Need to insert:
+
+```text
+c
+```
+
+Eviction decision:
+
+```text
+First key = b
+So b is least recently used
+Evict b
+```
+
+After eviction and insert:
+
+```text
+[a] -> [c]
+```
+
+Frequency:
+
+```text
+a -> 2
+c -> 1
+```
+
+---
+
+## Diagrammatic Flow
+
+```text
+Start:
+[]
+
+SET a:
+[a]
+
+SET b:
+[a] -> [b]
+ LRU    MRU
+
+GET a:
+[b] -> [a]
+ LRU    MRU
+
+SET c:
+Need space
+Evict b
+
+[a] -> [c]
+ LRU    MRU
+```
+
+---
+
+## Why This Works
+
+```text
+LinkedHashMap with accessOrder=true keeps access order automatically.
+
+get(key) moves key to the end.
+put(key,value) moves key to the end.
+iterator().next() gives the first key.
+first key = least recently used.
+```
+
+So LRU eviction becomes simple:
+
+```text
+If cache is full:
+    remove first key
+Then insert new key
+```
+
+Complexity:
+
+```text
+GET      -> O(1)
+SET      -> O(1)
+EvictLRU -> O(1)
 ```
 
 
