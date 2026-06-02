@@ -1,28 +1,22 @@
-# 023_Consistent_Hashing.md
+# MiniRedis Phase 23 — Consistent Hashing (Rich Version)
 
-# MiniRedis Phase 23 — Consistent Hashing
-
-## Clickable Index
+# Clickable Index
 
 - [1. Goal](#1-goal)
-- [2. What We Built Previously](#2-what-we-built-previously)
-- [3. Previous Limitation](#3-previous-limitation)
-- [4. What We Build In This Phase](#4-what-we-build-in-this-phase)
-- [5. Why This Phase Matters](#5-why-this-phase-matters)
-- [6. Architecture Diagram](#6-architecture-diagram)
-- [7. File Structure](#7-file-structure)
-- [8. Complete Java Code](#8-complete-java-code)
-- [9. How To Run](#9-how-to-run)
-- [10. Step-by-Step Dry Run](#10-step-by-step-dry-run)
-- [11. Test Commands](#11-test-commands)
-- [12. DSA / CP Concepts Used](#12-dsa--cp-concepts-used)
-- [13. System Design Relevance](#13-system-design-relevance)
-- [14. Redis Connection With This Phase](#14-redis-connection-with-this-phase)
-- [15. Production-Grade Concepts](#15-production-grade-concepts)
-- [16. Scalability Discussion](#16-scalability-discussion)
-- [17. Interview Notes](#17-interview-notes)
-- [18. Common Bugs](#18-common-bugs)
-- [19. Next Step](#19-next-step)
+- [2. Why Consistent Hashing Exists](#2-why-consistent-hashing-exists)
+- [3. Problem With Normal Modulo Hashing](#3-problem-with-normal-modulo-hashing)
+- [4. Consistent Hash Ring Mental Model](#4-consistent-hash-ring-mental-model)
+- [5. Virtual Nodes Explained](#5-virtual-nodes-explained)
+- [6. Deep Internal Data Structure Explanation](#6-deep-internal-data-structure-explanation)
+- [7. Complete Java Code](#7-complete-java-code)
+- [8. Step-by-Step Dry Run](#8-step-by-step-dry-run)
+- [9. Internal Memory Visualization](#9-internal-memory-visualization)
+- [10. Complexity Analysis](#10-complexity-analysis)
+- [11. Real Production Use Cases](#11-real-production-use-cases)
+- [12. Redis Production Internals](#12-redis-production-internals)
+- [13. Failure Cases And Bottlenecks](#13-failure-cases-and-bottlenecks)
+- [14. Interview Questions](#14-interview-questions)
+- [15. Final Mental Model](#15-final-mental-model)
 
 ---
 
@@ -34,616 +28,931 @@ In this phase, we build:
 Consistent Hashing
 ```
 
+Main objective:
+
+```text
+Distribute keys across cluster nodes
+while minimizing key movement.
+```
+
+Mental model:
+
+```text
+hash ring
+```
+
+Every node gets:
+
+```text
+position on ring
+```
+
+Every key gets:
+
+```text
+hash position
+```
+
+Key assigned to:
+
+```text
+next clockwise node
+```
+
+Real-world analogy:
+
+```text
+Pizza sliced into sections.
+
+Each server owns one section.
+```
+
+When new server added:
+
+```text
+only nearby slice changes
+```
+
+NOT entire pizza.
+
+Production systems using this idea:
+
+```text
+Redis Cluster
+Cassandra
+DynamoDB
+Memcached
+CDN routing
+distributed caches
+```
+
+---
+
+# 2. Why Consistent Hashing Exists
+
+Initially distributed systems used:
+
+```text
+hash(key) % number_of_servers
+```
+
+Example:
+
+```text
+hash(user:1) % 3
+```
+
+Problem appears when:
+
+```text
+server count changes
+```
+
+Example:
+
+Before:
+
+```text
+3 servers
+```
+
+After:
+
+```text
+4 servers
+```
+
+Almost ALL keys remap.
+
+This becomes catastrophic.
+
+Why?
+
+Because:
+
+```text
+cache misses explode
+massive data migration
+network spikes
+system instability
+```
+
+Consistent hashing solves this.
+
+Goal:
+
+```text
+minimize remapping
+```
+
+Only small portion of keys move.
+
+Huge scalability improvement.
+
+---
+
+# 3. Problem With Normal Modulo Hashing
+
+Suppose:
+
+```text
+3 servers
+```
+
+Routing:
+
+```text
+hash(key) % 3
+```
+
+Example:
+
+```text
+user:1 -> server-1
+user:2 -> server-2
+user:3 -> server-0
+```
+
+Now add:
+
+```text
+server-4
+```
+
+Routing changes to:
+
+```text
+hash(key) % 4
+```
+
+Result:
+
+```text
+almost every key changes server
+```
+
+Problem:
+
+```text
+full cache invalidation
+```
+
+Example:
+
+```text
+100 million keys
+```
+
+Suddenly:
+
+```text
+90 million remapped
+```
+
+System meltdown possible.
+
+---
+
+# 4. Consistent Hash Ring Mental Model
+
+Instead of:
+
+```text
+linear modulo
+```
+
+Use:
+
+```text
+circular ring
+```
+
+Visualization:
+
+```text
+                [Node-A]
+            /               \
+      key-1                   key-2
+
+ [Node-C]                     [Node-B]
+
+      key-5                   key-3
+            \               /
+                 key-4
+```
+
+How lookup works:
+
+```text
+1. hash key
+2. move clockwise
+3. first node found owns key
+```
+
+Important advantage:
+
+```text
+adding/removing node
+affects only neighboring region
+```
+
+NOT entire cluster.
+
+---
+
+# 5. Virtual Nodes Explained
+
+Real systems avoid:
+
+```text
+one position per node
+```
+
+Why?
+
+Because distribution becomes uneven.
+
+Example:
+
+```text
+Node-A owns huge region
+Node-B owns tiny region
+```
+
+Bad load balancing.
+
+Solution:
+
+```text
+virtual nodes
+```
+
+One physical node appears:
+
+```text
+multiple times on ring
+```
+
+Example:
+
+```text
+redis-1#0
+redis-1#1
+redis-1#2
+```
+
+Benefits:
+
+```text
+better load balance
+smooth scaling
+less hotspotting
+```
+
+Production systems heavily use this.
+
+---
+
+# 6. Deep Internal Data Structure Explanation
+
+MiniRedis implementation:
+
+```java
+TreeMap<Integer, String>
+```
+
 Purpose:
 
 ```text
-Distribute keys across nodes using a hash ring.
+maintain sorted ring positions
 ```
 
-This continues the MiniRedis journey from a simple parser/store into a real Redis-like backend component.
+Key idea:
+
+```text
+sorted hash ring
+```
+
+Why TreeMap?
+
+Because we need:
+
+```text
+ceiling lookup
+```
+
+Meaning:
+
+```text
+find first node clockwise
+```
+
+Core operation:
+
+```java
+ceilingEntry(hash)
+```
+
+Complexity:
+
+| Operation | Complexity |
+|---|---|
+| Add node | O(v log n) |
+| Lookup key | O(log n) |
+
+Where:
+
+```text
+v = virtual nodes
+n = total ring entries
+```
 
 ---
 
-# 2. What We Built Previously
+# Why TreeMap Is Perfect
 
-Earlier phases gave us:
+Because TreeMap internally uses:
 
 ```text
-001 TCP server
-002 RESP parser
-003 in-memory store
+Red-Black Tree
 ```
 
-Then each later phase adds one production capability.
-
-Current mental model:
+Which maintains:
 
 ```text
-Client command
-      |
-      v
-Parser
-      |
-      v
-Command object
-      |
-      v
-Command executor
-      |
-      v
-Redis-like internal engine
-      |
-      v
-Response
+sorted ordering automatically
+```
+
+Needed for:
+
+```text
+clockwise traversal
 ```
 
 ---
 
-# 3. Previous Limitation
+# Ring Wraparound
+
+Very important concept.
+
+Suppose:
 
 ```text
-Modulo hashing remaps too many keys when nodes change.
+key hash > largest node hash
 ```
 
-This limitation matters because production Redis is not only a `Map`.
-
-It also needs:
+Then:
 
 ```text
-correct command behavior
-memory control
-expiration
-persistence
-concurrency
+wrap to first node
+```
+
+Like circular clock.
+
+Example:
+
+```text
+11 PM -> next hour -> 12 AM
+```
+
+This creates:
+
+```text
+consistent circular mapping
+```
+
+---
+
+# Production Redis Internals
+
+Real distributed systems add:
+
+```text
 replication
-sharding
-observability
+slot migration
+rebalancing
+rack awareness
+multi-region placement
+```
+
+Redis Cluster uses:
+
+```text
+16384 hash slots
+```
+
+instead of generic TreeMap ring.
+
+Cassandra/Dynamo:
+
+```text
+real consistent hash rings
 ```
 
 ---
 
-# 4. What We Build In This Phase
+# 7. Complete Java Code
 
-We add:
+## 7.1 HashRing.java
 
-```text
-We add virtual nodes and ring lookup to minimize movement.
-```
+### Logic Before Code
 
-Commands or operations covered:
+This class simulates:
 
 ```text
-key -> hash ring -> node
+consistent hash ring
 ```
 
----
-
-# 5. Why This Phase Matters
-
-This phase matters because it connects implementation to real backend systems.
-
-Real systems need:
+Core responsibilities:
 
 ```text
-feature correctness
-clear data structures
-predictable complexity
-safe failure handling
-production debugging
-scalability path
+1. add nodes
+2. create virtual nodes
+3. route keys
 ```
 
-MiniRedis teaches these in small increments.
+Internal structure:
 
----
+```java
+TreeMap<Integer, String>
+```
 
-# 6. Architecture Diagram
+Meaning:
 
 ```text
-+------------------+
-| Client / Driver  |
-+--------+---------+
-         |
-         v
-+------------------+
-| Parser / Command |
-+--------+---------+
-         |
-         v
-+------------------+
-| Command Executor |
-+--------+---------+
-         |
-         v
-+------------------+
-| Consistent Hashing |
-+--------+---------+
-         |
-         v
-+------------------+
-| Response         |
-+------------------+
+hash position
+   ->
+physical node
 ```
-
-Phase flow:
-
-```text
-Input
-  -> validate
-  -> execute Consistent Hashing
-  -> update internal state
-  -> return output
-```
-
----
-
-# 7. File Structure
-
-Recommended structure:
-
-```text
-MiniRedis/
-└── src/
-    └── main/
-        └── java/
-            └── com/
-                └── miniredis/
-                    ├── protocol/
-                    ├── command/
-                    ├── storage/
-                    ├── server/
-                    ├── persistence/
-                    ├── cluster/
-                    ├── metrics/
-                    └── driver/
-```
-
-For this phase, keep only the needed packages.
-
----
-
-# 8. Complete Java Code
-
-
-## 8.1 `HashRing.java`
-
-### Logic before this class
-
-Consistent hashing maps keys to nodes.
-
-It avoids remapping every key when a node is added or removed.
 
 ```java
 package com.miniredis.cluster;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
+/**
+ * HashRing simulates consistent hashing.
+ */
 public class HashRing {
-    private final TreeMap<Integer, String> ring = new TreeMap<>();
+
+    /**
+     * Sorted ring positions.
+     *
+     * key   -> hash position
+     * value -> physical node
+     */
+    private final TreeMap<Integer, String> ring =
+            new TreeMap<>();
+
+    /**
+     * Number of virtual nodes
+     * per physical node.
+     */
     private final int virtualNodes;
 
     public HashRing(int virtualNodes) {
+
         this.virtualNodes = virtualNodes;
     }
 
+    /**
+     * Add physical node.
+     */
     public void addNode(String node) {
+
+        /**
+         * Create multiple virtual nodes.
+         */
         for (int i = 0; i < virtualNodes; i++) {
-            ring.put(Objects.hash(node, i), node);
+
+            int hash =
+                    Objects.hash(node, i);
+
+            ring.put(hash, node);
         }
     }
 
+    /**
+     * Route key to node.
+     */
     public String getNode(String key) {
-        int hash = Objects.hash(key);
-        Map.Entry<Integer, String> entry = ring.ceilingEntry(hash);
-        return entry != null ? entry.getValue() : ring.firstEntry().getValue();
+
+        // --------------------------------
+        // STEP 1
+        // HASH KEY
+        // --------------------------------
+
+        int hash =
+                Objects.hash(key);
+
+        // --------------------------------
+        // STEP 2
+        // FIND CLOCKWISE NODE
+        // --------------------------------
+
+        Map.Entry<Integer, String> entry =
+                ring.ceilingEntry(hash);
+
+        // --------------------------------
+        // STEP 3
+        // WRAP AROUND IF NEEDED
+        // --------------------------------
+
+        if (entry == null) {
+
+            return ring.firstEntry()
+                    .getValue();
+        }
+
+        return entry.getValue();
     }
 }
 ```
 
 ---
 
-## 8.2 `DistributedLock.java`
+## 7.2 Phase023Driver.java
 
-### Logic before this class
+### Logic Before Code
 
-A distributed lock needs:
+This driver simulates:
 
 ```text
-lock key
-owner token
-TTL
-safe release
+cluster node addition
+key routing
+ring lookup
 ```
-
-Only the owner token can release the lock.
-
-```java
-package com.miniredis.lock;
-
-import java.util.Objects;
-
-public class DistributedLock {
-    private String token;
-    private long expireAtMillis;
-
-    public synchronized boolean acquire(String newToken, long ttlMillis) {
-        long now = System.currentTimeMillis();
-
-        if (token == null || now >= expireAtMillis) {
-            token = newToken;
-            expireAtMillis = now + ttlMillis;
-            return true;
-        }
-
-        return false;
-    }
-
-    public synchronized boolean release(String ownerToken) {
-        if (Objects.equals(token, ownerToken)) {
-            token = null;
-            expireAtMillis = 0;
-            return true;
-        }
-
-        return false;
-    }
-}
-```
-
----
-
-## 8.3 `Phase023Driver.java`
-
-### Logic before this class
-
-This driver demonstrates cluster routing and lock ownership.
 
 ```java
 package com.miniredis.driver;
 
 import com.miniredis.cluster.HashRing;
-import com.miniredis.lock.DistributedLock;
 
 public class Phase023Driver {
+
     public static void main(String[] args) {
-        HashRing ring = new HashRing(10);
+
+        /**
+         * Create ring.
+         */
+        HashRing ring =
+                new HashRing(10);
+
+        // --------------------------------
+        // ADD CLUSTER NODES
+        // --------------------------------
 
         ring.addNode("redis-1");
         ring.addNode("redis-2");
         ring.addNode("redis-3");
 
-        System.out.println("user:1 -> " + ring.getNode("user:1"));
-        System.out.println("order:9 -> " + ring.getNode("order:9"));
+        // --------------------------------
+        // ROUTE KEYS
+        // --------------------------------
 
-        DistributedLock lock = new DistributedLock();
-        System.out.println("lock client-A = " + lock.acquire("client-A", 3000));
-        System.out.println("lock client-B = " + lock.acquire("client-B", 3000));
-        System.out.println("unlock client-A = " + lock.release("client-A"));
+        System.out.println(
+                "user:1 -> "
+                        + ring.getNode("user:1")
+        );
+
+        System.out.println(
+                "order:9 -> "
+                        + ring.getNode("order:9")
+        );
+
+        System.out.println(
+                "payment:77 -> "
+                        + ring.getNode("payment:77")
+        );
     }
 }
 ```
 
-
 ---
 
-# 9. How To Run
+# 8. Step-by-Step Dry Run
 
-From project root:
+# Step 1
 
-```bash
-javac -d out src/main/java/com/miniredis/**/*.java
+Code:
+
+```java
+ring.addNode("redis-1");
 ```
 
-Run the phase driver:
-
-```bash
-java -cp out com.miniredis.driver.Phase023Driver
-```
-
-If your shell does not expand `**`, compile individual files or use IntelliJ.
-
----
-
-
-# 10. Step-by-Step Dry Run
-
-Example commands:
+Execution:
 
 ```text
-key -> hash ring -> node
+1. create 10 virtual nodes
+2. hash each vnode
+3. insert into TreeMap
 ```
 
-Internal flow:
+Ring state:
 
 ```text
-1. Client/driver creates input command.
-2. Parser converts raw input into Command object.
-3. CommandExecutor validates command name and arguments.
-4. Executor calls the correct storage/service method.
-5. Data structure is updated or queried.
-6. Response is returned.
-```
-
-State transition:
-
-```text
-Before:
-previous phase capability only
-
-Operation:
-Consistent Hashing
-
-After:
-new Redis-like behavior is available
-```
-
-Visual execution:
-
-```text
-Command
-  -> validate
-  -> execute
-  -> update internal state
-  -> return response
-```
-
-
----
-
-# 11. Test Commands
-
-Try these mental or driver-level commands:
-
-```text
-key -> hash ring -> node
-```
-
-Expected behavior:
-
-```text
-command accepted
-state updated or queried
-response returned
-```
-
-For server phases, test with:
-
-```bash
-telnet localhost 6379
-```
-
-or:
-
-```bash
-nc localhost 6379
+ring
+ ├── 102 -> redis-1
+ ├── 301 -> redis-1
+ ├── 800 -> redis-1
+ ...
 ```
 
 ---
 
-# 12. DSA / CP Concepts Used
+# Step 2
 
-```text
-Hash ring, binary search in TreeMap, virtual nodes
+Code:
+
+```java
+ring.getNode("user:1");
 ```
 
-Complexity thinking:
+Execution:
 
 ```text
-Ask:
-1. What is the core data structure?
-2. What is lookup complexity?
-3. What is update complexity?
-4. What happens under high write/read load?
-5. What is the memory cost?
+1. hash key
+2. locate clockwise vnode
+3. return owner node
 ```
 
-This is exactly how DSA connects to system design.
-
----
-
-# 13. System Design Relevance
-
-This phase maps to:
+Example:
 
 ```text
-Redis Cluster, Cassandra, DynamoDB, Memcached sharding
+hash(user:1) = 450
 ```
 
-System design pattern:
+Clockwise lookup:
 
 ```text
-Requirement
-  -> choose data structure
-  -> define operation complexity
-  -> define failure behavior
-  -> define scaling path
+first vnode >= 450
+```
+
+Result:
+
+```text
+redis-2
 ```
 
 ---
 
-# 14. Redis Connection With This Phase
+# Step 3
 
-Real Redis uses the same idea at production scale.
+Node added:
 
-MiniRedis version:
-
-```text
-simple Java implementation
+```java
+ring.addNode("redis-4");
 ```
 
-Real Redis version:
+Important:
 
 ```text
-optimized C implementation
-event loop
-carefully tuned memory layout
-persistence configuration
-replication protocol
-cluster routing
+only nearby keys move
 ```
 
-This phase gives the mental model before optimization.
+NOT entire cluster.
+
+This is the core advantage.
 
 ---
 
-# 15. Production-Grade Concepts
-
-Production concerns:
+# 9. Internal Memory Visualization
 
 ```text
-correctness
-validation
-memory usage
-latency
-thread safety
-durability
-observability
-failure recovery
+HASH RING
+
+100 -> redis-1
+250 -> redis-2
+400 -> redis-3
+700 -> redis-1
+900 -> redis-2
 ```
 
-Questions to ask:
+Key routing:
 
 ```text
-What if process crashes?
-What if key is hot?
-What if memory is full?
-What if many clients connect?
-What if disk is slow?
-What if replica lags?
+user:1 hash=430
+```
+
+Clockwise search:
+
+```text
+700 -> redis-1
+```
+
+Owner:
+
+```text
+redis-1
 ```
 
 ---
 
-# 16. Scalability Discussion
+# 10. Complexity Analysis
 
-Single-node path:
+| Operation | Complexity | Reason |
+|---|---|---|
+| Add vnode | O(log n) | TreeMap insert |
+| Key lookup | O(log n) | ceilingEntry search |
+| Wraparound | O(1) | firstEntry |
+
+---
+
+# 11. Real Production Use Cases
+
+# Redis Cluster
+
+Distribute cache keys.
+
+---
+
+# Cassandra
+
+Partition distributed data.
+
+---
+
+# DynamoDB
+
+Scalable distributed partitioning.
+
+---
+
+# CDN Routing
+
+Map users to edge servers.
+
+---
+
+# Distributed Caches
+
+Memcached clusters.
+
+---
+
+# 12. Redis Production Internals
+
+Redis Cluster uses:
 
 ```text
-single JVM
-  -> thread-safe store
-  -> TTL cleanup
-  -> persistence
-  -> metrics
+16384 hash slots
 ```
 
-Distributed path:
+NOT generic vnode rings.
+
+Cassandra/Dynamo:
+
+```text
+true consistent hashing
+```
+
+Production systems also support:
 
 ```text
 replication
-  -> sharding
-  -> consistent hashing
-  -> cluster client
-  -> failover
-```
-
-Bottlenecks to watch:
-
-```text
-CPU
-GC
-memory
-network
-lock contention
-disk fsync
-hot keys
-large values
-replication backlog
+rack awareness
+rebalancing
+failure recovery
 ```
 
 ---
 
-# 17. Interview Notes
+# 13. Failure Cases And Bottlenecks
 
-Good explanation structure:
+# Problem 1 — Hot Keys
 
-```text
-1. Start with the simplest design.
-2. Explain the data structure.
-3. Give operation complexity.
-4. Discuss failure cases.
-5. Add production improvements.
-6. Explain scaling path.
-```
+Some keys receive huge traffic.
 
-Possible follow-ups:
+Result:
 
 ```text
-How do you make it thread-safe?
-How do you persist it?
-How do you evict keys?
-How do you shard it?
-How do you recover after crash?
-How do you monitor it?
+single node overloaded
 ```
 
 ---
 
-# 18. Common Bugs
+# Problem 2 — Uneven Distribution
 
-## Bug 1 — Wrong argument count
+Too few virtual nodes.
 
-Cause:
-
-```text
-command validation missing
-```
-
-Fix:
+Result:
 
 ```text
-validate args before executing
-```
-
-## Bug 2 — Shared mutable state bug
-
-Cause:
-
-```text
-multiple threads update the same data
-```
-
-Fix:
-
-```text
-ConcurrentHashMap, locks, or atomic operations
-```
-
-## Bug 3 — Memory leak
-
-Cause:
-
-```text
-expired or unused keys remain forever
-```
-
-Fix:
-
-```text
-TTL cleanup and eviction
-```
-
-## Bug 4 — Inconsistent recovery
-
-Cause:
-
-```text
-write applied to memory but not persisted
-```
-
-Fix:
-
-```text
-AOF/WAL ordering and fsync policy
+bad balancing
 ```
 
 ---
 
-# 19. Next Step
+# Problem 3 — Node Failure
 
-Next phase:
+Server disappears.
+
+Need:
 
 ```text
-024
+key reassignment
 ```
 
-Continue the MiniRedis roadmap until the final production architecture.
+---
+
+# Problem 4 — Massive Rebalancing
+
+Cluster scaling too aggressively.
+
+Result:
+
+```text
+migration storms
+```
+
+---
+
+# 14. Interview Questions
+
+# Q1
+
+Why consistent hashing better than modulo hashing?
+
+Answer:
+
+```text
+minimal key remapping
+```
+
+---
+
+# Q2
+
+Why virtual nodes matter?
+
+Answer:
+
+```text
+better load balancing
+```
+
+---
+
+# Q3
+
+Why TreeMap used?
+
+Answer:
+
+```text
+sorted ring lookup
+```
+
+---
+
+# Q4
+
+What is clockwise lookup?
+
+Answer:
+
+```text
+first node >= key hash
+```
+
+---
+
+# Q5
+
+Difference between Redis Cluster and Cassandra ring?
+
+Redis:
+
+```text
+hash slots
+```
+
+Cassandra:
+
+```text
+full consistent hashing ring
+```
+
+---
+
+# 15. Final Mental Model
+
+```text
+Modulo hashing
+   -> unstable scaling
+
+Consistent hashing
+   -> scalable distributed routing
+```
+
+Consistent hashing becomes foundation for:
+
+```text
+distributed databases
+distributed caches
+CDNs
+microservices
+large-scale infrastructure
+```
