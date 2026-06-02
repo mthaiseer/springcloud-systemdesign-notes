@@ -1,28 +1,21 @@
-# 020_Streams_Log.md
+# MiniRedis Phase 20 — Streams Log (Rich Version)
 
-# MiniRedis Phase 20 — Streams Log
-
-## Clickable Index
+# Clickable Index
 
 - [1. Goal](#1-goal)
-- [2. What We Built Previously](#2-what-we-built-previously)
-- [3. Previous Limitation](#3-previous-limitation)
-- [4. What We Build In This Phase](#4-what-we-build-in-this-phase)
-- [5. Why This Phase Matters](#5-why-this-phase-matters)
-- [6. Architecture Diagram](#6-architecture-diagram)
-- [7. File Structure](#7-file-structure)
-- [8. Complete Java Code](#8-complete-java-code)
-- [9. How To Run](#9-how-to-run)
-- [10. Step-by-Step Dry Run](#10-step-by-step-dry-run)
-- [11. Test Commands](#11-test-commands)
-- [12. DSA / CP Concepts Used](#12-dsa--cp-concepts-used)
-- [13. System Design Relevance](#13-system-design-relevance)
-- [14. Redis Connection With This Phase](#14-redis-connection-with-this-phase)
-- [15. Production-Grade Concepts](#15-production-grade-concepts)
-- [16. Scalability Discussion](#16-scalability-discussion)
-- [17. Interview Notes](#17-interview-notes)
-- [18. Common Bugs](#18-common-bugs)
-- [19. Next Step](#19-next-step)
+- [2. Why Redis Streams Exist](#2-why-redis-streams-exist)
+- [3. Pub/Sub vs Streams](#3-pubsub-vs-streams)
+- [4. Internal Data Structure Deep Dive](#4-internal-data-structure-deep-dive)
+- [5. Architecture Mental Model](#5-architecture-mental-model)
+- [6. Complete Java Code](#6-complete-java-code)
+- [7. Step-by-Step Dry Run](#7-step-by-step-dry-run)
+- [8. Internal Memory Visualization](#8-internal-memory-visualization)
+- [9. Complexity Analysis](#9-complexity-analysis)
+- [10. Real Production Use Cases](#10-real-production-use-cases)
+- [11. Redis Production Internals](#11-redis-production-internals)
+- [12. Failure Cases And Bottlenecks](#12-failure-cases-and-bottlenecks)
+- [13. Interview Questions](#13-interview-questions)
+- [14. Final Mental Model](#14-final-mental-model)
 
 ---
 
@@ -31,229 +24,566 @@
 In this phase, we build:
 
 ```text
-Streams Log
+Redis Streams Log
+```
+
+Main objective:
+
+```text
+Store durable append-only events
+that consumers can replay later.
+```
+
+Mental model:
+
+```text
+Mini Kafka inside Redis
+```
+
+Streams are NOT simple Pub/Sub.
+
+Pub/Sub:
+
+```text
+live delivery only
+```
+
+Streams:
+
+```text
+durable event log
+```
+
+Real-world analogy:
+
+```text
+Bank transaction history.
+```
+
+Even if a user disconnects:
+
+```text
+transactions still exist
+```
+
+and can be replayed later.
+
+Commands introduced:
+
+```text
+XADD
+XREAD
+```
+
+Example:
+
+```text
+XADD orders order-created
+XADD orders payment-success
+
+XREAD orders
+```
+
+Result:
+
+```text
+all stored events returned
+```
+
+Production systems using this idea:
+
+```text
+Kafka
+Pulsar
+Redis Streams
+Event sourcing
+Audit logs
+Payment events
+Order pipelines
+```
+
+---
+
+# 2. Why Redis Streams Exist
+
+Earlier we built:
+
+```text
+Pub/Sub
+```
+
+Problem with Pub/Sub:
+
+```text
+messages disappear
+```
+
+Example:
+
+```text
+Publisher sends message
+Subscriber offline
+Message lost forever
+```
+
+That is acceptable for:
+
+```text
+live chat typing indicator
+temporary notifications
+real-time dashboards
+```
+
+But NOT acceptable for:
+
+```text
+payments
+orders
+banking
+analytics
+event processing
+```
+
+Example:
+
+```text
+payment-completed
+```
+
+If this message disappears:
+
+```text
+system inconsistency happens
+```
+
+Redis Streams solve this problem.
+
+Instead of:
+
+```text
+deliver and forget
+```
+
+Streams do:
+
+```text
+append and retain
+```
+
+Mental model:
+
+```text
+append-only log
+```
+
+Every event gets:
+
+```text
+unique ordered ID
+```
+
+Example:
+
+```text
+1720001-0 order-created
+1720002-0 payment-success
+1720003-0 shipped
+```
+
+Consumers can later:
+
+```text
+resume reading from last ID
+```
+
+This becomes the foundation of:
+
+```text
+event-driven architecture
+```
+
+---
+
+# 3. Pub/Sub vs Streams
+
+# Pub/Sub
+
+```text
+fire and forget
+```
+
+Flow:
+
+```text
+publisher
+   -> subscriber
+```
+
+If subscriber offline:
+
+```text
+message lost
+```
+
+Good for:
+
+```text
+live notifications
+chat typing
+cache invalidation
+```
+
+---
+
+# Streams
+
+```text
+append and replay
+```
+
+Flow:
+
+```text
+producer
+   -> stream log
+       -> consumers read later
+```
+
+If consumer offline:
+
+```text
+message still exists
+```
+
+Good for:
+
+```text
+payments
+orders
+audit logs
+analytics
+microservice events
+```
+
+---
+
+# 4. Internal Data Structure Deep Dive
+
+MiniRedis implementation:
+
+```java
+Map<String, List<String>>
+```
+
+Meaning:
+
+```text
+stream name
+   -> ordered list of events
+```
+
+Example:
+
+```text
+streams
+ └── order-stream
+      ├── 1720001-0 order-created
+      ├── 1720002-0 payment-success
+      └── 1720003-0 shipped
+```
+
+---
+
+# Why List?
+
+Because Streams require:
+
+```text
+append-only ordering
+```
+
+New events always go:
+
+```text
+to the end
+```
+
+Mental model:
+
+```text
+timeline
+```
+
+---
+
+# Stream ID Structure
+
+Each event has:
+
+```text
+timestamp-sequence
+```
+
+Example:
+
+```text
+1720001-0
+1720001-1
+1720002-0
 ```
 
 Purpose:
 
 ```text
-Add Redis Streams-style durable append-only messages.
+global ordering
 ```
 
-This continues the MiniRedis journey from a simple parser/store into a real Redis-like backend component.
-
----
-
-# 2. What We Built Previously
-
-Earlier phases gave us:
+Even if multiple events occur in same millisecond:
 
 ```text
-001 TCP server
-002 RESP parser
-003 in-memory store
-```
-
-Then each later phase adds one production capability.
-
-Current mental model:
-
-```text
-Client command
-      |
-      v
-Parser
-      |
-      v
-Command object
-      |
-      v
-Command executor
-      |
-      v
-Redis-like internal engine
-      |
-      v
-Response
+sequence differentiates them
 ```
 
 ---
 
-# 3. Previous Limitation
+# Complexity
+
+| Operation | Complexity |
+|---|---|
+| XADD | O(1) append |
+| XREAD | O(n) scan |
+
+---
+
+# Why Streams Are Powerful
+
+Because consumers can:
 
 ```text
-Pub/Sub loses messages if subscribers are offline.
+resume from previous offset
 ```
 
-This limitation matters because production Redis is not only a `Map`.
-
-It also needs:
+Example:
 
 ```text
-correct command behavior
-memory control
-expiration
-persistence
-concurrency
-replication
-sharding
-observability
+consumer crashed after reading:
+
+1720002-0
+```
+
+Next read:
+
+```text
+resume from:
+1720002-0
+```
+
+Exactly like Kafka offsets.
+
+---
+
+# Production Redis Internals
+
+Real Redis Streams are MUCH more advanced.
+
+Internally Redis uses:
+
+```text
+Radix Tree
+ListPack
+Consumer Groups
+Pending Entry List
+```
+
+NOT simple ArrayList.
+
+Why?
+
+Because production systems need:
+
+```text
+millions of events
+low memory
+fast append
+fast replay
+consumer tracking
 ```
 
 ---
 
-# 4. What We Build In This Phase
-
-We add:
+# 5. Architecture Mental Model
 
 ```text
-We add XADD and XREAD using an ordered stream log with IDs.
+Producer
+   |
+   v
+XADD
+   |
+   v
+Stream Log
+   |
+   +------------------+
+   |                  |
+   v                  v
+Consumer A       Consumer B
 ```
 
-Commands or operations covered:
+Very important:
 
 ```text
-XADD orders event
-XREAD orders 0-0
+Consumers are decoupled.
 ```
+
+Producer does NOT care:
+
+```text
+who reads later
+```
+
+This is core event-driven architecture.
 
 ---
 
-# 5. Why This Phase Matters
+# 6. Complete Java Code
 
-This phase matters because it connects implementation to real backend systems.
+## 6.1 MessageBus.java
 
-Real systems need:
+### Logic Before Code
 
-```text
-feature correctness
-clear data structures
-predictable complexity
-safe failure handling
-production debugging
-scalability path
-```
-
-MiniRedis teaches these in small increments.
-
----
-
-# 6. Architecture Diagram
+This class simulates:
 
 ```text
-+------------------+
-| Client / Driver  |
-+--------+---------+
-         |
-         v
-+------------------+
-| Parser / Command |
-+--------+---------+
-         |
-         v
-+------------------+
-| Command Executor |
-+--------+---------+
-         |
-         v
-+------------------+
-| Streams Log      |
-+--------+---------+
-         |
-         v
-+------------------+
-| Response         |
-+------------------+
+Redis Streams append-only log
 ```
 
-Phase flow:
+Core responsibilities:
 
 ```text
-Input
-  -> validate
-  -> execute Streams Log
-  -> update internal state
-  -> return output
+1. append events
+2. generate IDs
+3. replay events
 ```
 
----
+Internal storage:
 
-# 7. File Structure
+```java
+Map<String, List<String>>
+```
 
-Recommended structure:
+Meaning:
 
 ```text
-MiniRedis/
-└── src/
-    └── main/
-        └── java/
-            └── com/
-                └── miniredis/
-                    ├── protocol/
-                    ├── command/
-                    ├── storage/
-                    ├── server/
-                    ├── persistence/
-                    ├── cluster/
-                    ├── metrics/
-                    └── driver/
+stream name
+   -> ordered events
 ```
-
-For this phase, keep only the needed packages.
-
----
-
-# 8. Complete Java Code
-
-
-## 8.1 `MessageBus.java`
-
-### Logic before this class
-
-Pub/Sub is volatile fanout.
-
-Streams are durable append-only logs.
-
-This class demonstrates both.
 
 ```java
 package com.miniredis.messaging;
 
 import java.util.*;
 
+/**
+ * MessageBus simulates Redis Streams.
+ *
+ * Stream behavior:
+ *
+ * producer
+ *    -> append event
+ *    -> event stored permanently
+ *    -> consumers can replay later
+ */
 public class MessageBus {
-    private final Map<String, List<String>> subscribers = new HashMap<>();
-    private final Map<String, List<String>> streams = new HashMap<>();
 
-    public void subscribe(String channel, String clientId) {
-        subscribers.computeIfAbsent(channel, c -> new ArrayList<>()).add(clientId);
-    }
+    /**
+     * streams:
+     *
+     * key   -> stream name
+     * value -> ordered list of events
+     *
+     * Example:
+     *
+     * order-stream
+     *   -> [
+     *        1720001-0 order-created,
+     *        1720002-0 payment-success
+     *      ]
+     */
+    private final Map<String, List<String>> streams =
+            new HashMap<>();
 
-    public void publish(String channel, String message) {
-        for (String client : subscribers.getOrDefault(channel, List.of())) {
-            System.out.println("deliver to " + client + ": " + message);
-        }
-    }
-
+    /**
+     * XADD stream message
+     *
+     * Appends a new event into stream.
+     */
     public String xadd(String stream, String message) {
-        String id = System.currentTimeMillis() + "-" + streams.getOrDefault(stream, List.of()).size();
-        streams.computeIfAbsent(stream, s -> new ArrayList<>()).add(id + " " + message);
+
+        /**
+         * Generate stream ID.
+         *
+         * Real Redis uses:
+         * timestamp-sequence
+         */
+        String id =
+                System.currentTimeMillis()
+                        + "-"
+                        + streams
+                        .getOrDefault(stream, List.of())
+                        .size();
+
+        /**
+         * Create stream if missing.
+         */
+        List<String> events =
+                streams.computeIfAbsent(
+                        stream,
+                        s -> new ArrayList<>()
+                );
+
+        /**
+         * Append event.
+         */
+        events.add(id + " " + message);
+
+        /**
+         * Return generated ID.
+         */
         return id;
     }
 
+    /**
+     * XREAD stream
+     *
+     * Returns all stream events.
+     */
     public List<String> xread(String stream) {
-        return new ArrayList<>(streams.getOrDefault(stream, List.of()));
+
+        /**
+         * Return COPY to avoid exposing
+         * internal mutable structure.
+         */
+        return new ArrayList<>(
+                streams.getOrDefault(
+                        stream,
+                        List.of()
+                )
+        );
     }
 }
 ```
 
 ---
 
-## 8.2 `Phase020Driver.java`
+## 6.2 Phase020Driver.java
 
-### Logic before this class
+### Logic Before Code
 
-The driver shows Pub/Sub fanout and Streams replay.
+This driver simulates:
+
+```text
+producer appending events
+consumer replaying events
+```
 
 ```java
 package com.miniredis.driver;
@@ -261,343 +591,390 @@ package com.miniredis.driver;
 import com.miniredis.messaging.MessageBus;
 
 public class Phase020Driver {
+
     public static void main(String[] args) {
+
+        /**
+         * Create stream engine.
+         */
         MessageBus bus = new MessageBus();
 
-        bus.subscribe("orders", "client-1");
-        bus.subscribe("orders", "client-2");
-        bus.publish("orders", "order-created");
+        // --------------------------------
+        // PRODUCER APPENDS EVENTS
+        // --------------------------------
 
-        String id = bus.xadd("order-stream", "order-paid");
-        System.out.println("stream id = " + id);
-        System.out.println("stream entries = " + bus.xread("order-stream"));
+        String id1 =
+                bus.xadd(
+                        "order-stream",
+                        "order-created"
+                );
+
+        String id2 =
+                bus.xadd(
+                        "order-stream",
+                        "payment-success"
+                );
+
+        String id3 =
+                bus.xadd(
+                        "order-stream",
+                        "order-shipped"
+                );
+
+        System.out.println(id1);
+        System.out.println(id2);
+        System.out.println(id3);
+
+        // --------------------------------
+        // CONSUMER REPLAYS EVENTS
+        // --------------------------------
+
+        System.out.println(
+                bus.xread("order-stream")
+        );
     }
 }
 ```
 
-
 ---
 
-# 9. How To Run
+# 7. Step-by-Step Dry Run
 
-From project root:
+# Step 1
 
-```bash
-javac -d out src/main/java/com/miniredis/**/*.java
+Code:
+
+```java
+bus.xadd(
+    "order-stream",
+    "order-created"
+);
 ```
 
-Run the phase driver:
-
-```bash
-java -cp out com.miniredis.driver.Phase020Driver
-```
-
-If your shell does not expand `**`, compile individual files or use IntelliJ.
-
----
-
-
-# 10. Step-by-Step Dry Run
-
-Example commands:
+Meaning:
 
 ```text
-XADD orders event
-XREAD orders 0-0
+append first event
 ```
 
-Internal flow:
+Before memory:
 
 ```text
-1. Client/driver creates input command.
-2. Parser converts raw input into Command object.
-3. CommandExecutor validates command name and arguments.
-4. Executor calls the correct storage/service method.
-5. Data structure is updated or queried.
-6. Response is returned.
+streams = {}
 ```
 
-State transition:
+Execution:
 
 ```text
-Before:
-previous phase capability only
-
-Operation:
-Streams Log
-
-After:
-new Redis-like behavior is available
+1. stream missing
+2. create ArrayList
+3. generate ID
+4. append event
 ```
 
-Visual execution:
+After memory:
 
 ```text
-Command
-  -> validate
-  -> execute
-  -> update internal state
-  -> return response
-```
-
-
----
-
-# 11. Test Commands
-
-Try these mental or driver-level commands:
-
-```text
-XADD orders event
-XREAD orders 0-0
-```
-
-Expected behavior:
-
-```text
-command accepted
-state updated or queried
-response returned
-```
-
-For server phases, test with:
-
-```bash
-telnet localhost 6379
-```
-
-or:
-
-```bash
-nc localhost 6379
+streams
+ └── order-stream
+      └── 1720001-0 order-created
 ```
 
 ---
 
-# 12. DSA / CP Concepts Used
+# Step 2
 
-```text
-Append-only log, ordered IDs, cursor reading
+Code:
+
+```java
+bus.xadd(
+    "order-stream",
+    "payment-success"
+);
 ```
 
-Complexity thinking:
+Execution:
 
 ```text
-Ask:
-1. What is the core data structure?
-2. What is lookup complexity?
-3. What is update complexity?
-4. What happens under high write/read load?
-5. What is the memory cost?
+1. stream exists
+2. generate next ID
+3. append event
 ```
 
-This is exactly how DSA connects to system design.
-
----
-
-# 13. System Design Relevance
-
-This phase maps to:
+After memory:
 
 ```text
-Kafka-like event streams, audit logs, async pipelines
-```
-
-System design pattern:
-
-```text
-Requirement
-  -> choose data structure
-  -> define operation complexity
-  -> define failure behavior
-  -> define scaling path
+streams
+ └── order-stream
+      ├── 1720001-0 order-created
+      └── 1720002-1 payment-success
 ```
 
 ---
 
-# 14. Redis Connection With This Phase
+# Step 3
 
-Real Redis uses the same idea at production scale.
+Code:
+
+```java
+bus.xread("order-stream");
+```
+
+Execution:
+
+```text
+1. locate stream
+2. copy all events
+3. return ordered list
+```
+
+Result:
+
+```text
+[
+  1720001-0 order-created,
+  1720002-1 payment-success
+]
+```
+
+---
+
+# 8. Internal Memory Visualization
+
+```text
+MessageBus
+ └── streams
+      └── order-stream
+           ├── 1720001-0 order-created
+           ├── 1720002-1 payment-success
+           └── 1720003-2 order-shipped
+```
+
+---
+
+# 9. Complexity Analysis
+
+| Operation | Complexity | Reason |
+|---|---|---|
+| XADD | O(1) | append to end |
+| XREAD | O(n) | scan stream |
+| Stream creation | O(1) | HashMap insert |
+
+---
+
+# 10. Real Production Use Cases
+
+# Payments
+
+```text
+payment-created
+payment-success
+payment-failed
+```
+
+---
+
+# Ecommerce
+
+```text
+order-created
+inventory-updated
+shipment-created
+```
+
+---
+
+# Analytics
+
+```text
+page-view
+button-click
+purchase-event
+```
+
+---
+
+# Audit Logging
+
+```text
+user-login
+password-change
+role-update
+```
+
+---
+
+# 11. Redis Production Internals
+
+Real Redis Streams support:
+
+```text
+Consumer Groups
+Acknowledgements
+Pending entries
+Replay
+Blocking reads
+Distributed consumption
+```
 
 MiniRedis version:
 
 ```text
-simple Java implementation
-```
-
-Real Redis version:
-
-```text
-optimized C implementation
-event loop
-carefully tuned memory layout
-persistence configuration
-replication protocol
-cluster routing
-```
-
-This phase gives the mental model before optimization.
-
----
-
-# 15. Production-Grade Concepts
-
-Production concerns:
-
-```text
-correctness
-validation
-memory usage
-latency
-thread safety
-durability
-observability
-failure recovery
-```
-
-Questions to ask:
-
-```text
-What if process crashes?
-What if key is hot?
-What if memory is full?
-What if many clients connect?
-What if disk is slow?
-What if replica lags?
-```
-
----
-
-# 16. Scalability Discussion
-
-Single-node path:
-
-```text
 single JVM
-  -> thread-safe store
-  -> TTL cleanup
-  -> persistence
-  -> metrics
+single process
+simple append-only list
 ```
 
-Distributed path:
+Production Redis:
 
 ```text
-replication
-  -> sharding
-  -> consistent hashing
-  -> cluster client
-  -> failover
-```
-
-Bottlenecks to watch:
-
-```text
-CPU
-GC
-memory
-network
-lock contention
-disk fsync
-hot keys
-large values
-replication backlog
+highly optimized stream engine
 ```
 
 ---
 
-# 17. Interview Notes
+# 12. Failure Cases And Bottlenecks
 
-Good explanation structure:
+# Problem 1 — Infinite Stream Growth
+
+Streams continuously grow.
+
+Result:
 
 ```text
-1. Start with the simplest design.
-2. Explain the data structure.
-3. Give operation complexity.
-4. Discuss failure cases.
-5. Add production improvements.
-6. Explain scaling path.
+memory explosion
 ```
 
-Possible follow-ups:
+Production fix:
 
 ```text
-How do you make it thread-safe?
-How do you persist it?
-How do you evict keys?
-How do you shard it?
-How do you recover after crash?
-How do you monitor it?
+stream trimming
+TTL
+compaction
 ```
 
 ---
 
-# 18. Common Bugs
+# Problem 2 — Slow Consumers
 
-## Bug 1 — Wrong argument count
+Producer faster than consumers.
 
-Cause:
+Result:
 
 ```text
-command validation missing
+backlog growth
 ```
 
-Fix:
+Production fix:
 
 ```text
-validate args before executing
-```
-
-## Bug 2 — Shared mutable state bug
-
-Cause:
-
-```text
-multiple threads update the same data
-```
-
-Fix:
-
-```text
-ConcurrentHashMap, locks, or atomic operations
-```
-
-## Bug 3 — Memory leak
-
-Cause:
-
-```text
-expired or unused keys remain forever
-```
-
-Fix:
-
-```text
-TTL cleanup and eviction
-```
-
-## Bug 4 — Inconsistent recovery
-
-Cause:
-
-```text
-write applied to memory but not persisted
-```
-
-Fix:
-
-```text
-AOF/WAL ordering and fsync policy
+consumer groups
+parallel processing
 ```
 
 ---
 
-# 19. Next Step
+# Problem 3 — Consumer Crash
 
-Next phase:
+Consumer dies after partial processing.
+
+Need:
 
 ```text
-021
+resume from offset
 ```
 
-Continue the MiniRedis roadmap until the final production architecture.
+Exactly why stream IDs matter.
+
+---
+
+# 13. Interview Questions
+
+# Q1
+
+Why Streams instead of Pub/Sub?
+
+Answer:
+
+```text
+Streams are durable and replayable.
+Pub/Sub loses offline messages.
+```
+
+---
+
+# Q2
+
+Why append-only log architecture is powerful?
+
+Answer:
+
+```text
+events become immutable history
+```
+
+Used in:
+
+```text
+Kafka
+Event sourcing
+CQRS
+```
+
+---
+
+# Q3
+
+Why IDs are ordered?
+
+Answer:
+
+```text
+consumers need replay ordering
+```
+
+---
+
+# Q4
+
+How does Kafka relate to Redis Streams?
+
+Answer:
+
+```text
+Both use append-only event logs.
+```
+
+Kafka:
+
+```text
+distributed durable log
+```
+
+Redis Streams:
+
+```text
+lighter in-memory event stream
+```
+
+---
+
+# 14. Final Mental Model
+
+```text
+Pub/Sub
+   -> live broadcast
+
+Streams
+   -> durable replayable history
+```
+
+Streams are the foundation of:
+
+```text
+event-driven systems
+microservices
+distributed workflows
+async pipelines
+real-time analytics
+```
