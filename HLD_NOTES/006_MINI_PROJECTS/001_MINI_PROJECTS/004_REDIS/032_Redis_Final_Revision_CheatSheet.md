@@ -1086,3 +1086,216 @@ Staff Engineer
 Distributed Systems
 System Design interviews
 ```
+
+
+---
+
+# Redis End-to-End Request Flow Diagram
+
+```text
+Client
+   |
+   v
+TCP Socket
+   |
+   v
+RESP Parser
+   |
+   v
+Command Executor
+   |
+   +----------------------+
+   |                      |
+   v                      v
+In-Memory Store      Persistence Layer
+(HashMap/SDS)         (RDB/AOF)
+   |
+   v
+Response Writer
+   |
+   v
+Client
+```
+
+---
+
+# Redis Replication Diagram
+
+```text
+                WRITE
+Client -----------------> Master Redis
+                               |
+                               |
+                               v
+                     Replication Stream
+                               |
+          +--------------------+--------------------+
+          |                                         |
+          v                                         v
+     Replica-1                                Replica-2
+```
+
+---
+
+# Redis Cluster Hash Slot Diagram
+
+```text
+               CRC16(key) % 16384
+                        |
+                        v
+
++----------------+----------------+----------------+
+| Node-A         | Node-B         | Node-C         |
+| Slots 0-5000   | Slots 5001-10k | Slots 10k-16k |
++----------------+----------------+----------------+
+```
+
+---
+
+# GeoHash Mental Model Diagram
+
+```text
++---------+---------+---------+
+| Cell A  | Cell B  | Cell C  |
++---------+---------+---------+
+| Cell D  | USER    | Cell F  |
++---------+---------+---------+
+| Cell G  | Cell H  | Cell I  |
++---------+---------+---------+
+
+Search:
+same cell + neighboring cells
+```
+
+---
+
+# Distributed Lock Flow Diagram
+
+```text
+Client-A
+   |
+   | acquire lock
+   v
+
++----------------------+
+| Redis DistributedLock|
++----------------------+
+   ^
+   |
+Client-B blocked
+```
+
+---
+
+# Redlock Quorum Diagram
+
+```text
+          Client
+             |
+   +---------+---------+
+   |         |         |
+   v         v         v
+
+ Redis-1  Redis-2  Redis-3
+    |         |
+    v         v
+
+ Redis-4  Redis-5
+
+
+Quorum Needed:
+3 out of 5
+```
+
+---
+
+# Redis Streams Consumer Group Diagram
+
+```text
+Producer
+   |
+   v
+Redis Stream
+   |
+   +----------------------+
+   |                      |
+   v                      v
+Consumer-A           Consumer-B
+```
+
+---
+
+# Cache Aside Pattern Diagram
+
+```text
+Application
+     |
+     v
+GET Cache
+     |
+     +------ HIT ------> Return Data
+     |
+     +------ MISS ----->
+                          DB Query
+                              |
+                              v
+                         Populate Cache
+                              |
+                              v
+                         Return Data
+```
+
+---
+
+# Monitoring Pipeline Diagram
+
+```text
+Client Traffic
+      |
+      v
+MiniRedis
+      |
+      +--------------------+
+      |                    |
+      v                    v
+ Metrics Registry      Logs
+      |
+      v
+Prometheus
+      |
+      v
+Grafana Dashboard
+```
+
+---
+
+# Load Testing Diagram
+
+```text
+k6 Virtual Users
+        |
+        v
+MiniRedis Server
+        |
+        +----------------------+
+        |                      |
+        v                      v
+Latency Metrics          Throughput Metrics
+```
+
+---
+
+# Redis Persistence Diagram
+
+```text
+                WRITE
+                  |
+                  v
+             Redis Memory
+              /        \
+             /          \
+            v            v
+
+      RDB Snapshot     AOF Log
+```
+
