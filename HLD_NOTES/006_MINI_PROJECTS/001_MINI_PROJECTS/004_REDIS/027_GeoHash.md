@@ -1,28 +1,23 @@
-# 027_GeoHash.md
+# MiniRedis Phase 27 — GeoHash (Rich Version)
 
-# MiniRedis Phase 27 — GeoHash
-
-## Clickable Index
+# Clickable Index
 
 - [1. Goal](#1-goal)
-- [2. What We Built Previously](#2-what-we-built-previously)
-- [3. Previous Limitation](#3-previous-limitation)
-- [4. What We Build In This Phase](#4-what-we-build-in-this-phase)
-- [5. Why This Phase Matters](#5-why-this-phase-matters)
-- [6. Architecture Diagram](#6-architecture-diagram)
-- [7. File Structure](#7-file-structure)
+- [2. Why GeoHash Exists](#2-why-geohash-exists)
+- [3. Problem With Naive Nearby Search](#3-problem-with-naive-nearby-search)
+- [4. GeoHash Mental Model](#4-geohash-mental-model)
+- [5. Grid Cell Search Explained](#5-grid-cell-search-explained)
+- [6. GEOADD And GEORADIUS Flow](#6-geoadd-and-georadius-flow)
+- [7. Deep Internal Data Structure Explanation](#7-deep-internal-data-structure-explanation)
 - [8. Complete Java Code](#8-complete-java-code)
-- [9. How To Run](#9-how-to-run)
-- [10. Step-by-Step Dry Run](#10-step-by-step-dry-run)
-- [11. Test Commands](#11-test-commands)
-- [12. DSA / CP Concepts Used](#12-dsa--cp-concepts-used)
-- [13. System Design Relevance](#13-system-design-relevance)
-- [14. Redis Connection With This Phase](#14-redis-connection-with-this-phase)
-- [15. Production-Grade Concepts](#15-production-grade-concepts)
-- [16. Scalability Discussion](#16-scalability-discussion)
-- [17. Interview Notes](#17-interview-notes)
-- [18. Common Bugs](#18-common-bugs)
-- [19. Next Step](#19-next-step)
+- [9. Step-by-Step Dry Run](#9-step-by-step-dry-run)
+- [10. Internal Memory Visualization](#10-internal-memory-visualization)
+- [11. Complexity Analysis](#11-complexity-analysis)
+- [12. Real Production Use Cases](#12-real-production-use-cases)
+- [13. Redis Production Internals](#13-redis-production-internals)
+- [14. Failure Cases And Bottlenecks](#14-failure-cases-and-bottlenecks)
+- [15. Interview Questions](#15-interview-questions)
+- [16. Final Mental Model](#16-final-mental-model)
 
 ---
 
@@ -31,241 +26,657 @@
 In this phase, we build:
 
 ```text
-GeoHash
+GeoHash / Geospatial Index
 ```
 
-Purpose:
+Main objective:
 
 ```text
-Store coordinates and find nearby points using grid/geohash idea.
+Store latitude-longitude points
+and find nearby objects efficiently.
 ```
 
-This continues the MiniRedis journey from a simple parser/store into a real Redis-like backend component.
-
----
-
-# 2. What We Built Previously
-
-Earlier phases gave us:
+Mental model:
 
 ```text
-001 TCP server
-002 RESP parser
-003 in-memory store
+2D world map
+   ->
+small searchable grid cells
 ```
 
-Then each later phase adds one production capability.
-
-Current mental model:
+Example use case:
 
 ```text
-Client command
-      |
-      v
-Parser
-      |
-      v
-Command object
-      |
-      v
-Command executor
-      |
-      v
-Redis-like internal engine
-      |
-      v
-Response
+Find nearby drivers around user location.
 ```
 
----
-
-# 3. Previous Limitation
+Commands conceptually introduced:
 
 ```text
-There was no spatial index for location-based queries.
+GEOADD
+GEORADIUS
 ```
 
-This limitation matters because production Redis is not only a `Map`.
-
-It also needs:
+Example:
 
 ```text
-correct command behavior
-memory control
-expiration
-persistence
-concurrency
-replication
-sharding
-observability
+GEOADD drivers driver-1 44.437 26.102
+GEOADD drivers driver-2 44.438 26.103
+
+GEORADIUS drivers 44.437 26.102
+```
+
+Expected result:
+
+```text
+nearby driver IDs
+```
+
+Production systems using this idea:
+
+```text
+Uber
+Bolt
+Food delivery
+Nearby restaurants
+Location search
+Maps
+Fleet tracking
 ```
 
 ---
 
-# 4. What We Build In This Phase
+# 2. Why GeoHash Exists
 
-We add:
+Normal Redis key-value lookup answers:
 
 ```text
-We add GEOADD and GEORADIUS style search with simplified geohash cells.
+GET user:1
 ```
 
-Commands or operations covered:
+But location systems ask:
 
 ```text
-GEOADD drivers d1 44.4 26.1
-GEORADIUS drivers 44.4 26.1
+Find all drivers within 2 km.
 ```
 
----
+This is not simple key lookup.
 
-# 5. Why This Phase Matters
-
-This phase matters because it connects implementation to real backend systems.
-
-Real systems need:
+It is a:
 
 ```text
-feature correctness
-clear data structures
-predictable complexity
-safe failure handling
-production debugging
-scalability path
+spatial query
 ```
 
-MiniRedis teaches these in small increments.
-
----
-
-# 6. Architecture Diagram
+Spatial query needs:
 
 ```text
-+------------------+
-| Client / Driver  |
-+--------+---------+
-         |
-         v
-+------------------+
-| Parser / Command |
-+--------+---------+
-         |
-         v
-+------------------+
-| Command Executor |
-+--------+---------+
-         |
-         v
-+------------------+
-| GeoHash          |
-+--------+---------+
-         |
-         v
-+------------------+
-| Response         |
-+------------------+
+latitude
+longitude
+distance
+nearby search
 ```
 
-Phase flow:
+Without spatial indexing:
 
 ```text
-Input
-  -> validate
-  -> execute GeoHash
-  -> update internal state
-  -> return output
+scan all drivers
+calculate distance for each driver
+return nearby ones
+```
+
+This becomes slow at scale.
+
+Example:
+
+```text
+1 million drivers
+```
+
+Naive nearby search:
+
+```text
+calculate distance 1 million times
+```
+
+Too expensive.
+
+GeoHash solves this by grouping nearby coordinates into:
+
+```text
+cells
+```
+
+Then search only:
+
+```text
+same cell + neighboring cells
 ```
 
 ---
 
-# 7. File Structure
+# 3. Problem With Naive Nearby Search
 
-Recommended structure:
+Suppose we store:
 
 ```text
-MiniRedis/
-└── src/
-    └── main/
-        └── java/
-            └── com/
-                └── miniredis/
-                    ├── protocol/
-                    ├── command/
-                    ├── storage/
-                    ├── server/
-                    ├── persistence/
-                    ├── cluster/
-                    ├── metrics/
-                    └── driver/
+driverId -> lat/lon
 ```
 
-For this phase, keep only the needed packages.
+Example:
+
+```text
+driver-1 -> 44.437, 26.102
+driver-2 -> 44.438, 26.103
+driver-3 -> 45.000, 27.000
+```
+
+User is at:
+
+```text
+44.437, 26.102
+```
+
+Naive search:
+
+```text
+for every driver:
+    calculate distance
+```
+
+Complexity:
+
+```text
+O(n)
+```
+
+If:
+
+```text
+n = 10 million
+```
+
+then every nearby search becomes very expensive.
+
+Problems:
+
+```text
+high CPU
+high latency
+bad p99
+poor scalability
+```
+
+GeoHash reduces candidate set.
+
+Instead of checking all drivers:
+
+```text
+check only drivers in nearby cells
+```
+
+---
+
+# 4. GeoHash Mental Model
+
+GeoHash converts:
+
+```text
+latitude + longitude
+```
+
+into:
+
+```text
+cell ID
+```
+
+Example:
+
+```text
+44.437, 26.102
+```
+
+becomes:
+
+```text
+4443:2610
+```
+
+In this MiniRedis phase, we use simplified grid cells:
+
+```java
+int latCell = (int) (lat * 100);
+int lonCell = (int) (lon * 100);
+```
+
+So:
+
+```text
+44.437 * 100 = 4443
+26.102 * 100 = 2610
+```
+
+Cell:
+
+```text
+4443:2610
+```
+
+All points inside same small geographic area share same cell.
+
+Mental model:
+
+```text
+world map split into boxes
+```
+
+Nearby search:
+
+```text
+find the user's box
+return objects inside that box
+```
+
+Later production version:
+
+```text
+also search neighboring boxes
+```
+
+---
+
+# 5. Grid Cell Search Explained
+
+Imagine map as grid:
+
+```text
++---------+---------+---------+
+|  cell A |  cell B |  cell C |
++---------+---------+---------+
+|  cell D |  USER   |  cell F |
++---------+---------+---------+
+|  cell G |  cell H |  cell I |
++---------+---------+---------+
+```
+
+If user is in center cell:
+
+```text
+search center cell
+```
+
+But true radius search should also check:
+
+```text
+8 neighboring cells
+```
+
+Because nearby object may be just across boundary.
+
+Simple MiniRedis version:
+
+```text
+same cell only
+```
+
+Production version:
+
+```text
+same cell + adjacent cells + distance filtering
+```
+
+Two-step pattern:
+
+```text
+1. candidate filtering by cell
+2. exact distance check
+```
+
+This is extremely common in scalable geo systems.
+
+---
+
+# 6. GEOADD And GEORADIUS Flow
+
+# GEOADD
+
+Command:
+
+```text
+GEOADD drivers driver-1 44.437 26.102
+```
+
+Execution:
+
+```text
+1. compute grid cell
+2. create cell bucket if missing
+3. store point in bucket
+```
+
+Memory:
+
+```text
+cells
+ └── 4443:2610
+      └── driver-1
+```
+
+---
+
+# GEORADIUS
+
+Command:
+
+```text
+GEORADIUS drivers 44.437 26.102
+```
+
+Execution:
+
+```text
+1. compute query cell
+2. fetch candidates from cell
+3. return candidate IDs
+```
+
+MiniRedis result:
+
+```text
+drivers in same cell
+```
+
+Production result:
+
+```text
+drivers within actual distance
+```
+
+---
+
+# 7. Deep Internal Data Structure Explanation
+
+MiniRedis implementation:
+
+```java
+Map<String, List<Point>>
+```
+
+Meaning:
+
+```text
+cellId -> points inside that cell
+```
+
+Example:
+
+```text
+cells
+ ├── 4443:2610 -> [driver-1, driver-2]
+ └── 4500:2700 -> [driver-3]
+```
+
+---
+
+# Point Object
+
+Each point stores:
+
+```text
+id
+latitude
+longitude
+```
+
+Why store lat/lon again?
+
+Because after candidate filtering:
+
+```text
+we may calculate exact distance
+```
+
+Cell only gives approximate location.
+
+Exact lat/lon gives accurate distance.
+
+---
+
+# Why HashMap?
+
+Because we need:
+
+```text
+fast cell lookup
+```
+
+Complexity:
+
+```text
+cell lookup = O(1)
+```
+
+---
+
+# Why List?
+
+Because many points can exist in same cell.
+
+Example:
+
+```text
+100 drivers in same city block
+```
+
+So:
+
+```text
+cell -> list of drivers
+```
+
+---
+
+# Limitation Of Same-Cell Only Search
+
+If driver is in neighboring cell but physically close:
+
+```text
+same-cell search misses it
+```
+
+Production fix:
+
+```text
+search neighboring cells too
+then filter by Haversine distance
+```
 
 ---
 
 # 8. Complete Java Code
 
+## 8.1 GeoPoint.java
 
-## 8.1 `GeoIndex.java`
+### Logic Before Code
 
-### Logic before this class
+A point represents one geo object:
 
-GeoHash reduces 2D location search into searchable cells.
+```text
+driver
+restaurant
+user
+warehouse
+```
 
-This simplified implementation uses grid cells.
+It stores:
 
-Real Redis uses sorted sets with geohash encoding internally.
+```text
+id + latitude + longitude
+```
 
 ```java
 package com.miniredis.geo;
 
-import java.util.*;
+/**
+ * GeoPoint represents one location object.
+ */
+public class GeoPoint {
 
-public class GeoIndex {
-    static class Point {
-        String id;
-        double lat;
-        double lon;
+    public final String id;
+    public final double lat;
+    public final double lon;
 
-        Point(String id, double lat, double lon) {
-            this.id = id;
-            this.lat = lat;
-            this.lon = lon;
-        }
-    }
-
-    private final Map<String, List<Point>> cells = new HashMap<>();
-
-    public void add(String id, double lat, double lon) {
-        cells.computeIfAbsent(cell(lat, lon), c -> new ArrayList<>())
-             .add(new Point(id, lat, lon));
-    }
-
-    public List<String> radius(double lat, double lon) {
-        List<String> result = new ArrayList<>();
-
-        for (Point p : cells.getOrDefault(cell(lat, lon), List.of())) {
-            result.add(p.id);
-        }
-
-        return result;
-    }
-
-    private String cell(double lat, double lon) {
-        int latCell = (int) (lat * 100);
-        int lonCell = (int) (lon * 100);
-        return latCell + ":" + lonCell;
+    public GeoPoint(
+            String id,
+            double lat,
+            double lon
+    ) {
+        this.id = id;
+        this.lat = lat;
+        this.lon = lon;
     }
 }
 ```
 
 ---
 
-## 8.2 `Phase027Driver.java`
+## 8.2 GeoIndex.java
 
-### Logic before this class
+### Logic Before Code
 
-The driver models nearby driver lookup.
+GeoIndex stores geo points inside grid cells.
+
+Core responsibilities:
+
+```text
+1. convert lat/lon to cell
+2. add point into cell
+3. search nearby points
+```
+
+```java
+package com.miniredis.geo;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Simplified GeoHash / grid-cell index.
+ */
+public class GeoIndex {
+
+    /**
+     * cellId -> list of geo points
+     */
+    private final Map<String, List<GeoPoint>> cells =
+            new HashMap<>();
+
+    /**
+     * GEOADD key id lat lon
+     *
+     * Adds a geo object into a grid cell.
+     */
+    public void add(
+            String id,
+            double lat,
+            double lon
+    ) {
+
+        String cellId =
+                cell(lat, lon);
+
+        List<GeoPoint> points =
+                cells.computeIfAbsent(
+                        cellId,
+                        c -> new ArrayList<>()
+                );
+
+        points.add(
+                new GeoPoint(
+                        id,
+                        lat,
+                        lon
+                )
+        );
+    }
+
+    /**
+     * GEORADIUS simplified.
+     *
+     * Returns IDs from same cell.
+     */
+    public List<String> radius(
+            double lat,
+            double lon
+    ) {
+
+        String cellId =
+                cell(lat, lon);
+
+        List<String> result =
+                new ArrayList<>();
+
+        List<GeoPoint> candidates =
+                cells.getOrDefault(
+                        cellId,
+                        List.of()
+                );
+
+        for (GeoPoint point : candidates) {
+
+            result.add(point.id);
+        }
+
+        return result;
+    }
+
+    /**
+     * Convert latitude/longitude to simplified cell.
+     *
+     * Example:
+     * lat = 44.437 -> 4443
+     * lon = 26.102 -> 2610
+     *
+     * cell = 4443:2610
+     */
+    private String cell(
+            double lat,
+            double lon
+    ) {
+
+        int latCell =
+                (int) (lat * 100);
+
+        int lonCell =
+                (int) (lon * 100);
+
+        return latCell + ":" + lonCell;
+    }
+
+    /**
+     * Debug helper.
+     */
+    public Map<String, List<GeoPoint>> snapshot() {
+
+        return new HashMap<>(cells);
+    }
+}
+```
+
+---
+
+## 8.3 Phase027Driver.java
+
+### Logic Before Code
+
+This driver simulates:
+
+```text
+nearby driver search
+```
 
 ```java
 package com.miniredis.driver;
@@ -273,341 +684,457 @@ package com.miniredis.driver;
 import com.miniredis.geo.GeoIndex;
 
 public class Phase027Driver {
+
     public static void main(String[] args) {
-        GeoIndex geo = new GeoIndex();
 
-        geo.add("driver-1", 44.437, 26.102);
-        geo.add("driver-2", 44.438, 26.103);
-        geo.add("driver-3", 45.000, 27.000);
+        GeoIndex geo =
+                new GeoIndex();
 
-        System.out.println("Nearby = " + geo.radius(44.437, 26.102));
+        // --------------------------------
+        // ADD DRIVERS
+        // --------------------------------
+
+        geo.add(
+                "driver-1",
+                44.437,
+                26.102
+        );
+
+        geo.add(
+                "driver-2",
+                44.438,
+                26.103
+        );
+
+        geo.add(
+                "driver-3",
+                45.000,
+                27.000
+        );
+
+        // --------------------------------
+        // QUERY NEARBY
+        // --------------------------------
+
+        System.out.println(
+                "Nearby = "
+                        + geo.radius(
+                        44.437,
+                        26.102
+                )
+        );
     }
 }
 ```
 
-
 ---
 
-# 9. How To Run
+# 9. Step-by-Step Dry Run
 
-From project root:
+## Step 1 — Add driver-1
 
-```bash
-javac -d out src/main/java/com/miniredis/**/*.java
+Code:
+
+```java
+geo.add(
+    "driver-1",
+    44.437,
+    26.102
+);
 ```
 
-Run the phase driver:
-
-```bash
-java -cp out com.miniredis.driver.Phase027Driver
-```
-
-If your shell does not expand `**`, compile individual files or use IntelliJ.
-
----
-
-
-# 10. Step-by-Step Dry Run
-
-Example commands:
+Cell calculation:
 
 ```text
-GEOADD drivers d1 44.4 26.1
-GEORADIUS drivers 44.4 26.1
+latCell = int(44.437 * 100) = 4443
+lonCell = int(26.102 * 100) = 2610
 ```
 
-Internal flow:
+Cell ID:
 
 ```text
-1. Client/driver creates input command.
-2. Parser converts raw input into Command object.
-3. CommandExecutor validates command name and arguments.
-4. Executor calls the correct storage/service method.
-5. Data structure is updated or queried.
-6. Response is returned.
+4443:2610
 ```
 
-State transition:
+Memory:
 
 ```text
-Before:
-previous phase capability only
-
-Operation:
-GeoHash
-
-After:
-new Redis-like behavior is available
-```
-
-Visual execution:
-
-```text
-Command
-  -> validate
-  -> execute
-  -> update internal state
-  -> return response
-```
-
-
----
-
-# 11. Test Commands
-
-Try these mental or driver-level commands:
-
-```text
-GEOADD drivers d1 44.4 26.1
-GEORADIUS drivers 44.4 26.1
-```
-
-Expected behavior:
-
-```text
-command accepted
-state updated or queried
-response returned
-```
-
-For server phases, test with:
-
-```bash
-telnet localhost 6379
-```
-
-or:
-
-```bash
-nc localhost 6379
+cells
+ └── 4443:2610
+      └── driver-1
 ```
 
 ---
 
-# 12. DSA / CP Concepts Used
+## Step 2 — Add driver-2
 
-```text
-Spatial hashing, grid index, candidate filtering
+Code:
+
+```java
+geo.add(
+    "driver-2",
+    44.438,
+    26.103
+);
 ```
 
-Complexity thinking:
+Cell calculation:
 
 ```text
-Ask:
-1. What is the core data structure?
-2. What is lookup complexity?
-3. What is update complexity?
-4. What happens under high write/read load?
-5. What is the memory cost?
+latCell = int(44.438 * 100) = 4443
+lonCell = int(26.103 * 100) = 2610
 ```
 
-This is exactly how DSA connects to system design.
-
----
-
-# 13. System Design Relevance
-
-This phase maps to:
+Same cell:
 
 ```text
-Uber, delivery apps, nearby restaurants, location search
+4443:2610
 ```
 
-System design pattern:
+Memory:
 
 ```text
-Requirement
-  -> choose data structure
-  -> define operation complexity
-  -> define failure behavior
-  -> define scaling path
+cells
+ └── 4443:2610
+      ├── driver-1
+      └── driver-2
 ```
 
 ---
 
-# 14. Redis Connection With This Phase
+## Step 3 — Add driver-3
 
-Real Redis uses the same idea at production scale.
+Code:
+
+```java
+geo.add(
+    "driver-3",
+    45.000,
+    27.000
+);
+```
+
+Cell:
+
+```text
+4500:2700
+```
+
+Memory:
+
+```text
+cells
+ ├── 4443:2610
+ │    ├── driver-1
+ │    └── driver-2
+ │
+ └── 4500:2700
+      └── driver-3
+```
+
+---
+
+## Step 4 — Query nearby drivers
+
+Code:
+
+```java
+geo.radius(
+    44.437,
+    26.102
+);
+```
+
+Query cell:
+
+```text
+4443:2610
+```
+
+Lookup:
+
+```text
+cells["4443:2610"]
+```
+
+Result:
+
+```text
+[driver-1, driver-2]
+```
+
+driver-3 is not returned because:
+
+```text
+different cell
+```
+
+---
+
+# 10. Internal Memory Visualization
+
+```text
+GeoIndex
+
+cells
+ ├── 4443:2610
+ │    ├── driver-1 (44.437, 26.102)
+ │    └── driver-2 (44.438, 26.103)
+ │
+ └── 4500:2700
+      └── driver-3 (45.000, 27.000)
+```
+
+---
+
+# 11. Complexity Analysis
+
+| Operation | Complexity | Reason |
+|---|---|---|
+| GEOADD | O(1) average | HashMap cell lookup |
+| GEORADIUS same cell | O(k) | k points in matched cell |
+| Naive search | O(n) | scan all points |
+
+Where:
+
+```text
+k = points in one cell
+n = total points
+```
+
+Goal:
+
+```text
+k << n
+```
+
+---
+
+# 12. Real Production Use Cases
+
+## Uber / Bolt Nearby Drivers
+
+```text
+find drivers around rider
+```
+
+## Food Delivery
+
+```text
+nearby restaurants
+nearby couriers
+```
+
+## Fleet Tracking
+
+```text
+vehicles in region
+```
+
+## Location-Based Ads
+
+```text
+users near shop
+```
+
+## Emergency Dispatch
+
+```text
+nearest ambulance
+nearest police unit
+```
+
+---
+
+# 13. Redis Production Internals
+
+Real Redis GEO commands include:
+
+```text
+GEOADD
+GEODIST
+GEOHASH
+GEOPOS
+GEOSEARCH
+```
+
+Redis internally stores geospatial data using:
+
+```text
+sorted sets
+```
+
+Redis encodes coordinates into:
+
+```text
+geohash score
+```
+
+Then it uses sorted set range queries to find candidates.
+
+Production search does:
+
+```text
+1. encode location
+2. find candidate ranges
+3. compute exact distance
+4. filter final result
+```
 
 MiniRedis version:
 
 ```text
-simple Java implementation
+HashMap grid cells
 ```
 
 Real Redis version:
 
 ```text
-optimized C implementation
-event loop
-carefully tuned memory layout
-persistence configuration
-replication protocol
-cluster routing
-```
-
-This phase gives the mental model before optimization.
-
----
-
-# 15. Production-Grade Concepts
-
-Production concerns:
-
-```text
-correctness
-validation
-memory usage
-latency
-thread safety
-durability
-observability
-failure recovery
-```
-
-Questions to ask:
-
-```text
-What if process crashes?
-What if key is hot?
-What if memory is full?
-What if many clients connect?
-What if disk is slow?
-What if replica lags?
+ZSet + geohash encoding
 ```
 
 ---
 
-# 16. Scalability Discussion
+# 14. Failure Cases And Bottlenecks
 
-Single-node path:
+## Problem 1 — Boundary Miss
+
+Object is physically nearby but in neighboring cell.
+
+Fix:
 
 ```text
-single JVM
-  -> thread-safe store
-  -> TTL cleanup
-  -> persistence
-  -> metrics
+search adjacent cells
 ```
 
-Distributed path:
+## Problem 2 — Dense Cell
+
+City center may contain many drivers.
+
+Result:
+
+```text
+large candidate list
+```
+
+Fix:
+
+```text
+smaller cells
+higher precision
+secondary filtering
+```
+
+## Problem 3 — Moving Objects
+
+Drivers constantly update location.
+
+Problem:
+
+```text
+old cell must be cleaned
+```
+
+Fix:
+
+```text
+id -> current cell map
+remove old location before insert
+```
+
+## Problem 4 — Exact Distance Needed
+
+Same cell does not guarantee within radius.
+
+Fix:
+
+```text
+Haversine distance
+```
+
+## Problem 5 — Hot Area
+
+Many queries in one area.
+
+Fix:
 
 ```text
 replication
-  -> sharding
-  -> consistent hashing
-  -> cluster client
-  -> failover
-```
-
-Bottlenecks to watch:
-
-```text
-CPU
-GC
-memory
-network
-lock contention
-disk fsync
-hot keys
-large values
-replication backlog
+local cache
+precomputed nearby buckets
 ```
 
 ---
 
-# 17. Interview Notes
+# 15. Interview Questions
 
-Good explanation structure:
+## Q1
+
+Why not scan all points?
+
+Answer:
 
 ```text
-1. Start with the simplest design.
-2. Explain the data structure.
-3. Give operation complexity.
-4. Discuss failure cases.
-5. Add production improvements.
-6. Explain scaling path.
+O(n) does not scale for millions of locations
 ```
 
-Possible follow-ups:
+## Q2
+
+What is GeoHash?
+
+Answer:
 
 ```text
-How do you make it thread-safe?
-How do you persist it?
-How do you evict keys?
-How do you shard it?
-How do you recover after crash?
-How do you monitor it?
+encoding lat/lon into searchable spatial cell
 ```
 
----
+## Q3
 
-# 18. Common Bugs
+Why search neighboring cells?
 
-## Bug 1 — Wrong argument count
-
-Cause:
+Answer:
 
 ```text
-command validation missing
+nearby points may cross cell boundary
 ```
 
-Fix:
+## Q4
+
+Why still calculate exact distance?
+
+Answer:
 
 ```text
-validate args before executing
+cell match gives candidates only, not exact radius
 ```
 
-## Bug 2 — Shared mutable state bug
+## Q5
 
-Cause:
+How does Redis store GEO internally?
 
-```text
-multiple threads update the same data
-```
-
-Fix:
+Answer:
 
 ```text
-ConcurrentHashMap, locks, or atomic operations
-```
-
-## Bug 3 — Memory leak
-
-Cause:
-
-```text
-expired or unused keys remain forever
-```
-
-Fix:
-
-```text
-TTL cleanup and eviction
-```
-
-## Bug 4 — Inconsistent recovery
-
-Cause:
-
-```text
-write applied to memory but not persisted
-```
-
-Fix:
-
-```text
-AOF/WAL ordering and fsync policy
+as sorted set with encoded geohash score
 ```
 
 ---
 
-# 19. Next Step
-
-Next phase:
+# 16. Final Mental Model
 
 ```text
-028
+Location search
+   -> reduce 2D space into cells
+   -> search small candidate set
+   -> exact distance filter
 ```
 
-Continue the MiniRedis roadmap until the final production architecture.
+GeoHash teaches:
+
+```text
+spatial hashing
+candidate filtering
+nearby search
+Uber-style backend design
+Redis GEO internals
+```
