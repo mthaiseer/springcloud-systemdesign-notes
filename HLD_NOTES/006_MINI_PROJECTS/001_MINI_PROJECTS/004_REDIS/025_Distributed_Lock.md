@@ -1,28 +1,23 @@
-# 025_Distributed_Lock.md
+# MiniRedis Phase 25 — Distributed Lock (Rich Version)
 
-# MiniRedis Phase 25 — Distributed Lock
-
-## Clickable Index
+# Clickable Index
 
 - [1. Goal](#1-goal)
-- [2. What We Built Previously](#2-what-we-built-previously)
-- [3. Previous Limitation](#3-previous-limitation)
-- [4. What We Build In This Phase](#4-what-we-build-in-this-phase)
-- [5. Why This Phase Matters](#5-why-this-phase-matters)
-- [6. Architecture Diagram](#6-architecture-diagram)
-- [7. File Structure](#7-file-structure)
+- [2. Why Distributed Lock Exists](#2-why-distributed-lock-exists)
+- [3. Race Condition Problem](#3-race-condition-problem)
+- [4. Lock Mental Model](#4-lock-mental-model)
+- [5. Why TTL Is Critical](#5-why-ttl-is-critical)
+- [6. Why Owner Token Is Critical](#6-why-owner-token-is-critical)
+- [7. Deep Internal Data Structure Explanation](#7-deep-internal-data-structure-explanation)
 - [8. Complete Java Code](#8-complete-java-code)
-- [9. How To Run](#9-how-to-run)
-- [10. Step-by-Step Dry Run](#10-step-by-step-dry-run)
-- [11. Test Commands](#11-test-commands)
-- [12. DSA / CP Concepts Used](#12-dsa--cp-concepts-used)
-- [13. System Design Relevance](#13-system-design-relevance)
-- [14. Redis Connection With This Phase](#14-redis-connection-with-this-phase)
-- [15. Production-Grade Concepts](#15-production-grade-concepts)
-- [16. Scalability Discussion](#16-scalability-discussion)
-- [17. Interview Notes](#17-interview-notes)
-- [18. Common Bugs](#18-common-bugs)
-- [19. Next Step](#19-next-step)
+- [9. Step-by-Step Dry Run](#9-step-by-step-dry-run)
+- [10. Internal Memory Visualization](#10-internal-memory-visualization)
+- [11. Complexity Analysis](#11-complexity-analysis)
+- [12. Real Production Use Cases](#12-real-production-use-cases)
+- [13. Redis Production Internals](#13-redis-production-internals)
+- [14. Failure Cases And Bottlenecks](#14-failure-cases-and-bottlenecks)
+- [15. Interview Questions](#15-interview-questions)
+- [16. Final Mental Model](#16-final-mental-model)
 
 ---
 
@@ -34,619 +29,1041 @@ In this phase, we build:
 Distributed Lock
 ```
 
-Purpose:
+Main objective:
 
 ```text
-Implement lock acquisition with token and TTL.
+Allow only ONE client at a time
+to execute a critical operation.
 ```
 
-This continues the MiniRedis journey from a simple parser/store into a real Redis-like backend component.
-
----
-
-# 2. What We Built Previously
-
-Earlier phases gave us:
+Mental model:
 
 ```text
-001 TCP server
-002 RESP parser
-003 in-memory store
+global mutex across distributed systems
 ```
 
-Then each later phase adds one production capability.
-
-Current mental model:
+Real-world analogy:
 
 ```text
-Client command
-      |
-      v
-Parser
-      |
-      v
-Command object
-      |
-      v
-Command executor
-      |
-      v
-Redis-like internal engine
-      |
-      v
-Response
+One hotel room key.
+
+Only one person can own the key at a time.
 ```
 
----
-
-# 3. Previous Limitation
+If another person tries:
 
 ```text
-There was no coordination primitive for exclusive work.
+access denied
 ```
 
-This limitation matters because production Redis is not only a `Map`.
+Distributed lock works exactly like this.
 
-It also needs:
+Commands conceptually involved:
 
 ```text
-correct command behavior
-memory control
-expiration
-persistence
-concurrency
-replication
-sharding
-observability
+SETNX
+EXPIRE
+LOCK
+UNLOCK
+```
+
+Example:
+
+```text
+LOCK order:1 token-abc EX 30
+```
+
+Meaning:
+
+```text
+Acquire lock on order:1
+for 30 seconds
+```
+
+Production systems using distributed locks:
+
+```text
+payment processing
+inventory reservation
+cron jobs
+leader election
+job scheduling
+distributed transactions
 ```
 
 ---
 
-# 4. What We Build In This Phase
+# 2. Why Distributed Lock Exists
 
-We add:
+Without distributed locking:
 
 ```text
-We add SET NX EX style locking and safe token-based release.
+multiple servers may update same resource simultaneously
 ```
 
-Commands or operations covered:
+Result:
+
+```text
+race conditions
+duplicate processing
+data corruption
+```
+
+Example:
+
+```text
+Only 1 product left in inventory.
+```
+
+Two users buy simultaneously.
+
+Without lock:
+
+```text
+both requests succeed
+inventory becomes negative
+```
+
+This becomes catastrophic in:
+
+```text
+payments
+banking
+ticket booking
+stock trading
+```
+
+Distributed lock guarantees:
+
+```text
+exclusive ownership
+```
+
+Only one client can hold the lock.
+
+---
+
+# 3. Race Condition Problem
+
+Suppose:
+
+```text
+inventory = 1
+```
+
+Two servers process payment simultaneously.
+
+# Without Lock
+
+Server-A reads:
+
+```text
+inventory = 1
+```
+
+Server-B reads:
+
+```text
+inventory = 1
+```
+
+Both decrement:
+
+```text
+inventory = -1
+```
+
+Incorrect state.
+
+---
+
+# With Lock
+
+Server-A acquires lock:
+
+```text
+LOCK inventory:item-1
+```
+
+Server-B tries same lock:
+
+```text
+FAIL
+```
+
+Server-B waits/retries.
+
+Result:
+
+```text
+safe sequential execution
+```
+
+This is the core purpose of distributed locking.
+
+---
+
+# 4. Lock Mental Model
+
+Architecture:
+
+```text
+Client-A
+   |
+   | acquire lock
+   v
++----------------+
+| DistributedLock|
++----------------+
+   ^
+   |
+Client-B blocked
+```
+
+Flow:
+
+```text
+1. client requests lock
+2. system checks ownership
+3. if free -> grant lock
+4. if occupied -> reject
+```
+
+Very important:
+
+```text
+lock must eventually expire
+```
+
+Otherwise:
+
+```text
+deadlock forever
+```
+
+---
+
+# 5. Why TTL Is Critical
+
+Suppose:
+
+```text
+client acquires lock
+```
+
+Then crashes.
+
+Without TTL:
+
+```text
+lock never released
+```
+
+Entire system stuck forever.
+
+TTL solves this.
+
+Example:
 
 ```text
 LOCK order:1 token EX 30
-UNLOCK order:1 token
+```
+
+Meaning:
+
+```text
+auto-release after 30 seconds
+```
+
+Even if owner crashes:
+
+```text
+system recovers automatically
+```
+
+This is why Redis locks always use:
+
+```text
+expiration time
 ```
 
 ---
 
-# 5. Why This Phase Matters
+# 6. Why Owner Token Is Critical
 
-This phase matters because it connects implementation to real backend systems.
+Very important distributed systems concept.
 
-Real systems need:
+Suppose:
 
 ```text
-feature correctness
-clear data structures
-predictable complexity
-safe failure handling
-production debugging
-scalability path
+Client-A acquires lock
 ```
 
-MiniRedis teaches these in small increments.
+Then:
+
+```text
+Client-B accidentally releases it
+```
+
+Catastrophic.
+
+Solution:
+
+```text
+owner token
+```
+
+Lock internally stores:
+
+```text
+token-abc
+```
+
+Unlock succeeds ONLY if:
+
+```text
+provided token matches owner token
+```
+
+This guarantees:
+
+```text
+safe release
+```
+
+Exactly how Redis distributed locking works.
 
 ---
 
-# 6. Architecture Diagram
+# 7. Deep Internal Data Structure Explanation
 
-```text
-+------------------+
-| Client / Driver  |
-+--------+---------+
-         |
-         v
-+------------------+
-| Parser / Command |
-+--------+---------+
-         |
-         v
-+------------------+
-| Command Executor |
-+--------+---------+
-         |
-         v
-+------------------+
-| Distributed Lock |
-+--------+---------+
-         |
-         v
-+------------------+
-| Response         |
-+------------------+
+MiniRedis implementation:
+
+```java
+Map<String, LockEntry>
 ```
 
-Phase flow:
+Meaning:
 
 ```text
-Input
-  -> validate
-  -> execute Distributed Lock
-  -> update internal state
-  -> return output
+lock key
+   ->
+owner token + expiration time
+```
+
+Example:
+
+```text
+locks
+ └── order:1
+      ├── token = client-A
+      └── expireAt = 1720000
 ```
 
 ---
 
-# 7. File Structure
+# Why HashMap?
 
-Recommended structure:
+Because lock operations require:
 
 ```text
-MiniRedis/
-└── src/
-    └── main/
-        └── java/
-            └── com/
-                └── miniredis/
-                    ├── protocol/
-                    ├── command/
-                    ├── storage/
-                    ├── server/
-                    ├── persistence/
-                    ├── cluster/
-                    ├── metrics/
-                    └── driver/
+fast lookup
+fast insert
+fast delete
 ```
 
-For this phase, keep only the needed packages.
+Complexity:
+
+| Operation | Complexity |
+|---|---|
+| acquire lock | O(1) |
+| release lock | O(1) |
+| expiration check | O(1) |
+
+---
+
+# Lock Acquisition Logic
+
+Acquire succeeds if:
+
+```text
+1. lock missing
+OR
+2. lock expired
+```
+
+Otherwise:
+
+```text
+lock denied
+```
+
+---
+
+# Lock Release Logic
+
+Release succeeds ONLY if:
+
+```text
+owner token matches
+```
+
+This prevents:
+
+```text
+accidental unlock by another client
+```
+
+---
+
+# Production Redis Internals
+
+Real Redis distributed lock commonly uses:
+
+```text
+SET key value NX PX 30000
+```
+
+Meaning:
+
+```text
+NX -> set only if absent
+PX -> expiration
+```
+
+Unlock uses Lua script:
+
+```text
+check token + delete atomically
+```
+
+Very important.
+
+Because:
+
+```text
+check + delete separately
+is NOT safe
+```
 
 ---
 
 # 8. Complete Java Code
 
+## 8.1 LockEntry.java
 
-## 8.1 `HashRing.java`
+### Logic Before Code
 
-### Logic before this class
-
-Consistent hashing maps keys to nodes.
-
-It avoids remapping every key when a node is added or removed.
-
-```java
-package com.miniredis.cluster;
-
-import java.util.*;
-
-public class HashRing {
-    private final TreeMap<Integer, String> ring = new TreeMap<>();
-    private final int virtualNodes;
-
-    public HashRing(int virtualNodes) {
-        this.virtualNodes = virtualNodes;
-    }
-
-    public void addNode(String node) {
-        for (int i = 0; i < virtualNodes; i++) {
-            ring.put(Objects.hash(node, i), node);
-        }
-    }
-
-    public String getNode(String key) {
-        int hash = Objects.hash(key);
-        Map.Entry<Integer, String> entry = ring.ceilingEntry(hash);
-        return entry != null ? entry.getValue() : ring.firstEntry().getValue();
-    }
-}
-```
-
----
-
-## 8.2 `DistributedLock.java`
-
-### Logic before this class
-
-A distributed lock needs:
+LockEntry stores:
 
 ```text
-lock key
 owner token
-TTL
-safe release
+expiration timestamp
 ```
-
-Only the owner token can release the lock.
 
 ```java
 package com.miniredis.lock;
 
-import java.util.Objects;
+/**
+ * Represents one distributed lock entry.
+ */
+public class LockEntry {
 
-public class DistributedLock {
-    private String token;
-    private long expireAtMillis;
+    /**
+     * Owner token.
+     */
+    public final String token;
 
-    public synchronized boolean acquire(String newToken, long ttlMillis) {
-        long now = System.currentTimeMillis();
+    /**
+     * Expiration timestamp.
+     */
+    public final long expireAtMillis;
 
-        if (token == null || now >= expireAtMillis) {
-            token = newToken;
-            expireAtMillis = now + ttlMillis;
-            return true;
-        }
+    public LockEntry(
+            String token,
+            long expireAtMillis
+    ) {
 
-        return false;
-    }
-
-    public synchronized boolean release(String ownerToken) {
-        if (Objects.equals(token, ownerToken)) {
-            token = null;
-            expireAtMillis = 0;
-            return true;
-        }
-
-        return false;
+        this.token = token;
+        this.expireAtMillis = expireAtMillis;
     }
 }
 ```
 
 ---
 
-## 8.3 `Phase025Driver.java`
+## 8.2 DistributedLockManager.java
 
-### Logic before this class
+### Logic Before Code
 
-This driver demonstrates cluster routing and lock ownership.
+This class simulates:
+
+```text
+distributed lock acquisition
+TTL expiration
+safe unlock
+```
+
+Core responsibilities:
+
+```text
+1. acquire lock
+2. validate owner
+3. release safely
+4. expire stale locks
+```
+
+```java
+package com.miniredis.lock;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * DistributedLockManager simulates
+ * Redis distributed locking.
+ */
+public class DistributedLockManager {
+
+    /**
+     * lock key -> lock entry
+     */
+    private final Map<String, LockEntry> locks =
+            new HashMap<>();
+
+    /**
+     * Acquire distributed lock.
+     */
+    public synchronized boolean acquire(
+            String lockKey,
+            String token,
+            long ttlMillis
+    ) {
+
+        long now =
+                System.currentTimeMillis();
+
+        LockEntry existing =
+                locks.get(lockKey);
+
+        // --------------------------------
+        // LOCK FREE OR EXPIRED
+        // --------------------------------
+
+        if (existing == null
+                || now >= existing.expireAtMillis) {
+
+            LockEntry newLock =
+                    new LockEntry(
+                            token,
+                            now + ttlMillis
+                    );
+
+            locks.put(
+                    lockKey,
+                    newLock
+            );
+
+            return true;
+        }
+
+        // --------------------------------
+        // LOCK CURRENTLY OWNED
+        // --------------------------------
+
+        return false;
+    }
+
+    /**
+     * Release lock safely.
+     */
+    public synchronized boolean release(
+            String lockKey,
+            String token
+    ) {
+
+        LockEntry existing =
+                locks.get(lockKey);
+
+        // --------------------------------
+        // LOCK MISSING
+        // --------------------------------
+
+        if (existing == null) {
+
+            return false;
+        }
+
+        // --------------------------------
+        // ONLY OWNER CAN RELEASE
+        // --------------------------------
+
+        if (Objects.equals(
+                existing.token,
+                token
+        )) {
+
+            locks.remove(lockKey);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Debug helper.
+     */
+    public Map<String, LockEntry> snapshot() {
+
+        return new HashMap<>(locks);
+    }
+}
+```
+
+---
+
+## 8.3 Phase025Driver.java
+
+### Logic Before Code
+
+This driver demonstrates:
+
+```text
+lock ownership
+lock contention
+safe unlock
+TTL-based locking
+```
 
 ```java
 package com.miniredis.driver;
 
-import com.miniredis.cluster.HashRing;
-import com.miniredis.lock.DistributedLock;
+import com.miniredis.lock.DistributedLockManager;
 
 public class Phase025Driver {
+
     public static void main(String[] args) {
-        HashRing ring = new HashRing(10);
 
-        ring.addNode("redis-1");
-        ring.addNode("redis-2");
-        ring.addNode("redis-3");
+        DistributedLockManager manager =
+                new DistributedLockManager();
 
-        System.out.println("user:1 -> " + ring.getNode("user:1"));
-        System.out.println("order:9 -> " + ring.getNode("order:9"));
+        // --------------------------------
+        // CLIENT-A ACQUIRES LOCK
+        // --------------------------------
 
-        DistributedLock lock = new DistributedLock();
-        System.out.println("lock client-A = " + lock.acquire("client-A", 3000));
-        System.out.println("lock client-B = " + lock.acquire("client-B", 3000));
-        System.out.println("unlock client-A = " + lock.release("client-A"));
+        boolean ok1 =
+                manager.acquire(
+                        "order:1",
+                        "token-A",
+                        30000
+                );
+
+        System.out.println(
+                "client-A lock = "
+                        + ok1
+        );
+
+        // --------------------------------
+        // CLIENT-B FAILS
+        // --------------------------------
+
+        boolean ok2 =
+                manager.acquire(
+                        "order:1",
+                        "token-B",
+                        30000
+                );
+
+        System.out.println(
+                "client-B lock = "
+                        + ok2
+        );
+
+        // --------------------------------
+        // WRONG OWNER RELEASE
+        // --------------------------------
+
+        boolean badUnlock =
+                manager.release(
+                        "order:1",
+                        "token-B"
+                );
+
+        System.out.println(
+                "client-B unlock = "
+                        + badUnlock
+        );
+
+        // --------------------------------
+        // CORRECT OWNER RELEASE
+        // --------------------------------
+
+        boolean okUnlock =
+                manager.release(
+                        "order:1",
+                        "token-A"
+                );
+
+        System.out.println(
+                "client-A unlock = "
+                        + okUnlock
+        );
     }
 }
 ```
 
-
 ---
 
-# 9. How To Run
+# 9. Step-by-Step Dry Run
 
-From project root:
+# Step 1 — Client-A Acquires Lock
 
-```bash
-javac -d out src/main/java/com/miniredis/**/*.java
+Code:
+
+```java
+manager.acquire(
+    "order:1",
+    "token-A",
+    30000
+);
 ```
 
-Run the phase driver:
-
-```bash
-java -cp out com.miniredis.driver.Phase025Driver
-```
-
-If your shell does not expand `**`, compile individual files or use IntelliJ.
-
----
-
-
-# 10. Step-by-Step Dry Run
-
-Example commands:
+Execution:
 
 ```text
-LOCK order:1 token EX 30
-UNLOCK order:1 token
+1. lock missing
+2. create LockEntry
+3. store token + expiration
+4. return true
 ```
 
-Internal flow:
+Memory:
 
 ```text
-1. Client/driver creates input command.
-2. Parser converts raw input into Command object.
-3. CommandExecutor validates command name and arguments.
-4. Executor calls the correct storage/service method.
-5. Data structure is updated or queried.
-6. Response is returned.
-```
-
-State transition:
-
-```text
-Before:
-previous phase capability only
-
-Operation:
-Distributed Lock
-
-After:
-new Redis-like behavior is available
-```
-
-Visual execution:
-
-```text
-Command
-  -> validate
-  -> execute
-  -> update internal state
-  -> return response
-```
-
-
----
-
-# 11. Test Commands
-
-Try these mental or driver-level commands:
-
-```text
-LOCK order:1 token EX 30
-UNLOCK order:1 token
-```
-
-Expected behavior:
-
-```text
-command accepted
-state updated or queried
-response returned
-```
-
-For server phases, test with:
-
-```bash
-telnet localhost 6379
-```
-
-or:
-
-```bash
-nc localhost 6379
+locks
+ └── order:1
+      ├── token = token-A
+      └── expireAt = future time
 ```
 
 ---
 
-# 12. DSA / CP Concepts Used
+# Step 2 — Client-B Tries Same Lock
 
-```text
-Atomic set-if-absent, lease, token ownership
+Code:
+
+```java
+manager.acquire(
+    "order:1",
+    "token-B",
+    30000
+);
 ```
 
-Complexity thinking:
+Execution:
 
 ```text
-Ask:
-1. What is the core data structure?
-2. What is lookup complexity?
-3. What is update complexity?
-4. What happens under high write/read load?
-5. What is the memory cost?
+1. lock exists
+2. lock not expired
+3. reject request
 ```
 
-This is exactly how DSA connects to system design.
-
----
-
-# 13. System Design Relevance
-
-This phase maps to:
+Result:
 
 ```text
-payment idempotency, inventory reservation, job deduplication
+false
 ```
 
-System design pattern:
+Meaning:
 
 ```text
-Requirement
-  -> choose data structure
-  -> define operation complexity
-  -> define failure behavior
-  -> define scaling path
-```
-
----
-
-# 14. Redis Connection With This Phase
-
-Real Redis uses the same idea at production scale.
-
-MiniRedis version:
-
-```text
-simple Java implementation
-```
-
-Real Redis version:
-
-```text
-optimized C implementation
-event loop
-carefully tuned memory layout
-persistence configuration
-replication protocol
-cluster routing
-```
-
-This phase gives the mental model before optimization.
-
----
-
-# 15. Production-Grade Concepts
-
-Production concerns:
-
-```text
-correctness
-validation
-memory usage
-latency
-thread safety
-durability
-observability
-failure recovery
-```
-
-Questions to ask:
-
-```text
-What if process crashes?
-What if key is hot?
-What if memory is full?
-What if many clients connect?
-What if disk is slow?
-What if replica lags?
-```
-
----
-
-# 16. Scalability Discussion
-
-Single-node path:
-
-```text
-single JVM
-  -> thread-safe store
-  -> TTL cleanup
-  -> persistence
-  -> metrics
-```
-
-Distributed path:
-
-```text
-replication
-  -> sharding
-  -> consistent hashing
-  -> cluster client
-  -> failover
-```
-
-Bottlenecks to watch:
-
-```text
-CPU
-GC
-memory
-network
 lock contention
-disk fsync
-hot keys
-large values
-replication backlog
 ```
 
 ---
 
-# 17. Interview Notes
+# Step 3 — Wrong Unlock Attempt
 
-Good explanation structure:
+Code:
 
-```text
-1. Start with the simplest design.
-2. Explain the data structure.
-3. Give operation complexity.
-4. Discuss failure cases.
-5. Add production improvements.
-6. Explain scaling path.
+```java
+manager.release(
+    "order:1",
+    "token-B"
+);
 ```
 
-Possible follow-ups:
+Execution:
 
 ```text
-How do you make it thread-safe?
-How do you persist it?
-How do you evict keys?
-How do you shard it?
-How do you recover after crash?
-How do you monitor it?
+1. locate lock
+2. compare tokens
+3. token mismatch
+4. reject unlock
+```
+
+Result:
+
+```text
+false
+```
+
+Critical safety mechanism.
+
+---
+
+# Step 4 — Correct Unlock
+
+Code:
+
+```java
+manager.release(
+    "order:1",
+    "token-A"
+);
+```
+
+Execution:
+
+```text
+1. locate lock
+2. token matches
+3. remove lock
+4. return true
+```
+
+Memory after unlock:
+
+```text
+locks = {}
 ```
 
 ---
 
-# 18. Common Bugs
-
-## Bug 1 — Wrong argument count
-
-Cause:
+# 10. Internal Memory Visualization
 
 ```text
-command validation missing
+locks
+ └── order:1
+      ├── token = token-A
+      └── expireAt = 1720000
 ```
 
-Fix:
+After release:
 
 ```text
-validate args before executing
-```
-
-## Bug 2 — Shared mutable state bug
-
-Cause:
-
-```text
-multiple threads update the same data
-```
-
-Fix:
-
-```text
-ConcurrentHashMap, locks, or atomic operations
-```
-
-## Bug 3 — Memory leak
-
-Cause:
-
-```text
-expired or unused keys remain forever
-```
-
-Fix:
-
-```text
-TTL cleanup and eviction
-```
-
-## Bug 4 — Inconsistent recovery
-
-Cause:
-
-```text
-write applied to memory but not persisted
-```
-
-Fix:
-
-```text
-AOF/WAL ordering and fsync policy
+locks = {}
 ```
 
 ---
 
-# 19. Next Step
+# 11. Complexity Analysis
 
-Next phase:
+| Operation | Complexity | Reason |
+|---|---|---|
+| acquire | O(1) | HashMap lookup |
+| release | O(1) | HashMap remove |
+| expiration check | O(1) | timestamp compare |
+
+---
+
+# 12. Real Production Use Cases
+
+# Payment Idempotency
+
+Prevent duplicate payment execution.
+
+---
+
+# Inventory Reservation
+
+Prevent overselling.
+
+---
+
+# Distributed Cron Jobs
+
+Ensure only one worker executes task.
+
+---
+
+# Leader Election
+
+Only one active leader node.
+
+---
+
+# Job Scheduling
+
+Prevent duplicate background jobs.
+
+---
+
+# 13. Redis Production Internals
+
+Real Redis lock:
 
 ```text
-026
+SET key token NX PX 30000
 ```
 
-Continue the MiniRedis roadmap until the final production architecture.
+Safe unlock uses:
+
+```text
+Lua script
+```
+
+Why Lua?
+
+Because:
+
+```text
+check + delete must be atomic
+```
+
+Advanced production systems use:
+
+```text
+RedLock
+fencing tokens
+lease renewal
+watchdog timers
+```
+
+---
+
+# 14. Failure Cases And Bottlenecks
+
+# Problem 1 — Client Crash
+
+Lock never released.
+
+Fix:
+
+```text
+TTL expiration
+```
+
+---
+
+# Problem 2 — Clock Drift
+
+Machines disagree on time.
+
+Result:
+
+```text
+incorrect expiration
+```
+
+---
+
+# Problem 3 — Network Partition
+
+Client thinks lock acquired.
+
+Master disagrees.
+
+Can cause:
+
+```text
+split brain
+```
+
+---
+
+# Problem 4 — Long GC Pause
+
+Application paused longer than TTL.
+
+Result:
+
+```text
+lock stolen by another client
+```
+
+Very important production issue.
+
+---
+
+# 15. Interview Questions
+
+# Q1
+
+Why distributed lock needed?
+
+Answer:
+
+```text
+prevent concurrent modification
+```
+
+---
+
+# Q2
+
+Why TTL mandatory?
+
+Answer:
+
+```text
+prevent deadlock after crash
+```
+
+---
+
+# Q3
+
+Why token needed?
+
+Answer:
+
+```text
+safe ownership validation
+```
+
+---
+
+# Q4
+
+Why Lua script used in Redis unlock?
+
+Answer:
+
+```text
+atomic check-and-delete
+```
+
+---
+
+# Q5
+
+What is RedLock?
+
+Answer:
+
+```text
+multi-node distributed lock algorithm
+```
+
+---
+
+# 16. Final Mental Model
+
+```text
+Distributed lock
+   -> distributed mutex
+```
+
+Locks become foundation for:
+
+```text
+safe concurrency
+distributed coordination
+leader election
+job scheduling
+payments
+inventory consistency
+```
