@@ -1,28 +1,22 @@
-# 021_Master_Replica.md
+# MiniRedis Phase 21 — Master Replica (Rich Version)
 
-# MiniRedis Phase 21 — Master Replica
-
-## Clickable Index
+# Clickable Index
 
 - [1. Goal](#1-goal)
-- [2. What We Built Previously](#2-what-we-built-previously)
-- [3. Previous Limitation](#3-previous-limitation)
-- [4. What We Build In This Phase](#4-what-we-build-in-this-phase)
-- [5. Why This Phase Matters](#5-why-this-phase-matters)
-- [6. Architecture Diagram](#6-architecture-diagram)
-- [7. File Structure](#7-file-structure)
-- [8. Complete Java Code](#8-complete-java-code)
-- [9. How To Run](#9-how-to-run)
-- [10. Step-by-Step Dry Run](#10-step-by-step-dry-run)
-- [11. Test Commands](#11-test-commands)
-- [12. DSA / CP Concepts Used](#12-dsa--cp-concepts-used)
-- [13. System Design Relevance](#13-system-design-relevance)
-- [14. Redis Connection With This Phase](#14-redis-connection-with-this-phase)
-- [15. Production-Grade Concepts](#15-production-grade-concepts)
-- [16. Scalability Discussion](#16-scalability-discussion)
-- [17. Interview Notes](#17-interview-notes)
-- [18. Common Bugs](#18-common-bugs)
-- [19. Next Step](#19-next-step)
+- [2. Why Replication Exists](#2-why-replication-exists)
+- [3. Single Node Problem](#3-single-node-problem)
+- [4. Master Replica Architecture](#4-master-replica-architecture)
+- [5. Internal Replication Flow](#5-internal-replication-flow)
+- [6. Deep Internal Data Structure Explanation](#6-deep-internal-data-structure-explanation)
+- [7. Complete Java Code](#7-complete-java-code)
+- [8. Step-by-Step Dry Run](#8-step-by-step-dry-run)
+- [9. Internal Memory Visualization](#9-internal-memory-visualization)
+- [10. Complexity Analysis](#10-complexity-analysis)
+- [11. Real Production Use Cases](#11-real-production-use-cases)
+- [12. Redis Production Internals](#12-redis-production-internals)
+- [13. Failure Cases And Bottlenecks](#13-failure-cases-and-bottlenecks)
+- [14. Interview Questions](#14-interview-questions)
+- [15. Final Mental Model](#15-final-mental-model)
 
 ---
 
@@ -31,622 +25,946 @@
 In this phase, we build:
 
 ```text
-Master Replica
+Master Replica Replication
 ```
 
-Purpose:
+Main objective:
 
 ```text
-Add basic master-replica replication.
+Copy write operations from master node
+to replica nodes automatically.
 ```
 
-This continues the MiniRedis journey from a simple parser/store into a real Redis-like backend component.
-
----
-
-# 2. What We Built Previously
-
-Earlier phases gave us:
+Mental model:
 
 ```text
-001 TCP server
-002 RESP parser
-003 in-memory store
+Primary database
+    ->
+Secondary replicas
 ```
 
-Then each later phase adds one production capability.
-
-Current mental model:
+Master node:
 
 ```text
-Client command
-      |
-      v
-Parser
-      |
-      v
-Command object
-      |
-      v
-Command executor
-      |
-      v
-Redis-like internal engine
-      |
-      v
-Response
+accepts writes
 ```
 
----
-
-# 3. Previous Limitation
+Replica node:
 
 ```text
-Single-node Redis is a single point of failure and cannot scale reads.
+copies data from master
 ```
 
-This limitation matters because production Redis is not only a `Map`.
-
-It also needs:
+Real-world analogy:
 
 ```text
-correct command behavior
-memory control
-expiration
-persistence
-concurrency
-replication
-sharding
-observability
+Teacher writes notes on board.
+
+Multiple students copy notes.
 ```
 
----
-
-# 4. What We Build In This Phase
-
-We add:
+Teacher:
 
 ```text
-We add master forwarding of write commands to replica stores.
+master
 ```
 
-Commands or operations covered:
+Students:
 
 ```text
-master SET
-replica receives SET
+replicas
+```
+
+Redis commands conceptually involved:
+
+```text
+SET
+GET
+REPLICATION
+SYNC
+```
+
+Example:
+
+```text
+Client:
+SET user:1 Mohamed
+
+Master:
+stores value
+
+Replica:
+receives same SET command
+```
+
+Production systems using this idea:
+
+```text
+Redis
+PostgreSQL replication
+MySQL replication
+Mongo replica set
+Kafka followers
 ```
 
 ---
 
-# 5. Why This Phase Matters
+# 2. Why Replication Exists
 
-This phase matters because it connects implementation to real backend systems.
-
-Real systems need:
+Initially MiniRedis was:
 
 ```text
-feature correctness
-clear data structures
-predictable complexity
-safe failure handling
-production debugging
-scalability path
+single node
 ```
 
-MiniRedis teaches these in small increments.
+Problem:
+
+```text
+single point of failure
+```
+
+If node crashes:
+
+```text
+entire cache disappears
+```
+
+Another problem:
+
+```text
+all reads hit one server
+```
+
+Result:
+
+```text
+CPU bottleneck
+memory bottleneck
+network bottleneck
+```
+
+Replication solves this.
+
+Master handles:
+
+```text
+writes
+```
+
+Replicas handle:
+
+```text
+reads
+```
+
+Benefits:
+
+```text
+high availability
+read scaling
+backup copy
+faster recovery
+```
+
+Example:
+
+```text
+1 master
+3 replicas
+```
+
+Read traffic distributed across:
+
+```text
+replica-1
+replica-2
+replica-3
+```
+
+instead of overloading master.
 
 ---
 
-# 6. Architecture Diagram
+# 3. Single Node Problem
+
+Without replication:
 
 ```text
-+------------------+
-| Client / Driver  |
-+--------+---------+
-         |
-         v
-+------------------+
-| Parser / Command |
-+--------+---------+
-         |
-         v
-+------------------+
-| Command Executor |
-+--------+---------+
-         |
-         v
-+------------------+
-| Master Replica   |
-+--------+---------+
-         |
-         v
-+------------------+
-| Response         |
-+------------------+
+Client
+   |
+   v
+Single Redis Node
 ```
 
-Phase flow:
+Problems:
+
+# Problem 1 — Crash
 
 ```text
-Input
-  -> validate
-  -> execute Master Replica
-  -> update internal state
-  -> return output
+Machine failure
+```
+
+Result:
+
+```text
+service unavailable
 ```
 
 ---
 
-# 7. File Structure
+# Problem 2 — Heavy Read Traffic
 
-Recommended structure:
+Millions of GET requests:
 
 ```text
-MiniRedis/
-└── src/
-    └── main/
-        └── java/
-            └── com/
-                └── miniredis/
-                    ├── protocol/
-                    ├── command/
-                    ├── storage/
-                    ├── server/
-                    ├── persistence/
-                    ├── cluster/
-                    ├── metrics/
-                    └── driver/
+single CPU overloaded
 ```
-
-For this phase, keep only the needed packages.
 
 ---
 
-# 8. Complete Java Code
+# Problem 3 — Maintenance Downtime
 
+Server restart:
 
-## 8.1 `HashRing.java`
+```text
+entire cache unavailable
+```
 
-### Logic before this class
+---
 
-Consistent hashing maps keys to nodes.
+# Problem 4 — Data Loss
 
-It avoids remapping every key when a node is added or removed.
+If memory lost before persistence:
+
+```text
+all data disappears
+```
+
+Replication reduces these risks.
+
+---
+
+# 4. Master Replica Architecture
+
+Architecture:
+
+```text
+                +-------------+
+                |   Client    |
+                +------+------+
+                       |
+                 WRITE |
+                       v
+                +-------------+
+                |   MASTER    |
+                +------+------+
+                       |
+         replicate SET |
+                       |
+        +--------------+--------------+
+        |                             |
+        v                             v
+ +-------------+              +-------------+
+ |  REPLICA-1  |              |  REPLICA-2  |
+ +-------------+              +-------------+
+```
+
+Flow:
+
+```text
+1. client sends SET
+2. master stores data
+3. master forwards write
+4. replicas apply same write
+```
+
+Very important:
+
+```text
+replicas usually become read-only
+```
+
+Why?
+
+Because:
+
+```text
+master is source of truth
+```
+
+---
+
+# 5. Internal Replication Flow
+
+Example:
+
+```text
+SET user:1 Mohamed
+```
+
+Master execution:
+
+```text
+1. store locally
+2. append replication event
+3. send event to replicas
+```
+
+Replica execution:
+
+```text
+1. receive command
+2. replay command
+3. update local memory
+```
+
+Result:
+
+```text
+all nodes converge to same state
+```
+
+This is called:
+
+```text
+eventual consistency
+```
+
+---
+
+# 6. Deep Internal Data Structure Explanation
+
+MiniRedis implementation mental model:
 
 ```java
-package com.miniredis.cluster;
+Map<String, String>
+```
+
+plus:
+
+```text
+replica node list
+```
+
+Master internally stores:
+
+```text
+connected replicas
+```
+
+Example:
+
+```text
+replicas
+ ├── replica-1
+ ├── replica-2
+ └── replica-3
+```
+
+Write operation:
+
+```text
+SET key value
+```
+
+becomes:
+
+```text
+1. update master memory
+2. iterate replicas
+3. replay SET on replicas
+```
+
+Complexity:
+
+| Operation | Complexity |
+|---|---|
+| Master SET | O(1) |
+| Replication fanout | O(number_of_replicas) |
+
+---
+
+# Why Replication Cost Matters
+
+If:
+
+```text
+100 replicas exist
+```
+
+One write becomes:
+
+```text
+101 writes
+```
+
+That becomes expensive.
+
+Production Redis optimizes this heavily.
+
+---
+
+# Synchronous vs Asynchronous Replication
+
+# Synchronous
+
+Master waits:
+
+```text
+until replicas acknowledge
+```
+
+Pros:
+
+```text
+strong consistency
+```
+
+Cons:
+
+```text
+higher latency
+```
+
+---
+
+# Asynchronous
+
+Master immediately responds.
+
+Replica sync happens later.
+
+Pros:
+
+```text
+fast writes
+```
+
+Cons:
+
+```text
+small replication lag possible
+```
+
+Redis mainly uses:
+
+```text
+asynchronous replication
+```
+
+---
+
+# 7. Complete Java Code
+
+## 7.1 ReplicatedStore.java
+
+### Logic Before Code
+
+This class simulates:
+
+```text
+master node
+replica nodes
+write replication
+```
+
+Core responsibilities:
+
+```text
+1. store master data
+2. maintain replicas
+3. forward writes
+```
+
+```java
+package com.miniredis.replication;
 
 import java.util.*;
 
-public class HashRing {
-    private final TreeMap<Integer, String> ring = new TreeMap<>();
-    private final int virtualNodes;
+/**
+ * ReplicatedStore simulates
+ * Redis master-replica replication.
+ */
+public class ReplicatedStore {
 
-    public HashRing(int virtualNodes) {
-        this.virtualNodes = virtualNodes;
+    /**
+     * Master data storage.
+     */
+    private final Map<String, String> masterStore =
+            new HashMap<>();
+
+    /**
+     * Replica storage list.
+     *
+     * Each replica:
+     * independent HashMap copy.
+     */
+    private final List<Map<String, String>> replicas =
+            new ArrayList<>();
+
+    /**
+     * Add new replica node.
+     */
+    public void addReplica() {
+
+        replicas.add(
+                new HashMap<>()
+        );
     }
 
-    public void addNode(String node) {
-        for (int i = 0; i < virtualNodes; i++) {
-            ring.put(Objects.hash(node, i), node);
+    /**
+     * SET key value
+     *
+     * Write into master,
+     * then replicate to replicas.
+     */
+    public void set(String key, String value) {
+
+        // --------------------------------
+        // STEP 1
+        // WRITE TO MASTER
+        // --------------------------------
+
+        masterStore.put(key, value);
+
+        // --------------------------------
+        // STEP 2
+        // REPLICATE TO ALL REPLICAS
+        // --------------------------------
+
+        for (Map<String, String> replica : replicas) {
+
+            replica.put(key, value);
         }
     }
 
-    public String getNode(String key) {
-        int hash = Objects.hash(key);
-        Map.Entry<Integer, String> entry = ring.ceilingEntry(hash);
-        return entry != null ? entry.getValue() : ring.firstEntry().getValue();
+    /**
+     * Read from master.
+     */
+    public String getFromMaster(String key) {
+
+        return masterStore.get(key);
+    }
+
+    /**
+     * Read from replica.
+     */
+    public String getFromReplica(
+            int replicaIndex,
+            String key
+    ) {
+
+        return replicas
+                .get(replicaIndex)
+                .get(key);
     }
 }
 ```
 
 ---
 
-## 8.2 `DistributedLock.java`
+## 7.2 Phase021Driver.java
 
-### Logic before this class
+### Logic Before Code
 
-A distributed lock needs:
+This driver simulates:
 
 ```text
-lock key
-owner token
-TTL
-safe release
+master write
+replica synchronization
+read scaling
 ```
-
-Only the owner token can release the lock.
-
-```java
-package com.miniredis.lock;
-
-import java.util.Objects;
-
-public class DistributedLock {
-    private String token;
-    private long expireAtMillis;
-
-    public synchronized boolean acquire(String newToken, long ttlMillis) {
-        long now = System.currentTimeMillis();
-
-        if (token == null || now >= expireAtMillis) {
-            token = newToken;
-            expireAtMillis = now + ttlMillis;
-            return true;
-        }
-
-        return false;
-    }
-
-    public synchronized boolean release(String ownerToken) {
-        if (Objects.equals(token, ownerToken)) {
-            token = null;
-            expireAtMillis = 0;
-            return true;
-        }
-
-        return false;
-    }
-}
-```
-
----
-
-## 8.3 `Phase021Driver.java`
-
-### Logic before this class
-
-This driver demonstrates cluster routing and lock ownership.
 
 ```java
 package com.miniredis.driver;
 
-import com.miniredis.cluster.HashRing;
-import com.miniredis.lock.DistributedLock;
+import com.miniredis.replication.ReplicatedStore;
 
 public class Phase021Driver {
+
     public static void main(String[] args) {
-        HashRing ring = new HashRing(10);
 
-        ring.addNode("redis-1");
-        ring.addNode("redis-2");
-        ring.addNode("redis-3");
+        /**
+         * Create replicated store.
+         */
+        ReplicatedStore store =
+                new ReplicatedStore();
 
-        System.out.println("user:1 -> " + ring.getNode("user:1"));
-        System.out.println("order:9 -> " + ring.getNode("order:9"));
+        // --------------------------------
+        // ADD REPLICAS
+        // --------------------------------
 
-        DistributedLock lock = new DistributedLock();
-        System.out.println("lock client-A = " + lock.acquire("client-A", 3000));
-        System.out.println("lock client-B = " + lock.acquire("client-B", 3000));
-        System.out.println("unlock client-A = " + lock.release("client-A"));
+        store.addReplica();
+        store.addReplica();
+
+        // --------------------------------
+        // CLIENT WRITE
+        // --------------------------------
+
+        store.set(
+                "user:1",
+                "Mohamed"
+        );
+
+        // --------------------------------
+        // READ FROM MASTER
+        // --------------------------------
+
+        System.out.println(
+                "master -> "
+                        + store.getFromMaster("user:1")
+        );
+
+        // --------------------------------
+        // READ FROM REPLICA
+        // --------------------------------
+
+        System.out.println(
+                "replica-1 -> "
+                        + store.getFromReplica(
+                        0,
+                        "user:1"
+                )
+        );
+
+        System.out.println(
+                "replica-2 -> "
+                        + store.getFromReplica(
+                        1,
+                        "user:1"
+                )
+        );
     }
 }
 ```
 
-
 ---
 
-# 9. How To Run
+# 8. Step-by-Step Dry Run
 
-From project root:
+# Step 1
 
-```bash
-javac -d out src/main/java/com/miniredis/**/*.java
+Code:
+
+```java
+store.addReplica();
 ```
 
-Run the phase driver:
-
-```bash
-java -cp out com.miniredis.driver.Phase021Driver
-```
-
-If your shell does not expand `**`, compile individual files or use IntelliJ.
-
----
-
-
-# 10. Step-by-Step Dry Run
-
-Example commands:
+Meaning:
 
 ```text
-master SET
-replica receives SET
+new replica joins cluster
 ```
 
-Internal flow:
+Memory:
 
 ```text
-1. Client/driver creates input command.
-2. Parser converts raw input into Command object.
-3. CommandExecutor validates command name and arguments.
-4. Executor calls the correct storage/service method.
-5. Data structure is updated or queried.
-6. Response is returned.
-```
-
-State transition:
-
-```text
-Before:
-previous phase capability only
-
-Operation:
-Master Replica
-
-After:
-new Redis-like behavior is available
-```
-
-Visual execution:
-
-```text
-Command
-  -> validate
-  -> execute
-  -> update internal state
-  -> return response
-```
-
-
----
-
-# 11. Test Commands
-
-Try these mental or driver-level commands:
-
-```text
-master SET
-replica receives SET
-```
-
-Expected behavior:
-
-```text
-command accepted
-state updated or queried
-response returned
-```
-
-For server phases, test with:
-
-```bash
-telnet localhost 6379
-```
-
-or:
-
-```bash
-nc localhost 6379
+replicas
+ └── replica-1 -> {}
 ```
 
 ---
 
-# 12. DSA / CP Concepts Used
+# Step 2
 
-```text
-Replication, eventual consistency, primary-secondary pattern
+Code:
+
+```java
+store.set(
+    "user:1",
+    "Mohamed"
+);
 ```
 
-Complexity thinking:
+Execution:
 
 ```text
-Ask:
-1. What is the core data structure?
-2. What is lookup complexity?
-3. What is update complexity?
-4. What happens under high write/read load?
-5. What is the memory cost?
+1. write to master
+2. iterate replicas
+3. replay SET on replicas
 ```
 
-This is exactly how DSA connects to system design.
-
----
-
-# 13. System Design Relevance
-
-This phase maps to:
+Master memory:
 
 ```text
-read replicas, HA cache, database replication
+masterStore
+ └── user:1 -> Mohamed
 ```
 
-System design pattern:
+Replica memory:
 
 ```text
-Requirement
-  -> choose data structure
-  -> define operation complexity
-  -> define failure behavior
-  -> define scaling path
+replica-1
+ └── user:1 -> Mohamed
+
+replica-2
+ └── user:1 -> Mohamed
 ```
 
 ---
 
-# 14. Redis Connection With This Phase
+# Step 3
 
-Real Redis uses the same idea at production scale.
+Code:
+
+```java
+store.getFromReplica(0, "user:1");
+```
+
+Execution:
+
+```text
+1. locate replica
+2. lookup key
+3. return value
+```
+
+Result:
+
+```text
+Mohamed
+```
+
+---
+
+# 9. Internal Memory Visualization
+
+```text
+MASTER
+ └── user:1 -> Mohamed
+
+REPLICA-1
+ └── user:1 -> Mohamed
+
+REPLICA-2
+ └── user:1 -> Mohamed
+```
+
+---
+
+# 10. Complexity Analysis
+
+| Operation | Complexity | Reason |
+|---|---|---|
+| Master SET | O(1) | HashMap write |
+| Replica fanout | O(r) | iterate replicas |
+| GET | O(1) | HashMap lookup |
+
+Where:
+
+```text
+r = number of replicas
+```
+
+---
+
+# 11. Real Production Use Cases
+
+# Read Scaling
+
+Heavy GET traffic distributed across replicas.
+
+---
+
+# High Availability
+
+If master crashes:
+
+```text
+replica promoted
+```
+
+---
+
+# Disaster Recovery
+
+Replica acts as backup copy.
+
+---
+
+# Geo Replication
+
+Different regions maintain copies.
+
+Example:
+
+```text
+Europe replica
+US replica
+Asia replica
+```
+
+---
+
+# 12. Redis Production Internals
+
+Real Redis replication includes:
+
+```text
+PSYNC
+Replication backlog
+RDB snapshot transfer
+AOF replay
+Replica offset tracking
+Partial resynchronization
+```
 
 MiniRedis version:
 
 ```text
-simple Java implementation
+simple in-memory fanout
 ```
 
-Real Redis version:
+Production Redis:
 
 ```text
-optimized C implementation
-event loop
-carefully tuned memory layout
-persistence configuration
-replication protocol
-cluster routing
-```
-
-This phase gives the mental model before optimization.
-
----
-
-# 15. Production-Grade Concepts
-
-Production concerns:
-
-```text
-correctness
-validation
-memory usage
-latency
-thread safety
-durability
-observability
-failure recovery
-```
-
-Questions to ask:
-
-```text
-What if process crashes?
-What if key is hot?
-What if memory is full?
-What if many clients connect?
-What if disk is slow?
-What if replica lags?
+networked replication engine
 ```
 
 ---
 
-# 16. Scalability Discussion
+# 13. Failure Cases And Bottlenecks
 
-Single-node path:
+# Problem 1 — Replica Lag
 
-```text
-single JVM
-  -> thread-safe store
-  -> TTL cleanup
-  -> persistence
-  -> metrics
-```
+Replica slower than master.
 
-Distributed path:
+Result:
 
 ```text
-replication
-  -> sharding
-  -> consistent hashing
-  -> cluster client
-  -> failover
-```
-
-Bottlenecks to watch:
-
-```text
-CPU
-GC
-memory
-network
-lock contention
-disk fsync
-hot keys
-large values
-replication backlog
+stale reads
 ```
 
 ---
 
-# 17. Interview Notes
+# Problem 2 — Network Partition
 
-Good explanation structure:
+Replica disconnected.
 
-```text
-1. Start with the simplest design.
-2. Explain the data structure.
-3. Give operation complexity.
-4. Discuss failure cases.
-5. Add production improvements.
-6. Explain scaling path.
-```
-
-Possible follow-ups:
+Result:
 
 ```text
-How do you make it thread-safe?
-How do you persist it?
-How do you evict keys?
-How do you shard it?
-How do you recover after crash?
-How do you monitor it?
+replication delay
 ```
 
 ---
 
-# 18. Common Bugs
+# Problem 3 — Split Brain
 
-## Bug 1 — Wrong argument count
+Two masters accidentally active.
 
-Cause:
+Result:
 
 ```text
-command validation missing
+data inconsistency
 ```
 
-Fix:
+Production fix:
 
 ```text
-validate args before executing
-```
-
-## Bug 2 — Shared mutable state bug
-
-Cause:
-
-```text
-multiple threads update the same data
-```
-
-Fix:
-
-```text
-ConcurrentHashMap, locks, or atomic operations
-```
-
-## Bug 3 — Memory leak
-
-Cause:
-
-```text
-expired or unused keys remain forever
-```
-
-Fix:
-
-```text
-TTL cleanup and eviction
-```
-
-## Bug 4 — Inconsistent recovery
-
-Cause:
-
-```text
-write applied to memory but not persisted
-```
-
-Fix:
-
-```text
-AOF/WAL ordering and fsync policy
+Sentinel
+Raft
+Leader election
 ```
 
 ---
 
-# 19. Next Step
+# Problem 4 — Replication Storm
 
-Next phase:
+Too many replicas.
+
+Result:
 
 ```text
-022
+master overloaded
 ```
 
-Continue the MiniRedis roadmap until the final production architecture.
+---
+
+# 14. Interview Questions
+
+# Q1
+
+Why use replicas?
+
+Answer:
+
+```text
+high availability + read scaling
+```
+
+---
+
+# Q2
+
+Why asynchronous replication?
+
+Answer:
+
+```text
+faster write latency
+```
+
+---
+
+# Q3
+
+What is replication lag?
+
+Answer:
+
+```text
+replica behind master updates
+```
+
+---
+
+# Q4
+
+What happens if master crashes?
+
+Answer:
+
+```text
+replica promoted to master
+```
+
+---
+
+# Q5
+
+Difference between Redis replication and Kafka replication?
+
+Redis:
+
+```text
+memory replication
+```
+
+Kafka:
+
+```text
+partition log replication
+```
+
+---
+
+# 15. Final Mental Model
+
+```text
+Single Redis
+   -> fast but risky
+
+Replicated Redis
+   -> scalable and resilient
+```
+
+Replication becomes the foundation for:
+
+```text
+high availability
+distributed systems
+large-scale caching
+fault tolerance
+global infrastructure
+```
