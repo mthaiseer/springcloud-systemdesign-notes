@@ -1,28 +1,23 @@
-# 026_Redlock_Basic.md
+# MiniRedis Phase 26 — Redlock Basic (Rich Version)
 
-# MiniRedis Phase 26 — Redlock Basic
-
-## Clickable Index
+# Clickable Index
 
 - [1. Goal](#1-goal)
-- [2. What We Built Previously](#2-what-we-built-previously)
-- [3. Previous Limitation](#3-previous-limitation)
-- [4. What We Build In This Phase](#4-what-we-build-in-this-phase)
-- [5. Why This Phase Matters](#5-why-this-phase-matters)
-- [6. Architecture Diagram](#6-architecture-diagram)
-- [7. File Structure](#7-file-structure)
+- [2. Why Redlock Exists](#2-why-redlock-exists)
+- [3. Single-Node Lock Problem](#3-single-node-lock-problem)
+- [4. Redlock Mental Model](#4-redlock-mental-model)
+- [5. Quorum Explained](#5-quorum-explained)
+- [6. Validity Time Explained](#6-validity-time-explained)
+- [7. Deep Internal Data Structure Explanation](#7-deep-internal-data-structure-explanation)
 - [8. Complete Java Code](#8-complete-java-code)
-- [9. How To Run](#9-how-to-run)
-- [10. Step-by-Step Dry Run](#10-step-by-step-dry-run)
-- [11. Test Commands](#11-test-commands)
-- [12. DSA / CP Concepts Used](#12-dsa--cp-concepts-used)
-- [13. System Design Relevance](#13-system-design-relevance)
-- [14. Redis Connection With This Phase](#14-redis-connection-with-this-phase)
-- [15. Production-Grade Concepts](#15-production-grade-concepts)
-- [16. Scalability Discussion](#16-scalability-discussion)
-- [17. Interview Notes](#17-interview-notes)
-- [18. Common Bugs](#18-common-bugs)
-- [19. Next Step](#19-next-step)
+- [9. Step-by-Step Dry Run](#9-step-by-step-dry-run)
+- [10. Internal Memory Visualization](#10-internal-memory-visualization)
+- [11. Complexity Analysis](#11-complexity-analysis)
+- [12. Real Production Use Cases](#12-real-production-use-cases)
+- [13. Redis Production Internals](#13-redis-production-internals)
+- [14. Failure Cases And Bottlenecks](#14-failure-cases-and-bottlenecks)
+- [15. Interview Questions](#15-interview-questions)
+- [16. Final Mental Model](#16-final-mental-model)
 
 ---
 
@@ -34,616 +29,1146 @@ In this phase, we build:
 Redlock Basic
 ```
 
-Purpose:
+Main objective:
 
 ```text
-Implement a simplified multi-node Redlock concept.
+Acquire the same lock on multiple Redis nodes
+and accept the lock only if majority nodes agree.
 ```
 
-This continues the MiniRedis journey from a simple parser/store into a real Redis-like backend component.
-
----
-
-# 2. What We Built Previously
-
-Earlier phases gave us:
+Mental model:
 
 ```text
-001 TCP server
-002 RESP parser
-003 in-memory store
+distributed lock with quorum
 ```
 
-Then each later phase adds one production capability.
-
-Current mental model:
+Earlier phase:
 
 ```text
-Client command
-      |
-      v
-Parser
-      |
-      v
-Command object
-      |
-      v
-Command executor
-      |
-      v
-Redis-like internal engine
-      |
-      v
-Response
+single Redis lock
 ```
 
----
-
-# 3. Previous Limitation
+This phase:
 
 ```text
-Single-node lock can fail if that node crashes or partitions.
+multi Redis node lock
 ```
 
-This limitation matters because production Redis is not only a `Map`.
-
-It also needs:
+Real-world analogy:
 
 ```text
-correct command behavior
-memory control
-expiration
-persistence
-concurrency
-replication
-sharding
-observability
+To enter a secure vault,
+you need approval from 3 out of 5 managers.
+```
+
+You do not need all 5.
+
+You need:
+
+```text
+majority approval
+```
+
+That majority is called:
+
+```text
+quorum
+```
+
+Production systems using this idea:
+
+```text
+distributed locks
+leader election
+critical section protection
+high availability coordination
 ```
 
 ---
 
-# 4. What We Build In This Phase
+# 2. Why Redlock Exists
 
-We add:
+Single-node distributed lock has one major weakness:
 
 ```text
-We acquire the same lock across multiple nodes and require quorum success.
+the Redis node itself can fail
 ```
 
-Commands or operations covered:
+Example:
 
 ```text
-acquire lock on 3 of 5 nodes
+Client-A acquires lock on redis-1
+redis-1 crashes
+Client-B may acquire lock elsewhere
 ```
 
----
-
-# 5. Why This Phase Matters
-
-This phase matters because it connects implementation to real backend systems.
-
-Real systems need:
+Now two clients may believe:
 
 ```text
-feature correctness
-clear data structures
-predictable complexity
-safe failure handling
-production debugging
-scalability path
+I own the lock
 ```
 
-MiniRedis teaches these in small increments.
-
----
-
-# 6. Architecture Diagram
+This can cause:
 
 ```text
-+------------------+
-| Client / Driver  |
-+--------+---------+
-         |
-         v
-+------------------+
-| Parser / Command |
-+--------+---------+
-         |
-         v
-+------------------+
-| Command Executor |
-+--------+---------+
-         |
-         v
-+------------------+
-| Redlock Basic    |
-+--------+---------+
-         |
-         v
-+------------------+
-| Response         |
-+------------------+
+double payment
+duplicate job execution
+oversold inventory
+split brain
 ```
 
-Phase flow:
+Redlock tries to reduce this risk by using:
 
 ```text
-Input
-  -> validate
-  -> execute Redlock Basic
-  -> update internal state
-  -> return output
+multiple independent Redis nodes
+```
+
+Instead of trusting one Redis node:
+
+```text
+trust majority of nodes
 ```
 
 ---
 
-# 7. File Structure
+# 3. Single-Node Lock Problem
 
-Recommended structure:
+Single-node lock flow:
 
 ```text
-MiniRedis/
-└── src/
-    └── main/
-        └── java/
-            └── com/
-                └── miniredis/
-                    ├── protocol/
-                    ├── command/
-                    ├── storage/
-                    ├── server/
-                    ├── persistence/
-                    ├── cluster/
-                    ├── metrics/
-                    └── driver/
+Client-A
+   |
+   v
+Redis-1
 ```
 
-For this phase, keep only the needed packages.
+Client-A acquires:
+
+```text
+LOCK order:1 token-A
+```
+
+Problem cases:
+
+## Problem 1 — Redis Node Crash
+
+Redis crashes after granting lock.
+
+The lock state may disappear.
+
+## Problem 2 — Network Partition
+
+Client cannot reach Redis.
+
+System cannot safely know:
+
+```text
+does lock still exist?
+```
+
+## Problem 3 — Failover Race
+
+Redis master fails before replication reaches replica.
+
+Replica promoted without lock.
+
+Another client acquires same lock.
+
+Result:
+
+```text
+two lock owners
+```
+
+Redlock attempts to reduce this issue.
+
+---
+
+# 4. Redlock Mental Model
+
+Redlock uses:
+
+```text
+N independent Redis nodes
+```
+
+Usually:
+
+```text
+5 nodes
+```
+
+To acquire lock:
+
+```text
+client tries all nodes
+```
+
+Success condition:
+
+```text
+lock acquired on majority nodes
+AND
+time taken is less than TTL
+```
+
+For 5 nodes:
+
+```text
+majority = 3
+```
+
+Architecture:
+
+```text
+             Client
+               |
+   +-----------+-----------+
+   |           |           |
+   v           v           v
+Redis-1     Redis-2     Redis-3
+   |           |
+   v           v
+Redis-4     Redis-5
+```
+
+If lock succeeds on:
+
+```text
+3 out of 5
+```
+
+then client owns lock.
+
+If only:
+
+```text
+2 out of 5
+```
+
+then lock acquisition fails.
+
+---
+
+# 5. Quorum Explained
+
+Quorum means:
+
+```text
+majority agreement
+```
+
+Formula:
+
+```text
+quorum = floor(N / 2) + 1
+```
+
+Examples:
+
+| Nodes | Quorum |
+|---|---|
+| 3 | 2 |
+| 5 | 3 |
+| 7 | 4 |
+
+For 5 Redis nodes:
+
+```text
+quorum = 3
+```
+
+Why not require all 5?
+
+Because one node may be:
+
+```text
+down
+slow
+network unreachable
+```
+
+Quorum gives:
+
+```text
+fault tolerance
+```
+
+---
+
+# 6. Validity Time Explained
+
+Redlock is not only about quorum.
+
+It also checks:
+
+```text
+how long lock acquisition took
+```
+
+Example:
+
+```text
+TTL = 30000 ms
+time spent acquiring = 200 ms
+```
+
+Remaining validity:
+
+```text
+29800 ms
+```
+
+Lock is useful.
+
+But if:
+
+```text
+TTL = 30000 ms
+time spent acquiring = 31000 ms
+```
+
+Then lock already expired.
+
+Even if quorum succeeded:
+
+```text
+lock must fail
+```
+
+So Redlock success requires:
+
+```text
+successCount >= quorum
+AND
+elapsedTime < ttlMillis
+```
+
+---
+
+# 7. Deep Internal Data Structure Explanation
+
+MiniRedis uses:
+
+```text
+List<DistributedLockNode>
+```
+
+Each node simulates:
+
+```text
+independent Redis instance
+```
+
+Each Redis node stores:
+
+```java
+Map<String, LockEntry>
+```
+
+Meaning:
+
+```text
+lock key -> token + expiry
+```
+
+RedlockManager stores:
+
+```text
+multiple nodes
+quorum rule
+```
+
+Acquire flow:
+
+```text
+1. generate token
+2. try lock on each node
+3. count successes
+4. check elapsed time
+5. if quorum success -> lock acquired
+6. else rollback acquired locks
+```
+
+Rollback is important.
+
+If acquisition fails after partially locking nodes:
+
+```text
+release those partial locks
+```
+
+Otherwise stale partial locks block future clients.
 
 ---
 
 # 8. Complete Java Code
 
+## 8.1 LockEntry.java
 
-## 8.1 `HashRing.java`
+### Logic Before Code
 
-### Logic before this class
-
-Consistent hashing maps keys to nodes.
-
-It avoids remapping every key when a node is added or removed.
-
-```java
-package com.miniredis.cluster;
-
-import java.util.*;
-
-public class HashRing {
-    private final TreeMap<Integer, String> ring = new TreeMap<>();
-    private final int virtualNodes;
-
-    public HashRing(int virtualNodes) {
-        this.virtualNodes = virtualNodes;
-    }
-
-    public void addNode(String node) {
-        for (int i = 0; i < virtualNodes; i++) {
-            ring.put(Objects.hash(node, i), node);
-        }
-    }
-
-    public String getNode(String key) {
-        int hash = Objects.hash(key);
-        Map.Entry<Integer, String> entry = ring.ceilingEntry(hash);
-        return entry != null ? entry.getValue() : ring.firstEntry().getValue();
-    }
-}
-```
-
----
-
-## 8.2 `DistributedLock.java`
-
-### Logic before this class
-
-A distributed lock needs:
+One lock entry stores:
 
 ```text
-lock key
 owner token
-TTL
-safe release
+expiry time
 ```
-
-Only the owner token can release the lock.
 
 ```java
 package com.miniredis.lock;
 
-import java.util.Objects;
+/**
+ * Stores lock owner token and expiry timestamp.
+ */
+public class LockEntry {
 
-public class DistributedLock {
-    private String token;
-    private long expireAtMillis;
+    public final String token;
+    public final long expireAtMillis;
 
-    public synchronized boolean acquire(String newToken, long ttlMillis) {
-        long now = System.currentTimeMillis();
-
-        if (token == null || now >= expireAtMillis) {
-            token = newToken;
-            expireAtMillis = now + ttlMillis;
-            return true;
-        }
-
-        return false;
-    }
-
-    public synchronized boolean release(String ownerToken) {
-        if (Objects.equals(token, ownerToken)) {
-            token = null;
-            expireAtMillis = 0;
-            return true;
-        }
-
-        return false;
+    public LockEntry(
+            String token,
+            long expireAtMillis
+    ) {
+        this.token = token;
+        this.expireAtMillis = expireAtMillis;
     }
 }
 ```
 
 ---
 
-## 8.3 `Phase026Driver.java`
+## 8.2 DistributedLockNode.java
 
-### Logic before this class
+### Logic Before Code
 
-This driver demonstrates cluster routing and lock ownership.
+This represents one independent Redis node.
+
+It supports:
+
+```text
+try acquire
+safe release
+```
+
+```java
+package com.miniredis.lock;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * Simulates one Redis node used by Redlock.
+ */
+public class DistributedLockNode {
+
+    private final String nodeName;
+
+    private final Map<String, LockEntry> locks =
+            new HashMap<>();
+
+    public DistributedLockNode(String nodeName) {
+        this.nodeName = nodeName;
+    }
+
+    /**
+     * Try to acquire lock on this node.
+     */
+    public synchronized boolean acquire(
+            String lockKey,
+            String token,
+            long ttlMillis
+    ) {
+
+        long now =
+                System.currentTimeMillis();
+
+        LockEntry existing =
+                locks.get(lockKey);
+
+        if (existing == null
+                || now >= existing.expireAtMillis) {
+
+            locks.put(
+                    lockKey,
+                    new LockEntry(
+                            token,
+                            now + ttlMillis
+                    )
+            );
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Release only if token matches.
+     */
+    public synchronized boolean release(
+            String lockKey,
+            String token
+    ) {
+
+        LockEntry existing =
+                locks.get(lockKey);
+
+        if (existing == null) {
+            return false;
+        }
+
+        if (Objects.equals(
+                existing.token,
+                token
+        )) {
+
+            locks.remove(lockKey);
+            return true;
+        }
+
+        return false;
+    }
+
+    public String getNodeName() {
+        return nodeName;
+    }
+
+    public Map<String, LockEntry> snapshot() {
+        return new HashMap<>(locks);
+    }
+}
+```
+
+---
+
+## 8.3 RedlockManager.java
+
+### Logic Before Code
+
+This class coordinates locking across multiple Redis nodes.
+
+It applies:
+
+```text
+quorum rule
+validity time rule
+rollback on failure
+```
+
+```java
+package com.miniredis.lock;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * Simplified Redlock implementation.
+ */
+public class RedlockManager {
+
+    private final List<DistributedLockNode> nodes;
+
+    public RedlockManager(
+            List<DistributedLockNode> nodes
+    ) {
+        this.nodes = nodes;
+    }
+
+    /**
+     * Acquire distributed lock.
+     */
+    public String acquire(
+            String lockKey,
+            long ttlMillis
+    ) {
+
+        String token =
+                UUID.randomUUID().toString();
+
+        int quorum =
+                nodes.size() / 2 + 1;
+
+        int successCount =
+                0;
+
+        long start =
+                System.currentTimeMillis();
+
+        List<DistributedLockNode> lockedNodes =
+                new ArrayList<>();
+
+        // --------------------------------
+        // TRY LOCK ON EACH NODE
+        // --------------------------------
+
+        for (DistributedLockNode node : nodes) {
+
+            boolean success =
+                    node.acquire(
+                            lockKey,
+                            token,
+                            ttlMillis
+                    );
+
+            if (success) {
+
+                successCount++;
+
+                lockedNodes.add(node);
+            }
+        }
+
+        long elapsed =
+                System.currentTimeMillis() - start;
+
+        // --------------------------------
+        // REDLOCK SUCCESS CONDITION
+        // --------------------------------
+
+        if (successCount >= quorum
+                && elapsed < ttlMillis) {
+
+            return token;
+        }
+
+        // --------------------------------
+        // ROLLBACK PARTIAL LOCKS
+        // --------------------------------
+
+        for (DistributedLockNode node : lockedNodes) {
+
+            node.release(
+                    lockKey,
+                    token
+            );
+        }
+
+        return null;
+    }
+
+    /**
+     * Release distributed lock from all nodes.
+     */
+    public void release(
+            String lockKey,
+            String token
+    ) {
+
+        for (DistributedLockNode node : nodes) {
+
+            node.release(
+                    lockKey,
+                    token
+            );
+        }
+    }
+}
+```
+
+---
+
+## 8.4 Phase026Driver.java
+
+### Logic Before Code
+
+This driver demonstrates:
+
+```text
+5 Redis nodes
+quorum = 3
+lock success
+second client blocked
+safe release
+```
 
 ```java
 package com.miniredis.driver;
 
-import com.miniredis.cluster.HashRing;
-import com.miniredis.lock.DistributedLock;
+import com.miniredis.lock.DistributedLockNode;
+import com.miniredis.lock.RedlockManager;
+
+import java.util.List;
 
 public class Phase026Driver {
+
     public static void main(String[] args) {
-        HashRing ring = new HashRing(10);
 
-        ring.addNode("redis-1");
-        ring.addNode("redis-2");
-        ring.addNode("redis-3");
+        List<DistributedLockNode> nodes =
+                List.of(
+                        new DistributedLockNode("redis-1"),
+                        new DistributedLockNode("redis-2"),
+                        new DistributedLockNode("redis-3"),
+                        new DistributedLockNode("redis-4"),
+                        new DistributedLockNode("redis-5")
+                );
 
-        System.out.println("user:1 -> " + ring.getNode("user:1"));
-        System.out.println("order:9 -> " + ring.getNode("order:9"));
+        RedlockManager manager =
+                new RedlockManager(nodes);
 
-        DistributedLock lock = new DistributedLock();
-        System.out.println("lock client-A = " + lock.acquire("client-A", 3000));
-        System.out.println("lock client-B = " + lock.acquire("client-B", 3000));
-        System.out.println("unlock client-A = " + lock.release("client-A"));
+        // --------------------------------
+        // CLIENT-A ACQUIRES LOCK
+        // --------------------------------
+
+        String tokenA =
+                manager.acquire(
+                        "order:1",
+                        30000
+                );
+
+        System.out.println(
+                "client-A token = "
+                        + tokenA
+        );
+
+        // --------------------------------
+        // CLIENT-B TRIES SAME LOCK
+        // --------------------------------
+
+        String tokenB =
+                manager.acquire(
+                        "order:1",
+                        30000
+                );
+
+        System.out.println(
+                "client-B token = "
+                        + tokenB
+        );
+
+        // --------------------------------
+        // CLIENT-A RELEASES LOCK
+        // --------------------------------
+
+        manager.release(
+                "order:1",
+                tokenA
+        );
+
+        // --------------------------------
+        // CLIENT-B TRIES AGAIN
+        // --------------------------------
+
+        tokenB =
+                manager.acquire(
+                        "order:1",
+                        30000
+                );
+
+        System.out.println(
+                "client-B token after release = "
+                        + tokenB
+        );
     }
 }
 ```
 
-
 ---
 
-# 9. How To Run
+# 9. Step-by-Step Dry Run
 
-From project root:
+## Step 1 — Create 5 Redis Nodes
 
-```bash
-javac -d out src/main/java/com/miniredis/**/*.java
-```
-
-Run the phase driver:
-
-```bash
-java -cp out com.miniredis.driver.Phase026Driver
-```
-
-If your shell does not expand `**`, compile individual files or use IntelliJ.
-
----
-
-
-# 10. Step-by-Step Dry Run
-
-Example commands:
+Memory:
 
 ```text
-acquire lock on 3 of 5 nodes
+redis-1 -> {}
+redis-2 -> {}
+redis-3 -> {}
+redis-4 -> {}
+redis-5 -> {}
 ```
 
-Internal flow:
+Quorum:
 
 ```text
-1. Client/driver creates input command.
-2. Parser converts raw input into Command object.
-3. CommandExecutor validates command name and arguments.
-4. Executor calls the correct storage/service method.
-5. Data structure is updated or queried.
-6. Response is returned.
-```
-
-State transition:
-
-```text
-Before:
-previous phase capability only
-
-Operation:
-Redlock Basic
-
-After:
-new Redis-like behavior is available
-```
-
-Visual execution:
-
-```text
-Command
-  -> validate
-  -> execute
-  -> update internal state
-  -> return response
-```
-
-
----
-
-# 11. Test Commands
-
-Try these mental or driver-level commands:
-
-```text
-acquire lock on 3 of 5 nodes
-```
-
-Expected behavior:
-
-```text
-command accepted
-state updated or queried
-response returned
-```
-
-For server phases, test with:
-
-```bash
-telnet localhost 6379
-```
-
-or:
-
-```bash
-nc localhost 6379
+5 / 2 + 1 = 3
 ```
 
 ---
 
-# 12. DSA / CP Concepts Used
+## Step 2 — Client-A Acquires Lock
 
-```text
-Quorum, distributed coordination, failure handling
+Code:
+
+```java
+manager.acquire("order:1", 30000);
 ```
 
-Complexity thinking:
+Execution:
 
 ```text
-Ask:
-1. What is the core data structure?
-2. What is lookup complexity?
-3. What is update complexity?
-4. What happens under high write/read load?
-5. What is the memory cost?
+1. generate token-A
+2. try redis-1
+3. try redis-2
+4. try redis-3
+5. try redis-4
+6. try redis-5
+7. count success
 ```
 
-This is exactly how DSA connects to system design.
-
----
-
-# 13. System Design Relevance
-
-This phase maps to:
+Suppose all succeed:
 
 ```text
-high availability locks, distributed critical sections
+successCount = 5
 ```
 
-System design pattern:
+Check:
 
 ```text
-Requirement
-  -> choose data structure
-  -> define operation complexity
-  -> define failure behavior
-  -> define scaling path
+5 >= 3 yes
+elapsed < TTL yes
 ```
 
----
-
-# 14. Redis Connection With This Phase
-
-Real Redis uses the same idea at production scale.
-
-MiniRedis version:
+Result:
 
 ```text
-simple Java implementation
-```
-
-Real Redis version:
-
-```text
-optimized C implementation
-event loop
-carefully tuned memory layout
-persistence configuration
-replication protocol
-cluster routing
-```
-
-This phase gives the mental model before optimization.
-
----
-
-# 15. Production-Grade Concepts
-
-Production concerns:
-
-```text
-correctness
-validation
-memory usage
-latency
-thread safety
-durability
-observability
-failure recovery
-```
-
-Questions to ask:
-
-```text
-What if process crashes?
-What if key is hot?
-What if memory is full?
-What if many clients connect?
-What if disk is slow?
-What if replica lags?
+lock acquired
 ```
 
 ---
 
-# 16. Scalability Discussion
+## Step 3 — Client-B Tries Same Lock
 
-Single-node path:
+Code:
 
-```text
-single JVM
-  -> thread-safe store
-  -> TTL cleanup
-  -> persistence
-  -> metrics
+```java
+manager.acquire("order:1", 30000);
 ```
 
-Distributed path:
+Each node already has:
 
 ```text
-replication
-  -> sharding
-  -> consistent hashing
-  -> cluster client
-  -> failover
+order:1 -> token-A
 ```
 
-Bottlenecks to watch:
+So Client-B fails on all nodes.
+
+Result:
 
 ```text
-CPU
-GC
-memory
-network
-lock contention
-disk fsync
-hot keys
-large values
-replication backlog
+null
+```
+
+Meaning:
+
+```text
+lock denied
 ```
 
 ---
 
-# 17. Interview Notes
+## Step 4 — Client-A Releases Lock
 
-Good explanation structure:
+Code:
 
-```text
-1. Start with the simplest design.
-2. Explain the data structure.
-3. Give operation complexity.
-4. Discuss failure cases.
-5. Add production improvements.
-6. Explain scaling path.
+```java
+manager.release("order:1", tokenA);
 ```
 
-Possible follow-ups:
+Execution:
 
 ```text
-How do you make it thread-safe?
-How do you persist it?
-How do you evict keys?
-How do you shard it?
-How do you recover after crash?
-How do you monitor it?
+1. send release to all nodes
+2. each node checks token
+3. token matches
+4. remove lock
+```
+
+Memory:
+
+```text
+all redis nodes empty again
 ```
 
 ---
 
-# 18. Common Bugs
+## Step 5 — Client-B Tries Again
 
-## Bug 1 — Wrong argument count
+Now locks are free.
 
-Cause:
+Client-B gets quorum.
+
+Result:
 
 ```text
-command validation missing
+new token returned
 ```
+
+---
+
+# 10. Internal Memory Visualization
+
+After Client-A lock:
+
+```text
+redis-1
+ └── order:1 -> token-A
+
+redis-2
+ └── order:1 -> token-A
+
+redis-3
+ └── order:1 -> token-A
+
+redis-4
+ └── order:1 -> token-A
+
+redis-5
+ └── order:1 -> token-A
+```
+
+After release:
+
+```text
+redis-1 -> {}
+redis-2 -> {}
+redis-3 -> {}
+redis-4 -> {}
+redis-5 -> {}
+```
+
+---
+
+# 11. Complexity Analysis
+
+| Operation | Complexity | Reason |
+|---|---|---|
+| Acquire | O(n) | try all nodes |
+| Release | O(n) | release all nodes |
+| Single node acquire | O(1) | HashMap lookup |
+
+Where:
+
+```text
+n = number of Redis lock nodes
+```
+
+---
+
+# 12. Real Production Use Cases
+
+## High Availability Locks
+
+Avoid trusting one Redis node.
+
+## Payment Critical Section
+
+Prevent duplicate payment capture.
+
+## Inventory Reservation
+
+Prevent overselling under failure.
+
+## Leader Election
+
+Only one worker becomes leader.
+
+## Distributed Job Execution
+
+Only one worker runs a scheduled job.
+
+---
+
+# 13. Redis Production Internals
+
+Redlock concept:
+
+```text
+Acquire lock on multiple independent Redis masters.
+Require majority success.
+Check elapsed time.
+Release using token.
+```
+
+Single Redis lock command:
+
+```text
+SET lockKey token NX PX ttl
+```
+
+Safe unlock:
+
+```text
+Lua check token and delete
+```
+
+Important note:
+
+```text
+Redlock is debated in distributed systems.
+```
+
+Why?
+
+Because correctness depends on:
+
+```text
+clock drift
+network delays
+pause times
+failure assumptions
+```
+
+For very critical systems:
+
+```text
+use fencing tokens
+database constraints
+idempotency keys
+transactional storage
+```
+
+---
+
+# 14. Failure Cases And Bottlenecks
+
+## Problem 1 — Clock Drift
+
+Nodes disagree about time.
+
+Result:
+
+```text
+TTL correctness risk
+```
+
+## Problem 2 — Long GC Pause
+
+Client acquires lock, pauses longer than TTL.
+
+Another client acquires lock.
+
+Old client resumes and still writes.
 
 Fix:
 
 ```text
-validate args before executing
+fencing tokens
 ```
 
-## Bug 2 — Shared mutable state bug
+## Problem 3 — Partial Lock Success
 
-Cause:
-
-```text
-multiple threads update the same data
-```
+Client locks 2 nodes but not quorum.
 
 Fix:
 
 ```text
-ConcurrentHashMap, locks, or atomic operations
+rollback partial locks
 ```
 
-## Bug 3 — Memory leak
+## Problem 4 — Slow Redis Node
 
-Cause:
-
-```text
-expired or unused keys remain forever
-```
+Lock acquisition takes too long.
 
 Fix:
 
 ```text
-TTL cleanup and eviction
+short per-node timeout
 ```
 
-## Bug 4 — Inconsistent recovery
+## Problem 5 — Network Partition
 
-Cause:
+Client may see subset of nodes.
 
-```text
-write applied to memory but not persisted
-```
-
-Fix:
+Risk:
 
 ```text
-AOF/WAL ordering and fsync policy
+incorrect lock ownership under bad assumptions
 ```
 
 ---
 
-# 19. Next Step
+# 15. Interview Questions
 
-Next phase:
+## Q1
+
+Why Redlock instead of single Redis lock?
+
+Answer:
 
 ```text
-027
+single Redis node can fail
+Redlock uses quorum across multiple nodes
 ```
 
-Continue the MiniRedis roadmap until the final production architecture.
+## Q2
+
+What is quorum?
+
+Answer:
+
+```text
+majority agreement
+```
+
+## Q3
+
+Why elapsed time check?
+
+Answer:
+
+```text
+lock must still be valid after acquisition
+```
+
+## Q4
+
+Why rollback partial locks?
+
+Answer:
+
+```text
+avoid stale partial locks after failed acquisition
+```
+
+## Q5
+
+Why is Redlock debated?
+
+Answer:
+
+```text
+distributed timing assumptions are hard
+```
+
+## Q6
+
+What is fencing token?
+
+Answer:
+
+```text
+monotonically increasing token used by downstream system
+to reject stale lock holders
+```
+
+---
+
+# 16. Final Mental Model
+
+```text
+Single Redis lock
+   -> one node authority
+
+Redlock
+   -> majority-based lock authority
+```
+
+Redlock teaches:
+
+```text
+quorum
+leases
+timeouts
+partial failure
+distributed coordination
+```
+
+For real financial or inventory systems:
+
+```text
+combine locks with idempotency and database constraints
+```
