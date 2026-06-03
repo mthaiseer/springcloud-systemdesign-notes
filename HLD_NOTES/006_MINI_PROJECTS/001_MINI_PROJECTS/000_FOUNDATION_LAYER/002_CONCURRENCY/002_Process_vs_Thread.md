@@ -2,188 +2,209 @@
 
 # MiniConcurrency — 002 Process vs Thread
 
-## 0. Why This Topic Matters
+## 0. Why This File Exists
 
-Before learning locks, race conditions, thread pools, Kafka consumers, Redis workers, or Spring Boot request handling, you must understand this foundation:
-
-```text
-Process = running application
-Thread  = worker inside that application
-```
-
-In backend systems, almost everything runs using processes and threads.
-
-Examples:
+Before learning locks, race conditions, thread pools, async programming, Kafka consumers, Redis server threads, or Spring Boot request handling, you must clearly understand:
 
 ```text
-Java Spring Boot app     -> one JVM process
-HTTP request handler     -> thread from thread pool
-Kafka consumer service   -> process with consumer threads
-Redis server             -> process handling commands
-Database server          -> process with many worker threads
-Docker container         -> usually one main process
-Kubernetes pod           -> runs one or more containers/processes
+What is a process?
+What is a thread?
+Why do backend systems use many threads?
+Why is sharing memory dangerous?
 ```
 
-If you understand process vs thread clearly, you will understand concurrency, parallelism, performance, scaling, and production debugging much better.
+This file builds the foundation for all later MiniConcurrency topics.
 
 ---
 
-# 1. Simple Definition
+## 1. One-Line Definition
 
-## Process
+```text
+Process = running program with its own memory.
 
-A process is a running program with its own memory.
+Thread = smaller execution unit inside a process that shares the process memory.
+```
 
 Example:
 
 ```text
-You run:
-java -jar order-service.jar
+Chrome browser = process
+Each tab / renderer / worker = separate process or thread depending on browser design
 
-Operating system creates:
-Order Service Process
+Java Spring Boot app = one process
+Each HTTP request may be handled by a thread from a thread pool
 ```
+
+---
+
+## 2. Process Mental Model
+
+A process is an independent running program.
+
+```text
+Program on disk
+    ↓
+Operating system starts it
+    ↓
+Process in memory
+```
+
+Example:
+
+```text
+java -jar app.jar
+```
+
+This starts one JVM process.
 
 That process has:
 
 ```text
-own memory
-own heap
-own stack area
-own file descriptors
-own network sockets
-own process id
+Code
+Heap memory
+Stack memory
+Open files
+Network sockets
+Environment variables
+Process ID
+```
+
+Diagram:
+
+```text
+Process: SpringBootApp
+
++-----------------------------------+
+| Code                              |
+| Heap                              |
+| Threads                           |
+| Open DB connections               |
+| Open Redis connections            |
+| HTTP server socket                |
++-----------------------------------+
 ```
 
 ---
 
-## Thread
+## 3. Thread Mental Model
 
-A thread is a smaller execution unit inside a process.
+A thread is a path of execution inside a process.
 
-One process can have many threads.
-
-Example:
+One process can contain many threads.
 
 ```text
-Order Service Process
-├── main thread
-├── HTTP worker thread 1
-├── HTTP worker thread 2
-├── Kafka consumer thread
-├── scheduler thread
-└── GC thread
+Process
+ ├── Thread 1
+ ├── Thread 2
+ ├── Thread 3
+ └── Thread 4
 ```
 
-Each thread executes code independently, but threads inside the same process share memory.
-
----
-
-# 2. Best Mental Model
+In Java backend:
 
 ```text
-Process = house
-Thread  = person working inside the house
-```
-
-Each house has its own rooms and resources.
-
-```text
-House A cannot directly use House B's private rooms.
-```
-
-But people inside the same house share the same kitchen, table, and tools.
-
-That is why threads can easily share data, but that also creates race conditions.
-
----
-
-# 3. Process vs Thread Diagram
-
-```text
-Operating System
-│
-├── Process A: order-service
-│   ├── Thread 1: handles request /orders/1
-│   ├── Thread 2: handles request /orders/2
-│   └── Thread 3: Kafka consumer
-│
-├── Process B: payment-service
-│   ├── Thread 1: handles payment request
-│   └── Thread 2: background retry worker
-│
-└── Process C: redis-server
-    └── Thread / event loop handles commands
-```
-
-Important:
-
-```text
-Different processes do not share heap memory directly.
-Threads in the same process share heap memory.
+Spring Boot JVM Process
+ ├── HTTP request thread 1
+ ├── HTTP request thread 2
+ ├── Kafka consumer thread
+ ├── Scheduler thread
+ ├── GC thread
+ └── Background cleanup thread
 ```
 
 ---
 
-# 4. Key Difference Table
+## 4. Process vs Thread Table
 
-| Feature | Process | Thread |
+| Concept | Process | Thread |
 |---|---|---|
-| Meaning | Running program | Execution unit inside process |
+| Meaning | Running program | Execution path inside process |
 | Memory | Own memory | Shares process memory |
-| Creation cost | Expensive | Cheaper |
-| Communication | Harder, needs IPC/network/files | Easier, shared objects |
-| Failure impact | Process crash may not kill others | Thread crash can affect same process |
-| Isolation | Strong | Weak |
-| Example | Spring Boot service JVM | Request worker thread |
+| Creation cost | Heavy | Lighter |
+| Communication | Harder | Easier |
+| Failure isolation | Better | Worse |
+| Example | JVM app, Redis server, Kafka broker | HTTP worker thread, cleanup thread |
+| Shared heap | No | Yes |
+| Crash impact | Usually one process | Can crash/corrupt process state |
 
 ---
 
-# 5. Java View
+## 5. Very Important Memory Difference
 
-When you run a Java application:
+### Process Memory
 
-```bash
-java Main
-```
-
-The operating system creates one JVM process.
-
-Inside that JVM process, Java creates threads.
+Two processes do not normally share memory.
 
 ```text
-JVM Process
-├── main thread
-├── garbage collector threads
-├── JIT compiler threads
-├── HTTP server threads
-├── async executor threads
-└── application-created threads
+Process A memory
+Process B memory
+```
+
+They are isolated.
+
+If Process A changes a variable, Process B does not see it.
+
+```text
+Process A:
+count = 10
+
+Process B:
+count = 10
+```
+
+These are separate copies.
+
+---
+
+### Thread Memory
+
+Threads inside the same process share heap memory.
+
+```text
+Process Heap:
+count = 10
+
+Thread A reads/writes count
+Thread B reads/writes count
+```
+
+This is powerful but dangerous.
+
+Why?
+
+Because multiple threads can update the same data at the same time.
+
+That creates:
+
+```text
+Race condition
+Data corruption
+Lost update
+Deadlock
+Visibility problem
 ```
 
 ---
 
-# 6. Java Example — One Process, Multiple Threads
+## 6. Java Example: One Process, Multiple Threads
 
 ```java
-public class ProcessVsThreadDemo {
+public class ProcessThreadDemo {
 
     public static void main(String[] args) {
 
         System.out.println("Main method started");
-        System.out.println("Current thread: " + Thread.currentThread().getName());
 
-        Thread worker1 = new Thread(() -> {
-            System.out.println("Worker 1 running on: " + Thread.currentThread().getName());
+        Thread t1 = new Thread(() -> {
+            System.out.println("Thread 1 running");
         });
 
-        Thread worker2 = new Thread(() -> {
-            System.out.println("Worker 2 running on: " + Thread.currentThread().getName());
+        Thread t2 = new Thread(() -> {
+            System.out.println("Thread 2 running");
         });
 
-        worker1.start();
-        worker2.start();
+        t1.start();
+        t2.start();
 
         System.out.println("Main method finished");
     }
@@ -192,94 +213,59 @@ public class ProcessVsThreadDemo {
 
 ---
 
-# 7. Step-by-Step Dry Run
+## 7. Step-by-Step Dry Run
 
-## Step 1
-
-Program starts.
-
-```text
-OS creates JVM process
-JVM creates main thread
-main() starts running
-```
-
-Output:
-
-```text
-Main method started
-Current thread: main
-```
-
----
-
-## Step 2
-
-Java creates two thread objects.
+Code:
 
 ```java
-Thread worker1 = new Thread(...);
-Thread worker2 = new Thread(...);
+Thread t1 = new Thread(() -> {
+    System.out.println("Thread 1 running");
+});
+
+Thread t2 = new Thread(() -> {
+    System.out.println("Thread 2 running");
+});
+
+t1.start();
+t2.start();
 ```
 
-Important:
+Dry run:
 
 ```text
-Thread object created, but actual thread has not started yet.
+Step 1:
+JVM process starts.
+
+Step 2:
+main thread begins execution.
+
+Step 3:
+main thread creates Thread object t1.
+Important: t1 is created but not running yet.
+
+Step 4:
+main thread creates Thread object t2.
+Important: t2 is also not running yet.
+
+Step 5:
+main thread calls t1.start().
+Now OS/JVM schedules t1 to run.
+
+Step 6:
+main thread calls t2.start().
+Now OS/JVM schedules t2 to run.
+
+Step 7:
+Thread execution order is not guaranteed.
+Possible output order can change.
 ```
-
----
-
-## Step 3
-
-`worker1.start()` tells JVM/OS:
-
-```text
-Create a new execution thread.
-Run the lambda code inside that thread.
-```
-
-Possible output:
-
-```text
-Worker 1 running on: Thread-0
-```
-
----
-
-## Step 4
-
-`worker2.start()` creates another execution thread.
-
-Possible output:
-
-```text
-Worker 2 running on: Thread-1
-```
-
----
-
-## Step 5
-
-Main thread continues independently.
-
-Possible output:
-
-```text
-Main method finished
-```
-
----
-
-# 8. Important Observation — Output Order Is Not Guaranteed
 
 Possible output 1:
 
 ```text
 Main method started
-Current thread: main
-Worker 1 running on: Thread-0
-Worker 2 running on: Thread-1
+Thread 1 running
+Thread 2 running
 Main method finished
 ```
 
@@ -287,26 +273,78 @@ Possible output 2:
 
 ```text
 Main method started
-Current thread: main
 Main method finished
-Worker 1 running on: Thread-0
-Worker 2 running on: Thread-1
+Thread 2 running
+Thread 1 running
 ```
 
 Why?
 
-Because thread scheduling is controlled by the OS/JVM.
-
-```text
-You start threads.
-But you do not control exact execution order.
-```
-
-This is the first major concurrency lesson.
+Because thread scheduling is controlled by JVM + OS.
 
 ---
 
-# 9. Java Example — Shared Memory Between Threads
+## 8. Important: start() vs run()
+
+### Wrong way
+
+```java
+t1.run();
+```
+
+This does not start a new thread.
+
+It only calls the method like a normal function.
+
+### Correct way
+
+```java
+t1.start();
+```
+
+This starts a real new thread.
+
+---
+
+## 9. Java Example: start() vs run()
+
+```java
+public class StartVsRunDemo {
+
+    public static void main(String[] args) {
+
+        Thread t = new Thread(() -> {
+            System.out.println("Running inside: " 
+                    + Thread.currentThread().getName());
+        });
+
+        t.run();
+
+        t.start();
+    }
+}
+```
+
+Expected idea:
+
+```text
+t.run()
+→ runs on main thread
+
+t.start()
+→ runs on new thread
+```
+
+Possible output:
+
+```text
+Running inside: main
+Running inside: Thread-0
+```
+
+---
+
+## 10. Shared Memory Example
 
 ```java
 public class SharedMemoryDemo {
@@ -329,366 +367,425 @@ public class SharedMemoryDemo {
         t1.join();
         t2.join();
 
-        System.out.println("Counter = " + counter);
+        System.out.println(counter);
     }
 }
 ```
 
-Expected:
+You may expect:
 
 ```text
-Counter = 2
+2
 ```
 
-But in more repeated cases, shared memory can create wrong results due to race conditions.
+But for bigger loops, this can break.
 
 ---
 
-# 10. Why Shared Memory Is Powerful
+## 11. Why counter++ Is Not Safe
 
-Threads inside the same process can access the same variable:
+This line:
 
 ```java
-static int counter = 0;
+counter++;
 ```
 
-This is useful because communication is easy.
+Looks like one operation.
+
+But internally it is:
 
 ```text
-Thread 1 updates counter
-Thread 2 reads counter
+1. read counter
+2. add 1
+3. write counter back
 ```
 
-But this is also dangerous.
+Dry run with two threads:
 
 ```text
-Two threads update same data at same time
-        ↓
+counter = 0
+
+Thread A reads counter = 0
+Thread B reads counter = 0
+
+Thread A adds 1 → 1
+Thread B adds 1 → 1
+
+Thread A writes 1
+Thread B writes 1
+
+Expected counter = 2
+Actual counter   = 1
+```
+
+This is called:
+
+```text
+Lost update
 Race condition
-        ↓
-Wrong result
 ```
 
 ---
 
-# 11. Process Isolation Example
+## 12. Backend Example: Spring Boot Request Threads
 
-Suppose you run two Java programs separately:
+Imagine this endpoint:
 
-```bash
-java OrderService
-java PaymentService
+```java
+@RestController
+class OrderController {
+
+    private int requestCount = 0;
+
+    @GetMapping("/orders")
+    public String getOrders() {
+        requestCount++;
+        return "orders";
+    }
+}
 ```
 
-Operating system creates:
+Problem:
 
 ```text
-Process 1: OrderService JVM
-Process 2: PaymentService JVM
+Many users call /orders at the same time.
+Each request runs on a different thread.
+All threads share the same controller object.
+requestCount++ is not thread-safe.
 ```
 
-Each process has separate memory.
+Flow:
 
 ```text
-OrderService counter != PaymentService counter
+User A request
+    ↓
+Thread 1
+    ↓
+requestCount++
+
+User B request
+    ↓
+Thread 2
+    ↓
+requestCount++
 ```
 
-They cannot directly access each other's Java objects.
+If both happen together, count may become wrong.
 
-To communicate, they need:
+---
+
+## 13. Safer Version Using AtomicInteger
+
+```java
+import java.util.concurrent.atomic.AtomicInteger;
+
+@RestController
+class OrderController {
+
+    private final AtomicInteger requestCount = new AtomicInteger(0);
+
+    @GetMapping("/orders")
+    public String getOrders() {
+        requestCount.incrementAndGet();
+        return "orders";
+    }
+}
+```
+
+Why safer?
+
+```text
+AtomicInteger makes increment operation thread-safe.
+```
+
+---
+
+## 14. Process Communication vs Thread Communication
+
+### Process Communication
+
+Processes need external mechanisms:
 
 ```text
 HTTP
+TCP socket
+File
+Pipe
+Message queue
+Shared memory
 Kafka
 Redis
 Database
-gRPC
-files
-sockets
-```
-
----
-
-# 12. Backend Real-World Mapping
-
-## Spring Boot
-
-```text
-Spring Boot application = one JVM process
-Each request = handled by a worker thread
 ```
 
 Example:
 
 ```text
-100 concurrent HTTP requests
-        ↓
-Tomcat thread pool may use 100 worker threads
+order-service process
+    ↓ HTTP/Kafka
+payment-service process
 ```
 
 ---
 
-## Redis
+### Thread Communication
+
+Threads can communicate through shared memory:
+
+```text
+Shared variable
+BlockingQueue
+ConcurrentHashMap
+AtomicInteger
+wait/notify
+Future
+CompletableFuture
+```
+
+Example:
+
+```text
+Producer thread
+    ↓ BlockingQueue
+Consumer thread
+```
+
+---
+
+## 15. Real-World Mini Mapping
+
+### MiniRedis
 
 ```text
 Redis server = process
-Commands handled by event loop / worker threads depending on version/features
-```
 
-MiniRedis helps you understand:
-
-```text
-server process
-client connection handling
-command execution
-shared in-memory map
-thread safety
+Inside it:
+- network event loop
+- background persistence thread
+- cleanup logic
+- client handling
 ```
 
 ---
 
-## Kafka
+### MiniKafka
 
 ```text
 Kafka broker = process
-Kafka consumer app = process
-Consumer threads = process records concurrently
+
+Inside it:
+- network threads
+- IO threads
+- log flush threads
+- replication threads
 ```
 
 ---
 
-## Docker
+### MiniGateway
 
 ```text
-Docker container usually runs one main process
-```
+Gateway = process
 
-Example:
-
-```text
-Container 1 -> order-service process
-Container 2 -> payment-service process
-Container 3 -> redis process
-```
-
----
-
-## Kubernetes
-
-```text
-Pod runs container
-Container runs process
-Process has threads
-```
-
-Layer:
-
-```text
-Kubernetes Cluster
-    ↓
-Node
-    ↓
-Pod
-    ↓
-Container
-    ↓
-Process
-    ↓
-Threads
+Inside it:
+- request worker threads
+- filter execution
+- load balancer logic
+- timeout/retry logic
 ```
 
 ---
 
-# 13. Why Process Is Safer Than Thread
-
-If one process crashes, other processes may continue.
-
-Example:
+### MiniSpringBootCloud
 
 ```text
-payment-service crashes
-order-service can still run
-```
+Each microservice = separate JVM process
 
-But if one thread corrupts shared memory inside the same process, the whole process may become unstable.
-
-Example:
-
-```text
-one bad thread modifies shared cache incorrectly
-all request threads may see wrong data
+Inside each service:
+- request threads
+- scheduler threads
+- async executor threads
+- Kafka listener threads
 ```
 
 ---
 
-# 14. Why Thread Is Faster Than Process
+## 16. Why Backend Engineers Must Know This
 
-Threads are lighter because they share memory and resources.
-
-Creating a process is heavier because OS must allocate separate memory and resources.
+Because production bugs often look like:
 
 ```text
-Process creation -> expensive
-Thread creation  -> cheaper
-Thread pool      -> even better
-```
-
-That is why backend servers use thread pools.
-
----
-
-# 15. Why Thread Pool Exists
-
-Creating a new thread for every request is expensive.
-
-Bad model:
-
-```text
-Request 1 -> create thread
-Request 2 -> create thread
-Request 3 -> create thread
-...
-```
-
-Better model:
-
-```text
-Create fixed worker threads once
-Reuse them for many requests
-```
-
-This is thread pool.
-
-```text
-ThreadPool
-├── worker-1
-├── worker-2
-├── worker-3
-└── worker-4
-```
-
-Requests wait in a queue.
-
-```text
-Request Queue -> Worker Threads -> Execute Task
-```
-
----
-
-# 16. Mini System Design Connection
-
-Process vs Thread connects to many minis:
-
-```text
-MiniConcurrency
-    ↓
-MiniThreadPool
-    ↓
-MiniRedis
-    ↓
-MiniKafka
-    ↓
-MiniGateway
-    ↓
-MiniSpringBootCloud
-    ↓
-MiniDocker
-    ↓
-MiniKubernetes
-```
-
-Why?
-
-Because every production service is:
-
-```text
-process + threads + network + memory + queues
-```
-
----
-
-# 17. Common Interview Question
-
-## Question
-
-What is the difference between process and thread?
-
-## Strong Answer
-
-A process is an independent running program with its own memory space. A thread is a lightweight execution unit inside a process. Threads inside the same process share heap memory, file descriptors, and other process resources, but each thread has its own call stack. Processes provide stronger isolation but are heavier. Threads are faster to create and communicate more easily, but shared memory makes concurrency bugs like race conditions and deadlocks possible.
-
----
-
-# 18. One-Line Memory Hook
-
-```text
-Process = isolated application
-Thread  = shared-memory worker inside application
-```
-
----
-
-# 19. What Breaks Next?
-
-Once multiple threads share memory, these problems appear:
-
-```text
-race condition
-lost update
-visibility issue
-deadlock
-starvation
-thread contention
-context switching overhead
-```
-
-That is why next topics are important:
-
-```text
-Thread lifecycle
-Context switching
+High CPU
+Too many threads
+Thread pool exhausted
+Deadlock
+Slow response
 Race condition
-Locks
-Atomic variables
-BlockingQueue
-ThreadPool
+Memory leak
+Connection pool starvation
+Request timeout
+Kafka consumer lag
+```
+
+All of these require process/thread understanding.
+
+---
+
+## 17. Interview Explanation
+
+If interviewer asks:
+
+```text
+What is the difference between process and thread?
+```
+
+Good answer:
+
+```text
+A process is an independent running program with its own memory space.
+A thread is a lightweight execution unit inside a process.
+Threads inside the same process share heap memory, so communication is easier,
+but synchronization is needed to avoid race conditions.
+Processes are more isolated but heavier to create and communicate between.
+```
+
+Strong backend addition:
+
+```text
+In Spring Boot, one deployed service usually runs as one JVM process.
+HTTP requests are handled by worker threads.
+So shared mutable state in singleton beans must be thread-safe.
 ```
 
 ---
 
-# 20. Final Summary
+## 18. Common Mistakes
+
+### Mistake 1
 
 ```text
-Process:
-- independent running program
-- own memory
-- strong isolation
-- expensive creation
-- communicates using IPC/network
-
-Thread:
-- execution unit inside process
-- shares memory with other threads
-- cheaper creation
-- fast communication
-- dangerous without synchronization
+Thinking every request creates a new process.
 ```
 
-Production mental model:
+Usually wrong.
+
+Most Java backend servers use worker threads.
+
+---
+
+### Mistake 2
 
 ```text
-Kubernetes Pod
-    ↓
-Docker Container
-    ↓
-Java Process
-    ↓
-Thread Pool
-    ↓
-Request Handler Thread
-    ↓
-Business Logic
+Thinking counter++ is thread-safe.
 ```
 
-If you understand this, concurrency becomes much easier.
+Wrong.
 
+It is read + modify + write.
+
+---
+
+### Mistake 3
+
+```text
+Calling thread.run() to start thread.
+```
+
+Wrong.
+
+Use:
+
+```java
+thread.start();
+```
+
+---
+
+### Mistake 4
+
+```text
+Putting mutable variables inside Spring singleton service without synchronization.
+```
+
+Dangerous.
+
+---
+
+## 19. Mini Dry Run Summary
+
+```text
+Java app starts
+    ↓
+JVM process created
+    ↓
+main thread starts
+    ↓
+main creates worker threads
+    ↓
+threads share heap memory
+    ↓
+if shared data is modified unsafely
+    ↓
+race condition happens
+```
+
+---
+
+## 20. Real Production Mental Model
+
+```text
+Machine
+ ├── Process: gateway-service
+ │    ├── Thread: request-1
+ │    ├── Thread: request-2
+ │    └── Thread: metrics
+ │
+ ├── Process: order-service
+ │    ├── Thread: request-1
+ │    ├── Thread: kafka-listener
+ │    └── Thread: scheduler
+ │
+ ├── Process: redis
+ │    └── event loop / background work
+ │
+ └── Process: kafka
+      ├── network threads
+      ├── IO threads
+      └── replication threads
+```
+
+This is the real backend world.
+
+---
+
+## 21. What To Remember
+
+```text
+Process = isolated running program.
+Thread = execution path inside a process.
+Processes do not easily share memory.
+Threads share memory.
+Shared memory needs safety.
+Java backend apps are usually one JVM process with many threads.
+```
+
+---
+
+## 22. Next File
+
+```text
+003_Thread_Lifecycle.md
+```
+
+Next you learn:
+
+```text
+NEW
+RUNNABLE
+BLOCKED
+WAITING
+TIMED_WAITING
+TERMINATED
+```
+
+This is needed before locks, wait/notify, thread pools, and production debugging.
