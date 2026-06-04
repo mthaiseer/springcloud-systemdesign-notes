@@ -1476,6 +1476,805 @@ Storage layout affects performance, updates, indexes, WAL, and MVCC.
 
 ---
 
+
+---
+
+# 64A. How Each Concept Looks In Memory
+
+This section connects the logical database concepts to actual memory representation.
+
+The goal:
+
+```text
+Table / Row / Record / Page
+should not feel abstract.
+You should visualize where each thing lives in memory.
+```
+
+---
+
+# 64B. Logical Table vs In-Memory Table
+
+## Logical View
+
+```text
+users table
+
++----+---------+-----------+-----+
+| id | name    | city      | age |
++----+---------+-----------+-----+
+| 1  | Mohamed | Bucharest | 30  |
+| 2  | John    | London    | 28  |
++----+---------+-----------+-----+
+```
+
+## In-Memory View
+
+In Java, a simple table can be represented as:
+
+```text
+Map<PrimaryKey, Row>
+```
+
+ASCII memory model:
+
+```text
+Heap Memory
+
+usersTable
+   |
+   +-- rows HashMap
+          |
+          +-- key: 1
+          |      |
+          |      +-- Row Object
+          |             |
+          |             +-- values Map
+          |                    |
+          |                    +-- "id"   -> 1
+          |                    +-- "name" -> "Mohamed"
+          |                    +-- "city" -> "Bucharest"
+          |                    +-- "age"  -> 30
+          |
+          +-- key: 2
+                 |
+                 +-- Row Object
+                        |
+                        +-- values Map
+                               |
+                               +-- "id"   -> 2
+                               +-- "name" -> "John"
+                               +-- "city" -> "London"
+                               +-- "age"  -> 28
+```
+
+Important:
+
+```text
+This is application-level memory representation.
+Real databases use compact binary pages instead.
+```
+
+---
+
+# 64C. Java Object Representation Mental Model
+
+A Java object is not stored like a compact database record.
+
+A Java object has:
+
+```text
+object header
+field references
+alignment/padding
+GC metadata
+separate String objects
+```
+
+Example:
+
+```java
+User user = new User(1, "Mohamed", "Bucharest", 30);
+```
+
+Approximate JVM heap mental model:
+
+```text
+Heap Memory
+
++----------------------+
+| User Object          |
++----------------------+
+| object header        |
+| id = 1               |
+| nameRef ------------ | ----+
+| cityRef ------------ | --+ |
+| age = 30             |   | |
++----------------------+   | |
+                           | |
+                           | v
+                +------------------+
+                | String "Mohamed" |
+                +------------------+
+                | object header    |
+                | char/byte array  |
+                +------------------+
+
+                           v
+                +--------------------+
+                | String "Bucharest" |
+                +--------------------+
+                | object header      |
+                | char/byte array    |
+                +--------------------+
+```
+
+This is flexible for Java.
+
+But it is bad for database storage because:
+
+```text
+too much overhead
+many pointers
+not compact
+JVM-specific
+not portable to disk
+```
+
+---
+
+# 64D. Database Record In Memory
+
+Database prefers compact bytes.
+
+Same user:
+
+```text
+{id=1, name=Mohamed, city=Bucharest, age=30}
+```
+
+can become:
+
+```text
+[record_header][null_bitmap][id][age][name_len][city_len][name_bytes][city_bytes]
+```
+
+ASCII:
+
+```text
+Record Bytes In Memory
+
++---------------+-------------+---------+---------+----------+----------+----------+------------+
+| record_header | null_bitmap | id      | age     | name_len | city_len | name     | city       |
++---------------+-------------+---------+---------+----------+----------+----------+------------+
+| metadata      | 0000        | 4 bytes | 4 bytes | 4 bytes  | 4 bytes  | Mohamed  | Bucharest  |
++---------------+-------------+---------+---------+----------+----------+----------+------------+
+```
+
+This is compact and disk-friendly.
+
+---
+
+# 64E. Object vs Record Memory Comparison
+
+## Java Object Style
+
+```text
+User object
+   |
+   +-- id value
+   +-- reference to String object
+   +-- reference to String object
+   +-- age value
+```
+
+## Database Record Style
+
+```text
+continuous byte array
+   |
+   +-- header
+   +-- bitmap
+   +-- field bytes
+   +-- variable data
+```
+
+Comparison:
+
+| Feature | Java Object | Database Record |
+|---|---|---|
+| Format | object + references | compact bytes |
+| Storage | JVM heap | page/disk |
+| Portability | JVM-specific | database-defined |
+| Disk-friendly | No | Yes |
+| Compact | No | Yes |
+| Good for | application logic | storage engine |
+
+---
+
+# 64F. Row As Map vs Record As Bytes
+
+## Row as Map
+
+```text
+Row Object
+   |
+   +-- HashMap<String, Object>
+          |
+          +-- "id"   -> Integer(1)
+          +-- "name" -> String("Mohamed")
+          +-- "city" -> String("Bucharest")
+          +-- "age"  -> Integer(30)
+```
+
+Pros:
+
+```text
+easy to use
+flexible
+good for learning
+```
+
+Cons:
+
+```text
+memory overhead
+not compact
+slow to serialize repeatedly
+not disk layout friendly
+```
+
+## Record as Bytes
+
+```text
+byte[]
+   |
+   +-- [header][bitmap][id][age][name][city]
+```
+
+Pros:
+
+```text
+compact
+fast disk IO
+portable
+storage-engine friendly
+```
+
+Cons:
+
+```text
+harder to parse
+needs schema metadata
+needs offset management
+```
+
+---
+
+# 64G. Serialized Byte Array Representation
+
+Java serializer output:
+
+```java
+byte[] recordBytes
+```
+
+Memory view:
+
+```text
+recordBytes
+   |
+   v
++------+------+------+------+------+------+------+------+------+------+
+| 00   | 00   | 00   | 01   | 00   | 00   | 00   | 08   | M    | o    | ...
++------+------+------+------+------+------+------+------+------+------+
+   \__________________/   \__________________/   \____________________
+          id=1                 name_len=8            name bytes
+```
+
+Simplified logical interpretation:
+
+```text
+[ id=1 ][ name_length=8 ][ Mohamed ][ age=30 ]
+```
+
+The database must know the schema to decode these bytes.
+
+---
+
+# 64H. Schema In Memory
+
+Schema metadata tells database how to interpret bytes.
+
+Example schema:
+
+```text
+users(
+  id INT,
+  name VARCHAR,
+  city VARCHAR,
+  age INT
+)
+```
+
+In memory:
+
+```text
+Schema Object
+   |
+   +-- Column[0] name="id",   type=INT,     fixed=4 bytes
+   +-- Column[1] name="name", type=VARCHAR, variable
+   +-- Column[2] name="city", type=VARCHAR, variable
+   +-- Column[3] name="age",  type=INT,     fixed=4 bytes
+```
+
+Why schema needed?
+
+```text
+bytes alone are meaningless.
+schema gives meaning to bytes.
+```
+
+---
+
+# 64I. Record Decode Flow In Memory
+
+Input:
+
+```text
+byte[] recordBytes
+Schema users
+```
+
+Flow:
+
+```text
+recordBytes
+    ↓
+read header
+    ↓
+read null bitmap
+    ↓
+schema says column 0 = INT
+    ↓
+read 4 bytes as id
+    ↓
+schema says column 1 = VARCHAR
+    ↓
+read length + string bytes
+    ↓
+reconstruct row
+```
+
+ASCII:
+
+```text
+Bytes + Schema
+      ↓
+Deserializer
+      ↓
+Row{id=1, name=Mohamed, city=Bucharest, age=30}
+```
+
+---
+
+# 64J. Page In Memory
+
+Database reads disk pages into RAM.
+
+Example:
+
+```text
+byte[] page = new byte[8192];
+```
+
+Memory view:
+
+```text
+RAM Buffer Pool
+
+Page-100
++------------------------------------------------+
+| byte[0]                                        |
+| byte[1]                                        |
+| byte[2]                                        |
+| ...                                            |
+| byte[8191]                                     |
++------------------------------------------------+
+```
+
+But logically the page contains:
+
+```text
+header
+slot directory
+free space
+record bytes
+```
+
+---
+
+# 64K. Slotted Page In Memory
+
+```text
+Page-100 In RAM
+
++------------------------------------------------+
+| Page Header                                    |
+| - pageId = 100                                 |
+| - freeStart = 120                              |
+| - freeEnd = 7600                               |
+| - slotCount = 3                                |
++------------------------------------------------+
+| Slot Directory                                 |
+| slot 0 -> offset 7900, length 80               |
+| slot 1 -> offset 7800, length 90               |
+| slot 2 -> offset 7600, length 120              |
++------------------------------------------------+
+| Free Space                                     |
+|                                                |
+|                                                |
++------------------------------------------------+
+| Record-2 bytes                                 |
+| Record-1 bytes                                 |
+| Record-0 bytes                                 |
++------------------------------------------------+
+```
+
+Mental model:
+
+```text
+slots grow downward from top
+records grow upward from bottom
+free space stays in middle
+```
+
+---
+
+# 64L. Page + Slot + Record Lookup
+
+RecordID:
+
+```text
+RID(page=100, slot=1)
+```
+
+Lookup flow:
+
+```text
+Buffer Pool
+   ↓
+Find Page-100
+   ↓
+Read slot directory
+   ↓
+slot 1 -> offset 7800
+   ↓
+Read record bytes at offset 7800
+   ↓
+Decode bytes using schema
+   ↓
+Return row
+```
+
+ASCII:
+
+```text
+RID(100, 1)
+    ↓
++------------------+
+| Page-100         |
+|                  |
+| Slot-1 -> 7800   |
+|                  |
+| offset 7800      |
+|   ↓              |
+| Record Bytes     |
++------------------+
+```
+
+---
+
+# 64M. Buffer Pool Representation
+
+Real database does not read disk every time.
+
+It keeps pages in RAM.
+
+```text
+Buffer Pool Memory
+
++-------------+      +-------------+      +-------------+
+| Frame-1     |      | Frame-2     |      | Frame-3     |
+| Page-100    |      | Page-101    |      | Page-205    |
++-------------+      +-------------+      +-------------+
+```
+
+Mapping:
+
+```text
+pageId -> memory frame
+```
+
+Example:
+
+```text
+100 -> Frame-1
+101 -> Frame-2
+205 -> Frame-3
+```
+
+This is like:
+
+```text
+cache for disk pages
+```
+
+---
+
+# 64N. Disk File Representation
+
+On disk, database file is mostly pages.
+
+```text
+users.data file
+
++---------+---------+---------+---------+---------+
+| Page-0  | Page-1  | Page-2  | Page-3  | Page-4  |
++---------+---------+---------+---------+---------+
+```
+
+Each page may contain many records.
+
+When database needs row:
+
+```text
+find page
+load page into buffer pool
+read record from page
+```
+
+---
+
+# 64O. Full End-To-End Memory Representation
+
+Logical query:
+
+```sql
+SELECT * FROM users WHERE id = 1;
+```
+
+Internal path:
+
+```text
+SQL Query
+   ↓
+Index lookup finds RID(100, 1)
+   ↓
+Buffer Pool checks Page-100
+   ↓
+If missing, read Page-100 from disk
+   ↓
+Page-100 loaded into RAM frame
+   ↓
+Slot-1 gives record offset
+   ↓
+Record bytes decoded using schema
+   ↓
+Row returned to application
+```
+
+ASCII full flow:
+
+```text
+Application
+   ↓
+SQL Engine
+   ↓
+Index
+   ↓
+RID(page=100, slot=1)
+   ↓
+Buffer Pool
+   ↓
+Page-100 in RAM
+   ↓
+Slot Directory
+   ↓
+Record Bytes
+   ↓
+Deserializer
+   ↓
+Row Object / ResultSet
+```
+
+---
+
+# 64P. INSERT Representation In Memory
+
+Insert row:
+
+```text
+{id=3, name=Alice, city=Paris, age=25}
+```
+
+Flow:
+
+```text
+Row Object
+   ↓
+Serialize to record bytes
+   ↓
+Find page with free space
+   ↓
+Copy record bytes into page byte[]
+   ↓
+Add slot entry
+   ↓
+Index maps id=3 to RID(page, slot)
+```
+
+ASCII:
+
+```text
+Before Page:
+
++----------------------+
+| Header               |
+| Slot-0               |
+| Slot-1               |
+| Free Space           |
+| Record-1             |
+| Record-0             |
++----------------------+
+
+After Insert:
+
++----------------------+
+| Header               |
+| Slot-0               |
+| Slot-1               |
+| Slot-2 -> Record-2   |
+| Free Space           |
+| Record-2             |
+| Record-1             |
+| Record-0             |
++----------------------+
+```
+
+---
+
+# 64Q. UPDATE Representation In Memory
+
+Update:
+
+```text
+name = John → Jonathan
+```
+
+If record grows:
+
+```text
+old record may not fit
+```
+
+Possible memory representation:
+
+```text
+Old Slot-1
+   ↓
+old record marked dead / moved
+
+New Slot-3
+   ↓
+new larger record bytes
+```
+
+ASCII:
+
+```text
+Before:
+
+Slot-1 -> [id=2][name=John][age=28]
+
+After:
+
+Slot-1 -> DEAD / old version
+Slot-3 -> [id=2][name=Jonathan][age=28]
+```
+
+This connects to:
+
+```text
+MVCC
+fragmentation
+vacuum
+compaction
+```
+
+---
+
+# 64R. DELETE Representation In Memory
+
+Delete does not always erase bytes immediately.
+
+Possible representation:
+
+```text
+Slot-1 -> record marked deleted
+```
+
+ASCII:
+
+```text
+Before:
+
+slot 1 -> [id=2][name=John][age=28]
+
+After delete:
+
+slot 1 -> [DELETED][id=2][name=John][age=28]
+```
+
+Later cleanup:
+
+```text
+vacuum/compaction removes dead record
+```
+
+---
+
+# 64S. How Concepts Map Together
+
+```text
+Table
+  logical collection of rows
+
+Row
+  logical record seen by application
+
+Record
+  physical binary representation of row
+
+Page
+  fixed-size block containing many records
+
+Slot
+  pointer inside page to a record
+
+RID
+  page id + slot id
+
+Buffer Pool
+  RAM cache of disk pages
+
+Disk File
+  persistent storage of pages
+```
+
+---
+
+# 64T. Final Diagram — Whole Storage Stack
+
+```text
+Application Object
+        ↓
+Logical Row
+        ↓
+Serialized Record Bytes
+        ↓
+Slot inside Page
+        ↓
+Page inside Buffer Pool
+        ↓
+Page inside Disk File
+        ↓
+Persistent Storage
+```
+
+This is the complete memory/storage mental model.
+
+
 # 64. Next File
 
 ```text
