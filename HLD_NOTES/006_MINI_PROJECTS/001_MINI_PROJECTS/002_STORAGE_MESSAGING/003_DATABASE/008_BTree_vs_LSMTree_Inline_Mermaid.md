@@ -288,21 +288,31 @@ leaf nodes linked in sorted order
 
 # 12. B+Tree Diagram
 
-```text
-                 Root
-              +---------+
-              | 30 | 60 |
-              +---------+
-             /     |     \
-            /      |      \
-+-------------+ +-------------+ +-------------+
-| 1 | 5 | 10  | | 35 | 45    | | 70 | 90    |
-+-------------+ +-------------+ +-------------+
-      |               |               |
-      +-------> next -+-------> next -+
+```mermaid
+flowchart TD
+    Root["Root Page<br/>Keys: 30 | 60"]
+
+    L1["Leaf Page A<br/>1 | 5 | 10"]
+    L2["Leaf Page B<br/>35 | 45 | 55"]
+    L3["Leaf Page C<br/>70 | 80 | 90"]
+
+    Root -->|key < 30| L1
+    Root -->|30 <= key < 60| L2
+    Root -->|key >= 60| L3
+
+    L1 -. next leaf .-> L2
+    L2 -. next leaf .-> L3
 ```
 
 Leaf links make range scans efficient.
+
+Tree mental model:
+
+```text
+Internal pages = routing keys
+Leaf pages     = actual index entries
+Leaf links     = fast range scan
+```
 
 ---
 
@@ -336,20 +346,39 @@ get RID / row pointer
 
 ---
 
-# 14. BTree Lookup ASCII Flow
+# 14. BTree Lookup Tree Flow
+
+```mermaid
+flowchart TD
+    Q["Find key = 45"]
+    Root["Root Page<br/>30 | 60"]
+    Decision{"45 position?"}
+    Left["Left child<br/>keys < 30"]
+    Middle["Middle child<br/>30 <= keys < 60"]
+    Right["Right child<br/>keys >= 60"]
+    Leaf["Leaf Page<br/>35 | 45 | 55"]
+    Found["Found key 45"]
+    RID["RID(page=100, slot=7)"]
+    Record["Load page 100<br/>read slot 7<br/>decode record bytes"]
+
+    Q --> Root --> Decision
+    Decision -->|No| Left
+    Decision -->|Yes| Middle --> Leaf --> Found --> RID --> Record
+    Decision -->|No| Right
+```
+
+Mental flow:
 
 ```text
-Find key=45
-
-Root [30 | 60]
-        ↓ 45 is between 30 and 60
-Middle child
-        ↓
-Leaf [35 | 45 | 55]
-        ↓
-Found 45
-        ↓
-RID(page=100, slot=7)
+Root page
+  ↓
+Choose child
+  ↓
+Leaf page
+  ↓
+RID
+  ↓
+Record bytes
 ```
 
 ---
@@ -379,14 +408,28 @@ This is why BTree is excellent for ranges.
 
 # 16. BTree Range Scan Diagram
 
-```text
-Leaf pages:
+```mermaid
+flowchart LR
+    A["Leaf A<br/>10 | 20 | 30"]
+    B["Leaf B<br/>40 | 50 | 60"]
+    C["Leaf C<br/>70 | 80 | 90"]
+    D["Leaf D<br/>100 | 110"]
 
-[10 | 20 | 30] -> [40 | 50 | 60] -> [70 | 80 | 90]
-                       ↑ start          ↑ stop
+    Start["Start: first key >= 40"] --> B
+    A -. next .-> B
+    B -. next .-> C
+    C -. next .-> D
+    C --> Stop["Stop after 80"]
 ```
 
 Very efficient.
+
+Range scan mental model:
+
+```text
+Find first leaf once
+then sequentially follow leaf links
+```
 
 ---
 
@@ -461,20 +504,29 @@ Parent updated with separator key.
 
 # 20. Page Split Diagram
 
+```mermaid
+flowchart TD
+    ParentBefore["Parent Page<br/>..."]
+    FullLeaf["Full Leaf Page<br/>10 | 20 | 30 | 40"]
+
+    Insert["Insert key 25"]
+    Split["Split full leaf"]
+
+    ParentAfter["Parent Page Updated<br/>separator key = 25"]
+    LeftLeaf["Left Leaf<br/>10 | 20"]
+    RightLeaf["Right Leaf<br/>25 | 30 | 40"]
+
+    ParentBefore --> FullLeaf --> Insert --> Split
+    Split --> ParentAfter
+    ParentAfter --> LeftLeaf
+    ParentAfter --> RightLeaf
+```
+
+Tree update mental model:
+
 ```text
-Before:
-
-Parent: [ ... ]
-          |
-Leaf: [10 | 20 | 30 | 40] FULL
-
-Insert 25
-
-After:
-
-Parent: [25]
-        /    \
-[10 | 20]   [25 | 30 | 40]
+Leaf split can bubble up to parent.
+If parent is also full, parent may split too.
 ```
 
 ---
@@ -623,24 +675,29 @@ Later compact SSTables
 
 # 29. LSM Write Path Diagram
 
+```mermaid
+flowchart TD
+    Client["Client Write<br/>put key=10,value=A"]
+    WAL["Append WAL<br/>durability"]
+    Mem["Write MemTable<br/>sorted in memory"]
+    Ack["Return success"]
+    Full{"MemTable full?"}
+    Frozen["Freeze MemTable"]
+    SST["Flush to SSTable<br/>immutable sorted file"]
+    Compact["Background compaction"]
+    Bigger["Larger compacted SSTable"]
+
+    Client --> WAL --> Mem --> Ack
+    Mem --> Full
+    Full -->|No| Mem
+    Full -->|Yes| Frozen --> SST --> Compact --> Bigger
+```
+
+LSM write mental model:
+
 ```text
-Client Write
-     ↓
-+------------+
-| WAL        |  append for durability
-+------------+
-     ↓
-+------------+
-| MemTable   |  sorted in-memory structure
-+------------+
-     ↓ flush when full
-+------------+
-| SSTable    |  immutable sorted file
-+------------+
-     ↓ compaction
-+------------+
-| Larger SST |
-+------------+
+foreground write = WAL append + memory write
+disk organization = later background work
 ```
 
 ---
@@ -742,6 +799,32 @@ This is very important.
 
 ---
 
+
+---
+
+# 34A. LSM Level Structure Diagram
+
+```mermaid
+flowchart TD
+    Mem["MemTable<br/>recent writes"]
+    L0["Level 0<br/>small SSTables<br/>may overlap"]
+    L1["Level 1<br/>larger sorted SSTables"]
+    L2["Level 2<br/>even larger SSTables"]
+    L3["Level 3<br/>old compacted data"]
+
+    Mem -->|flush| L0
+    L0 -->|compact| L1
+    L1 -->|compact| L2
+    L2 -->|compact| L3
+```
+
+Mental model:
+
+```text
+fresh data starts in memory
+then moves down levels through compaction
+```
+
 # 35. SSTable Diagram
 
 ```text
@@ -817,16 +900,47 @@ return value
 
 # 39. LSM Read Diagram
 
-```text
-Read key=10
+```mermaid
+flowchart TD
+    Q["Read key=10"]
+    Mem["Check MemTable"]
+    MemFound{"Found?"}
 
-MemTable      → not found
-SSTable-L0-A  → not found
-SSTable-L0-B  → found
-SSTable-L1    → maybe older
+    BF0["Bloom Filter<br/>SSTable L0-A"]
+    Check0{"May contain key?"}
+    SST0["Read SSTable L0-A"]
+
+    BF1["Bloom Filter<br/>SSTable L0-B"]
+    Check1{"May contain key?"}
+    SST1["Read SSTable L0-B"]
+
+    BF2["Bloom Filter<br/>SSTable L1"]
+    Check2{"May contain key?"}
+    SST2["Read SSTable L1"]
+
+    Result["Return latest value / not found"]
+
+    Q --> Mem --> MemFound
+    MemFound -->|Yes| Result
+    MemFound -->|No| BF0 --> Check0
+    Check0 -->|Yes| SST0 --> Result
+    Check0 -->|No| BF1 --> Check1
+    Check1 -->|Yes| SST1 --> Result
+    Check1 -->|No| BF2 --> Check2
+    Check2 -->|Yes| SST2 --> Result
+    Check2 -->|No| Result
 ```
 
 Need optimization.
+
+That optimization is usually:
+
+```text
+Bloom filters
+block cache
+compaction
+SSTable indexes
+```
 
 ---
 
@@ -892,11 +1006,23 @@ reduces read amplification
 
 # 43. Compaction Diagram
 
-Before:
+Before compaction:
 
 ```text
 SSTable-A: 1=A1, 3=C1, 5=E1
 SSTable-B: 1=A2, 4=D1, 6=F1
+```
+
+```mermaid
+flowchart TD
+    A["SSTable-A<br/>1=A1<br/>3=C1<br/>5=E1"]
+    B["SSTable-B<br/>1=A2<br/>4=D1<br/>6=F1"]
+    Merge["Merge sorted files<br/>latest value wins"]
+    C["SSTable-C<br/>1=A2<br/>3=C1<br/>4=D1<br/>5=E1<br/>6=F1"]
+
+    A --> Merge
+    B --> Merge
+    Merge --> C
 ```
 
 After compaction:
@@ -931,18 +1057,25 @@ Compaction later removes old value and tombstone.
 
 # 45. Tombstone Diagram
 
+```mermaid
+flowchart TD
+    Old["Old SSTable<br/>key=5,value=John"]
+    Delete["DELETE key=5"]
+    Tomb["New SSTable<br/>key=5,TOMBSTONE"]
+    Read["Read key=5"]
+    Latest["Latest entry is TOMBSTONE<br/>treat as deleted"]
+    Compact["Compaction later"]
+    Remove["Remove old value + tombstone<br/>when safe"]
+
+    Old --> Read
+    Delete --> Tomb --> Read --> Latest --> Compact --> Remove
+```
+
+Tombstone mental model:
+
 ```text
-Old SSTable:
-key=5 value=John
-
-New SSTable:
-key=5 TOMBSTONE
-
-Read:
-latest marker says deleted
-
-Compaction:
-remove both old value and tombstone eventually
+delete now = write delete marker
+physical cleanup = later compaction
 ```
 
 ---
@@ -1014,7 +1147,27 @@ old versions/tombstones occupy disk
 
 # 50. Read Path Comparison
 
-## BTree
+```mermaid
+flowchart LR
+    subgraph BTreeRead["BTree Read"]
+        BR1["Root page"]
+        BR2["Internal page"]
+        BR3["Leaf page"]
+        BR4["RID / record pointer"]
+        BR1 --> BR2 --> BR3 --> BR4
+    end
+
+    subgraph LSMRead["LSM Read"]
+        LR1["MemTable"]
+        LR2["Bloom filters"]
+        LR3["SSTable L0"]
+        LR4["SSTable L1"]
+        LR5["SSTable L2"]
+        LR1 --> LR2 --> LR3 --> LR4 --> LR5
+    end
+```
+
+BTree:
 
 ```text
 Root
@@ -1028,7 +1181,7 @@ Record pointer
 
 Few page reads.
 
-## LSM
+LSM:
 
 ```text
 MemTable
@@ -1046,7 +1199,28 @@ May check multiple structures.
 
 # 51. Write Path Comparison
 
-## BTree
+```mermaid
+flowchart LR
+    subgraph BTreeWrite["BTree Write"]
+        B1["Find leaf page"]
+        B2["Modify page"]
+        B3["Maybe split"]
+        B4["Update parent"]
+        B5["Write WAL"]
+        B1 --> B2 --> B3 --> B4 --> B5
+    end
+
+    subgraph LSMWrite["LSM Write"]
+        L1["Append WAL"]
+        L2["Write MemTable"]
+        L3["Ack quickly"]
+        L4["Flush later"]
+        L5["Compact later"]
+        L1 --> L2 --> L3 --> L4 --> L5
+    end
+```
+
+BTree:
 
 ```text
 Find leaf page
@@ -1058,7 +1232,7 @@ maybe split
 write WAL
 ```
 
-## LSM
+LSM:
 
 ```text
 append WAL
@@ -1357,6 +1531,39 @@ Bad architecture.
 
 ---
 
+
+---
+
+# 63A. Mermaid Decision Tree — Which One To Choose?
+
+```mermaid
+flowchart TD
+    Start["Workload"]
+    ReadHeavy{"Read-heavy?<br/>Range queries?<br/>Transactions?"}
+    WriteHeavy{"Massive writes?<br/>Logs/events/metrics?"}
+    Mixed{"Need both?"}
+
+    BTree["Choose BTree/B+Tree style<br/>Postgres / MySQL"]
+    LSM["Choose LSM style<br/>Cassandra / RocksDB / Scylla"]
+    Hybrid["Use hybrid architecture<br/>Postgres + Kafka + LSM/OLAP store"]
+
+    Start --> ReadHeavy
+    ReadHeavy -->|Yes| BTree
+    ReadHeavy -->|No| WriteHeavy
+    WriteHeavy -->|Yes| LSM
+    WriteHeavy -->|No| Mixed
+    Mixed -->|Yes| Hybrid
+    Mixed -->|No| BTree
+```
+
+Decision mental model:
+
+```text
+transactions + ranges + correctness → BTree database
+huge ingestion + distributed writes → LSM database
+mixed high-scale platform → combine systems
+```
+
 # 64. Final Mental Model
 
 ```text
@@ -1392,438 +1599,6 @@ Write-heavy NoSQL/storage engines commonly use LSM.
 ```
 
 ---
-
-
----
-
-# 66A. Mermaid Diagram — B+Tree Structure
-
-```mermaid
-flowchart TD
-    Root["Root Page<br/>Keys: 30 | 60"]
-
-    I1["Internal/Leaf Page<br/>Keys: 1 | 10 | 20"]
-    I2["Internal/Leaf Page<br/>Keys: 35 | 45 | 55"]
-    I3["Internal/Leaf Page<br/>Keys: 70 | 80 | 90"]
-
-    Root -->|key < 30| I1
-    Root -->|30 <= key < 60| I2
-    Root -->|key >= 60| I3
-
-    I1 -. next leaf .-> I2
-    I2 -. next leaf .-> I3
-```
-
-Mental model:
-
-```text
-Root/internal pages route the search.
-Leaf pages store actual index entries.
-Leaf pages are linked for fast range scans.
-```
-
----
-
-# 66B. Mermaid Diagram — B+Tree Lookup Flow
-
-Query:
-
-```sql
-SELECT * FROM users WHERE id = 45;
-```
-
-```mermaid
-flowchart TD
-    Q["Query: id = 45"]
-    R["Read Root Page<br/>[30 | 60]"]
-    C{"Where does 45 fit?"}
-    M["Go to middle child<br/>30 <= 45 < 60"]
-    L["Read Leaf Page<br/>[35 | 45 | 55]"]
-    F["Find key 45"]
-    RID["Get RID<br/>page=100, slot=7"]
-    P["Load data page 100"]
-    REC["Read slot 7<br/>decode record bytes"]
-    OUT["Return row"]
-
-    Q --> R --> C --> M --> L --> F --> RID --> P --> REC --> OUT
-```
-
-This is why B+Tree lookup is fast:
-
-```text
-few page reads
-because each node contains many keys
-```
-
----
-
-# 66C. Mermaid Diagram — B+Tree Range Scan
-
-Query:
-
-```sql
-SELECT * FROM users WHERE id BETWEEN 40 AND 80;
-```
-
-```mermaid
-flowchart LR
-    A["Leaf Page A<br/>10 | 20 | 30"]
-    B["Leaf Page B<br/>40 | 50 | 60"]
-    C["Leaf Page C<br/>70 | 80 | 90"]
-    D["Leaf Page D<br/>100 | 110"]
-
-    A --> B --> C --> D
-
-    Start["Start at first key >= 40"] --> B
-    B --> C
-    C --> Stop["Stop after key > 80"]
-```
-
-Mental model:
-
-```text
-Find starting leaf once.
-Then scan linked leaf pages sequentially.
-```
-
-This is why B+Tree is excellent for:
-
-```text
-BETWEEN
-ORDER BY
-range queries
-prefix scans
-```
-
----
-
-# 66D. Mermaid Diagram — B+Tree Page Split
-
-Insert:
-
-```text
-25
-```
-
-into full leaf:
-
-```text
-[10 | 20 | 30 | 40]
-```
-
-```mermaid
-flowchart TD
-    BeforeParent["Parent Page<br/>..."]
-    FullLeaf["Full Leaf Page<br/>10 | 20 | 30 | 40"]
-
-    BeforeParent --> FullLeaf
-
-    Insert["Insert key 25"]
-    Split["Leaf page is full<br/>split needed"]
-
-    Left["Left Leaf<br/>10 | 20"]
-    Right["Right Leaf<br/>25 | 30 | 40"]
-    NewParent["Parent updated<br/>separator key = 25"]
-
-    FullLeaf --> Insert --> Split
-    Split --> Left
-    Split --> Right
-    Split --> NewParent
-    NewParent --> Left
-    NewParent --> Right
-```
-
-Important:
-
-```text
-B+Tree writes can touch multiple pages:
-leaf page
-new page
-parent page
-WAL
-```
-
-This is why writes can be more expensive than reads.
-
----
-
-# 66E. Mermaid Diagram — BTree Write Path
-
-```mermaid
-flowchart TD
-    W["Insert / Update Key"]
-    Root["Find root page"]
-    Traverse["Traverse internal pages"]
-    Leaf["Reach target leaf page"]
-    Space{"Leaf has space?"}
-    Insert["Insert/update key in page"]
-    Split["Split page"]
-    Parent["Update parent page"]
-    WAL["Write WAL record"]
-    Dirty["Mark pages dirty"]
-    Commit["Commit"]
-
-    W --> Root --> Traverse --> Leaf --> Space
-    Space -->|Yes| Insert --> WAL --> Dirty --> Commit
-    Space -->|No| Split --> Parent --> WAL --> Dirty --> Commit
-```
-
-Mental model:
-
-```text
-BTree write = find page + modify page + maybe split + WAL
-```
-
----
-
-# 66F. Mermaid Diagram — LSM Write Path
-
-```mermaid
-flowchart TD
-    Client["Client Write<br/>put key=10,value=A"]
-    WAL["Append to WAL<br/>durability"]
-    Mem["Write to MemTable<br/>sorted in memory"]
-    Ack["Acknowledge success"]
-    Full{"MemTable full?"}
-    Freeze["Freeze MemTable<br/>immutable memtable"]
-    Flush["Flush to SSTable<br/>sorted immutable file"]
-    Disk["Disk SSTable"]
-    Compact["Background compaction"]
-
-    Client --> WAL --> Mem --> Ack
-    Mem --> Full
-    Full -->|No| Mem
-    Full -->|Yes| Freeze --> Flush --> Disk --> Compact
-```
-
-Mental model:
-
-```text
-LSM write is fast because foreground write mostly touches:
-WAL append + memory write
-```
-
-Disk organization happens later.
-
----
-
-# 66G. Mermaid Diagram — LSM Read Path
-
-Query:
-
-```text
-get key=10
-```
-
-```mermaid
-flowchart TD
-    Q["Read key=10"]
-    Mem["Check MemTable"]
-    FoundMem{"Found?"}
-    BF1["Check Bloom Filter<br/>SSTable L0-A"]
-    SST1{"May contain key?"}
-    Read1["Read SSTable L0-A"]
-    BF2["Check Bloom Filter<br/>SSTable L0-B"]
-    SST2{"May contain key?"}
-    Read2["Read SSTable L0-B"]
-    BF3["Check Bloom Filter<br/>SSTable L1"]
-    SST3{"May contain key?"}
-    Read3["Read SSTable L1"]
-    Result["Return latest value"]
-
-    Q --> Mem --> FoundMem
-    FoundMem -->|Yes| Result
-    FoundMem -->|No| BF1 --> SST1
-    SST1 -->|No| BF2
-    SST1 -->|Yes| Read1 --> Result
-    BF2 --> SST2
-    SST2 -->|No| BF3
-    SST2 -->|Yes| Read2 --> Result
-    BF3 --> SST3
-    SST3 -->|Yes| Read3 --> Result
-    SST3 -->|No| Result
-```
-
-Important:
-
-```text
-LSM read may check multiple places.
-Bloom filters reduce unnecessary SSTable reads.
-```
-
----
-
-# 66H. Mermaid Diagram — LSM Levels
-
-```mermaid
-flowchart TD
-    Mem["MemTable<br/>recent writes"]
-    L0["Level 0<br/>multiple small SSTables"]
-    L1["Level 1<br/>larger sorted SSTables"]
-    L2["Level 2<br/>even larger SSTables"]
-    L3["Level 3<br/>old compacted data"]
-
-    Mem -->|flush| L0
-    L0 -->|compact| L1
-    L1 -->|compact| L2
-    L2 -->|compact| L3
-```
-
-Mental model:
-
-```text
-Data moves from memory to small SSTables,
-then compaction gradually merges it into larger levels.
-```
-
----
-
-# 66I. Mermaid Diagram — LSM Compaction
-
-Before compaction:
-
-```text
-SSTable-A: 1=A1, 3=C1, 5=E1
-SSTable-B: 1=A2, 4=D1, 6=F1
-```
-
-```mermaid
-flowchart TD
-    A["SSTable-A<br/>1=A1<br/>3=C1<br/>5=E1"]
-    B["SSTable-B<br/>1=A2<br/>4=D1<br/>6=F1"]
-    Merge["Merge sorted files<br/>latest value wins"]
-    C["SSTable-C<br/>1=A2<br/>3=C1<br/>4=D1<br/>5=E1<br/>6=F1"]
-
-    A --> Merge
-    B --> Merge
-    Merge --> C
-```
-
-Compaction does:
-
-```text
-merge sorted files
-remove old versions
-remove tombstones when safe
-reduce read amplification
-```
-
----
-
-# 66J. Mermaid Diagram — LSM Tombstone Delete
-
-```mermaid
-flowchart TD
-    Old["Old SSTable<br/>key=5,value=John"]
-    Del["Delete key=5"]
-    Tomb["New SSTable<br/>key=5,TOMBSTONE"]
-    Read["Read key=5"]
-    Latest["Latest entry is tombstone<br/>treat as deleted"]
-    Compact["Compaction later"]
-    Remove["Remove old value + tombstone<br/>when safe"]
-
-    Old --> Read
-    Del --> Tomb --> Read --> Latest --> Compact --> Remove
-```
-
-Important:
-
-```text
-Delete in LSM usually writes a tombstone first.
-Actual physical removal happens later during compaction.
-```
-
----
-
-# 66K. Mermaid Diagram — BTree vs LSM Write Comparison
-
-```mermaid
-flowchart LR
-    subgraph BTree["BTree Write"]
-        B1["Find leaf page"]
-        B2["Modify page"]
-        B3["Maybe split page"]
-        B4["Update parent"]
-        B5["Write WAL"]
-        B1 --> B2 --> B3 --> B4 --> B5
-    end
-
-    subgraph LSM["LSM Write"]
-        L1["Append WAL"]
-        L2["Write MemTable"]
-        L3["Ack quickly"]
-        L4["Flush later"]
-        L5["Compact later"]
-        L1 --> L2 --> L3 --> L4 --> L5
-    end
-```
-
-Mental model:
-
-```text
-BTree pays more write cost immediately.
-LSM delays much of the write organization to background compaction.
-```
-
----
-
-# 66L. Mermaid Diagram — BTree vs LSM Read Comparison
-
-```mermaid
-flowchart LR
-    subgraph BTreeRead["BTree Read"]
-        BR1["Root page"]
-        BR2["Internal page"]
-        BR3["Leaf page"]
-        BR4["RID / record"]
-        BR1 --> BR2 --> BR3 --> BR4
-    end
-
-    subgraph LSMRead["LSM Read"]
-        LR1["MemTable"]
-        LR2["Bloom filters"]
-        LR3["SSTable L0"]
-        LR4["SSTable L1"]
-        LR5["SSTable L2"]
-        LR1 --> LR2 --> LR3 --> LR4 --> LR5
-    end
-```
-
-Mental model:
-
-```text
-BTree read path is usually direct.
-LSM read path may check multiple structures.
-```
-
----
-
-# 66M. Mermaid Diagram — Which Storage Engine To Choose?
-
-```mermaid
-flowchart TD
-    Start["Workload"]
-    ReadHeavy{"Read-heavy<br/>range queries<br/>transactions?"}
-    WriteHeavy{"Massive writes<br/>logs/events/metrics?"}
-    BTree["Choose BTree/B+Tree style<br/>Postgres/MySQL"]
-    LSM["Choose LSM style<br/>Cassandra/RocksDB/Scylla"]
-    Hybrid["Hybrid architecture<br/>Postgres + Kafka + Cassandra/ClickHouse"]
-
-    Start --> ReadHeavy
-    ReadHeavy -->|Yes| BTree
-    ReadHeavy -->|No| WriteHeavy
-    WriteHeavy -->|Yes| LSM
-    WriteHeavy -->|Mixed workload| Hybrid
-```
-
-Final mental model:
-
-```text
-Need correctness + transactions + ranges → BTree database
-Need massive write ingestion + distributed scale → LSM database
-Need both → combine systems
-```
-
 
 # 66. Next File
 
