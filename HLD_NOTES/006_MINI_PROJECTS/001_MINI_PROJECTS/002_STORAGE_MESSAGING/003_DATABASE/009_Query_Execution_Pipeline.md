@@ -16,10 +16,12 @@ and think:
 database finds row and returns it
 ```
 
-But internally a database runs a complete pipeline:
+But internally a database runs a full pipeline:
 
 ```text
 SQL text
+    ↓
+tokenizer
     ↓
 parser
     ↓
@@ -35,28 +37,18 @@ execution engine
     ↓
 storage engine
     ↓
+buffer pool
+    ↓
 pages / records
     ↓
 result
 ```
 
-This file connects previous files:
+This file explains how a query really executes inside a database.
 
-```text
-table
-row
-record
-page
-hash index
-BTree
-LSM tree
-```
+No Mermaid diagrams.
 
-into the real question:
-
-```text
-How does SELECT actually run?
-```
+Only ASCII mental models.
 
 ---
 
@@ -81,68 +73,76 @@ then the plan is executed.
 A database query engine is like:
 
 ```text
-compiler + optimizer + runtime engine + storage engine
+compiler
++
+optimizer
++
+runtime execution engine
++
+storage engine
 ```
 
 SQL is not directly executed.
 
-It is processed.
+It is processed step by step.
 
 ---
 
 # 3. Full Query Pipeline
 
 ```text
-SQL Query
-   ↓
-Tokenizer
-   ↓
-Parser
-   ↓
-Semantic Analyzer
-   ↓
-Logical Plan
-   ↓
-Optimizer
-   ↓
-Physical Plan
-   ↓
-Execution Engine
-   ↓
-Storage Engine
-   ↓
-Buffer Pool
-   ↓
-Pages / Records
-   ↓
-Result Set
++----------------------+
+| SQL Query            |
++----------------------+
+          ↓
++----------------------+
+| Tokenizer            |
++----------------------+
+          ↓
++----------------------+
+| Parser               |
++----------------------+
+          ↓
++----------------------+
+| Semantic Analyzer    |
++----------------------+
+          ↓
++----------------------+
+| Logical Plan         |
++----------------------+
+          ↓
++----------------------+
+| Optimizer            |
++----------------------+
+          ↓
++----------------------+
+| Physical Plan        |
++----------------------+
+          ↓
++----------------------+
+| Execution Engine     |
++----------------------+
+          ↓
++----------------------+
+| Storage Engine       |
++----------------------+
+          ↓
++----------------------+
+| Buffer Pool          |
++----------------------+
+          ↓
++----------------------+
+| Pages / Records      |
++----------------------+
+          ↓
++----------------------+
+| Result Set           |
++----------------------+
 ```
 
 ---
 
-# 4. Mermaid — Full Query Pipeline
-
-```mermaid
-flowchart TD
-    SQL["SQL Query"]
-    Tokenizer["Tokenizer<br/>split SQL into tokens"]
-    Parser["Parser<br/>build parse tree"]
-    Semantic["Semantic Analyzer<br/>validate table/columns/types"]
-    Logical["Logical Plan<br/>what to do"]
-    Optimizer["Optimizer<br/>choose cheapest strategy"]
-    Physical["Physical Plan<br/>how to do it"]
-    Executor["Execution Engine<br/>run operators"]
-    Storage["Storage Engine<br/>index/page access"]
-    Buffer["Buffer Pool<br/>RAM page cache"]
-    Pages["Pages / Records"]
-    Result["Result Set"]
-
-    SQL --> Tokenizer --> Parser --> Semantic --> Logical --> Optimizer --> Physical --> Executor --> Storage --> Buffer --> Pages --> Result
-```
-
----
-
-# 5. Example Query
+# 4. Example Query
 
 ```sql
 SELECT name, age
@@ -150,18 +150,19 @@ FROM users
 WHERE id = 10;
 ```
 
-Human sees:
+Human meaning:
 
 ```text
-get name and age for user id 10
+Get name and age for user id 10.
 ```
 
-Database sees:
+Database meaning:
 
 ```text
-parse
-validate
-choose index
+parse SQL
+validate table/columns
+choose plan
+use index if useful
 load page
 decode record
 project columns
@@ -170,9 +171,41 @@ return result
 
 ---
 
+# 5. SQL Is Like A Programming Language
+
+SQL query:
+
+```text
+source code
+```
+
+Database engine:
+
+```text
+compiler + runtime
+```
+
+Internal transformation:
+
+```text
+SQL string
+   ↓
+tokens
+   ↓
+parse tree
+   ↓
+logical plan
+   ↓
+physical plan
+   ↓
+execution
+```
+
+---
+
 # 6. Stage 1 — Tokenizer
 
-Tokenizer breaks SQL string into tokens.
+Tokenizer splits SQL text into tokens.
 
 Input:
 
@@ -204,7 +237,15 @@ Raw SQL string
 small meaningful words/symbols
 ```
 
-Like compiler lexical analysis.
+Example:
+
+```text
+"SELECT name FROM users"
+      ↓
+[SELECT] [name] [FROM] [users]
+```
+
+This is similar to lexical analysis in compilers.
 
 ---
 
@@ -212,19 +253,19 @@ Like compiler lexical analysis.
 
 Parser checks SQL grammar.
 
-Example:
+Input:
 
 ```sql
 SELECT name FROM users WHERE id = 10;
 ```
 
-Parser builds structure:
+Parser builds query structure:
 
 ```text
 SELECT
-  projection: name
-  from: users
-  filter: id = 10
+├── projection: name
+├── from: users
+└── where: id = 10
 ```
 
 ---
@@ -237,65 +278,58 @@ Bad SQL:
 SELEC name FROM users;
 ```
 
-Parser fails because:
+Parser fails:
 
 ```text
-SELEC is not SELECT
+SELEC is not valid SELECT keyword
 ```
 
-This is syntax error.
+This is:
+
+```text
+syntax error
+```
 
 ---
 
-# 10. Parse Tree Mental Model
+# 10. Parse Tree ASCII
 
 ```text
 SELECT
-├── Projection: name, age
-├── From: users
-└── Where:
+│
+├── Projection
+│   └── name
+│
+├── From
+│   └── users
+│
+└── Where
     └── id = 10
 ```
 
-This is tree form of SQL.
+This tree represents the structure of SQL.
 
 ---
 
-# 11. Mermaid — Parse Tree
+# 11. Stage 3 — Semantic Analyzer
 
-```mermaid
-flowchart TD
-    Select["SELECT"]
-    Projection["Projection<br/>name, age"]
-    From["FROM<br/>users"]
-    Where["WHERE"]
-    Predicate["Predicate<br/>id = 10"]
-
-    Select --> Projection
-    Select --> From
-    Select --> Where
-    Where --> Predicate
-```
-
----
-
-# 12. Stage 3 — Semantic Analyzer
-
-Syntax can be correct but meaning can be wrong.
+Syntax may be correct but meaning may be invalid.
 
 Semantic analyzer checks:
 
 ```text
-does table exist?
-does column exist?
-is type valid?
-does user have permission?
-are functions valid?
+table exists?
+column exists?
+types compatible?
+user has permission?
+function exists?
 ```
 
 ---
 
-# 13. Semantic Error Example
+# 12. Semantic Error Example
+
+Query:
 
 ```sql
 SELECT salary FROM users;
@@ -316,6 +350,34 @@ column salary does not exist
 
 ---
 
+# 13. Syntax vs Semantic Error
+
+## Syntax Error
+
+```text
+SQL grammar wrong
+```
+
+Example:
+
+```sql
+SELEC * FROM users;
+```
+
+## Semantic Error
+
+```text
+SQL grammar correct but meaning wrong
+```
+
+Example:
+
+```sql
+SELECT unknown_column FROM users;
+```
+
+---
+
 # 14. Stage 4 — Logical Plan
 
 Logical plan describes:
@@ -324,9 +386,9 @@ Logical plan describes:
 what operations are needed
 ```
 
-without choosing exact physical algorithm.
+It does NOT yet decide exact algorithms.
 
-For query:
+Query:
 
 ```sql
 SELECT name, age
@@ -338,23 +400,31 @@ Logical plan:
 
 ```text
 Projection(name, age)
-    ↓
+        ↓
 Filter(id = 10)
-    ↓
+        ↓
 Scan(users)
 ```
 
 ---
 
-# 15. Mermaid — Logical Plan
+# 15. Logical Plan Tree
 
-```mermaid
-flowchart TD
-    Projection["Projection<br/>name, age"]
-    Filter["Filter<br/>id = 10"]
-    Scan["Scan<br/>users table"]
-
-    Projection --> Filter --> Scan
+```text
++----------------------------+
+| Projection                 |
+| columns: name, age         |
++----------------------------+
+              ↓
++----------------------------+
+| Filter                     |
+| predicate: id = 10         |
++----------------------------+
+              ↓
++----------------------------+
+| Scan                       |
+| table: users               |
++----------------------------+
 ```
 
 ---
@@ -370,34 +440,41 @@ WHAT should happen?
 Example:
 
 ```text
-scan users
+read users
 filter id=10
 return name and age
 ```
 
-But it does not yet decide:
+But it does not decide:
 
 ```text
-table scan or index scan?
+table scan?
+index scan?
+hash index?
+BTree index?
 ```
 
-That is optimizer's job.
+That comes next.
 
 ---
 
 # 17. Stage 5 — Optimizer
 
-Optimizer chooses the best execution strategy.
+Optimizer chooses:
+
+```text
+best execution strategy
+```
 
 It decides:
 
 ```text
-table scan?
-index scan?
-hash join?
-nested loop join?
-merge join?
-sort or use index order?
+table scan or index scan?
+which index?
+join order?
+join algorithm?
+sort method?
+parallel execution?
 ```
 
 Goal:
@@ -410,9 +487,9 @@ lowest estimated cost
 
 # 18. Optimizer Mental Model
 
-Same query can run many ways.
+Same SQL can run in many ways.
 
-Example query:
+Query:
 
 ```sql
 SELECT * FROM users WHERE id = 10;
@@ -421,55 +498,81 @@ SELECT * FROM users WHERE id = 10;
 Possible plans:
 
 ```text
-Plan A: scan full table
-Plan B: use hash index
-Plan C: use BTree index
+Plan A:
+Full table scan
+
+Plan B:
+Hash index lookup
+
+Plan C:
+BTree index lookup
 ```
 
-Optimizer chooses cheapest.
+Optimizer chooses the cheapest.
 
 ---
 
-# 19. Cost-Based Optimization
+# 19. Optimizer Decision Tree
+
+```text
+Query: WHERE id = 10
+        ↓
+Is useful index available?
+        ├── no
+        │   └── choose table scan
+        │
+        └── yes
+            ↓
+        Is predicate selective?
+            ├── yes
+            │   └── choose index scan
+            │
+            └── no
+                └── maybe choose table scan
+```
+
+---
+
+# 20. Cost-Based Optimization
 
 Optimizer estimates:
 
 ```text
-rows read
-disk pages read
 CPU cost
+disk IO cost
 memory cost
+rows processed
 join cost
 sort cost
 ```
 
-Then chooses lowest cost plan.
+Then chooses plan with lowest estimated cost.
 
 ---
 
-# 20. Statistics
+# 21. Statistics
 
 Optimizer depends on statistics:
 
 ```text
 table row count
-number of distinct values
+distinct values
 histograms
 index selectivity
 null count
 data distribution
 ```
 
-Bad statistics can cause bad plans.
+Bad statistics can produce bad plans.
 
 ---
 
-# 21. Selectivity
+# 22. Selectivity
 
 Selectivity means:
 
 ```text
-how much data predicate filters out
+how much data a predicate filters out
 ```
 
 High selectivity:
@@ -478,7 +581,13 @@ High selectivity:
 WHERE id = 10
 ```
 
-returns few rows.
+Usually returns:
+
+```text
+1 row
+```
+
+Great for index.
 
 Low selectivity:
 
@@ -486,57 +595,53 @@ Low selectivity:
 WHERE country = 'India'
 ```
 
-may return many rows.
+May return:
+
+```text
+large part of table
+```
+
+Index may not help much.
 
 ---
 
-# 22. Index Scan vs Table Scan Decision
+# 23. Table Scan vs Index Scan
+
+## Table Scan
+
+```text
+read all pages
+check all rows
+```
+
+Good when:
+
+```text
+small table
+many rows needed
+index not useful
+```
 
 ## Index Scan
+
+```text
+use index
+jump to matching rows
+```
 
 Good when:
 
 ```text
 few rows needed
-predicate highly selective
+predicate selective
 index exists
-```
-
-## Table Scan
-
-Good when:
-
-```text
-large percentage of table needed
-small table
-index not useful
-```
-
----
-
-# 23. Mermaid — Optimizer Decision
-
-```mermaid
-flowchart TD
-    Query["WHERE id = 10"]
-    Stats["Read statistics<br/>row count + selectivity"]
-    IndexExists{"Useful index exists?"}
-    Selective{"Predicate selective?"}
-    IndexScan["Choose Index Scan"]
-    TableScan["Choose Table Scan"]
-
-    Query --> Stats --> IndexExists
-    IndexExists -->|No| TableScan
-    IndexExists -->|Yes| Selective
-    Selective -->|Yes| IndexScan
-    Selective -->|No| TableScan
 ```
 
 ---
 
 # 24. Stage 6 — Physical Plan
 
-Physical plan says:
+Physical plan describes:
 
 ```text
 HOW exactly to execute
@@ -545,23 +650,49 @@ HOW exactly to execute
 Example:
 
 ```text
-IndexScan(users_pkey on id=10)
-    ↓
 Projection(name, age)
+        ↓
+IndexScan(users_pkey, id=10)
+        ↓
+RID(page=100, slot=3)
 ```
 
 This is executable.
 
 ---
 
-# 25. Physical Plan Example
+# 25. Logical Plan vs Physical Plan
+
+## Logical Plan
 
 ```text
-Projection(name, age)
-    ↓
-Index Scan using users_pkey
-    ↓
-RID(page=100, slot=3)
+Projection
+  ↓
+Filter
+  ↓
+Scan
+```
+
+## Physical Plan
+
+```text
+Projection
+  ↓
+IndexScan using users_pkey
+  ↓
+RID lookup
+```
+
+Logical plan:
+
+```text
+what to do
+```
+
+Physical plan:
+
+```text
+how to do it
 ```
 
 ---
@@ -590,40 +721,47 @@ Operators produce rows.
 
 # 27. Volcano Iterator Model
 
-Many databases use iterator model.
+Many databases use iterator-style execution.
 
-Each operator has:
+Each operator supports:
 
 ```text
 next()
 ```
 
-Parent asks child for next row.
+Parent operator asks child:
+
+```text
+give me next row
+```
+
+Rows flow upward.
+
+Requests flow downward.
 
 ---
 
-# 28. Mermaid — Iterator Model
+# 28. Iterator Model ASCII
 
-```mermaid
-flowchart TD
-    Client["Client asks for result"]
-    Projection["Projection.next()"]
-    Filter["Filter.next()"]
-    IndexScan["IndexScan.next()"]
-    Storage["Storage Engine"]
-    Row["Row returned upward"]
-
-    Client --> Projection --> Filter --> IndexScan --> Storage --> Row
-    Row --> Filter
-    Filter --> Projection
-    Projection --> Client
+```text
+Client
+  ↓ asks next()
+Projection.next()
+  ↓ asks next()
+Filter.next()
+  ↓ asks next()
+IndexScan.next()
+  ↓
+Storage Engine
+  ↑
+Row returned upward
 ```
 
 Mental model:
 
 ```text
-rows flow upward
-requests flow downward
+request goes down
+row comes up
 ```
 
 ---
@@ -641,33 +779,37 @@ read page 1
     ↓
 decode records
     ↓
-apply filter
+return rows
     ↓
 read page 2
     ↓
-repeat
+repeat until all pages done
 ```
 
 ---
 
-# 30. Mermaid — Table Scan
+# 30. Table Scan ASCII
 
-```mermaid
-flowchart TD
-    Start["Table Scan users"]
-    P1["Read Page-1"]
-    R1["Decode all records"]
-    F1["Apply filter"]
-    P2["Read Page-2"]
-    R2["Decode all records"]
-    F2["Apply filter"]
-    More{"More pages?"}
-    Out["Return matching rows"]
-
-    Start --> P1 --> R1 --> F1 --> P2 --> R2 --> F2 --> More
-    More -->|Yes| P1
-    More -->|No| Out
+```text
+Table File
+│
+├── Page-1
+│   ├── Record-1
+│   ├── Record-2
+│   └── Record-3
+│
+├── Page-2
+│   ├── Record-4
+│   ├── Record-5
+│   └── Record-6
+│
+└── Page-3
+    ├── Record-7
+    ├── Record-8
+    └── Record-9
 ```
+
+Table scan checks every record.
 
 Cost:
 
@@ -679,7 +821,7 @@ O(N)
 
 # 31. Index Scan Operator
 
-Index scan uses index to find row location.
+Index scan uses index first.
 
 Flow:
 
@@ -697,31 +839,46 @@ decode record
 
 ---
 
-# 32. Mermaid — Index Scan
-
-```mermaid
-flowchart TD
-    Query["WHERE id = 10"]
-    Index["Search Index<br/>id=10"]
-    RID["RID(page=100, slot=3)"]
-    Buffer["Buffer Pool<br/>load page 100"]
-    Slot["Read slot 3"]
-    Record["Decode record bytes"]
-    Row["Return row"]
-
-    Query --> Index --> RID --> Buffer --> Slot --> Record --> Row
-```
-
-Cost:
+# 32. Index Scan ASCII
 
 ```text
-O(log N) for BTree
-O(1) average for hash index
+Query: id = 10
+        ↓
+BTree / Hash Index
+        ↓
+RID(page=100, slot=3)
+        ↓
+Buffer Pool loads Page-100
+        ↓
+Slot-3 gives record offset
+        ↓
+Read record bytes
+        ↓
+Decode row
 ```
 
 ---
 
-# 33. Buffer Pool Role
+# 33. Storage Engine Role
+
+Execution engine asks storage engine:
+
+```text
+give me row for RID(page=100, slot=3)
+```
+
+Storage engine handles:
+
+```text
+page lookup
+buffer pool
+disk read
+record decoding
+```
+
+---
+
+# 34. Buffer Pool Access
 
 Execution engine does not usually read disk directly.
 
@@ -731,29 +888,28 @@ It asks buffer pool:
 give me page 100
 ```
 
-Buffer pool checks:
-
-```text
-page in RAM?
-```
+Buffer pool checks memory.
 
 ---
 
-# 34. Mermaid — Buffer Pool Access
+# 35. Buffer Pool ASCII
 
-```mermaid
-flowchart TD
-    Need["Need Page-100"]
-    BP["Buffer Pool"]
-    Hit{"Page in RAM?"}
-    RAM["Return page from RAM"]
-    Disk["Read page from disk"]
-    Cache["Put page into buffer pool"]
-    Return["Return page to executor"]
-
-    Need --> BP --> Hit
-    Hit -->|Yes| RAM --> Return
-    Hit -->|No| Disk --> Cache --> Return
+```text
+Need Page-100
+      ↓
+Buffer Pool
+      ↓
+Is Page-100 in RAM?
+      ├── yes
+      │   └── return page immediately
+      │
+      └── no
+          ↓
+      read page from disk
+          ↓
+      put page into buffer pool
+          ↓
+      return page
 ```
 
 Cache hit:
@@ -765,89 +921,56 @@ fast
 Cache miss:
 
 ```text
-slow disk read
+slow
 ```
 
 ---
 
-# 35. Record Decode
+# 36. Page To Row Decode
 
-After page loaded:
-
-```text
-slot directory gives offset
-```
-
-Then database reads:
-
-```text
-record bytes
-```
-
-and decodes using schema.
-
-Flow:
+After page is loaded:
 
 ```text
 page
  ↓
-slot
+slot directory
+ ↓
+record offset
  ↓
 record bytes
  ↓
 schema decode
  ↓
-row
+row object/result
 ```
 
 ---
 
-# 36. Mermaid — Page To Row Decode
-
-```mermaid
-flowchart TD
-    Page["Page-100 in RAM"]
-    Slot["Slot Directory<br/>slot 3 -> offset 7400"]
-    Bytes["Record bytes at offset 7400"]
-    Schema["Schema<br/>id INT, name VARCHAR, age INT"]
-    Decode["Deserializer"]
-    Row["Row{id=10,name=Mohamed,age=30}"]
-
-    Page --> Slot --> Bytes
-    Bytes --> Decode
-    Schema --> Decode
-    Decode --> Row
-```
-
----
-
-# 37. Projection Operator
-
-Projection returns only requested columns.
-
-Query:
-
-```sql
-SELECT name, age FROM users;
-```
-
-If record contains:
+# 37. Page Decode ASCII
 
 ```text
-id, name, city, age
-```
-
-projection returns:
-
-```text
-name, age
+Page-100 in RAM
+│
+├── Page Header
+│
+├── Slot Directory
+│   ├── slot-0 -> offset 7900
+│   ├── slot-1 -> offset 7600
+│   └── slot-3 -> offset 7400
+│
+└── Record Area
+    └── offset 7400 -> [record bytes]
+                          ↓
+                    decode using schema
+                          ↓
+                    Row{id=10,name=Mohamed,age=30}
 ```
 
 ---
 
 # 38. Filter Operator
 
-Filter applies predicate.
+Filter applies WHERE condition.
 
 Example:
 
@@ -858,33 +981,274 @@ WHERE age > 25
 Flow:
 
 ```text
-row comes from child
+row arrives
     ↓
-evaluate age > 25
+evaluate predicate
     ↓
-pass or discard
+true? pass upward
+false? discard
 ```
 
 ---
 
-# 39. Mermaid — Filter + Projection
+# 39. Filter ASCII
 
-```mermaid
-flowchart TD
-    Row["Full Row<br/>id,name,city,age"]
-    Filter{"age > 25?"}
-    Project["Project columns<br/>name, age"]
-    Output["Output Row<br/>name, age"]
-    Discard["Discard row"]
+```text
+Incoming Row
+{id=1, name=Mohamed, age=30}
+        ↓
+Condition: age > 25?
+        ↓
+true
+        ↓
+pass row upward
+```
 
-    Row --> Filter
-    Filter -->|Yes| Project --> Output
-    Filter -->|No| Discard
+For:
+
+```text
+{id=2, name=John, age=20}
+```
+
+```text
+Condition: age > 25?
+        ↓
+false
+        ↓
+discard
 ```
 
 ---
 
-# 40. LIMIT Operator
+# 40. Projection Operator
+
+Projection keeps only requested columns.
+
+Query:
+
+```sql
+SELECT name, age
+```
+
+Input row:
+
+```text
+{id=1, name=Mohamed, city=Bucharest, age=30}
+```
+
+Output row:
+
+```text
+{name=Mohamed, age=30}
+```
+
+---
+
+# 41. Projection ASCII
+
+```text
+Full Row
++----+---------+-----------+-----+
+| id | name    | city      | age |
++----+---------+-----------+-----+
+| 1  | Mohamed | Bucharest | 30  |
++----+---------+-----------+-----+
+        ↓
+Project name, age
+        ↓
++---------+-----+
+| name    | age |
++---------+-----+
+| Mohamed | 30  |
++---------+-----+
+```
+
+---
+
+# 42. Full Query Dry Run
+
+Query:
+
+```sql
+SELECT name
+FROM users
+WHERE age > 25;
+```
+
+Table:
+
+```text
++----+---------+-----+
+| id | name    | age |
++----+---------+-----+
+| 1  | Mohamed | 30  |
+| 2  | John    | 20  |
+| 3  | Alice   | 35  |
++----+---------+-----+
+```
+
+Execution plan:
+
+```text
+Projection(name)
+        ↓
+Filter(age > 25)
+        ↓
+TableScan(users)
+```
+
+Dry run:
+
+```text
+Scan row 1: Mohamed age=30
+Filter: 30 > 25 true
+Projection: keep name
+Output: Mohamed
+
+Scan row 2: John age=20
+Filter: 20 > 25 false
+Discard
+
+Scan row 3: Alice age=35
+Filter: 35 > 25 true
+Projection: keep name
+Output: Alice
+```
+
+Final result:
+
+```text
+Mohamed
+Alice
+```
+
+---
+
+# 43. Predicate Pushdown
+
+Predicate pushdown means:
+
+```text
+apply filter as early as possible
+```
+
+Instead of:
+
+```text
+read many rows
+send upward
+filter later
+```
+
+do:
+
+```text
+filter during scan
+```
+
+This reduces work.
+
+---
+
+# 44. Predicate Pushdown ASCII
+
+Bad:
+
+```text
+Storage
+  ↓
+all rows
+  ↓
+executor
+  ↓
+filter
+```
+
+Better:
+
+```text
+Storage
+  ↓
+scan + filter
+  ↓
+only matching rows
+  ↓
+executor
+```
+
+---
+
+# 45. Projection Pushdown
+
+Projection pushdown means:
+
+```text
+read only needed columns early
+```
+
+Important in:
+
+```text
+column stores
+Parquet
+analytics engines
+```
+
+Example:
+
+```sql
+SELECT salary FROM employees;
+```
+
+Column store can read:
+
+```text
+salary column only
+```
+
+---
+
+# 46. Covering Index
+
+Covering index contains all columns needed.
+
+Example index:
+
+```text
+(id, name, age)
+```
+
+Query:
+
+```sql
+SELECT name, age FROM users WHERE id = 10;
+```
+
+Database can answer from index only.
+
+No table page read.
+
+---
+
+# 47. Covering Index ASCII
+
+```text
+Query:
+SELECT name, age WHERE id=10
+
+Index Entry:
+[id=10][name=Mohamed][age=30]
+        ↓
+all needed columns already here
+        ↓
+return result
+```
+
+Very fast.
+
+---
+
+# 48. LIMIT Operator
 
 Query:
 
@@ -898,11 +1262,11 @@ Database may stop after:
 10 rows
 ```
 
-No need to scan everything in some plans.
+No need to scan all rows in some cases.
 
 ---
 
-# 41. SORT Operator
+# 49. SORT Operator
 
 Query:
 
@@ -922,41 +1286,27 @@ Sort can be expensive.
 
 ---
 
-# 42. External Sort
+# 50. External Sort ASCII
 
-If data does not fit memory:
+If data does not fit RAM:
 
 ```text
-sort chunks in memory
-write temp files
-merge sorted files
-```
-
-This is external sort.
-
----
-
-# 43. Mermaid — External Sort
-
-```mermaid
-flowchart TD
-    Input["Large unsorted data"]
-    Chunk1["Sort chunk-1 in memory"]
-    Chunk2["Sort chunk-2 in memory"]
-    Chunk3["Sort chunk-3 in memory"]
-    Temp["Write sorted temp runs"]
-    Merge["Merge sorted runs"]
-    Output["Sorted output"]
-
-    Input --> Chunk1 --> Temp
-    Input --> Chunk2 --> Temp
-    Input --> Chunk3 --> Temp
-    Temp --> Merge --> Output
+Large Input
+    ↓
+split into chunks
+    ↓
+sort chunk-1 in memory → temp file 1
+sort chunk-2 in memory → temp file 2
+sort chunk-3 in memory → temp file 3
+    ↓
+merge sorted temp files
+    ↓
+final sorted output
 ```
 
 ---
 
-# 44. Aggregation Operator
+# 51. Aggregation Operator
 
 Query:
 
@@ -973,12 +1323,10 @@ hash aggregate
 sort aggregate
 ```
 
----
-
-# 45. Hash Aggregate Mental Model
+Hash aggregate mental model:
 
 ```text
-HashMap<groupKey, aggregateValue>
+HashMap<city, count>
 ```
 
 Example:
@@ -991,7 +1339,7 @@ Paris     → 5
 
 ---
 
-# 46. Join Query Preview
+# 52. Join Query Preview
 
 Query:
 
@@ -1002,200 +1350,32 @@ JOIN users u
 ON o.user_id = u.id;
 ```
 
-Database must choose join algorithm.
+Database must choose:
+
+```text
+nested loop join
+hash join
+merge join
+```
+
+Join optimization is a major topic.
 
 ---
 
-# 47. Join Algorithms
-
-Common joins:
+# 53. Join Plan Tree ASCII
 
 ```text
-Nested Loop Join
+Projection(selected columns)
+          ↓
 Hash Join
-Merge Join
+    ┌─────┴─────┐
+    ↓           ↓
+Scan orders   Scan users
 ```
 
 ---
 
-# 48. Nested Loop Join
-
-Mental model:
-
-```text
-for each row in orders:
-    find matching row in users
-```
-
-Can be good if:
-
-```text
-outer table small
-inner table indexed
-```
-
----
-
-# 49. Hash Join
-
-Mental model:
-
-```text
-build hash table on smaller input
-probe with larger input
-```
-
-Good for equality joins.
-
----
-
-# 50. Merge Join
-
-Mental model:
-
-```text
-both inputs sorted
-walk together
-```
-
-Good when inputs are already sorted.
-
----
-
-# 51. Mermaid — Join Plan Tree
-
-```mermaid
-flowchart TD
-    Projection["Projection<br/>selected columns"]
-    Join["Hash Join<br/>orders.user_id = users.id"]
-    Orders["Scan orders"]
-    Users["Scan users / index users"]
-
-    Projection --> Join
-    Join --> Orders
-    Join --> Users
-```
-
----
-
-# 52. Covering Index
-
-A covering index contains all columns needed by query.
-
-Example index:
-
-```text
-(id, name, age)
-```
-
-Query:
-
-```sql
-SELECT name, age FROM users WHERE id = 10;
-```
-
-Database may answer from index only.
-
----
-
-# 53. Mermaid — Covering Index
-
-```mermaid
-flowchart TD
-    Query["SELECT name, age<br/>WHERE id=10"]
-    Index["Covering Index<br/>id,name,age"]
-    Found["Index entry contains all needed columns"]
-    Return["Return result<br/>no table page read"]
-
-    Query --> Index --> Found --> Return
-```
-
-Very fast.
-
----
-
-# 54. EXPLAIN Plan
-
-Databases expose chosen plan.
-
-Example:
-
-```sql
-EXPLAIN SELECT * FROM users WHERE id = 10;
-```
-
-May show:
-
-```text
-Index Scan using users_pkey
-```
-
-Use this to debug performance.
-
----
-
-# 55. EXPLAIN ANALYZE
-
-```sql
-EXPLAIN ANALYZE
-SELECT * FROM users WHERE id = 10;
-```
-
-Shows:
-
-```text
-actual execution time
-actual rows
-actual loops
-chosen plan
-```
-
-Very important production skill.
-
----
-
-# 56. Slow Query Causes
-
-Common reasons:
-
-```text
-missing index
-bad statistics
-wrong join order
-large sort
-full table scan
-low selectivity predicate
-too many rows returned
-cold buffer pool
-```
-
----
-
-# 57. OLTP vs OLAP Execution
-
-## OLTP
-
-```text
-small queries
-index lookups
-low latency
-transactions
-```
-
-## OLAP
-
-```text
-large scans
-aggregations
-parallel execution
-columnar processing
-```
-
-Execution engines differ heavily.
-
----
-
-# 58. Backend API Flow
+# 54. Backend API Flow
 
 Spring Boot endpoint:
 
@@ -1206,48 +1386,36 @@ GET /users/10
 Internal path:
 
 ```text
+HTTP Request
+    ↓
 Controller
     ↓
-Repository
+Service
     ↓
-SQL query
+Repository / JDBC
     ↓
-Database query pipeline
+SQL Query
     ↓
-Index scan
+Database Query Pipeline
     ↓
-Buffer pool
+Execution Plan
     ↓
-Record decode
+Index Scan
     ↓
-DTO response
+Buffer Pool
+    ↓
+Record Decode
+    ↓
+ResultSet
+    ↓
+DTO Response
 ```
 
 ---
 
-# 59. Mermaid — Backend To DB Query Flow
+# 55. Mini Query Engine Java Idea
 
-```mermaid
-flowchart TD
-    API["GET /users/10"]
-    Controller["Spring Controller"]
-    Service["UserService"]
-    Repo["Repository / JDBC"]
-    SQL["SQL Query"]
-    DB["Database Query Pipeline"]
-    Plan["Execution Plan"]
-    Storage["Storage Engine"]
-    Result["ResultSet"]
-    DTO["Return DTO"]
-
-    API --> Controller --> Service --> Repo --> SQL --> DB --> Plan --> Storage --> Result --> DTO
-```
-
----
-
-# 60. Mini Query Engine Java Idea
-
-A very simple mini query engine can model:
+A simple mini query engine can model:
 
 ```text
 TableScan
@@ -1255,9 +1423,15 @@ Filter
 Projection
 ```
 
+Each operator exposes:
+
+```java
+next()
+```
+
 ---
 
-# 61. Java Operator Interface
+# 56. Java Operator Interface
 
 ```java
 public interface Operator {
@@ -1270,7 +1444,7 @@ Each operator returns one row at a time.
 
 ---
 
-# 62. Java TableScan Operator
+# 57. Java TableScan Operator
 
 ```java
 import java.util.Iterator;
@@ -1281,6 +1455,7 @@ public class TableScanOperator implements Operator {
     private final Iterator<Row> iterator;
 
     public TableScanOperator(List<Row> rows) {
+
         this.iterator = rows.iterator();
     }
 
@@ -1298,7 +1473,7 @@ public class TableScanOperator implements Operator {
 
 ---
 
-# 63. Java Filter Operator
+# 58. Java Filter Operator
 
 ```java
 import java.util.function.Predicate;
@@ -1310,6 +1485,7 @@ public class FilterOperator implements Operator {
 
     public FilterOperator(Operator child,
                           Predicate<Row> predicate) {
+
         this.child = child;
         this.predicate = predicate;
     }
@@ -1335,7 +1511,7 @@ public class FilterOperator implements Operator {
 
 ---
 
-# 64. Java Projection Operator
+# 59. Java Projection Operator
 
 ```java
 import java.util.List;
@@ -1347,6 +1523,7 @@ public class ProjectionOperator implements Operator {
 
     public ProjectionOperator(Operator child,
                               List<String> columns) {
+
         this.child = child;
         this.columns = columns;
     }
@@ -1373,7 +1550,7 @@ public class ProjectionOperator implements Operator {
 
 ---
 
-# 65. Mini Query Dry Run
+# 60. Java Operator Pipeline
 
 Query:
 
@@ -1381,34 +1558,138 @@ Query:
 SELECT name FROM users WHERE age > 25;
 ```
 
-Plan:
+Pipeline:
 
-```text
-Projection(name)
-    ↓
-Filter(age > 25)
-    ↓
-TableScan(users)
+```java
+Operator scan =
+        new TableScanOperator(users);
+
+Operator filter =
+        new FilterOperator(
+                scan,
+                row -> (int) row.get("age") > 25
+        );
+
+Operator projection =
+        new ProjectionOperator(
+                filter,
+                List.of("name")
+        );
 ```
 
-Rows:
+Execution:
 
-```text
-{id=1, name=Mohamed, age=30}
-{id=2, name=John, age=20}
+```java
+Row row;
+
+while ((row = projection.next()) != null) {
+    System.out.println(row);
+}
 ```
 
-Dry run:
+---
+
+# 61. Java Pipeline ASCII
 
 ```text
-TableScan returns Mohamed row
-Filter age > 25? yes
-Projection keeps name
-Output Mohamed
+projection.next()
+        ↓
+filter.next()
+        ↓
+scan.next()
+        ↓
+row returned from table
+        ↑
+filter checks predicate
+        ↑
+projection keeps selected columns
+        ↑
+client receives row
+```
 
-TableScan returns John row
-Filter age > 25? no
-discard
+---
+
+# 62. EXPLAIN Plan
+
+Databases expose chosen plan.
+
+Example:
+
+```sql
+EXPLAIN SELECT * FROM users WHERE id = 10;
+```
+
+Possible output:
+
+```text
+Index Scan using users_pkey
+```
+
+This tells:
+
+```text
+database used index
+not full table scan
+```
+
+---
+
+# 63. EXPLAIN ANALYZE
+
+```sql
+EXPLAIN ANALYZE
+SELECT * FROM users WHERE id = 10;
+```
+
+Shows:
+
+```text
+actual execution time
+actual rows
+actual loops
+chosen plan
+```
+
+Very important production skill.
+
+---
+
+# 64. Slow Query Causes
+
+Common causes:
+
+```text
+missing index
+bad statistics
+wrong join order
+large sort
+full table scan
+low selectivity predicate
+too many rows returned
+cold buffer pool
+lock waits
+```
+
+---
+
+# 65. OLTP vs OLAP Query Execution
+
+## OLTP
+
+```text
+small queries
+index lookups
+low latency
+transactions
+```
+
+## OLAP
+
+```text
+large scans
+aggregations
+parallel execution
+columnar processing
 ```
 
 ---
@@ -1417,6 +1698,8 @@ discard
 
 ```text
 SQL text
+   ↓
+Tokenize
    ↓
 Parse
    ↓
