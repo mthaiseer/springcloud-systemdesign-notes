@@ -501,8 +501,8 @@ Modern ranking algorithm.
 
 Used in:
 
-- entity["software","Elasticsearch","search engine"]
-- entity["software","Apache Lucene","search library"]
+- Elasticsearch
+- Apache Lucene
 
 Improves TF-IDF.
 
@@ -693,7 +693,7 @@ Top Results
 
 # 32. Elasticsearch Mental Model
 
-entity["software","Elasticsearch","search engine"] internally uses:
+Elasticsearch internally uses:
 
 ```text
 Lucene indexes
@@ -709,7 +709,7 @@ Distributed search layer on top of Lucene.
 
 # 33. Lucene Mental Model
 
-entity["software","Apache Lucene","search library"] is:
+Apache Lucene is:
 
 ```text
 core indexing and retrieval engine
