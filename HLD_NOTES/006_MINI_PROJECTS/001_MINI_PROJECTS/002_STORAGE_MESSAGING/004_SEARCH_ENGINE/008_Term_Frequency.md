@@ -1,1862 +1,979 @@
 # 008_Term_Frequency.md
+
 # MiniSearchEngine — 008 Term Frequency
 
-## 1. Section 1
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+## 0. Why This File Exists
+
+Search engines do NOT return documents randomly.
+
+They try to answer:
 
 ```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
+Which documents are MOST relevant?
 ```
 
-ASCII Mental Model:
+Suppose user searches:
+
+```text
+redis
+```
+
+Documents:
+
+```text
+Doc1:
+redis redis redis caching fast
+
+Doc2:
+redis tutorial
+
+Doc3:
+database systems
+```
+
+All documents are not equally relevant.
+
+Search engine assumes:
+
+```text
+more occurrences of query term
+=
+document talks more about topic
+```
+
+This idea is called:
+
+```text
+Term Frequency (TF)
+```
+
+---
+
+# 1. One-Line Definition
+
+```text
+Term Frequency measures how many times a term appears inside a document.
+```
+
+---
+
+# 2. Biggest Mental Model
+
+Search engine mental model:
+
+```text
+If document repeatedly mentions something,
+it is probably important in that document.
+```
+
+Example:
+
+```text
+redis redis redis caching
+```
+
+Document likely about:
+
+```text
+redis
+```
+
+---
+
+# 3. Why Ranking Needed
+
+Without ranking:
+
+```text
+all matching documents appear equal
+```
+
+Bad search experience.
+
+Search engines need:
+
+```text
+relevance scoring
+```
+
+---
+
+# 4. Ranking ASCII Diagram
+
+```text
+Query:
+redis
+
+      ↓
+
+Doc1 → redis redis redis caching
+Doc2 → redis tutorial
+Doc3 → database systems
+
+      ↓
+
+Compute Scores
+
+      ↓
+
+Rank Results
+```
+
+---
+
+# 5. Raw Term Frequency
+
+Simplest formula:
+
+```text
+TF(term, doc)
+=
+count of term inside document
+```
+
+---
+
+# 6. Raw TF Example
+
+Document:
+
+```text
+redis redis kafka redis
+```
+
+Term counts:
+
+```text
+redis → 3
+kafka → 1
+```
+
+---
+
+# 7. Why Raw TF Useful
+
+Repeated terms usually indicate:
+
+```text
+higher topical importance
+```
+
+Example:
+
+```text
+redis redis redis caching
+```
+
+is more related to:
+
+```text
+redis
+```
+
+than:
+
+```text
+redis tutorial
+```
+
+---
+
+# 8. Problem With Raw TF
+
+Long documents naturally contain more words.
+
+Example:
+
+```text
+10000-word article
+```
+
+may contain many repetitions simply because:
+
+```text
+document is huge
+```
+
+Need normalization.
+
+---
+
+# 9. Normalized TF
+
+Common normalization:
+
+```text
+TF =
+term_count / total_terms
+```
+
+Balances:
+
+```text
+term importance
+vs
+document length
+```
+
+---
+
+# 10. Normalized TF Example
+
+Document:
+
+```text
+redis redis kafka redis
+```
+
+Values:
+
+```text
+redis count = 3
+total terms = 4
+```
+
+Normalized TF:
+
+```text
+3 / 4 = 0.75
+```
+
+---
+
+# 11. Normalization ASCII
+
+```text
+redis redis kafka redis
+
+redis count:
+3
+
+total terms:
+4
+
+TF:
+3 / 4 = 0.75
+```
+
+---
+
+# 12. Keyword Stuffing Problem
+
+Bad webpages may repeat:
+
+```text
+redis redis redis redis redis
+```
+
+just to manipulate rankings.
+
+This is called:
+
+```text
+keyword stuffing
+```
+
+---
+
+# 13. TF Saturation
+
+Modern search engines use:
+
+```text
+diminishing returns
+```
+
+Meaning:
+
+```text
+10 occurrences
+is NOT 10x more useful than 1 occurrence
+```
+
+---
+
+# 14. TF Saturation ASCII
+
+```text
+TF increases
+      ↓
+Score increases slower
+```
+
+---
+
+# 15. Why TF Alone Insufficient
+
+High TF does NOT always mean quality.
+
+Spam pages may abuse repetition.
+
+Modern systems combine TF with:
+
+```text
+IDF
+BM25
+PageRank
+click signals
+quality signals
+```
+
+---
+
+# 16. Document Frequency (DF)
+
+Document Frequency means:
+
+```text
+how many documents contain term
+```
+
+Example:
+
+```text
+redis → 100 docs
+the → 100 million docs
+```
+
+---
+
+# 17. Why Rare Terms Important
+
+Rare terms are more informative.
+
+Example:
+
+```text
+redis
+```
+
+Very specific.
+
+Example:
+
+```text
+the
+```
+
+Not useful.
+
+---
+
+# 18. Inverse Document Frequency (IDF)
+
+IDF reduces importance of common terms.
+
+Core idea:
+
+```text
+rare terms get higher weight
+common terms get lower weight
+```
+
+---
+
+# 19. TF-IDF Intuition
+
+Classic ranking formula:
+
+```text
+TF-IDF
+```
+
+Meaning:
+
+```text
+high local importance
++
+high global rarity
+```
+
+---
+
+# 20. TF-IDF ASCII
+
+```text
+High TF
++
+Low DF
+=
+High Relevance
+```
+
+---
+
+# 21. Query Execution Flow
 
 ```text
 Query
-  ↓
-Posting List
-  ↓
+   ↓
+Load Posting Lists
+   ↓
 Read Frequencies
-  ↓
-Compute Score
+   ↓
+Compute TF
+   ↓
+Apply IDF
+   ↓
+Generate Scores
+   ↓
+Sort Results
 ```
 
-Java Example:
+---
 
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
+# 22. Posting Lists Store TF
 
-## 2. Section 2
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+Posting lists contain frequencies directly.
+
+Example:
 
 ```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
+redis →
+
+[
+  {doc=1, freq=3},
+  {doc=2, freq=1}
+]
 ```
 
-ASCII Mental Model:
+---
+
+# 23. Why TF Stored In Posting Lists
+
+Without stored TF:
+
+```text
+search engine must rescan documents
+```
+
+Too expensive.
+
+Instead:
+
+```text
+frequencies precomputed during indexing
+```
+
+---
+
+# 24. Lucene Mental Model
+
+Lucene stores:
+
+```text
+docIDs
+frequencies
+positions
+offsets
+```
+
+inside postings.
+
+---
+
+# 25. BM25
+
+Modern Lucene primarily uses:
+
+```text
+BM25 ranking
+```
+
+BM25 improves TF-IDF by adding:
+
+```text
+TF saturation
+document normalization
+better relevance behavior
+```
+
+---
+
+# 26. Multi-Term Query
+
+Query:
+
+```text
+redis caching
+```
+
+Documents:
+
+```text
+Doc1:
+redis redis caching fast
+
+Doc2:
+redis tutorial
+```
+
+Doc1 ranks higher because:
+
+```text
+contains both terms
++
+higher TF
+```
+
+---
+
+# 27. Multi-Term ASCII
+
+```text
+Query:
+redis caching
+
+Score =
+redis score
++
+caching score
+```
+
+---
+
+# 28. Field Weighting
+
+Different fields have different importance.
+
+Example:
+
+```text
+title
+body
+tags
+description
+```
+
+Title matches usually weighted higher.
+
+---
+
+# 29. Field Weight ASCII
+
+```text
+Title Match
+    ↓
+Higher Score
+
+Body Match
+    ↓
+Lower Score
+```
+
+---
+
+# 30. Phrase Matching Bonus
+
+Exact phrase queries often receive bonus score.
+
+Example:
+
+```text
+"redis caching"
+```
+
+Phrase match:
+
+```text
+higher relevance
+```
+
+---
+
+# 31. Search Ranking Pipeline
 
 ```text
 Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+   ↓
+Retrieve Posting Lists
+   ↓
+Read TF values
+   ↓
+Apply Ranking Formula
+   ↓
+Generate Scores
+   ↓
+Sort Results
 ```
 
-Java Example:
+---
 
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 3. Section 3
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+# 32. Memory Layout Mental Model
 
 ```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
+Posting List
+ ├── DocIDs
+ ├── Frequencies
+ ├── Positions
+ └── Metadata
 ```
 
-ASCII Mental Model:
+---
+
+# 33. Segment Mental Model
+
+Lucene stores indexes as:
+
+```text
+immutable segments
+```
+
+Each segment contains:
+
+```text
+its own TF statistics
+```
+
+---
+
+# 34. Segment ASCII
+
+```text
+Index
+ ├── Segment1
+ ├── Segment2
+ └── Segment3
+```
+
+---
+
+# 35. Distributed Search
+
+Elasticsearch distributes indexes into:
+
+```text
+shards
+```
+
+Each shard computes local scores.
+
+Coordinator merges ranked results.
+
+---
+
+# 36. Distributed Search ASCII
 
 ```text
 Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+   ↓
+Coordinator
+   ↓
+Search Shard1
+Search Shard2
+Search Shard3
+   ↓
+Merge Results
 ```
 
-Java Example:
+---
+
+# 37. Java TF Counter
 
 ```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
+import java.util.HashMap;
+import java.util.Map;
+
+public class TermFrequencyCounter {
+
+    public Map<String, Integer>
+    computeTF(String text) {
+
+        Map<String, Integer> tf =
+                new HashMap<>();
+
+        String[] tokens =
+                text.toLowerCase()
+                    .split("\\s+");
+
+        for (String token : tokens) {
+
+            tf.put(
+                    token,
+                    tf.getOrDefault(token, 0) + 1
+            );
+        }
+
+        return tf;
+    }
 }
 ```
 
-## 4. Section 4
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+---
+
+# 38. Java TF Dry Run
+
+Input:
 
 ```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
+redis redis kafka redis
 ```
 
-ASCII Mental Model:
+Execution:
+
+Step 1:
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+redis → 1
 ```
 
-Java Example:
+Step 2:
+
+```text
+redis → 2
+```
+
+Step 3:
+
+```text
+kafka → 1
+```
+
+Step 4:
+
+```text
+redis → 3
+```
+
+Final map:
+
+```text
+redis → 3
+kafka → 1
+```
+
+---
+
+# 39. Java Normalized TF
 
 ```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
+public double normalizedTF(
+        int termCount,
+        int totalTerms) {
+
+    return (double) termCount
+            / totalTerms;
 }
 ```
 
-## 5. Section 5
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+---
+
+# 40. Normalized TF Dry Run
+
+Document:
 
 ```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
+redis redis kafka redis
 ```
 
-ASCII Mental Model:
+Values:
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+redis count = 3
+total terms = 4
 ```
 
-Java Example:
+Result:
+
+```text
+3 / 4 = 0.75
+```
+
+---
+
+# 41. Java TF-IDF Example
 
 ```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
+public double tfidf(
+        double tf,
+        double idf) {
+
+    return tf * idf;
 }
 ```
 
-## 6. Section 6
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+---
 
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 7. Section 7
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 8. Section 8
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 9. Section 9
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 10. Section 10
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 11. Section 11
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 12. Section 12
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 13. Section 13
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 14. Section 14
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 15. Section 15
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 16. Section 16
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 17. Section 17
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 18. Section 18
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 19. Section 19
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 20. Section 20
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 21. Section 21
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 22. Section 22
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 23. Section 23
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 24. Section 24
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 25. Section 25
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 26. Section 26
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 27. Section 27
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 28. Section 28
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 29. Section 29
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 30. Section 30
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 31. Section 31
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 32. Section 32
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 33. Section 33
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 34. Section 34
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 35. Section 35
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 36. Section 36
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 37. Section 37
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 38. Section 38
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 39. Section 39
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 40. Section 40
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
+# 42. TF-IDF Dry Run
 
-Java Example:
+Suppose:
 
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 41. Section 41
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 42. Section 42
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 43. Section 43
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 44. Section 44
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 45. Section 45
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 46. Section 46
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 47. Section 47
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
-
-ASCII Mental Model:
-
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
+TF = 0.75
+IDF = 2.0
 ```
 
-## 48. Section 48
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+Score:
 
 ```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
+0.75 × 2.0 = 1.5
 ```
 
-ASCII Mental Model:
+Higher score:
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+higher relevance
 ```
-
-Java Example:
 
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
+---
 
-## 49. Section 49
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+# 43. Production Ranking Signals
 
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
+Modern systems use MUCH more than TF.
 
-ASCII Mental Model:
+Signals include:
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
+TF
+IDF
+BM25
+freshness
+PageRank
+click data
+semantic embeddings
+personalization
 ```
 
-## 50. Section 50
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+---
 
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
+# 44. Performance Considerations
 
-ASCII Mental Model:
+Search engines precompute:
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+frequencies
+document statistics
 ```
 
-Java Example:
+during indexing.
 
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
+This avoids expensive recalculation during search.
 
-## 51. Section 51
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+---
 
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
+# 45. Common Mistakes
 
-ASCII Mental Model:
+## Mistake 1
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
+Using raw TF only
 ```
 
-## 52. Section 52
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+Long documents dominate unfairly.
 
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
+---
 
-ASCII Mental Model:
+## Mistake 2
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
+Ignoring document frequency
 ```
 
-## 53. Section 53
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+Common terms become overweighted.
 
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
+---
 
-ASCII Mental Model:
+## Mistake 3
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
+Assuming repetition always better
 ```
 
-## 54. Section 54
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+Can cause spam ranking.
 
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
+---
 
-ASCII Mental Model:
+## Mistake 4
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+Ignoring phrase relevance
 ```
 
-Java Example:
+Phrase matches often stronger.
 
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 55. Section 55
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+---
 
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
+# 46. Interview Explanation
 
-ASCII Mental Model:
+If interviewer asks:
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+Why is term frequency important?
 ```
 
-Java Example:
+Strong answer:
 
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
-
-## 56. Section 56
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
-
 ```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
+Term Frequency measures how often a term appears inside a document.
+Higher TF often indicates stronger topical relevance, so search engines
+use TF as one of the core ranking signals.
 ```
 
-ASCII Mental Model:
+Senior addition:
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+Modern systems combine TF with IDF or BM25 to avoid bias toward long
+documents and keyword stuffing.
 ```
-
-Java Example:
 
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
+---
 
-## 57. Section 57
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+# 47. Final Mental Model
 
 ```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
+More Relevant Mentions
+         ↓
+Higher TF
+         ↓
+Higher Score
 ```
 
-ASCII Mental Model:
+Balanced with:
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+document normalization
+IDF
+BM25 saturation
 ```
-
-Java Example:
 
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
+---
 
-## 58. Section 58
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+# 48. What To Remember
 
 ```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
+TF measures occurrences inside document.
 
-ASCII Mental Model:
+Higher TF often means higher relevance.
 
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
+Raw TF alone is insufficient.
 
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
+Normalization matters.
 
-## 59. Section 59
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+Rare terms are more useful.
 
-```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
-```
+TF-IDF combines local importance + global rarity.
 
-ASCII Mental Model:
+BM25 improves TF-IDF.
 
-```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
+Lucene stores TF inside posting lists.
 ```
-
-Java Example:
 
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
-```
+---
 
-## 60. Section 60
-Term Frequency (TF) measures how many times a term appears inside a document.
-Higher TF usually indicates stronger topical relevance in search engines.
+# 49. Next File
 
 ```text
-Query: redis
-Doc1: redis redis caching
-TF(redis)=2
+009_TF_IDF_Ranking.md
 ```
 
-ASCII Mental Model:
+Next you learn:
 
 ```text
-Query
-  ↓
-Posting List
-  ↓
-Read Frequencies
-  ↓
-Compute Score
-```
-
-Java Example:
-
-```java
-Map<String,Integer> tf = new HashMap<>();
-for(String token : text.split("\\s+")) {
-    tf.put(token, tf.getOrDefault(token,0)+1);
-}
+vector space model
+cosine similarity
+document vectors
+query vectors
+ranking mathematics
+Lucene scoring intuition
+BM25 deeper
 ```
