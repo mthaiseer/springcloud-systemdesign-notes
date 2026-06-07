@@ -485,7 +485,9 @@ Insert FAILURE
 
 Failure rate:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"Failure\\ Rate = \\frac{Failures}{Total\\ Calls} \\times 100"}}
+```text
+Failure Rate = (Failures / Total Calls) × 100
+```
 
 ---
 
@@ -509,7 +511,9 @@ Total:
 
 Failure rate:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"Failure\\ Rate = \\frac{3}{5} \\times 100 = 60\\%"}}
+```text
+Failure Rate = (3 / 5) × 100 = 60%
+```
 
 ---
 
@@ -725,7 +729,9 @@ public void record(CallResult result) {
 
 Pointer rotation:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"nextIndex = (currentIndex + 1) \\bmod size"}}
+```text
+nextIndex = (currentIndex + 1) % size
+```
 
 ---
 
