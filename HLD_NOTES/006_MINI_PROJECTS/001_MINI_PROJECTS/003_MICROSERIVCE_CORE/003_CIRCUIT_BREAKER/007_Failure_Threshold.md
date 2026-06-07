@@ -100,7 +100,9 @@ too many failures = dangerous
 
 Failure rate:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"Failure\\ Rate = \\frac{Failed\\ Calls}{Total\\ Calls} \\times 100"}}
+```text
+Failure Rate = (Failed Calls / Total Calls) × 100
+```
 
 ---
 
@@ -115,7 +117,9 @@ Failed Calls = 6
 
 Failure rate:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"Failure\\ Rate = \\frac{6}{10} \\times 100 = 60\\%"}}
+```text
+Failure Rate = (6 / 10) × 100 = 60%
+```
 
 ---
 
@@ -420,7 +424,9 @@ slow call
 
 # 26. Slow Call Threshold Formula
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"Slow\\ Call\\ Rate = \\frac{Slow\\ Calls}{Total\\ Calls} \\times 100"}}
+```text
+Slow Call Rate = (Slow Calls / Total Calls) × 100
+```
 
 ---
 
@@ -435,7 +441,9 @@ Slow Calls = 7
 
 Slow call rate:
 
-genui{"math_block_widget_always_prefetch_v2":{"content":"Slow\\ Call\\ Rate = \\frac{7}{10} \\times 100 = 70\\%"}}
+```text
+Slow Call Rate = (7 / 10) × 100 = 70%
+```
 
 ---
 
