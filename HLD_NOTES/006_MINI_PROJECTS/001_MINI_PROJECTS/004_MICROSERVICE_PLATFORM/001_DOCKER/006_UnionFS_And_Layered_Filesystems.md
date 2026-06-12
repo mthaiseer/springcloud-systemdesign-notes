@@ -1,966 +1,920 @@
-# 006_UnionFS_And_Layered_Filesystems
+# 006_UnionFS_And_Layered_Filesystems.md
 
-# Title
+# UnionFS And Layered Filesystems – Understanding First Edition With ASCII Diagrams
 
-## Why This Matters
+## Goal Of This Chapter
 
-UnionFS and layered filesystems are the reason Docker images are practical at scale. Without layers, every image would contain a complete copy of the operating system, runtime, libraries, and application. Layering allows reuse, caching, fast deployments, smaller downloads, and immutable infrastructure.
+This chapter is written for backend engineers who want to understand:
 
-A senior engineer should understand:
+- Why Docker images are layered
+- Why containers are storage efficient
+- Why Docker builds are fast
+- Why Kubernetes image pulls are efficient
+- Why Spring Boot images can be optimized dramatically
+- Why Docker cache exists
+- Why image layering is one of Docker's biggest innovations
 
-- Why Docker images are composed of layers
-- Why builds are fast or slow
-- Why cache hits matter
-- Why image size matters in Kubernetes
-- How registries store images efficiently
+The goal is NOT to learn filesystem implementation details.
 
----
-
-## Mental Model
-
-Think of Docker images as Git commits for filesystems.
-
-```text
-Layer 1: Ubuntu Base
-Layer 2: Java Runtime
-Layer 3: Dependencies
-Layer 4: Application
-
-Combined View
-      |
-      V
-Single Filesystem
-```
-
-Application sees one filesystem.
-
-Internally Docker sees many layers.
+The goal is to understand the ideas that make Docker practical.
 
 ---
 
-## Core Concepts
+# Mental Model
 
-### UnionFS
+Imagine 100 Spring Boot services.
 
-A union filesystem merges multiple directories into one logical view.
-
-Advantages:
-
-- Layer reuse
-- Storage efficiency
-- Fast distribution
-
-Disadvantages:
-
-- Layer management complexity
-
-Interview Explanation:
-
-UnionFS presents multiple filesystem layers as one filesystem.
-
-### Layered Images
-
-Each Dockerfile instruction creates a new layer.
-
-Example:
-
-```dockerfile
-FROM eclipse-temurin:21-jre
-COPY app.jar app.jar
-ENTRYPOINT ["java","-jar","app.jar"]
-```
-
-Results:
+Without layers:
 
 ```text
-Base Layer
-Java Layer
-Application Layer
+Service A
++-------------+
+| Ubuntu      |
+| JDK         |
+| App         |
++-------------+
+
+Service B
++-------------+
+| Ubuntu      |
+| JDK         |
+| App         |
++-------------+
+
+Service C
++-------------+
+| Ubuntu      |
+| JDK         |
+| App         |
++-------------+
 ```
 
-### Immutable Layers
+Everything is duplicated.
 
-Layers never change.
+With layers:
+
+```text
+Shared Ubuntu Layer
+Shared JDK Layer
+        |
+        +------ App A
+        |
+        +------ App B
+        |
+        +------ App C
+```
+
+The idea:
+
+```text
+Store common files once.
+Reuse them everywhere.
+```
+
+That is the core idea behind UnionFS.
+
+---
+
+# Why This Problem Exists
+
+Before layered images, distributing applications was expensive.
+
+Imagine:
+
+```text
+Ubuntu = 100 MB
+JDK    = 300 MB
+App    = 50 MB
+```
+
+One service:
+
+```text
+450 MB
+```
+
+100 services:
+
+```text
+45 GB
+```
+
+Most of those files are identical.
+
+The same:
+
+```text
+Ubuntu Files
+Java Runtime
+Certificates
+Libraries
+```
+
+are copied repeatedly.
+
+This wastes:
+
+- Storage
+- Network bandwidth
+- CI/CD time
+- Deployment time
+
+Engineers needed a way to share common files.
+
+---
+
+# Real World Analogy
+
+Think of an apartment building.
+
+```text
+Building
++--------------------------------+
+| Foundation                     |
+| Elevator                       |
+| Roof                           |
+| Hallways                       |
++--------------------------------+
+```
+
+Every apartment uses them.
+
+Nobody builds:
+
+```text
+100 elevators
+100 roofs
+100 foundations
+```
+
+for 100 apartments.
 
 Instead:
 
 ```text
-Old Layer
-     |
-New Layer
+Shared Structure
+      +
+Private Furniture
 ```
 
-is created.
+Docker images work similarly.
+
+```text
+Shared Layers
+      +
+Application Layer
+```
+
+---
+
+# What Is UnionFS?
+
+UnionFS means:
+
+```text
+Take Multiple Layers
+        |
+        v
+Present Them As One Filesystem
+```
+
+Example:
+
+```text
+Layer 1
+Ubuntu
+
+Layer 2
+Java
+
+Layer 3
+Application
+```
+
+Application sees:
+
+```text
+/
+├── bin
+├── etc
+├── lib
+├── usr
+└── app.jar
+```
+
+It does NOT see:
+
+```text
+Layer 1
+Layer 2
+Layer 3
+```
+
+separately.
+
+UnionFS merges them.
+
+---
+
+# Layer Mental Model
+
+Each Docker instruction usually creates a layer.
+
+Example:
+
+```dockerfile
+FROM ubuntu
+```
+
+creates:
+
+```text
+Layer 1
+```
+
+Then:
+
+```dockerfile
+RUN apt install openjdk
+```
+
+creates:
+
+```text
+Layer 2
+```
+
+Then:
+
+```dockerfile
+COPY app.jar app.jar
+```
+
+creates:
+
+```text
+Layer 3
+```
+
+Visual:
+
+```text
++---------------------+
+| Application Layer   |
++---------------------+
+| OpenJDK Layer       |
++---------------------+
+| Ubuntu Layer        |
++---------------------+
+```
+
+---
+
+# Why Layers Are Powerful
+
+Imagine 50 Spring Boot services.
+
+All use:
+
+```text
+Ubuntu
+Java 21
+```
+
+Only application code differs.
+
+```text
+Service A
+Service B
+Service C
+```
+
+Docker stores:
+
+```text
+Ubuntu Layer -> Once
+Java Layer   -> Once
+```
+
+Only application layers vary.
+
+Storage drops dramatically.
+
+---
+
+# Read Only Layers
+
+Image layers are immutable.
+
+Meaning:
+
+```text
+Cannot Change
+```
+
+Diagram:
+
+```text
+Ubuntu Layer
+     |
+Read Only
+```
+
+```text
+Java Layer
+     |
+Read Only
+```
 
 Benefits:
 
 - Safe sharing
-- Predictable deployments
-- Cache reuse
+- Faster caching
+- Reliable builds
 
 ---
 
-## Internal Architecture
+# Writable Container Layer
+
+When a container starts:
+
+Docker adds:
 
 ```text
-Container Filesystem
-        |
-+-------------------+
-| Writable Layer    |
-+-------------------+
-| Application Layer |
-+-------------------+
-| Dependency Layer  |
-+-------------------+
-| JRE Layer         |
-+-------------------+
-| OS Layer          |
-+-------------------+
+Writable Layer
 ```
 
+Visual:
+
+```text
+Container
+
++----------------------+
+| Writable Layer       |
++----------------------+
+| Application Layer    |
++----------------------+
+| Java Layer           |
++----------------------+
+| Ubuntu Layer         |
++----------------------+
+```
+
+Any write goes here.
+
+Example:
+
+```text
+logs.txt
+temp files
+cache files
+```
+
+are stored only in writable layer.
+
 ---
 
-## Step-by-Step Flow
+# Why Containers Lose Data
 
-1. Developer writes Dockerfile.
-2. Docker processes instructions.
-3. Each instruction creates a layer.
-4. Layers are stored locally.
-5. Image pushed to registry.
-6. Registry stores unique layers.
-7. Kubernetes node pulls only missing layers.
-8. Container adds writable layer.
-9. Application starts.
+Many beginners see:
+
+```text
+Container Restart
+```
+
+then:
+
+```text
+Data Missing
+```
+
+Why?
+
+Because:
+
+```text
+Writable Layer
+```
+is temporary.
+
+Visual:
+
+```text
+Container A
+
++---------------------+
+| Writable Layer      |
+| user-upload.txt     |
++---------------------+
+
+Container Deleted
+        |
+Writable Layer Deleted
+```
+
+Lesson:
+
+```text
+Container storage is not persistence.
+```
+
+Use volumes.
 
 ---
 
-## Deep Walkthrough Example
+# Docker Build Cache
 
-Dockerfile:
+One of the biggest productivity wins.
+
+Imagine:
 
 ```dockerfile
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-COPY target/app.jar app.jar
-ENTRYPOINT ["java","-jar","app.jar"]
+FROM ubuntu
+RUN install java
+COPY app.jar
 ```
 
-Layer Creation:
+First build:
 
 ```text
-Layer 1 -> Base Image
-Layer 2 -> WORKDIR Metadata
-Layer 3 -> Application JAR
-Layer 4 -> Startup Metadata
+Layer 1 Built
+Layer 2 Built
+Layer 3 Built
 ```
 
-If app.jar changes:
+Now code changes.
+
+Only:
 
 ```text
-Layer 1 Reused
-Layer 2 Reused
-Layer 3 Rebuilt
-Layer 4 Rebuilt
+app.jar
 ```
 
-This is why Docker builds are efficient.
+changes.
+
+Docker reuses:
+
+```text
+Layer 1
+Layer 2
+```
+
+and rebuilds:
+
+```text
+Layer 3
+```
+
+Visual:
+
+```text
+Layer 1  CACHE HIT
+Layer 2  CACHE HIT
+Layer 3  REBUILD
+```
+
+Huge time savings.
 
 ---
 
-## Layer-by-Layer Example
+# Spring Boot Example
 
 Bad Dockerfile:
 
 ```dockerfile
 COPY . .
-RUN mvn clean package
-```
-
-Every code change invalidates cache.
-
-Good Dockerfile:
-
-```dockerfile
-COPY pom.xml .
-RUN mvn dependency:go-offline
-
-COPY src src
 RUN mvn package
 ```
 
-Result:
+Every change:
 
 ```text
-Dependencies Layer Reused
-Only Source Layer Rebuilt
+Invalidates everything
 ```
 
----
-
-## Data Structures Used
-
-```java
-class Layer {
-    String id;
-    String parentId;
-    long size;
-    String digest;
-}
-```
-
-```java
-class Image {
-    String imageId;
-    List<Layer> layers;
-}
-```
-
----
-
-## Algorithms Used
-
-### Layer Resolution
+Visual:
 
 ```text
-Request File
-     |
-Search Top Layer
-     |
-Not Found
-     |
-Search Parent Layer
-```
-
-### Cache Matching
-
-```text
-Instruction Hash
+Code Change
       |
-Compare Previous Build
-      |
-Cache Hit / Cache Miss
+Layer 1 Rebuild
+Layer 2 Rebuild
+Layer 3 Rebuild
+Layer 4 Rebuild
 ```
 
----
+Slow.
 
-## Production Implementation
-
-Production flow:
-
-```text
-Git Push
-   |
-CI Build
-   |
-Docker Build
-   |
-Registry Push
-   |
-Kubernetes Pull
-   |
-Pod Startup
-```
-
----
-
-## Java Code Examples
-
-### Layer Representation
-
-```java
-public class Layer {
-
-    private final String id;
-    private final long size;
-
-    public Layer(String id,long size){
-        this.id=id;
-        this.size=size;
-    }
-}
-```
-
-Dry Run:
-
-```text
-Create Layer
-Store Metadata
-Attach To Image
-```
-
-### Image Representation
-
-```java
-import java.util.*;
-
-public class Image {
-
-    private List<Layer> layers =
-        new ArrayList<>();
-}
-```
-
----
-
-## Spring Boot Example
-
-application.yml
-
-```yaml
-server:
-  port: 8080
-
-spring:
-  application:
-    name: user-service
-```
-
-Dockerfile:
-
-```dockerfile
-FROM eclipse-temurin:21-jre
-
-COPY target/user-service.jar app.jar
-
-ENTRYPOINT ["java","-jar","app.jar"]
-```
-
-Build:
-
-```bash
-docker build -t user-service:v1 .
-```
-
-Run:
-
-```bash
-docker run -p 8080:8080 user-service:v1
-```
-
-Startup Lifecycle:
-
-```text
-Container Start
-      |
-JVM Start
-      |
-Spring Context
-      |
-Tomcat
-      |
-Application Ready
-```
-
----
-
-## Dockerfile Example
-
-```dockerfile
-FROM eclipse-temurin:21-jre
-
-WORKDIR /app
-
-COPY target/app.jar app.jar
-
-ENTRYPOINT ["java","-jar","app.jar"]
-```
-
-Layer Analysis:
-
-```text
-FROM      -> Layer A
-WORKDIR   -> Layer B
-COPY      -> Layer C
-ENTRYPOINT-> Metadata
-```
-
----
-
-## Multi-Stage Build Example
-
-```dockerfile
-FROM maven:3.9-eclipse-temurin-21 AS builder
-
-WORKDIR /src
-
-COPY . .
-
-RUN mvn clean package
-
-FROM eclipse-temurin:21-jre
-
-COPY --from=builder /src/target/app.jar app.jar
-
-ENTRYPOINT ["java","-jar","app.jar"]
-```
-
-Benefits:
-
-```text
-Smaller Image
-No Maven Runtime
-Better Security
-```
-
----
-
-## Docker Build Cache Example
-
-Cache Hit:
-
-```text
-pom.xml unchanged
-Dependencies reused
-```
-
-Cache Miss:
-
-```text
-pom.xml changed
-Dependencies redownloaded
-```
-
-Good Ordering:
+Better Dockerfile:
 
 ```dockerfile
 COPY pom.xml .
-RUN mvn dependency:go-offline
+RUN mvn dependency:resolve
 
-COPY src src
-```
-
-Bad Ordering:
-
-```dockerfile
-COPY . .
+COPY src ./src
 RUN mvn package
 ```
 
+Now dependencies stay cached.
+
+Visual:
+
+```text
+Dependency Layer  CACHE HIT
+Application Layer REBUILD
+```
+
+Fast.
+
 ---
 
-## Registry Internals
+# Docker Connection
 
-Image Push:
+Docker depends heavily on layered filesystems.
+
+Without UnionFS:
 
 ```text
-Layer A
-Layer B
-Layer C
+Every image contains everything.
 ```
 
-Registry checks:
+With UnionFS:
 
 ```text
-Already Exists?
+Shared Layers
+      +
+Small Differences
 ```
 
-If yes:
+Diagram:
 
 ```text
-Skip Upload
-```
+Registry
 
-Digest:
-
-```text
-sha256:xxxxx
-```
-
-Digest is immutable.
-
-Tag:
-
-```text
-latest
-v1
-v2
-```
-
-Tag can point to different images.
-
-Interview Answer:
-
-```text
-Tag Mutable
-Digest Immutable
+Ubuntu Layer
+     |
+     +---- Service A
+     |
+     +---- Service B
+     |
+     +---- Service C
 ```
 
 ---
 
-## Kubernetes Example
+# Kubernetes Connection
 
-Deployment:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: user-service
-spec:
-  replicas: 3
-```
-
-Image Pull Flow:
+Imagine a node running:
 
 ```text
-Scheduler
-   |
-Node Selected
-   |
-Check Layer Cache
-   |
-Download Missing Layers
-   |
-Create Container
-```
-
-imagePullPolicy:
-
-```text
-Always
-IfNotPresent
-Never
-```
-
-ImagePullBackOff Causes:
-
-- Wrong image
-- Wrong credentials
-- Network issue
-- Missing tag
-
----
-
-## Sequence Diagram (ASCII)
-
-```text
-Developer
-   |
-docker build
-   |
-Layers Created
-   |
-Registry Push
-   |
-Kubernetes Pull
-   |
-Container Start
-```
-
----
-
-## Request Lifecycle
-
-```text
-Client
-   |
-Load Balancer
-   |
-Pod
-   |
-Container
-   |
-Spring Boot
-   |
-Database
-```
-
----
-
-## Multiple Dry Runs
-
-### Build Dry Run
-
-```text
-Read Dockerfile
-Create Layers
-Store Cache
-Build Image
-```
-
-### Run Dry Run
-
-```text
-Image
- |
-Writable Layer
- |
-Container
- |
-Application
-```
-
-### Failure Dry Run
-
-```text
-Wrong Jar
- |
-Container Exit
- |
-CrashLoopBackOff
-```
-
-### Kubernetes Dry Run
-
-```text
-Deployment
- |
-Node
- |
-Pull Image
- |
-Start Pod
- |
-Ready
-```
-
----
-
-## Failure Scenarios
-
-### Large Image
-
-```text
-2GB Image
-```
-
-Effects:
-
-- Slow build
-- Slow deployment
-
-### Cache Miss
-
-Every build downloads dependencies.
-
-### Disk Full
-
-Cannot create new layers.
-
-### ImagePullBackOff
-
-Image unavailable.
-
-### Wrong Tag
-
-```text
-v5 requested
-v5 absent
-```
-
-### Missing Config
-
-Application startup failure.
-
-### Permission Issue
-
-Cannot read files.
-
----
-
-## Failure Investigation Playbook
-
-### Large Image
-
-Commands:
-
-```bash
-docker history image
-docker image inspect image
-```
-
-### Cache Problems
-
-```bash
-docker build --progress=plain .
-```
-
-### Registry Issue
-
-```bash
-docker pull image
-```
-
-### Kubernetes
-
-```bash
-kubectl describe pod
-kubectl logs pod
-```
-
----
-
-## Debugging Guide
-
-```bash
-docker images
-docker history image
-docker inspect image
-docker system df
-docker logs container
-```
-
-Kubernetes:
-
-```bash
-kubectl get pods
-kubectl describe pod
-```
-
----
-
-## Performance Considerations
-
-- Small base image
-- Multi-stage builds
-- Layer reuse
-- Cache optimization
-
-Avoid:
-
-- Huge COPY commands
-- Unused dependencies
-
----
-
-## Scalability Considerations
-
-Layer reuse enables:
-
-```text
-100 Services
-Shared Runtime Layers
-```
-
-Network traffic reduced.
-
-Storage reduced.
-
----
-
-## Common Interview Questions
-
-Q1: What is UnionFS?
-A: Filesystem that merges multiple layers.
-
-Q2: Why layers?
-A: Storage and network efficiency.
-
-Q3: Are layers mutable?
-A: No.
-
-Q4: What is writable layer?
-A: Container-specific layer.
-
-Q5: What is copy-on-write?
-A: Copy only on modification.
-
-Q6: Why image caching?
-A: Faster builds.
-
-Q7: What invalidates cache?
-A: Instruction or input change.
-
-Q8: Why multi-stage builds?
-A: Smaller images.
-
-Q9: What is image digest?
-A: Immutable content hash.
-
-Q10: What is image tag?
-A: Mutable reference.
-
-Q11: Registry stores what?
-A: Layers and metadata.
-
-Q12: Why image size matters?
-A: Startup speed.
-
-Q13: Kubernetes layer reuse?
-A: Pull only missing layers.
-
-Q14: ImagePullBackOff?
-A: Image cannot be pulled.
-
-Q15: Docker history?
-A: Layer history.
-
-Q16: Layer sharing?
-A: Yes.
-
-Q17: Build cache benefit?
-A: Faster CI.
-
-Q18: Why immutable images?
-A: Predictability.
-
-Q19: Registry optimization?
-A: Deduplicate layers.
-
-Q20: Explain layers in one minute.
-A: Images are immutable stacks of filesystem changes.
-
-Q21-Q30:
-Senior discussions on caching, registries, digests, supply chain security, canary deployments, and image governance.
-
----
-
-## Strong Interview Answers
-
-### Explain UnionFS
-
-UnionFS combines multiple immutable filesystem layers into a single logical filesystem. Containers add a writable layer on top. This design enables image sharing, caching, and efficient distribution.
-
-### Why Docker Layers Matter
-
-Layers allow reuse. Hundreds of services can share the same Java runtime layer, reducing storage and network costs.
-
-### Why Multi-Stage Builds
-
-They separate build-time dependencies from runtime dependencies, producing smaller and safer images.
-
-### Tag vs Digest
-
-Tags are mutable references. Digests uniquely identify image content and never change.
-
-### Why Kubernetes Starts Faster On Warm Nodes
-
-Nodes already have common layers cached locally, so only missing layers are downloaded.
-
----
-
-## Real World Production Case Study
-
-Microservice Platform:
-
-```text
-Gateway
-User Service
 Order Service
 Payment Service
-Notification Service
+User Service
+Gateway
 ```
 
 All use:
 
 ```text
-Ubuntu Base
-Java Runtime
+Java 21 Layer
 ```
 
-Only application layers differ.
+Node downloads:
+
+```text
+Java Layer Once
+```
+
+Then reuses it.
 
 Benefits:
 
-- Smaller registry
-- Faster deployments
-- Faster rollbacks
+```text
+Faster Scaling
+Lower Bandwidth
+Faster Deployments
+```
+
+Visual:
+
+```text
+Kubernetes Node
+
++-------------------------+
+| Shared Java Layer       |
++-------------------------+
+
+Order Pod
+Payment Pod
+User Pod
+Gateway Pod
+```
 
 ---
 
-## FAANG/System Design Discussion
+# Production Failure Story #1
 
-Topics:
-
-- Immutable infrastructure
-- CI/CD optimization
-- Image caching
-- Deployment speed
-- Registry scalability
-- Kubernetes startup optimization
-
-Architecture:
+Problem:
 
 ```text
-Git
- |
-CI
- |
-Docker Build
- |
+Docker Image = 4 GB
+```
+
+Deployment takes forever.
+
+Investigation:
+
+```text
+Image contains:
+
+Build Tools
+Source Code
+Logs
+Temp Files
+Unused Packages
+```
+
+Fix:
+
+```text
+Multi-stage Build
+```
+
+Result:
+
+```text
+4 GB -> 300 MB
+```
+
+---
+
+# Production Failure Story #2
+
+Problem:
+
+```text
+CI Pipeline Slow
+```
+
+Every build:
+
+```text
+10 Minutes
+```
+
+Cause:
+
+```text
+Cache Always Invalidated
+```
+
+Fix:
+
+Reorder Dockerfile.
+
+Result:
+
+```text
+10 min -> 1 min
+```
+
+---
+
+# Production Failure Story #3
+
+Problem:
+
+```text
+Kubernetes Node Disk Full
+```
+
+Cause:
+
+```text
+Too Many Large Images
+```
+
+Visual:
+
+```text
+Node
+
+Image A  2 GB
+Image B  2 GB
+Image C  2 GB
+```
+
+Fix:
+
+```text
+Shared Base Images
+Smaller Layers
+Image Cleanup
+```
+
+---
+
+# Debugging Mindset
+
+When image is large:
+
+Ask:
+
+```text
+What layer is large?
+```
+
+When deployment is slow:
+
+Ask:
+
+```text
+Cache miss?
+```
+
+When node storage is full:
+
+Ask:
+
+```text
+Too many images?
+Too many layers?
+```
+
+Think in layers.
+
+---
+
+# Performance Tradeoffs
+
+Benefits:
+
+```text
+Storage Savings
+Fast Pulls
+Fast Builds
+Layer Reuse
+```
+
+Costs:
+
+```text
+Layer Complexity
+Cache Management
+Image Optimization Work
+```
+
+Table:
+
+| Area | No Layers | Layers |
+|--------|-----------|---------|
+| Storage | High | Low |
+| Pull Speed | Slow | Fast |
+| Build Speed | Slow | Fast |
+| Reuse | Poor | Excellent |
+
+---
+
+# Common Mistakes
+
+Wrong:
+
+```text
+Every container has full OS copy
+```
+
+Correct:
+
+```text
+Containers share image layers
+```
+
+Wrong:
+
+```text
+Container storage is permanent
+```
+
+Correct:
+
+```text
+Writable layer is temporary
+```
+
+Wrong:
+
+```text
+Docker cache is magic
+```
+
+Correct:
+
+```text
+Docker cache works because layers are reused
+```
+
+Additional mistakes:
+
+1. Huge base images
+2. Using latest blindly
+3. Storing secrets in layers
+4. Ignoring image size
+5. Copying unnecessary files
+6. Not using multi-stage builds
+7. Breaking cache frequently
+
+---
+
+# System Design Connection
+
+```text
+Microservice
+      |
+Docker Image
+      |
+Layers
+      |
 Registry
- |
+      |
 Kubernetes
 ```
 
----
-
-## Production Checklist
-
-- Multi-stage build
-- Small base image
-- Scan image
-- Use digests
-- Minimize layers
-- Optimize cache
-- Monitor registry usage
-
----
-
-## One-Page Cheat Sheet
+Layering enables:
 
 ```text
-Image = Layers
-
-Container =
-Image + Writable Layer
-
-UnionFS =
-Merged View
-
-Digest =
-Immutable
-
-Tag =
-Mutable
-
-Multi-stage =
-Smaller Images
+Fast CI/CD
+Fast Scaling
+Efficient Storage
+Cloud Native Deployments
 ```
+
+Without layered filesystems:
+
+Cloud-native platforms would be much slower.
 
 ---
 
-## Last-Minute Interview Revision
+# Strong Interview Answers
+
+Q: Why are Docker images layered?
+
+Expected Answer:
+
+Docker images are layered so common filesystem content can be shared and reused. This reduces storage, network transfer, and build time.
+
+Common Wrong Answer:
+
+Layers are only for organization.
+
+---
+
+Q: What is UnionFS?
+
+Expected Answer:
+
+UnionFS combines multiple filesystem layers and presents them as a single merged filesystem view.
+
+Common Wrong Answer:
+
+UnionFS is Docker storage.
+
+---
+
+Q: Why are Docker builds fast?
+
+Expected Answer:
+
+Docker reuses unchanged layers using build cache. Only changed layers are rebuilt.
+
+---
+
+# One Picture To Remember
 
 ```text
-Layers -> Reuse
+Container Filesystem
 
-UnionFS -> Merge
++--------------------------------+
+| Writable Layer                 |
+| Logs                           |
+| Temp Files                     |
++--------------------------------+
+| Spring Boot App Layer          |
++--------------------------------+
+| Java Runtime Layer             |
++--------------------------------+
+| Ubuntu Layer                   |
++--------------------------------+
+               |
+               v
+         UnionFS Merge
+               |
+               v
+      One Filesystem View
 
-Digest -> Immutable
+Benefits:
 
-Tag -> Mutable
-
-Registry -> Layer Store
-
-Kubernetes -> Pull Missing Layers
+Storage Savings
+Fast Builds
+Fast Pulls
+Fast Scaling
 ```
-
----
-
-## Mental Models Table
-
-| Concept | Mental Model |
-|----------|-------------|
-| Layer | Lego Block |
-| Image | Stack of Lego Blocks |
-| UnionFS | Transparent Stack |
-| Registry | Warehouse |
-| Digest | Fingerprint |
-| Tag | Nickname |
-| Writable Layer | Scratch Pad |
-
----
-
-## Key Takeaways
-
-1. UnionFS enables layered images.
-2. Layers are immutable.
-3. Containers add writable layers.
-4. Registries store layers efficiently.
-5. Digests are immutable.
-6. Tags are mutable.
-7. Build cache accelerates CI.
-8. Multi-stage builds reduce size.
-9. Kubernetes benefits from cached layers.
-10. Layering is fundamental to modern container platforms.
