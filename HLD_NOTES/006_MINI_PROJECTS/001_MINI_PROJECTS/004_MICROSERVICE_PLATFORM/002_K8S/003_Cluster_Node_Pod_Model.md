@@ -2,121 +2,192 @@
 
 # MiniK8s Deep Production Mode
 
-## Understanding First • ASCII Visual Learning • Real World Mental Models
+## Understanding First • Real World • ASCII Diagrams • Spring Boot Perspective
 
 ---
 
-# 1. Why This Chapter Exists
+# Why This Chapter Matters
 
-Most Kubernetes confusion comes from not understanding:
+Most Kubernetes confusion comes from these four words:
 
 ```text
 Cluster
-   |
-   v
 Node
-   |
-   v
 Pod
-   |
-   v
 Container
 ```
 
 People memorize definitions.
 
-Do not memorize.
+Don't.
 
 Understand the relationship.
 
+```text
+Cluster
+   |
+Node
+   |
+Pod
+   |
+Container
+```
+
+Everything in Kubernetes builds on this.
+
 ---
 
-# 2. Real World Analogy: City Model
+# Real World Analogy: City Model
 
-Think of Kubernetes as a city.
+Imagine a city.
 
 ```text
 City
-  |
-  +--> Buildings
-          |
-          +--> Apartments
-                  |
-                  +--> People
+ |
+ +-- Building A
+ |
+ +-- Building B
+ |
+ +-- Building C
 ```
 
-Kubernetes equivalent:
+Inside a building:
+
+```text
+Building
+ |
+ +-- Apartment 101
+ +-- Apartment 102
+```
+
+Inside apartment:
+
+```text
+Apartment
+ |
+ +-- Person
+```
+
+Kubernetes:
 
 ```text
 Cluster
-  |
-  +--> Nodes
-          |
-          +--> Pods
-                  |
-                  +--> Containers
+ |
+ +-- Node
+ |
+ +-- Node
+ |
+ +-- Node
 ```
 
-Mental Model:
+```text
+Node
+ |
+ +-- Pod
+ +-- Pod
+```
+
+```text
+Pod
+ |
+ +-- Container
+```
+
+Memory Hook:
 
 ```text
 Cluster = City
-
 Node = Building
-
 Pod = Apartment
-
 Container = Person
 ```
 
 ---
 
-# 3. What Is A Cluster?
+# Infrastructure Evolution
 
-A cluster is the entire Kubernetes system.
+Before Kubernetes:
 
 ```text
-+------------------------------------+
-|            CLUSTER                 |
-|                                    |
-|  Node-1                            |
-|  Node-2                            |
-|  Node-3                            |
-|                                    |
-+------------------------------------+
+Spring Boot
+    |
+One Server
+```
+
+Failure:
+
+```text
+Server X
+```
+
+Everything gone.
+
+Then:
+
+```text
+Server1
+Server2
+Server3
+```
+
+Need management.
+
+Kubernetes introduces:
+
+```text
+Cluster
+```
+
+---
+
+# What Is A Cluster?
+
+Cluster is the entire Kubernetes environment.
+
+```text
++----------------------------------+
+|            CLUSTER               |
+|                                  |
+| Node-1                           |
+| Node-2                           |
+| Node-3                           |
+|                                  |
++----------------------------------+
+```
+
+Cluster =
+
+```text
+Machines
+   +
+Networking
+   +
+Kubernetes Control Plane
 ```
 
 Think:
 
 ```text
-Cluster
- =
-Collection Of Machines
- +
-Kubernetes Components
+Cluster = Entire City
 ```
 
 ---
 
-# 4. Why Clusters Exist
-
-Single machine:
-
-```text
-+------------+
-| Spring App |
-+------------+
-```
+# Why Clusters Exist
 
 Problem:
 
 ```text
-Machine Fails
-      |
-      X
+One Machine
 ```
 
-Everything down.
+Failure:
+
+```text
+Machine Down
+```
+
+Application unavailable.
 
 Cluster:
 
@@ -126,78 +197,84 @@ Node2
 Node3
 ```
 
-Failure of one node does not destroy system.
+One machine can fail.
+
+System survives.
 
 ---
 
-# 5. Node Mental Model
+# What Is A Node?
 
-Node = Worker Machine
+Node is a worker machine.
 
 Can be:
 
 ```text
 Physical Server
-Virtual Machine
-Cloud VM
+VM
+Cloud Instance
 ```
 
-Diagram:
+Inside:
 
 ```text
 +--------------------------------+
 | Node                           |
 |                                |
 | CPU                            |
-| Memory                         |
+| RAM                            |
 | Disk                           |
 | Network                        |
 |                                |
 | Kubelet                        |
 | Container Runtime              |
-|                                |
 +--------------------------------+
 ```
 
-Node is where applications run.
+Node runs Pods.
 
 ---
 
-# 6. Real Production Example
+# Node Resource Model
 
-E-commerce Platform
-
-```text
-Order Service
-Payment Service
-Inventory Service
-Notification Service
-```
-
-Cluster:
+Example:
 
 ```text
-+--------------------------------+
-| Cluster                        |
-|                                |
-| Node1                          |
-| Node2                          |
-| Node3                          |
-|                                |
-+--------------------------------+
+Node-1
+
+8 CPU
+16 GB RAM
 ```
 
-Applications distributed.
+Pods consume resources.
+
+```text
+Order Pod       1 CPU
+Payment Pod     2 CPU
+Redis Pod       1 CPU
+```
+
+Scheduler places Pods according to capacity.
 
 ---
 
-# 7. What Is A Pod?
+# What Is A Pod?
 
 Most important Kubernetes object.
 
-Pod is NOT container.
+Wrong:
 
-Pod wraps containers.
+```text
+Pod = Container
+```
+
+Correct:
+
+```text
+Pod contains containers
+```
+
+Diagram:
 
 ```text
 +----------------------+
@@ -217,45 +294,7 @@ Most Pods:
 
 ---
 
-# 8. Apartment Analogy
-
-Building:
-
-```text
-Node
-```
-
-Apartment:
-
-```text
-Pod
-```
-
-People:
-
-```text
-Containers
-```
-
-Diagram:
-
-```text
-Building (Node)
-
-+----------------+
-| Apartment A    |
-|  Person        |
-+----------------+
-
-+----------------+
-| Apartment B    |
-|  Person        |
-+----------------+
-```
-
----
-
-# 9. Why Pods Exist
+# Why Pods Exist
 
 Why not run containers directly?
 
@@ -267,35 +306,23 @@ Storage
 Lifecycle
 ```
 
-Pod provides:
+Pod provides them.
 
 ```text
-Shared IP
-Shared Storage
-Shared Lifecycle
++--------------------------+
+| Pod                      |
+|                          |
+| Shared IP                |
+| Shared Volume            |
+|                          |
+| Container A              |
+| Container B              |
++--------------------------+
 ```
 
 ---
 
-# 10. Pod Internals
-
-```text
-+--------------------------------+
-| Pod                            |
-|                                |
-| Shared IP                      |
-| Shared Volume                  |
-| Shared Namespace               |
-|                                |
-| Container A                    |
-| Container B                    |
-|                                |
-+--------------------------------+
-```
-
----
-
-# 11. Single Container Pod
+# Single Container Pod
 
 Spring Boot Example
 
@@ -308,241 +335,157 @@ public class OrderApplication {
 }
 ```
 
-Container:
+Runtime:
 
 ```text
 java -jar order.jar
 ```
 
-Pod:
+Kubernetes:
 
 ```text
-+----------------------+
-| Order Pod            |
-|                      |
-| Order Container      |
-|                      |
-+----------------------+
+Order Pod
+    |
+    +-- Order Container
 ```
-
-Most common pattern.
 
 ---
 
-# 12. Multi Container Pod
+# Multi Container Pod
 
-Example:
+Production Example
 
 ```text
-Spring Boot
- +
-Log Sidecar
+Order Service
+     +
+Log Collector
 ```
 
 Diagram:
 
 ```text
-+----------------------+
-| Pod                  |
-|                      |
-| Order Container      |
-|                      |
-| Log Container        |
-|                      |
-+----------------------+
++---------------------------+
+| Pod                       |
+|                           |
+| Order Container           |
+|                           |
+| FluentBit Sidecar         |
++---------------------------+
 ```
 
-Both share:
+Shared:
 
 ```text
 IP
 Storage
+Lifecycle
 ```
 
 ---
 
-# 13. Pod IP Model
+# Cluster → Node → Pod → Container
 
-Every Pod gets IP.
+The most important picture:
 
 ```text
-Pod-A -> 10.1.1.5
+Cluster
+ |
+ +----------------------+
+ |                      |
+Node-1              Node-2
+ |                      |
+ |                      |
+Pod-A               Pod-C
+Pod-B               Pod-D
+ |                      |
+Container         Container
+```
 
-Pod-B -> 10.1.1.8
+Expanded:
+
+```text
+Cluster
+   |
+Node
+   |
+Pod
+   |
+Container
+   |
+Application
+```
+
+---
+
+# Spring Boot Deployment Journey
+
+```text
+OrderApplication.java
+         |
+         v
+order.jar
+         |
+         v
+Docker Image
+         |
+         v
+Container
+         |
+         v
+Pod
+         |
+         v
+Node
+         |
+         v
+Cluster
+```
+
+This is the actual deployment chain.
+
+---
+
+# Pod Networking Mental Model
+
+Every Pod gets an IP.
+
+```text
+Order Pod      10.1.1.5
+Payment Pod    10.1.1.9
 ```
 
 Communication:
 
 ```text
-Pod-A
-   |
-   v
-Pod-B
+Order Pod
+     |
+     v
+Payment Pod
 ```
 
-No NAT between Pods.
+Looks like normal networking.
 
 ---
 
-# 14. Node Hosting Pods
+# Node Hosting Many Pods
 
 ```text
 +--------------------------------+
 | Node-1                         |
 |                                |
-| Pod-A                          |
-| Pod-B                          |
-| Pod-C                          |
+| Order Pod                      |
+| Payment Pod                    |
+| Inventory Pod                  |
+| Notification Pod               |
 |                                |
 +--------------------------------+
 ```
 
-Node hosts many Pods.
+One node hosts many Pods.
 
 ---
 
-# 15. Cluster Hosting Nodes
-
-```text
-+-----------------------------------------+
-| Cluster                                 |
-|                                         |
-| Node-1                                  |
-| Node-2                                  |
-| Node-3                                  |
-|                                         |
-+-----------------------------------------+
-```
-
-Hierarchy:
-
-```text
-Cluster
-   |
-   v
-Node
-   |
-   v
-Pod
-   |
-   v
-Container
-```
-
----
-
-# 16. Complete Spring Boot Journey
-
-```text
-Java Code
-    |
-    v
-JAR
-    |
-    v
-Docker Image
-    |
-    v
-Container
-    |
-    v
-Pod
-    |
-    v
-Node
-    |
-    v
-Cluster
-```
-
-This is the entire deployment chain.
-
----
-
-# 17. Pod Failure Story
-
-Before:
-
-```text
-Pod-A
-Pod-B
-Pod-C
-```
-
-Failure:
-
-```text
-Pod-B X
-```
-
-Controller notices.
-
-Creates:
-
-```text
-Pod-D
-```
-
-Result:
-
-```text
-Pod-A
-Pod-C
-Pod-D
-```
-
----
-
-# 18. Node Failure Story
-
-Before:
-
-```text
-Node1
-Node2
-Node3
-```
-
-Node2:
-
-```text
-X
-```
-
-Pods disappear.
-
-Cluster reaction:
-
-```text
-New Pods Created
-On Healthy Nodes
-```
-
----
-
-# 19. Why Multiple Nodes Matter
-
-Single Node:
-
-```text
-Node Failure
-    |
-    X
-System Down
-```
-
-Multiple Nodes:
-
-```text
-Node Failure
-    |
-    v
-System Survives
-```
-
----
-
-# 20. Scheduling Example
+# Scheduler Story
 
 Need:
 
@@ -568,22 +511,105 @@ Scheduler
     +--> Node3
 ```
 
+Scheduler chooses.
+
+Kubelet executes.
+
 ---
 
-# 21. Production Story
+# Pod Failure Story
 
-Order Service:
+Before:
+
+```text
+Pod-A
+Pod-B
+Pod-C
+```
+
+Failure:
+
+```text
+Pod-B X
+```
+
+Controller notices:
+
+```text
+Desired = 3
+Actual  = 2
+```
+
+Action:
+
+```text
+Create Pod-D
+```
+
+Result:
+
+```text
+Pod-A
+Pod-C
+Pod-D
+```
+
+Self-healing.
+
+---
+
+# Node Failure Story
+
+Cluster:
+
+```text
+Node1
+Node2
+Node3
+```
+
+Failure:
+
+```text
+Node2 X
+```
+
+Lost:
+
+```text
+Payment Pod
+Inventory Pod
+```
+
+Kubernetes:
+
+```text
+Create Replacement Pods
+On Healthy Nodes
+```
+
+Result:
+
+```text
+Node1
+Node3
+Healthy Again
+```
+
+---
+
+# Black Friday Story
+
+Normal Day:
 
 ```text
 10 Pods
 ```
 
-Traffic increases.
-
-Need:
+Traffic Spike:
 
 ```text
-20 Pods
+100 Pods
 ```
 
 Cluster:
@@ -593,13 +619,124 @@ Node1
 Node2
 Node3
 Node4
+Node5
 ```
 
-Scheduler distributes workload.
+Scheduler spreads Pods.
+
+```text
+No Single Machine Bottleneck
+```
 
 ---
 
-# 22. Common Mistakes
+# Spring Boot + Redis Example
+
+```text
+Order Pod
+    |
+    v
+Redis Pod
+```
+
+Detailed:
+
+```text
++-------------+      +------------+
+| Order Pod   |----->| Redis Pod  |
++-------------+      +------------+
+```
+
+Real systems contain many Pods.
+
+---
+
+# Pod Eviction Story
+
+Node memory pressure:
+
+```text
+RAM Full
+```
+
+Kubernetes:
+
+```text
+Evict Pod
+```
+
+Meaning:
+
+```text
+Remove Pod
+Schedule New One
+```
+
+Pods are replaceable.
+
+Important mindset.
+
+---
+
+# Capacity Planning
+
+Cluster:
+
+```text
+3 Nodes
+```
+
+Each:
+
+```text
+8 CPU
+16 GB RAM
+```
+
+Total:
+
+```text
+24 CPU
+48 GB RAM
+```
+
+Scheduler uses resources efficiently.
+
+---
+
+# Debugging Mental Model
+
+Application Down?
+
+Never start randomly.
+
+Follow:
+
+```text
+Cluster
+   |
+Node
+   |
+Pod
+   |
+Container
+   |
+Application
+```
+
+Questions:
+
+```text
+Cluster healthy?
+Node healthy?
+Pod running?
+Container running?
+App healthy?
+```
+
+---
+
+# Common Mistakes
 
 Mistake:
 
@@ -607,12 +744,10 @@ Mistake:
 Pod = Container
 ```
 
-Wrong.
-
 Correct:
 
 ```text
-Pod contains containers
+Pod wraps containers
 ```
 
 Mistake:
@@ -621,91 +756,37 @@ Mistake:
 Cluster = Node
 ```
 
-Wrong.
-
 Correct:
 
 ```text
 Cluster contains nodes
 ```
 
----
-
-# 23. Debugging Mindset
-
-When application unavailable:
+Mistake:
 
 ```text
-Deployment?
-    |
-Pod?
-    |
-Node?
-    |
-Container?
+Pods are permanent
 ```
 
-Check hierarchy.
-
----
-
-# 24. Debug Commands
-
-```bash
-kubectl get nodes
-
-kubectl get pods
-
-kubectl get pods -o wide
-
-kubectl describe pod POD_NAME
-
-kubectl describe node NODE_NAME
-```
-
----
-
-# 25. One Picture To Remember
+Correct:
 
 ```text
-CLUSTER
-   |
-   +---------------------+
-   |                     |
- NODE-1               NODE-2
-   |                     |
-   |                     |
- POD-A               POD-C
- POD-B               POD-D
-   |                     |
-Container         Container
-```
-
-Rule:
-
-```text
-Cluster contains Nodes
-
-Nodes contain Pods
-
-Pods contain Containers
-
-Containers run Applications
+Pods are replaceable
 ```
 
 ---
 
-# 26. Interview Questions
+# Interview Questions
 
-Q. What is Cluster?
+Q. What is a Cluster?
 
-Collection of Kubernetes Nodes managed together.
+Collection of Kubernetes nodes managed together.
 
-Q. What is Node?
+Q. What is a Node?
 
-Machine running Pods.
+Worker machine that runs Pods.
 
-Q. What is Pod?
+Q. What is a Pod?
 
 Smallest deployable unit in Kubernetes.
 
@@ -715,54 +796,80 @@ Yes.
 
 Q. Why Pod instead of Container?
 
-Shared networking, storage and lifecycle.
+Shared:
+
+```text
+Network
+Storage
+Lifecycle
+```
 
 ---
 
-# 27. Cheat Sheet
+# Cheat Sheet
 
 ```text
 Cluster
-  = Entire Kubernetes Environment
+ = Entire Kubernetes Environment
 
 Node
-  = Worker Machine
+ = Worker Machine
 
 Pod
-  = Smallest Deployable Unit
+ = Smallest Deployable Unit
 
 Container
-  = Running Process
+ = Running Process
 
-Relationship:
+Relationship
 
 Cluster
    |
-   v
 Node
    |
-   v
 Pod
    |
-   v
 Container
 ```
 
 ---
 
-# Final Memory Hook
+# One Picture To Remember
 
-Never memorize.
+```text
++------------------------------------------------+
+|                KUBERNETES CLUSTER              |
+|                                                |
+|   +----------------+   +----------------+      |
+|   | Node-1         |   | Node-2         |      |
+|   |                |   |                |      |
+|   | Order Pod      |   | Payment Pod    |      |
+|   | Redis Pod      |   | Inventory Pod  |      |
+|   |                |   |                |      |
+|   +----------------+   +----------------+      |
+|                                                |
++------------------------------------------------+
 
-Remember:
+Cluster
+   |
+Nodes
+   |
+Pods
+   |
+Containers
+   |
+Applications
+```
+
+Final Memory Hook:
 
 ```text
 City
-  |
+ |
 Building
-  |
+ |
 Apartment
-  |
+ |
 Person
 ```
 
@@ -770,10 +877,10 @@ Kubernetes:
 
 ```text
 Cluster
-  |
+ |
 Node
-  |
+ |
 Pod
-  |
+ |
 Container
 ```
