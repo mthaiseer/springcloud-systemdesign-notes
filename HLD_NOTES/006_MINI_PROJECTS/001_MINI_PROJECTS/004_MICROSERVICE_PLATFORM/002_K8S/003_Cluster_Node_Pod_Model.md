@@ -1,1111 +1,1837 @@
-# 004_ControlPlane_vs_DataPlane.md
+# 003_Cluster_Node_Pod_Model.md
 
 > MiniK8s Deep Production Mode  
 > Understanding First • ASCII Visual Learning • Real World Mental Model • Do Not Memorize • Java + Spring Boot + Kubernetes + Production Debugging
 
 ---
 
-# 1. Why This Chapter Exists
+# 1. Why Cluster, Node, and Pod Matter
 
-Most Kubernetes confusion comes from mixing two different worlds:
+Most Kubernetes confusion starts because people memorize words before understanding the physical picture.
 
-```text
-1. The world that makes decisions
-2. The world that runs real user traffic
-```
-
-Kubernetes calls these two worlds:
+They hear:
 
 ```text
-Control Plane = decision making and cluster brain
-Data Plane    = actual application runtime and traffic path
+Cluster
+Node
+Pod
+Container
+Deployment
+Service
 ```
 
-If you do not separate them, Kubernetes feels like magic.
+Then they try to remember definitions.
 
-You may ask:
+That is the wrong path.
+
+The correct path is to ask:
 
 ```text
-Why is my Pod Pending?
-Why is my Service reachable even if API Server is slow?
-Why can app traffic continue when scheduler is down?
-Why does kubectl fail but existing applications still run?
+Where does my Spring Boot app actually run?
+Who owns the machine?
+Who starts the Java process?
+What happens when the machine dies?
+What happens when one app instance dies?
 ```
 
-These questions become easy when you understand the split.
+Kubernetes is not mainly a YAML tool. It is a distributed operating model for running applications across many machines.
 
-One picture:
+The first picture to build in your head is this:
 
 ```text
-                 CONTROL PLANE
-          decides, stores, watches, schedules
-                       |
-                       | desired decisions
-                       v
-                   DATA PLANE
-          runs pods, handles traffic, executes work
+Cluster
+  |
+  +-- Node
+  |     |
+  |     +-- Pod
+  |           |
+  |           +-- Container
+  |                 |
+  |                 +-- java -jar order-service.jar
+  |
+  +-- Node
+  |     |
+  |     +-- Pod
+  |
+  +-- Node
+        |
+        +-- Pod
 ```
 
-Do not memorize component names first.
+If you understand this picture, Kubernetes becomes much easier.
 
-Understand the job split first.
+A cluster is the whole production playground.
+
+A node is one machine inside that playground.
+
+A pod is the smallest deployable runtime unit placed on a node.
+
+A container is the actual application process environment inside the pod.
+
+Do not memorize these as dictionary definitions.
+
+Map them to real life.
 
 ```text
-Control Plane asks: What should happen?
-Data Plane asks: How do I keep running what was assigned to me?
+Cluster = whole hospital
+Node    = one building / ward
+Pod     = one patient room
+Container = actual patient/equipment inside the room
 ```
 
-In production, this distinction helps you debug faster.
-
-Example:
-
-```text
-kubectl get pods fails
-```
-
-This may be a control plane problem.
-
-But:
-
-```text
-Customer traffic still works
-```
-
-because the data plane may still be healthy.
-
-That is the core model.
+Kubernetes manages the hospital, assigns rooms, replaces failed rooms, and keeps the desired number of rooms active.
 
 ---
 
-# 2. The Wrong Mental Model
+# 2. One Picture Before Any Definition
 
-Bad mental model:
-
-```text
-Kubernetes Cluster
-    |
-    +-- API Server runs apps
-    +-- Scheduler runs apps
-    +-- etcd runs apps
-    +-- Pods are inside control plane
-```
-
-This is wrong.
-
-The API Server does not run your Spring Boot process.
-
-The scheduler does not execute your Java code.
-
-etcd does not serve customer requests.
-
-Correct model:
+Before learning individual terms, look at the full runtime stack.
 
 ```text
-CONTROL PLANE
-  - API Server
-  - etcd
-  - Scheduler
-  - Controller Manager
-
-DATA PLANE
-  - Worker Nodes
-  - kubelet
-  - container runtime
-  - Pods
-  - Services / kube-proxy / CNI rules
-  - Your Spring Boot containers
++----------------------------------------------------+
+|                    KUBERNETES CLUSTER              |
+|                                                    |
+|   +----------------------+   +------------------+   |
+|   | Node-1               |   | Node-2           |   |
+|   |                      |   |                  |   |
+|   |  +----------------+  |   | +--------------+ |   |
+|   |  | Pod A          |  |   | | Pod C        | |   |
+|   |  |                |  |   | |              | |   |
+|   |  | Container      |  |   | | Container    | |   |
+|   |  | Spring Boot    |  |   | | Spring Boot  | |   |
+|   |  +----------------+  |   | +--------------+ |   |
+|   |                      |   |                  |   |
+|   |  +----------------+  |   | +--------------+ |   |
+|   |  | Pod B          |  |   | | Pod D        | |   |
+|   |  +----------------+  |   | +--------------+ |   |
+|   +----------------------+   +------------------+   |
+|                                                    |
++----------------------------------------------------+
 ```
 
-ASCII:
+This is runtime reality.
+
+Your users do not hit YAML files.
+
+Your users hit applications running in containers inside pods on nodes inside a cluster.
+
+A common beginner mistake is thinking:
 
 ```text
-Wrong Thinking
-
-User Traffic
-    |
-    v
-API Server  X
-
-Correct Thinking
-
-User Traffic
-    |
-    v
-Service / Ingress / Pod
-    |
-    v
-Spring Boot Container
+Kubernetes runs my container directly.
 ```
 
-`kubectl` traffic and customer traffic are different paths.
+More accurate:
 
 ```text
-kubectl apply -> API Server -> etcd -> controllers
-
-HTTP request -> Load Balancer -> Service -> Pod -> Java app
+Kubernetes creates a Pod object.
+Scheduler assigns the Pod to a Node.
+Kubelet on that Node asks the container runtime to start containers.
 ```
 
-If you remember this, many debugging cases become simple.
+That means the Pod is the unit Kubernetes schedules.
+
+The container is the unit the runtime executes.
+
+This distinction matters in debugging.
+
+If a Pod is Pending, the container may not even exist yet.
+
+If a container is CrashLoopBackOff, the Pod exists but the app process keeps failing.
+
+If a Node is NotReady, Pods on it may become unavailable.
 
 ---
 
-# 3. Real World Analogy: Airport
+# 3. Cluster Mental Model
 
-Airport control tower:
+A Kubernetes cluster is a group of machines controlled as one system.
+
+Without Kubernetes, you may think of servers separately.
 
 ```text
-- decides runway usage
-- coordinates landings
-- coordinates takeoffs
-- prevents conflicts
+server-1
+server-2
+server-3
 ```
 
-Airplanes and runways:
+You manually decide where to deploy.
 
 ```text
-- carry passengers
-- burn fuel
-- move physically
-- deliver real-world value
+Put order-service on server-1.
+Put payment-service on server-2.
+Put inventory-service on server-3.
 ```
 
-Mapping:
+With Kubernetes, you think in terms of a cluster.
 
 ```text
-Airport Control Tower = Kubernetes Control Plane
-Airplanes + Runways   = Kubernetes Data Plane
+Dear Kubernetes,
+Run 3 copies of order-service somewhere healthy.
+Run 2 copies of payment-service somewhere healthy.
+Keep them alive.
 ```
 
 Diagram:
 
 ```text
-            AIRPORT CONTROL TOWER
-        +---------------------------+
-        | decide which plane lands  |
-        | decide runway allocation  |
-        | coordinate movement       |
-        +-------------+-------------+
-                      |
-                      | instructions
-                      v
-        +---------------------------+
-        | runway + airplanes        |
-        | passengers actually move  |
-        +---------------------------+
-```
+Manual Server Thinking
 
-Kubernetes:
-
-```text
-            KUBERNETES CONTROL PLANE
-        +------------------------------+
-        | API Server                   |
-        | Scheduler                    |
-        | Controllers                  |
-        | etcd                         |
-        +--------------+---------------+
-                       |
-                       | assignments
-                       v
-        +------------------------------+
-        | Worker Nodes                 |
-        | Pods                         |
-        | Containers                   |
-        | Services                     |
-        +------------------------------+
-```
-
-Important:
-
-```text
-The tower does not carry passengers.
-The control plane does not serve your app traffic.
-```
-
-If the control tower has a temporary communication issue, planes already in the air do not instantly disappear.
-
-Similarly, if the Kubernetes API Server is temporarily unavailable, already running Pods do not instantly stop.
-
----
-
-# 4. Real World Analogy: Restaurant Chain
-
-Imagine a restaurant chain.
-
-Head office:
-
-```text
-- decides each branch should have 5 chefs
-- decides menu version
-- decides opening hours
-- tracks branch status
-```
-
-Branch kitchen:
-
-```text
-- cooks food
-- serves customers
-- handles local execution
-```
-
-Mapping:
-
-```text
-Head Office       = Control Plane
-Branch Kitchens   = Data Plane
-Customers         = User Traffic
-Chefs             = Pods
-Branch Manager    = kubelet
-```
-
-ASCII:
-
-```text
-                 HEAD OFFICE
-        +--------------------------+
-        | desired chefs = 5        |
-        | menu version = v2        |
-        | branch health dashboard  |
-        +------------+-------------+
-                     |
-                     | instruction
-                     v
-                 BRANCH KITCHEN
-        +--------------------------+
-        | chef-1 cooking           |
-        | chef-2 cooking           |
-        | chef-3 cooking           |
-        | customers eating         |
-        +--------------------------+
-```
-
-If head office network is temporarily down:
-
-```text
-Existing chefs do not vanish.
-Existing customers can still eat.
-New menu rollout may pause.
-New branch scheduling may pause.
-```
-
-Kubernetes behaves similarly:
-
-```text
-Existing Pods may continue running.
-Existing Service traffic may continue.
-New scheduling may stop.
-Rollouts may pause.
-kubectl may fail.
-```
-
-This is why separating control and data plane is not theory.
-
-It is production survival.
-
----
-
-# 5. The Core Picture
-
-```text
-                          DEVELOPER
-                             |
-                             | kubectl apply / get / logs
-                             v
-+----------------------------------------------------------------+
-|                         CONTROL PLANE                          |
-|                                                                |
-|  +------------+     +------------+     +-------------------+   |
-|  | API Server |<--->|   etcd     |     | Controller Manager|   |
-|  +-----+------+     +------------+     +---------+---------+   |
-|        ^                                      ^                |
-|        |                                      | watch          |
-|        |                                      v                |
-|  +-----+------+                         +------------------+   |
-|  | Scheduler  |                         | Reconciliation   |   |
-|  +-----+------+                         +------------------+   |
-+--------|-------------------------------------------------------+
-         |
-         | Pod assigned to node
-         v
-+----------------------------------------------------------------+
-|                           DATA PLANE                           |
-|                                                                |
-|  +-------------------+       +-------------------+             |
-|  | Worker Node-1     |       | Worker Node-2     |             |
-|  | kubelet           |       | kubelet           |             |
-|  | container runtime |       | container runtime |             |
-|  | Pod: order-api    |       | Pod: payment-api  |             |
-|  +-------------------+       +-------------------+             |
-|                                                                |
-|  Services, kube-proxy/eBPF rules, CNI networking, volumes       |
-+----------------------------------------------------------------+
-```
-
-Customer request path:
-
-```text
-Customer
-   |
-   v
-Load Balancer / Ingress
-   |
-   v
-Service
-   |
-   v
-Pod
-   |
-   v
-Spring Boot Controller
-```
-
-Control request path:
-
-```text
 Developer
    |
-   v
-kubectl
+   +--> server-1: start order-service
+   +--> server-2: start order-service
+   +--> server-3: start order-service
+
+Kubernetes Cluster Thinking
+
+Developer
    |
+   | desired state: replicas = 3
    v
-API Server
+Cluster
    |
-   v
-etcd / controllers / scheduler
+   +--> chooses suitable nodes
+   +--> starts pods
+   +--> replaces failures
 ```
 
-Two different paths.
+The cluster hides individual machine complexity behind one control system.
 
-One cluster.
+This does not mean machines disappear.
 
-Different responsibilities.
+It means you stop managing machines one by one for normal application deployment.
+
+A cluster contains:
+
+```text
+Control plane components
+Worker nodes
+Networking
+Storage integrations
+Runtime agents
+Application pods
+```
+
+The cluster is the boundary where Kubernetes makes scheduling and reconciliation decisions.
+
+If you say:
+
+```text
+kubectl get pods
+```
+
+You are asking the cluster state.
+
+If you say:
+
+```text
+kubectl get nodes
+```
+
+You are asking which machines belong to the cluster.
 
 ---
 
-# 6. Control Plane Responsibilities
+# 4. Real World Analogy: City, Buildings, Rooms
 
-The control plane is responsible for cluster decisions and cluster memory.
-
-It handles:
+Think of Kubernetes like a city.
 
 ```text
-1. Accepting Kubernetes API requests
-2. Validating YAML/object schemas
-3. Enforcing authentication and authorization
-4. Storing desired and observed state
-5. Watching for state changes
-6. Running controllers
-7. Scheduling Pods to Nodes
-8. Maintaining object relationships
-9. Triggering reconciliation
-```
-
-The control plane does not normally:
-
-```text
-- serve your customer HTTP requests
-- run your Spring Boot container
-- store your application database rows
-- execute your business logic
-```
-
-Diagram:
-
-```text
-Control Plane Jobs
-
-+-----------------------+
-| receive desired state |
-+-----------+-----------+
-            |
-            v
-+-----------------------+
-| store cluster state   |
-+-----------+-----------+
-            |
-            v
-+-----------------------+
-| compare desired/actual|
-+-----------+-----------+
-            |
-            v
-+-----------------------+
-| make decisions        |
-+-----------+-----------+
-            |
-            v
-+-----------------------+
-| instruct data plane   |
-+-----------------------+
-```
-
-One sentence:
-
-```text
-Control plane is the brain and memory of Kubernetes.
-```
-
----
-
-# 7. Data Plane Responsibilities
-
-The data plane is responsible for actual workload execution.
-
-It handles:
-
-```text
-1. Running Pods
-2. Pulling container images
-3. Starting containers
-4. Restarting containers according to policy
-5. Exposing app ports
-6. Passing traffic to Pods
-7. Mounting volumes
-8. Reporting node and pod status
-9. Enforcing network rules
-10. Using CPU and memory resources
-```
-
-Data plane components include:
-
-```text
-Worker Node
-kubelet
-container runtime
-CNI plugin
-kube-proxy or eBPF datapath
-Pods
-Containers
-Volumes
-Node OS/kernel
+Cluster = city
+Node    = building
+Pod     = apartment room
+Container = person living in room
 ```
 
 ASCII:
 
 ```text
-Worker Node
+City / Cluster
 +------------------------------------------------+
-| kubelet                                        |
-|   watches assigned Pods                        |
-|   talks to container runtime                   |
 |                                                |
-| container runtime                              |
-|   pulls image                                  |
-|   starts container                             |
+| Building / Node A        Building / Node B     |
+| +----------------+       +----------------+    |
+| | Room / Pod 1   |       | Room / Pod 3   |    |
+| | App Container  |       | App Container  |    |
+| +----------------+       +----------------+    |
 |                                                |
-| Pods                                           |
-|   order-service                                |
-|   payment-service                              |
+| +----------------+       +----------------+    |
+| | Room / Pod 2   |       | Room / Pod 4   |    |
+| | App Container  |       | App Container  |    |
+| +----------------+       +----------------+    |
 |                                                |
-| networking                                     |
-|   CNI + Service rules                          |
 +------------------------------------------------+
 ```
 
-One sentence:
+The city planner does not care about one specific room unless there is a problem.
+
+The owner says:
 
 ```text
-Data plane is where applications actually live and serve traffic.
+I need 3 rooms occupied by order-service workers.
+```
+
+The city planner finds buildings with enough space.
+
+If one building burns down, rooms in that building are lost.
+
+The planner opens new rooms in other buildings.
+
+This is how Kubernetes thinks.
+
+You ask for app capacity.
+
+Kubernetes places that capacity across nodes.
+
+Important mental hook:
+
+```text
+A Pod belongs to exactly one Node at a time.
+A Node can run many Pods.
+A Cluster contains many Nodes.
+```
+
+Do not memorize.
+
+Just remember:
+
+```text
+City -> Building -> Room -> Person
+Cluster -> Node -> Pod -> Container
 ```
 
 ---
 
-# 8. Component Mapping Table
+# 5. Node Mental Model
+
+A node is a machine that can run pods.
+
+It can be:
 
 ```text
-+----------------------+----------------+--------------------------------+
-| Component            | Plane          | Main Job                       |
-+----------------------+----------------+--------------------------------+
-| API Server           | Control Plane  | Kubernetes front door          |
-| etcd                 | Control Plane  | Cluster state database         |
-| Scheduler            | Control Plane  | Chooses node for pending Pod   |
-| Controller Manager   | Control Plane  | Runs reconciliation loops      |
-| Cloud Controller     | Control Plane  | Talks to cloud provider APIs   |
-| kubelet              | Data Plane     | Node agent, starts Pods        |
-| Container Runtime    | Data Plane     | Runs containers                |
-| Pod                  | Data Plane     | Runtime unit                   |
-| Service datapath     | Data Plane     | Routes traffic to Pods         |
-| CNI plugin           | Data Plane     | Pod networking                 |
-| Node OS/kernel       | Data Plane     | CPU, memory, network, storage  |
-+----------------------+----------------+--------------------------------+
+Physical server
+Virtual machine
+Cloud VM
+Local Docker Desktop VM
+Minikube VM
+Kind container node
 ```
 
-Do not memorize the table blindly.
+Kubernetes does not require you to treat nodes as precious pets.
 
-Ask this question:
+Production mindset:
 
 ```text
-Does this component decide cluster state?
-Or does it execute workload traffic/runtime?
+Node is replaceable capacity.
 ```
 
-Examples:
+A node provides:
 
 ```text
-Scheduler chooses node       -> Control Plane
-kubelet starts container     -> Data Plane
-etcd stores Pod object       -> Control Plane
-Pod handles HTTP request     -> Data Plane
-Service routes traffic       -> Data Plane
-API Server validates YAML    -> Control Plane
-```
-
-This reasoning is more useful than memorization.
-
----
-
-# 9. API Server In The Control Plane
-
-The API Server is the front door.
-
-Everything that changes Kubernetes state goes through it.
-
-```text
-kubectl
-controllers
-scheduler
-kubelet
-operators
-admission webhooks
-```
-
-All talk to API Server.
-
-Diagram:
-
-```text
-                    +-------------+
-Developer -------->|             |
-Controller ------->| API Server  |<------ Scheduler
-Kubelet ---------->|             |
-Operator --------->|             |
-                    +------+------+ 
-                           |
-                           v
-                         etcd
-```
-
-Important:
-
-```text
-Nobody should directly edit etcd.
-```
-
-API Server handles:
-
-```text
-authentication
-authorization
-validation
-admission control
-object versioning
-watch streams
-state persistence through etcd
-```
-
-Production meaning:
-
-```text
-If API Server is down:
-- kubectl may fail
-- new deployments may fail
-- controllers may not observe changes
-- scheduler may not bind new Pods
-
-But existing Pods may keep serving traffic.
-```
-
-Why?
-
-Because running containers are already executing on worker nodes.
-
----
-
-# 10. etcd In The Control Plane
-
-etcd is Kubernetes memory.
-
-It stores:
-
-```text
-Deployments
-ReplicaSets
-Pods
-Services
-ConfigMaps
-Secrets
-Nodes
-Events
-Leases
-Controller state
-```
-
-Mental model:
-
-```text
-API Server = front door
-etcd       = memory behind the door
-```
-
-ASCII:
-
-```text
-kubectl apply deployment.yaml
-        |
-        v
-+----------------+
-| API Server     |
-+-------+--------+
-        |
-        | persist object
-        v
-+----------------+
-| etcd           |
-| /deployments   |
-| /pods          |
-| /services      |
-+----------------+
-```
-
-Wrong thinking:
-
-```text
-Pod runs inside etcd
-```
-
-Correct thinking:
-
-```text
-Pod object is stored in etcd.
-Pod container runs on a Node.
-```
-
-If etcd is unhealthy, the control plane cannot reliably remember or update cluster state.
-
-But etcd does not contain your app memory heap, Java threads, HTTP requests, or database connections.
-
-Your Spring Boot runtime is in the data plane.
-
----
-
-# 11. Scheduler In The Control Plane
-
-Scheduler answers one question:
-
-```text
-Where should this Pod run?
-```
-
-It does not start containers.
-
-Input:
-
-```text
-Pod object exists
-spec.nodeName is empty
-```
-
-Scheduler checks:
-
-```text
-CPU requests
-memory requests
-node capacity
-taints and tolerations
-node affinity
-pod affinity/anti-affinity
-topology spread
-volume constraints
-```
-
-Then it binds the Pod to a Node.
-
-ASCII:
-
-```text
-Pending Pod
-  name: order-service-abc
-  nodeName: <empty>
-        |
-        v
-Scheduler
-  filter nodes
-  score nodes
-  pick best node
-        |
-        v
-Bound Pod
-  nodeName: worker-2
-```
-
-After scheduling:
-
-```text
-kubelet on worker-2 sees the assigned Pod
-```
-
-Then kubelet starts the container.
-
-Important split:
-
-```text
-Scheduler decides placement.
-Kubelet executes placement.
-```
-
-If scheduler is down:
-
-```text
-Existing Pods continue running.
-New unscheduled Pods remain Pending.
-```
-
----
-
-# 12. Controller Manager In The Control Plane
-
-Controllers are reconciliation loops.
-
-They continuously compare desired state and actual state.
-
-Pseudo-code:
-
-```text
-while true:
-    desired = read_spec()
-    actual  = read_status()
-
-    if desired != actual:
-        take_action()
-```
-
-Controller examples:
-
-```text
-Deployment Controller
-ReplicaSet Controller
-Node Controller
-EndpointSlice Controller
-Job Controller
-Namespace Controller
-ServiceAccount Controller
+CPU
+Memory
+Disk
+Network
+Container runtime
+Kubelet
+kube-proxy / networking agent
 ```
 
 Diagram:
 
 ```text
-+-------------------+
-| Watch API Server  |
-+---------+---------+
-          |
-          v
-+-------------------+
-| Compare state     |
-+---------+---------+
-          |
-          v
-+-------------------+
-| Create/update/delete objects |
-+---------+---------+
-          |
-          v
-+-------------------+
-| Repeat forever    |
-+-------------------+
++------------------------------------------------+
+| Node                                           |
+|                                                |
+|  CPU / Memory / Disk / Network                 |
+|                                                |
+|  +--------------------+                        |
+|  | kubelet            | watches API Server     |
+|  +--------------------+                        |
+|                                                |
+|  +--------------------+                        |
+|  | container runtime  | starts containers      |
+|  +--------------------+                        |
+|                                                |
+|  +--------------------+                        |
+|  | pods               | app runtime units      |
+|  +--------------------+                        |
++------------------------------------------------+
 ```
 
-Example:
-
-```text
-Deployment spec says replicas = 3
-ReplicaSet actual has 2 Pods
-Controller creates one Pod object
-```
-
-The controller does not SSH into nodes.
-
-It writes desired changes to the API Server.
-
-The data plane reacts later.
-
----
-
-# 13. Kubelet In The Data Plane
-
-Kubelet is the local node manager.
-
-It runs on every worker node.
+The kubelet is the local agent.
 
 It asks:
 
 ```text
-Which Pods are assigned to my Node?
+Which Pods are assigned to me?
 ```
 
-Then it works locally:
+Then it tries to make them real.
+
+The scheduler does not SSH into the node and start containers.
+
+The scheduler only decides placement.
+
+Kubelet performs the local execution.
+
+This separation is very important.
 
 ```text
-pull image
-create container
-mount volumes
-configure Pod sandbox
-run liveness/readiness/startup probes
-restart failed containers
-report status
+Scheduler = choose where
+Kubelet   = run here
+Runtime   = start container
+```
+
+---
+
+# 6. Pod Mental Model
+
+A Pod is the smallest deployable unit in Kubernetes.
+
+Kubernetes schedules Pods, not individual containers.
+
+A Pod usually contains one application container.
+
+Example:
+
+```text
+Pod: order-service-abc123
+  Container: order-service
+    Process: java -jar order-service.jar
+```
+
+Diagram:
+
+```text
++----------------------------------------+
+| Pod                                    |
+|                                        |
+|  Shared network namespace              |
+|  Shared volume mounts                  |
+|  Shared lifecycle boundary             |
+|                                        |
+|  +----------------------------------+  |
+|  | Container                        |  |
+|  | java -jar order-service.jar      |  |
+|  +----------------------------------+  |
++----------------------------------------+
+```
+
+Why does Kubernetes use Pod instead of directly running containers?
+
+Because sometimes containers must live together.
+
+Examples:
+
+```text
+Main app + log sidecar
+Main app + proxy sidecar
+Main app + metrics exporter
+Main app + init container before startup
+```
+
+A Pod gives these containers shared local context.
+
+Containers in the same Pod can talk through localhost.
+
+```text
+Container A -> localhost -> Container B
+```
+
+But most beginner Spring Boot services use one container per Pod.
+
+So the practical beginner model is:
+
+```text
+Pod = wrapper around your app container
+```
+
+The advanced model is:
+
+```text
+Pod = one scheduled unit with shared network, storage, and lifecycle for one or more containers
+```
+
+---
+
+# 7. Container Mental Model Inside Pod
+
+A container is where your application process actually runs.
+
+For Spring Boot:
+
+```text
+java -jar app.jar
+```
+
+For Node.js:
+
+```text
+node server.js
+```
+
+For Go:
+
+```text
+./server
+```
+
+Kubernetes does not run Java directly.
+
+It runs a container image that contains Java, your JAR, and startup command.
+
+Example Dockerfile:
+
+```dockerfile
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY target/order-service.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+Pod YAML references image:
+
+```yaml
+containers:
+  - name: order-service
+    image: order-service:1.0.0
+    ports:
+      - containerPort: 8080
+```
+
+Runtime picture:
+
+```text
+Pod
+ |
+ +-- Container from image order-service:1.0.0
+       |
+       +-- Java runtime
+       +-- app.jar
+       +-- process: java -jar app.jar
+```
+
+Debugging meaning:
+
+```text
+Pod Pending        -> container not started yet
+ImagePullBackOff   -> image cannot be pulled
+CrashLoopBackOff   -> container starts then crashes
+Running not Ready  -> process alive but not traffic-safe
+```
+
+Do not say:
+
+```text
+My Pod image is broken.
+```
+
+More precise:
+
+```text
+The container image used by the Pod may be broken.
+```
+
+Precision helps debugging.
+
+---
+
+# 8. Cluster vs Node vs Pod vs Container
+
+Here is the memory table.
+
+```text
++-----------+------------------------------+------------------------------+
+| Concept   | Simple Meaning               | Production Question          |
++-----------+------------------------------+------------------------------+
+| Cluster   | whole Kubernetes system       | Is the platform healthy?     |
+| Node      | machine in the cluster        | Does this machine have room? |
+| Pod       | scheduled runtime unit        | Is this app instance alive?  |
+| Container | actual process environment    | Did the process start?       |
++-----------+------------------------------+------------------------------+
+```
+
+Relationship:
+
+```text
+Cluster has Nodes
+Node has Pods
+Pod has Containers
+Container has Processes
+```
+
+Expanded:
+
+```text
+Kubernetes Cluster
+    |
+    +-- node-a
+    |     |
+    |     +-- pod/order-service-1
+    |     |      |
+    |     |      +-- container/order-service
+    |     |
+    |     +-- pod/payment-service-1
+    |
+    +-- node-b
+          |
+          +-- pod/order-service-2
+          |
+          +-- pod/inventory-service-1
+```
+
+A common interview answer:
+
+```text
+A cluster is a collection of nodes. Nodes provide compute resources. Kubernetes schedules Pods onto Nodes. Pods wrap one or more containers that share network and storage context. Containers run the actual application processes.
+```
+
+But do not only memorize this sentence.
+
+Visualize the tree.
+
+---
+
+# 9. Spring Boot App Placement Example
+
+Suppose you have three services:
+
+```text
+order-service
+payment-service
+inventory-service
+```
+
+Each is a Spring Boot app.
+
+You build three images:
+
+```text
+order-service:1.0.0
+payment-service:1.0.0
+inventory-service:1.0.0
+```
+
+Kubernetes may place Pods like this:
+
+```text
+Cluster
++------------------------------------------------------+
+|                                                      |
+| Node A                                               |
+|   Pod order-1      -> container order-service        |
+|   Pod payment-1    -> container payment-service      |
+|                                                      |
+| Node B                                               |
+|   Pod order-2      -> container order-service        |
+|   Pod inventory-1  -> container inventory-service    |
+|                                                      |
+| Node C                                               |
+|   Pod order-3      -> container order-service        |
+|   Pod payment-2    -> container payment-service      |
+|                                                      |
++------------------------------------------------------+
+```
+
+You did not manually choose every placement.
+
+You declared desired replicas.
+
+```yaml
+spec:
+  replicas: 3
+```
+
+Scheduler selected nodes based on available resources and constraints.
+
+Your application-level architecture is still your responsibility.
+
+Kubernetes knows:
+
+```text
+CPU requests
+Memory requests
+Labels
+Taints
+Affinity
+Node availability
+```
+
+Kubernetes does not know:
+
+```text
+This payment service has bad SQL
+This order service has wrong business logic
+This inventory API is too chatty
+```
+
+Kubernetes places workloads.
+
+It does not design your domain model.
+
+---
+
+# 10. Pod Is Not A Mini VM
+
+Many beginners think:
+
+```text
+Pod = small virtual machine
+```
+
+This is misleading.
+
+A VM has its own guest OS kernel.
+
+A Pod does not have its own kernel.
+
+Containers inside Pods share the node kernel.
+
+Simple picture:
+
+```text
+Virtual Machine Model
+
+Hardware
+  |
+  +-- Host OS
+       |
+       +-- Hypervisor
+            |
+            +-- Guest OS
+                 |
+                 +-- App Process
+
+Pod/Container Model
+
+Node Kernel
+  |
+  +-- Container namespaces/cgroups
+       |
+       +-- App Process
+```
+
+A Pod is not a full machine.
+
+It is a scheduling and isolation boundary around containers.
+
+Important consequences:
+
+```text
+Pod startup is usually faster than VM startup
+Pod isolation is weaker than full VM isolation
+Pod shares node kernel
+Pod can be recreated easily
+Pod is disposable
+```
+
+Production mindset:
+
+```text
+Do not store critical state inside a Pod filesystem.
+Pods are cattle, not pets.
+```
+
+If a Pod dies, its local filesystem may disappear.
+
+Use external storage, database, object storage, or PersistentVolumes for durable data.
+
+For Spring Boot stateless services, this is ideal.
+
+```text
+Pod dies -> new Pod starts -> service continues
+```
+
+For stateful systems, you need extra design.
+
+---
+
+# 11. Pod Lifecycle Simple Model
+
+A Pod moves through phases.
+
+Useful simplified lifecycle:
+
+```text
+Pending -> Running -> Ready -> Terminating -> Gone
+```
+
+More detailed:
+
+```text
+1. Pod object created
+2. Scheduler assigns Node
+3. Kubelet sees assignment
+4. Image pulled
+5. Container created
+6. Container started
+7. Readiness checked
+8. Pod receives traffic
 ```
 
 ASCII:
 
 ```text
-Control Plane
-    |
-    | Pod assigned to worker-1
-    v
-Worker Node
-+----------------------------------+
-| kubelet                          |
-|   sees Pod assigned to this node |
-|   asks runtime to start it       |
-|                                  |
-| container runtime                |
-|   pulls image                    |
-|   starts container               |
-|                                  |
-| Pod                              |
-|   java -jar order-service.jar    |
-+----------------------------------+
+Pod Object
+   |
+   v
+Pending
+   |
+   | scheduled to node
+   v
+ContainerCreating
+   |
+   | image pulled, container started
+   v
+Running
+   |
+   | readiness passes
+   v
+Ready
+   |
+   | deletion/update/failure
+   v
+Terminating
 ```
 
 Important:
 
 ```text
-kubelet belongs to the data plane,
-but it communicates with the control plane.
+Running != Ready
 ```
 
-It is the bridge between decision and execution.
+Running means container process exists.
 
-If kubelet cannot reach API Server temporarily:
+Ready means Kubernetes can send traffic to it.
+
+For Spring Boot, startup can take time.
 
 ```text
-Existing containers may keep running.
-Status updates may stop.
-New instructions may not arrive.
+JVM starts
+Spring context loads
+DB pool initializes
+Flyway/Liquibase migration may run
+Actuator health becomes UP
+Readiness passes
 ```
+
+Do not route traffic just because Java process exists.
+
+Use readiness probes.
 
 ---
 
-# 14. Container Runtime In The Data Plane
+# 12. Node Lifecycle Simple Model
 
-The container runtime actually runs containers.
+A node also has health.
 
-Examples:
+Typical states:
 
 ```text
-containerd
-CRI-O
+Ready
+NotReady
+SchedulingDisabled
+Unknown
 ```
 
-Kubelet does not directly execute your Java process.
+A node must regularly report status.
 
-It asks the runtime.
+Kubelet sends heartbeats to the API Server.
 
-Flow:
+Diagram:
 
 ```text
-kubelet
-  |
-  | CRI request
-  v
-container runtime
-  |
-  | create container
-  v
-Linux kernel namespaces + cgroups
-  |
-  v
-java -jar app.jar
+Node
+ |
+ | kubelet heartbeat
+ v
+API Server
+ |
+ v
+Node status updated
+```
+
+If heartbeat stops:
+
+```text
+Control plane suspects node problem
+Node becomes NotReady/Unknown
+Pods on that node become unavailable
+Controllers create replacement Pods if needed
+```
+
+Failure picture:
+
+```text
+Before:
+
+Node A: order-1, payment-1
+Node B: order-2, payment-2
+Node C: order-3
+
+Node B dies:
+
+Node A: order-1, payment-1
+Node B: X
+Node C: order-3
+
+Replacement:
+
+Node A: order-1, payment-1, order-4
+Node C: order-3, payment-3
+```
+
+Kubernetes does not repair the dead physical machine.
+
+It restores application desired state somewhere else.
+
+That is self-healing at workload level.
+
+---
+
+# 13. Scheduling: How Pod Gets A Node
+
+The scheduler watches for Pods without assigned nodes.
+
+```text
+Pod.spec.nodeName is empty
+```
+
+Then it chooses a node.
+
+Simplified flow:
+
+```text
+Pending Pod
+   |
+   v
+Filter nodes
+   |
+   | enough CPU?
+   | enough memory?
+   | taints tolerated?
+   | node selector matches?
+   v
+Score nodes
+   |
+   | best fit?
+   | spreading?
+   | affinity?
+   v
+Bind Pod to Node
 ```
 
 ASCII:
 
 ```text
-Pod Spec
-  image: order-service:1.0.0
-        |
-        v
-kubelet
-        |
-        v
-container runtime
-        |
-        v
-container process
-        |
-        v
-Spring Boot application
+Unscheduled Pod
+      |
+      v
++-----------------------+
+| Scheduler             |
+| filter + score nodes  |
++----------+------------+
+           |
+           v
+       node-b selected
+           |
+           v
+API Server updates Pod binding
+           |
+           v
+kubelet on node-b starts Pod
 ```
 
-This is data plane work because it consumes CPU, memory, disk, network, and serves actual application logic.
-
-If image pull fails, the problem is data plane execution, even though the Pod object exists in the control plane.
-
-Status example:
+Important separation:
 
 ```text
-ImagePullBackOff
+Scheduler does not start containers.
+Kubelet starts containers.
+```
+
+If Pod is Pending for long time, common reasons:
+
+```text
+Not enough CPU
+Not enough memory
+Node selector mismatch
+Taints without tolerations
+PVC not bound
+Image pull secret issue comes later, after scheduling
+```
+
+Debug:
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+Look at Events.
+
+Events usually tell why scheduling failed.
+
+---
+
+# 14. Resource Requests: How Scheduler Thinks
+
+Scheduler uses requests, not actual usage, for placement.
+
+Example:
+
+```yaml
+resources:
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"
 ```
 
 Meaning:
 
 ```text
-Control plane accepted the desired Pod.
-Data plane could not pull/start the container image.
+Please reserve at least 0.5 CPU and 512 Mi memory for this container.
+Do not allow more than 1 CPU and 1 Gi memory.
 ```
 
----
-
-# 15. Service Traffic Is Data Plane
-
-A Kubernetes Service gives stable access to changing Pods.
+Node capacity example:
 
 ```text
-Client -> Service -> ready Pods
+Node A capacity: 4 CPU, 8 Gi memory
+Already requested: 3.5 CPU, 7 Gi memory
+New Pod request: 1 CPU, 2 Gi memory
+
+Result: cannot schedule on Node A
 ```
-
-Service object is stored in the control plane.
-
-But packet forwarding is data plane.
 
 Diagram:
 
 ```text
-Control Plane Side
+Node Capacity
+CPU:    [####----] 4 cores
+Memory: [######--] 8 Gi
 
-Service object:
-  name: order-service
-  selector: app=order-service
+Requested already
+CPU:    [###-----] 3.5 cores
+Memory: [#######-] 7 Gi
 
-EndpointSlice object:
-  Pod IPs:
-    10.1.1.5
-    10.1.2.7
+New Pod needs
+CPU:    [##------] 1 core
+Memory: [##------] 2 Gi
 
-Data Plane Side
-
-Client packet
-    |
-    v
-Service virtual IP / DNS
-    |
-    v
-node networking rules
-    |
-    v
-Pod IP
+Not enough remaining request space
 ```
 
-Important split:
+Production lesson:
 
 ```text
-Service definition    = control plane object
-Service packet route  = data plane behavior
+No requests = scheduler cannot make smart placement.
+Wrong requests = cluster becomes inefficient or unstable.
 ```
 
-If API Server is temporarily down, existing Service datapath rules may still route traffic.
+For Spring Boot, memory requests matter because JVM memory behavior can surprise beginners.
 
-If kube-proxy/eBPF datapath is broken, API Server may look healthy but traffic may fail.
-
-So never debug only one plane.
+A Java app with 512Mi limit may crash if heap, metaspace, threads, direct buffers, and native memory exceed the container limit.
 
 ---
 
-# 16. CNI Networking In The Data Plane
+# 15. Pod Networking Mental Model
 
-CNI means Container Network Interface.
+Each Pod gets its own IP address.
 
-It gives Pods networking.
+Inside a Pod, containers share the same network namespace.
 
-It handles:
+For one-container Pod:
 
 ```text
-Pod IP allocation
-network interfaces
-routing
-network policy enforcement
-cross-node Pod traffic
+Pod IP = app IP
 ```
+
+For multi-container Pod:
+
+```text
+Both containers share same Pod IP
+Both can use localhost to talk
+```
+
+Diagram:
+
+```text
+Pod
++-------------------------------------+
+| IP: 10.244.1.25                     |
+|                                     |
+| Container A: app on port 8080       |
+| Container B: sidecar on port 15001  |
+|                                     |
+| A -> localhost:15001 -> B           |
+| B -> localhost:8080  -> A           |
++-------------------------------------+
+```
+
+Across Pods:
+
+```text
+Pod A IP: 10.244.1.25
+Pod B IP: 10.244.2.18
+```
+
+They can communicate if network policy allows.
+
+But Pod IP is not stable.
+
+A restarted Pod may get a new IP.
+
+That is why clients should use Service names.
+
+```text
+order-service.default.svc.cluster.local
+```
+
+Do not build production systems using direct Pod IPs.
+
+Use Services, DNS, and labels.
+
+---
+
+# 16. Multi-Container Pod Model
+
+Most Spring Boot services use one container per Pod.
+
+But Kubernetes allows multiple containers in one Pod when they are tightly coupled.
+
+Common examples:
+
+```text
+App container + logging sidecar
+App container + Envoy proxy sidecar
+App container + metrics exporter
+App container + file sync sidecar
+```
+
+Diagram:
+
+```text
++------------------------------------------------+
+| Pod                                            |
+|                                                |
+|  Shared IP: 10.244.1.50                        |
+|  Shared volumes                                |
+|                                                |
+|  +--------------------+   +----------------+   |
+|  | Spring Boot App    |   | Envoy Sidecar  |   |
+|  | port 8080          |   | port 15001     |   |
+|  +--------------------+   +----------------+   |
+|                                                |
+|  app -> localhost:15001 -> envoy               |
++------------------------------------------------+
+```
+
+Sidecar rule:
+
+```text
+Use same Pod only when containers must share lifecycle and local context.
+```
+
+Bad use:
+
+```text
+Put order-service and payment-service in same Pod.
+```
+
+Why bad?
+
+They scale differently.
+
+They deploy differently.
+
+They fail differently.
+
+They should be separate Deployments and separate Pods.
+
+Good use:
+
+```text
+order-service + local proxy sidecar
+```
+
+Because proxy is part of the order-service runtime behavior.
+
+Mental model:
+
+```text
+A Pod is one deployable cell.
+Do not put unrelated organs in one cell.
+```
+
+---
+
+# 17. Init Containers
+
+An init container runs before the main app container.
+
+Use it for startup preparation.
 
 Examples:
 
 ```text
-Calico
-Cilium
-Flannel
-Weave Net
+Wait for dependency
+Run migration check
+Download config file
+Prepare mounted directory
+Check secret exists
+```
+
+Flow:
+
+```text
+Pod created
+   |
+   v
+Init container 1 runs successfully
+   |
+   v
+Init container 2 runs successfully
+   |
+   v
+Main container starts
 ```
 
 ASCII:
 
 ```text
-Pod A on Node-1                         Pod B on Node-2
-+-------------+                         +-------------+
-| 10.1.1.5    |                         | 10.1.2.9    |
-+------+------+                         +------+------+
-       |                                       ^
-       v                                       |
-+-------------+      node network       +-------------+
-| CNI rules   |------------------------>| CNI rules   |
-+-------------+                         +-------------+
++------------------------------------+
+| Pod                                |
+|                                    |
+|  init-db-check   -> completed      |
+|  init-config     -> completed      |
+|  order-service   -> running        |
++------------------------------------+
 ```
 
-Control plane stores desired network objects like:
+Example YAML:
+
+```yaml
+initContainers:
+  - name: wait-for-db
+    image: busybox
+    command: ['sh', '-c', 'echo checking-db; sleep 5']
+containers:
+  - name: order-service
+    image: order-service:1.0.0
+```
+
+Production caution:
 
 ```text
-Pods
-Services
-NetworkPolicies
-EndpointSlices
+Do not hide real dependency design problems with long sleeps.
 ```
 
-Data plane enforces actual packet movement.
+Better:
 
-If NetworkPolicy blocks traffic, your API Server may still be perfect.
+```text
+Application should handle retry/backoff.
+Readiness should protect traffic.
+Init containers should prepare environment, not replace resilience.
+```
 
-Your failure is in the data plane traffic path.
+For Spring Boot, DB may not be ready at exact startup time.
+
+Your app should not assume perfect startup order.
+
+Kubernetes starts Pods, but distributed systems need retry logic.
 
 ---
 
-# 17. Spring Boot Order Service Example
+# 18. Replica Mental Model
 
-Application:
+When you say replicas = 3, Kubernetes creates 3 Pods.
 
-```java
-package com.example.order;
+```text
+Deployment: order-service replicas=3
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@SpringBootApplication
-public class OrderServiceApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(OrderServiceApplication.class, args);
-    }
-}
-
-@RestController
-class OrderController {
-    @GetMapping("/orders/health-business")
-    public String businessHealth() {
-        return "order-service business path ok";
-    }
-}
+Creates:
+order-service-abc
+order-service-def
+order-service-ghi
 ```
 
-Kubernetes Deployment:
+Each Pod is separate.
+
+Each has its own IP.
+
+Each may run on a different node.
+
+Diagram:
+
+```text
+Deployment order-service
+          |
+          v
+ReplicaSet order-service-rs
+          |
+          +--> Pod order-abc on Node A
+          +--> Pod order-def on Node B
+          +--> Pod order-ghi on Node C
+```
+
+These Pods are interchangeable if your application is stateless.
+
+For stateless Spring Boot APIs, this is ideal.
+
+```text
+Any request can go to any replica.
+```
+
+For stateful apps, replicas may not be interchangeable.
+
+Example:
+
+```text
+Redis primary and replica are not identical roles.
+Postgres leader and follower differ.
+Kafka brokers have partition assignments.
+```
+
+That is why Kubernetes has StatefulSet for some workloads.
+
+But for normal backend services:
+
+```text
+Deployment + replicas + Service
+```
+
+is the common pattern.
+
+---
+
+# 19. Why Pod Names Are Weird
+
+You may see:
+
+```text
+order-service-7c9dbf5b6d-kx82p
+```
+
+This is not random noise.
+
+It reflects ownership.
+
+```text
+Deployment name: order-service
+ReplicaSet hash: 7c9dbf5b6d
+Pod suffix: kx82p
+```
+
+Mental model:
+
+```text
+Deployment creates ReplicaSet
+ReplicaSet creates Pods
+Pod name includes generated identity
+```
+
+Example:
+
+```text
+order-service
+  |
+  +-- order-service-7c9dbf5b6d
+        |
+        +-- order-service-7c9dbf5b6d-kx82p
+        +-- order-service-7c9dbf5b6d-m91ab
+        +-- order-service-7c9dbf5b6d-zx10q
+```
+
+Do not manually depend on Pod names.
+
+Pods are disposable.
+
+Use labels and Services.
+
+Bad idea:
+
+```text
+Call http://order-service-7c9dbf5b6d-kx82p:8080
+```
+
+Good idea:
+
+```text
+Call http://order-service:8080
+```
+
+Pod names help debugging.
+
+They are not stable application identity for stateless workloads.
+
+---
+
+# 20. Labels Connect Cluster Objects
+
+Pods are selected by labels.
+
+Deployment template gives labels to Pods.
+
+```yaml
+template:
+  metadata:
+    labels:
+      app: order-service
+      version: v1
+```
+
+Service selects labels.
+
+```yaml
+selector:
+  app: order-service
+```
+
+Diagram:
+
+```text
+Service: order-service
+selector app=order-service
+        |
+        v
++-------------------------------+
+| Matching Pods                 |
+| order-abc app=order-service   |
+| order-def app=order-service   |
+| order-ghi app=order-service   |
++-------------------------------+
+```
+
+If labels mismatch:
+
+```text
+Service exists
+Pods exist
+No endpoints
+Traffic fails
+```
+
+Broken example:
+
+```yaml
+Pod label:
+  app: order
+
+Service selector:
+  app: order-service
+```
+
+Debug:
+
+```bash
+kubectl get pods --show-labels
+kubectl describe svc order-service
+kubectl get endpoints order-service
+```
+
+Production mindset:
+
+```text
+In Kubernetes, relationships are often label queries, not hard-coded references.
+```
+
+This is powerful but dangerous.
+
+One typo can disconnect traffic.
+
+---
+
+# 21. Node Capacity And Pod Density
+
+A node can run many Pods.
+
+But not unlimited Pods.
+
+Limits come from:
+
+```text
+CPU
+Memory
+Disk
+Network
+Max pods per node
+IP address availability
+DaemonSet overhead
+System reserved resources
+```
+
+Picture:
+
+```text
+Node A
+CPU:    8 cores
+Memory: 32 Gi
+
+Pods:
+  order-service      request 1 CPU / 1 Gi
+  payment-service    request 1 CPU / 2 Gi
+  inventory-service  request 0.5 CPU / 1 Gi
+  logging-agent      request 0.2 CPU / 256 Mi
+```
+
+Packing view:
+
+```text
+Node A Capacity
+CPU    [########]
+Memory [################################]
+
+Allocated requests
+CPU    [###-----]
+Memory [#####---------------------------]
+```
+
+If too many heavy Pods land on one node, performance suffers.
+
+If requests are too high, cluster wastes capacity.
+
+If requests are too low, node gets overloaded.
+
+This is why production Kubernetes needs measurement.
+
+```text
+requests = scheduling promise
+limits   = hard container boundary
+actual   = real runtime usage
+```
+
+For Java services, set resources based on load testing and JVM behavior.
+
+Do not copy random YAML from the internet.
+
+---
+
+# 22. Cluster Is Not One Big Machine
+
+A dangerous beginner model:
+
+```text
+Cluster = one huge server
+```
+
+Better:
+
+```text
+Cluster = many machines coordinated by one control system
+```
+
+Why it matters:
+
+```text
+Node can fail
+Network between nodes can fail
+Pod placement affects latency
+Storage may be node-specific
+DaemonSets run per node
+Pod IP ranges differ by node
+```
+
+Diagram:
+
+```text
+Wrong mental model:
+
++-------------------+
+| giant machine     |
+| all apps inside   |
++-------------------+
+
+Correct mental model:
+
++---------+   network   +---------+   network   +---------+
+| Node A  | <---------> | Node B  | <---------> | Node C  |
++---------+             +---------+             +---------+
+      \                     |                     /
+       \                    |                    /
+        +------------- Control Plane ------------+
+```
+
+Kubernetes gives a unified API.
+
+It does not remove distributed systems reality.
+
+If two Pods communicate across nodes, network is involved.
+
+If a node dies, Pods on that node die.
+
+If zone fails, all nodes in that zone may disappear.
+
+Production design must still consider failure domains.
+
+---
+
+# 23. Failure Domain Mental Model
+
+A failure domain is a group of things that can fail together.
+
+Examples:
+
+```text
+Same node
+Same rack
+Same availability zone
+Same region
+Same power supply
+Same network switch
+```
+
+If all replicas run on one node, node failure kills all replicas.
+
+Bad placement:
+
+```text
+Node A:
+  order-1
+  order-2
+  order-3
+
+Node B:
+  empty
+Node C:
+  empty
+```
+
+Better placement:
+
+```text
+Node A:
+  order-1
+Node B:
+  order-2
+Node C:
+  order-3
+```
+
+Kubernetes can help with spreading.
+
+Tools:
+
+```text
+pod anti-affinity
+topology spread constraints
+node labels
+zones
+```
+
+Simple mental model:
+
+```text
+Do not put all eggs in one node.
+```
+
+For a product company backend, availability often depends on replica spreading.
+
+Having 3 replicas is not enough if all 3 replicas are on the same weak failure domain.
+
+---
+
+# 24. Pod Disposability
+
+Pods are temporary.
+
+They are created, killed, replaced, rescheduled.
+
+You should design apps assuming:
+
+```text
+Pod can disappear anytime.
+Pod IP can change.
+Pod local disk can disappear.
+Pod name can change.
+Pod restart may happen during deploy.
+```
+
+Spring Boot service should therefore:
+
+```text
+Store durable data in database/object storage
+Use external Redis/Kafka/Postgres correctly
+Expose health/readiness endpoints
+Handle SIGTERM gracefully
+Use idempotency for important operations
+Avoid in-memory-only critical state
+```
+
+Bad design:
+
+```text
+User uploads file
+App stores only in /tmp inside Pod
+Pod restarts
+File gone
+```
+
+Good design:
+
+```text
+User uploads file
+App stores in S3/object storage
+DB stores metadata
+Pod can die safely
+```
+
+Pod motto:
+
+```text
+A Pod is not your home.
+It is a rented room.
+```
+
+---
+
+# 25. Graceful Shutdown For Spring Boot Pods
+
+When Kubernetes terminates a Pod, it sends SIGTERM to the container process.
+
+Spring Boot should stop accepting new work and finish existing work if possible.
+
+Flow:
+
+```text
+kubectl rollout restart / scale down / node drain
+        |
+        v
+Pod marked Terminating
+        |
+        v
+Removed from Service endpoints after readiness changes
+        |
+        v
+SIGTERM sent to Java process
+        |
+        v
+Spring Boot graceful shutdown
+        |
+        v
+Container exits
+```
+
+Spring Boot config:
+
+```yaml
+server:
+  shutdown: graceful
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+```
+
+Kubernetes termination grace:
+
+```yaml
+terminationGracePeriodSeconds: 45
+```
+
+Mental model:
+
+```text
+Kubernetes gives your app a chance to leave cleanly.
+Your app must cooperate.
+```
+
+Bad behavior:
+
+```text
+Pod killed while processing payment
+No idempotency
+Request retried
+Double charge risk
+```
+
+Good behavior:
+
+```text
+Readiness goes false
+No new traffic
+Existing request finishes
+Idempotency key protects retry
+App exits cleanly
+```
+
+Kubernetes orchestration and application correctness must work together.
+
+---
+
+# 26. YAML Example: Pod Only
+
+A raw Pod YAML:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: order-service-pod
+  labels:
+    app: order-service
+spec:
+  containers:
+    - name: order-service
+      image: order-service:1.0.0
+      ports:
+        - containerPort: 8080
+```
+
+This creates one Pod.
+
+But in production, you usually do not create naked Pods directly.
+
+Why?
+
+If the Pod dies, who recreates it?
+
+A naked Pod has no higher-level controller protecting desired replica count.
+
+Better:
+
+```text
+Deployment -> ReplicaSet -> Pod
+```
+
+Raw Pod is useful for learning and debugging.
+
+Deployment is useful for real applications.
+
+Mental model:
+
+```text
+Naked Pod = one manually requested room
+Deployment = manager that keeps rooms alive
+```
+
+If you delete a naked Pod:
+
+```bash
+kubectl delete pod order-service-pod
+```
+
+It is gone.
+
+If you delete a Deployment-managed Pod:
+
+```bash
+kubectl delete pod order-service-abc
+```
+
+ReplicaSet creates a replacement.
+
+That is the difference between object and controller-owned object.
+
+---
+
+# 27. YAML Example: Deployment Creates Pods
+
+Production-like Deployment:
 
 ```yaml
 apiVersion: apps/v1
@@ -1127,809 +1853,223 @@ spec:
           image: order-service:1.0.0
           ports:
             - containerPort: 8080
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
 ```
 
-Control plane interpretation:
+Object chain:
 
 ```text
-Desired state:
-3 Pods should exist for order-service image.
+Deployment
+  |
+  +-- ReplicaSet
+        |
+        +-- Pod 1
+        +-- Pod 2
+        +-- Pod 3
 ```
 
-Data plane execution:
+The Pod template is important.
 
 ```text
-3 Java processes run on worker nodes.
-They listen on port 8080.
-They serve HTTP requests.
+Deployment does not directly contain running containers.
+It contains a template for Pods.
 ```
 
-Diagram:
+Controller uses the template to create Pods.
+
+When you update the template, Deployment creates a new ReplicaSet.
 
 ```text
-Deployment YAML
-    |
-    v
-CONTROL PLANE stores desired state
-    |
-    v
-Scheduler assigns Pods
-    |
-    v
-DATA PLANE starts containers
-    |
-    v
-java -jar order-service.jar
+image: order-service:1.0.0 -> order-service:1.1.0
+```
+
+This triggers rollout.
+
+Mental hook:
+
+```text
+Deployment = rollout brain
+ReplicaSet = replica count guard
+Pod = runtime cell
+Container = process box
 ```
 
 ---
 
-# 18. Full Dry Run: kubectl apply
+# 28. Java Code: Know Your Pod And Node
 
-Command:
+A Spring Boot app can read environment variables injected from Kubernetes.
 
-```bash
-kubectl apply -f order-deployment.yaml
-```
-
-Step-by-step:
-
-```text
-1. kubectl sends request to API Server.
-
-2. API Server authenticates the user.
-
-3. API Server checks authorization.
-
-4. API Server validates Deployment schema.
-
-5. Admission controllers may mutate or reject object.
-
-6. API Server stores Deployment object in etcd.
-
-7. Deployment Controller watches new Deployment.
-
-8. Deployment Controller creates ReplicaSet object.
-
-9. ReplicaSet Controller sees desired replicas = 3.
-
-10. ReplicaSet Controller creates 3 Pod objects.
-
-11. Scheduler sees Pods with no nodeName.
-
-12. Scheduler picks worker nodes.
-
-13. API Server records Pod-to-Node binding.
-
-14. Kubelet on each selected node sees assigned Pod.
-
-15. Kubelet asks container runtime to pull image.
-
-16. Runtime starts container.
-
-17. Spring Boot starts.
-
-18. Kubelet reports Pod status.
-
-19. EndpointSlice controller adds ready Pod IPs.
-
-20. Service datapath can send traffic.
-```
-
-Plane view:
-
-```text
-Steps 1-13  mostly Control Plane
-Steps 14-20 mostly Data Plane + status feedback
-```
-
-One picture:
-
-```text
-kubectl -> API Server -> etcd -> controllers -> scheduler
-                                      |
-                                      v
-                              kubelet -> runtime -> Pod
-```
-
----
-
-# 19. Full Dry Run: Customer HTTP Request
-
-Customer request:
-
-```text
-GET /orders/health-business
-```
-
-Flow:
-
-```text
-1. Customer reaches external Load Balancer.
-
-2. Load Balancer forwards request to Ingress or NodePort.
-
-3. Ingress controller or gateway chooses Service.
-
-4. Service datapath chooses a ready Pod endpoint.
-
-5. Packet reaches Pod IP.
-
-6. Container receives TCP connection.
-
-7. Spring Boot embedded Tomcat handles request.
-
-8. Controller method returns response.
-```
-
-ASCII:
-
-```text
-Customer
-   |
-   v
-External LB
-   |
-   v
-Ingress / Gateway
-   |
-   v
-Service: order-service
-   |
-   v
-Pod IP: 10.1.1.5:8080
-   |
-   v
-Spring Boot Controller
-```
-
-Notice what is not in the hot path:
-
-```text
-API Server is not handling this HTTP request.
-etcd is not queried for every request.
-Scheduler is not involved per request.
-Controller Manager is not routing packets.
-```
-
-This is why customer traffic can continue even when some control plane functions are temporarily impaired.
-
-Existing data plane rules and running processes serve the request.
-
----
-
-# 20. Spec, Status, And Plane Boundary
-
-In Kubernetes YAML:
-
-```text
-spec   = desired state
-status = observed state
-```
-
-Plane mapping:
-
-```text
-Control Plane stores and manages spec.
-Data Plane produces reality.
-Control Plane records status from reality.
-```
-
-Example:
+YAML:
 
 ```yaml
-spec:
-  replicas: 3
-
-status:
-  replicas: 3
-  readyReplicas: 2
-  availableReplicas: 2
+env:
+  - name: POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  - name: POD_NAMESPACE
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.namespace
+  - name: NODE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: spec.nodeName
 ```
 
-Meaning:
+Java controller:
 
-```text
-Control plane knows desired = 3.
-Data plane currently has only 2 ready.
-Controllers keep reconciling.
+```java
+package com.example.order;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+
+@RestController
+public class RuntimeInfoController {
+
+    @GetMapping("/runtime")
+    public Map<String, String> runtime() {
+        return Map.of(
+            "pod", env("POD_NAME"),
+            "namespace", env("POD_NAMESPACE"),
+            "node", env("NODE_NAME"),
+            "javaVersion", System.getProperty("java.version")
+        );
+    }
+
+    private String env(String key) {
+        return System.getenv().getOrDefault(key, "unknown");
+    }
+}
 ```
 
-ASCII:
+Why useful?
 
-```text
-spec.replicas = 3
-       |
-       v
-Control Plane decision
-       |
-       v
-Data Plane runs Pods
-       |
-       v
-status.readyReplicas = 2
-       |
-       v
-Control Plane sees mismatch
+When load balancing across replicas, you can see which Pod handled a request.
+
+Example response:
+
+```json
+{
+  "pod": "order-service-7c9dbf5b6d-kx82p",
+  "namespace": "prod",
+  "node": "worker-node-2",
+  "javaVersion": "21.0.2"
+}
 ```
 
-This loop crosses the boundary continuously.
-
-Do not think control plane and data plane are disconnected.
-
-They are separate responsibilities, connected by watch/report loops.
+This helps debug traffic distribution.
 
 ---
 
-# 21. What Happens If API Server Goes Down?
+# 29. Java Code: Graceful Request Tracking
 
-Scenario:
+For production, you may want to know whether requests are still active during shutdown.
 
-```text
-API Server unavailable for a short time
+Simple filter:
+
+```java
+package com.example.order;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@Component
+public class ActiveRequestFilter extends OncePerRequestFilter {
+
+    private final AtomicInteger activeRequests = new AtomicInteger();
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+        activeRequests.incrementAndGet();
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            activeRequests.decrementAndGet();
+        }
+    }
+
+    public int activeRequests() {
+        return activeRequests.get();
+    }
+}
 ```
 
-Likely symptoms:
+Expose it:
 
-```text
-kubectl get pods fails
-kubectl apply fails
-controllers cannot reliably update state
-scheduler cannot process new pending Pods
-kubelets cannot report fresh status
+```java
+@RestController
+class RequestDebugController {
+    private final ActiveRequestFilter filter;
+
+    RequestDebugController(ActiveRequestFilter filter) {
+        this.filter = filter;
+    }
+
+    @GetMapping("/debug/active-requests")
+    Map<String, Integer> active() {
+        return Map.of("activeRequests", filter.activeRequests());
+    }
+}
 ```
 
-But existing workloads may continue:
+This is not mandatory for every service.
+
+But it teaches a production idea:
 
 ```text
-Existing containers keep running.
-Existing Service rules may keep routing.
-Existing app traffic may still work.
-```
-
-ASCII:
-
-```text
-kubectl ----X----> API Server
-
-Customer ---> Service ---> Pod ---> Spring Boot
-                still possibly works
-```
-
-Why?
-
-```text
-A running Linux process does not need API Server for every CPU instruction.
-A Service datapath does not query API Server for every packet.
-```
-
-But do not misunderstand.
-
-Long API Server outage is serious.
-
-It affects:
-
-```text
-new deployments
-autoscaling decisions
-node status freshness
-controller reconciliation
-new scheduling
-operator behavior
-cluster management
-```
-
-Production conclusion:
-
-```text
-Control plane outage may not instantly stop data plane traffic,
-but it reduces the cluster's ability to adapt, heal, and change.
-```
-
----
-
-# 22. What Happens If Scheduler Goes Down?
-
-Scenario:
-
-```text
-Scheduler unavailable
-```
-
-Existing Pods:
-
-```text
-continue running
-```
-
-New Pods:
-
-```text
-may stay Pending
-```
-
-Example:
-
-```text
-Deployment scaled from 3 to 5 replicas
-ReplicaSet creates 2 Pod objects
-Scheduler unavailable
-Pods do not get nodeName
-Result: Pending
-```
-
-Diagram:
-
-```text
-ReplicaSet creates Pod
-        |
-        v
-Pending Pod
-  nodeName: empty
-        |
-        X scheduler down
-        |
-        v
-No node assigned
-```
-
-Commands:
-
-```bash
-kubectl get pods
-kubectl describe pod <pending-pod>
-```
-
-You may see events like:
-
-```text
-0/5 nodes are available
-```
-
-or no fresh scheduling events.
-
-Plane lesson:
-
-```text
-Scheduler is control plane.
-It affects placement, not already-running Java execution.
+Pod termination is not only Kubernetes behavior.
+Application must understand lifecycle too.
 ```
 
 ---
 
-# 23. What Happens If Controller Manager Goes Down?
+# 30. Readiness And Liveness For Pods
 
-Scenario:
-
-```text
-Controller Manager unavailable
-```
-
-Existing Pods may continue running.
-
-But reconciliation stops or slows.
-
-Examples:
+Kubernetes needs to know two things.
 
 ```text
-Deployment rollout may not progress.
-ReplicaSet may not create replacement Pods.
-Node state updates may be delayed.
-EndpointSlice updates may be delayed.
-Job completion handling may be delayed.
+Liveness: should this container be restarted?
+Readiness: should this Pod receive traffic?
 ```
 
-ASCII:
+Do not mix them.
 
-```text
-Desired replicas = 3
-Actual replicas  = 2
-        |
-        X controller loop unavailable
-        |
-        v
-Mismatch remains longer
-```
-
-Production meaning:
-
-```text
-The cluster becomes less self-healing.
-```
-
-It is like a restaurant where the branch kitchens are still cooking, but head office is not noticing staffing problems.
-
-Existing orders may continue.
-
-New corrections may not happen.
-
-This is why control plane health matters even when customer traffic still appears fine.
-
----
-
-# 24. What Happens If etcd Has Problems?
-
-etcd problems are dangerous because etcd is cluster memory.
-
-Symptoms may include:
-
-```text
-API Server slow or failing
-writes failing
-leader election issues
-watch instability
-controllers lagging
-cluster state inconsistencies from client perspective
-```
-
-ASCII:
-
-```text
-kubectl apply
-    |
-    v
-API Server
-    |
-    X cannot persist to etcd reliably
-    |
-    v
-Desired state not safely stored
-```
-
-Existing running Pods:
-
-```text
-may continue running for some time
-```
-
-But the cluster cannot safely manage desired state.
-
-Do not treat etcd as just another database.
-
-For Kubernetes, etcd is the memory of the control plane.
-
-Production mindset:
-
-```text
-Backup etcd.
-Monitor etcd latency.
-Protect etcd disk I/O.
-Avoid direct writes.
-Use highly available control plane design.
-```
-
-Data plane can survive short-term memory trouble.
-
-But long-term, a cluster without reliable memory cannot be trusted.
-
----
-
-# 25. What Happens If A Worker Node Goes Down?
-
-Worker node is data plane.
-
-Scenario:
-
-```text
-worker-2 dies
-```
-
-Immediate data plane effect:
-
-```text
-Pods on worker-2 stop serving traffic.
-```
-
-Control plane reaction:
-
-```text
-Node heartbeat missing
-Node marked NotReady
-Pods eventually considered unavailable
-ReplicaSet creates replacement Pods
-Scheduler places them on healthy nodes
-Kubelets start replacements
-```
-
-ASCII:
-
-```text
-Before:
-worker-1: order-A
-worker-2: order-B
-worker-3: order-C
-
-Failure:
-worker-2: X
-
-After reconciliation:
-worker-1: order-A, order-D
-worker-3: order-C
-```
-
-Plane lesson:
-
-```text
-Worker failure is data plane failure.
-Recovery requires control plane decisions.
-```
-
-If control plane is also unhealthy during node failure, recovery is delayed.
-
-That is why production Kubernetes separates:
-
-```text
-highly available control plane
-multiple worker nodes
-pod anti-affinity
-proper readiness
-replica count > 1
-```
-
----
-
-# 26. What Happens If kubelet Fails?
-
-kubelet is data plane node agent.
-
-Scenario:
-
-```text
-kubelet process on worker-1 fails
-```
-
-Possible effects:
-
-```text
-Node stops reporting fresh status.
-Pod status becomes stale.
-New Pod instructions may not be executed.
-Health probes may stop being managed.
-Container restart management may be affected.
-```
-
-Existing containers:
-
-```text
-may continue running because container runtime already started them
-```
-
-But Kubernetes loses local management visibility.
-
-ASCII:
-
-```text
-API Server
-    |
-    X kubelet not reporting
-    |
-worker-1
-+---------------------+
-| containers running? |
-| maybe yes           |
-| kubelet dead        |
-+---------------------+
-```
-
-Debug:
-
-```bash
-kubectl get nodes
-kubectl describe node worker-1
-ssh worker-1
-systemctl status kubelet
-journalctl -u kubelet
-crictl ps
-```
-
-Plane lesson:
-
-```text
-The container process and kubelet process are related,
-but they are not the same process.
-```
-
----
-
-# 27. Control Plane HA Mental Model
-
-Production clusters usually run multiple control plane replicas.
-
-```text
-API Server replicas
-etcd members
-controller-manager leader election
-scheduler leader election
-```
-
-ASCII:
-
-```text
-                 Load Balancer
-                      |
-        +-------------+-------------+
-        |             |             |
-        v             v             v
-+--------------+ +--------------+ +--------------+
-| API Server 1 | | API Server 2 | | API Server 3 |
-+------+-------+ +------+-------+ +------+-------+
-       |                |                |
-       +----------------+----------------+
-                        |
-                        v
-              +-------------------+
-              | etcd cluster      |
-              | member1 member2  |
-              | member3          |
-              +-------------------+
-```
-
-Controller manager and scheduler typically use leader election.
-
-```text
-Multiple instances exist.
-Only one active leader performs certain decisions.
-If leader dies, another takes over.
-```
-
-This avoids two schedulers fighting over the same work.
-
-Mental model:
-
-```text
-High availability means control plane can lose one component
-without losing the whole cluster brain.
-```
-
-But HA control plane does not remove the need for healthy data plane.
-
-You need both.
-
----
-
-# 28. Data Plane HA Mental Model
-
-Data plane high availability means your app can survive node and Pod failures.
-
-Use:
-
-```text
-multiple replicas
-multiple worker nodes
-readiness probes
-PodDisruptionBudgets
-anti-affinity / topology spread
-horizontal scaling
-safe rollout strategy
-```
-
-Bad deployment:
-
-```text
-replicas = 1
-single worker node
-no readiness probe
-```
-
-Failure:
-
-```text
-one Pod dies = outage
-```
-
-Better deployment:
-
-```text
-replicas = 3
-spread across nodes
-readiness protects traffic
-rolling update controlled
-```
-
-ASCII:
-
-```text
 Bad:
-worker-1: order-service-A
-worker-2:
-worker-3:
+
+```text
+DB down -> liveness fails -> Kubernetes restarts app repeatedly
+```
 
 Better:
-worker-1: order-service-A
-worker-2: order-service-B
-worker-3: order-service-C
-```
-
-Data plane HA is about keeping customer traffic alive.
-
-Control plane HA is about keeping cluster decisions alive.
-
-You need both for serious production.
-
----
-
-# 29. Control Plane vs Data Plane During Rolling Update
-
-You update image:
 
 ```text
-order-service:1.0.0 -> order-service:1.1.0
+DB down -> readiness fails -> traffic stops
+App stays alive and retries DB
 ```
 
-Control plane work:
-
-```text
-Deployment object updated
-Deployment Controller creates new ReplicaSet
-ReplicaSet Controller creates new Pods
-Scheduler assigns new Pods
-EndpointSlice updates ready endpoints
-```
-
-Data plane work:
-
-```text
-kubelet pulls new image
-container runtime starts new containers
-Spring Boot starts
-readiness probe decides traffic eligibility
-Service routes only to ready Pods
-old Pods terminate gradually
-```
-
-ASCII:
-
-```text
-CONTROL PLANE
-Deployment v2
-   |
-   v
-New ReplicaSet
-   |
-   v
-New Pod objects
-   |
-   v
-Schedule to nodes
-
-DATA PLANE
-Pull image
-   |
-   v
-Start Java process
-   |
-   v
-Readiness pass
-   |
-   v
-Receive traffic
-```
-
-If new app version fails readiness:
-
-```text
-Control plane may show rollout not complete.
-Data plane protects traffic by not sending requests to unready Pods.
-```
-
-This is why readiness is a data plane safety signal used by control plane objects.
-
----
-
-# 30. Spring Boot Readiness Example
-
-Spring Boot may be running but not ready.
-
-Example:
-
-```text
-Tomcat started
-DB connection failed
-Kafka not reachable
-cache warmup not done
-```
-
-Actuator config:
+Spring Boot Actuator config:
 
 ```yaml
 management:
@@ -1938,15 +2078,22 @@ management:
       probes:
         enabled: true
   health:
-    readinessstate:
-      enabled: true
     livenessstate:
+      enabled: true
+    readinessstate:
       enabled: true
 ```
 
-Kubernetes readiness:
+Kubernetes probes:
 
 ```yaml
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
 readinessProbe:
   httpGet:
     path: /actuator/health/readiness
@@ -1955,929 +2102,918 @@ readinessProbe:
   periodSeconds: 5
 ```
 
-Flow:
+Diagram:
 
 ```text
-Pod starts
+Container alive?
    |
-   v
-Java process starts
+   +-- no  -> restart container
    |
-   v
-readiness endpoint DOWN
-   |
-   v
-Service does not send traffic
-   |
-   v
-DB connected
-   |
-   v
-readiness endpoint UP
-   |
-   v
-Service sends traffic
-```
+   +-- yes -> check readiness
 
-Plane interpretation:
-
-```text
-Data plane signal: app is ready or not.
-Control plane object/status: Pod Ready condition and endpoints.
-Data plane action: traffic goes only to ready endpoints.
+Ready for traffic?
+   |
+   +-- no  -> remove from Service endpoints
+   |
+   +-- yes -> allow traffic
 ```
 
 ---
 
-# 31. Debugging Model: First Ask Which Plane
+# 31. Service Routes To Ready Pods
 
-When Kubernetes breaks, ask:
-
-```text
-Is this a control plane problem?
-Is this a data plane problem?
-Or is this a boundary problem?
-```
-
-Control plane symptoms:
+A Service gives stable access to a group of Pods.
 
 ```text
-kubectl cannot connect
-API requests timeout
-Pods not scheduled
-Deployments not reconciling
-objects not updating
-controller lag
-etcd errors
+Client -> Service -> Ready Pods
 ```
 
-Data plane symptoms:
-
-```text
-Pod CrashLoopBackOff
-ImagePullBackOff
-Node NotReady
-Service has no traffic
-DNS failure inside Pod
-NetworkPolicy block
-CPU/memory throttling
-app latency high
-```
-
-Boundary symptoms:
-
-```text
-kubelet cannot reach API Server
-status stale
-endpoints not updated
-node heartbeat missing
-admission webhook blocks deployments
-```
-
-ASCII:
-
-```text
-Problem
-   |
-   +-- kubectl / scheduling / reconciliation? --> Control Plane
-   |
-   +-- app traffic / Pod runtime / networking? -> Data Plane
-   |
-   +-- reports/watch/status bridge broken? ----> Boundary
-```
-
-This question prevents random debugging.
-
----
-
-# 32. Debugging Path: kubectl Works But App Down
-
-Symptom:
-
-```text
-kubectl get pods works
-But customer request fails
-```
-
-Likely not full control plane outage.
-
-Check data plane path:
-
-```bash
-kubectl get pods -o wide
-kubectl get svc
-kubectl get endpoints order-service
-kubectl describe svc order-service
-kubectl logs deploy/order-service
-kubectl describe pod <pod>
-```
-
-Layer-by-layer:
-
-```text
-1. Are Pods Running?
-2. Are Pods Ready?
-3. Does Service selector match labels?
-4. Are endpoints populated?
-5. Is targetPort correct?
-6. Is app listening on correct port?
-7. Is NetworkPolicy blocking?
-8. Is Ingress routing correct?
-9. Is external load balancer healthy?
-```
-
-ASCII:
+Diagram:
 
 ```text
 Client
   |
+  | http://order-service
   v
-Ingress
+Service order-service
   |
-  v
-Service
-  |
-  v
-Endpoint
-  |
-  v
-Pod
-  |
-  v
-Container port
-  |
-  v
-Spring Boot
+  +--> Pod A Ready
+  +--> Pod B Ready
+  +--> Pod C NotReady  X no traffic
 ```
 
-If `kubectl` works, control plane visibility exists.
+Service selects Pods by labels.
 
-Now follow data plane traffic.
+Readiness decides whether selected Pods become endpoints.
 
----
-
-# 33. Debugging Path: App Works But kubectl Fails
-
-Symptom:
+That means two things must be correct:
 
 ```text
-Customer app works
-kubectl get pods fails
+1. Labels must match Service selector.
+2. Readiness must pass.
 ```
 
-This points toward control plane access or API issue.
-
-Possible causes:
-
-```text
-API Server unavailable
-kubeconfig wrong
-network path to API Server broken
-certificate expired
-authorization issue
-control plane load balancer problem
-```
-
-Commands/checks:
+Debug order:
 
 ```bash
-kubectl cluster-info
-kubectl auth can-i get pods
-kubectl config current-context
-kubectl config view
-curl -k https://<api-server>/readyz
-```
-
-Plane picture:
-
-```text
-kubectl ----X----> API Server
-
-Customer ---> Service ---> Pod ---> App
-                works
-```
-
-Important lesson:
-
-```text
-Do not restart Pods just because kubectl fails.
-First identify whether the failure is management-path or traffic-path.
-```
-
-This is a senior production habit.
-
----
-
-# 34. Debugging Path: Pod Pending
-
-Symptom:
-
-```text
-Pod stays Pending
-```
-
-This is usually a control-plane scheduling or resource issue.
-
-Check:
-
-```bash
-kubectl describe pod <pod>
-kubectl get nodes
-kubectl describe node <node>
-```
-
-Common causes:
-
-```text
-not enough CPU
-not enough memory
-taint not tolerated
-nodeSelector mismatch
-affinity impossible
-PVC not bound
-scheduler unavailable
-quota exceeded
-```
-
-ASCII:
-
-```text
-Pod object exists
-    |
-    v
-Needs Node
-    |
-    v
-Scheduler checks constraints
-    |
-    X no valid node
-    |
-    v
-Pending
-```
-
-Plane interpretation:
-
-```text
-The app has not entered data plane runtime yet.
-It is stuck before kubelet can execute it.
-```
-
-That is why checking application logs may show nothing.
-
-There is no container yet.
-
----
-
-# 35. Debugging Path: CrashLoopBackOff
-
-Symptom:
-
-```text
-Pod scheduled
-Container starts
-Container crashes repeatedly
-```
-
-This is data plane runtime plus application failure.
-
-Commands:
-
-```bash
-kubectl logs <pod>
-kubectl logs <pod> --previous
-kubectl describe pod <pod>
-```
-
-Common Spring Boot causes:
-
-```text
-missing environment variable
-wrong DB password
-cannot reach database
-Flyway migration failure
-port mismatch
-OutOfMemoryError
-bad JVM options
-wrong active profile
-```
-
-ASCII:
-
-```text
-Scheduler assigned node
-    |
-    v
-kubelet starts container
-    |
-    v
-Spring Boot starts
-    |
-    X app crashes
-    |
-    v
-kubelet restarts with backoff
-```
-
-Plane interpretation:
-
-```text
-Control plane did its job.
-Data plane started execution.
-Application failed at runtime.
-```
-
-Kubernetes can restart bad containers.
-
-It cannot automatically fix bad configuration or broken code.
-
----
-
-# 36. Debugging Path: Service Has No Endpoints
-
-Symptom:
-
-```bash
+kubectl get svc order-service
 kubectl get endpoints order-service
-
-NAME            ENDPOINTS
-order-service   <none>
+kubectl get pods -l app=order-service
+kubectl describe pod <pod>
 ```
 
-This is usually a label/readiness boundary issue.
-
-Check Service selector:
-
-```bash
-kubectl describe svc order-service
-```
-
-Check Pod labels:
-
-```bash
-kubectl get pods --show-labels
-```
-
-Example bug:
-
-```yaml
-# Pod label
-app: order
-
-# Service selector
-app: order-service
-```
-
-No match.
-
-ASCII:
+If endpoints are empty:
 
 ```text
-Service selector: app=order-service
-        |
-        v
-Pods:
-  pod-A app=order   X
-  pod-B app=order   X
-  pod-C app=order   X
-
-Result: no endpoints
+Possible cause 1: label mismatch
+Possible cause 2: Pods not Ready
+Possible cause 3: wrong targetPort
 ```
 
-Another cause:
+Mental model:
 
 ```text
-Pods exist but readiness probe failing.
-```
-
-Then Service may not route traffic.
-
-Plane lesson:
-
-```text
-Control plane object exists.
-Data plane traffic fails because endpoint membership is empty.
+Service is not magic.
+It is a stable front door pointing to currently Ready matching Pods.
 ```
 
 ---
 
-# 37. Debugging Path: DNS Fails Inside Pod
+# 32. Dry Run: Deploy Order Service To Cluster
 
-Symptom:
-
-```text
-order-service cannot call payment-service
-```
-
-Inside Pod:
+You apply Deployment:
 
 ```bash
-nslookup payment-service
-curl http://payment-service:8080/health
+kubectl apply -f order-service-deployment.yaml
 ```
 
-Possible causes:
+Internal story:
 
 ```text
-CoreDNS issue
-wrong namespace
-Service does not exist
-NetworkPolicy blocks DNS
-Pod DNS config broken
-node networking problem
+1. API Server validates Deployment.
+2. Deployment object stored in etcd.
+3. Deployment controller creates ReplicaSet.
+4. ReplicaSet controller creates 3 Pod objects.
+5. Scheduler sees Pods with no node.
+6. Scheduler selects nodes.
+7. API Server stores Pod bindings.
+8. Kubelet on selected nodes sees assigned Pods.
+9. Container runtime pulls image.
+10. Container starts Java process.
+11. Spring Boot starts.
+12. Readiness probe begins.
+13. Ready Pods become Service endpoints.
 ```
 
 ASCII:
 
 ```text
-order Pod
-   |
-   | DNS query payment-service
-   v
-CoreDNS Service
-   |
-   v
-Kubernetes Service record
-   |
-   v
-payment-service ClusterIP
+Deployment YAML
+      |
+      v
+Deployment object
+      |
+      v
+ReplicaSet
+      |
+      v
+Pods created
+      |
+      v
+Scheduler assigns Nodes
+      |
+      v
+Kubelet starts Containers
+      |
+      v
+Spring Boot Ready
+      |
+      v
+Service sends traffic
 ```
 
-Plane interpretation:
+This one flow explains many production problems.
+
+When something fails, identify which step failed.
+
+---
+
+# 33. Dry Run: Pod Crash
+
+Initial desired state:
 
 ```text
-Service object is control plane state.
-DNS query and packet movement are data plane behavior.
-CoreDNS itself runs as Pods, so it is part of the data plane workload supporting cluster networking.
+order-service replicas = 3
 ```
+
+Actual:
+
+```text
+Pod A Running Ready
+Pod B Running Ready
+Pod C Running Ready
+```
+
+Then Pod B container crashes because DB password is wrong after config update.
+
+Flow:
+
+```text
+Container exits with error
+   |
+   v
+Kubelet notices
+   |
+   v
+Restart policy applies
+   |
+   v
+Container restarted
+   |
+   v
+App crashes again
+   |
+   v
+CrashLoopBackOff
+```
+
+ReplicaSet may still see the Pod object exists.
+
+Kubelet keeps trying to restart the container.
 
 Debug:
 
 ```bash
-kubectl get svc -n kube-system kube-dns
-kubectl get pods -n kube-system -l k8s-app=kube-dns
-kubectl logs -n kube-system deploy/coredns
+kubectl get pods
+kubectl logs pod-b
+kubectl logs pod-b --previous
+kubectl describe pod pod-b
+```
+
+Mental distinction:
+
+```text
+Pod exists.
+Container inside Pod is unhealthy.
+```
+
+Kubernetes can restart the process.
+
+It cannot guess the correct DB password.
+
+---
+
+# 34. Dry Run: Node Failure
+
+Initial:
+
+```text
+Node A: order-1
+Node B: order-2
+Node C: order-3
+```
+
+Node B fails.
+
+Timeline:
+
+```text
+1. Kubelet heartbeat from Node B stops.
+2. Control plane marks Node B NotReady/Unknown.
+3. Pods on Node B are considered unavailable.
+4. ReplicaSet sees desired 3 but available 2.
+5. New Pod order-4 is created.
+6. Scheduler places order-4 on Node A or Node C.
+7. Kubelet starts container.
+8. Readiness passes.
+9. Service sends traffic to healthy Pods.
+```
+
+ASCII:
+
+```text
+Before failure:
+
+Node A [order-1]
+Node B [order-2]
+Node C [order-3]
+
+After Node B failure:
+
+Node A [order-1]
+Node B [X]
+Node C [order-3]
+
+After reconciliation:
+
+Node A [order-1, order-4]
+Node B [X]
+Node C [order-3]
+```
+
+Production lesson:
+
+```text
+Kubernetes restores desired Pod count.
+It does not save in-memory state from the dead Pod.
 ```
 
 ---
 
-# 38. Production Story: Control Plane Slow, Traffic Fine
+# 35. Dry Run: Rolling Update Across Pods
 
-A team sees alerts:
+Current version:
 
 ```text
-kubectl commands timing out
-API Server latency high
-etcd disk latency high
+order-service:1.0.0
 ```
 
-But customer traffic graphs show:
+New version:
 
 ```text
-HTTP 200 rate normal
-p99 latency normal
-error rate normal
+order-service:1.1.0
 ```
 
-Junior reaction:
+Deployment changes Pod template.
+
+Kubernetes creates a new ReplicaSet.
+
+Flow:
 
 ```text
-Restart all Pods?
-```
-
-Senior reaction:
-
-```text
-Do not touch data plane blindly.
-Separate management-path problem from traffic-path problem.
+Old ReplicaSet has 3 Pods.
+New ReplicaSet starts with 0 Pods.
+Deployment gradually scales new up and old down.
 ```
 
 Picture:
 
 ```text
-Management path degraded:
-Engineer -> kubectl -> API Server -> etcd   SLOW
-
-Traffic path healthy:
-Customer -> LB -> Service -> Pod -> App     OK
+Step 0: v1 v1 v1
+Step 1: v1 v1 v1 v2-starting
+Step 2: v1 v1 v2
+Step 3: v1 v2 v2
+Step 4: v2 v2 v2
 ```
 
-Actions:
+If new Pods fail readiness:
 
 ```text
-check API Server metrics
-check etcd fsync latency
-check control plane node CPU/memory
-check admission webhooks
-avoid unnecessary deploys during control plane instability
+New Pod starts
+Readiness fails
+Service does not route traffic
+Rollout stalls
+Old Pods may remain
 ```
 
-Lesson:
+Debug:
+
+```bash
+kubectl rollout status deployment/order-service
+kubectl describe deployment order-service
+kubectl get rs
+kubectl get pods
+```
+
+Mental model:
 
 ```text
-When the brain is slow, do not randomly disturb healthy muscles.
+Deployment safely changes Pod templates over time.
 ```
 
 ---
 
-# 39. Production Story: Control Plane Healthy, Traffic Broken
+# 36. Production Story: All Pods On One Node
 
-Another incident:
+A team runs 3 replicas of order-service.
+
+They think:
 
 ```text
-kubectl get pods works
-Deployments look healthy
-API Server is fine
-But users get 503
+We are safe because replicas = 3.
 ```
 
-Investigation:
+But actual placement:
 
-```bash
-kubectl get endpoints checkout-service
+```text
+Node A:
+  order-1
+  order-2
+  order-3
+
+Node B:
+  empty
+Node C:
+  empty
 ```
+
+Node A crashes.
 
 Result:
+
+```text
+All order-service replicas unavailable.
+```
+
+The team had replica count but poor failure-domain spreading.
+
+Fix options:
+
+```text
+Use topology spread constraints
+Use pod anti-affinity
+Use multiple nodes/zones
+Monitor pod placement
+```
+
+Debug command:
+
+```bash
+kubectl get pods -o wide
+```
+
+Look at NODE column.
+
+Mindset:
+
+```text
+Replica count answers how many.
+Placement answers where.
+Availability needs both.
+```
+
+---
+
+# 37. Production Story: Pending Pods
+
+Symptoms:
+
+```text
+order-service-abc   Pending
+```
+
+Beginner says:
+
+```text
+Kubernetes is broken.
+```
+
+Better question:
+
+```text
+Why could the scheduler not place this Pod?
+```
+
+Debug:
+
+```bash
+kubectl describe pod order-service-abc
+```
+
+Common events:
+
+```text
+0/3 nodes are available: insufficient memory
+0/3 nodes are available: insufficient cpu
+node(s) had untolerated taint
+pod has unbound immediate PersistentVolumeClaims
+```
+
+Meaning:
+
+```text
+Pod object exists.
+No suitable node found yet.
+Container has not started.
+```
+
+Fix depends on cause:
+
+```text
+Lower wrong requests
+Add nodes
+Fix tolerations
+Fix PVC/storage
+Fix node selector
+```
+
+Mental model:
+
+```text
+Pending is usually a placement problem, not an app crash.
+```
+
+---
+
+# 38. Production Story: OOMKilled Java Pod
+
+Symptoms:
+
+```text
+order-service-abc restarted
+Last State: Terminated
+Reason: OOMKilled
+Exit Code: 137
+```
+
+Meaning:
+
+```text
+Container exceeded memory limit.
+Kernel killed it.
+```
+
+Spring Boot memory includes more than heap.
+
+```text
+Heap
+Metaspace
+Thread stacks
+Direct buffers
+JIT/code cache
+Native memory
+Libraries
+```
+
+Bad assumption:
+
+```text
+memory limit 512Mi means set -Xmx512m
+```
+
+This may fail because heap uses all memory and leaves no room for native overhead.
+
+Better:
+
+```text
+limit 1Gi
+heap maybe 60-70% depending app
+measure under load
+```
+
+Example:
+
+```yaml
+resources:
+  requests:
+    memory: "1Gi"
+  limits:
+    memory: "1Gi"
+```
+
+JVM option example:
+
+```text
+-XX:MaxRAMPercentage=70
+```
+
+Debug:
+
+```bash
+kubectl describe pod <pod>
+kubectl top pod <pod>
+kubectl logs <pod> --previous
+```
+
+Mental model:
+
+```text
+Kubernetes enforces the container boundary.
+Java must be sized for that boundary.
+```
+
+---
+
+# 39. Production Story: Service Has No Endpoints
+
+Symptoms:
+
+```text
+curl http://order-service fails
+kubectl get svc shows service exists
+kubectl get pods shows pods running
+```
+
+Check endpoints:
+
+```bash
+kubectl get endpoints order-service
+```
+
+Output:
 
 ```text
 <none>
 ```
 
-Cause:
+Possible causes:
 
 ```text
-New readiness probe path was wrong:
-/actuator/health/ready
-instead of
-/actuator/health/readiness
+Service selector does not match Pod labels
+Pods are not Ready
+targetPort does not match container port
+Wrong namespace
 ```
 
-Control plane accepted YAML.
-
-Data plane app started.
-
-Readiness failed.
-
-Service removed Pods from endpoints.
-
-ASCII:
-
-```text
-Pod Running
-   |
-   X readiness failing
-   |
-   v
-Not Ready
-   |
-   v
-No Service endpoint
-   |
-   v
-503 to users
-```
-
-Lesson:
-
-```text
-A healthy control plane does not guarantee healthy application traffic.
-```
-
-You must debug the data plane path.
-
----
-
-# 40. Production Story: Node Failure During Rollout
-
-Scenario:
-
-```text
-Rolling update starts
-One worker node dies
-New Pods need scheduling
-```
-
-If control plane is healthy:
-
-```text
-Node marked NotReady
-ReplicaSet creates replacements
-Scheduler chooses healthy nodes
-Rollout may continue if capacity exists
-```
-
-If cluster has poor capacity:
-
-```text
-Pods remain Pending
-rollout stalls
-availability may drop
-```
-
-ASCII:
-
-```text
-worker-1: old pod
-worker-2: X failed
-worker-3: new pod
-
-Need replacement
-    |
-    v
-Scheduler checks capacity
-    |
-    +-- enough capacity -> new pod starts
-    |
-    +-- no capacity ----> Pending
-```
-
-Production design:
-
-```text
-replica count >= 3
-spread across nodes
-PodDisruptionBudget
-resource requests realistic
-cluster autoscaler configured
-readiness probes correct
-```
-
-Plane lesson:
-
-```text
-Data plane failure requires control plane recovery decisions.
-Control plane recovery needs enough data plane capacity.
-```
-
----
-
-# 41. Interview Answer: Control Plane vs Data Plane
-
-Strong answer:
-
-```text
-In Kubernetes, the control plane is responsible for cluster decisions, state storage, scheduling, and reconciliation. It includes the API Server, etcd, scheduler, and controller manager. The data plane is where workloads actually run and traffic is served. It includes worker nodes, kubelet, container runtime, Pods, CNI networking, and Service datapath.
-
-The control plane decides what should happen. The data plane executes it. For example, when I apply a Deployment, the API Server stores it, controllers create Pods, the scheduler assigns nodes, and then kubelet on the selected nodes starts containers. Customer HTTP traffic usually flows through load balancer, ingress/service, and Pods, not through the API Server.
-```
-
-Short version for interview:
-
-```text
-Control plane = brain and memory.
-Data plane = muscles and traffic path.
-```
-
-But always add production nuance:
-
-```text
-If control plane has issues, existing workloads may continue, but new scheduling, deployments, reconciliation, and autoscaling can be affected. If data plane has issues, customer traffic and running workloads are affected directly.
-```
-
----
-
-# 42. Common Interview Questions
-
-## What components are in the control plane?
-
-```text
-API Server, etcd, scheduler, controller manager, and sometimes cloud controller manager.
-```
-
-## What components are in the data plane?
-
-```text
-Worker nodes, kubelet, container runtime, Pods, CNI networking, Service datapath, and node OS/kernel resources.
-```
-
-## Does API Server serve application traffic?
-
-```text
-No. API Server serves Kubernetes API traffic. Application traffic goes through load balancers, ingress/gateway, Services, and Pods.
-```
-
-## What happens if the scheduler is down?
-
-```text
-Existing Pods continue running, but new Pods that need placement may stay Pending.
-```
-
-## What happens if API Server is down?
-
-```text
-kubectl and control operations fail or degrade. Existing workloads may keep running for some time, but the cluster cannot reliably accept changes or reconcile new state.
-```
-
-## Is kubelet control plane or data plane?
-
-```text
-kubelet is data plane. It runs on worker nodes and executes assigned Pods, but it communicates with the API Server.
-```
-
-## Is Service control plane or data plane?
-
-```text
-The Service object is control plane state. The actual packet routing/load balancing behavior is data plane.
-```
-
-## Why is this distinction useful?
-
-```text
-It helps debug incidents. If kubectl fails but traffic works, suspect control plane or management path. If kubectl works but users get errors, follow the data plane traffic path.
-```
-
----
-
-# 43. Beginner Mistakes
-
-```text
-Mistake 1:
-Thinking API Server runs application traffic.
-Correct:
-API Server handles Kubernetes API traffic.
-
-Mistake 2:
-Thinking scheduler starts containers.
-Correct:
-Scheduler chooses nodes. Kubelet starts containers.
-
-Mistake 3:
-Thinking etcd stores application data.
-Correct:
-etcd stores Kubernetes cluster state, not your order rows.
-
-Mistake 4:
-Thinking kubectl failure means all apps are down.
-Correct:
-Management path may fail while data path still works.
-
-Mistake 5:
-Thinking Running means reachable.
-Correct:
-Service endpoints, readiness, networking, and ports must be correct.
-
-Mistake 6:
-Ignoring worker node health.
-Correct:
-Data plane health directly affects user traffic.
-
-Mistake 7:
-Debugging randomly.
-Correct:
-First classify: control plane, data plane, or boundary.
-```
-
----
-
-# 44. Command Cheat Sheet By Plane
-
-Control plane checks:
+Debug sequence:
 
 ```bash
-kubectl cluster-info
-kubectl get componentstatuses   # older/deprecated in many clusters, but seen in interviews
-kubectl get --raw='/readyz?verbose'
+kubectl get svc order-service -o yaml
+kubectl get pods --show-labels
+kubectl describe pod <pod>
+kubectl get endpoints order-service
+```
+
+ASCII:
+
+```text
+Service selector app=order-service
+        |
+        v
+Pods labels app=order
+        |
+        v
+No match
+        |
+        v
+No endpoints
+        |
+        v
+No traffic
+```
+
+Production lesson:
+
+```text
+Running Pods do not guarantee reachable service.
+Service routing needs labels + readiness + ports.
+```
+
+---
+
+# 40. Debugging Mindset: Cluster To Container
+
+When debugging Kubernetes, follow the hierarchy.
+
+```text
+Cluster
+  |
+  v
+Node
+  |
+  v
+Pod
+  |
+  v
+Container
+  |
+  v
+Application logs
+```
+
+Do not jump randomly.
+
+Good command path:
+
+```bash
 kubectl get nodes
-kubectl get events -A --sort-by=.lastTimestamp
-kubectl auth can-i get pods
-kubectl api-resources
-kubectl get deployment order-service -o yaml
-```
-
-Data plane checks:
-
-```bash
 kubectl get pods -o wide
 kubectl describe pod <pod>
 kubectl logs <pod>
 kubectl logs <pod> --previous
-kubectl exec -it <pod> -- sh
-kubectl top pod
-kubectl top node
 kubectl get svc
 kubectl get endpoints
-kubectl get endpointslices
 ```
 
-Node-level checks:
-
-```bash
-systemctl status kubelet
-journalctl -u kubelet
-crictl ps
-crictl logs <container-id>
-ip route
-iptables -t nat -L
-```
-
-Traffic checks:
-
-```bash
-kubectl run curl --image=curlimages/curl -it --rm -- sh
-curl http://order-service:8080/actuator/health
-nslookup order-service
-```
-
-Mindset:
+Interpretation:
 
 ```text
-Use commands according to the plane you are debugging.
+Node NotReady      -> machine/agent/network problem
+Pod Pending        -> scheduling/resource problem
+ImagePullBackOff   -> image/registry problem
+CrashLoopBackOff   -> app/container startup problem
+Running 0/1        -> readiness or container issue
+Service no endpoint-> label/readiness/port issue
+```
+
+One picture:
+
+```text
+Is cluster healthy?
+   |
+Are nodes ready?
+   |
+Are pods scheduled?
+   |
+Did containers start?
+   |
+Is app ready?
+   |
+Does service route?
+```
+
+This is production debugging.
+
+---
+
+# 41. Commands Cheat Sheet
+
+Cluster and nodes:
+
+```bash
+kubectl cluster-info
+kubectl get nodes
+kubectl describe node <node-name>
+kubectl top nodes
+```
+
+Pods:
+
+```bash
+kubectl get pods
+kubectl get pods -o wide
+kubectl get pods --show-labels
+kubectl describe pod <pod-name>
+kubectl logs <pod-name>
+kubectl logs <pod-name> --previous
+kubectl exec -it <pod-name> -- sh
+```
+
+Deployments and ReplicaSets:
+
+```bash
+kubectl get deployments
+kubectl describe deployment order-service
+kubectl get rs
+kubectl rollout status deployment/order-service
+kubectl rollout history deployment/order-service
+kubectl rollout undo deployment/order-service
+```
+
+Services:
+
+```bash
+kubectl get svc
+kubectl describe svc order-service
+kubectl get endpoints order-service
+```
+
+Resource usage:
+
+```bash
+kubectl top pod
+kubectl top pod <pod-name>
+kubectl top node
+```
+
+Placement:
+
+```bash
+kubectl get pods -o wide
+```
+
+The `NODE` column tells where each Pod is running.
+
+---
+
+# 42. Interview Questions
+
+## What is a Kubernetes cluster?
+
+A Kubernetes cluster is a set of machines managed as one orchestration system. It includes a control plane and worker nodes. The cluster stores desired state, schedules workloads, runs Pods, and continuously reconciles actual state toward desired state.
+
+## What is a node?
+
+A node is a machine in the cluster that provides CPU, memory, disk, and network resources for running Pods. Each node runs kubelet and a container runtime. Kubelet watches for Pods assigned to that node and starts containers locally.
+
+## What is a Pod?
+
+A Pod is the smallest deployable and schedulable unit in Kubernetes. It wraps one or more containers that share network and storage context. Kubernetes schedules Pods onto Nodes, and containers inside the Pod run the actual application processes.
+
+## Is a Pod the same as a container?
+
+No. A Pod is a Kubernetes runtime unit that can contain one or more containers. The container runs the actual process. Kubernetes schedules the Pod, while the container runtime starts containers inside that Pod.
+
+## Can a Pod run on multiple nodes?
+
+No. A Pod is assigned to exactly one node at a time. If that node fails, Kubernetes may create a replacement Pod on another node, but the original Pod does not stretch across nodes.
+
+## Why should we not call Pod IPs directly?
+
+Pod IPs are temporary. When Pods restart or are recreated, their IPs can change. A Service provides a stable name and virtual IP that routes traffic to currently Ready matching Pods.
+
+## What happens when a node dies?
+
+The control plane eventually marks the node NotReady or Unknown. Pods on that node become unavailable. Controllers such as ReplicaSet create replacement Pods to restore the desired replica count on healthy nodes.
+
+## What is the difference between Pending and CrashLoopBackOff?
+
+Pending usually means the Pod has not been scheduled or containers have not started, often due to resource, taint, selector, or storage issues. CrashLoopBackOff means the container starts but repeatedly crashes, so kubelet restarts it with backoff.
+
+## Why do we need readiness probes?
+
+A container can be running before the application is ready for traffic. Readiness probes tell Kubernetes whether a Pod should be included in Service endpoints. This prevents traffic from reaching apps that are still starting or temporarily unable to serve.
+
+## Why are resource requests important?
+
+Resource requests tell the scheduler how much CPU and memory to reserve for a Pod. Without correct requests, Kubernetes cannot place Pods safely. Bad requests can cause poor packing, Pending Pods, node pressure, or unstable performance.
+
+---
+
+# 43. Cluster Node Pod Cheat Sheet
+
+```text
+Cluster
+  Whole Kubernetes environment.
+  Contains control plane and worker nodes.
+
+Node
+  Machine that runs Pods.
+  Provides CPU, memory, disk, network.
+  Runs kubelet and container runtime.
+
+Pod
+  Smallest deployable/schedulable unit.
+  Assigned to one node.
+  Has its own IP.
+  Contains one or more containers.
+
+Container
+  Actual application process environment.
+  Built from image.
+  Runs java -jar app.jar for Spring Boot.
+```
+
+Hierarchy:
+
+```text
+Cluster -> Node -> Pod -> Container -> Process
+```
+
+Failure mapping:
+
+```text
+Cluster API down      -> cannot manage cluster normally
+Node NotReady         -> machine/agent/network issue
+Pod Pending           -> scheduling/resource issue
+ImagePullBackOff      -> image/registry issue
+CrashLoopBackOff      -> app/container crash issue
+Running not Ready     -> health/readiness issue
+Service no endpoints  -> label/readiness/port issue
+```
+
+Production rules:
+
+```text
+Do not store durable data in Pod local disk.
+Do not call Pod IPs directly.
+Do not put unrelated services in one Pod.
+Do not rely only on replica count; check placement.
+Set realistic resource requests and limits.
+Use readiness and liveness correctly.
+Design Spring Boot shutdown gracefully.
 ```
 
 ---
 
-# 45. One Picture To Remember
+# 44. One Picture To Remember
 
 ```text
-                            MANAGEMENT PATH
+                         KUBERNETES CLUSTER
 
-Developer
-   |
-   v
-kubectl
-   |
-   v
-+------------------------------+
-|        CONTROL PLANE         |
-|                              |
-|  API Server                  |
-|  etcd                        |
-|  Controller Manager          |
-|  Scheduler                   |
-|                              |
-|  decides desired cluster     |
-|  state and reconciliation    |
-+---------------+--------------+
-                |
-                | assignments / desired actions
-                v
-+------------------------------+
-|          DATA PLANE          |
-|                              |
-|  Worker Nodes                |
-|  kubelet                     |
-|  container runtime           |
-|  CNI networking              |
-|  Service datapath            |
-|  Pods / Containers           |
-|                              |
-|  runs applications           |
-|  serves real traffic         |
-+---------------+--------------+
-                ^
-                |
-                v
-Customer ---> Service/Ingress ---> Pod ---> Spring Boot
++------------------------------------------------------------------+
+|                                                                  |
+|  Control Plane                                                   |
+|  +----------------+   +-------------+   +--------------------+   |
+|  | API Server     |   | Scheduler   |   | Controllers        |   |
+|  +----------------+   +-------------+   +--------------------+   |
+|                                                                  |
+|              desired state -> placement -> reconciliation         |
+|                                                                  |
+|  Worker Nodes                                                    |
+|                                                                  |
+|  +--------------------------+   +-----------------------------+   |
+|  | Node A                   |   | Node B                      |   |
+|  |                          |   |                             |   |
+|  | kubelet                  |   | kubelet                     |   |
+|  | container runtime        |   | container runtime           |   |
+|  |                          |   |                             |   |
+|  | +----------------------+ |   | +-------------------------+ |   |
+|  | | Pod order-1          | |   | | Pod order-2             | |   |
+|  | | IP 10.244.1.10       | |   | | IP 10.244.2.20          | |   |
+|  | | +------------------+ | |   | | +---------------------+ | |   |
+|  | | | Container        | | |   | | | Container           | | |   |
+|  | | | java -jar app    | | |   | | | java -jar app       | | |   |
+|  | | +------------------+ | |   | | +---------------------+ | |   |
+|  | +----------------------+ |   | +-------------------------+ |   |
+|  |                          |   |                             |   |
+|  | +----------------------+ |   | +-------------------------+ |   |
+|  | | Pod payment-1        | |   | | Pod inventory-1        | |   |
+|  | +----------------------+ |   | +-------------------------+ |   |
+|  +--------------------------+   +-----------------------------+   |
+|                                                                  |
++------------------------------------------------------------------+
 
 Rule:
-Control plane makes decisions.
-Data plane serves traffic.
+
+Cluster is the whole system.
+Node is the machine.
+Pod is the scheduled runtime cell.
+Container is where your app process runs.
 ```
 
 ---
 
-# 46. Final Production Checklist
+# 45. Final Memory Hook
+
+Do not memorize Kubernetes as random objects.
+
+Remember this physical chain:
 
 ```text
-[ ] I can explain control plane as Kubernetes brain/memory.
-[ ] I can explain data plane as runtime/traffic execution.
-[ ] I know API Server does not serve app traffic.
-[ ] I know scheduler chooses nodes but does not start containers.
-[ ] I know kubelet starts assigned Pods on worker nodes.
-[ ] I know etcd stores Kubernetes state, not application business data.
-[ ] I know Service object and Service datapath are different concepts.
-[ ] I can explain why existing Pods may run during short control plane issues.
-[ ] I can explain why new Pods may remain Pending if scheduler is unavailable.
-[ ] I can debug kubectl failure separately from customer traffic failure.
-[ ] I can debug Pod Pending as scheduling/control-plane path.
-[ ] I can debug CrashLoopBackOff as runtime/app/data-plane path.
-[ ] I can debug no endpoints using labels and readiness.
-[ ] I can follow traffic from Ingress to Service to Endpoint to Pod.
-[ ] I can answer interview questions with production nuance.
+Your Java code
+   |
+   v
+JAR file
+   |
+   v
+Container image
+   |
+   v
+Container
+   |
+   v
+Pod
+   |
+   v
+Node
+   |
+   v
+Cluster
 ```
 
----
-
-# 47. Final Memory Hook
-
-Do not memorize Kubernetes as many moving parts.
-
-Remember it like a body:
+And this operational chain:
 
 ```text
-Control Plane = brain + memory + decision system
-Data Plane    = muscles + roads + running work
-```
-
-Or like an airport:
-
-```text
-Control Plane = control tower
-Data Plane    = runways + airplanes + passengers
+You declare desired replicas
+   |
+   v
+Kubernetes creates Pods
+   |
+   v
+Scheduler places Pods on Nodes
+   |
+   v
+Kubelet starts Containers
+   |
+   v
+Spring Boot serves traffic when Ready
 ```
 
 Final sentence:
 
 ```text
-Kubernetes control plane decides and remembers what the cluster should do; Kubernetes data plane runs the actual Pods and carries real user traffic.
+A Kubernetes cluster is not where you memorize objects.
+It is where nodes provide capacity, pods become disposable runtime cells, and containers run your real application processes under continuous orchestration.
 ```
+
