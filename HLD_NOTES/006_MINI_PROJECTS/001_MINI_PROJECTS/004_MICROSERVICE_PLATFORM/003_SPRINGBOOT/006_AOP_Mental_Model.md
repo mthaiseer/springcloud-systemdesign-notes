@@ -7,74 +7,72 @@
 
 # Why AOP Exists
 
-Imagine 500 service methods.
+Modern applications contain hundreds of business methods.
 
-Every method needs:
+```text
+Create Order
+Transfer Money
+Book Ticket
+Cancel Booking
+Generate Invoice
+```
+
+Every method usually needs:
 
 ```text
 Logging
-Transactions
+Transaction
 Security
 Metrics
+Tracing
 Retry
 Auditing
 ```
 
 Without AOP:
 
-```java
-public void transfer() {
-
-    log();
-
-    startTransaction();
-
-    try {
-        businessLogic();
-
-        commit();
-    }
-    catch(Exception e) {
-        rollback();
-    }
-}
-```
-
-Business code becomes polluted.
-
-AOP solves this.
+Business logic becomes mixed with infrastructure logic.
 
 ---
 
 # The Problem
 
-Suppose:
+Imagine 300 service methods.
+
+Without AOP:
 
 ```java
-transferMoney()
+public void transfer() {
 
-createOrder()
+    logStart();
 
-cancelOrder()
+    startTransaction();
 
-refundPayment()
+    try {
+
+        businessLogic();
+
+        commit();
+
+        logSuccess();
+
+    } catch(Exception e) {
+
+        rollback();
+
+        logFailure();
+    }
+}
 ```
 
-Every method needs:
+Now repeat this in:
 
 ```text
-Transaction
-Logging
-Security
+300 Services
+500 Methods
 ```
 
-Duplicated code everywhere.
-
-This violates:
-
-```text
-Single Responsibility Principle
-```
+Huge duplication.
 
 ---
 
@@ -91,19 +89,23 @@ Smart Middleman
    |
    v
 
-Real Object
+Target Object
 ```
+
+Everything in Spring AOP comes from this picture.
 
 The middleman can:
 
 ```text
-Execute Code Before
+Run Code Before
 
-Execute Code After
+Run Code After
 
-Execute Code On Error
+Run Code On Error
 
-Modify Return Value
+Modify Results
+
+Block Access
 ```
 
 ---
@@ -112,50 +114,77 @@ Modify Return Value
 
 Airport Security
 
-Passenger wants airplane.
-
-Actual flow:
-
 ```text
 Passenger
-     |
-     v
+
+    |
+    v
 
 Security Checkpoint
-     |
-     v
+
+    |
+    v
 
 Boarding Gate
-     |
-     v
+
+    |
+    v
 
 Aircraft
 ```
 
 Passenger never directly enters aircraft.
 
-Security sits in between.
+Security sits between.
 
 AOP works exactly the same.
 
 ---
 
-# Java Example
+# One Picture To Remember
+
+```text
+CLIENT
+
+   |
+   v
+
++----------------+
+| SMART MIDDLEMAN|
++----------------+
+
+   |
+   v
+
+REAL OBJECT
+```
+
+Never forget this.
+
+---
+
+# Spring Boot Example #1
 
 Without AOP
 
 ```java
-public void transfer() {
+@Service
+public class PaymentService {
 
-    System.out.println("Start");
+    public void transfer() {
 
-    businessLogic();
+        System.out.println("START");
 
-    System.out.println("End");
+        businessLogic();
+
+        System.out.println("END");
+    }
 }
 ```
 
-With AOP
+Business code polluted.
+
+With AOP:
 
 ```java
 @Logged
@@ -169,28 +198,6 @@ Logging moved outside business code.
 
 ---
 
-# One Picture To Remember
-
-```text
-CALLER
-
-   |
-   v
-
-+----------------+
-| SMART MIDDLEMAN|
-+----------------+
-
-   |
-   v
-
-TARGET OBJECT
-```
-
-Everything in AOP comes from this picture.
-
----
-
 # Rich ASCII Diagram
 
 ```text
@@ -199,23 +206,17 @@ Client
    |
    v
 
-+----------------------+
-| Logging Advice       |
-+----------------------+
+Logging Advice
 
    |
    v
 
-+----------------------+
-| Transaction Advice   |
-+----------------------+
+Transaction Advice
 
    |
    v
 
-+----------------------+
-| Security Advice      |
-+----------------------+
+Security Advice
 
    |
    v
@@ -225,11 +226,14 @@ PaymentService
 
 ---
 
-# Core AOP Vocabulary
+# Core Vocabulary
 
 ```text
 Target
 = Real Object
+
+Proxy
+= Smart Middleman
 
 Advice
 = Extra Behavior
@@ -239,9 +243,6 @@ Aspect
 
 Join Point
 = Method Execution
-
-Proxy
-= Smart Middleman
 
 Pointcut
 = Which Methods?
@@ -256,7 +257,8 @@ Developer writes:
 ```java
 @Transactional
 @Service
-class PaymentService {}
+public class PaymentService {
+}
 ```
 
 Spring sees:
@@ -265,7 +267,7 @@ Spring sees:
 Transactional Annotation
 ```
 
-Spring creates:
+Creates:
 
 ```text
 Proxy
@@ -276,7 +278,9 @@ PaymentService
 
 ---
 
-# Internal Flow
+# Proxy Creation Pipeline
+
+During startup:
 
 ```text
 Bean Creation
@@ -289,20 +293,66 @@ BeanPostProcessor
       |
       v
 
-Detect AOP Annotation
+InfrastructureAdvisorAutoProxyCreator
 
       |
       v
 
-Create Proxy
+ProxyFactory
 
       |
       v
 
-Store Proxy In Context
+JDK/CGLIB Proxy
+
+      |
+      v
+
+Stored In Context
 ```
 
-ApplicationContext usually stores proxy.
+This is where AOP enters Spring.
+
+---
+
+# What Gets Injected?
+
+Code:
+
+```java
+@Autowired
+private PaymentService service;
+```
+
+Reality:
+
+```text
+service
+
+      |
+      v
+
+PaymentService$$SpringProxy
+
+      |
+      v
+
+PaymentService
+```
+
+Most developers think:
+
+```text
+Injected Bean = PaymentService
+```
+
+Reality:
+
+```text
+Injected Bean = Proxy
+```
+
+Very important.
 
 ---
 
@@ -311,10 +361,10 @@ ApplicationContext usually stores proxy.
 Code:
 
 ```java
-paymentService.transfer();
+service.transfer();
 ```
 
-Actual Flow:
+Execution:
 
 ```text
 Caller
@@ -327,23 +377,25 @@ Proxy
    |
    v
 
-Real Method
+PaymentService
 ```
 
 Not:
 
 ```text
 Caller
+
    |
    v
-Real Method
+
+PaymentService
 ```
 
 ---
 
 # Around Advice Mental Model
 
-Most important advice.
+Most important advice type.
 
 ```text
 Before
@@ -359,7 +411,7 @@ Target Method
 After
 ```
 
-Spring internally:
+Internally:
 
 ```java
 before();
@@ -374,103 +426,165 @@ try {
 catch(Exception e){
 
     error();
-
 }
 ```
 
 ---
 
-# Dry Run #2
+# Spring Boot Example #2
 
-Transaction Example
+```java
+@Aspect
+@Component
+public class LoggingAspect {
+
+    @Around(
+      "execution(* com.demo..*(..))"
+    )
+    public Object log(
+      ProceedingJoinPoint pjp
+    ) throws Throwable {
+
+        System.out.println("Before");
+
+        Object result =
+            pjp.proceed();
+
+        System.out.println("After");
+
+        return result;
+    }
+}
+```
+
+Execution:
+
+```text
+Before
+
+Real Method
+
+After
+```
+
+---
+
+# Transaction Example
 
 ```java
 @Transactional
 public void transfer() {
+
+    debit();
+
+    credit();
 }
 ```
 
-Flow:
-
-```text
-Proxy Receives Call
-
-Start Transaction
-
-Call Target
-
-Commit
-
-Return
-```
-
-Exception:
-
-```text
-Proxy Receives Call
-
-Start Transaction
-
-Call Target
-
-Exception
-
-Rollback
-```
-
----
-
-# Why Proxy Exists
-
-Without proxy:
+Developer only sees:
 
 ```java
 transfer()
 ```
 
-cannot magically gain:
-
-```text
-Transaction
-
-Security
-
-Logging
-```
-
-Proxy provides interception point.
+Proxy performs everything else.
 
 ---
 
-# Production Scale Example
-
-E-Commerce System
+# Internal Execution
 
 ```text
-300 Services
+Client
 
-10,000 Requests/sec
+    |
+    v
+
+Transaction Proxy
+
+    |
+    v
+
+Begin Transaction
+
+    |
+    v
+
+transfer()
+
+    |
+    v
+
+Commit
 ```
 
-Requirements:
+---
+
+# Failure Flow
+
+Exception:
 
 ```text
-Transactions
+Client
 
-Metrics
+    |
+    v
 
-Tracing
+Proxy
 
-Security
+    |
+    v
+
+Begin Transaction
+
+    |
+    v
+
+transfer()
+
+    |
+    v
+
+Exception
+
+    |
+    v
+
+Rollback
 ```
 
-Instead of modifying 300 services:
+This is the real magic of Transactional.
+
+---
+
+# Spring Boot Example #3
+
+```java
+@Transactional
+public void createOrder() {
+
+    orderRepo.save(order);
+
+    paymentRepo.save(payment);
+
+    throw new RuntimeException();
+}
+```
+
+Execution:
 
 ```text
-Add Aspects Once
+Start Transaction
+
+Save Order
+
+Save Payment
+
+Exception
+
+Rollback Everything
 ```
 
-All services gain behavior.
+Database remains consistent.
 
 ---
 
@@ -492,6 +606,11 @@ Transaction Aspect
   |
   v
 
+Logging Aspect
+
+  |
+  v
+
 Metrics Aspect
 
   |
@@ -500,11 +619,49 @@ Metrics Aspect
 Target Service
 ```
 
+Many aspects can execute together.
+
 ---
 
-# Production Failure Story
+# Production Scale Example
 
-Team created:
+E-Commerce System
+
+```text
+300 Services
+
+10000 Requests/sec
+```
+
+Requirements:
+
+```text
+Transaction
+
+Tracing
+
+Metrics
+
+Security
+
+Logging
+```
+
+Without AOP:
+
+Modify hundreds of services.
+
+With AOP:
+
+Add behavior once.
+
+Entire system gains capability.
+
+---
+
+# Famous Production Failure
+
+Developer:
 
 ```java
 @Transactional
@@ -515,7 +672,7 @@ private void save() {
 Expected:
 
 ```text
-Transaction
+Transaction Active
 ```
 
 Reality:
@@ -526,23 +683,9 @@ No Transaction
 
 Why?
 
-Proxy cannot intercept private methods.
-
-Outage followed.
-
 ---
 
-# Failure Flow
-
-Developer:
-
-```java
-@Transactional
-private void save() {
-}
-```
-
-Flow:
+# Failure Explanation
 
 ```text
 Caller
@@ -554,12 +697,16 @@ Target Directly
 
 No Proxy
 
+No Interception
+
 No Transaction
 ```
 
+Private methods cannot be intercepted.
+
 ---
 
-# Famous Self Invocation Problem
+# Self Invocation Problem
 
 ```java
 @Service
@@ -576,7 +723,7 @@ public class PaymentService {
 }
 ```
 
-Developer expects:
+Expected:
 
 ```text
 Transaction Active
@@ -592,23 +739,7 @@ No Transaction
 
 # Internal Execution
 
-Expected:
-
-```text
-process()
-
-  |
-  v
-
-Proxy
-
-  |
-  v
-
-save()
-```
-
-Actual:
+Developer imagines:
 
 ```text
 process()
@@ -616,62 +747,192 @@ process()
    |
    v
 
-save()
+Proxy
 
-Inside Same Object
+   |
+   v
+
+save()
+```
+
+Reality:
+
+```text
+process()
+
+   |
+   v
+
+this.save()
+
+   |
+   v
+
+Target Object
 ```
 
 Proxy bypassed.
 
-This is one of Spring's most famous bugs.
+---
+
+# Spring Boot Example #4
+
+```java
+@Service
+@RequiredArgsConstructor
+public class PaymentService {
+
+    private final PaymentService self;
+
+    public void process() {
+
+        self.save();
+    }
+
+    @Transactional
+    public void save() {
+    }
+}
+```
+
+Now:
+
+```text
+Call Goes Through Proxy
+
+Transaction Active
+```
+
+(Alternative fixes explained in later chapter.)
+
+---
+
+# Security Example
+
+```java
+@PreAuthorize(
+ "hasRole('ADMIN')"
+)
+public void deleteUser() {
+}
+```
+
+Execution:
+
+```text
+Client
+
+      |
+      v
+
+Security Proxy
+
+      |
+      v
+
+Check Role
+
+      |
+      +--- ADMIN -> Continue
+
+      |
+      +--- Not ADMIN -> 403
+```
+
+---
+
+# Logging Example
+
+```java
+@LogExecutionTime
+public Order getOrder() {
+}
+```
+
+Execution:
+
+```text
+Before Advice
+
+Start Timer
+
+     |
+     v
+
+getOrder()
+
+     |
+     v
+
+Stop Timer
+
+     |
+     v
+
+Write Log
+```
 
 ---
 
 # Debugging Mindset
 
-Always ask:
-
-```text
-Did Call Pass Through Proxy?
-```
-
-Not:
+Never ask:
 
 ```text
 Why Transaction Failed?
 ```
 
-If proxy not involved:
+Ask:
 
 ```text
-AOP Not Applied
+Did The Call Pass Through Proxy?
+```
+
+If proxy missing:
+
+```text
+AOP Missing
 ```
 
 ---
 
-# Debugging Checklist
+# Senior Debugging Checklist
 
 ```text
-Public Method?
-
 Spring Bean?
+
+Public Method?
 
 Proxy Created?
 
-Called Through Bean?
-
 Self Invocation?
+
+Final Method?
+
+Private Method?
 ```
+
+---
+
+# Proxy Inspection
+
+```java
+AopUtils.isAopProxy(bean)
+
+AopUtils.isJdkDynamicProxy(bean)
+
+AopUtils.isCglibProxy(bean)
+```
+
+Useful in production debugging.
 
 ---
 
 # How Seniors Debug
 
-Check actual class.
-
 ```java
 System.out.println(
-service.getClass()
+bean.getClass()
 );
 ```
 
@@ -683,7 +944,7 @@ PaymentService$$SpringProxy
 
 Proxy exists.
 
-If output:
+If:
 
 ```text
 PaymentService
@@ -695,15 +956,15 @@ No proxy.
 
 # Common Misconceptions
 
-## AOP Changes My Code
+## AOP Modifies My Code
 
 Wrong.
 
-AOP wraps code.
+It wraps code.
 
 ---
 
-## Transactional Lives In Service
+## Transaction Logic Lives In Service
 
 Wrong.
 
@@ -727,100 +988,24 @@ Proxy cannot intercept them.
 
 ---
 
-# Spring Boot Example
+## AOP Is Only For Transactions
 
-```java
-@Service
-public class PaymentService {
+Wrong.
 
-    @Transactional
-    public void transfer() {
-
-        System.out.println("Business Logic");
-    }
-}
-```
-
-Execution:
+Used for:
 
 ```text
-Client
+Logging
 
-  |
-  v
+Metrics
 
-Transaction Proxy
+Security
 
-  |
-  v
+Caching
 
-PaymentService.transfer()
+Retry
 
-  |
-  v
-
-Commit
-```
-
----
-
-# Internal Execution Explanation
-
-Spring proxy performs:
-
-```java
-startTransaction();
-
-try {
-
-    target.transfer();
-
-    commit();
-
-}
-catch(Exception e){
-
-    rollback();
-}
-```
-
-Your method never contains this code.
-
-Proxy injects it.
-
----
-
-# Dry Run #3
-
-Security Example
-
-```java
-@Secured("ADMIN")
-public void deleteUser() {
-}
-```
-
-Flow:
-
-```text
-Proxy Receives Call
-
-Check Role
-
-ADMIN ?
-
-   |
-  Yes
-   |
-   v
-
-Call Method
-```
-
-Otherwise:
-
-```text
-Access Denied
+Tracing
 ```
 
 ---
@@ -835,31 +1020,31 @@ A mechanism that inserts behavior around method execution without modifying busi
 
 ## What Is The Mental Model?
 
-A smart middleman between caller and target.
+Smart middleman between caller and target.
 
 ---
 
-## Why Does Spring Need Proxies?
+## Why Does Spring Need Proxy?
 
-To intercept method calls and add behavior.
+To intercept method calls.
 
 ---
 
 ## Why Does Self Invocation Fail?
 
-Call never goes through proxy.
+Proxy bypassed.
 
 ---
 
 ## Why Does Transactional Need Public Methods?
 
-Proxy interception works on externally invoked methods.
+Proxy interception.
 
 ---
 
 ## What Is Advice?
 
-Code executed before, after, around, or on exception.
+Behavior executed around method calls.
 
 ---
 
@@ -878,7 +1063,7 @@ Advice
 = Extra Behavior
 
 Aspect
-= Collection Of Advice
+= Advice Collection
 
 Pointcut
 = Which Methods
@@ -887,18 +1072,18 @@ Join Point
 = Method Execution
 ```
 
-Core Flow:
+Flow:
 
 ```text
 Caller
 
-  |
-  v
+   |
+   v
 
 Proxy
 
-  |
-  v
+   |
+   v
 
 Target
 ```
@@ -913,30 +1098,22 @@ User Request
       |
       v
 
-+-------------------+
-| Security Aspect   |
-+-------------------+
+Security Aspect
 
       |
       v
 
-+-------------------+
-| Transaction Aspect|
-+-------------------+
+Transaction Aspect
 
       |
       v
 
-+-------------------+
-| Logging Aspect    |
-+-------------------+
+Logging Aspect
 
       |
       v
 
-+-------------------+
-| Metrics Aspect    |
-+-------------------+
+Metrics Aspect
 
       |
       v
@@ -951,4 +1128,4 @@ Database
 
 If you remember one sentence:
 
-"AOP is a smart middleman that intercepts method calls and adds behavior before the real method executes."
+AOP is a smart middleman that intercepts calls and adds behavior before the real method executes.
