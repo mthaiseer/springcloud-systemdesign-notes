@@ -1,326 +1,313 @@
 # 005_Bean_Lifecycle.md
 
 # Bean Lifecycle
-## The Mental Model: Spring Raises Every Bean From Birth To Death
+## Mental Model: Spring's Assembly Line That Turns a Raw Object Into a Production-Ready Bean
 
 ---
 
-# Why It Exists
+# Why This Exists
 
-Most developers think:
+A Java object can be created with:
+
+```java
+new UserService();
+```
+
+But a production application needs much more:
+
+- Dependencies injected
+- Configuration validated
+- Resources initialized
+- Transactions enabled
+- Proxies created
+- Resources cleaned up
+
+A raw object is not enough.
+
+Spring therefore manages a complete lifecycle.
+
+---
+
+# The Problem
+
+Imagine:
 
 ```java
 @Service
-class UserService {}
-```
-
-and Spring magically injects it.
-
-Reality:
-
-A bean goes through an entire lifecycle.
-
-```text
-Birth
- ↓
-Dependency Injection
- ↓
-Initialization
- ↓
-Ready For Use
- ↓
-Destruction
-```
-
-Without lifecycle management:
-
-- Resources leak
-- Connections remain open
-- Configuration incomplete
-- Startup becomes unpredictable
-- Shutdown becomes dangerous
-
-Spring solves this using Bean Lifecycle Management.
-
----
-
-# Problem
-
-Imagine a bean:
-
-```java
-class DatabaseClient {
+class PaymentService {
 }
 ```
 
 Questions:
 
 ```text
-When should connection open?
+Who creates it?
 
 Who injects dependencies?
 
-Who validates config?
+Who validates configuration?
 
-Who starts background threads?
+Who creates transaction proxies?
 
-Who closes resources?
+Who cleans resources during shutdown?
 ```
 
-Without a lifecycle:
+Without a lifecycle manager:
 
-Chaos.
+```text
+Chaos
+```
 
 ---
 
-# Mental Model
+# Core Mental Model
 
-A Bean is not an object.
+A Bean Lifecycle is an Assembly Line.
 
-A Bean is a managed object.
-
-Huge difference.
-
-Normal Object:
+Raw Material:
 
 ```text
-new Object()
-
-Created
-
-Used
-
-Garbage Collected
+Java Class
 ```
 
-Spring Bean:
+Final Product:
 
 ```text
-Create
- ↓
-Inject
- ↓
-Initialize
- ↓
-Manage
- ↓
-Destroy
+Production Ready Bean
 ```
 
-ApplicationContext supervises entire journey.
+Spring acts like a factory.
 
 ---
 
 # Real World Analogy
 
-Employee Lifecycle
+Car Manufacturing Plant
 
 ```text
-Candidate
-    ↓
-Hiring
-    ↓
-Training
-    ↓
-Assigned Desk
-    ↓
-Working
-    ↓
-Retirement
+Raw Metal
+    |
+    v
+Chassis
+    |
+    v
+Engine Installed
+    |
+    v
+Quality Check
+    |
+    v
+Paint
+    |
+    v
+Electronics
+    |
+    v
+Ready Car
 ```
 
-Bean Lifecycle:
+Spring Bean:
 
 ```text
 Class
-   ↓
+    |
+    v
 Instantiation
-   ↓
+    |
+    v
 Dependency Injection
-   ↓
-Initialization
-   ↓
-Serving Requests
-   ↓
-Destruction
+    |
+    v
+Validation
+    |
+    v
+Enhancement
+    |
+    v
+Proxy Wrapping
+    |
+    v
+Ready Bean
 ```
-
-Spring behaves like HR.
 
 ---
 
 # One Picture To Remember
 
 ```text
-             SPRING CONTAINER
+RAW OBJECT
 
-                     |
-                     |
-                     v
+      |
+      v
 
-             Instantiate Bean
++------------------+
+| Instantiation    |
++------------------+
 
-                     |
-                     v
+      |
+      v
 
-            Inject Dependencies
++------------------+
+| Dependency       |
+| Injection        |
++------------------+
 
-                     |
-                     v
+      |
+      v
 
-           Post Processing Phase
++------------------+
+| Initialization   |
++------------------+
 
-                     |
-                     v
+      |
+      v
 
-              Initialization
++------------------+
+| Enhancement      |
+| Proxy Creation   |
++------------------+
 
-                     |
-                     v
+      |
+      v
 
-                Ready State
-
-                     |
-                     v
-
-                Application
-
-                     |
-                     v
-
-                Destruction
+PRODUCTION READY BEAN
 ```
-
-Everything passes through Spring.
 
 ---
 
-# Complete Lifecycle Diagram
+# Complete Lifecycle Flow
 
 ```text
-Class Definition
+Bean Definition
 
-        |
-        v
+      |
+      v
 
-Constructor Called
+Instantiation
 
-        |
-        v
+      |
+      v
 
 Dependency Injection
 
-        |
-        v
+      |
+      v
 
 Aware Interfaces
 
-        |
-        v
+      |
+      v
 
-BeanPostProcessor Before Init
+BeanPostProcessor
+Before Initialization
 
-        |
-        v
+      |
+      v
 
 @PostConstruct
 
-        |
-        v
+      |
+      v
 
 afterPropertiesSet()
 
-        |
-        v
+      |
+      v
 
 Custom Init Method
 
-        |
-        v
+      |
+      v
 
-BeanPostProcessor After Init
+BeanPostProcessor
+After Initialization
 
-        |
-        v
+      |
+      v
+
+Proxy Creation
+
+      |
+      v
 
 READY
 
-        |
-        v
-
-Application Running
-
-        |
-        v
+      |
+      v
 
 @PreDestroy
 
-        |
-        v
+      |
+      v
 
-destroy()
-
-        |
-        v
-
-Custom Destroy Method
+Destroy Method
 ```
-
-This is the full lifecycle.
 
 ---
 
-# Internal Working
+# Internal Spring Source Flow
 
-When Spring starts:
+Most developers see:
 
-```text
-ApplicationContext
-        |
-        v
-Find Bean Definition
-        |
-        v
-Create Bean
-        |
-        v
-Manage Lifecycle
+```java
+@Service
+class UserService {}
 ```
 
-Lifecycle is orchestrated by:
+Internally Spring executes:
 
 ```text
-BeanFactory
-+
-BeanPostProcessor
-+
-Lifecycle Callbacks
+createBean()
+
+      |
+      v
+
+doCreateBean()
+
+      |
+      v
+
+createBeanInstance()
+
+      |
+      v
+
+populateBean()
+
+      |
+      v
+
+initializeBean()
+
+      |
+      v
+
+applyBeanPostProcessors()
+
+      |
+      v
+
+Return Bean
 ```
+
+Understanding this explains half of Spring.
 
 ---
 
 # Phase 1: Instantiation
 
-Spring executes:
+Spring creates object.
 
 ```java
 new UserService()
 ```
 
-or
-
-```java
-new UserService(repo)
-```
-
-depending on constructor.
-
-At this point:
+State:
 
 ```text
 Object Exists
 
-Dependencies Not Injected Yet
+Dependencies Not Injected
 ```
 
 ---
@@ -331,7 +318,7 @@ Dependencies Not Injected Yet
 @Service
 class UserService {
 
-    public UserService() {
+    UserService() {
         System.out.println("Constructor");
     }
 }
@@ -344,8 +331,6 @@ Constructor
 ```
 
 Only object creation happened.
-
-Nothing else.
 
 ---
 
@@ -370,7 +355,7 @@ Flow:
 ```text
 Need UserService
 
-Need UserRepository
+Need Repository
 
 Create Repository
 
@@ -379,26 +364,24 @@ Inject Repository
 Create Service
 ```
 
-Dependency graph resolved first.
-
 ---
 
-# Dependency Resolution Diagram
+# Dependency Graph Example
 
 ```text
-UserController
-      |
-      v
-UserService
-      |
-      v
-UserRepository
-      |
-      v
-DataSource
+Controller
+    |
+    v
+Service
+    |
+    v
+Repository
+    |
+    v
+Datasource
 ```
 
-Spring walks graph from bottom upward.
+Spring resolves bottom-up.
 
 ---
 
@@ -406,11 +389,9 @@ Spring walks graph from bottom upward.
 
 Spring can inject container information.
 
-Example:
-
 ```java
-BeanNameAware
 ApplicationContextAware
+BeanNameAware
 EnvironmentAware
 ```
 
@@ -419,69 +400,35 @@ Flow:
 ```text
 Bean Created
 
-Spring Says:
-
-Here is your Bean Name
-
-Here is ApplicationContext
-
-Here is Environment
+Container Metadata Injected
 ```
-
-Most projects rarely need this.
 
 ---
 
-# Phase 4: BeanPostProcessor Before Initialization
-
-Critical concept.
+# Phase 4: Before Initialization
 
 Spring executes:
 
 ```text
-postProcessBeforeInitialization()
+BeanPostProcessor
+Before Initialization
 ```
-
-for every bean.
 
 Think:
 
 ```text
-Inspection Phase
+Inspection Stage
 ```
+
+Factory checks product before shipping.
 
 ---
 
-# Why BeanPostProcessor Exists
-
-Spring wants extension points.
-
-Example:
-
-```text
-Logging
-
-Validation
-
-AOP
-
-Transactions
-
-Security
-```
-
-Need hook before bean becomes active.
-
----
-
-# Phase 5: @PostConstruct
-
-Example:
+# Phase 5: PostConstruct
 
 ```java
 @PostConstruct
 public void init() {
-    System.out.println("Init");
 }
 ```
 
@@ -493,12 +440,12 @@ Constructor
 Dependency Injection
 ```
 
-Perfect place for:
+Typical uses:
 
 ```text
-Validation
-
 Cache Warmup
+
+Validation
 
 Resource Initialization
 ```
@@ -517,7 +464,7 @@ class UserService {
 
     @PostConstruct
     void init() {
-        System.out.println("PostConstruct");
+        System.out.println("Init");
     }
 }
 ```
@@ -527,50 +474,37 @@ Output:
 ```text
 Constructor
 
-PostConstruct
+Init
 ```
-
-Order matters.
 
 ---
 
-# Phase 6: InitializingBean
+# Phase 6: afterPropertiesSet()
 
 ```java
-class UserService
-implements InitializingBean {
-
-    public void afterPropertiesSet() {
-    }
-}
+implements InitializingBean
 ```
 
 Spring invokes:
 
-```text
+```java
 afterPropertiesSet()
 ```
 
-after injection.
-
-Less common today.
-
-@PostConstruct preferred.
+after dependency injection.
 
 ---
 
-# Phase 7: Custom Init Method
-
-Configuration:
+# Phase 7: Custom Init
 
 ```java
 @Bean(initMethod="start")
 ```
 
-Flow:
+Order:
 
 ```text
-PostConstruct
+@PostConstruct
 
 ↓
 
@@ -578,293 +512,319 @@ afterPropertiesSet()
 
 ↓
 
-start()
+Custom Init
 ```
 
 ---
 
 # Phase 8: BeanPostProcessor After Initialization
 
-Very important.
-
-Spring now executes:
+Most important phase.
 
 ```text
 postProcessAfterInitialization()
 ```
 
-This phase creates proxies.
-
-AOP lives here.
-
-Transactions live here.
-
-Security often lives here.
-
-Remember:
-
-Proxy creation happens AFTER initialization.
+This is where Spring can enhance beans.
 
 ---
 
-# Lifecycle Timeline
+# Proxy Creation Happens Here
+
+Remember this forever:
+
+```text
+Proxy Creation
+
+Happens AFTER Initialization
+```
+
+Diagram:
 
 ```text
 Constructor
-      ↓
+      |
 Injection
-      ↓
-BeforeInit BPP
-      ↓
+      |
 @PostConstruct
-      ↓
-afterPropertiesSet
-      ↓
-Custom Init
-      ↓
+      |
 AfterInit BPP
-      ↓
+      |
 Proxy Creation
-      ↓
-Ready
+      |
+READY
 ```
 
-Memorize this flow.
+This explains many Spring bugs.
 
 ---
 
-# Production Example
-
-Payment Service
+# MOST IMPORTANT DRY RUN
 
 ```java
 @Service
-class PaymentService {
+@Transactional
+public class PaymentService {
 
     @PostConstruct
-    void init() {
+    public void init() {
+        transfer();
+    }
 
-        LoadExchangeRates();
-
-        WarmCache();
-
-        ValidateConfiguration();
+    public void transfer() {
+        System.out.println("Transfer");
     }
 }
 ```
 
-Startup:
+Developers expect:
+
+```text
+Transaction Active
+```
+
+Reality:
+
+```text
+No Transaction
+```
+
+Why?
+
+---
+
+# Internal Execution
 
 ```text
 Create Bean
 
 Inject Dependencies
 
-Run Init
+@PostConstruct Runs
 
+transfer()
+
+NO PROXY
+
+NO TRANSACTION
+
+AfterInit BPP
+
+Create Transaction Proxy
+
+READY
+```
+
+Key lesson:
+
+```text
+@PostConstruct executes
+before transactional proxy exists.
+```
+
+This is a favorite senior interview question.
+
+---
+
+# Production Scale Example
+
+Payment System Startup
+
+```text
+400 Beans
+
+Repositories
+Services
+Controllers
+Clients
+Schedulers
+```
+
+Each bean goes through:
+
+```text
+Instantiate
+Inject
+Initialize
+Enhance
+Proxy
 Ready
 ```
 
-System safe before serving traffic.
+Application becomes healthy only after all beans finish lifecycle.
 
 ---
 
 # Production Failure Story
 
-Team created:
+Real incident:
 
 ```java
 @PostConstruct
 void init() {
 
-   Thread.sleep(30000);
+    Thread.sleep(60000);
 }
 ```
-
-500 beans.
 
 Startup:
 
 ```text
-30 seconds × many services
+Bean Waiting
+
+Context Waiting
+
+Application Waiting
 ```
 
-Application needed minutes to boot.
+Kubernetes:
 
-Production outage occurred after restart.
+```text
+Readiness Probe Failed
 
-Lesson:
+Pod Restarted
+```
 
-Keep initialization lightweight.
+Root cause:
+
+Heavy initialization.
 
 ---
 
-# Failure Flow
-
-Example:
-
-```java
-@PostConstruct
-void init() {
-
-   throw new RuntimeException();
-}
-```
-
-Flow:
-
-```text
-Bean Creation
-
-Injection
-
-@PostConstruct
-
-Exception
-```
-
-Result:
+# Failure Tree
 
 ```text
 Bean Creation Failed
 
-Context Startup Failed
-```
+      |
+      +--- Constructor Failure
 
-Application may not start.
+      |
+      +--- Dependency Failure
+
+      |
+      +--- PostConstruct Failure
+
+      |
+      +--- Proxy Creation Failure
+
+      |
+      +--- Circular Dependency
+```
 
 ---
 
-# Real Production Failure
-
-Database unavailable.
+# Production Failure Example
 
 ```java
 @PostConstruct
 void init() {
 
-   datasource.getConnection();
+    datasource.getConnection();
 }
 ```
 
-Startup:
+Database Down.
+
+Flow:
 
 ```text
-DB Down
+Create Bean
 
-Init Fails
+PostConstruct
 
-Bean Fails
+Database Connection
 
-Context Fails
+Exception
 
-Application Down
+Startup Failed
 ```
 
-Seen frequently in production.
+Application never becomes ready.
 
 ---
 
-# Debugging Mindset
+# Senior Debugging Mindset
 
-When startup fails ask:
-
-```text
-Which lifecycle phase failed?
-```
-
-Not:
+Don't ask:
 
 ```text
 Which bean failed?
 ```
 
-Better question.
-
----
-
-# Debugging Flow
+Ask:
 
 ```text
-Constructor?
-      |
-      v
-
-Injection?
-      |
-      v
-
-PostConstruct?
-      |
-      v
-
-Proxy Creation?
-      |
-      v
-
-Ready?
+Which lifecycle stage failed?
 ```
 
-Locate phase.
+```text
+Instantiation?
 
-Locate issue.
+Injection?
+
+Initialization?
+
+Proxy Creation?
+
+Shutdown?
+```
+
+Much faster debugging.
 
 ---
 
-# Reading Logs Like Seniors
-
-Logs:
+# Reading Startup Logs
 
 ```text
 Creating shared instance
 
-Finished creating instance
+Populating bean
 
-Invoking init methods
+Invoking init method
+
+Finished bean creation
 ```
 
-Interpretation:
+Translation:
 
 ```text
-Instantiation Success
+Instantiation
 
-Injection Success
+Injection
 
-Initialization Running
+Initialization
+
+Ready
 ```
-
-Now you know exact lifecycle stage.
 
 ---
 
-# Destruction Phase
+# Shutdown Lifecycle
 
-Shutdown:
+Startup gets attention.
 
-```text
-SIGTERM
+Shutdown is equally important.
 
-Spring Shutdown
-
-Destroy Beans
-```
-
-Order:
+Flow:
 
 ```text
-Ready Bean
+Running
 
-↓
+      |
+      v
 
 @PreDestroy
 
-↓
+      |
+      v
 
 destroy()
 
-↓
+      |
+      v
 
-Custom Destroy
+Resource Cleanup
 ```
 
 ---
@@ -873,48 +833,21 @@ Custom Destroy
 
 ```java
 @Service
-class ConnectionManager {
+class KafkaConsumerManager {
 
     @PreDestroy
     void shutdown() {
-        System.out.println("Closing");
+
+        consumer.close();
     }
 }
 ```
 
-Application stops:
-
-```text
-Closing
-```
-
-Resources released.
-
----
-
-# Why Destruction Matters
-
-Imagine:
-
-```text
-Database Connections
-
-Kafka Consumers
-
-Threads
-
-File Handles
-```
-
-Not closed.
-
-Result:
+Without cleanup:
 
 ```text
 Resource Leaks
 ```
-
-Production instability.
 
 ---
 
@@ -925,9 +858,11 @@ Startup:
 ```text
 Constructor
 
-Inject
+Injection
 
 PostConstruct
+
+Proxy Creation
 
 Ready
 ```
@@ -940,59 +875,51 @@ PreDestroy
 Destroy
 ```
 
-Full lifecycle complete.
+Complete lifecycle.
 
 ---
 
 # Common Misconceptions
 
-## Misconception 1
-
-Constructor = Ready Bean
+## Constructor Means Ready
 
 Wrong.
 
-Dependencies may not be injected yet.
+Dependencies may not be fully prepared.
 
 ---
 
-## Misconception 2
-
-@PostConstruct runs before injection
+## PostConstruct Runs Before Injection
 
 Wrong.
 
-Runs after dependency injection.
+It runs after injection.
 
 ---
 
-## Misconception 3
-
-Destroy methods always run
+## Transactional Works Everywhere
 
 Wrong.
 
-Force kill:
+Not during PostConstruct.
+
+Proxy does not exist yet.
+
+---
+
+## Destroy Always Executes
+
+Wrong.
 
 ```text
 kill -9
 ```
 
-No graceful shutdown.
+prevents graceful shutdown.
 
 ---
 
-## Misconception 4
-
-BeanPostProcessor optional concept
-
-Wrong.
-
-AOP depends heavily on it.
-
----
-
-# Java Example
+# Full Java Example
 
 ```java
 @Service
@@ -1010,7 +937,7 @@ implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        System.out.println("AfterPropertiesSet");
+        System.out.println("afterPropertiesSet");
     }
 
     @PreDestroy
@@ -1020,19 +947,17 @@ implements InitializingBean {
 }
 ```
 
-Startup:
+Output:
 
 ```text
 Constructor
 
 PostConstruct
 
-AfterPropertiesSet
-```
+afterPropertiesSet
 
-Shutdown:
+Application Running
 
-```text
 PreDestroy
 ```
 
@@ -1045,44 +970,46 @@ Spring internally performs:
 ```text
 instantiateBean()
 
+      ↓
+
 populateBean()
+
+      ↓
+
+initializeBean()
+
+      ↓
 
 applyBeanPostProcessorsBeforeInitialization()
 
-invokeInitMethods()
+      ↓
+
+@PostConstruct
+
+      ↓
+
+afterPropertiesSet()
+
+      ↓
 
 applyBeanPostProcessorsAfterInitialization()
+
+      ↓
+
+Create Proxy
+
+      ↓
+
+Return Bean
 ```
-
-Core lifecycle pipeline.
-
----
-
-# Advanced Mental Model
-
-A Bean behaves like:
-
-```text
-Managed Process
-```
-
-not
-
-```text
-Passive Object
-```
-
-Spring continuously supervises it.
-
-Exactly like an operating system supervises a process.
 
 ---
 
 # Interview Questions
 
-## What is Bean Lifecycle?
+## What Is Bean Lifecycle?
 
-The sequence of phases a bean passes through from creation to destruction under Spring management.
+Complete journey of a bean from creation to destruction.
 
 ---
 
@@ -1098,33 +1025,29 @@ Runs after dependency injection.
 
 ---
 
-## Purpose of BeanPostProcessor?
+## Why Does Transactional Fail Inside PostConstruct?
 
-Provides lifecycle extension points and enables features like AOP and transaction proxies.
-
----
-
-## What runs first?
-
-```text
-Constructor
-
-Dependency Injection
-
-PostConstruct
-```
+Proxy has not been created yet.
 
 ---
 
-## What happens if PostConstruct fails?
+## What Does BeanPostProcessor Do?
 
-Bean creation fails and application startup may fail.
+Provides extension points before and after initialization.
+
+Used heavily by AOP.
 
 ---
 
-## When is PreDestroy called?
+## When Is Proxy Created?
 
-During graceful container shutdown.
+After initialization phase.
+
+---
+
+## Why Is PreDestroy Important?
+
+Releases resources safely.
 
 ---
 
@@ -1135,9 +1058,9 @@ Bean Lifecycle
 
 Instantiate
     ↓
-Inject Dependencies
+Inject
     ↓
-Aware Interfaces
+Aware
     ↓
 BeforeInit BPP
     ↓
@@ -1149,6 +1072,8 @@ Custom Init
     ↓
 AfterInit BPP
     ↓
+Proxy Creation
+    ↓
 Ready
     ↓
 @PreDestroy
@@ -1156,56 +1081,73 @@ Ready
 Destroy
 ```
 
-Important:
+Remember:
 
-Constructor ≠ Ready
+```text
+@PostConstruct
 
-@PostConstruct = Initialization
+BEFORE Proxy
 
-@PreDestroy = Cleanup
+@Transactional
 
-BeanPostProcessor =
-Lifecycle Extension Point
+AFTER Proxy
+```
 
 ---
 
-# One Picture To Remember
+# Final Picture To Remember
 
 ```text
-                 SPRING HR DEPARTMENT
+SPRING FACTORY
 
-                        |
-                        v
+Raw Java Object
 
-                   HIRE EMPLOYEE
+       |
+       v
 
-                        |
-                        v
+Instantiation
 
-                 GIVE DEPENDENCIES
+       |
+       v
 
-                        |
-                        v
+Dependency Installation
 
-                    TRAINING
+       |
+       v
 
-                (@PostConstruct)
+Inspection
 
-                        |
-                        v
+       |
+       v
 
-                  ACTIVE EMPLOYEE
+@PostConstruct
 
-                      (READY)
+       |
+       v
 
-                        |
-                        v
+Enhancement
 
-                     RETIRES
+       |
+       v
 
-                  (@PreDestroy)
+Proxy Wrapping
+
+       |
+       v
+
+Production Ready Bean
+
+       |
+       v
+
+@PreDestroy
+
+       |
+       v
+
+Destroyed
 ```
 
 If you remember one sentence:
 
-"Spring raises every bean from birth, prepares it for work, supervises it while running, and cleans it up before death."
+Spring transforms a raw Java object into a production-ready managed component through a carefully controlled lifecycle.
