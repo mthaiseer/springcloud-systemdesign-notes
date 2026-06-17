@@ -792,6 +792,773 @@ Correct:
 Self invocation bypasses proxy
 ```
 
+
+---
+
+# Redis Code Snippet Example - Why Proxy Matters For @Cacheable
+
+Redis caching in Spring is also proxy-based.
+
+Many developers think:
+
+```text
+@Cacheable talks to Redis directly from my method
+```
+
+Wrong mental model.
+
+Correct mental model:
+
+```text
+Client
+   |
+   v
+Spring Proxy
+   |
+   +--> Check Redis Cache
+   |
+   +--> If Hit: return cached value
+   |
+   +--> If Miss: call real method
+   |
+   +--> Store result in Redis
+   |
+   v
+Real Service Method
+```
+
+The Redis logic is not inside your method.
+
+The Redis cache logic is executed by the proxy before and after your method call.
+
+---
+
+# Redis Cache Flow Diagram
+
+```text
+                 CLIENT REQUEST
+
+                       |
+                       v
+
+              +------------------+
+              |  SPRING PROXY    |
+              +------------------+
+
+                       |
+                       v
+
+              Check Redis Cache
+
+                 /             \
+
+                /               \
+
+             HIT                 MISS
+
+              |                    |
+
+              v                    v
+
+        Return Value         Call Real Method
+
+                                   |
+                                   v
+
+                              Save To Redis
+
+                                   |
+                                   v
+
+                              Return Value
+```
+
+This is the same proxy mental model as transactions.
+
+```text
+@Transactional -> Transaction Proxy
+@Cacheable     -> Cache Proxy
+@Async         -> Async Proxy
+@Retryable     -> Retry Proxy
+```
+
+---
+
+# Redis Setup Example
+
+## Maven Dependency
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-cache</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+```
+
+---
+
+## application.yml
+
+```yaml
+spring:
+  cache:
+    type: redis
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+```
+
+---
+
+## Enable Caching
+
+```java
+@SpringBootApplication
+@EnableCaching
+public class MiniSpringBootApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(
+                MiniSpringBootApplication.class,
+                args
+        );
+    }
+}
+```
+
+Important:
+
+```text
+@EnableCaching
+     |
+     v
+Spring creates cache infrastructure
+     |
+     v
+Spring creates proxy around @Cacheable beans
+```
+
+Without `@EnableCaching`, the cache proxy behavior will not be activated.
+
+---
+
+# Working Redis Cache Example - Proxy Hit
+
+```java
+@Service
+@RequiredArgsConstructor
+public class ProductService {
+
+    private final ProductRepository productRepository;
+
+    @Cacheable(value = "products", key = "#id")
+    public ProductDto getProduct(Long id) {
+
+        System.out.println("DB HIT for product id = " + id);
+
+        Product product = productRepository.findById(id)
+                .orElseThrow();
+
+        return new ProductDto(
+                product.getId(),
+                product.getName(),
+                product.getPrice()
+        );
+    }
+}
+```
+
+Controller:
+
+```java
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/products")
+public class ProductController {
+
+    private final ProductService productService;
+
+    @GetMapping("/{id}")
+    public ProductDto getProduct(@PathVariable Long id) {
+
+        return productService.getProduct(id);
+    }
+}
+```
+
+Flow:
+
+```text
+HTTP Request
+     |
+     v
+ProductController
+     |
+     v
+ProductService Proxy
+     |
+     v
+Check Redis key: products::1
+     |
+     +--> Miss first time
+     |
+     v
+Call real ProductService.getProduct(1)
+     |
+     v
+DB Query
+     |
+     v
+Store result in Redis
+     |
+     v
+Return ProductDto
+```
+
+Second request:
+
+```text
+HTTP Request
+     |
+     v
+ProductController
+     |
+     v
+ProductService Proxy
+     |
+     v
+Check Redis key: products::1
+     |
+     +--> Hit
+     |
+     v
+Return cached ProductDto
+
+Real method is NOT called.
+DB is NOT hit.
+```
+
+If you see this log only once:
+
+```text
+DB HIT for product id = 1
+```
+
+then Redis caching is working.
+
+---
+
+# Internal Execution Walkthrough - @Cacheable
+
+When this method is called through the proxy:
+
+```java
+productService.getProduct(1L);
+```
+
+Spring mentally executes something like:
+
+```java
+Object cacheKey = "products::1";
+
+Object cachedValue = redis.get(cacheKey);
+
+if (cachedValue != null) {
+    return cachedValue;
+}
+
+Object result = target.getProduct(1L);
+
+redis.set(cacheKey, result);
+
+return result;
+```
+
+But this code is not inside your method.
+
+It lives in Spring's caching interceptor attached to the proxy.
+
+---
+
+# Failing Redis Cache Example - Self Invocation
+
+```java
+@Service
+@RequiredArgsConstructor
+public class ProductService {
+
+    private final ProductRepository productRepository;
+
+    public ProductDto getProductForOrder(Long id) {
+
+        // Internal call
+        // This is this.getProduct(id)
+        return getProduct(id);
+    }
+
+    @Cacheable(value = "products", key = "#id")
+    public ProductDto getProduct(Long id) {
+
+        System.out.println("DB HIT for product id = " + id);
+
+        Product product = productRepository.findById(id)
+                .orElseThrow();
+
+        return new ProductDto(
+                product.getId(),
+                product.getName(),
+                product.getPrice()
+        );
+    }
+}
+```
+
+Controller:
+
+```java
+@GetMapping("/order-view/{id}")
+public ProductDto getProductForOrder(@PathVariable Long id) {
+
+    return productService.getProductForOrder(id);
+}
+```
+
+Expected by junior developer:
+
+```text
+getProductForOrder()
+      |
+      v
+@Cacheable getProduct()
+      |
+      v
+Redis cache used
+```
+
+Actual flow:
+
+```text
+Controller
+    |
+    v
+ProductService Proxy
+    |
+    v
+getProductForOrder()
+    |
+    v
+this.getProduct(id)
+    |
+    v
+Real Method Directly
+```
+
+Proxy is bypassed.
+
+Redis cache interceptor does not run.
+
+Result:
+
+```text
+Every call hits DB.
+Redis is ignored.
+```
+
+This is the exact same reason `@Transactional` fails during self-invocation.
+
+```text
+No Proxy
+   =
+No Transaction
+
+No Proxy
+   =
+No Redis Cache
+```
+
+---
+
+# Fix 1 - Move Cache Method To Another Bean
+
+This is the clean production solution.
+
+```java
+@Service
+@RequiredArgsConstructor
+public class ProductCacheService {
+
+    private final ProductRepository productRepository;
+
+    @Cacheable(value = "products", key = "#id")
+    public ProductDto getProduct(Long id) {
+
+        System.out.println("DB HIT for product id = " + id);
+
+        Product product = productRepository.findById(id)
+                .orElseThrow();
+
+        return new ProductDto(
+                product.getId(),
+                product.getName(),
+                product.getPrice()
+        );
+    }
+}
+```
+
+```java
+@Service
+@RequiredArgsConstructor
+public class ProductOrderService {
+
+    private final ProductCacheService productCacheService;
+
+    public ProductDto getProductForOrder(Long id) {
+
+        return productCacheService.getProduct(id);
+    }
+}
+```
+
+Now flow:
+
+```text
+ProductOrderService
+        |
+        v
+ProductCacheService Proxy
+        |
+        v
+Redis Cache Interceptor
+        |
+        v
+Real ProductCacheService.getProduct()
+```
+
+Proxy is hit.
+
+Redis works.
+
+---
+
+# Fix 2 - Inject Self Proxy
+
+This works, but is less clean.
+
+```java
+@Service
+@RequiredArgsConstructor
+public class ProductService {
+
+    private final ProductRepository productRepository;
+
+    private final ProductService self;
+
+    public ProductDto getProductForOrder(Long id) {
+
+        return self.getProduct(id);
+    }
+
+    @Cacheable(value = "products", key = "#id")
+    public ProductDto getProduct(Long id) {
+
+        System.out.println("DB HIT for product id = " + id);
+
+        Product product = productRepository.findById(id)
+                .orElseThrow();
+
+        return new ProductDto(
+                product.getId(),
+                product.getName(),
+                product.getPrice()
+        );
+    }
+}
+```
+
+Mental model:
+
+```text
+this.getProduct()
+      |
+      v
+Bypasses proxy
+
+
+self.getProduct()
+      |
+      v
+Hits proxy
+```
+
+Usually prefer separate bean over self-injection.
+
+---
+
+# Redis + Proxy Production Failure Story
+
+A production team added Redis caching to reduce database pressure.
+
+```java
+@Cacheable(value = "products", key = "#id")
+public ProductDto getProduct(Long id) {
+    return repository.findById(id);
+}
+```
+
+They tested `/products/{id}` and cache worked.
+
+Then a high-traffic checkout flow used:
+
+```java
+public OrderSummary createOrder(Long productId) {
+    ProductDto product = getProduct(productId);
+    ...
+}
+```
+
+During sale traffic:
+
+```text
+DB CPU 95%
+Redis QPS low
+Cache hit ratio near 0%
+Checkout latency high
+```
+
+Why?
+
+The checkout flow called the cached method internally.
+
+```text
+createOrder()
+    |
+    v
+this.getProduct()
+```
+
+Proxy was bypassed.
+
+Redis was not used.
+
+The fix:
+
+```text
+Move cached method to ProductCacheService
+```
+
+After fix:
+
+```text
+Controller / OrderService
+        |
+        v
+ProductCacheService Proxy
+        |
+        v
+Redis Cache
+```
+
+Result:
+
+```text
+DB load dropped
+Redis hit ratio increased
+p99 latency improved
+```
+
+Senior debugging lesson:
+
+When cache does not work, do not start with Redis.
+
+First ask:
+
+```text
+Did the method call pass through Spring proxy?
+```
+
+---
+
+# Redis Debugging Checklist
+
+When `@Cacheable` does not work:
+
+```text
+1. Is @EnableCaching present?
+
+2. Is Redis configured?
+
+3. Is the method public?
+
+4. Is the method called from another Spring bean?
+
+5. Is it self-invocation?
+
+6. Is the bean proxied?
+
+7. Is the key correct?
+
+8. Is the result serializable?
+
+9. Are cache names consistent?
+
+10. Is TTL configured as expected?
+```
+
+Proxy-related debugging:
+
+```java
+System.out.println(productService.getClass());
+```
+
+Possible output:
+
+```text
+class com.example.ProductService$$SpringCGLIB$$0
+```
+
+or:
+
+```text
+class jdk.proxy2.$Proxy89
+```
+
+If you see the real class only, proxy may not be active.
+
+---
+
+# Redis Example - Cache Eviction
+
+Updating data must evict stale cache.
+
+```java
+@Service
+@RequiredArgsConstructor
+public class ProductWriteService {
+
+    private final ProductRepository productRepository;
+
+    @CacheEvict(value = "products", key = "#id")
+    public void updatePrice(Long id, BigDecimal newPrice) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow();
+
+        product.setPrice(newPrice);
+
+        productRepository.save(product);
+    }
+}
+```
+
+Flow:
+
+```text
+Client
+   |
+   v
+ProductWriteService Proxy
+   |
+   v
+Evict Redis key products::1
+   |
+   v
+Call updatePrice()
+   |
+   v
+DB updated
+```
+
+If `updatePrice()` is called internally through `this.updatePrice()`, eviction can also be skipped.
+
+Same rule:
+
+```text
+No Proxy
+   =
+No Cache Eviction
+```
+
+---
+
+# Redis Example - Cache Put
+
+```java
+@CachePut(value = "products", key = "#result.id")
+public ProductDto refreshProduct(Long id) {
+
+    Product product = productRepository.findById(id)
+            .orElseThrow();
+
+    return new ProductDto(
+            product.getId(),
+            product.getName(),
+            product.getPrice()
+    );
+}
+```
+
+Mental model:
+
+```text
+Always execute method
+        |
+        v
+Put returned value into Redis
+```
+
+Difference:
+
+```text
+@Cacheable
+   =
+Maybe skip method if cache hit
+
+@CachePut
+   =
+Always run method and update cache
+
+@CacheEvict
+   =
+Remove value from cache
+```
+
+All three depend on proxy interception.
+
+---
+
+# Final Redis Memory Hook
+
+```text
+Redis caching in Spring is not magic inside Redis.
+
+Redis caching in Spring is proxy interception.
+
+@Cacheable
+@CachePut
+@CacheEvict
+
+all require:
+
+Client
+   |
+   v
+Spring Proxy
+   |
+   v
+Real Method
+```
+
+If the call does not pass through the proxy, Redis annotations do not execute.
+
+
 ---
 
 # Interview Questions
