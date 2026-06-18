@@ -1,1480 +1,31 @@
-# 011_Request_Flow_End_To_End.md
+# 011_Request_Flow_End_To_End — The Spring Boot Request Pipeline Model
 
-# MiniSpringBoot Deep Production Mode
-# 011 - Request Flow End To End
+## Core Mental Model
 
-## One Core Mental Model
-
-> A Spring Boot web request is not a direct call from browser to controller.
->
-> A Spring Boot web request is a **pipeline handoff**.
->
-> Each layer receives the request, adds context, makes one decision, and hands it to the next layer until a response is written back.
-
-This chapter teaches exactly ONE core mental model:
+Do not imagine a Spring Boot request as:
 
 ```text
-HTTP request flow
-        =
-Pipeline of responsibility handoffs
+Browser calls controller.
+Controller returns response.
 ```
 
-Do not memorize random Spring MVC classes.
+That is too shallow.
 
-Think like this:
+The better mental model is:
+
+> **A request is a controlled pipeline. Each stage receives the request, adds responsibility, passes it forward, and later the response travels back through the same path.**
 
 ```text
 Client
-  -> Network
-  -> Embedded Server
-  -> Servlet Container
-  -> Filter Chain
-  -> DispatcherServlet
-  -> Handler Mapping
-  -> Handler Adapter
-  -> Controller
-  -> Service
-  -> Repository
-  -> Database
-  -> Response Converters
-  -> Filters again
-  -> Client
-```
-
-If you remember only one picture, remember this:
-
-```text
-Raw HTTP bytes
-     |
-     v
-Tomcat thread
-     |
-     v
-Filter chain
-     |
-     v
-DispatcherServlet
-     |
-     v
-Controller method
-     |
-     v
-Service / DB / external systems
-     |
-     v
-JSON response written to socket
-```
-
-The request survives because each layer follows a simple contract:
-
-```text
-Receive request context.
-Do exactly one responsibility.
-Pass control forward.
-Return response backward.
-```
-
----
-
-## Why This Exists
-
-A web application receives messy external input.
-
-Example request:
-
-```http
-POST /api/orders HTTP/1.1
-Host: shop.example.com
-Authorization: Bearer eyJ...
-Content-Type: application/json
-X-Request-Id: req-123
-
-{
-  "productId": 42,
-  "quantity": 2
-}
-```
-
-A controller method wants clean Java objects:
-
-```java
-@PostMapping("/orders")
-public OrderResponse create(@Valid @RequestBody CreateOrderRequest request) {
-    return orderService.create(request);
-}
-```
-
-Many things must happen between raw HTTP and this Java method:
-
-```text
-Parse socket bytes
-Decode HTTP headers
-Choose worker thread
-Run security filters
-Attach tracing context
-Find matching controller method
-Deserialize JSON
-Validate input
-Call business code
-Handle exceptions
-Serialize response JSON
-Write bytes to client
-```
-
-Without a disciplined pipeline, every controller would need to know everything:
-
-```text
-Authentication
-Authorization
-Logging
-Metrics
-JSON parsing
-Validation
-Exception formatting
-CORS
-Compression
-Character encoding
-Routing
-Database transaction boundaries
-```
-
-That would be impossible to maintain.
-
-Spring Boot solves this by turning request handling into a layered pipeline.
-
-The key design:
-
-```text
-Generic infrastructure handles generic concerns.
-Your controller handles business intent.
-```
-
----
-
-## Problem Statement
-
-Consider this endpoint:
-
-```java
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/api/orders")
-public class OrderController {
-
-    private final OrderService orderService;
-
-    @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(
-            @Valid @RequestBody CreateOrderRequest request) {
-        OrderResponse response = orderService.createOrder(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-}
-```
-
-Important question:
-
-```text
-How does an HTTP request become this Java method call?
-```
-
-The method has no socket code.
-
-It does not manually parse JSON.
-
-It does not manually find `/api/orders`.
-
-It does not manually write HTTP response bytes.
-
-Still, the browser receives:
-
-```http
-HTTP/1.1 201 Created
-Content-Type: application/json
-
-{
-  "orderId": 1001,
-  "status": "CREATED"
-}
-```
-
-The hidden mechanism is the Spring MVC request pipeline.
-
-One-line answer:
-
-```text
-Tomcat receives the request, filters wrap it, DispatcherServlet routes it, handler adapters invoke the controller, converters translate body data, and the response travels back through the same pipeline.
-```
-
----
-
-## Mental Model
-
-Think of an airport journey.
-
-A passenger does not directly walk from street to airplane.
-
-They pass through stations:
-
-```text
-Entrance
-  -> Security gate
-  -> Check-in counter
-  -> Immigration
-  -> Boarding gate
-  -> Aircraft
-```
-
-Each station does one job:
-
-```text
-Security checks danger.
-Check-in maps passenger to flight.
-Immigration verifies identity.
-Boarding gate verifies seat.
-Aircraft performs actual travel.
-```
-
-Spring Boot request flow is similar.
-
-```text
-Network accepts connection.
-Tomcat assigns thread.
-Filters inspect/wrap request.
-DispatcherServlet finds route.
-HandlerAdapter invokes controller.
-Controller delegates business work.
-MessageConverter writes JSON.
-Response travels back.
-```
-
-The controller is not the airport.
-
-The controller is only the boarding gate for business logic.
-
-Mental hook:
-
-```text
-A request is a package moving through a conveyor belt.
-Each machine reads labels, adds context, and forwards it.
-```
-
----
-
-## Core Concepts
-
-### Client
-
-The caller of your API.
-
-It may be:
-
-```text
-Browser
-Mobile app
-Another microservice
-Postman
-Load balancer health check
-Kubernetes probe
-```
-
-### TCP Connection
-
-Before HTTP can be processed, there is a network connection.
-
-For HTTPS, TLS termination may happen at:
-
-```text
-Load balancer
-Ingress controller
-API Gateway
-Application server
-```
-
-### Embedded Server
-
-Spring Boot commonly starts embedded Tomcat.
-
-Conceptually:
-
-```text
-Spring Boot application
-  contains
-Tomcat server
-```
-
-You do not deploy a WAR into external Tomcat in the common Boot model.
-
-Boot starts the server inside your process.
-
-### Servlet Container
-
-Tomcat implements the Servlet model.
-
-It converts HTTP requests into:
-
-```text
-HttpServletRequest
-HttpServletResponse
-```
-
-### Worker Thread
-
-Tomcat assigns a request to a worker thread.
-
-Example:
-
-```text
-http-nio-8080-exec-17
-```
-
-This thread carries request execution until completion in traditional Spring MVC.
-
-### Filter Chain
-
-Filters run before and after the main servlet.
-
-Common filters:
-
-```text
-Security filter
-CORS filter
-Logging filter
-Tracing filter
-Compression filter
-Character encoding filter
-```
-
-Filter mental model:
-
-```text
-Before DispatcherServlet:
-    inspect / reject / wrap request
-After DispatcherServlet:
-    inspect / modify / log response
-```
-
-### DispatcherServlet
-
-The central Spring MVC front controller.
-
-It receives all matching web requests and coordinates routing.
-
-Mental model:
-
-```text
-DispatcherServlet = traffic controller for Spring MVC
-```
-
-### HandlerMapping
-
-Finds which controller method should handle the request.
-
-Example:
-
-```text
-POST /api/orders
-    -> OrderController.createOrder()
-```
-
-### HandlerAdapter
-
-Knows how to invoke the chosen handler.
-
-For annotated controllers, this usually means:
-
-```text
-RequestMappingHandlerAdapter
-```
-
-It handles:
-
-```text
-@RequestBody
-@PathVariable
-@RequestParam
-@Valid
-ResponseEntity
-```
-
-### Argument Resolvers
-
-Convert request data into method parameters.
-
-Examples:
-
-```java
-@PathVariable Long id
-@RequestParam String sort
-@RequestHeader String requestId
-@RequestBody CreateOrderRequest body
-Principal user
-```
-
-### HttpMessageConverter
-
-Converts between HTTP body bytes and Java objects.
-
-Common example:
-
-```text
-JSON body <-> Java DTO
-```
-
-With Jackson:
-
-```text
-application/json -> MappingJackson2HttpMessageConverter
-```
-
-### Controller
-
-Entry point for application-specific web intent.
-
-Controller should:
-
-```text
-Receive validated request model
-Call service
-Return response model
-```
-
-Controller should not:
-
-```text
-Contain database transaction logic
-Contain complex business rules
-Call ten repositories directly
-Know transport internals deeply
-```
-
-### Service
-
-Business operation boundary.
-
-Often transaction starts here, not in controller.
-
-```java
-@Transactional
-public OrderResponse createOrder(CreateOrderRequest request) { ... }
-```
-
-### Repository
-
-Persistence boundary.
-
-It talks to database through JPA, JDBC, MyBatis, etc.
-
-### Exception Resolver
-
-Converts exceptions into HTTP responses.
-
-Example:
-
-```text
-MethodArgumentNotValidException -> 400 Bad Request
-AccessDeniedException           -> 403 Forbidden
-EntityNotFoundException         -> 404 Not Found
-Unhandled RuntimeException      -> 500 Internal Server Error
-```
-
-### Response Writer
-
-Converts Java response objects into HTTP response bytes.
-
-Example:
-
-```java
-OrderResponse(orderId=1001, status="CREATED")
-```
-
-becomes:
-
-```json
-{"orderId":1001,"status":"CREATED"}
-```
-
----
-
-## Internal Architecture
-
-High-level architecture:
-
-```text
-                 Client
-                   |
-                   v
-            Load Balancer / Ingress
-                   |
-                   v
-          Spring Boot Application
-+---------------------------------------------------+
-|                                                   |
-|  Embedded Tomcat                                  |
-|      |                                            |
-|      v                                            |
-|  Servlet Filter Chain                             |
-|      |                                            |
-|      v                                            |
-|  DispatcherServlet                                |
-|      |                                            |
-|      +--> HandlerMappings                         |
-|      |       |                                    |
-|      |       v                                    |
-|      |   Controller method found                  |
-|      |                                            |
-|      +--> HandlerAdapter                          |
-|              |                                    |
-|              +--> ArgumentResolvers               |
-|              +--> HttpMessageConverters           |
-|              +--> Validator                       |
-|              +--> Controller invocation           |
-|                                                   |
-|  Controller -> Service -> Repository -> Database  |
-|                                                   |
-+---------------------------------------------------+
-```
-
-The hidden center:
-
-```text
-DispatcherServlet
-```
-
-It is the coordinator that says:
-
-```text
-Who should handle this request?
-How do I invoke it?
-How do I convert the result?
-How do I handle exceptions?
-```
-
----
-
-## Internal Working
-
-Spring MVC request lifecycle can be understood in eight phases:
-
-```text
-1. Connection accepted
-2. Request parsed
-3. Filter chain executed
-4. DispatcherServlet invoked
-5. Handler selected
-6. Controller method invoked
-7. Response created
-8. Response travels back and connection completes
-```
-
-### Phase 1 - Connection Accepted
-
-A client sends request bytes to the application port.
-
-```text
-Client socket -> server socket on port 8080
-```
-
-Tomcat accepts the connection.
-
-For HTTP/1.1 keep-alive, multiple requests may reuse one TCP connection.
-
-### Phase 2 - Request Parsed
-
-Tomcat parses raw bytes into servlet objects:
-
-```text
-Request line
-Headers
-Query parameters
-Body stream
-Cookies
-```
-
-Conceptual conversion:
-
-```text
-Raw bytes
-  -> HttpServletRequest
-  -> HttpServletResponse
-```
-
-### Phase 3 - Filter Chain Executed
-
-Tomcat runs filters in configured order.
-
-```text
-Filter A
-  -> Filter B
-      -> Filter C
-          -> DispatcherServlet
-      <- Filter C after
-  <- Filter B after
-<- Filter A after
-```
-
-Important:
-
-```text
-Filters can stop the request before controller.
-```
-
-Example:
-
-```text
-Invalid JWT -> Security filter returns 401
-Controller is never called
-```
-
-### Phase 4 - DispatcherServlet Invoked
-
-If filters allow the request, control reaches DispatcherServlet.
-
-DispatcherServlet asks:
-
-```text
-Which handler should process this request?
-```
-
-### Phase 5 - Handler Selected
-
-HandlerMapping checks registered mappings.
-
-Example mapping table:
-
-```text
-GET  /api/orders/{id} -> OrderController.getOrder(id)
-POST /api/orders      -> OrderController.createOrder(request)
-GET  /actuator/health -> Actuator health endpoint
-```
-
-It matches using:
-
-```text
-HTTP method
-Path pattern
-Consumes content type
-Produces content type
-Headers / params conditions
-```
-
-### Phase 6 - Controller Method Invoked
-
-HandlerAdapter prepares arguments.
-
-For this method:
-
-```java
-@PostMapping
-public ResponseEntity<OrderResponse> createOrder(
-        @Valid @RequestBody CreateOrderRequest request) { ... }
-```
-
-Spring does:
-
-```text
-Read request body stream
-Choose JSON message converter
-Deserialize JSON into CreateOrderRequest
-Run validation
-Call method using reflection/invocation infrastructure
-```
-
-### Phase 7 - Response Created
-
-Controller returns Java object:
-
-```java
-ResponseEntity.status(CREATED).body(orderResponse)
-```
-
-Spring converts it:
-
-```text
-status = 201
-headers = Content-Type: application/json
-body = JSON bytes
-```
-
-### Phase 8 - Response Travels Back
-
-Control unwinds:
-
-```text
-Controller returns
-HandlerAdapter returns
-DispatcherServlet returns
-Filters after-phase run
-Tomcat writes response bytes
-Client receives response
-```
-
----
-
-## Step-by-Step Flow
-
-Successful POST request:
-
-```text
-1. Client sends POST /api/orders.
-
-2. Load balancer forwards request to a Spring Boot pod.
-
-3. Tomcat accepts the connection.
-
-4. Tomcat assigns worker thread http-nio-8080-exec-17.
-
-5. Tomcat parses HTTP request into HttpServletRequest.
-
-6. Filter chain starts.
-
-7. Request ID filter attaches correlation id.
-
-8. Security filter validates JWT.
-
-9. CORS filter checks origin if browser request.
-
-10. DispatcherServlet receives request.
-
-11. HandlerMapping matches POST /api/orders.
-
-12. HandlerAdapter prepares to invoke OrderController.createOrder().
-
-13. @RequestBody resolver reads JSON body.
-
-14. Jackson converts JSON into CreateOrderRequest.
-
-15. Bean Validation validates fields.
-
-16. Controller method is called.
-
-17. Controller calls orderService.createOrder().
-
-18. Service executes business rules.
-
-19. Transaction starts at service boundary if @Transactional exists.
-
-20. Repository writes to database.
-
-21. Service returns OrderResponse.
-
-22. Controller wraps it in ResponseEntity 201.
-
-23. MessageConverter serializes OrderResponse to JSON.
-
-24. DispatcherServlet completes.
-
-25. Filters run after-phase for logging/metrics.
-
-26. Tomcat writes HTTP response bytes.
-
-27. Client receives 201 Created.
-```
-
-One-line lifecycle:
-
-```text
-Accept -> Parse -> Filter -> Dispatch -> Map -> Adapt -> Invoke -> Convert -> Write
-```
-
----
-
-## Deep Walkthrough Example
-
-### Business Case: Create Order
-
-Request:
-
-```http
-POST /api/orders HTTP/1.1
-Content-Type: application/json
-Authorization: Bearer valid-token
-X-Request-Id: req-789
-
-{
-  "productId": 42,
-  "quantity": 2
-}
-```
-
-Controller:
-
-```java
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/api/orders")
-public class OrderController {
-
-    private final OrderService orderService;
-
-    @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(
-            @Valid @RequestBody CreateOrderRequest request) {
-        OrderResponse response = orderService.createOrder(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-}
-```
-
-DTO:
-
-```java
-public record CreateOrderRequest(
-        @NotNull Long productId,
-        @Min(1) int quantity
-) {}
-```
-
-Service:
-
-```java
-@Service
-@RequiredArgsConstructor
-public class OrderService {
-
-    private final OrderRepository orderRepository;
-    private final InventoryRepository inventoryRepository;
-
-    @Transactional
-    public OrderResponse createOrder(CreateOrderRequest request) {
-        inventoryRepository.reserve(request.productId(), request.quantity());
-        Order order = orderRepository.save(new Order(request.productId(), request.quantity()));
-        return new OrderResponse(order.getId(), "CREATED");
-    }
-}
-```
-
-Internal flow:
-
-```text
-HTTP body bytes
-    |
-    v
-Jackson ObjectMapper
-    |
-    v
-CreateOrderRequest(productId=42, quantity=2)
-    |
-    v
-Bean Validation
-    |
-    v
-OrderController.createOrder(request)
-    |
-    v
-OrderService proxy
-    |
-    v
-TransactionInterceptor
-    |
-    v
-OrderService real method
-    |
-    v
-Repositories
-    |
-    v
-PostgreSQL
-    |
-    v
-OrderResponse(orderId=1001, status=CREATED)
-    |
-    v
-Jackson ObjectMapper
-    |
-    v
-JSON bytes
-```
-
-The controller sees clean Java.
-
-The client sees HTTP.
-
-Spring MVC performs the translation.
-
----
-
-## Rich ASCII Diagrams
-
-### Diagram 1 - Full End-To-End Request Conveyor
-
-```text
-+--------+     +------------+     +---------+     +------------+
-| Client | --> | LB/Ingress | --> | Tomcat  | --> | Filters    |
-+--------+     +------------+     +---------+     +------------+
-                                                       |
-                                                       v
-+----------+   +------------+   +------------+   +-------------------+
-| Database |<--| Repository |<--| Service    |<--| Controller Method |
-+----------+   +------------+   +------------+   +-------------------+
-                                                       ^
-                                                       |
-                                             +--------------------+
-                                             | DispatcherServlet  |
-                                             +--------------------+
-```
-
-### Diagram 2 - DispatcherServlet Internals
-
-```text
-DispatcherServlet
-      |
-      +--> HandlerMapping
-      |       |
-      |       v
-      |   Finds OrderController.createOrder()
-      |
-      +--> HandlerAdapter
-      |       |
-      |       +--> ArgumentResolvers
-      |       +--> MessageConverters
-      |       +--> Validator
-      |       +--> Invoke controller
-      |
-      +--> ExceptionResolvers if failure
-      |
-      +--> View/Response handling
-```
-
-### Diagram 3 - Filter Chain Onion
-
-```text
-Request enters
-    |
-    v
-+-------------------------+
-| RequestIdFilter before  |
-|  +-------------------+  |
-|  | Security before   |  |
-|  |  +-------------+  |  |
-|  |  | CORS before |  |  |
-|  |  |     |       |  |  |
-|  |  |     v       |  |  |
-|  |  | Dispatcher  |  |  |
-|  |  |     |       |  |  |
-|  |  | CORS after  |  |  |
-|  |  +-------------+  |  |
-|  | Security after    |  |
-|  +-------------------+  |
-| RequestIdFilter after   |
-+-------------------------+
-    |
-    v
-Response leaves
-```
-
-### Diagram 4 - Controller Argument Resolution
-
-```text
-Controller method:
-
-createOrder(@Valid @RequestBody CreateOrderRequest request,
-            @RequestHeader("X-Request-Id") String requestId)
-
-Spring resolves:
-
-HTTP body stream ----------------> @RequestBody resolver
-                                      |
-                                      v
-                                  Jackson JSON -> DTO
-
-HTTP header X-Request-Id --------> @RequestHeader resolver
-                                      |
-                                      v
-                                  String requestId
-
-DTO -----------------------------> Validator
-                                      |
-                                      v
-                                  valid or exception
-```
-
-### Diagram 5 - Response Conversion
-
-```text
-Controller returns:
-
-ResponseEntity<OrderResponse>
-    status = 201
-    body   = OrderResponse(1001, CREATED)
-
-        |
-        v
-HttpMessageConverter
-        |
-        v
-JSON bytes:
-{"orderId":1001,"status":"CREATED"}
-
-        |
-        v
-HttpServletResponse
-        |
-        v
-Socket write
-```
-
-### Diagram 6 - Normal Response Path And Error Path
-
-```text
-Normal path:
-
-Request -> Filters -> Dispatcher -> Controller -> Service -> DB
-                                                   |
-                                                   v
-Response <- Filters <- Dispatcher <- JSON converter <- return object
-
-Error path:
-
-Request -> Filters -> Dispatcher -> Controller -> Service throws
-                                      |
-                                      v
-                              ExceptionResolver
-                                      |
-                                      v
-Response <- Filters <- Dispatcher <- Error JSON
-```
-
----
-
-## Data Structures & Algorithms Used
-
-Spring request flow is not about hard algorithms.
-
-It is about routing, ordered chains, maps, adapters, and object conversion.
-
-### 1. Thread Pool
-
-Tomcat uses worker threads.
-
-Conceptual structure:
-
-```text
-Request queue
-    |
-    v
-Worker thread pool
-    |
-    +--> http-nio-8080-exec-1
-    +--> http-nio-8080-exec-2
-    +--> http-nio-8080-exec-3
-```
-
-Production formula:
-
-```text
-Concurrent requests ≈ RPS × latency
-```
-
-Example:
-
-```text
-500 RPS × 200 ms = 100 concurrent requests
-```
-
-If blocking MVC uses one thread per active request, thread pool sizing matters.
-
-### 2. Ordered Filter Chain
-
-Filters are executed in order.
-
-Conceptual structure:
-
-```java
-List<Filter> filters = [requestIdFilter, securityFilter, corsFilter];
-```
-
-Algorithm:
-
-```text
-Call filter[0]
-  filter[0] calls chain.doFilter()
-    Call filter[1]
-      filter[1] calls chain.doFilter()
-        Call filter[2]
-          filter[2] calls DispatcherServlet
-```
-
-This behaves like nested function calls.
-
-### 3. Handler Mapping Registry
-
-Spring keeps mappings from request patterns to controller methods.
-
-Conceptual map:
-
-```text
-POST /api/orders      -> OrderController#createOrder
-GET  /api/orders/{id} -> OrderController#getOrder
-DELETE /api/orders/{id} -> OrderController#deleteOrder
-```
-
-Matching considers:
-
-```text
-Path
-HTTP method
-Consumes
-Produces
-Headers
-Params
-```
-
-### 4. Adapter Pattern
-
-DispatcherServlet does not know how to invoke every possible handler type.
-
-It asks HandlerAdapter:
-
-```text
-Can you invoke this handler?
-```
-
-For annotated controllers:
-
-```text
-RequestMappingHandlerAdapter
-```
-
-This is why Spring MVC is extensible.
-
-### 5. Chain Of Responsibility
-
-Filters and exception resolvers use chain-like behavior.
-
-Example exception resolvers:
-
-```text
-ExceptionHandlerExceptionResolver
-ResponseStatusExceptionResolver
-DefaultHandlerExceptionResolver
-```
-
-Each resolver gets a chance.
-
-### 6. Reflection / Method Invocation
-
-Controller methods are invoked dynamically.
-
-Spring knows:
-
-```text
-Bean instance
-Method reference
-Resolved arguments
-```
-
-Then calls:
-
-```text
-method.invoke(controllerBean, args)
-```
-
-Conceptually, not something you manually write.
-
-### 7. Serialization
-
-Jackson maps JSON fields to Java fields and Java fields to JSON.
-
-Conceptually:
-
-```text
-JSON object keys -> DTO constructor parameters / fields
-Java object fields -> JSON object keys
-```
-
----
-
-## Java Code Example With Execution Explanation
-
-### Controller
-
-```java
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/api/products")
-public class ProductController {
-
-    private final ProductService productService;
-
-    @GetMapping("/{id}")
-    public ProductResponse getProduct(@PathVariable Long id) {
-        return productService.getProduct(id);
-    }
-}
-```
-
-### Service
-
-```java
-@Service
-@RequiredArgsConstructor
-public class ProductService {
-
-    private final ProductRepository productRepository;
-
-    public ProductResponse getProduct(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
-
-        return new ProductResponse(product.getId(), product.getName(), product.getPrice());
-    }
-}
-```
-
-### Exception
-
-```java
-public class ProductNotFoundException extends RuntimeException {
-    public ProductNotFoundException(Long id) {
-        super("Product not found: " + id);
-    }
-}
-```
-
-### Global Exception Handler
-
-```java
-@RestControllerAdvice
-public class ApiExceptionHandler {
-
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(ProductNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ApiError("PRODUCT_NOT_FOUND", ex.getMessage()));
-    }
-}
-```
-
-### Internal Execution For Success
-
-Request:
-
-```http
-GET /api/products/10
-```
-
-Flow:
-
-```text
-Tomcat parses request
-Filter chain runs
-DispatcherServlet asks HandlerMapping
-GET /api/products/{id} matches ProductController.getProduct
-@PathVariable resolver converts "10" to Long 10
-Controller calls ProductService
-Repository finds product
-Controller returns ProductResponse
-Jackson serializes response
-HTTP 200 returned
-```
-
-### Internal Execution For Failure
-
-Request:
-
-```http
-GET /api/products/999
-```
-
-Flow:
-
-```text
-Controller calls ProductService
-Repository returns empty
-Service throws ProductNotFoundException
-Exception escapes controller
-DispatcherServlet asks exception resolvers
-@RestControllerAdvice handler matches exception
-ApiError is returned
-Jackson serializes error
-HTTP 404 returned
-```
-
-Important mental model:
-
-```text
-Exceptions are also part of the request pipeline.
-They do not randomly become HTTP responses.
-Exception resolvers translate them.
-```
-
----
-
-## Spring Boot Example With Internal Flow
-
-### Request DTO
-
-```java
-public record CreateUserRequest(
-        @NotBlank String name,
-        @Email String email
-) {}
-```
-
-### Response DTO
-
-```java
-public record CreateUserResponse(
-        Long id,
-        String name,
-        String email
-) {}
-```
-
-### Controller
-
-```java
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/api/users")
-public class UserController {
-
-    private final UserService userService;
-
-    @PostMapping
-    public ResponseEntity<CreateUserResponse> createUser(
-            @Valid @RequestBody CreateUserRequest request) {
-        CreateUserResponse response = userService.createUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-}
-```
-
-### Service
-
-```java
-@Service
-@RequiredArgsConstructor
-public class UserService {
-
-    private final UserRepository userRepository;
-
-    @Transactional
-    public CreateUserResponse createUser(CreateUserRequest request) {
-        User user = new User();
-        user.setName(request.name());
-        user.setEmail(request.email());
-
-        User saved = userRepository.save(user);
-
-        return new CreateUserResponse(saved.getId(), saved.getName(), saved.getEmail());
-    }
-}
-```
-
-### Debug Filter
-
-```java
-@Component
-public class RequestDebugFilter extends OncePerRequestFilter {
-
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
-
-        long start = System.currentTimeMillis();
-        String thread = Thread.currentThread().getName();
-
-        System.out.println("REQUEST START " + request.getMethod() + " "
-                + request.getRequestURI() + " thread=" + thread);
-
-        try {
-            filterChain.doFilter(request, response);
-        } finally {
-            long duration = System.currentTimeMillis() - start;
-            System.out.println("REQUEST END status=" + response.getStatus()
-                    + " durationMs=" + duration
-                    + " thread=" + Thread.currentThread().getName());
-        }
-    }
-}
-```
-
-### Internal Debug Output
-
-Expected mental output:
-
-```text
-REQUEST START POST /api/users thread=http-nio-8080-exec-5
-Controller createUser called
-Service createUser called
-Repository save called
-REQUEST END status=201 durationMs=42 thread=http-nio-8080-exec-5
-```
-
-This shows the request stayed on one worker thread in normal blocking MVC.
-
-### Internal Flow Diagram
-
-```text
-POST /api/users
-    |
-    v
-RequestDebugFilter before
-    |
-    v
-Spring Security filters
-    |
-    v
-DispatcherServlet
-    |
-    v
-UserController.createUser()
-    |
-    v
-UserService proxy
-    |
-    v
-@Transactional starts
-    |
-    v
-UserRepository.save()
-    |
-    v
-Database insert
-    |
-    v
-Transaction commit
-    |
-    v
-Jackson serializes response
-    |
-    v
-RequestDebugFilter after
-    |
-    v
-HTTP 201
-```
-
----
-
-## Production Architecture Example
-
-### Kubernetes Production Flow
-
-```text
-Client
   |
   v
-DNS
+Network Socket
   |
   v
-Cloud Load Balancer
+Embedded Server
   |
   v
-Kubernetes Ingress Controller
-  |
-  v
-Service ClusterIP
-  |
-  v
-Spring Boot Pod
-  |
-  v
-Tomcat
+Servlet Container
   |
   v
 Filter Chain
@@ -1483,1351 +34,1654 @@ Filter Chain
 DispatcherServlet
   |
   v
-Controller -> Service -> Repository
+Controller
   |
   v
-PostgreSQL / Redis / Kafka
+Service
+  |
+  v
+Repository
+  |
+  v
+Database
 ```
 
-Inside a pod:
+This chapter teaches exactly one idea:
 
-```text
-Spring Boot JVM
-+-----------------------------------------------------+
-|                                                     |
-|  Tomcat port 8080                                   |
-|      |                                              |
-|      v                                              |
-|  http-nio worker thread                             |
-|      |                                              |
-|      v                                              |
-|  Filters: requestId, security, metrics, tracing     |
-|      |                                              |
-|      v                                              |
-|  DispatcherServlet                                  |
-|      |                                              |
-|      v                                              |
-|  Controller -> Service -> Repository                |
-|                                                     |
-+-----------------------------------------------------+
-```
+> **A Spring Boot request is not a direct method call; it is an end-to-end pipeline with clear runtime stages, ownership boundaries, and failure points.**
 
-Production request context usually carries:
+If you remember only one sentence:
 
-```text
-Request ID
-Trace ID
-User identity
-Tenant ID
-Locale
-Authorization scopes
-Transaction context
-Security context
-MDC logging context
-```
-
-Many of these are attached early in filters and used later by services and logs.
+> **A request enters through the web server, passes through filters and DispatcherServlet, reaches controller-service-repository, then returns as an HTTP response.**
 
 ---
 
-## Sequence Diagram ASCII
+## Why This Exists
 
-### Successful POST Request
+When learning Spring Boot, many developers only see this:
 
-```text
-Client      Tomcat      Filters      Dispatcher     HandlerAdapter    Controller    Service      DB
-  |           |           |              |                |              |           |          |
-  | POST      |           |              |                |              |           |          |
-  |---------->|           |              |                |              |           |          |
-  |           | parse     |              |                |              |           |          |
-  |           |---------->|              |                |              |           |          |
-  |           |           | before       |                |              |           |          |
-  |           |           |------------->|                |              |           |          |
-  |           |           |              | find handler   |              |           |          |
-  |           |           |              |--------------->|              |           |          |
-  |           |           |              |                | resolve args |           |          |
-  |           |           |              |                |------------->|           |          |
-  |           |           |              |                |              | call svc  |          |
-  |           |           |              |                |              |---------->|          |
-  |           |           |              |                |              |           | INSERT   |
-  |           |           |              |                |              |           |--------->|
-  |           |           |              |                |              | response  |          |
-  |           |           |              |                |<-------------|           |          |
-  |           |           |              | JSON convert   |              |           |          |
-  |           |           |<-------------|                |              |           |          |
-  |           | write     | after        |                |              |           |          |
-  |<----------|<----------|              |                |              |           |          |
-```
-
-### Validation Failure Before Controller
-
-```text
-Client      Tomcat      Filters      Dispatcher     HandlerAdapter     Controller
-  |           |           |              |                |                |
-  | POST bad  |           |              |                |                |
-  |---------->|           |              |                |                |
-  |           | parse     |              |                |                |
-  |           |---------->|              |                |                |
-  |           |           |------------->|                |                |
-  |           |           |              | find handler   |                |
-  |           |           |              |--------------->|                |
-  |           |           |              |                | deserialize    |
-  |           |           |              |                | validate fails |
-  |           |           |              | exception resolver             |
-  |           |           |<-------------|                |                |
-  |<----------|           | 400 response |                | NOT CALLED     |
-```
-
-Important:
-
-```text
-Controller may not run if argument resolution or validation fails.
-```
-
----
-
-## Request Lifecycle
-
-Full request lifecycle:
-
-```text
-1. Client resolves DNS and connects to load balancer.
-
-2. Load balancer or ingress forwards request to application pod.
-
-3. Tomcat accepts connection on configured port.
-
-4. Tomcat selects or creates worker thread.
-
-5. Tomcat parses HTTP request into HttpServletRequest.
-
-6. Servlet filter chain begins.
-
-7. Infrastructure filters add request id, security context, tracing, CORS, logging, metrics.
-
-8. If a filter rejects request, error response is written immediately.
-
-9. If filters pass, DispatcherServlet receives request.
-
-10. DispatcherServlet asks HandlerMappings for matching handler.
-
-11. HandlerMapping returns controller method metadata.
-
-12. DispatcherServlet selects HandlerAdapter.
-
-13. HandlerAdapter resolves method arguments.
-
-14. Message converters deserialize request body if needed.
-
-15. Bean Validation validates @Valid parameters.
-
-16. Controller method is invoked.
-
-17. Controller delegates to service.
-
-18. Service applies business rules and often opens transaction.
-
-19. Repository accesses database.
-
-20. Service returns business response.
-
-21. Controller returns DTO or ResponseEntity.
-
-22. HandlerAdapter processes return value.
-
-23. Message converter serializes DTO to JSON.
-
-24. DispatcherServlet completes request.
-
-25. Filter chain after-phase executes.
-
-26. Tomcat commits response and writes bytes to socket.
-
-27. Client receives status, headers, and body.
-```
-
-Memory hook:
-
-```text
-Network -> Servlet -> Filters -> Dispatcher -> Controller -> Service -> DB -> JSON -> Socket
-```
-
----
-
-## Multiple Dry Runs
-
-### Dry Run 1 - Normal GET
-
-Request:
-
-```http
-GET /api/products/10
-```
-
-Flow:
-
-```text
-Tomcat receives request
-Filter chain passes
-DispatcherServlet matches GET /api/products/{id}
-@PathVariable resolver converts 10 to Long
-Controller calls service
-Service reads database
-Controller returns ProductResponse
-Jackson writes JSON
-HTTP 200 returned
-```
-
-Final response:
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-{"id":10,"name":"Keyboard","price":99.0}
-```
-
-### Dry Run 2 - Validation Failure
-
-Request:
-
-```http
-POST /api/users
-Content-Type: application/json
-
-{
-  "name": "",
-  "email": "not-email"
+```java
+@GetMapping("/orders/{id}")
+public OrderResponse getOrder(@PathVariable Long id) {
+    return orderService.getOrder(id);
 }
 ```
 
-Flow:
+It looks like the request magically appears inside the controller.
+
+But in production, bugs happen before and after the controller:
 
 ```text
-Tomcat parses request
-Filters pass
-DispatcherServlet finds UserController.createUser
-Jackson creates CreateUserRequest
-Bean Validation checks @NotBlank and @Email
+Request timeout before controller
+Authentication filter rejects request
+JSON body cannot be parsed
+Wrong controller mapping selected
 Validation fails
-MethodArgumentNotValidException thrown
-Exception resolver creates 400 response
-Controller method is not called
-Service is not called
-Database is not touched
+Transaction fails
+Repository query is slow
+DB connection pool is exhausted
+Response serialization fails
+Client disconnects before response
 ```
 
-Final response:
+If your mental model starts at the controller, you miss half the system.
 
-```http
-HTTP/1.1 400 Bad Request
-Content-Type: application/json
-
-{"error":"VALIDATION_FAILED"}
-```
-
-### Dry Run 3 - Unauthorized Request
-
-Request:
-
-```http
-GET /api/orders/1
-Authorization: Bearer invalid-token
-```
-
-Flow:
+The full request path matters because production debugging asks:
 
 ```text
-Tomcat receives request
-Security filter checks token
-Token invalid
-Security filter writes 401 response
-DispatcherServlet is not called
-Controller is not called
+Did the request reach the server?
+Did it pass filters?
+Was controller mapping found?
+Did JSON deserialize?
+Did validation pass?
+Did service transaction start?
+Did repository get DB connection?
+Did SQL finish?
+Did response serialize?
+Did the client receive it?
 ```
 
-Final response:
-
-```http
-HTTP/1.1 401 Unauthorized
-```
-
-Mental model:
-
-```text
-Filters guard the gate before MVC routing.
-```
-
-### Dry Run 4 - Controller Throws Business Exception
-
-Flow:
-
-```text
-GET /api/products/999
-DispatcherServlet routes request
-Controller calls service
-Service cannot find product
-Service throws ProductNotFoundException
-Exception bubbles to DispatcherServlet
-@RestControllerAdvice handles it
-HTTP 404 JSON response returned
-```
-
-Final response:
-
-```http
-HTTP/1.1 404 Not Found
-Content-Type: application/json
-
-{"code":"PRODUCT_NOT_FOUND"}
-```
-
-### Dry Run 5 - Slow Database Causes Thread Pressure
-
-Traffic:
-
-```text
-1000 RPS
-Database latency = 1 second
-```
-
-Approximate active request threads:
-
-```text
-1000 RPS × 1 second = 1000 concurrent requests
-```
-
-If Tomcat max threads is 200:
-
-```text
-200 threads busy
-New requests queue
-Latency increases
-Timeouts happen
-```
-
-Mental model:
-
-```text
-In blocking Spring MVC, slow downstream calls hold request threads.
-```
+The request-flow model exists so you can debug by stage, not by guessing.
 
 ---
 
-## Failure Scenarios
+## Problem Statement
 
-### 1. Controller Not Called Because Filter Rejected Request
+A user calls this API:
 
-Symptom:
+```http
+POST /api/orders
+Content-Type: application/json
+Authorization: Bearer token
 
-```text
-You put breakpoint in controller.
-It never hits.
-Client gets 401 or 403.
+{
+  "productId": 1001,
+  "quantity": 2
+}
 ```
 
-Likely cause:
+Your code:
 
-```text
-Security filter rejected request before DispatcherServlet.
+```java
+@PostMapping("/api/orders")
+public ResponseEntity<OrderResponse> create(@RequestBody CreateOrderRequest request) {
+    OrderResponse response = orderService.createOrder(request);
+    return ResponseEntity.status(201).body(response);
+}
 ```
 
-Debug:
+The core problem:
+
+> **How does raw network data become a Java controller method call, then become a database transaction, then become an HTTP response?**
+
+Spring Boot solves this through a layered runtime pipeline:
 
 ```text
-Enable Spring Security debug logs.
-Check Authorization header.
-Check filter order.
+1. Embedded server accepts socket request.
+2. Servlet container creates HttpServletRequest/Response.
+3. Filters run before controller.
+4. DispatcherServlet finds handler.
+5. Argument resolvers build method parameters.
+6. Controller invokes service.
+7. Service owns business and transaction boundary.
+8. Repository talks to persistence.
+9. Return value handlers serialize response.
+10. Filters complete and server writes bytes back.
 ```
 
-### 2. Controller Not Called Because Mapping Does Not Match
+That is the one flow.
 
-Symptom:
+---
+
+## Real World Analogy
+
+Imagine an airport journey.
+
+```text
+Passenger arrives at airport.
+Security checks documents.
+Gate system finds correct gate.
+Boarding agent verifies ticket.
+Passenger enters aircraft.
+Flight reaches destination.
+Baggage returns through arrival flow.
+```
+
+Mapping:
+
+```text
+Airport journey                Spring Boot request
+---------------                -------------------
+Airport entrance               network socket
+Security checks                filters/security filters
+Gate lookup                    DispatcherServlet mapping
+Boarding agent                 controller
+Flight operation               service/business logic
+Cargo/baggage system           repository/database
+Return journey                 response serialization
+```
+
+A passenger does not teleport to the aircraft.
+
+A request does not teleport to the controller.
+
+It passes through gates.
+
+---
+
+## The One Mental Model
+
+Think of a request as a train moving through stations.
+
+```text
+Station 1: Network server
+Station 2: Servlet container
+Station 3: Filter chain
+Station 4: DispatcherServlet
+Station 5: Handler mapping
+Station 6: Controller method
+Station 7: Service business logic
+Station 8: Repository/database
+Station 9: Response serialization
+Station 10: Server writes response
+```
+
+Each station has one job.
+
+```text
+Server:
+  accepts connections
+
+Filters:
+  cross-cutting checks
+
+DispatcherServlet:
+  routes request to controller
+
+Controller:
+  translates HTTP into application command
+
+Service:
+  executes business use case
+
+Repository:
+  loads/saves data
+
+Database:
+  persists state
+
+Serializer:
+  converts Java object to JSON
+
+Server:
+  sends HTTP response bytes
+```
+
+Senior debugging question:
+
+> **At which station did the request stop, slow down, or produce the wrong result?**
+
+---
+
+## Core Concepts
+
+## Embedded Server
+
+Spring Boot usually starts an embedded server.
+
+For Spring MVC, commonly:
+
+```text
+Tomcat
+Jetty
+Undertow
+```
+
+With default starter web, Tomcat is common.
+
+It listens on a port:
+
+```properties
+server.port=8080
+```
+
+Mental model:
+
+```text
+The embedded server is the front door that accepts HTTP connections.
+```
+
+## Servlet Container
+
+In Spring MVC, the servlet container creates:
+
+```text
+HttpServletRequest
+HttpServletResponse
+```
+
+These are Java objects representing the HTTP request and response.
+
+## Filter Chain
+
+Filters run before the request reaches the controller.
+
+Examples:
+
+```text
+security filter
+CORS filter
+logging filter
+request ID filter
+rate limiting filter
+encoding filter
+authentication filter
+```
+
+Filters can:
+
+```text
+allow request
+modify request/response
+reject request
+short-circuit response
+```
+
+If a security filter rejects the request, the controller is never called.
+
+## DispatcherServlet
+
+The `DispatcherServlet` is the central front controller of Spring MVC.
+
+It decides:
+
+```text
+Which controller method should handle this request?
+How should method arguments be created?
+Which return value handler should process the result?
+Which exception handler should handle errors?
+```
+
+Mental model:
+
+```text
+DispatcherServlet = traffic controller for MVC requests
+```
+
+## Handler Mapping
+
+Handler mapping finds the controller method.
+
+Example:
+
+```java
+@PostMapping("/api/orders")
+```
+
+For request:
+
+```text
+POST /api/orders
+```
+
+Spring maps it to:
+
+```text
+OrderController.create()
+```
+
+If no match:
 
 ```text
 404 Not Found
-Controller breakpoint not hit
 ```
 
-Possible causes:
+If method wrong:
 
 ```text
-Wrong HTTP method
-Wrong path prefix
-Missing context path
-Trailing slash mismatch
-Consumes/produces mismatch
-Controller package not scanned
+405 Method Not Allowed
 ```
 
-### 3. Request Body Cannot Be Deserialized
+## Argument Resolver
 
-Symptom:
+Argument resolvers build controller method parameters.
 
-```text
-400 Bad Request
-JSON parse error
-Controller not called
-```
-
-Possible causes:
-
-```text
-Malformed JSON
-Wrong Content-Type
-Missing no-args constructor for class DTO
-Invalid enum value
-Date format mismatch
-```
-
-### 4. Validation Fails Before Business Logic
-
-Symptom:
-
-```text
-400 Bad Request
-Service not called
-```
-
-Cause:
-
-```text
-@Valid fails during argument resolution.
-```
-
-### 5. Response Already Committed
-
-Symptom:
-
-```text
-Cannot call sendError() after response has been committed
-```
-
-Cause:
-
-```text
-Some code wrote response bytes early, then later tried to change status.
-```
-
-Production fix:
-
-```text
-Return structured ResponseEntity.
-Avoid writing directly to response unless necessary.
-```
-
-### 6. Thread Pool Exhaustion
-
-Symptom:
-
-```text
-High request latency
-Tomcat busy threads near max
-Requests waiting
-CPU not necessarily high
-```
-
-Cause:
-
-```text
-Slow DB / external service / locks / long transactions hold threads.
-```
-
-### 7. Missing Request ID In Logs
-
-Symptom:
-
-```text
-Cannot trace one request across logs.
-```
-
-Cause:
-
-```text
-Request ID filter missing or MDC not cleared correctly.
-```
-
-Fix:
-
-```text
-Add filter that puts requestId into MDC before chain and removes it in finally.
-```
-
-### 8. Large Request Body Hurts Memory
-
-Symptom:
-
-```text
-Memory pressure
-Slow requests
-Large JSON upload causes GC spikes
-```
-
-Cause:
-
-```text
-Request body is fully read/deserialized into memory.
-```
-
-Fix:
-
-```text
-Limit request size.
-Use streaming upload for large files.
-Keep DTOs bounded.
-```
-
----
-
-## Failure Investigation Playbook
-
-When request flow surprises you, debug in this order.
-
-### Step 1 - Did Request Reach The App?
-
-Check access logs or a first filter.
-
-```text
-If no log appears, request may be stuck at DNS, LB, ingress, service, network policy, or wrong port.
-```
-
-### Step 2 - Did It Pass Filters?
-
-Add or inspect filter logs.
-
-```text
-Security filter may return 401/403 before controller.
-CORS may block browser requests.
-Request size filter may reject large body.
-```
-
-### Step 3 - Did DispatcherServlet Find A Handler?
-
-Enable mapping logs:
-
-```yaml
-logging:
-  level:
-    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
-```
-
-Look for registered mappings.
-
-### Step 4 - Did Argument Resolution Fail?
-
-Check for:
-
-```text
-HttpMessageNotReadableException
-MethodArgumentNotValidException
-MissingServletRequestParameterException
-MethodArgumentTypeMismatchException
-```
-
-### Step 5 - Did Controller Run?
-
-Add a log at controller entry:
+Examples:
 
 ```java
-log.info("createOrder called requestId={}", requestId);
+@PathVariable Long id
+@RequestParam int page
+@RequestBody CreateOrderRequest request
+@RequestHeader String token
+Authentication authentication
 ```
 
-If not reached, issue is before controller.
+For `@RequestBody`, Spring uses message converters.
 
-### Step 6 - Did Service / Transaction Run?
+## Message Converter
 
-Add logs at service entry.
+Message converters convert HTTP body to Java objects and Java objects to HTTP body.
 
-Check transaction logs if needed:
-
-```yaml
-logging:
-  level:
-    org.springframework.transaction: TRACE
-```
-
-### Step 7 - Did Exception Resolver Convert Error?
-
-Check `@RestControllerAdvice`.
-
-Common issue:
+Common:
 
 ```text
-Exception is thrown but no handler exists, so client gets generic 500.
+Jackson JSON converter
 ```
 
-### Step 8 - Did Response Serialization Fail?
+Input:
 
-Symptoms:
-
-```text
-Controller returned successfully but response is 500.
+```json
+{"productId":1001,"quantity":2}
 ```
 
-Possible causes:
-
-```text
-Jackson infinite recursion
-Lazy-loaded entity outside transaction
-DTO contains unsupported type
-```
-
-### Step 9 - Did After-Filter Fail?
-
-A filter can throw after controller returns.
-
-Always inspect full stack trace.
-
-### Step 10 - Check Metrics
-
-Useful metrics:
-
-```text
-http.server.requests count/latency
-Tomcat busy threads
-Tomcat max threads
-Hikari active connections
-DB query latency
-Exception count by status
-p95/p99 latency by endpoint
-```
-
----
-
-## Debugging Guide
-
-### Request ID Filter With MDC
+Becomes:
 
 ```java
-@Component
-public class CorrelationIdFilter extends OncePerRequestFilter {
+new CreateOrderRequest(1001L, 2)
+```
 
-    private static final String HEADER = "X-Request-Id";
+Output:
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+```java
+new OrderResponse(501L, "CREATED")
+```
 
-        String requestId = request.getHeader(HEADER);
-        if (requestId == null || requestId.isBlank()) {
-            requestId = UUID.randomUUID().toString();
-        }
+Becomes JSON.
 
-        MDC.put("requestId", requestId);
-        response.setHeader(HEADER, requestId);
+## Controller
 
-        try {
-            filterChain.doFilter(request, response);
-        } finally {
-            MDC.remove("requestId");
-        }
-    }
+Controller translates HTTP into application call.
+
+It should handle:
+
+```text
+HTTP path
+query params
+headers
+request body
+status code
+response DTO
+```
+
+It should not own deep business logic.
+
+## Service
+
+Service owns use case and transaction boundary.
+
+```java
+@Transactional
+public OrderResponse createOrder(CreateOrderCommand command) {
+    // business logic
 }
 ```
 
-### Log Pattern
+## Repository
 
-```properties
-logging.pattern.level=%5p [requestId=%X{requestId}]
-```
-
-### Controller Debug Log
+Repository hides persistence access.
 
 ```java
-@Slf4j
+public interface OrderRepository extends JpaRepository<Order, Long> {
+}
+```
+
+## Database
+
+The database executes SQL and stores durable state.
+
+---
+
+## Internal Architecture
+
+```text
+Client
+  |
+  v
++-------------------------+
+| Embedded Server         |
+| Tomcat                  |
++-------------------------+
+  |
+  v
++-------------------------+
+| Servlet Container       |
+| HttpServletRequest      |
++-------------------------+
+  |
+  v
++-------------------------+
+| Filter Chain            |
+| Security/CORS/Logging   |
++-------------------------+
+  |
+  v
++-------------------------+
+| DispatcherServlet       |
+| Spring MVC front door   |
++-------------------------+
+  |
+  v
++-------------------------+
+| HandlerMapping          |
+| find controller method  |
++-------------------------+
+  |
+  v
++-------------------------+
+| HandlerAdapter          |
+| invoke method           |
++-------------------------+
+  |
+  v
++-------------------------+
+| Controller              |
+| HTTP boundary           |
++-------------------------+
+  |
+  v
++-------------------------+
+| Service                 |
+| business boundary       |
++-------------------------+
+  |
+  v
++-------------------------+
+| Repository              |
+| persistence boundary    |
++-------------------------+
+  |
+  v
++-------------------------+
+| Database                |
++-------------------------+
+```
+
+Response travels back:
+
+```text
+Database -> Repository -> Service -> Controller -> DispatcherServlet -> Filters -> Server -> Client
+```
+
+---
+
+## Internal Working
+
+Given:
+
+```java
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;
 
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
     @PostMapping
-    public ResponseEntity<OrderResponse> create(@Valid @RequestBody CreateOrderRequest request) {
-        log.info("create order request productId={} quantity={}",
-                request.productId(), request.quantity());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(orderService.createOrder(request));
+    public ResponseEntity<OrderResponse> create(@RequestBody CreateOrderRequest request) {
+        OrderResponse response = orderService.createOrder(request);
+        return ResponseEntity.status(201).body(response);
     }
 }
 ```
 
-### Useful Spring MVC Logs
-
-```yaml
-logging:
-  level:
-    org.springframework.web: DEBUG
-    org.springframework.web.servlet.DispatcherServlet: DEBUG
-    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
-    org.springframework.http.converter: DEBUG
-```
-
-### Debugging Questions
+When a request arrives:
 
 ```text
-1. Did request reach the app?
-2. Which thread handled it?
-3. Which filters ran?
-4. Did security reject it?
-5. Did DispatcherServlet find a handler?
-6. Did body deserialization succeed?
-7. Did validation pass?
-8. Did controller method run?
-9. Did service method run?
-10. Did transaction start?
-11. Did repository query complete?
-12. Did response serialization succeed?
-13. Did any after-filter throw?
-14. Was the response committed before error handling?
+1. Client opens TCP connection to server.
+2. Tomcat accepts connection.
+3. Tomcat parses HTTP request bytes.
+4. Servlet request/response objects are created.
+5. Filter chain starts.
+6. Security filter checks authentication.
+7. DispatcherServlet receives request.
+8. HandlerMapping finds OrderController#create.
+9. HandlerAdapter prepares method invocation.
+10. RequestBody argument resolver reads JSON body.
+11. Jackson converts JSON into CreateOrderRequest.
+12. Controller method is invoked.
+13. Controller calls service.
+14. Transaction proxy opens transaction.
+15. Service calls repositories.
+16. Hibernate/JDBC executes SQL through HikariCP.
+17. Database returns result.
+18. Transaction commits.
+19. Controller returns ResponseEntity.
+20. ReturnValueHandler processes response.
+21. Jackson serializes OrderResponse to JSON.
+22. Filters finish post-processing.
+23. Tomcat writes HTTP response bytes.
+24. Client receives response.
+```
+
+Important:
+
+```text
+The controller is only one station in the journey.
 ```
 
 ---
 
-## Performance Considerations
-
-### Blocking Thread Cost
-
-In Spring MVC, a request commonly occupies one server thread while waiting.
-
-If service calls DB:
+## Rich ASCII Diagram — End-to-End Request
 
 ```text
-Thread waits for DB response.
+HTTP Request
+POST /api/orders
+Authorization: Bearer ...
+Content-Type: application/json
+
+{
+  "productId": 1001,
+  "quantity": 2
+}
+
+      |
+      v
++----------------------+
+| 1. Tomcat            |
+| accepts socket       |
++----------+-----------+
+           |
+           v
++----------------------+
+| 2. Servlet Container |
+| builds request objs  |
++----------+-----------+
+           |
+           v
++----------------------+
+| 3. Filter Chain      |
+| auth, CORS, logging  |
++----------+-----------+
+           |
+           v
++----------------------+
+| 4. DispatcherServlet |
+| MVC front controller |
++----------+-----------+
+           |
+           v
++----------------------+
+| 5. HandlerMapping    |
+| POST /api/orders     |
+| -> OrderController   |
++----------+-----------+
+           |
+           v
++----------------------+
+| 6. Argument Resolver |
+| JSON -> Request DTO  |
++----------+-----------+
+           |
+           v
++----------------------+
+| 7. Controller        |
+| HTTP translation     |
++----------+-----------+
+           |
+           v
++----------------------+
+| 8. Service           |
+| business + tx        |
++----------+-----------+
+           |
+           v
++----------------------+
+| 9. Repository        |
+| persistence gateway  |
++----------+-----------+
+           |
+           v
++----------------------+
+| 10. Database         |
+| SQL + commit         |
++----------+-----------+
+           |
+           v
+HTTP Response 201 Created
 ```
-
-If service calls remote API:
-
-```text
-Thread waits for network response.
-```
-
-Formula:
-
-```text
-Concurrent requests ≈ RPS × average latency
-```
-
-Example:
-
-```text
-2000 RPS × 100 ms = 200 concurrent requests
-```
-
-If p99 becomes 2 seconds:
-
-```text
-2000 RPS × 2 seconds = 4000 concurrent requests at p99 pressure
-```
-
-That can overwhelm threads, DB connections, and queues.
-
-### JSON Serialization Cost
-
-Large responses cost:
-
-```text
-CPU for serialization
-Memory for object graph
-Network bandwidth
-Client parsing time
-```
-
-Better:
-
-```text
-Paginate large lists
-Return DTOs, not entities
-Avoid huge nested graphs
-Compress where appropriate
-```
-
-### Validation Cost
-
-Validation is usually cheap, but complex custom validators can hit database or remote services.
-
-Bad:
-
-```text
-@Valid triggers remote call per field
-```
-
-Better:
-
-```text
-Keep validation local and fast.
-Do business existence checks in service.
-```
-
-### Filter Cost
-
-Every request passes through filters.
-
-Do not make filters heavy.
-
-Bad filter behavior:
-
-```text
-Reads entire request body unnecessarily
-Calls database
-Calls remote auth service synchronously every time
-Logs huge payloads
-```
-
-### Controller Should Be Thin
-
-Controller should not do expensive orchestration.
-
-Good split:
-
-```text
-Controller = HTTP translation
-Service    = business rules
-Repository = persistence
-```
-
-### Timeouts
-
-Production systems need timeouts at every boundary:
-
-```text
-Load balancer timeout
-Ingress timeout
-Tomcat connection timeout
-DB query timeout
-HTTP client timeout
-Transaction timeout
-```
-
-No timeout means stuck requests can hold resources too long.
 
 ---
 
-## Scalability Considerations
+## Java Code Example
 
-### Horizontal Scaling
+### Request DTO
 
-Adding pods increases request capacity only if bottlenecks can scale.
-
-```text
-More pods
-  -> more Tomcat threads
-  -> more DB connections
-  -> more pressure on database
+```java
+public record CreateOrderRequest(
+        Long productId,
+        int quantity
+) {}
 ```
 
-Danger:
+### Response DTO
 
-```text
-20 pods × 30 Hikari connections = 600 possible DB connections
+```java
+public record OrderResponse(
+        Long orderId,
+        Long productId,
+        int quantity,
+        String status
+) {}
 ```
 
-Your database may not handle that.
+### Controller
 
-### Stateless Request Handling
+```java
+@RestController
+@RequestMapping("/api/orders")
+public class OrderController {
 
-Spring Boot REST services scale best when stateless.
+    private final OrderService orderService;
 
-Good:
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
-```text
-JWT / session externalized
-No local in-memory user session dependency
-No local file dependency
-No sticky session required
+    @PostMapping
+    public ResponseEntity<OrderResponse> create(@RequestBody CreateOrderRequest request) {
+        OrderResponse response = orderService.createOrder(request);
+        return ResponseEntity.status(201).body(response);
+    }
+}
 ```
 
-### Backpressure
+### Service
 
-If downstream DB is slow, blindly accepting all requests causes collapse.
+```java
+@Service
+public class OrderService {
 
-Use:
+    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
-```text
-Connection pool limits
-Thread pool limits
-Rate limiting
-Bulkheads
-Circuit breakers
-Timeouts
-Queue limits
+    public OrderService(ProductRepository productRepository,
+                        OrderRepository orderRepository) {
+        this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
+    }
+
+    @Transactional
+    public OrderResponse createOrder(CreateOrderRequest request) {
+        Product product = productRepository.findById(request.productId())
+                .orElseThrow(() -> new BusinessException("Product not found"));
+
+        product.decreaseStock(request.quantity());
+
+        Order order = Order.create(product, request.quantity());
+        Order saved = orderRepository.save(order);
+
+        return new OrderResponse(
+                saved.getId(),
+                product.getId(),
+                saved.getQuantity(),
+                saved.getStatus().name()
+        );
+    }
+}
 ```
 
-### Gateway / Ingress Responsibilities
+### Repository
 
-Common edge responsibilities:
-
-```text
-TLS termination
-Routing
-Rate limiting
-Authentication pre-checks
-Request size limits
-Compression
-Observability
+```java
+public interface ProductRepository extends JpaRepository<Product, Long> {
+}
 ```
 
-But application must still validate and authorize.
-
-### Readiness And Liveness
-
-Kubernetes should only send traffic to ready pods.
-
-```text
-Readiness probe = can receive traffic?
-Liveness probe  = should restart app?
+```java
+public interface OrderRepository extends JpaRepository<Order, Long> {
+}
 ```
 
-Bad readiness means requests enter pods before Spring is ready.
+### Entity
+
+```java
+@Entity
+public class Product {
+
+    @Id
+    private Long id;
+
+    private String name;
+
+    private int stock;
+
+    protected Product() {}
+
+    public void decreaseStock(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("quantity must be positive");
+        }
+
+        if (stock < quantity) {
+            throw new BusinessException("Out of stock");
+        }
+
+        this.stock -= quantity;
+    }
+
+    public Long getId() {
+        return id;
+    }
+}
+```
+
+Execution explanation:
+
+```text
+Controller:
+  receives Java DTO after JSON deserialization.
+
+Service:
+  starts transaction, applies business rule.
+
+Repository:
+  loads/saves entities.
+
+Hibernate:
+  tracks changes and flushes SQL.
+
+Database:
+  persists order and stock update.
+
+Response:
+  Java DTO serialized to JSON.
+```
+
+---
+
+## Spring Boot Code Example With Filter
+
+A request ID filter:
+
+```java
+@Component
+public class RequestIdFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String requestId = UUID.randomUUID().toString();
+        response.setHeader("X-Request-Id", requestId);
+
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            // cleanup logging context if used
+        }
+    }
+}
+```
+
+Internal execution:
+
+```text
+Request enters filter.
+Filter adds request ID.
+Filter calls next stage.
+Controller/service/repository execute.
+Response comes back.
+Filter can do final cleanup.
+```
+
+If filter does not call:
+
+```java
+filterChain.doFilter(request, response);
+```
+
+Then request stops there.
+
+This is how security can reject before controller.
+
+---
+
+## Step-by-Step Dry Run — Normal Flow
+
+Input:
+
+```http
+POST /api/orders
+Content-Type: application/json
+
+{
+  "productId": 1001,
+  "quantity": 2
+}
+```
+
+Database before:
+
+```text
+products
++------+----------+-------+
+| id   | name     | stock |
++------+----------+-------+
+| 1001 | Keyboard | 10    |
++------+----------+-------+
+```
+
+Flow:
+
+```text
+1. Tomcat receives HTTP request.
+2. Servlet container creates request/response objects.
+3. Filter chain runs.
+4. DispatcherServlet receives request.
+5. HandlerMapping finds OrderController#create.
+6. Jackson converts JSON to CreateOrderRequest.
+7. Controller calls orderService.createOrder().
+8. Transaction begins.
+9. ProductRepository loads product 1001.
+10. Product stock decreases 10 -> 8.
+11. Order entity is created.
+12. OrderRepository saves order.
+13. Hibernate flushes SQL.
+14. Transaction commits.
+15. Service returns OrderResponse.
+16. Controller returns 201 Created.
+17. Jackson serializes response DTO to JSON.
+18. Tomcat writes response bytes.
+```
+
+Database after:
+
+```text
+products
++------+----------+-------+
+| id   | name     | stock |
++------+----------+-------+
+| 1001 | Keyboard | 8     |
++------+----------+-------+
+
+orders
++----+------------+----------+---------+
+| id | product_id | quantity | status  |
++----+------------+----------+---------+
+| 501| 1001       | 2        | CREATED |
++----+------------+----------+---------+
+```
+
+Response:
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "orderId": 501,
+  "productId": 1001,
+  "quantity": 2,
+  "status": "CREATED"
+}
+```
+
+---
+
+## Dry Run — Authentication Failure
+
+Request:
+
+```http
+POST /api/orders
+Authorization: missing
+```
+
+Flow:
+
+```text
+1. Tomcat receives request.
+2. Servlet request object created.
+3. Security filter chain runs.
+4. Authentication filter checks token.
+5. Token missing.
+6. Filter writes 401 response.
+7. DispatcherServlet is not called.
+8. Controller is not called.
+9. Service is not called.
+10. Database is not touched.
+```
+
+Response:
+
+```http
+HTTP/1.1 401 Unauthorized
+```
+
+Debug lesson:
+
+```text
+If controller logs are absent, request may have stopped in filter chain.
+```
+
+---
+
+## Dry Run — JSON Parse Failure
+
+Request:
+
+```http
+POST /api/orders
+Content-Type: application/json
+
+{
+  "productId": 1001,
+  "quantity": 
+}
+```
+
+Flow:
+
+```text
+1. Request reaches DispatcherServlet.
+2. HandlerMapping finds controller.
+3. Argument resolver tries @RequestBody.
+4. Jackson tries to parse JSON.
+5. JSON is invalid.
+6. HttpMessageNotReadableException is thrown.
+7. Controller method is not invoked.
+8. Exception handler returns 400 Bad Request.
+```
+
+Debug lesson:
+
+```text
+Controller method can be skipped even after route matches if argument resolution fails.
+```
+
+---
+
+## Dry Run — Business Failure
+
+Request:
+
+```json
+{
+  "productId": 1001,
+  "quantity": 20
+}
+```
+
+Database:
+
+```text
+stock = 8
+```
+
+Flow:
+
+```text
+1. Request reaches controller.
+2. JSON becomes DTO.
+3. Controller calls service.
+4. Transaction starts.
+5. Product is loaded.
+6. product.decreaseStock(20) throws BusinessException.
+7. Transaction rolls back.
+8. ControllerAdvice maps exception to 400.
+9. Response sent.
+```
+
+Response:
+
+```http
+HTTP/1.1 400 Bad Request
+
+{
+  "message": "Out of stock"
+}
+```
+
+Debug lesson:
+
+```text
+Business failures should usually happen in service/domain layer, not filter or repository.
+```
+
+---
+
+## Dry Run — Database Connection Pool Exhaustion
+
+Flow:
+
+```text
+1. Request reaches service.
+2. Transaction starts.
+3. Repository needs DB connection.
+4. Hibernate asks HikariCP for connection.
+5. All connections are active.
+6. Request waits for connection.
+7. Wait exceeds connectionTimeout.
+8. SQLTransientConnectionException occurs.
+9. Transaction fails.
+10. Response becomes 500/503 depending on handling.
+```
+
+Debug lesson:
+
+```text
+A request may reach repository but still fail before SQL executes.
+```
+
+Check:
+
+```text
+Hikari active connections
+Hikari pending threads
+DB slow queries
+transaction duration
+```
+
+---
+
+## Production Scale Example
+
+Imagine an ecommerce service at 2,000 RPS.
+
+```text
+Load Balancer
+    |
+    v
+Spring Boot pods
+    |
+    +-- Tomcat request threads
+    +-- Filter chain
+    +-- DispatcherServlet
+    +-- Controllers
+    +-- Services
+    +-- HikariCP
+    +-- PostgreSQL
+```
+
+Each stage has capacity:
+
+```text
+Load balancer:
+  connection limits
+
+Tomcat:
+  max request threads
+
+Filter chain:
+  auth/crypto cost
+
+DispatcherServlet:
+  mapping/argument resolution cost
+
+Service:
+  business CPU + external calls
+
+HikariCP:
+  DB connection limit
+
+Database:
+  query/lock capacity
+
+Serializer:
+  JSON CPU and payload size
+```
+
+At scale, bottleneck can be any stage.
+
+Example symptom:
+
+```text
+p99 latency = 2 seconds
+```
+
+Possible causes by stage:
+
+```text
+Tomcat thread saturation
+security token verification slow
+JSON payload too large
+controller doing too much work
+service calling slow external API
+transaction holding DB connection
+N+1 query
+DB lock contention
+response serialization huge
+client network slow
+```
+
+Senior thinking:
+
+```text
+Trace one request through all stages.
+Measure each station.
+Do not guess.
+```
 
 ---
 
 ## Production Failure Story
 
-### Incident: Slow Endpoint Took Down All APIs
+A team saw random checkout timeouts.
 
-A service had this endpoint:
-
-```java
-@GetMapping("/reports/monthly")
-public MonthlyReport report() {
-    return reportService.generateMonthlyReport();
-}
-```
-
-Internally it did:
+Controller logs showed:
 
 ```text
-Load 300,000 rows
-Map entities to nested DTOs
-Serialize huge JSON response
-No pagination
-No timeout
+Checkout started
 ```
 
-During business hours, several clients called it repeatedly.
-
-What happened:
+But sometimes there was no:
 
 ```text
-Tomcat threads became busy generating reports.
-DB connections stayed active.
-Heap usage increased due to large DTO graphs.
-GC pauses increased.
-Other small APIs waited behind busy threads.
-p99 latency increased for unrelated endpoints.
-Ingress started returning 504.
+Checkout completed
 ```
 
-Initial wrong assumption:
+Initial guess:
 
 ```text
-Database is slow.
+Controller bug.
 ```
 
-Actual issue:
+Actual flow investigation:
 
 ```text
-The request pipeline allowed one expensive endpoint to consume shared server resources.
+Controller entered.
+Service started transaction.
+Repository loaded cart.
+Service called payment provider inside transaction.
+Payment provider became slow.
+DB connection stayed borrowed during external call.
+Hikari pool exhausted.
+Other requests waited for DB connection.
+Tomcat threads piled up.
+Health checks slowed.
+Pods restarted.
 ```
 
-Failure diagram:
+Root cause:
 
 ```text
-/report request
-    |
-    v
-Tomcat worker thread held for 20s
-    |
-    v
-DB connection held for long query
-    |
-    v
-Large DTO in heap
-    |
-    v
-Jackson serializes huge response
-    |
-    v
-Other requests wait for threads / DB connections
+External network call inside DB transaction extended the request pipeline and held scarce DB connections.
 ```
 
 Fix:
 
 ```text
-1. Paginated report endpoint.
-2. Added async background report generation.
-3. Stored generated report in object storage.
-4. Returned job id immediately.
-5. Added endpoint-specific rate limit.
-6. Added query timeout.
-7. Added response size monitoring.
-8. Reduced Tomcat and Hikari settings to prevent DB overload.
+Shorten transaction.
+Persist payment attempt.
+Commit DB transaction.
+Call payment provider outside transaction or use outbox/saga.
+Use timeouts and circuit breaker.
+Monitor Hikari pending threads.
 ```
 
-Improved model:
+Lesson:
+
+> **End-to-end request flow is only as strong as the slowest stage, and holding scarce resources across slow stages causes cascading failure.**
+
+---
+
+## Debugging Mindset
+
+When a request fails, locate the stage.
 
 ```text
-Request should initiate work quickly.
-Long-running heavy work should not monopolize request threads.
+Did it reach server?
+  Check access logs/load balancer.
+
+Did it pass filters?
+  Check security/auth logs.
+
+Did DispatcherServlet map it?
+  Check route/method/path.
+
+Did argument resolution work?
+  Check JSON/validation errors.
+
+Did controller run?
+  Check controller logs.
+
+Did service transaction start?
+  Check transaction logs/traces.
+
+Did repository get connection?
+  Check Hikari metrics.
+
+Did SQL execute?
+  Check SQL logs/DB metrics.
+
+Did response serialize?
+  Check converter/serialization errors.
+
+Did client receive response?
+  Check timeout/client disconnect/access logs.
 ```
 
-Senior lesson:
+### Symptom Map
 
 ```text
-Every endpoint shares the same request pipeline resources.
-One bad endpoint can starve unrelated APIs.
+404
+  -> HandlerMapping did not find route
+
+405
+  -> Path exists but HTTP method wrong
+
+400 before controller
+  -> JSON parse, validation, parameter binding
+
+401/403
+  -> security filter
+
+500 after service starts
+  -> business exception not mapped, DB error, serialization error
+
+Timeout before controller log
+  -> Tomcat queue, filter, network, security
+
+Timeout after controller log
+  -> service/repository/downstream/DB
+
+Hikari timeout
+  -> DB connection pool pressure
+
+LazyInitializationException during response
+  -> entity serialization after transaction/session closed
 ```
 
 ---
 
 ## Common Misconceptions
 
-### Misconception 1
+## Misconception 1 — “Request directly calls controller”
 
-```text
-The request goes directly to controller.
-```
+No.
 
-Correct:
+It passes through server, servlet container, filters, DispatcherServlet, handler mapping, argument resolution, then controller.
 
-```text
-The request passes through Tomcat, filters, DispatcherServlet, handler mapping, adapters, argument resolvers, and converters before the controller method runs.
-```
+## Misconception 2 — “If controller is not called, route is wrong”
 
-### Misconception 2
+Not always.
 
-```text
-Filters and interceptors are the same.
-```
+Security filters, CORS filters, malformed HTTP, or server-level rejection can stop request earlier.
 
-Correct:
+## Misconception 3 — “`@RequestBody` is just simple mapping”
 
-```text
-Filters are Servlet-level and run before DispatcherServlet.
-Spring MVC interceptors run around handler execution inside MVC.
-```
+No.
 
-### Misconception 3
+It uses message converters, usually Jackson.
+Invalid JSON or incompatible DTO fields can fail before controller method body runs.
 
-```text
-404 always means controller returned not found.
-```
+## Misconception 4 — “Service is only a pass-through”
 
-Correct:
+Service should own business use case and transaction boundary.
 
-```text
-404 may mean no route matched before controller was called.
-```
+## Misconception 5 — “Repository method means SQL immediately finished”
 
-### Misconception 4
+Not necessarily.
 
-```text
-400 validation errors happen inside controller.
-```
+JPA may delay flush.
+Hikari may wait for connection.
+Lazy loading may execute later.
+Transaction commit may trigger SQL.
 
-Correct:
+## Misconception 6 — “Returning entity is harmless”
 
-```text
-Many 400 errors happen during argument resolution before controller method invocation.
-```
+Returning JPA entities can trigger lazy loading, leak fields, or fail serialization.
 
-### Misconception 5
-
-```text
-@ResponseBody manually creates JSON.
-```
-
-Correct:
-
-```text
-Spring delegates JSON serialization to HttpMessageConverter, usually backed by Jackson.
-```
-
-### Misconception 6
-
-```text
-Adding pods always fixes slow APIs.
-```
-
-Correct:
-
-```text
-If the bottleneck is database, external API, locks, or shared thread pool pressure, adding pods may amplify the bottleneck.
-```
-
-### Misconception 7
-
-```text
-Controller is the best place for business logic.
-```
-
-Correct:
-
-```text
-Controller should translate HTTP to application call. Service should own business rules.
-```
+Prefer response DTOs.
 
 ---
 
-## Java / Spring Boot Code Examples With Internal Execution Explanation
+## Java/Spring Boot Code Examples With Internal Explanation
 
-### Example 1 - Path Variable And Request Param
-
-```java
-@GetMapping("/api/products/{id}")
-public ProductResponse getProduct(
-        @PathVariable Long id,
-        @RequestParam(defaultValue = "false") boolean includeReviews) {
-    return productService.getProduct(id, includeReviews);
-}
-```
-
-Request:
-
-```http
-GET /api/products/10?includeReviews=true
-```
-
-Internal execution:
-
-```text
-HandlerMapping matches /api/products/{id}
-@PathVariable resolver extracts id="10"
-ConversionService converts "10" to Long
-@RequestParam resolver extracts includeReviews="true"
-ConversionService converts "true" to boolean
-Controller method invoked with id=10, includeReviews=true
-```
-
-### Example 2 - Request Header
-
-```java
-@PostMapping("/api/payments")
-public PaymentResponse pay(
-        @RequestHeader("Idempotency-Key") String idempotencyKey,
-        @Valid @RequestBody PaymentRequest request) {
-    return paymentService.pay(idempotencyKey, request);
-}
-```
-
-Internal execution:
-
-```text
-Header resolver extracts Idempotency-Key
-Body resolver reads JSON body
-Validator validates PaymentRequest
-Controller calls service with clean Java values
-```
-
-Production note:
-
-```text
-Idempotency keys are usually service-level business safety, not controller-only validation.
-```
-
-### Example 3 - Global Error Response
+## Exception Handler
 
 ```java
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class ApiExceptionHandler {
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusiness(BusinessException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(ex.getMessage()));
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleValidation() {
         return ResponseEntity.badRequest()
-                .body(new ApiError("VALIDATION_FAILED", "Invalid request body"));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleUnknown(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiError("INTERNAL_ERROR", "Something went wrong"));
+                .body(new ErrorResponse("Invalid request"));
     }
 }
 ```
-
-Internal execution:
-
-```text
-Exception thrown anywhere inside MVC handling
-DispatcherServlet asks exception resolvers
-Matching @ExceptionHandler method selected
-ApiError returned
-MessageConverter serializes ApiError to JSON
-```
-
-### Example 4 - Filter Timing Every Request
 
 ```java
-@Component
-public class TimingFilter extends OncePerRequestFilter {
+public record ErrorResponse(String message) {}
+```
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+Internal role:
 
-        long start = System.nanoTime();
-        try {
-            filterChain.doFilter(request, response);
-        } finally {
-            long elapsedMs = (System.nanoTime() - start) / 1_000_000;
-            System.out.println(request.getMethod() + " "
-                    + request.getRequestURI() + " status="
-                    + response.getStatus() + " ms=" + elapsedMs);
-        }
-    }
+```text
+Exception thrown in controller/service/argument resolution.
+DispatcherServlet searches exception resolvers.
+ControllerAdvice method maps exception to HTTP response.
+```
+
+## Validation Example
+
+```java
+public record CreateOrderRequest(
+        @NotNull Long productId,
+        @Min(1) int quantity
+) {}
+```
+
+Controller:
+
+```java
+@PostMapping
+public ResponseEntity<OrderResponse> create(@Valid @RequestBody CreateOrderRequest request) {
+    return ResponseEntity.status(201)
+            .body(orderService.createOrder(request));
 }
 ```
 
-Internal execution:
+Flow:
 
 ```text
-Filter runs before DispatcherServlet
-filterChain.doFilter passes control forward
-After controller/exception handling completes, finally block runs
-Filter sees final response status
+JSON parsed first.
+DTO created.
+Validation runs.
+If invalid, controller method body does not execute.
 ```
 
 ---
 
-## FAANG/System Design Discussion
+## Performance Considerations
 
-### How would you explain Spring request flow in an interview?
+Each request stage adds cost.
+
+```text
+Network:
+  connection setup, TLS
+
+Server:
+  request parsing, thread allocation
+
+Filters:
+  auth, CORS, logging, tracing
+
+DispatcherServlet:
+  mapping, argument resolution
+
+JSON:
+  deserialize/serialize
+
+Service:
+  business logic, transactions
+
+Repository:
+  DB connection, SQL
+
+Database:
+  locks, indexes, IO
+
+Response:
+  serialization, network write
+```
+
+Optimization must target the bottleneck.
+
+Bad optimization:
+
+```text
+Tune Jackson while DB query takes 900 ms.
+```
+
+Good optimization:
+
+```text
+Trace request.
+Find slowest stage.
+Fix that stage.
+```
+
+Common request-flow performance killers:
+
+```text
+N+1 queries
+large JSON payloads
+slow authentication calls
+external API call inside transaction
+DB connection pool exhaustion
+large response serialization
+too many filters doing expensive work
+missing indexes
+lock contention
+```
+
+---
+
+## Scalability Considerations
+
+At scale, a request path is a chain of queues.
+
+```text
+Load balancer queue
+Tomcat accept queue
+Tomcat thread pool
+Hikari connection pool
+DB lock queue
+Kafka producer buffer
+External API connection pool
+```
+
+One slow queue can affect all upstream stages.
+
+```text
+DB slows
+  -> Hikari connections held longer
+  -> request threads wait
+  -> Tomcat threads saturate
+  -> load balancer retries
+  -> traffic increases
+  -> system collapses
+```
+
+Protection patterns:
+
+```text
+timeouts
+bulkheads
+rate limiting
+circuit breakers
+bounded thread pools
+bounded connection pools
+short transactions
+DTOs
+pagination
+caching
+read replicas
+async queues
+```
+
+Request flow thinking helps decide where to protect.
+
+---
+
+## Failure Investigation Playbook
+
+## Step 1 — Start at the user-visible symptom
+
+```text
+status code?
+timeout?
+wrong body?
+slow response?
+intermittent failure?
+```
+
+## Step 2 — Locate the failed stage
+
+Use logs/traces:
+
+```text
+access log
+filter log
+controller log
+service span
+repository span
+SQL log
+DB metrics
+response log
+```
+
+## Step 3 — Check resource pools
+
+```text
+Tomcat active threads
+Hikari active/pending connections
+DB active sessions
+thread pool queues
+Kafka producer latency
+external HTTP client pools
+```
+
+## Step 4 — Check boundaries
+
+```text
+Controller:
+  HTTP mapping/validation/DTO
+
+Service:
+  business logic/transaction
+
+Repository:
+  query/connection/index
+
+Database:
+  locks/slow queries
+
+Response:
+  serialization/lazy loading
+```
+
+## Step 5 — Fix by ownership
+
+```text
+Wrong status code -> ControllerAdvice
+Wrong business decision -> Service/domain
+Slow query -> Repository/DB
+Timeout due to connection pool -> Transaction/query/pool sizing
+Auth failure -> Security filter
+Serialization failure -> DTO/response mapping
+```
+
+---
+
+## Interview Q&A
+
+### Q1. Explain Spring Boot request flow end to end.
 
 Strong answer:
 
-```text
-In Spring Boot MVC, an HTTP request first reaches the embedded servlet container such as Tomcat. Tomcat parses it into HttpServletRequest and assigns a worker thread. The request passes through the servlet filter chain, where concerns such as security, CORS, tracing, and logging can run. If filters allow it, DispatcherServlet receives the request. DispatcherServlet uses HandlerMapping to find the matching controller method and HandlerAdapter to invoke it. Argument resolvers and message converters convert path variables, query params, headers, and JSON request bodies into Java method parameters. The controller delegates to service and repository layers. The return value is converted back to JSON by HttpMessageConverter and written to the response. Exceptions are translated by exception resolvers such as @RestControllerAdvice.
-```
+> The request first reaches the embedded server such as Tomcat, which parses HTTP and creates servlet request/response objects. It passes through the filter chain, then reaches `DispatcherServlet`. Spring MVC finds the matching controller method through handler mappings, resolves method arguments using resolvers and message converters, invokes the controller, then the service and repository layers execute business and persistence work. The return value is handled, serialized to JSON, filters complete, and the server writes the HTTP response back to the client.
 
-### What should a senior engineer monitor?
+### Q2. What is the role of DispatcherServlet?
 
-```text
-Request rate by endpoint
-Latency p50/p95/p99 by endpoint
-HTTP status distribution
-Tomcat busy threads
-Request queueing
-DB connection pool active/pending
-Downstream latency
-Serialization errors
-Validation error rates
-Security rejection rates
-```
+Strong answer:
 
-### What design mistake causes production outages?
+> `DispatcherServlet` is the central front controller in Spring MVC. It receives requests after filters, finds the correct handler method, invokes it through a handler adapter, applies argument resolvers and return value handlers, and delegates exception handling.
 
-```text
-Treating request threads as free.
-```
+### Q3. What happens before a controller method is called?
 
-In blocking MVC:
+Strong answer:
 
-```text
-Slow DB, slow HTTP calls, large JSON serialization, and long transactions hold request threads.
-```
+> The server accepts the request, the servlet container creates request/response objects, filters execute, `DispatcherServlet` maps the request to a handler, argument resolvers parse path variables, query params, headers, or request body, and validation may run. If any of these fail, the controller method body may never execute.
 
-Senior design principle:
+### Q4. Where should business logic live in the request flow?
 
-```text
-Keep request path short, bounded, observable, and protected by timeouts.
-```
+Strong answer:
 
----
+> Business logic should live in the service/domain layer, not the controller or repository. The controller translates HTTP, the service executes the use case and transaction, and the repository handles persistence access.
 
-## Common Interview Questions
+### Q5. Why can a request timeout even if controller code is simple?
 
-### Q1. What is DispatcherServlet?
+Strong answer:
 
-DispatcherServlet is the central front controller in Spring MVC. It receives web requests after the filter chain, finds the correct handler using HandlerMappings, invokes it using HandlerAdapters, handles exceptions, and coordinates response rendering.
+> Because the bottleneck may be outside controller code: filters, authentication, DB connection pool, slow SQL, lock waits, external API calls, response serialization, or server thread saturation.
 
-### Q2. What happens before a controller method is called?
+### Q6. What is the role of filters?
 
-The request is accepted by Tomcat, parsed into servlet request/response objects, passed through filters, routed by DispatcherServlet, matched to a handler, and converted into method arguments using argument resolvers and message converters. Validation may also run before the controller method is invoked.
+Strong answer:
 
-### Q3. What is the difference between Filter and HandlerInterceptor?
+> Filters handle cross-cutting web concerns before and after the controller, such as security, CORS, logging, tracing, rate limiting, and request IDs. A filter can also short-circuit the request and return a response without calling the controller.
 
-A Filter is part of the Servlet layer and runs before the request reaches DispatcherServlet. A HandlerInterceptor is part of Spring MVC and runs after a handler is selected but before/after controller execution.
+### Q7. How do you debug a slow Spring Boot request?
 
-### Q4. How does `@RequestBody` work internally?
+Strong answer:
 
-Spring uses an argument resolver that reads the request body and delegates to an HttpMessageConverter. For JSON, Jackson is commonly used to deserialize bytes into a Java DTO. If `@Valid` is present, validation runs after deserialization.
-
-### Q5. Why can a controller not be called even though the endpoint exists?
-
-A filter may reject the request, route matching may fail due to method/path/content type mismatch, body deserialization may fail, or validation may fail during argument resolution before method invocation.
-
-### Q6. How are exceptions converted to HTTP responses?
-
-DispatcherServlet delegates to HandlerExceptionResolvers. `@RestControllerAdvice` with `@ExceptionHandler` is a common way to map exceptions to structured HTTP responses.
-
-### Q7. Why is Spring MVC called blocking?
-
-In the common Servlet MVC model, a request occupies a worker thread while it waits for downstream operations such as database queries or remote HTTP calls. Long waits can exhaust server threads.
-
-### Q8. What is the role of HttpMessageConverter?
-
-It converts HTTP request/response bodies to and from Java objects. For REST APIs, it commonly converts JSON to DTOs and DTOs back to JSON.
-
-### Q9. Where should business logic live?
-
-Business logic should live in services. Controllers should translate HTTP input into application calls and translate application output into HTTP responses.
-
-### Q10. What is the best production rule for request flow?
-
-Keep the request path short, bounded, observable, and protected. Add timeouts, avoid huge responses, use pagination, keep filters lightweight, and monitor p99 latency and thread/connection pool pressure.
-
----
-
-## Strong Interview Answers
-
-### Explain end-to-end Spring Boot request flow.
-
-```text
-A request first reaches the embedded server, usually Tomcat, which parses HTTP and assigns a worker thread. The request passes through servlet filters for cross-cutting concerns like security and tracing. Then DispatcherServlet acts as the front controller. It uses HandlerMapping to find the controller method and HandlerAdapter to invoke it. Argument resolvers extract path variables, query params, headers, and body data. HttpMessageConverters deserialize JSON into DTOs and later serialize DTOs back to JSON. The controller delegates business work to services and repositories. Exceptions are handled by HandlerExceptionResolvers, often backed by @RestControllerAdvice. Finally the response returns back through filters and Tomcat writes bytes to the client.
-```
-
-### Explain why 400 can happen before controller.
-
-```text
-A 400 can happen during argument resolution. For example, if JSON is malformed, the HttpMessageConverter throws HttpMessageNotReadableException. If @Valid fails, Spring throws MethodArgumentNotValidException. In both cases the controller method is not invoked because Spring could not construct valid method arguments.
-```
-
-### Explain production impact of slow downstream calls.
-
-```text
-In blocking Spring MVC, each active request usually occupies a server thread. If downstream latency increases, those threads remain busy longer. Concurrent requests are roughly RPS multiplied by latency. If the thread pool or DB pool saturates, unrelated endpoints also slow down. This is why timeouts, bulkheads, pagination, and short transactions are important.
-```
+> I trace the request stage by stage: server, filters, DispatcherServlet mapping, controller, service, repository, DB, serialization, and response write. I check metrics for Tomcat threads, Hikari pool, SQL latency, DB locks, external calls, and payload size to locate the bottleneck.
 
 ---
 
 ## Production Checklist
 
 ```text
-[ ] Request ID is generated or propagated.
-[ ] Trace ID is visible in logs.
-[ ] Security filters reject invalid requests early.
-[ ] CORS is configured intentionally.
-[ ] Controller mappings are tested.
-[ ] DTO validation is clear and consistent.
-[ ] Error responses are standardized with @RestControllerAdvice.
-[ ] Controllers are thin.
-[ ] Business logic lives in services.
-[ ] Transactions start at service boundaries where appropriate.
-[ ] Large responses are paginated.
-[ ] Request body size limits exist.
-[ ] Timeouts exist for DB and remote calls.
-[ ] Tomcat thread metrics are monitored.
-[ ] Hikari pool metrics are monitored.
-[ ] p95/p99 latency is tracked by endpoint.
-[ ] 4xx and 5xx rates are tracked.
-[ ] Filters are lightweight.
-[ ] MDC is cleared in finally blocks.
-[ ] Readiness probe prevents traffic before app is ready.
+HTTP Boundary
+[ ] Are routes clear?
+[ ] Are DTOs used instead of entities?
+[ ] Is validation applied?
+[ ] Are errors mapped with ControllerAdvice?
+
+Filters
+[ ] Is auth efficient?
+[ ] Are request IDs/tracing present?
+[ ] Are CORS/security rules correct?
+[ ] Are expensive operations avoided in filters?
+
+Service Layer
+[ ] Does service own business use case?
+[ ] Is @Transactional at service boundary?
+[ ] Are external calls avoided inside transactions?
+[ ] Are idempotency and retries considered?
+
+Repository/DB
+[ ] Are queries expected and measured?
+[ ] Are indexes aligned?
+[ ] Are N+1 queries avoided?
+[ ] Is Hikari pool monitored?
+
+Response
+[ ] Are response DTOs used?
+[ ] Is payload size controlled?
+[ ] Is lazy loading avoided during serialization?
+[ ] Are status codes correct?
+
+Observability
+[ ] Access logs enabled
+[ ] Request tracing enabled
+[ ] Stage-level metrics available
+[ ] p95/p99 latency monitored
+[ ] Error rate by status code monitored
 ```
 
 ---
@@ -2835,192 +1689,132 @@ In blocking Spring MVC, each active request usually occupies a server thread. If
 ## One-Page Cheat Sheet
 
 ```text
-Spring Boot request flow
-        =
-Pipeline handoff from HTTP bytes to controller and back
-```
+Spring Boot Request Flow
+========================
 
-Main flow:
+1. Client
+   Sends HTTP request.
 
-```text
-Client
-  -> LB / Ingress
-  -> Tomcat
-  -> HttpServletRequest
-  -> Filter Chain
-  -> DispatcherServlet
-  -> HandlerMapping
-  -> HandlerAdapter
-  -> ArgumentResolvers
-  -> HttpMessageConverters
-  -> Controller
-  -> Service
-  -> Repository
-  -> Database
-  -> Response DTO
-  -> HttpMessageConverters
-  -> HttpServletResponse
-  -> Client
-```
+2. Embedded Server
+   Tomcat/Jetty/Undertow accepts connection.
 
-Core roles:
+3. Servlet Container
+   Creates HttpServletRequest/Response.
 
-```text
-Tomcat              = accepts and parses HTTP
-Filter              = servlet-level cross-cutting gate
-DispatcherServlet   = Spring MVC front controller
-HandlerMapping      = finds controller method
-HandlerAdapter      = invokes controller method
-ArgumentResolver    = builds method parameters
-MessageConverter    = JSON <-> Java DTO
-Controller          = HTTP translation layer
-Service             = business logic layer
-Repository          = persistence layer
-ExceptionResolver   = exception -> HTTP response
-```
+4. Filter Chain
+   Security, CORS, logging, tracing.
 
-Failure location memory:
+5. DispatcherServlet
+   Spring MVC front controller.
 
-```text
-401/403 -> often filter/security before controller
-404     -> often no handler mapping
-400     -> often argument/body/validation before controller
-500     -> often service, repository, serialization, or unhandled exception
-```
+6. HandlerMapping
+   Finds controller method.
 
-Performance formula:
+7. Argument Resolvers
+   Build @PathVariable, @RequestParam, @RequestBody.
 
-```text
-Concurrent requests ≈ RPS × latency
-```
+8. Message Converters
+   JSON <-> Java DTO.
 
-Main production rule:
+9. Controller
+   HTTP translation boundary.
 
-```text
-Keep request path short, bounded, observable, and protected by timeouts.
+10. Service
+   Business + transaction boundary.
+
+11. Repository
+   Persistence boundary.
+
+12. Database
+   SQL and durable state.
+
+13. Return Value Handler
+   Processes controller return.
+
+14. Response Serialization
+   Java DTO -> JSON.
+
+15. Server Writes Response
+   Client receives status/body.
+
+Debug Rules
+-----------
+401/403: filters/security
+404/405: mapping/method
+400 before controller: binding/validation/body
+500 after service: business/DB/serialization
+Timeout before controller: server/filter/thread saturation
+Timeout after controller: service/DB/external call
 ```
 
 ---
 
 ## Last-Minute Interview Revision
 
+Do not say:
+
 ```text
-1. Request does not go directly to controller.
-2. Tomcat converts socket bytes to servlet request/response.
-3. Filters run before DispatcherServlet.
-4. DispatcherServlet is the Spring MVC traffic controller.
-5. HandlerMapping finds the controller method.
-6. HandlerAdapter invokes it.
-7. ArgumentResolvers build method parameters.
-8. HttpMessageConverters convert JSON and Java DTOs.
-9. @Valid can fail before controller runs.
-10. @RestControllerAdvice converts exceptions to HTTP responses.
-11. Controller should be thin.
-12. Service should own business logic.
-13. Blocking MVC holds a thread per active request.
-14. Slow downstream systems create thread pressure.
-15. Monitor endpoint latency, Tomcat threads, DB pool, and error rates.
+Request comes to controller and service calls repository.
 ```
 
----
+Say:
 
-## Mental Models Table
+```text
+A request enters the embedded server, becomes servlet request/response objects, passes through filters, reaches DispatcherServlet, is mapped to a controller method, has arguments resolved through converters, then controller calls service, service calls repository/database, and the return value is serialized back to HTTP response.
+```
 
-| Concept | Mental Model | Production Meaning |
-|---|---|---|
-| Tomcat | Airport entrance | Accepts and parses HTTP |
-| Worker thread | Request carrier | Holds request execution in blocking MVC |
-| Filter | Security gate | Can reject before controller |
-| DispatcherServlet | Traffic controller | Coordinates MVC routing |
-| HandlerMapping | Address book | Finds controller method |
-| HandlerAdapter | Method invoker | Calls handler correctly |
-| ArgumentResolver | Translator | Converts HTTP parts to Java args |
-| MessageConverter | JSON machine | Converts body bytes and DTOs |
-| Controller | HTTP adapter | Should stay thin |
-| Service | Business engine | Owns rules and transactions |
-| Repository | DB gateway | Owns persistence access |
-| ExceptionResolver | Error translator | Exception to HTTP response |
+Senior version:
+
+```text
+I debug Spring Boot requests as a staged pipeline. I locate where the request stops or slows: server threads, filters, DispatcherServlet mapping, argument resolution, controller, service transaction, repository query, DB connection pool, database, serialization, or response write.
+```
 
 ---
 
 ## One Picture To Remember
 
 ```text
-                       ONE HTTP REQUEST
-+---------------------------------------------------------------+
-|                                                               |
-|  Raw HTTP bytes                                               |
-|       |                                                       |
-|       v                                                       |
-|  Tomcat parses request                                        |
-|       |                                                       |
-|       v                                                       |
-|  Filter Chain                                                 |
-|       |                                                       |
-|       v                                                       |
-|  DispatcherServlet                                            |
-|       |                                                       |
-|       +--> HandlerMapping finds controller                    |
-|       |                                                       |
-|       +--> HandlerAdapter resolves args                       |
-|       |                                                       |
-|       v                                                       |
-|  Controller method                                            |
-|       |                                                       |
-|       v                                                       |
-|  Service -> Repository -> Database                            |
-|       |                                                       |
-|       v                                                       |
-|  Response DTO                                                 |
-|       |                                                       |
-|       v                                                       |
-|  JSON bytes written to socket                                 |
-|                                                               |
-+---------------------------------------------------------------+
+                    SPRING BOOT REQUEST PIPELINE
+
+Client
+  |
+  v
+[Embedded Server]
+  |
+  v
+[Servlet Request/Response]
+  |
+  v
+[Filter Chain]
+  |
+  v
+[DispatcherServlet]
+  |
+  v
+[HandlerMapping + Argument Resolvers]
+  |
+  v
+[Controller]     -> HTTP boundary
+  |
+  v
+[Service]        -> business + transaction boundary
+  |
+  v
+[Repository]     -> persistence boundary
+  |
+  v
+[Database]
+  |
+  v
+[Response DTO]
+  |
+  v
+[JSON Serialization]
+  |
+  v
+[HTTP Response to Client]
 ```
 
-Final memory hook:
+Final retention sentence:
 
-```text
-Spring request flow is not controller magic.
-
-It is:
-
-Parse request.
-Run gates.
-Route to handler.
-Translate HTTP to Java.
-Run business logic.
-Translate Java to HTTP.
-Write response.
-```
-
----
-
-## Key Takeaways
-
-1. A Spring Boot request is a pipeline, not a direct browser-to-controller call.
-
-2. Tomcat accepts the network request, parses HTTP, and assigns a worker thread.
-
-3. Filters run before DispatcherServlet and can reject requests early.
-
-4. DispatcherServlet is the central coordinator of Spring MVC.
-
-5. HandlerMapping finds the matching controller method.
-
-6. HandlerAdapter invokes the controller method using argument resolvers.
-
-7. HttpMessageConverters convert JSON bodies into Java DTOs and Java DTOs into JSON responses.
-
-8. Validation can fail before the controller method is called.
-
-9. Exception resolvers convert Java exceptions into HTTP responses.
-
-10. Controllers should translate HTTP; services should own business rules.
-
-11. In blocking MVC, slow downstream calls hold request threads.
-
-12. Production debugging starts by locating where the pipeline stopped: network, filter, mapping, argument resolution, controller, service, repository, serialization, or response write.
-
-13. Senior engineers monitor p99 latency, Tomcat threads, DB pool pressure, error rates, and endpoint-level resource usage.
+> **A Spring Boot request is a pipeline, not a jump: server → filters → DispatcherServlet → controller → service → repository → database → response.**
