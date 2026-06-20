@@ -1,110 +1,41 @@
 # 001_CPP_Basics_For_CP.md
 
-# C++ Basics for Competitive Programming: Data + Operations + Control Flow
+# C++ Basics for CP: Data → Operation → Control Flow
 
 ## Why This Exists
 
-Competitive Programming and FAANG DSA interviews look scary at first because the problems talk about arrays, graphs, dynamic programming, greedy choices, binary search, trees, strings, heaps, and many other techniques. But underneath every single problem, the computer is doing only one simple thing:
+Before STL, prefix sum, binary search, graph, DP, or greedy, every competitive programming solution depends on one basic mental model:
 
 ```text
-Take input data
-    ↓
-Store it in variables
-    ↓
-Apply operations
-    ↓
-Control the execution path
-    ↓
-Produce output
+DATA → OPERATION → CONTROL FLOW → ANSWER
 ```
 
-This chapter exists to build the foundation before STL, math, prefix sum, binary search, graph, and DP.
+Most beginners think C++ is a list of syntax rules. That is the wrong model. For CP and FAANG DSA, C++ is a tool for moving data through operations under controlled execution.
 
-The goal is not to memorize C++ syntax. The goal is to build the mental model that every C++ contest program is built from three parts:
+Every problem eventually becomes:
 
 ```text
-DATA + OPERATIONS + CONTROL FLOW
+Read input
+Store data
+Transform data
+Make decisions
+Repeat work
+Print/return answer
 ```
 
-Once this becomes natural, every future topic becomes easier.
+So this chapter teaches exactly one topic: **C++ basics for CP**, using one mental model: **Data → Operation → Control Flow**.
 
-Prefix Sum is data plus addition plus loop control.  
-Binary Search is data plus comparison plus controlled narrowing.  
-Graph BFS is data plus queue operations plus loop control.  
-DP is data plus recurrence operations plus iteration order.
-
-So this chapter teaches one core mental model only:
-
-```text
-Every CP solution is data moving through operations under control flow.
-```
+This is enough to start beginner Codeforces A/B problems, AtCoder beginner tasks, and simple FAANG array/string interview problems.
 
 ---
 
-## Problem Statement
-
-When beginners start C++ for CP, they often ask:
+## Core Mental Model
 
 ```text
-What should I learn first?
-How much C++ is enough?
-Do I need OOP?
-Do I need pointers?
-Do I need templates?
-Why does my code give WA/TLE/RE?
-```
-
-For contests and interviews, the first problem is not advanced C++. The first problem is this:
-
-```text
-Can you read input, store data, transform it correctly, and output the answer?
-```
-
-Most beginner mistakes come from weak basics:
-
-```text
-Wrong data type      → overflow
-Wrong loop boundary  → off-by-one WA
-Wrong condition      → incorrect branch
-Wrong initialization → garbage value
-Wrong complexity     → TLE
-Wrong division       → runtime error
-```
-
-So the first C++ chapter must teach how a program thinks.
-
-A C++ contest program is not magic. It is a pipeline:
-
-```text
-Input
-  ↓
-Variables
-  ↓
-Operators
-  ↓
-Conditions
-  ↓
-Loops
-  ↓
-Functions
-  ↓
-Output
-```
-
-If you understand this pipeline, you can debug most beginner problems.
-
----
-
-## Mental Model
-
-The only mental model for this chapter is:
-
-# Data + Operations + Control Flow
-
-```text
-DATA              = what you store
-OPERATIONS        = what you do to data
-CONTROL FLOW      = when and how many times you do it
+DATA        = values you store
+OPERATION   = work you do on values
+CONTROL     = order, choice, and repetition
+ANSWER      = final output
 ```
 
 In C++:
@@ -114,991 +45,314 @@ Variables store data.
 Operators transform data.
 if/else chooses paths.
 loops repeat work.
-functions organize repeated logic.
+functions organize logic.
 ```
 
-A full CP solution is usually:
+One-picture flow:
 
 ```text
-read n
-read array
-initialize answer
-loop over data
-    update answer
-print answer
-```
-
-ASCII mental model:
-
-```text
-+------------------+
-|      INPUT       |
-+------------------+
-          |
-          v
-+------------------+
-|       DATA       |
-| variables/array  |
-+------------------+
-          |
-          v
-+------------------+
-|    OPERATIONS    |
-| + - * / % compare|
-+------------------+
-          |
-          v
-+------------------+
-|  CONTROL FLOW    |
-| if / for / while |
-+------------------+
-          |
-          v
-+------------------+
-|      OUTPUT      |
-+------------------+
-```
-
-A problem statement is converted into this model.
-
-Example:
-
-```text
-Given two numbers, print their sum.
-```
-
-Becomes:
-
-```text
-Data        : a, b
-Operation   : a + b
-Control flow: direct execution once
-Output      : sum
++---------+      +-------------+      +---------------+      +--------+
+|  Input  | ---> |    Data     | ---> |  Operations   | ---> | Answer |
++---------+      +-------------+      +---------------+      +--------+
+                         |                    ^
+                         v                    |
+                   +------------+-------------+
+                   |     Control Flow         |
+                   | if / for / while / func  |
+                   +--------------------------+
 ```
 
 Example:
 
 ```text
-Given n numbers, print the maximum.
+Problem: Given n numbers, print their sum.
+
+Data        : n, x, sum
+Operation   : sum += x
+Control     : repeat n times
+Answer      : sum
 ```
 
-Becomes:
-
-```text
-Data        : n, array values, current maximum
-Operation   : comparison
-Control flow: loop n times
-Output      : maximum
-```
-
-Example:
-
-```text
-Given n, print numbers from 1 to n.
-```
-
-Becomes:
-
-```text
-Data        : n, i
-Operation   : i increases by 1
-Control flow: loop while i <= n
-Output      : each i
-```
-
-This is the whole beginning of C++ for CP.
+This same model appears in almost every future topic.
 
 ---
 
-## Real World Analogy
+## Pattern Recognition
 
-Imagine a restaurant kitchen.
-
-```text
-Customer Order
-      ↓
-Ingredients
-      ↓
-Cooking Steps
-      ↓
-Decision Checks
-      ↓
-Repeated Actions
-      ↓
-Final Dish
-```
-
-Map this to C++:
+When you read a beginner CP/DSA problem, ask these five questions:
 
 ```text
-Customer order  → input
-Ingredients     → variables/data
-Cooking steps   → operations
-Decision checks → if/else
-Repeated actions→ loops
-Final dish      → output
+1. What data is given?
+2. What data must I store?
+3. What operation updates the answer?
+4. What control flow repeats or chooses logic?
+5. What should I print or return?
 ```
 
-Restaurant example:
+### Common Recognition Signals
 
-```text
-Order: Make 3 omelettes.
-
-Data:
-- eggs = 6
-- salt = yes
-- pan = hot
-
-Operations:
-- crack eggs
-- mix
-- cook
-
-Control Flow:
-- repeat for 3 omelettes
-- if pan too hot, reduce heat
-
-Output:
-- 3 omelettes
-```
-
-C++ example:
-
-```text
-Problem: Read n numbers and count positives.
-
-Data:
-- n
-- x
-- count
-
-Operations:
-- compare x > 0
-- count++
-
-Control Flow:
-- repeat n times
-- if x positive, update count
-
-Output:
-- count
-```
-
-Everything is the same pattern.
+| Problem asks for | Data | Operation | Control Flow |
+|---|---|---|---|
+| sum / total | numbers | addition | loop |
+| count | items | condition + increment | loop + if |
+| maximum | current best | comparison | loop |
+| minimum | current best | comparison | loop |
+| possible? | boolean flag | condition check | if / loop |
+| print sequence | index | increment | loop |
+| choose bigger/smaller | values | compare | if/else |
 
 ---
 
-## Contest Recognition Pattern
+## Recognition Checklist
 
-Whenever you read a CP or FAANG problem, immediately ask:
-
-```text
-1. What is the input data?
-2. What do I need to store?
-3. What operation changes the answer?
-4. What condition decides the path?
-5. What loop repeats the logic?
-6. What should be printed or returned?
-```
-
-### Universal Contest Skeleton
+Use this before coding:
 
 ```text
-read input
-prepare data
-process data
-print answer
+[ ] Is the input one value, many values, array, or string?
+[ ] Do I need int or long long?
+[ ] Is the answer updated once or inside a loop?
+[ ] Is there a condition like positive/even/greater/smaller?
+[ ] Is the loop 0-indexed or 1-indexed?
+[ ] What is the exact output format?
 ```
 
-### Codeforces A Form
+This checklist prevents many beginner WA bugs.
 
-Usually simple data + simple operation + direct control flow.
+---
+
+## Sub-Patterns
+
+C++ basics show up as small CP forms.
+
+## 1. Direct Formula Pattern
 
 ```text
 Input: a, b
-Operation: compare/sum/difference
-Control: if/else
-Output: YES/NO or number
+Answer: a + b
 ```
 
-### Codeforces B Form
-
-Usually loop + condition + counting/transformation.
-
-```text
-Input: n, array/string
-Operation: count/check/update
-Control: loop + if
-Output: answer
-```
-
-### Codeforces C Form
-
-Usually smarter operation or optimized control.
-
-```text
-Input: array/string
-Operation: prefix, greedy, sort, math
-Control: loop with invariant
-Output: optimized answer
-```
-
-### Codeforces D Form
-
-Usually deeper invariant, graph, DP, binary search, or data structure.
-
-```text
-Input: large constraints
-Operation: optimized state transition
-Control: carefully ordered loops/search
-Output: result under constraints
-```
-
-### LeetCode Form
-
-Usually function-based instead of stdin/stdout:
-
-```text
-Input: function parameters
-Operation: algorithm
-Control: loops/recursion
-Output: return value
-```
-
-But the mental model is the same.
-
----
-
-## Core Concepts
-
-## 1. Variables = Named Boxes for Data
-
-A variable is a named place where data is stored.
+Used when there is no repeated work.
 
 ```cpp
-int age = 47;
-long long score = 10000000000LL;
-char grade = 'A';
-bool ok = true;
+int a, b;
+cin >> a >> b;
+cout << a + b << '\n';
 ```
 
 Mental model:
 
 ```text
-+---------+
-| age     |
-|   47    |
-+---------+
+Data → operation once → answer
 ```
 
-A variable has:
+## 2. Condition Pattern
 
 ```text
-name  → how you refer to it
-type  → what kind of data it stores
-value → actual stored content
+Input: x
+Answer: YES if x is even, otherwise NO
 ```
 
-In CP:
+```cpp
+if (x % 2 == 0) cout << "YES\n";
+else cout << "NO\n";
+```
+
+Mental model:
+
+```text
+Data → test condition → choose output
+```
+
+## 3. Counting Pattern
+
+```text
+Input: n numbers
+Answer: count positives
+```
+
+```cpp
+int countPositive = 0;
+for (int i = 0; i < n; i++) {
+    int x;
+    cin >> x;
+    if (x > 0) countPositive++;
+}
+```
+
+Mental model:
+
+```text
+Data stream → condition → increment answer
+```
+
+## 4. Best Value Pattern
+
+```text
+Input: n numbers
+Answer: maximum
+```
+
+```cpp
+int mx;
+cin >> mx;
+
+for (int i = 1; i < n; i++) {
+    int x;
+    cin >> x;
+    if (x > mx) mx = x;
+}
+```
+
+Mental model:
+
+```text
+Current best + new value → compare → maybe update best
+```
+
+## 5. Simulation Pattern
+
+```text
+Given instructions, update state step by step.
+```
+
+```cpp
+int position = 0;
+for (char move : s) {
+    if (move == 'L') position--;
+    else if (move == 'R') position++;
+}
+```
+
+Mental model:
+
+```text
+State → operation per instruction → final state
+```
+
+---
+
+## Codeforces Forms
+
+## Codeforces A Form
+
+Usually direct operation or simple condition.
+
+```text
+Input: few numbers
+Logic: formula or if/else
+Output: number or YES/NO
+```
+
+Example form:
+
+```text
+Given a and b, check if a is divisible by b.
+```
+
+Core C++ needed:
+
+```text
+variables + modulo + if/else
+```
+
+## Codeforces B Form
+
+Usually loop + condition + count/update.
+
+```text
+Input: n and array/string
+Logic: scan once
+Output: count, max, min, transformed value
+```
+
+Core C++ needed:
+
+```text
+loop + variable update + condition
+```
+
+## Codeforces C Form
+
+Usually the same basics plus an invariant.
+
+```text
+Input: larger n
+Logic: scan with careful state
+Output: optimized answer
+```
+
+Core C++ needed:
+
+```text
+loop discipline + correct initialization + long long
+```
+
+## Codeforces D Form
+
+Usually advanced data structure/algorithm, but still built on this base.
+
+```text
+Data structures + operations + controlled loops/search
+```
+
+If basics are weak, D problems become impossible to debug.
+
+---
+
+## LeetCode / FAANG Forms
+
+In FAANG interviews, you often write functions instead of full input/output programs.
+
+Contest style:
 
 ```cpp
 int n;
 cin >> n;
+vector<int> a(n);
+for (int i = 0; i < n; i++) cin >> a[i];
 ```
 
-Means:
-
-```text
-Create box named n.
-Read value from input.
-Store it inside n.
-```
-
----
-
-## 2. Data Types = Size and Meaning
-
-Common contest types:
-
-```text
-int        → normal integer, around ±2 billion
-long long  → large integer, around ±9e18
-double     → decimal
-char       → single character
-string     → text
-bool       → true/false
-```
-
-For CP, the most important rule:
-
-```text
-If multiplication or large sum is possible, use long long.
-```
-
-Bad:
+Interview style:
 
 ```cpp
-int x = 1000000000;
-int y = 1000000000;
-int z = x + y + y; // may overflow
+int solve(vector<int>& a) {
+    // logic here
+}
 ```
 
-Good:
-
-```cpp
-long long x = 1000000000LL;
-long long y = 1000000000LL;
-long long z = x + y + y;
-```
-
----
-
-## 3. Operators = Actions on Data
-
-Arithmetic:
+But the mental model is unchanged:
 
 ```text
-+ addition
-- subtraction
-* multiplication
-/ division
-% remainder
-```
-
-Comparison:
-
-```text
-== equal
-!= not equal
-<  less than
->  greater than
-<= less or equal
->= greater or equal
-```
-
-Logical:
-
-```text
-&& AND
-|| OR
-!  NOT
+Input data → process → return answer
 ```
 
 Example:
 
 ```cpp
-if (x % 2 == 0) {
-    cout << "even";
-}
-```
-
-Meaning:
-
-```text
-Data: x
-Operation: x % 2
-Condition: result == 0
-Control: choose branch
-```
-
----
-
-## 4. Conditions = Choose Path
-
-```cpp
-if (condition) {
-    // run when true
-} else {
-    // run when false
-}
-```
-
-Mental diagram:
-
-```text
-          condition
-             |
-       +-----+-----+
-       |           |
-     true        false
-       |           |
-       v           v
-   do this      do that
-```
-
-Example:
-
-```cpp
-if (a > b) {
-    cout << a;
-} else {
-    cout << b;
-}
-```
-
-This chooses the maximum of two numbers.
-
----
-
-## 5. Loops = Repeat Work
-
-The most common CP loop:
-
-```cpp
-for (int i = 0; i < n; i++) {
-    // work
-}
-```
-
-Loop mental model:
-
-```text
-initialize i = 0
-check i < n
-run body
-increase i
-repeat
-```
-
-ASCII:
-
-```text
-+---------+
-| i = 0   |
-+---------+
-     |
-     v
-+------------+
-| i < n ?    |
-+------------+
-   | yes
-   v
-+------------+
-| body runs  |
-+------------+
-   |
-   v
-+------------+
-| i++        |
-+------------+
-   |
-   +------ back to condition
-```
-
----
-
-## 6. Functions = Named Logic
-
-Functions help avoid repeated code.
-
-```cpp
-int square(int x) {
-    return x * x;
-}
-```
-
-Mental model:
-
-```text
-input x
-  ↓
-operation x*x
-  ↓
-return result
-```
-
-In CP, functions are useful for:
-
-```text
-checking condition
-computing answer
-cleaning solve()
-writing reusable logic
-```
-
-Example:
-
-```cpp
-bool isEven(int x) {
-    return x % 2 == 0;
-}
-```
-
----
-
-## Internal Working
-
-A C++ program is converted by the compiler into machine instructions.
-
-Simple C++:
-
-```cpp
-int a = 5;
-int b = 7;
-int sum = a + b;
-```
-
-Internal view:
-
-```text
-Memory:
-+------+-------+
-| name | value |
-+------+-------+
-| a    | 5     |
-| b    | 7     |
-| sum  | 12    |
-+------+-------+
-
-Instruction flow:
-1. store 5 in a
-2. store 7 in b
-3. read a
-4. read b
-5. add
-6. store result in sum
-```
-
-### Expression Evaluation
-
-```cpp
-int ans = a + b * c;
-```
-
-C++ follows operator precedence:
-
-```text
-b * c first
-then a + result
-```
-
-If:
-
-```text
-a = 2, b = 3, c = 4
-```
-
-Then:
-
-```text
-ans = 2 + 3 * 4
-ans = 2 + 12
-ans = 14
-```
-
-### Condition Execution
-
-```cpp
-if (x > 10) {
-    cout << "big";
-}
-```
-
-Internal:
-
-```text
-1. read x
-2. compare x with 10
-3. if true, execute cout
-4. if false, skip block
-```
-
-### Loop Execution
-
-```cpp
-for (int i = 1; i <= 3; i++) {
-    cout << i << " ";
-}
-```
-
-Internal:
-
-```text
-i = 1 → condition true → print 1 → i becomes 2
-i = 2 → condition true → print 2 → i becomes 3
-i = 3 → condition true → print 3 → i becomes 4
-i = 4 → condition false → stop
-```
-
----
-
-## Rich ASCII Diagrams
-
-### Full Contest Program Pipeline
-
-```text
-                   +----------------------+
-                   |  Problem Statement   |
-                   +----------+-----------+
-                              |
-                              v
-                   +----------------------+
-                   | Understand Input     |
-                   +----------+-----------+
-                              |
-                              v
-                   +----------------------+
-                   | Choose Data Storage  |
-                   | int, long long, vec  |
-                   +----------+-----------+
-                              |
-                              v
-                   +----------------------+
-                   | Apply Operations     |
-                   | + - * / % compare    |
-                   +----------+-----------+
-                              |
-                              v
-                   +----------------------+
-                   | Control Flow         |
-                   | if, for, while       |
-                   +----------+-----------+
-                              |
-                              v
-                   +----------------------+
-                   | Output Answer        |
-                   +----------------------+
-```
-
-### Variable Memory Box
-
-```text
-Declaration:
-
-int n = 5;
-
-Memory:
-
-+---------+
-| n       |
-| int     |
-| value 5 |
-+---------+
-```
-
-### Update Operation
-
-```text
-Before:
-
-+---------+
-| count   |
-| 3       |
-+---------+
-
-Operation:
-
-count++
-
-After:
-
-+---------+
-| count   |
-| 4       |
-+---------+
-```
-
-### If/Else Branch
-
-```text
-             x > 0 ?
-          +----+----+
-          |         |
-        true      false
-          |         |
-          v         v
-    count++     do nothing
-```
-
-### Loop Over Array
-
-```text
-Array:
-
-index:  0   1   2   3   4
-value:  5  -1   7   0   3
-
-Loop pointer:
-
-i = 0  → arr[0]
-i = 1  → arr[1]
-i = 2  → arr[2]
-i = 3  → arr[3]
-i = 4  → arr[4]
-```
-
----
-
-## Step-by-Step Dry Run #1: Sum of Two Numbers
-
-Problem:
-
-```text
-Read two integers a and b. Print their sum.
-```
-
-C++:
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    int a, b;
-    cin >> a >> b;
-    int sum = a + b;
-    cout << sum << '\n';
-    return 0;
-}
-```
-
-Input:
-
-```text
-5 7
-```
-
-Execution:
-
-```text
-int a, b;        → create boxes a and b
-cin >> a >> b;   → a = 5, b = 7
-sum = a + b;     → sum = 12
-cout << sum;     → print 12
-```
-
-Variable tracking:
-
-| Step | a | b | sum | Output |
-|---|---:|---:|---:|---|
-| Declare | ? | ? | - | - |
-| Read | 5 | 7 | - | - |
-| Add | 5 | 7 | 12 | - |
-| Print | 5 | 7 | 12 | 12 |
-
-Mental model:
-
-```text
-Data        : a, b
-Operation   : addition
-Control flow: straight line
-Output      : sum
-```
-
----
-
-## Step-by-Step Dry Run #2: Maximum of Two Numbers
-
-Problem:
-
-```text
-Read a and b. Print the bigger number.
-```
-
-C++:
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    int a, b;
-    cin >> a >> b;
-
-    if (a > b) {
-        cout << a << '\n';
-    } else {
-        cout << b << '\n';
+int countPositive(vector<int>& nums) {
+    int ans = 0;
+
+    for (int x : nums) {
+        if (x > 0) ans++;
     }
 
-    return 0;
+    return ans;
 }
-```
-
-Input:
-
-```text
-9 4
-```
-
-Execution:
-
-```text
-a = 9
-b = 4
-condition: a > b → 9 > 4 → true
-print a → 9
-```
-
-Variable tracking:
-
-| Step | a | b | Condition | Output |
-|---|---:|---:|---|---|
-| Read | 9 | 4 | - | - |
-| Check | 9 | 4 | 9 > 4 = true | - |
-| Print | 9 | 4 | true branch | 9 |
-
-Input 2:
-
-```text
-3 8
-```
-
-Execution:
-
-```text
-a = 3
-b = 8
-condition: 3 > 8 → false
-print b → 8
-```
-
-Mental model:
-
-```text
-Data        : a, b
-Operation   : comparison
-Control flow: if/else
-Output      : maximum
-```
-
----
-
-## Step-by-Step Dry Run #3: Print 1 to N
-
-Problem:
-
-```text
-Read n. Print numbers from 1 to n.
-```
-
-C++:
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    int n;
-    cin >> n;
-
-    for (int i = 1; i <= n; i++) {
-        cout << i << " ";
-    }
-
-    cout << '\n';
-    return 0;
-}
-```
-
-Input:
-
-```text
-5
-```
-
-Loop tracking:
-
-| Iteration | i | Condition i <= n | Output So Far |
-|---|---:|---|---|
-| Start | 1 | 1 <= 5 true | |
-| 1 | 1 | true | 1 |
-| 2 | 2 | true | 1 2 |
-| 3 | 3 | true | 1 2 3 |
-| 4 | 4 | true | 1 2 3 4 |
-| 5 | 5 | true | 1 2 3 4 5 |
-| Stop | 6 | 6 <= 5 false | 1 2 3 4 5 |
-
-Mental model:
-
-```text
-Data        : n, i
-Operation   : print i, i++
-Control flow: for loop
-Output      : sequence
-```
-
----
-
-## Step-by-Step Dry Run #4: Count Positive Numbers
-
-Problem:
-
-```text
-Given n integers, count how many are positive.
-```
-
-Input:
-
-```text
-5
--2 3 0 7 -1
-```
-
-C++:
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    int n;
-    cin >> n;
-
-    int countPositive = 0;
-
-    for (int i = 0; i < n; i++) {
-        int x;
-        cin >> x;
-
-        if (x > 0) {
-            countPositive++;
-        }
-    }
-
-    cout << countPositive << '\n';
-    return 0;
-}
-```
-
-Tracking:
-
-| i | x | x > 0? | countPositive |
-|---:|---:|---|---:|
-| 0 | -2 | false | 0 |
-| 1 | 3 | true | 1 |
-| 2 | 0 | false | 1 |
-| 3 | 7 | true | 2 |
-| 4 | -1 | false | 2 |
-
-Output:
-
-```text
-2
-```
-
-Mental model:
-
-```text
-Data        : n, x, countPositive
-Operation   : compare x > 0, increment
-Control flow: loop + if
-Output      : count
 ```
 
 ---
 
 ## Brute Force
 
-For C++ basics, brute force means writing the most direct version of logic.
+Brute force means solving directly without optimization.
 
-Example:
+Example problem:
 
 ```text
-Print maximum of 3 numbers.
+Given n numbers, find the maximum.
 ```
 
-Naive direct thinking:
+Bad beginner brute force idea for fixed small input:
 
 ```cpp
 if (a >= b && a >= c) cout << a;
@@ -1106,57 +360,278 @@ else if (b >= a && b >= c) cout << b;
 else cout << c;
 ```
 
-Why it works:
+This works only for 3 numbers. It fails as a general method.
+
+Why it fails:
 
 ```text
-It checks every possibility directly.
+n can be 100000.
+Manual conditions do not scale.
 ```
-
-Why it can become messy:
-
-```text
-For 100 numbers, writing conditions manually is impossible.
-```
-
-So we need loops.
 
 ---
 
 ## Better Approach
 
-Use repeated logic.
-
-Maximum of n numbers:
-
-```cpp
-int mx = firstValue;
-
-for each next value:
-    if value > mx:
-        mx = value
-```
-
-This uses the same mental model:
+Use a loop and keep the current best.
 
 ```text
-Data        : current value, current maximum
-Operation   : comparison and update
-Control flow: loop
+Initialize best from real data.
+For each new value:
+    if value is better, update best.
+```
+
+This works for any n.
+
+```cpp
+int mx;
+cin >> mx;
+
+for (int i = 1; i < n; i++) {
+    int x;
+    cin >> x;
+    if (x > mx) mx = x;
+}
 ```
 
 ---
 
 ## Optimal Approach
 
-For basic maximum/count/sum problems, the optimal approach is usually one pass.
+For basic scan problems, one pass is optimal.
+
+Why?
 
 ```text
-Read each item once.
-Update answer immediately.
-Do not store unnecessary data.
+To know the answer, every input value may matter.
+So you must inspect each value at least once.
 ```
 
-Example:
+Therefore:
+
+```text
+Time  : O(n)
+Memory: O(1) if no storage needed
+```
+
+This is the first optimization idea in CP:
+
+```text
+Do not store data unless you need it later.
+Process streaming input when possible.
+```
+
+---
+
+## Rich ASCII Diagrams
+
+## Program Pipeline
+
+```text
+Problem Statement
+       |
+       v
++---------------+
+| Read Input    |
++---------------+
+       |
+       v
++---------------+
+| Store Data    |
+| n, x, sum     |
++---------------+
+       |
+       v
++---------------+
+| Apply Logic   |
+| +, %, compare |
++---------------+
+       |
+       v
++---------------+
+| Control Flow  |
+| if / loop     |
++---------------+
+       |
+       v
++---------------+
+| Print Answer  |
++---------------+
+```
+
+## Loop Mental Model
+
+```text
+for (int i = 0; i < n; i++)
+
+Start i = 0
+    |
+    v
+Check i < n ? ---- no ----> stop
+    |
+   yes
+    |
+    v
+Run body
+    |
+    v
+i++
+    |
+    +------ back to check
+```
+
+## Maximum Update
+
+```text
+Current mx = 4
+New x      = 7
+
+Compare:
+7 > 4 ? yes
+
+Update:
+mx = 7
+```
+
+```text
++------+       +------+
+| mx=4 |  -->  | mx=7 |
++------+       +------+
+    ^              ^
+ old best       new best
+```
+
+---
+
+## Step-by-Step Dry Run #1: Sum of N Numbers
+
+Problem:
+
+```text
+Read n numbers and print their sum.
+```
+
+Input:
+
+```text
+5
+2 4 -1 3 6
+```
+
+Code:
+
+```cpp
+int n;
+cin >> n;
+
+long long sum = 0;
+
+for (int i = 0; i < n; i++) {
+    int x;
+    cin >> x;
+    sum += x;
+}
+
+cout << sum << '\n';
+```
+
+Variable tracking:
+
+| i | x | sum before | operation | sum after |
+|---:|---:|---:|---|---:|
+| 0 | 2 | 0 | 0 + 2 | 2 |
+| 1 | 4 | 2 | 2 + 4 | 6 |
+| 2 | -1 | 6 | 6 - 1 | 5 |
+| 3 | 3 | 5 | 5 + 3 | 8 |
+| 4 | 6 | 8 | 8 + 6 | 14 |
+
+Output:
+
+```text
+14
+```
+
+Mental model:
+
+```text
+Data        : n, x, sum
+Operation   : sum += x
+Control     : loop n times
+Answer      : sum
+```
+
+---
+
+## Step-by-Step Dry Run #2: Count Even Numbers
+
+Problem:
+
+```text
+Given n numbers, count how many are even.
+```
+
+Input:
+
+```text
+6
+2 5 8 9 10 11
+```
+
+Code:
+
+```cpp
+int n;
+cin >> n;
+
+int evenCount = 0;
+
+for (int i = 0; i < n; i++) {
+    int x;
+    cin >> x;
+
+    if (x % 2 == 0) {
+        evenCount++;
+    }
+}
+
+cout << evenCount << '\n';
+```
+
+Variable tracking:
+
+| i | x | x % 2 | even? | evenCount |
+|---:|---:|---:|---|---:|
+| 0 | 2 | 0 | yes | 1 |
+| 1 | 5 | 1 | no | 1 |
+| 2 | 8 | 0 | yes | 2 |
+| 3 | 9 | 1 | no | 2 |
+| 4 | 10 | 0 | yes | 3 |
+| 5 | 11 | 1 | no | 3 |
+
+Output:
+
+```text
+3
+```
+
+---
+
+## Step-by-Step Dry Run #3: Maximum Value
+
+Problem:
+
+```text
+Given n numbers, print the maximum.
+```
+
+Input:
+
+```text
+5
+-4 -10 -2 -7 -3
+```
+
+Correct code:
 
 ```cpp
 int n;
@@ -1168,20 +643,36 @@ cin >> mx;
 for (int i = 1; i < n; i++) {
     int x;
     cin >> x;
-    if (x > mx) mx = x;
+
+    if (x > mx) {
+        mx = x;
+    }
 }
 
 cout << mx << '\n';
 ```
 
-Complexity:
+Variable tracking:
+
+| Step | x | mx before | x > mx? | mx after |
+|---|---:|---:|---|---:|
+| first | -4 | ? | initialize | -4 |
+| i=1 | -10 | -4 | no | -4 |
+| i=2 | -2 | -4 | yes | -2 |
+| i=3 | -7 | -2 | no | -2 |
+| i=4 | -3 | -2 | no | -2 |
+
+Output:
 
 ```text
-Time  : O(n)
-Memory: O(1)
+-2
 ```
 
-This is optimal because every number must be seen at least once.
+Important lesson:
+
+```text
+Do not initialize maximum as 0 when numbers can be negative.
+```
 
 ---
 
@@ -1192,90 +683,74 @@ This is optimal because every number must be seen at least once.
 using namespace std;
 
 /*
-    This program demonstrates the core CP mental model:
-
-    DATA + OPERATIONS + CONTROL FLOW
+    MiniCPP Mental Model:
+    DATA -> OPERATION -> CONTROL FLOW -> ANSWER
 
     Problem:
-    Given n integers, compute:
+    For each test case, read n numbers and print:
     1. sum of all numbers
     2. maximum number
-    3. count of positive numbers
+    3. count of even numbers
 
-    This is beginner-friendly but also shows the universal CP structure:
-    input -> process -> output
+    This demonstrates:
+    - variables
+    - data types
+    - operators
+    - if condition
+    - for loop
+    - long long for safe sum
 */
 
-int main() {
-    // Fast enough for beginner examples.
-    // Full fast I/O will be covered deeply in a later chapter.
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    // DATA: n stores how many numbers we will read.
+void solve() {
     int n;
     cin >> n;
 
-    // DATA: variables used to build answers.
-    long long sum = 0;       // long long avoids overflow for large sums.
-    int mx;                  // maximum value seen so far.
-    int positiveCount = 0;   // number of positive integers.
+    long long sum = 0;  // use long long because sum may exceed int
 
-    // Read the first number separately so mx has a real value.
-    int x;
-    cin >> x;
+    int mx;
+    cin >> mx;          // initialize maximum from actual input
+    sum += mx;
 
-    // OPERATION: update sum with first value.
-    sum += x;
+    int evenCount = 0;
 
-    // DATA: initialize maximum using first input.
-    mx = x;
-
-    // OPERATION + CONTROL FLOW: check positivity.
-    if (x > 0) {
-        positiveCount++;
+    if (mx % 2 == 0) {
+        evenCount++;
     }
 
-    // CONTROL FLOW: process remaining n - 1 numbers.
     for (int i = 1; i < n; i++) {
+        int x;
         cin >> x;
 
-        // OPERATION: add current number to sum.
+        // Operation 1: add current value to sum
         sum += x;
 
-        // CONTROL FLOW: if current number is bigger, update maximum.
+        // Operation 2: update maximum if current value is larger
         if (x > mx) {
             mx = x;
         }
 
-        // CONTROL FLOW: if current number is positive, count it.
-        if (x > 0) {
-            positiveCount++;
+        // Operation 3: count even values
+        if (x % 2 == 0) {
+            evenCount++;
         }
     }
 
-    // OUTPUT: print computed results.
-    cout << "sum = " << sum << '\n';
-    cout << "max = " << mx << '\n';
-    cout << "positive = " << positiveCount << '\n';
+    cout << sum << " " << mx << " " << evenCount << '\n';
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t;
+    cin >> t;
+
+    while (t--) {
+        solve();
+    }
 
     return 0;
 }
-```
-
-Example input:
-
-```text
-5
--2 3 0 7 -1
-```
-
-Output:
-
-```text
-sum = 7
-max = 7
-positive = 2
 ```
 
 ---
@@ -1285,767 +760,416 @@ positive = 2
 Input:
 
 ```text
+1
 5
--2 3 0 7 -1
+-4 -10 -2 -7 -3
 ```
 
-Initial:
+Execution:
 
 ```text
+t = 1
+solve() starts
+
 n = 5
-sum = 0
-positiveCount = 0
+
+read mx = -4
+sum = -4
+evenCount = 1 because -4 is even
+
+loop from i = 1 to 4
 ```
 
-Read first x:
+Tracking:
+
+| i | x | sum | mx | evenCount |
+|---:|---:|---:|---:|---:|
+| init | -4 | -4 | -4 | 1 |
+| 1 | -10 | -14 | -4 | 2 |
+| 2 | -2 | -16 | -2 | 3 |
+| 3 | -7 | -23 | -2 | 3 |
+| 4 | -3 | -26 | -2 | 3 |
+
+Output:
 
 ```text
-x = -2
-sum = -2
-mx = -2
-x > 0 false
-positiveCount = 0
-```
-
-Loop starts from i = 1.
-
-### i = 1
-
-```text
-x = 3
-sum = -2 + 3 = 1
-x > mx → 3 > -2 true → mx = 3
-x > 0 true → positiveCount = 1
-```
-
-### i = 2
-
-```text
-x = 0
-sum = 1 + 0 = 1
-x > mx → 0 > 3 false
-x > 0 false
-```
-
-### i = 3
-
-```text
-x = 7
-sum = 1 + 7 = 8
-x > mx → 7 > 3 true → mx = 7
-x > 0 true → positiveCount = 2
-```
-
-### i = 4
-
-```text
-x = -1
-sum = 8 - 1 = 7
-x > mx → -1 > 7 false
-x > 0 false
-```
-
-Final:
-
-```text
-sum = 7
-mx = 7
-positiveCount = 2
+-26 -2 3
 ```
 
 ---
 
-## Variable Tracking Table
+## Complexity Analysis
 
-| Step | i | x | sum | mx | positiveCount |
-|---|---:|---:|---:|---:|---:|
-| Start | - | - | 0 | ? | 0 |
-| First read | - | -2 | -2 | -2 | 0 |
-| Loop 1 | 1 | 3 | 1 | 3 | 1 |
-| Loop 2 | 2 | 0 | 1 | 3 | 1 |
-| Loop 3 | 3 | 7 | 8 | 7 | 2 |
-| Loop 4 | 4 | -1 | 7 | 7 | 2 |
+For each test case:
 
-This table is how you should mentally debug simple CP code.
+```text
+Time Complexity  : O(n)
+Memory Complexity: O(1)
+```
+
+Why O(n)?
+
+```text
+We read each number once.
+Each update is O(1).
+Total work grows linearly with n.
+```
+
+Why O(1) memory?
+
+```text
+We do not store the entire array.
+We only keep sum, mx, evenCount, and current x.
+```
 
 ---
 
 ## Edge Cases
 
-### Edge Case 1: n = 1
-
-Input:
+## 1. Single Element
 
 ```text
-1
-5
+n = 1
+value = 5
 ```
 
-The loop from `i = 1` to `i < n` does not run.
+Loop should still work.
 
-Still correct:
+Output:
 
 ```text
 sum = 5
-mx = 5
-positive = 1
+max = 5
+evenCount = 0
 ```
 
-### Edge Case 2: All Negative
-
-Input:
+## 2. All Negative
 
 ```text
-4
--8 -3 -10 -1
+-5 -2 -9
 ```
 
-Correct maximum is `-1`, not `0`.
+Maximum is `-2`, not `0`.
 
-Mistake:
+## 3. All Zero
+
+```text
+0 0 0
+```
+
+Zero is even. If counting positive numbers, zero is not positive.
+
+## 4. Large Sum
+
+```text
+n = 200000
+each value = 1000000000
+```
+
+Sum exceeds int. Use `long long`.
+
+## 5. Multiple Test Cases
+
+Always reset variables inside `solve()`.
+
+Wrong:
 
 ```cpp
-int mx = 0; // wrong for all negative input
+long long sum = 0; // outside solve and not reset
 ```
 
 Correct:
 
 ```cpp
-cin >> mx; // initialize from real data
-```
-
-### Edge Case 3: Zero Values
-
-Zero is not positive and not negative.
-
-```cpp
-if (x > 0) positiveCount++;
-```
-
-Do not write:
-
-```cpp
-if (x >= 0) positiveCount++; // counts zero also
-```
-
-### Edge Case 4: Large Sum
-
-If n is large and values are large:
-
-```text
-n = 200000
-x = 1000000000
-```
-
-Sum can be:
-
-```text
-200000 * 1000000000 = 200000000000000
-```
-
-This does not fit in int.
-
-Use:
-
-```cpp
-long long sum = 0;
+void solve() {
+    long long sum = 0;
+}
 ```
 
 ---
 
-## Failure Scenarios
+## Common Mistakes
 
-## Wrong Answer
+## Mistake 1: Off-by-One Loop
 
-WA usually means logic is wrong.
-
-Common examples:
+Wrong:
 
 ```cpp
-for (int i = 0; i <= n; i++) // runs n+1 times
+for (int i = 0; i <= n; i++)
 ```
 
-Should be:
+This runs `n + 1` times.
+
+Correct:
 
 ```cpp
 for (int i = 0; i < n; i++)
 ```
 
-Another WA:
+## Mistake 2: Wrong Maximum Initialization
+
+Wrong:
 
 ```cpp
-if (x >= 0) positiveCount++;
+int mx = 0;
 ```
 
-But problem asks positive, so zero should not count.
-
----
-
-## Time Limit Exceeded
-
-TLE means your code takes too long.
-
-Beginner example:
-
-```cpp
-for (int i = 1; i <= n; i++) {
-    for (int j = 1; j <= n; j++) {
-        cout << i << " " << j << '\n';
-    }
-}
-```
-
-If n = 200000, this is impossible.
-
-Basic rule:
-
-```text
-n up to 1e5 or 2e5 → usually O(n) or O(n log n)
-n up to 1e3       → O(n^2) may be okay
-n up to 20        → exponential may be okay
-```
-
----
-
-## Runtime Error
-
-Runtime error means program crashes.
-
-Common examples:
-
-### Division by zero
-
-```cpp
-int ans = a / b; // if b = 0, crash
-```
-
-### Invalid array index
-
-```cpp
-vector<int> a(n);
-cout << a[n]; // invalid, last index is n-1
-```
-
-### Infinite recursion
-
-Will be covered later, but it can crash stack memory.
-
----
-
-## Compilation Error
-
-Compilation error means C++ cannot understand your code.
-
-Examples:
-
-```cpp
-int x = 5
-cout << x;
-```
-
-Missing semicolon.
+Fails for all negative values.
 
 Correct:
 
 ```cpp
-int x = 5;
-cout << x;
+int mx;
+cin >> mx;
 ```
 
-Another:
+## Mistake 3: Integer Overflow
+
+Wrong:
 
 ```cpp
-cout << y;
+int sum = 0;
 ```
 
-But `y` was never declared.
+Correct:
+
+```cpp
+long long sum = 0;
+```
+
+## Mistake 4: Assignment Instead of Comparison
+
+Wrong:
+
+```cpp
+if (x = 0)
+```
+
+Correct:
+
+```cpp
+if (x == 0)
+```
+
+## Mistake 5: Not Reading Input Correctly
+
+If problem gives `n` then `n` numbers, read exactly that.
+
+```cpp
+cin >> n;
+for (int i = 0; i < n; i++) cin >> x;
+```
 
 ---
 
 ## Common WA/TLE/Runtime/Overflow Bugs
 
-## WA Bugs
+## WA
 
 ```text
-1. Off-by-one loop
-2. Wrong comparison sign
-3. Not resetting answer per test case
-4. Wrong initialization
-5. Misreading input
-6. Confusing positive with non-negative
-7. Integer division surprises
+Wrong comparison
+Wrong loop boundary
+Wrong initialization
+Wrong output format
+Forgetting test cases
+Counting zero incorrectly
+```
+
+## TLE
+
+```text
+Using nested loops unnecessarily
+Infinite loop
+Printing too much
+Not using fast I/O in large input
+```
+
+## Runtime Error
+
+```text
+Division by zero
+Array out of bounds
+Reading missing input
+Accessing empty vector
+```
+
+## Overflow
+
+```text
+int cannot store very large sums/products.
+Use long long.
+Use 1LL * a * b for multiplication.
 ```
 
 Example:
 
 ```cpp
-int avg = sum / n;
-```
-
-If `sum` and `n` are int, result is integer division.
-
----
-
-## TLE Bugs
-
-```text
-1. Nested loops when n is large
-2. Printing too much
-3. Recomputing same value
-4. Using slow approach despite constraints
-5. Infinite loop
-```
-
-Infinite loop:
-
-```cpp
-int i = 0;
-while (i < n) {
-    cout << i;
-    // forgot i++
-}
+long long product = 1LL * a * b;
 ```
 
 ---
 
-## Runtime Error Bugs
-
-```text
-1. Division by zero
-2. Out-of-bounds array access
-3. Negative index
-4. Stack overflow
-5. Accessing empty vector
-```
-
-Example:
-
-```cpp
-vector<int> v;
-cout << v[0]; // runtime error or undefined behavior
-```
-
----
-
-## Overflow Bugs
-
-```cpp
-int a = 1000000000;
-int b = 1000000000;
-int c = a + b + b;
-```
-
-This may overflow.
-
-Correct:
-
-```cpp
-long long a = 1000000000LL;
-long long b = 1000000000LL;
-long long c = a + b + b;
-```
-
-Important:
-
-```cpp
-long long ans = a * b;
-```
-
-If `a` and `b` are int, multiplication happens as int first.
-
-Safer:
-
-```cpp
-long long ans = 1LL * a * b;
-```
-
----
-
-## Debugging Mindset
-
-A strong CP debugger asks:
-
-```text
-1. What data do I have?
-2. What operation am I applying?
-3. Which control path is running?
-4. How does the variable change after each step?
-5. Which edge case breaks my assumption?
-```
-
-### Debugging Checklist
+## Debugging Checklist
 
 Before submitting:
 
 ```text
-[ ] Did I use long long where needed?
-[ ] Are loop bounds correct?
+[ ] Did I read input in the correct order?
+[ ] Did I reset variables for every test case?
+[ ] Did I choose long long for large answers?
+[ ] Are my loop boundaries correct?
 [ ] Did I handle n = 1?
-[ ] Did I handle all negative values?
-[ ] Did I reset variables inside each test case?
-[ ] Did I avoid division by zero?
-[ ] Did I print exactly what problem asks?
-[ ] Did I test sample manually?
+[ ] Did I handle negative values?
+[ ] Did I print exactly the required format?
+[ ] Did I test a custom edge case?
 ```
 
-### Manual Dry Run Habit
+When stuck, print variable states locally:
 
-For every beginner problem, dry run at least one custom case:
-
-```text
-smallest input
-largest-looking input
-all equal values
-negative values
-zero values
-mixed values
+```cpp
+cerr << "i=" << i << " x=" << x << " sum=" << sum << '\n';
 ```
+
+Do not leave debug prints in final submission.
 
 ---
 
-## Contest Tips
+## Similar Problems
 
-### Tip 1: First Convert Problem to Pipeline
-
-```text
-Input → Data → Operation → Control → Output
-```
-
-Do not jump to code immediately.
-
-### Tip 2: Name Variables Clearly
-
-Bad:
-
-```cpp
-int a,b,c,d;
-```
-
-Good for learning:
-
-```cpp
-int n;
-int positiveCount;
-long long sum;
-```
-
-In contests, short names are okay after you understand.
-
-### Tip 3: Use long long Often
-
-For sums, products, counts, and answers:
-
-```cpp
-long long ans = 0;
-```
-
-### Tip 4: Keep solve() Clean
-
-Later you will use:
-
-```cpp
-void solve() {
-    // one test case logic
-}
-```
-
-For now, understand main flow first.
-
-### Tip 5: Read Constraints
-
-Constraints decide control flow complexity.
+Practice these beginner forms:
 
 ```text
-n <= 100       → many approaches work
-n <= 2e5       → need efficient loop/sort
-n <= 1e9       → cannot loop over all n
+1. Sum of n numbers
+2. Count even numbers
+3. Count positive numbers
+4. Find maximum
+5. Find minimum
+6. Check if number is divisible by k
+7. Print YES/NO based on condition
+8. Simulate movement L/R/U/D
+9. Count vowels in a string
+10. Find average using sum
 ```
 
----
-
-## FAANG Interview Discussion
-
-In FAANG interviews, you usually do not write full stdin/stdout code. You write a function. But the mental model is identical.
-
-Example interview problem:
-
-```text
-Given an array, return the maximum value.
-```
-
-Function version:
-
-```cpp
-int findMax(vector<int>& nums) {
-    int mx = nums[0];
-
-    for (int x : nums) {
-        if (x > mx) {
-            mx = x;
-        }
-    }
-
-    return mx;
-}
-```
-
-Mental model:
-
-```text
-Data        : nums, mx, x
-Operation   : comparison
-Control flow: loop
-Output      : return mx
-```
-
-Interviewers care about basics because advanced algorithms are built from them.
-
-They check:
-
-```text
-Can you reason about variables?
-Can you explain loop invariants?
-Can you handle edge cases?
-Can you avoid overflow?
-Can you write clean logic?
-Can you dry run?
-```
-
-A candidate who cannot dry run a simple loop will struggle with binary search and DP.
-
----
-
-## Interview Q&A
-
-### Q1. What is the core structure of a CP solution?
-
-Strong answer:
-
-```text
-A CP solution usually reads input, stores necessary data, applies operations under control flow such as loops and conditions, then prints the answer. Internally, most algorithms are data plus operations plus control flow.
-```
-
-### Q2. Why use long long in contests?
-
-Strong answer:
-
-```text
-Because constraints often allow values or sums beyond the int range. int is around 2e9, while long long supports around 9e18. For sums, products, and final answers, long long prevents overflow.
-```
-
-### Q3. What causes off-by-one errors?
-
-Strong answer:
-
-```text
-Off-by-one errors happen when loop boundaries do not match valid indices or required count. For 0-indexed arrays of size n, valid indices are 0 to n-1, so the loop should usually be i < n, not i <= n.
-```
-
-### Q4. Why initialize maximum from the first value?
-
-Strong answer:
-
-```text
-If all values are negative, initializing maximum as 0 gives the wrong answer. Initializing from real input ensures the answer always belongs to the data.
-```
-
-### Q5. What is the difference between compile error and runtime error?
-
-Strong answer:
-
-```text
-A compile error means the code syntax or declarations are invalid and the program cannot be built. A runtime error happens after the program starts, usually due to invalid memory access, division by zero, or similar crashes.
-```
-
-### Q6. How do you debug a wrong answer?
-
-Strong answer:
-
-```text
-I dry run small cases, track variable values, verify loop boundaries, test edge cases, and compare expected output with actual output. I specifically check initialization, conditions, and overflow.
-```
-
----
-
-## Similar Problem Patterns
-
-These beginner patterns all use the same mental model:
-
-### Sum Pattern
-
-```text
-Data: numbers
-Operation: addition
-Control: loop
-```
-
-### Count Pattern
-
-```text
-Data: numbers/items
-Operation: condition check + increment
-Control: loop + if
-```
-
-### Maximum Pattern
-
-```text
-Data: current maximum and current value
-Operation: comparison + update
-Control: loop
-```
-
-### Minimum Pattern
-
-```text
-Data: current minimum and current value
-Operation: comparison + update
-Control: loop
-```
-
-### YES/NO Pattern
-
-```text
-Data: input condition
-Operation: logical check
-Control: if/else
-```
-
-### Simulation Pattern
-
-```text
-Data: state
-Operation: update state
-Control: repeat steps
-```
+All use the same mental model.
 
 ---
 
 ## Pattern Expansion
 
-This chapter expands into every future MiniCPP and MiniDSA chapter.
+This chapter expands into future CP topics:
 
 ```text
 C++ Basics
-   ↓
-STL
-   ↓
-Arrays / Strings
-   ↓
-Prefix Sum
-   ↓
-Two Pointers
-   ↓
-Binary Search
-   ↓
-Graphs
-   ↓
-DP
+│
+├── STL
+│   └── Data becomes vector/set/map
+│
+├── Prefix Sum
+│   └── Operation becomes cumulative addition
+│
+├── Two Pointers
+│   └── Control flow becomes left/right movement
+│
+├── Binary Search
+│   └── Control flow becomes halve search space
+│
+├── Graph BFS
+│   └── Data becomes queue + visited array
+│
+└── DP
+    └── Data becomes states and transitions
 ```
 
-Examples:
-
-### Prefix Sum
+The base never changes:
 
 ```text
-Data        : array, prefix array
-Operation   : prefix[i] = prefix[i-1] + a[i]
-Control flow: loop
-```
-
-### Binary Search
-
-```text
-Data        : low, high, mid
-Operation   : compare mid condition
-Control flow: while loop halves search space
-```
-
-### BFS
-
-```text
-Data        : graph, queue, visited
-Operation   : push/pop/mark
-Control flow: while queue not empty
-```
-
-### DP
-
-```text
-Data        : dp states
-Operation   : recurrence
-Control flow: correct iteration order
-```
-
-Same mental model. More advanced data and operations.
-
----
-
-## Complexity Cheat Sheet
-
-| Code Shape | Complexity | Example |
-|---|---:|---|
-| Single statement | O(1) | `x++` |
-| One loop over n | O(n) | sum array |
-| Two nested loops | O(n²) | all pairs |
-| Loop halves each time | O(log n) | binary search |
-| Sort | O(n log n) | `sort(v.begin(), v.end())` |
-| Loop + sort | O(n log n) | sort then scan |
-
-Beginner contest rule:
-
-```text
-Always compare your loops with constraints.
-```
-
-Rough guide:
-
-```text
-1e8 operations may be too much.
-1e6 to 1e7 is usually safer.
+Data → Operation → Control Flow → Answer
 ```
 
 ---
 
-## Recognition Cheat Sheet
+## Cheat Sheet
 
-When reading a problem:
-
-```text
-If problem asks total       → sum variable
-If problem asks how many    → count variable
-If problem asks largest     → max variable
-If problem asks smallest    → min variable
-If problem asks possible    → bool flag
-If problem asks repeat      → loop
-If problem asks choose      → if/else
-If problem has many tests   → test case loop
-```
-
-C++ starter template:
+## Basic Types
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
+int x = 10;
+long long big = 10000000000LL;
+double d = 3.14;
+char c = 'A';
+bool ok = true;
+string s = "hello";
+```
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+## Input / Output
 
-    // code here
+```cpp
+cin >> x;
+cout << x << '\n';
+```
 
-    return 0;
+## If / Else
+
+```cpp
+if (x > 0) {
+    cout << "positive\n";
+} else {
+    cout << "not positive\n";
 }
 ```
 
-Multi-test template:
+## For Loop
+
+```cpp
+for (int i = 0; i < n; i++) {
+    // repeated work
+}
+```
+
+## Sum Pattern
+
+```cpp
+long long sum = 0;
+for (int i = 0; i < n; i++) {
+    int x;
+    cin >> x;
+    sum += x;
+}
+```
+
+## Count Pattern
+
+```cpp
+int cnt = 0;
+for (int i = 0; i < n; i++) {
+    int x;
+    cin >> x;
+    if (x > 0) cnt++;
+}
+```
+
+## Max Pattern
+
+```cpp
+int mx;
+cin >> mx;
+
+for (int i = 1; i < n; i++) {
+    int x;
+    cin >> x;
+    if (x > mx) mx = x;
+}
+```
+
+## CP Template
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 void solve() {
-    // one test case
+    // logic for one test case
 }
 
 int main() {
@@ -2068,71 +1192,62 @@ int main() {
 ## One Picture To Remember
 
 ```text
-                 COMPETITIVE PROGRAMMING PROGRAM
+                 EVERY CP / DSA SOLUTION
 
-        +------------------------------------------------+
-        |                 PROBLEM STATEMENT              |
-        +-----------------------+------------------------+
-                                |
-                                v
-        +------------------------------------------------+
-        |                    INPUT DATA                  |
-        |        n, array, string, graph, queries         |
-        +-----------------------+------------------------+
-                                |
-                                v
-        +------------------------------------------------+
-        |                 STORE AS DATA                  |
-        |        variables, arrays, vectors, strings      |
-        +-----------------------+------------------------+
-                                |
-                                v
-        +------------------------------------------------+
-        |                 APPLY OPERATIONS               |
-        |       +, -, *, /, %, compare, update, count     |
-        +-----------------------+------------------------+
-                                |
-                                v
-        +------------------------------------------------+
-        |                 CONTROL FLOW                   |
-        |       if/else, for, while, function calls       |
-        +-----------------------+------------------------+
-                                |
-                                v
-        +------------------------------------------------+
-        |                   ANSWER                       |
-        |              print / return result              |
-        +------------------------------------------------+
+        +-------------------------------+
+        |           INPUT DATA          |
+        | n, array, string, queries     |
+        +---------------+---------------+
+                        |
+                        v
+        +-------------------------------+
+        |             DATA              |
+        | variables, counters, best     |
+        +---------------+---------------+
+                        |
+                        v
+        +-------------------------------+
+        |          OPERATION            |
+        | add, compare, count, update   |
+        +---------------+---------------+
+                        |
+                        v
+        +-------------------------------+
+        |        CONTROL FLOW           |
+        | if, for, while, function      |
+        +---------------+---------------+
+                        |
+                        v
+        +-------------------------------+
+        |            ANSWER             |
+        | print or return result        |
+        +-------------------------------+
 
-        ONE SENTENCE:
+ONE LINE:
 
-        Every C++ CP solution is data transformed by operations
-        under control flow until the answer appears.
+Data is stored, operations transform it, control flow decides when it happens.
 ```
 
 ---
 
-## Final MiniCPP Takeaway
+## Final Takeaway
 
-Do not memorize C++ as random syntax.
+For CP and FAANG DSA, do not learn C++ like a full software engineering language first.
 
-Remember this:
-
-```text
-Variables hold data.
-Operators change data.
-Conditions choose paths.
-Loops repeat work.
-Functions organize logic.
-Algorithms are built from these pieces.
-```
-
-When stuck, ask:
+Start with this mental model:
 
 ```text
-What data do I need?
-What operation updates the answer?
-What control flow repeats or chooses the logic?
+Data → Operation → Control Flow → Answer
 ```
 
-This is the first mental model of C++ for CP and FAANG interviews.
+Then practice recognizing small forms:
+
+```text
+sum
+count
+max/min
+condition
+simulation
+```
+
+Once this is natural, STL, prefix sum, binary search, graph, and DP become much easier because they are all built from the same foundation.
