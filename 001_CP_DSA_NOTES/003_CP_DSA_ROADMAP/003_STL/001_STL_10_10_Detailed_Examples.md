@@ -1,0 +1,5747 @@
+# MiniSTL_Master_10_10_Expanded.md
+
+## 60–90 KB STL Pattern Engine for Codeforces CM + FAANG Interviews
+
+> **Purpose:** Master STL as a problem-solving engine, not a syntax list.  
+> **Level:** Beginner-friendly → CF Div2 A/B/C/D → Candidate Master readiness → FAANG interview patterns.  
+> **Language:** C++17 only.
+
+---
+
+# Clickable Index
+
+- [000. Core Mental Model](#000-core-mental-model)
+- [001. STL Decision Engine](#001-stl-decision-engine)
+- [002. Complexity and Container Choice](#002-complexity-and-container-choice)
+- [003. Vector Engine](#003-vector-engine)
+- [004. String Engine](#004-string-engine)
+- [005. Pair Tuple Struct Engine](#005-pair-tuple-struct-engine)
+- [006. Stack Engine](#006-stack-engine)
+- [007. Queue Engine](#007-queue-engine)
+- [008. Deque Engine](#008-deque-engine)
+- [009. Priority Queue Engine](#009-priority-queue-engine)
+- [010. Set Multiset Engine](#010-set-multiset-engine)
+- [011. Map Unordered Map Engine](#011-map-unordered-map-engine)
+- [012. Iterators and Invalidation](#012-iterators-and-invalidation)
+- [013. Sort Comparator Engine](#013-sort-comparator-engine)
+- [014. STL Binary Search](#014-stl-binary-search)
+- [015. Frequency Pattern](#015-frequency-pattern)
+- [016. Prefix Map Pattern](#016-prefix-map-pattern)
+- [017. Two Pointers STL Pattern](#017-two-pointers-stl-pattern)
+- [018. Sliding Window STL Pattern](#018-sliding-window-stl-pattern)
+- [019. Monotonic Stack Variants](#019-monotonic-stack-variants)
+- [020. Monotonic Deque Variants](#020-monotonic-deque-variants)
+- [021. Priority Queue Advanced and Lazy Deletion](#021-priority-queue-advanced-and-lazy-deletion)
+- [022. Multiset Advanced and Window Median](#022-multiset-advanced-and-window-median)
+- [023. Range Mapping and Interval Merge](#023-range-mapping-and-interval-merge)
+- [024. Sweep Line Engine](#024-sweep-line-engine)
+- [025. Top-K and Kth Engine](#025-top-k-and-kth-engine)
+- [026. Median Maintenance](#026-median-maintenance)
+- [027. LRU Cache STL Design](#027-lru-cache-stl-design)
+- [028. LFU Cache STL Design](#028-lfu-cache-stl-design)
+- [029. CF A/B/C/D Forms](#029-cf-abcd-forms)
+- [030. FAANG Forms](#030-faang-forms)
+- [031. STL Bug Encyclopedia](#031-stl-bug-encyclopedia)
+- [032. Debugging Playbook](#032-debugging-playbook)
+- [033. Practice Ladder](#033-practice-ladder)
+- [099. Final Cheat Sheet](#099-final-cheat-sheet)
+
+---
+
+# 000. Core Mental Model
+
+STL is not about memorizing containers.
+
+STL is about mapping a **needed operation** to the correct **machine**.
+
+```text
+Problem statement
+      ↓
+What operation must be fast?
+      ↓
+Which STL gives that operation?
+      ↓
+Which known pattern uses that STL?
+      ↓
+Can it survive constraints?
+      ↓
+Implement + debug
+```
+
+## One Sentence
+
+> STL mastery means choosing the right data structure before writing code.
+
+## The Operation Machine View
+
+```text
+vector          -> random access + sorting
+string          -> character sequence
+stack           -> last opened, first closed
+queue           -> first discovered, first processed
+deque           -> both ends + monotonic windows
+priority_queue  -> best candidate repeatedly
+set             -> ordered unique search
+multiset        -> ordered duplicates
+map             -> ordered key-value
+unordered_map   -> average O(1) key-value
+list            -> O(1) node movement when iterator known
+```
+
+## One Picture
+
+```text
+                    STL MASTER MAP
+                           |
+       -------------------------------------------------
+       |             |              |                  |
+   Sequence       Ordering        Hashing             Heap
+       |             |              |                  |
+ vector/string   set/map       unordered_map      priority_queue
+ deque           multiset      unordered_set      top-k/dijkstra
+       |
+ stack/queue/list for flow and design
+```
+
+---
+
+# 001. STL Decision Engine
+
+## Master Decision Tree
+
+```text
+Need index access?
+    -> vector / string
+
+Need sorted after reading all input?
+    -> vector + sort
+
+Need dynamic ordered search?
+    -> set / multiset / map
+
+Need frequency lookup?
+    -> unordered_map / map
+
+Need current best repeatedly?
+    -> priority_queue
+
+Need next greater/smaller?
+    -> monotonic stack
+
+Need window max/min?
+    -> monotonic deque
+
+Need window median?
+    -> two multisets
+
+Need stream median?
+    -> two heaps
+
+Need LRU?
+    -> list + unordered_map
+
+Need LFU?
+    -> unordered_map + frequency lists
+```
+
+## Operation Table
+
+```text
+Operation                              STL
+--------------------------------------------------------
+append + index                         vector
+character scan                         string
+sort and pair                          vector + sort
+unique ordered values                   set
+ordered duplicates                      multiset
+fast average count                      unordered_map
+ordered count                           map
+smallest/largest repeatedly             priority_queue
+BFS                                     queue
+DFS iterative                           stack
+sliding max/min                         deque
+nearest greater boundary                stack
+range overlap                           vector events + sort
+median                                  two heaps / multiset
+cache recency                           list + unordered_map
+cache frequency                         unordered_map + list buckets
+```
+
+## Contest Recognition
+
+```text
+"previous same value"       -> unordered_map
+"nearest >= x"              -> set.lower_bound
+"erase one duplicate"       -> multiset.find + erase(iterator)
+"top k"                     -> heap of size k
+"next greater"              -> monotonic stack
+"max in every window"       -> monotonic deque
+"meeting rooms"             -> sweep line / min heap
+"LRU cache"                 -> list + unordered_map
+```
+
+---
+
+# 002. Complexity and Container Choice
+
+## Complexity Table
+
+```text
+vector index                         O(1)
+vector push_back                     amortized O(1)
+vector insert/erase middle/front     O(N)
+sort                                 O(N log N)
+lower_bound on vector                O(log N)
+
+string substr                        O(length)
+stack push/pop/top                   O(1)
+queue push/pop/front                 O(1)
+deque push_front/back                O(1)
+deque pop_front/back                 O(1)
+
+priority_queue top                   O(1)
+priority_queue push/pop              O(log N)
+
+set/map find/insert/erase            O(log N)
+set/map lower_bound                  O(log N)
+unordered_map average find/insert    O(1)
+unordered_map worst case             O(N)
+
+list insert/erase by iterator        O(1)
+```
+
+## Constraint Thinking
+
+```text
+N <= 2e5:
+    O(N log N) is usually fine
+    O(N) is excellent
+    O(N^2) is usually dead
+```
+
+## Common TLE Translation
+
+```text
+vector erase front in loop:
+    O(N) each * N = O(N^2)
+
+sort inside loop:
+    O(N log N) each * N = O(N^2 log N)
+
+std::lower_bound on set:
+    iterator traversal O(N), not O(logN)
+```
+
+Use:
+
+```cpp
+s.lower_bound(x);
+```
+
+not:
+
+```cpp
+lower_bound(s.begin(), s.end(), x);
+```
+
+---
+
+# 003. Vector Engine
+
+## Why This Exists
+
+`vector` is the default CP container because it is simple, cache-friendly, sortable, and indexable.
+
+## Core Mental Model
+
+```text
+index:  0   1   2   3
+       [10][20][30][40]
+```
+
+## When To Use
+
+```text
+input array
+sort values
+prefix sum
+DP
+graph adjacency
+binary search
+coordinate compression
+interval list
+event list
+```
+
+## When Not To Use
+
+```text
+frequent erase from front
+frequent insertion in middle
+dynamic ordered search
+```
+
+## Basic Vector Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> a(n);
+
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+    }
+
+    sort(a.begin(), a.end());
+
+    for (int x : a) cout << x << " ";
+    cout << "\n";
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+Input:
+5
+4 1 7 2 2
+
+read:
+[4,1,7,2,2]
+
+sort:
+[1,2,2,4,7]
+```
+
+## Pattern 1: Prefix Sum
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+
+    vector<long long> pref(n + 1, 0);
+
+    for (int i = 0; i < n; i++) {
+        long long x;
+        cin >> x;
+        pref[i + 1] = pref[i] + x;
+    }
+
+    while (q--) {
+        int l, r;
+        cin >> l >> r; // 0-indexed inclusive
+        cout << pref[r + 1] - pref[l] << "\n";
+    }
+
+    return 0;
+}
+```
+
+## Pattern 2: Coordinate Compression
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> a(n), vals;
+
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+        vals.push_back(a[i]);
+    }
+
+    sort(vals.begin(), vals.end());
+    vals.erase(unique(vals.begin(), vals.end()), vals.end());
+
+    for (int x : a) {
+        int compressed = lower_bound(vals.begin(), vals.end(), x) - vals.begin();
+        cout << compressed << " ";
+    }
+
+    return 0;
+}
+```
+
+## Coordinate Compression Dry Run
+
+```text
+a = [100, 5, 100, 20]
+
+vals sorted unique = [5,20,100]
+
+5   -> 0
+20  -> 1
+100 -> 2
+
+compressed array = [2,0,2,1]
+```
+
+## Bugs
+
+```text
+out of bounds index
+forgetting long long for sums
+erase from front repeatedly
+not sorting before lower_bound
+not using unique correctly:
+    sort first, then erase(unique(...), end)
+```
+
+---
+
+# 004. String Engine
+
+## Core Mental Model
+
+`string` is a vector-like container of characters.
+
+```text
+s = "abca"
+
+index: 0 1 2 3
+char:  a b c a
+```
+
+## Pattern Recognition
+
+```text
+frequency
+palindrome
+anagram
+substring/window
+stack parsing
+rolling hash later
+```
+
+## Frequency Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    string s;
+    cin >> s;
+
+    vector<int> freq(26, 0);
+
+    for (char c : s) {
+        freq[c - 'a']++;
+    }
+
+    for (int i = 0; i < 26; i++) {
+        if (freq[i]) {
+            cout << char('a' + i) << " " << freq[i] << "\n";
+        }
+    }
+
+    return 0;
+}
+```
+
+## Palindrome Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    string s;
+    cin >> s;
+
+    int l = 0, r = (int)s.size() - 1;
+
+    while (l < r) {
+        if (s[l] != s[r]) {
+            cout << "NO\n";
+            return 0;
+        }
+        l++;
+        r--;
+    }
+
+    cout << "YES\n";
+    return 0;
+}
+```
+
+## Group Anagrams Key
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    unordered_map<string, vector<string>> groups;
+
+    for (int i = 0; i < n; i++) {
+        string s;
+        cin >> s;
+
+        string key = s;
+        sort(key.begin(), key.end());
+
+        groups[key].push_back(s);
+    }
+
+    for (auto &[key, words] : groups) {
+        for (string &w : words) cout << w << " ";
+        cout << "\n";
+    }
+
+    return 0;
+}
+```
+
+## Bugs
+
+```text
+getline after cin issue
+substr copies O(length)
+assuming only lowercase when input may contain uppercase
+signed char indexing issue for cnt[256]
+```
+
+---
+
+# 005. Pair Tuple Struct Engine
+
+## Core Mental Model
+
+Group related values.
+
+```text
+(value, index)
+(distance, node)
+(start, end)
+(x, y)
+```
+
+## Default Pair Sorting
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<pair<int,int>> v = {{3,10}, {1,50}, {3,5}};
+
+    sort(v.begin(), v.end());
+
+    for (auto [a,b] : v) {
+        cout << a << " " << b << "\n";
+    }
+
+    return 0;
+}
+```
+
+Output:
+
+```text
+1 50
+3 5
+3 10
+```
+
+## Custom Struct Sorting
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Item {
+    int score;
+    int age;
+    string name;
+};
+
+int main() {
+    vector<Item> v = {
+        {90,20,"Ali"},
+        {90,18,"Bob"},
+        {95,19,"Cara"}
+    };
+
+    sort(v.begin(), v.end(), [](const Item& a, const Item& b) {
+        if (a.score != b.score) return a.score > b.score;
+        return a.age < b.age;
+    });
+
+    for (auto &x : v) {
+        cout << x.name << " " << x.score << " " << x.age << "\n";
+    }
+
+    return 0;
+}
+```
+
+## Bugs
+
+```text
+comparator must be strict
+never return a <= b
+avoid return a.score - b.score due to overflow
+```
+
+---
+
+# 006. Stack Engine
+
+## Core Mental Model
+
+Last in, first out.
+
+```text
+push 1
+push 2
+push 3
+
+top = 3
+
+bottom [1 2 3] top
+```
+
+## Pattern Recognition
+
+```text
+valid parentheses
+undo last
+nested structures
+next greater/smaller
+histogram
+DFS iterative
+```
+
+## Valid Parentheses
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+bool match(char a, char b) {
+    return (a == '(' && b == ')') ||
+           (a == '[' && b == ']') ||
+           (a == '{' && b == '}');
+}
+
+int main() {
+    string s;
+    cin >> s;
+
+    stack<char> st;
+
+    for (char c : s) {
+        if (c == '(' || c == '[' || c == '{') {
+            st.push(c);
+        } else {
+            if (st.empty() || !match(st.top(), c)) {
+                cout << "NO\n";
+                return 0;
+            }
+            st.pop();
+        }
+    }
+
+    cout << (st.empty() ? "YES\n" : "NO\n");
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+s = "([])"
+
+read '(' -> stack: (
+read '[' -> stack: ( [
+read ']' -> top [ matches, pop -> (
+read ')' -> top ( matches, pop -> empty
+valid
+```
+
+## Bugs
+
+```text
+top on empty stack
+forget final empty check
+confusing open and close matching
+```
+
+---
+
+# 007. Queue Engine
+
+## Core Mental Model
+
+First in, first out.
+
+```text
+front -> [A][B][C] <- back
+```
+
+## Pattern Recognition
+
+```text
+BFS
+level order
+multi-source expansion
+simulation
+shortest path in unweighted graph/grid
+```
+
+## BFS Template
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+
+    vector<vector<int>> g(n);
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        --u; --v;
+
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    vector<int> dist(n, -1);
+    queue<int> q;
+
+    dist[0] = 0;
+    q.push(0);
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        for (int v : g[u]) {
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+
+    for (int d : dist) cout << d << " ";
+    return 0;
+}
+```
+
+## Multi-Source BFS Mental Model
+
+```text
+push all sources with dist=0
+then normal BFS expands waves
+```
+
+```text
+S . . .
+. . . .
+. . S .
+
+Both S expand together.
+```
+
+---
+
+# 008. Deque Engine
+
+## Core Mental Model
+
+Deque supports both ends.
+
+```text
+push_front -> [ ][ ][ ] <- push_back
+pop_front  -> [ ][ ][ ] <- pop_back
+```
+
+## Uses
+
+```text
+sliding window max/min
+0-1 BFS
+two-ended simulation
+monotonic deque
+```
+
+## Basic Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    deque<int> dq;
+
+    dq.push_back(10);
+    dq.push_front(5);
+    dq.push_back(20);
+
+    cout << dq.front() << " " << dq.back() << "\n";
+
+    dq.pop_front();
+
+    cout << dq.front() << "\n";
+    return 0;
+}
+```
+
+## 0-1 BFS Preview
+
+When edge weights are only 0 or 1:
+
+```text
+weight 0 -> push_front
+weight 1 -> push_back
+```
+
+This gives Dijkstra-like behavior in O(V+E).
+
+---
+
+# 009. Priority Queue Engine
+
+## Core Mental Model
+
+Heap gives best element repeatedly.
+
+```text
+priority_queue<int> = max heap
+top() = largest
+```
+
+## Max Heap
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    priority_queue<int> pq;
+
+    pq.push(5);
+    pq.push(1);
+    pq.push(10);
+
+    while (!pq.empty()) {
+        cout << pq.top() << " ";
+        pq.pop();
+    }
+
+    return 0;
+}
+```
+
+Output:
+
+```text
+10 5 1
+```
+
+## Min Heap
+
+```cpp
+priority_queue<int, vector<int>, greater<int>> pq;
+```
+
+## Custom Heap For Pair
+
+```cpp
+priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+```
+
+This gives smallest pair lexicographically.
+
+## Pattern Recognition
+
+```text
+top k
+kth largest
+Dijkstra
+merge k sorted lists
+scheduling
+always choose cheapest/largest
+```
+
+## Bugs
+
+```text
+default is max heap
+top on empty
+forget stale entries in Dijkstra
+custom comparator backwards
+```
+
+---
+
+# 010. Set Multiset Engine
+
+## Core Mental Model
+
+```text
+set      = sorted unique
+multiset = sorted duplicates
+```
+
+## Ordered Search
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    set<int> s = {1, 4, 7, 10};
+
+    int x;
+    cin >> x;
+
+    auto it = s.lower_bound(x);
+
+    if (it == s.end()) cout << "none\n";
+    else cout << *it << "\n";
+
+    return 0;
+}
+```
+
+## Previous Value
+
+```cpp
+auto it = s.lower_bound(x);
+if (it != s.begin()) {
+    --it;
+    cout << *it << "\n";
+}
+```
+
+## Erase One Copy From Multiset
+
+```cpp
+auto it = ms.find(x);
+if (it != ms.end()) ms.erase(it);
+```
+
+## Danger
+
+```cpp
+ms.erase(x);
+```
+
+removes all copies.
+
+## Use Cases
+
+```text
+nearest value
+dynamic sorted data
+window min/max with deletion
+median
+ordered duplicates
+```
+
+---
+
+# 011. Map Unordered Map Engine
+
+## Core Mental Model
+
+```text
+key -> value
+```
+
+## map
+
+```text
+ordered keys
+O(logN)
+lower_bound available
+```
+
+## unordered_map
+
+```text
+hash table
+average O(1)
+no sorted order
+```
+
+## Frequency Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    unordered_map<int,int> freq;
+
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+        freq[x]++;
+    }
+
+    for (auto &[key, val] : freq) {
+        cout << key << " " << val << "\n";
+    }
+
+    return 0;
+}
+```
+
+## Custom Hash For Safety
+
+```cpp
+struct custom_hash {
+    static uint64_t splitmix64(uint64_t x) {
+        x += 0x9e3779b97f4a7c15;
+        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+        x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+        return x ^ (x >> 31);
+    }
+
+    size_t operator()(uint64_t x) const {
+        static const uint64_t FIXED_RANDOM =
+            chrono::steady_clock::now().time_since_epoch().count();
+        return splitmix64(x + FIXED_RANDOM);
+    }
+};
+
+unordered_map<long long, int, custom_hash> safeMap;
+```
+
+## Bugs
+
+```text
+operator[] creates key
+unordered_map worst-case can TLE
+map slower but ordered
+```
+
+---
+
+# 012. Iterators and Invalidation
+
+## Core Mental Model
+
+Iterator is pointer-like.
+
+```text
+[ a b c d )
+^       ^
+begin   end
+```
+
+## Important Rules
+
+```text
+end() is not valid to dereference
+begin() cannot be decremented
+vector erase invalidates iterators at/after erase point
+set/map erase invalidates only erased iterator
+list erase invalidates erased iterator only
+```
+
+## Vector Lower Bound Index
+
+```cpp
+int idx = lower_bound(a.begin(), a.end(), x) - a.begin();
+```
+
+## Set Lower Bound
+
+```cpp
+auto it = s.lower_bound(x);
+```
+
+Do not subtract set iterators.
+
+## Safe Erase While Iterating Map
+
+```cpp
+for (auto it = mp.begin(); it != mp.end(); ) {
+    if (it->second == 0) {
+        it = mp.erase(it);
+    } else {
+        ++it;
+    }
+}
+```
+
+---
+
+# 013. Sort Comparator Engine
+
+## Why Sorting Matters
+
+Sorting creates structure.
+
+```text
+chaos -> order -> binary search/two pointers/greedy
+```
+
+## Comparator Rules
+
+Comparator must answer:
+
+```text
+Should a come before b?
+```
+
+It must be strict.
+
+Bad:
+
+```cpp
+return a <= b;
+```
+
+Good:
+
+```cpp
+return a < b;
+```
+
+## Multi-Key Sort
+
+```cpp
+sort(v.begin(), v.end(), [](auto &a, auto &b) {
+    if (a.first != b.first) return a.first < b.first;
+    return a.second > b.second;
+});
+```
+
+## Interval Sort
+
+```cpp
+sort(intervals.begin(), intervals.end(), [](auto &a, auto &b) {
+    if (a.first != b.first) return a.first < b.first;
+    return a.second < b.second;
+});
+```
+
+## Bugs
+
+```text
+non-strict comparator
+inconsistent comparator
+overflow in subtraction comparator
+forget tie-breaker
+```
+
+---
+
+# 014. STL Binary Search
+
+## Core Mental Model
+
+```text
+lower_bound = first >= x
+upper_bound = first > x
+```
+
+## Count Occurrences
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<int> a = {1,2,2,2,4,7};
+
+    int x;
+    cin >> x;
+
+    auto l = lower_bound(a.begin(), a.end(), x);
+    auto r = upper_bound(a.begin(), a.end(), x);
+
+    cout << r - l << "\n";
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+a=[1,2,2,2,4,7], x=2
+
+lower_bound -> index 1
+upper_bound -> index 4
+count = 3
+```
+
+## First Greater Than X
+
+```cpp
+auto it = upper_bound(a.begin(), a.end(), x);
+```
+
+## Last Less Than X
+
+```cpp
+auto it = lower_bound(a.begin(), a.end(), x);
+if (it != a.begin()) {
+    --it;
+    cout << *it;
+}
+```
+
+---
+
+# 015. Frequency Pattern
+
+## Core Mental Model
+
+```text
+value -> count
+```
+
+## Count Equal Pairs
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    unordered_map<int,long long> freq;
+    long long ans = 0;
+
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+
+        ans += freq[x];
+        freq[x]++;
+    }
+
+    cout << ans << "\n";
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+a=[5,5,2,5]
+
+x=5 old freq=0 ans=0
+x=5 old freq=1 ans=1
+x=2 old freq=0 ans=1
+x=5 old freq=2 ans=3
+```
+
+## Variants
+
+```text
+same value
+same remainder
+same normalized difference
+same sorted-string key
+same prefix sum
+```
+
+---
+
+# 016. Prefix Map Pattern
+
+## Core Mental Model
+
+```text
+sum(l..r) = pref[r] - pref[l-1]
+```
+
+To find sum K:
+
+```text
+pref[l-1] = pref[r] - K
+```
+
+## Count Subarrays Sum K
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    long long k;
+    cin >> n >> k;
+
+    unordered_map<long long,long long> freq;
+    freq[0] = 1;
+
+    long long pref = 0;
+    long long ans = 0;
+
+    for (int i = 0; i < n; i++) {
+        long long x;
+        cin >> x;
+
+        pref += x;
+        ans += freq[pref - k];
+        freq[pref]++;
+    }
+
+    cout << ans << "\n";
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+a=[1,2,1,2], k=3
+
+pref=1 need=-2 ans=0
+pref=3 need=0  ans=1
+pref=4 need=1  ans=2
+pref=6 need=3  ans=3
+```
+
+## Variants
+
+```text
+subarray divisible by k:
+    use pref % k frequency
+
+equal 0/1 count:
+    convert 0 to -1, count prefix equal
+
+longest subarray:
+    store first index of prefix
+```
+
+---
+
+# 017. Two Pointers STL Pattern
+
+## Core Mental Model
+
+Both pointers move monotonically.
+
+```text
+l -> right
+r -> left/right
+```
+
+## Pair Sum Sorted
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, target;
+    cin >> n >> target;
+
+    vector<int> a(n);
+    for (int &x : a) cin >> x;
+
+    sort(a.begin(), a.end());
+
+    int l = 0;
+    int r = n - 1;
+
+    while (l < r) {
+        int sum = a[l] + a[r];
+
+        if (sum == target) {
+            cout << "YES\n";
+            return 0;
+        }
+
+        if (sum < target) l++;
+        else r--;
+    }
+
+    cout << "NO\n";
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+a=[1,2,4,7,9,11], target=13
+
+l=0 r=5 sum=12 <13 -> l++
+l=1 r=5 sum=13 -> found
+```
+
+---
+
+# 018. Sliding Window STL Pattern
+
+## Core Mental Model
+
+Contiguous window.
+
+```text
+expand right
+shrink left until valid
+```
+
+## Longest Substring Without Repeat
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    string s;
+    cin >> s;
+
+    vector<int> cnt(256, 0);
+    int l = 0;
+    int best = 0;
+
+    for (int r = 0; r < (int)s.size(); r++) {
+        cnt[s[r]]++;
+
+        while (cnt[s[r]] > 1) {
+            cnt[s[l]]--;
+            l++;
+        }
+
+        best = max(best, r - l + 1);
+    }
+
+    cout << best << "\n";
+    return 0;
+}
+```
+
+## Bugs
+
+```text
+sliding window sum fails with negatives
+wrong while condition
+forget to decrement leaving char
+```
+
+---
+
+# 019. Monotonic Stack Variants
+
+## Core Mental Model
+
+Monotonic stack stores unresolved candidates.
+
+```text
+Each element enters once and leaves once.
+```
+
+## Variant 1: Next Greater Right
+
+```cpp
+while (!st.empty() && a[st.top()] < a[i]) {
+    ans[st.top()] = a[i];
+    st.pop();
+}
+st.push(i);
+```
+
+## Full Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> a(n), ans(n, -1);
+    for (int &x : a) cin >> x;
+
+    stack<int> st;
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && a[st.top()] < a[i]) {
+            ans[st.top()] = a[i];
+            st.pop();
+        }
+        st.push(i);
+    }
+
+    for (int x : ans) cout << x << " ";
+    return 0;
+}
+```
+
+## Variant 2: Previous Smaller
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> a(n), ans(n, -1);
+    for (int &x : a) cin >> x;
+
+    stack<int> st;
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && a[st.top()] >= a[i]) {
+            st.pop();
+        }
+
+        if (!st.empty()) ans[i] = a[st.top()];
+
+        st.push(i);
+    }
+
+    for (int x : ans) cout << x << " ";
+    return 0;
+}
+```
+
+## Variant 3: Daily Temperatures
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> t(n), ans(n, 0);
+    for (int &x : t) cin >> x;
+
+    stack<int> st;
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && t[st.top()] < t[i]) {
+            int j = st.top();
+            st.pop();
+            ans[j] = i - j;
+        }
+        st.push(i);
+    }
+
+    for (int x : ans) cout << x << " ";
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+a=[2,1,5,3]
+
+i=0 stack=[]
+push 0
+
+i=1 a[0]=2 < 1 no
+push 1
+
+i=2 a[1]=1 < 5 -> ans[1]=5 pop
+    a[0]=2 < 5 -> ans[0]=5 pop
+push 2
+
+i=3 a[2]=5 < 3 no
+push 3
+
+ans=[5,5,-1,-1]
+```
+
+## Largest Rectangle Histogram Template
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<long long> h(n);
+    for (auto &x : h) cin >> x;
+
+    stack<int> st;
+    long long best = 0;
+
+    for (int i = 0; i <= n; i++) {
+        long long cur = (i == n ? 0 : h[i]);
+
+        while (!st.empty() && h[st.top()] >= cur) {
+            long long height = h[st.top()];
+            st.pop();
+
+            int left = st.empty() ? -1 : st.top();
+            long long width = i - left - 1;
+
+            best = max(best, height * width);
+        }
+
+        st.push(i);
+    }
+
+    cout << best << "\n";
+    return 0;
+}
+```
+
+## Recognition
+
+```text
+nearest greater/smaller
+first warmer day
+span
+histogram
+subarray min/max contribution
+```
+
+---
+
+# 020. Monotonic Deque Variants
+
+## Core Mental Model
+
+Deque keeps useful candidates for a moving window.
+
+For maximum:
+
+```text
+values in deque are decreasing
+front is maximum
+```
+
+## Sliding Window Maximum
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, k;
+    cin >> n >> k;
+
+    vector<int> a(n);
+    for (int &x : a) cin >> x;
+
+    deque<int> dq;
+
+    for (int i = 0; i < n; i++) {
+        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
+
+        while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back();
+
+        dq.push_back(i);
+
+        if (i >= k - 1) {
+            cout << a[dq.front()] << " ";
+        }
+    }
+
+    return 0;
+}
+```
+
+## Sliding Window Minimum
+
+Change condition:
+
+```cpp
+while (!dq.empty() && a[dq.back()] >= a[i]) dq.pop_back();
+```
+
+## Dry Run
+
+```text
+a=[1,3,-1,-3,5], k=3
+
+i=0 dq=[1]
+i=1 pop 1, dq=[3]
+i=2 dq=[3,-1], output 3
+i=3 dq=[3,-1,-3], output 3
+i=4 remove expired 3, pop -3,-1, dq=[5], output 5
+```
+
+## Bugs
+
+```text
+store indices not values
+remove expired before output
+<= vs < affects duplicates but both can be valid depending use
+```
+
+---
+
+# 021. Priority Queue Advanced and Lazy Deletion
+
+## Why Lazy Deletion Exists
+
+`priority_queue` cannot erase arbitrary elements.
+
+Solution:
+
+```text
+mark deleted
+remove when stale item reaches top
+```
+
+## Lazy Max Example
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    priority_queue<int> pq;
+    unordered_map<int,int> deleted;
+
+    pq.push(5);
+    pq.push(10);
+    pq.push(7);
+
+    deleted[10]++;
+
+    while (!pq.empty() && deleted[pq.top()] > 0) {
+        deleted[pq.top()]--;
+        pq.pop();
+    }
+
+    cout << pq.top() << "\n"; // 7
+    return 0;
+}
+```
+
+## Dijkstra Stale Entry Pattern
+
+```cpp
+if (d != dist[u]) continue;
+```
+
+## Use Cases
+
+```text
+sliding window heap
+Dijkstra
+online max after deletion
+frequency heap
+top-k with updates
+```
+
+## Bugs
+
+```text
+not cleaning before using top
+deleted count mismatch
+heap memory grows
+```
+
+---
+
+# 022. Multiset Advanced and Window Median
+
+## Window Min/Max With Multiset
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, k;
+    cin >> n >> k;
+
+    vector<int> a(n);
+    for (int &x : a) cin >> x;
+
+    multiset<int> ms;
+
+    for (int i = 0; i < n; i++) {
+        ms.insert(a[i]);
+
+        if (i >= k) {
+            auto it = ms.find(a[i-k]);
+            ms.erase(it);
+        }
+
+        if (i >= k - 1) {
+            cout << *ms.begin() << " " << *ms.rbegin() << "\n";
+        }
+    }
+
+    return 0;
+}
+```
+
+## Two Multisets Median
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+multiset<int> low, high;
+
+void rebalance() {
+    while (low.size() < high.size()) {
+        low.insert(*high.begin());
+        high.erase(high.begin());
+    }
+
+    while (low.size() > high.size() + 1) {
+        auto it = prev(low.end());
+        high.insert(*it);
+        low.erase(it);
+    }
+}
+
+void add(int x) {
+    if (low.empty() || x <= *low.rbegin()) low.insert(x);
+    else high.insert(x);
+    rebalance();
+}
+
+void removeOne(int x) {
+    auto it = low.find(x);
+    if (it != low.end()) low.erase(it);
+    else {
+        it = high.find(x);
+        if (it != high.end()) high.erase(it);
+    }
+    rebalance();
+}
+
+int main() {
+    int n, k;
+    cin >> n >> k;
+
+    vector<int> a(n);
+    for (int &x : a) cin >> x;
+
+    for (int i = 0; i < n; i++) {
+        add(a[i]);
+
+        if (i >= k) removeOne(a[i-k]);
+
+        if (i >= k - 1) {
+            cout << *low.rbegin() << " ";
+        }
+    }
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+a=[1,5,2,7], k=3
+
+window [1,5,2] sorted [1,2,5]
+low=[1,2], high=[5], median=2
+
+slide to [5,2,7]
+remove 1, add 7
+sorted [2,5,7]
+low=[2,5], high=[7], median=5
+```
+
+---
+
+# 023. Range Mapping and Interval Merge
+
+## Merge Intervals
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<pair<int,int>> intervals(n);
+    for (auto &[l,r] : intervals) cin >> l >> r;
+
+    sort(intervals.begin(), intervals.end());
+
+    vector<pair<int,int>> merged;
+
+    for (auto [l,r] : intervals) {
+        if (merged.empty() || merged.back().second < l) {
+            merged.push_back({l,r});
+        } else {
+            merged.back().second = max(merged.back().second, r);
+        }
+    }
+
+    for (auto [l,r] : merged) {
+        cout << l << " " << r << "\n";
+    }
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+[1,4], [2,6], [8,10]
+
+add [1,4]
+[2,6] overlaps -> merge [1,6]
+[8,10] no overlap -> add
+```
+
+## Insert Interval Form
+
+```text
+add new interval
+merge with neighbors
+```
+
+Best STL:
+
+```text
+vector + sort if offline
+set/map if online intervals
+```
+
+---
+
+# 024. Sweep Line Engine
+
+## Core Mental Model
+
+Turn ranges into events.
+
+```text
+start +1
+end   -1
+```
+
+## Max Overlap
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<pair<int,int>> events;
+
+    for (int i = 0; i < n; i++) {
+        int l, r;
+        cin >> l >> r;
+
+        events.push_back({l, +1});
+        events.push_back({r, -1});
+    }
+
+    sort(events.begin(), events.end());
+
+    int active = 0;
+    int best = 0;
+
+    for (auto [x, delta] : events) {
+        active += delta;
+        best = max(best, active);
+    }
+
+    cout << best << "\n";
+    return 0;
+}
+```
+
+## Tie-Breaking
+
+For half-open intervals `[l,r)`:
+
+```text
+end at r should happen before start at r sometimes
+```
+
+For inclusive intervals `[l,r]`, use:
+
+```cpp
+events.push_back({l, +1});
+events.push_back({r + 1, -1});
+```
+
+## Difference Array Compression Variant
+
+```text
+range add:
+diff[l] += val
+diff[r+1] -= val
+prefix diff gives active value
+```
+
+---
+
+# 025. Top-K and Kth Engine
+
+## Kth Largest
+
+Use min heap size K.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, k;
+    cin >> n >> k;
+
+    priority_queue<int, vector<int>, greater<int>> pq;
+
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+
+        pq.push(x);
+
+        if ((int)pq.size() > k) pq.pop();
+    }
+
+    cout << pq.top() << "\n";
+    return 0;
+}
+```
+
+## Top K Frequent
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, k;
+    cin >> n >> k;
+
+    unordered_map<int,int> freq;
+
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+        freq[x]++;
+    }
+
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+
+    for (auto &[val, cnt] : freq) {
+        pq.push({cnt, val});
+        if ((int)pq.size() > k) pq.pop();
+    }
+
+    vector<int> ans;
+
+    while (!pq.empty()) {
+        ans.push_back(pq.top().second);
+        pq.pop();
+    }
+
+    for (int x : ans) cout << x << " ";
+    return 0;
+}
+```
+
+## Complexity
+
+```text
+frequency O(N)
+heap O(M logK), M=unique values
+```
+
+---
+
+# 026. Median Maintenance
+
+## Two Heap Model
+
+```text
+low  max-heap: smaller half
+high min-heap: larger half
+
+max(low) <= min(high)
+```
+
+## Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    priority_queue<int> low;
+    priority_queue<int, vector<int>, greater<int>> high;
+
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+
+        if (low.empty() || x <= low.top()) low.push(x);
+        else high.push(x);
+
+        if (low.size() > high.size() + 1) {
+            high.push(low.top());
+            low.pop();
+        }
+
+        if (high.size() > low.size()) {
+            low.push(high.top());
+            high.pop();
+        }
+
+        cout << low.top() << "\n";
+    }
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+stream 5,2,10,1
+
+5 -> low=[5], high=[] median=5
+2 -> low=[2], high=[5] median=2
+10 -> low=[5,2], high=[10] median=5
+1 -> low=[2,1], high=[5,10] median=2
+```
+
+---
+
+# 027. LRU Cache STL Design
+
+## Core Mental Model
+
+Need:
+
+```text
+O(1) key lookup
+O(1) move to most recent
+O(1) evict least recent
+```
+
+Use:
+
+```text
+list<pair<key,value>>
+unordered_map<key, iterator>
+```
+
+## ASCII
+
+```text
+front                         back
+MRU  [3] [1] [7] [2]  LRU
+```
+
+## Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class LRUCache {
+    int cap;
+    list<pair<int,int>> order;
+    unordered_map<int, list<pair<int,int>>::iterator> pos;
+
+public:
+    LRUCache(int capacity) {
+        cap = capacity;
+    }
+
+    int get(int key) {
+        if (!pos.count(key)) return -1;
+
+        auto it = pos[key];
+        int value = it->second;
+
+        order.erase(it);
+        order.push_front({key, value});
+        pos[key] = order.begin();
+
+        return value;
+    }
+
+    void put(int key, int value) {
+        if (cap == 0) return;
+
+        if (pos.count(key)) {
+            order.erase(pos[key]);
+        }
+
+        order.push_front({key, value});
+        pos[key] = order.begin();
+
+        if ((int)order.size() > cap) {
+            int oldKey = order.back().first;
+            order.pop_back();
+            pos.erase(oldKey);
+        }
+    }
+};
+
+int main() {
+    LRUCache cache(2);
+
+    cache.put(1,10);
+    cache.put(2,20);
+    cout << cache.get(1) << "\n";
+    cache.put(3,30);
+    cout << cache.get(2) << "\n";
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+capacity=2
+
+put(1): [1]
+put(2): [2,1]
+get(1): [1,2]
+put(3): [3,1,2] -> evict 2 -> [3,1]
+```
+
+## Bugs
+
+```text
+forget cap=0
+forget to erase evicted key from map
+iterator invalid after erase
+not updating map after move
+```
+
+---
+
+# 028. LFU Cache STL Design
+
+## Core Mental Model
+
+Evict:
+
+```text
+lowest frequency
+if tie, least recently used among that frequency
+```
+
+Use:
+
+```text
+key -> node {value, freq, iterator}
+freq -> list of keys
+minFreq
+```
+
+## ASCII
+
+```text
+freq 1: [7,2]   back is least recent
+freq 2: [5]
+freq 3: [1]
+
+minFreq = 1
+evict back of freq 1
+```
+
+## Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class LFUCache {
+    struct Node {
+        int value;
+        int freq;
+        list<int>::iterator it;
+    };
+
+    int cap;
+    int minFreq;
+
+    unordered_map<int, Node> data;
+    unordered_map<int, list<int>> buckets;
+
+    void touch(int key) {
+        int f = data[key].freq;
+
+        buckets[f].erase(data[key].it);
+
+        if (buckets[f].empty()) {
+            buckets.erase(f);
+            if (minFreq == f) minFreq++;
+        }
+
+        int nf = f + 1;
+        buckets[nf].push_front(key);
+
+        data[key].freq = nf;
+        data[key].it = buckets[nf].begin();
+    }
+
+public:
+    LFUCache(int capacity) {
+        cap = capacity;
+        minFreq = 0;
+    }
+
+    int get(int key) {
+        if (!data.count(key)) return -1;
+
+        int value = data[key].value;
+        touch(key);
+        return value;
+    }
+
+    void put(int key, int value) {
+        if (cap == 0) return;
+
+        if (data.count(key)) {
+            data[key].value = value;
+            touch(key);
+            return;
+        }
+
+        if ((int)data.size() == cap) {
+            int evictKey = buckets[minFreq].back();
+            buckets[minFreq].pop_back();
+
+            if (buckets[minFreq].empty()) {
+                buckets.erase(minFreq);
+            }
+
+            data.erase(evictKey);
+        }
+
+        buckets[1].push_front(key);
+        data[key] = {value, 1, buckets[1].begin()};
+        minFreq = 1;
+    }
+};
+
+int main() {
+    LFUCache cache(2);
+
+    cache.put(1,10);
+    cache.put(2,20);
+    cout << cache.get(1) << "\n";
+    cache.put(3,30);
+    cout << cache.get(2) << "\n";
+    cout << cache.get(3) << "\n";
+
+    return 0;
+}
+```
+
+## Dry Run
+
+```text
+capacity=2
+
+put(1)
+freq1: [1], minFreq=1
+
+put(2)
+freq1: [2,1], minFreq=1
+
+get(1)
+remove 1 from freq1 -> [2]
+put 1 into freq2 -> [1]
+minFreq still 1
+
+put(3)
+evict back of freq1 -> 2
+insert 3 into freq1 -> [3]
+```
+
+## Bugs
+
+```text
+not updating minFreq
+not maintaining LRU order inside same frequency
+iterator invalidation
+forget cap=0
+```
+
+---
+
+# 029. CF A/B/C/D Forms
+
+## Div2 A
+
+```text
+vector, string, sort, set, map
+```
+
+Examples:
+
+```text
+count unique
+sort and compare
+frequency characters
+min/max
+```
+
+## Div2 B
+
+```text
+unordered_map
+sort + greedy
+two pointers
+priority_queue simple
+```
+
+Examples:
+
+```text
+pairing values
+count remainders
+frequency decisions
+```
+
+## Div2 C
+
+```text
+prefix + map
+lower_bound
+multiset
+monotonic stack
+deque
+```
+
+Examples:
+
+```text
+subarray count
+window max/min
+nearest boundary
+dynamic ordered constraints
+```
+
+## Div2 D / CM
+
+```text
+priority_queue lazy deletion
+sweep line
+two multisets
+range mapping
+Dijkstra heap
+advanced comparator
+```
+
+Recognition:
+
+```text
+online updates
+dynamic median
+events
+interval overlap
+stale heap entries
+```
+
+---
+
+# 030. FAANG Forms
+
+## Mapping Table
+
+```text
+Two Sum                         unordered_map
+Group Anagrams                  unordered_map<string, vector<string>>
+Top K Frequent                  unordered_map + heap
+Merge Intervals                 vector + sort
+Meeting Rooms                   sort + priority_queue
+Sliding Window Maximum          deque
+Valid Parentheses               stack
+Daily Temperatures              monotonic stack
+Median Finder                   two heaps
+LRU Cache                       list + unordered_map
+LFU Cache                       unordered_map + lists
+Random Pick Weight              prefix vector + lower_bound
+```
+
+## Interview Explanation Pattern
+
+```text
+I need operation X fast.
+This STL gives X in O(...).
+Each element is processed ...
+So total time is ...
+Extra memory is ...
+```
+
+---
+
+# 031. STL Bug Encyclopedia
+
+## Vector
+
+```text
+erase front in loop -> TLE
+out-of-bounds
+prefix int overflow
+```
+
+## String
+
+```text
+substr copies
+getline after cin
+wrong char range
+```
+
+## Stack/Queue
+
+```text
+top/front on empty
+forgot final stack empty check
+```
+
+## Priority Queue
+
+```text
+default max heap
+stale entries
+top on empty
+```
+
+## Set/Map
+
+```text
+erase all duplicates
+decrement begin
+dereference end
+std::lower_bound on set is O(N)
+```
+
+## Comparator
+
+```text
+<= instead of <
+non-transitive
+overflow from subtraction
+```
+
+## LRU/LFU
+
+```text
+iterator invalidation
+not updating map iterator
+not updating minFreq
+capacity zero
+```
+
+---
+
+# 032. Debugging Playbook
+
+## Before Submit
+
+```text
+[ ] Did I choose STL by operation?
+[ ] Is complexity okay for max N?
+[ ] Is data sorted before binary search?
+[ ] Did I use set.lower_bound, not std::lower_bound?
+[ ] Did I check empty before top/front/back?
+[ ] Did I erase one multiset copy correctly?
+[ ] Did I preserve original index if needed?
+[ ] Is comparator strict?
+[ ] Are heap stale entries cleaned?
+[ ] Did I handle duplicates?
+[ ] Did I handle capacity 0 in cache?
+[ ] Did I use long long where needed?
+```
+
+## TLE Investigation
+
+```text
+1. Search for erase(begin()).
+2. Search for sort inside loop.
+3. Search for nested vector find/count.
+4. Search for lower_bound on set with std::lower_bound.
+5. Check map vs unordered_map.
+6. Check heap stale cleanup.
+```
+
+---
+
+# 033. Practice Ladder
+
+## Beginner STL
+
+```text
+vector input/output
+sort array
+frequency count
+valid parentheses
+set unique count
+```
+
+## CF A/B
+
+```text
+sort and compare
+map frequency decisions
+pair after sorting
+basic lower_bound
+priority_queue simple top-k
+```
+
+## CF C
+
+```text
+prefix + unordered_map
+monotonic stack
+sliding window max
+multiset window min/max
+sweep line overlap
+```
+
+## CF D / CM
+
+```text
+lazy deletion heap
+two multiset median
+range mapping
+Dijkstra with priority_queue
+advanced comparator
+interval events
+```
+
+## FAANG
+
+```text
+LRU Cache
+LFU Cache
+Median Finder
+Sliding Window Maximum
+Top K Frequent
+Merge Intervals
+Meeting Rooms
+Daily Temperatures
+```
+
+---
+
+# 099. Final Cheat Sheet
+
+## Container Choice
+
+```text
+vector              index + sort + prefix
+string              char problems
+stack               LIFO / parser / monotonic
+queue               BFS / FIFO
+deque               both ends / window max
+priority_queue      best repeatedly
+set                 sorted unique
+multiset            sorted duplicates
+map                 ordered key-value
+unordered_map       fast average key-value
+list                O(1) node movement
+```
+
+## Pattern Choice
+
+```text
+frequency               unordered_map
+subarray sum k           prefix + map
+next greater             monotonic stack
+window max/min           monotonic deque
+top k                    heap size k
+kth largest              min heap size k
+dynamic nearest          set.lower_bound
+dynamic median           two heaps / two multisets
+merge intervals          vector + sort
+overlap count            sweep line
+LRU                      list + unordered_map
+LFU                      unordered_map + frequency lists
+```
+
+## Complexity
+
+```text
+sort                    O(NlogN)
+heap push/pop           O(logN)
+set/map op              O(logN)
+unordered_map avg       O(1)
+vector erase front      O(N)
+monotonic stack/deque   O(N)
+LRU get/put             O(1)
+LFU get/put             O(1)
+```
+
+## One Picture To Remember
+
+```text
+PROBLEM
+   ↓
+What operation must be fast?
+   ↓
+Choose STL machine
+   ↓
+Apply pattern
+   ↓
+Check bugs
+   ↓
+AC
+```
+
+STL mastery = operation selection + safe implementation.
+
+
+---
+
+# Appendix A. Monotonic Stack Pattern Matrix
+
+```text
+Need next greater right:
+    scan left -> right
+    pop while stack value < current
+
+Need next smaller right:
+    scan left -> right
+    pop while stack value > current
+
+Need previous greater left:
+    scan left -> right
+    pop while stack value <= current
+    top is previous greater
+
+Need previous smaller left:
+    scan left -> right
+    pop while stack value >= current
+    top is previous smaller
+```
+
+## Template Matrix
+
+```cpp
+// Previous smaller
+while (!st.empty() && a[st.top()] >= a[i]) st.pop();
+ans[i] = st.empty() ? -1 : st.top();
+st.push(i);
+```
+
+```cpp
+// Previous greater
+while (!st.empty() && a[st.top()] <= a[i]) st.pop();
+ans[i] = st.empty() ? -1 : st.top();
+st.push(i);
+```
+
+```cpp
+// Next smaller
+for (int i = 0; i < n; i++) {
+    while (!st.empty() && a[st.top()] > a[i]) {
+        ans[st.top()] = i;
+        st.pop();
+    }
+    st.push(i);
+}
+```
+
+```cpp
+// Next greater
+for (int i = 0; i < n; i++) {
+    while (!st.empty() && a[st.top()] < a[i]) {
+        ans[st.top()] = i;
+        st.pop();
+    }
+    st.push(i);
+}
+```
+
+## Equal Element Trap
+
+```text
+Use < or <= depending whether equal values should block.
+
+For strictly greater:
+    pop while < current
+
+For greater or equal:
+    pop while <= current
+```
+
+---
+
+# Appendix B. Sweep Line Tie-Break Matrix
+
+## Meeting Rooms
+
+Intervals often behave as:
+
+```text
+[start, end)
+```
+
+If one meeting ends at 10 and another starts at 10, they do not overlap.
+
+Tie rule:
+
+```text
+end event before start event
+```
+
+One way:
+
+```cpp
+events.push_back({start, +1});
+events.push_back({end, -1});
+sort(events.begin(), events.end());
+```
+
+Because `-1` sorts before `+1` at same coordinate.
+
+## Inclusive Ranges
+
+For inclusive `[l,r]`, use:
+
+```cpp
+events.push_back({l, +1});
+events.push_back({r + 1, -1});
+```
+
+If `r+1` may overflow, use pair sorting with custom endpoint logic.
+
+---
+
+# Appendix C. Ordered Set Problem Forms
+
+## Form 1: Smallest value >= x
+
+```cpp
+auto it = s.lower_bound(x);
+```
+
+## Form 2: Largest value <= x
+
+```cpp
+auto it = s.upper_bound(x);
+if (it != s.begin()) {
+    --it;
+}
+```
+
+## Form 3: Maintain active intervals
+
+```text
+insert start/end
+remove expired
+query nearest
+```
+
+## Form 4: Dynamic mex
+
+Maintain set of missing values.
+
+```cpp
+set<int> missing;
+for (int i = 0; i <= n; i++) missing.insert(i);
+
+// when value x appears first time:
+missing.erase(x);
+
+// mex:
+*missing.begin()
+```
+
+---
+
+# Appendix D. Heap Problem Forms
+
+## Form 1: Always take largest
+
+```cpp
+priority_queue<int> pq;
+```
+
+## Form 2: Always take smallest
+
+```cpp
+priority_queue<int, vector<int>, greater<int>> pq;
+```
+
+## Form 3: Dijkstra
+
+```cpp
+priority_queue<pair<ll,int>, vector<pair<ll,int>>, greater<pair<ll,int>>> pq;
+```
+
+## Form 4: K largest
+
+```text
+min heap size k
+```
+
+## Form 5: K smallest
+
+```text
+max heap size k
+```
+
+## Form 6: Lazy deletion
+
+```text
+mark invalid
+clean top before using
+```
+
+---
+
+# Appendix E. LRU vs LFU Comparison
+
+```text
+LRU evicts by recency.
+LFU evicts by frequency, then recency.
+```
+
+## LRU Data Structures
+
+```text
+list<pair<key,value>>
+unordered_map<key, list iterator>
+```
+
+## LFU Data Structures
+
+```text
+unordered_map<key, Node>
+unordered_map<freq, list<key>>
+minFreq
+```
+
+## Design Interview Explanation
+
+```text
+LRU:
+    Hash map gives O(1) access.
+    Doubly linked list gives O(1) move to front and remove from back.
+
+LFU:
+    Hash map gives O(1) key access.
+    Frequency buckets group keys by count.
+    Each bucket is a list to preserve recency within same frequency.
+    minFreq tells which bucket to evict from.
+```
+
+---
+
+# Appendix F. More FAANG Mini Templates
+
+## Meeting Rooms II
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<pair<int,int>> intervals(n);
+    for (auto &[s,e] : intervals) cin >> s >> e;
+
+    sort(intervals.begin(), intervals.end());
+
+    priority_queue<int, vector<int>, greater<int>> ends;
+
+    int ans = 0;
+
+    for (auto [s,e] : intervals) {
+        while (!ends.empty() && ends.top() <= s) {
+            ends.pop();
+        }
+
+        ends.push(e);
+        ans = max(ans, (int)ends.size());
+    }
+
+    cout << ans << "\n";
+    return 0;
+}
+```
+
+## Daily Temperatures
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> t(n), ans(n,0);
+    for (int &x : t) cin >> x;
+
+    stack<int> st;
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && t[st.top()] < t[i]) {
+            int j = st.top();
+            st.pop();
+            ans[j] = i - j;
+        }
+        st.push(i);
+    }
+
+    for (int x : ans) cout << x << " ";
+    return 0;
+}
+```
+
+## Random Pick Weight
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> pref(n);
+    for (int i = 0; i < n; i++) {
+        int w;
+        cin >> w;
+        pref[i] = w + (i ? pref[i-1] : 0);
+    }
+
+    int x;
+    cin >> x; // assume 1 <= x <= pref.back()
+
+    int idx = lower_bound(pref.begin(), pref.end(), x) - pref.begin();
+    cout << idx << "\n";
+
+    return 0;
+}
+```
+
+---
+
+# Appendix G. CM-Level STL Recognition Drills
+
+## Drill 1
+
+```text
+Problem: For each element, find the next element to the right that is greater.
+
+Recognition:
+    nearest greater boundary
+STL:
+    stack
+Pattern:
+    monotonic stack
+```
+
+## Drill 2
+
+```text
+Problem: Count subarrays with sum exactly K, values can be negative.
+
+Recognition:
+    prefix difference
+STL:
+    unordered_map
+Pattern:
+    prefix + frequency
+```
+
+## Drill 3
+
+```text
+Problem: Maintain numbers under insert/delete and output median.
+
+Recognition:
+    dynamic median
+STL:
+    multiset / two heaps
+Pattern:
+    balanced halves
+```
+
+## Drill 4
+
+```text
+Problem: Merge overlapping booking intervals.
+
+Recognition:
+    intervals offline
+STL:
+    vector<pair> + sort
+Pattern:
+    interval merge
+```
+
+## Drill 5
+
+```text
+Problem: Max number of active intervals at once.
+
+Recognition:
+    events over coordinate
+STL:
+    vector<pair> + sort
+Pattern:
+    sweep line
+```
+
+---
+
+# Appendix H. Final CM STL Mindset
+
+```text
+CF A/B:
+    vector, string, sort, frequency
+
+CF C:
+    prefix map, binary search, monotonic stack/deque, set
+
+CF D:
+    priority_queue, multiset, sweep line, lazy deletion, graph adjacency
+
+FAANG:
+    hashmap, stack, heap, deque, list+hashmap design
+```
+
+The jump from beginner to CM is not learning more containers.
+
+It is learning **which container matches the hidden operation**.
+
+
+---
+
+# Appendix I. Iterator Invalidation Deep Table
+
+Iterator invalidation is one of the most common hidden runtime bugs in C++ STL.
+
+## Vector
+
+```text
+push_back:
+    may invalidate all iterators if capacity changes
+
+erase:
+    invalidates erased iterator and everything after it
+
+insert:
+    may invalidate all iterators if reallocation happens
+```
+
+Bad:
+
+```cpp
+for (auto it = v.begin(); it != v.end(); it++) {
+    if (*it == 0) {
+        v.erase(it); // it becomes invalid
+    }
+}
+```
+
+Better:
+
+```cpp
+for (auto it = v.begin(); it != v.end(); ) {
+    if (*it == 0) {
+        it = v.erase(it);
+    } else {
+        ++it;
+    }
+}
+```
+
+## Set / Map
+
+```text
+erase only invalidates erased iterator
+other iterators stay valid
+```
+
+Safe erase:
+
+```cpp
+for (auto it = s.begin(); it != s.end(); ) {
+    if (*it % 2 == 0) {
+        it = s.erase(it);
+    } else {
+        ++it;
+    }
+}
+```
+
+## Unordered Map
+
+```text
+rehashing may invalidate iterators
+erase invalidates erased iterator
+```
+
+If you insert many values and keep iterators, be careful.
+
+## List
+
+```text
+insert/erase does not invalidate other iterators
+```
+
+This is why `list` is used for LRU.
+
+---
+
+# Appendix J. Custom Comparator Deep Dive
+
+## Mental Model
+
+Comparator answers:
+
+```text
+Should a come before b?
+```
+
+It must be strict.
+
+## Strict Weak Ordering Rules
+
+```text
+comp(a,a) must be false
+if comp(a,b) true, comp(b,a) must be false
+ordering must be transitive
+```
+
+## Bad Comparator
+
+```cpp
+sort(a.begin(), a.end(), [](int x, int y) {
+    return x <= y;
+});
+```
+
+Why bad?
+
+```text
+comp(5,5) returns true
+This violates strictness.
+Sort behavior becomes undefined.
+```
+
+## Good Comparator
+
+```cpp
+sort(a.begin(), a.end(), [](int x, int y) {
+    return x < y;
+});
+```
+
+## Multi-Key Comparator
+
+```cpp
+sort(v.begin(), v.end(), [](auto &a, auto &b) {
+    if (a.score != b.score) return a.score > b.score;
+    if (a.penalty != b.penalty) return a.penalty < b.penalty;
+    return a.name < b.name;
+});
+```
+
+## Comparator Overflow Trap
+
+Bad:
+
+```cpp
+return a.x - b.x < 0;
+```
+
+If `a.x` and `b.x` are large, subtraction can overflow.
+
+Good:
+
+```cpp
+return a.x < b.x;
+```
+
+## Priority Queue Comparator Trap
+
+For `priority_queue`, comparator feels reversed.
+
+```cpp
+struct Cmp {
+    bool operator()(const Node& a, const Node& b) const {
+        return a.dist > b.dist; // min-heap by dist
+    }
+};
+```
+
+Meaning:
+
+```text
+return true means a has lower priority than b
+```
+
+---
+
+# Appendix K. Hashing and unordered_map Safety
+
+## Problem
+
+`unordered_map` is average O(1), but in adversarial cases it can degrade.
+
+## When To Use unordered_map
+
+```text
+frequency
+prefix sums
+Two Sum
+Group Anagrams
+counting previous states
+```
+
+## When To Prefer map
+
+```text
+need ordered traversal
+need lower_bound by key
+small constraints where O(logN) is fine
+want deterministic ordering
+```
+
+## Reserve Optimization
+
+```cpp
+unordered_map<long long,int> mp;
+mp.reserve(1 << 20);
+mp.max_load_factor(0.7);
+```
+
+## Custom Hash Template
+
+```cpp
+struct custom_hash {
+    static uint64_t splitmix64(uint64_t x) {
+        x += 0x9e3779b97f4a7c15;
+        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+        x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+        return x ^ (x >> 31);
+    }
+
+    size_t operator()(uint64_t x) const {
+        static const uint64_t FIXED_RANDOM =
+            chrono::steady_clock::now().time_since_epoch().count();
+        return splitmix64(x + FIXED_RANDOM);
+    }
+};
+```
+
+Use:
+
+```cpp
+unordered_map<long long,int,custom_hash> mp;
+```
+
+## Common Bug
+
+```cpp
+if (mp[x]) ...
+```
+
+This creates key `x`.
+
+Use:
+
+```cpp
+if (mp.count(x)) ...
+```
+
+when you only want to check existence.
+
+---
+
+# Appendix L. Graph STL Forms
+
+STL is also the backbone of graph problems.
+
+## Adjacency List
+
+```cpp
+vector<vector<int>> g(n);
+```
+
+## Weighted Graph
+
+```cpp
+vector<vector<pair<int,int>>> g(n);
+```
+
+## Edge List
+
+```cpp
+vector<tuple<int,int,int>> edges;
+```
+
+## BFS
+
+```cpp
+queue<int> q;
+```
+
+## Dijkstra
+
+```cpp
+priority_queue<pair<long long,int>,
+               vector<pair<long long,int>>,
+               greater<pair<long long,int>>> pq;
+```
+
+## Topological Sort
+
+```cpp
+queue<int> q; // nodes with indegree 0
+```
+
+## DSU Storage
+
+```cpp
+vector<int> parent(n), sz(n);
+```
+
+## Dijkstra Full Skeleton
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+const ll INF = 4e18;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+
+    vector<vector<pair<int,int>>> g(n);
+
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        --u; --v;
+        g[u].push_back({v,w});
+    }
+
+    vector<ll> dist(n, INF);
+
+    priority_queue<pair<ll,int>,
+                   vector<pair<ll,int>>,
+                   greater<pair<ll,int>>> pq;
+
+    dist[0] = 0;
+    pq.push({0,0});
+
+    while (!pq.empty()) {
+        auto [d,u] = pq.top();
+        pq.pop();
+
+        if (d != dist[u]) continue; // stale entry
+
+        for (auto [v,w] : g[u]) {
+            if (dist[v] > d + w) {
+                dist[v] = d + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+
+    for (ll d : dist) cout << d << " ";
+    return 0;
+}
+```
+
+## Recognition
+
+```text
+unweighted shortest path -> queue BFS
+weighted non-negative    -> priority_queue Dijkstra
+DAG ordering             -> queue topo sort
+MST Kruskal              -> vector edges + sort + DSU
+```
+
+---
+
+# Appendix M. STL for DP and State Compression
+
+STL appears in DP when state is sparse or dynamic.
+
+## Dense DP
+
+Use vector.
+
+```cpp
+vector<int> dp(n + 1, INF);
+```
+
+## 2D DP
+
+```cpp
+vector<vector<int>> dp(n, vector<int>(m, 0));
+```
+
+## Sparse DP
+
+Use map or unordered_map.
+
+```cpp
+unordered_map<long long, long long> dp;
+```
+
+## DP With Bitmask
+
+```cpp
+vector<int> dp(1 << n, INF);
+```
+
+## DP State As Tuple Key
+
+For ordered map:
+
+```cpp
+map<tuple<int,int,int>, long long> dp;
+```
+
+For unordered_map, encode state:
+
+```cpp
+long long key = 1LL * i * 1000000 + j;
+```
+
+Be careful about collisions.
+
+## Recognition
+
+```text
+state count small and dense -> vector
+state sparse -> map/unordered_map
+need ordered states -> map
+bitmask states -> vector size 2^n
+```
+
+---
+
+# Appendix N. STL Problem Form: Coordinate Compression + Fenwick Prep
+
+Even before Fenwick/segment tree, STL helps compress coordinates.
+
+## Why Compression
+
+Values may be huge:
+
+```text
+a[i] up to 1e9
+```
+
+But only N distinct values exist.
+
+## Template
+
+```cpp
+vector<int> vals = a;
+
+sort(vals.begin(), vals.end());
+vals.erase(unique(vals.begin(), vals.end()), vals.end());
+
+for (int x : a) {
+    int id = lower_bound(vals.begin(), vals.end(), x) - vals.begin();
+}
+```
+
+## Dry Run
+
+```text
+a=[1000000000, 5, 1000000000, 20]
+
+vals sorted unique:
+[5,20,1000000000]
+
+compressed:
+1000000000 -> 2
+5          -> 0
+1000000000 -> 2
+20         -> 1
+```
+
+## Use Cases
+
+```text
+Fenwick tree
+segment tree
+inversion count
+offline queries
+range compression
+large coordinate sweep line
+```
+
+---
+
+# Appendix O. Offline Query Pattern With STL
+
+## Mental Model
+
+Sometimes answer queries faster by sorting them.
+
+```text
+sort data
+sort queries
+move pointer once
+```
+
+## Example Form
+
+```text
+Given array and queries x:
+count how many numbers <= x.
+```
+
+## Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+
+    vector<int> a(n);
+    for (int &x : a) cin >> x;
+
+    sort(a.begin(), a.end());
+
+    while (q--) {
+        int x;
+        cin >> x;
+
+        int cnt = upper_bound(a.begin(), a.end(), x) - a.begin();
+        cout << cnt << "\n";
+    }
+
+    return 0;
+}
+```
+
+## Complexity
+
+```text
+sort O(NlogN)
+each query O(logN)
+```
+
+If queries need cumulative state, sort queries and use pointer.
+
+---
+
+# Appendix P. More Dry Runs
+
+## lower_bound Dry Run
+
+```text
+a=[1,3,3,5,8]
+x=3
+
+lower_bound:
+first >=3 is index 1
+
+upper_bound:
+first >3 is index 3
+
+count of 3 = 3-1 = 2
+```
+
+## multiset Erase Dry Run
+
+```text
+ms={1,2,2,2,5}
+
+ms.erase(2):
+    ms={1,5}
+
+erase one:
+    it=ms.find(2)
+    ms.erase(it)
+    ms={1,2,2,5}
+```
+
+## LRU Dry Run With Map
+
+```text
+capacity=2
+
+list: []
+map: {}
+
+put(1,10)
+list: [1]
+map: 1 -> iterator to list node
+
+put(2,20)
+list: [2,1]
+
+get(1)
+move 1 to front
+list: [1,2]
+
+put(3,30)
+list before evict: [3,1,2]
+evict back 2
+list: [3,1]
+map has keys 1,3
+```
+
+## LFU Dry Run With Buckets
+
+```text
+capacity=2
+
+put(1)
+freq1: [1]
+minFreq=1
+
+put(2)
+freq1: [2,1]
+minFreq=1
+
+get(1)
+freq1: [2]
+freq2: [1]
+minFreq=1
+
+put(3)
+evict back of freq1 = 2
+freq1: [3]
+freq2: [1]
+```
+
+---
+
+# Appendix Q. One-Line Recognition Cheat Codes
+
+```text
+"nearest greater"               stack
+"nearest smaller"               stack
+"every window maximum"          deque
+"dynamic median"                two multisets
+"stream median"                 two heaps
+"k largest"                     min heap size k
+"k smallest"                    max heap size k
+"count previous same"           unordered_map
+"subarray sum k"                prefix + unordered_map
+"ordered nearest"               set.lower_bound
+"merge ranges"                  sort intervals
+"max overlaps"                  sweep line
+"evict least recent"            list + unordered_map
+"evict least frequent"          frequency lists
+```
+
+---
+
+# Appendix R. STL Interview Narration Bank
+
+## Hash Map
+
+```text
+I use an unordered_map because I need average O(1) lookup by key.
+This trades extra O(N) memory for faster lookup.
+```
+
+## Heap
+
+```text
+I use a priority_queue because I repeatedly need the current best candidate.
+Each insertion/removal is O(logN).
+```
+
+## Monotonic Stack
+
+```text
+The stack stores unresolved indices.
+Each index is pushed once and popped once, so even though there is a while loop, total time is O(N).
+```
+
+## Deque
+
+```text
+The deque stores candidate indices for the current window.
+Expired indices leave from the front, weaker candidates leave from the back.
+Each index enters and leaves once, so total time is O(N).
+```
+
+## LRU
+
+```text
+The unordered_map gives O(1) access to nodes.
+The list gives O(1) movement and deletion when we have the iterator.
+Together, get and put are O(1).
+```
+
+## LFU
+
+```text
+The key map stores value, frequency, and iterator.
+Frequency buckets store keys ordered by recency.
+minFreq tells us where to evict in O(1).
+```
+
+---
+
+# Appendix S. Final CM Checklist
+
+```text
+[ ] Can I explain why vector erase front is O(N)?
+[ ] Can I write lower_bound and upper_bound without bugs?
+[ ] Can I erase one copy from multiset?
+[ ] Can I implement next greater element?
+[ ] Can I implement sliding window maximum?
+[ ] Can I implement top-k with heap size k?
+[ ] Can I handle stale heap entries?
+[ ] Can I merge intervals?
+[ ] Can I sweep events with tie-breaking?
+[ ] Can I implement LRU from memory?
+[ ] Can I explain LFU structure?
+[ ] Can I choose map vs unordered_map under pressure?
+[ ] Can I avoid iterator invalidation bugs?
+```
+
+
+
+---
+
+# Appendix T. Final 20 STL Micro-Patterns
+
+## 1. Remove Duplicates From Sorted Vector
+
+```cpp
+sort(a.begin(), a.end());
+a.erase(unique(a.begin(), a.end()), a.end());
+```
+
+## 2. Count x In Sorted Vector
+
+```cpp
+auto l = lower_bound(a.begin(), a.end(), x);
+auto r = upper_bound(a.begin(), a.end(), x);
+long long cnt = r - l;
+```
+
+## 3. First Index With Value At Least x
+
+```cpp
+int idx = lower_bound(a.begin(), a.end(), x) - a.begin();
+```
+
+## 4. Check Existence In Set
+
+```cpp
+if (s.count(x)) {
+    // exists
+}
+```
+
+## 5. Check Existence In unordered_map Without Creating Key
+
+```cpp
+if (mp.find(x) != mp.end()) {
+    // exists
+}
+```
+
+## 6. Frequency Increment
+
+```cpp
+freq[x]++;
+```
+
+## 7. Frequency Decrement And Cleanup
+
+```cpp
+freq[x]--;
+if (freq[x] == 0) freq.erase(x);
+```
+
+## 8. Sort Intervals
+
+```cpp
+sort(intervals.begin(), intervals.end());
+```
+
+## 9. Sort By Second
+
+```cpp
+sort(v.begin(), v.end(), [](auto &a, auto &b) {
+    return a.second < b.second;
+});
+```
+
+## 10. Min Heap Pair
+
+```cpp
+priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+```
+
+## 11. Reverse Vector
+
+```cpp
+reverse(a.begin(), a.end());
+```
+
+## 12. Sum Vector
+
+```cpp
+long long sum = accumulate(a.begin(), a.end(), 0LL);
+```
+
+## 13. Max Element
+
+```cpp
+int mx = *max_element(a.begin(), a.end());
+```
+
+## 14. Min Element
+
+```cpp
+int mn = *min_element(a.begin(), a.end());
+```
+
+## 15. Index Of Max
+
+```cpp
+int idx = max_element(a.begin(), a.end()) - a.begin();
+```
+
+## 16. Next Permutation
+
+```cpp
+sort(a.begin(), a.end());
+do {
+    // use permutation
+} while (next_permutation(a.begin(), a.end()));
+```
+
+## 17. Erase One multiset Value
+
+```cpp
+auto it = ms.find(x);
+if (it != ms.end()) ms.erase(it);
+```
+
+## 18. Largest In multiset
+
+```cpp
+int mx = *ms.rbegin();
+```
+
+## 19. Smallest In multiset
+
+```cpp
+int mn = *ms.begin();
+```
+
+## 20. Safe Previous In Set
+
+```cpp
+auto it = s.lower_bound(x);
+if (it != s.begin()) {
+    --it;
+    // *it is previous value
+}
+```
+
+---
+
+# Appendix U. Final Rating Standard
+
+A 10/10 STL file for CM and FAANG should let you:
+
+```text
+1. Choose the right STL from problem wording.
+2. Know exact complexity.
+3. Recognize common CF A/B/C/D forms.
+4. Implement monotonic stack/deque from memory.
+5. Implement priority_queue lazy deletion.
+6. Handle multiset duplicates correctly.
+7. Explain LRU and LFU in interviews.
+8. Avoid iterator invalidation.
+9. Debug WA/TLE/runtime bugs quickly.
+10. Convert STL knowledge into patterns, not syntax.
+```
+
+This file is designed around those ten outcomes.
+
+
+---
+
+# 100. 10/10 EXPANSION PACK — PROBLEM EXAMPLES, DRY RUNS, ASCII DIAGRAMS
+
+> This section upgrades `001_STL` from a container guide into a **problem-recognition training file** like `003_RealWorld_Problems`: every STL machine is connected to a real problem, an operation, a visual diagram, a dry run, code, bugs, and CP/FAANG forms.
+
+---
+
+# 100.0 How To Use This Expansion
+
+Do not read STL as syntax.
+
+Read every problem like this:
+
+```text
+Problem story
+   ↓
+Remove story words
+   ↓
+Find repeated operation
+   ↓
+Pick STL machine
+   ↓
+Write invariant
+   ↓
+Dry run before code
+   ↓
+Implement
+```
+
+## Master STL Problem Conversion Picture
+
+```text
+                         PROBLEM STATEMENT
+                                 |
+                                 v
+                    What operation repeats many times?
+                                 |
+       +-------------------------+-------------------------+
+       |                         |                         |
+    Count key              Keep order/search          Pick best repeatedly
+       |                         |                         |
+unordered_map/map          set/multiset/map           priority_queue
+       |
+       v
+ previous state
+
+       +-------------------------+-------------------------+
+       |                         |                         |
+ contiguous window          boundary/nearest          graph wave
+       |                         |                         |
+ map/deque/multiset          stack/set                 queue/heap
+```
+
+## Recognition Table
+
+```text
+Problem phrase                                 STL pattern
+-----------------------------------------------------------------
+count previous same value                       unordered_map freq
+count previous same prefix                      unordered_map prefix
+sorted after all input                          vector + sort
+first >= x in static sorted data                lower_bound vector
+first >= x in dynamic data                      set.lower_bound
+largest <= x with duplicates                    multiset + upper_bound
+always smallest/largest available               priority_queue
+next greater/smaller                            monotonic stack
+max/min of every window                         monotonic deque
+median with delete                              two multisets
+merge intervals                                 vector + sort
+max overlap                                     sweep line events
+BFS shortest unweighted                         queue
+Dijkstra positive weights                       priority_queue min heap
+LRU cache                                       list + unordered_map
+```
+
+---
+
+# 101. Vector Deep Problem Examples
+
+## 101.1 Problem: Range Sum Queries
+
+### Story
+
+A shop records daily profit. For many queries `[l, r]`, return total profit from day `l` to day `r`.
+
+### Remove Story
+
+```text
+daily profit = array value
+many range sum queries = prefix sum
+```
+
+### STL Machine
+
+```text
+vector<long long> pref
+```
+
+### ASCII Mental Model
+
+```text
+array index:   0   1   2   3   4
+profit:       [3] [2] [7] [1] [4]
+
+pref index:    0   1   2   3   4   5
+pref:         [0] [3] [5] [12][13][17]
+
+sum(l..r) = pref[r+1] - pref[l]
+
+query l=1,r=3:
+profit[1..3] = 2+7+1
+pref[4] - pref[1] = 13 - 3 = 10
+```
+
+### Dry Run
+
+```text
+a = [3,2,7,1,4]
+
+pref[0] = 0
+pref[1] = pref[0] + 3 = 3
+pref[2] = pref[1] + 2 = 5
+pref[3] = pref[2] + 7 = 12
+pref[4] = pref[3] + 1 = 13
+pref[5] = pref[4] + 4 = 17
+
+query [1,3]
+answer = pref[4] - pref[1] = 13 - 3 = 10
+```
+
+### C++17 Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, q;
+    cin >> n >> q;
+
+    vector<long long> pref(n + 1, 0);
+
+    for (int i = 0; i < n; i++) {
+        long long x;
+        cin >> x;
+        pref[i + 1] = pref[i] + x;
+    }
+
+    while (q--) {
+        int l, r;
+        cin >> l >> r; // 0-indexed inclusive
+        cout << pref[r + 1] - pref[l] << '\n';
+    }
+}
+```
+
+### Bugs
+
+```text
+use long long for sums
+if input is 1-indexed, convert carefully
+pref size should be n+1
+query [l,r] uses pref[r+1]-pref[l]
+```
+
+### CP / FAANG Forms
+
+```text
+static range sum
+subarray sum preprocessing
+matrix prefix later
+analytics dashboard range total
+```
+
+---
+
+## 101.2 Problem: Coordinate Compression
+
+### Story
+
+City IDs are huge numbers, but you only need their rank order.
+
+### Hidden Operation
+
+```text
+large value -> small rank preserving order
+```
+
+### STL Machine
+
+```text
+vector + sort + unique + lower_bound
+```
+
+### ASCII Diagram
+
+```text
+original:      [1000000000, 5, 1000000000, 20]
+copy:          [1000000000, 5, 1000000000, 20]
+sort:          [5, 20, 1000000000, 1000000000]
+unique:        [5, 20, 1000000000]
+
+rank map by lower_bound:
+5          -> 0
+20         -> 1
+1000000000 -> 2
+
+compressed:    [2, 0, 2, 1]
+```
+
+### Dry Run
+
+```text
+x=1000000000
+lower_bound(vals, x) points index 2
+compressed = 2
+
+x=5
+lower_bound(vals, x) points index 0
+compressed = 0
+```
+
+### C++17 Code
+
+```cpp
+vector<int> compress(vector<int> a) {
+    vector<int> vals = a;
+    sort(vals.begin(), vals.end());
+    vals.erase(unique(vals.begin(), vals.end()), vals.end());
+
+    vector<int> res;
+    for (int x : a) {
+        int id = lower_bound(vals.begin(), vals.end(), x) - vals.begin();
+        res.push_back(id);
+    }
+    return res;
+}
+```
+
+### Bugs
+
+```text
+must sort before unique
+lower_bound only works on sorted vector
+compression preserves order, not distance
+```
+
+---
+
+# 102. String Deep Problem Examples
+
+## 102.1 Problem: First Non-Repeating Character
+
+### Story
+
+Given a stream of typed characters, find the first character appearing exactly once.
+
+### Hidden Operation
+
+```text
+count frequency, then scan original order
+```
+
+### STL Machine
+
+```text
+string + vector<int> freq
+```
+
+### ASCII Diagram
+
+```text
+s = "swiss"
+
+scan frequency:
+s -> 3
+w -> 1
+i -> 1
+
+second pass:
+s count 3 skip
+w count 1 answer
+```
+
+### Dry Run
+
+```text
+s w i s s
+
+freq after count:
+s=3, w=1, i=1
+
+index 0: s -> freq 3, not answer
+index 1: w -> freq 1, answer = w
+```
+
+### C++17 Code
+
+```cpp
+char firstUnique(const string& s) {
+    vector<int> freq(256, 0);
+    for (unsigned char c : s) freq[c]++;
+
+    for (unsigned char c : s) {
+        if (freq[c] == 1) return c;
+    }
+    return '#';
+}
+```
+
+### Bugs
+
+```text
+use unsigned char for 256-index safety
+if only lowercase, vector<int>(26) is fine
+single pass alone is not enough unless using queue
+```
+
+---
+
+## 102.2 Problem: Group Anagrams
+
+### Story
+
+Group words that contain the same letters.
+
+### Hidden Operation
+
+```text
+canonical key = sorted word
+same key -> same group
+```
+
+### STL Machine
+
+```text
+unordered_map<string, vector<string>>
+```
+
+### ASCII Diagram
+
+```text
+word      sorted key
+-------------------
+eat       aet
+tea       aet
+ate       aet
+tan       ant
+nat       ant
+
+map:
+aet -> [eat, tea, ate]
+ant -> [tan, nat]
+```
+
+### C++17 Code
+
+```cpp
+vector<vector<string>> groupAnagrams(vector<string>& words) {
+    unordered_map<string, vector<string>> mp;
+
+    for (string w : words) {
+        string key = w;
+        sort(key.begin(), key.end());
+        mp[key].push_back(w);
+    }
+
+    vector<vector<string>> ans;
+    for (auto& [key, group] : mp) ans.push_back(group);
+    return ans;
+}
+```
+
+### Bugs
+
+```text
+sorting each word costs O(L log L)
+for lowercase only, 26-frequency key can be faster
+unordered_map output order is not sorted
+```
+
+---
+
+# 103. Stack Deep Problem Examples
+
+## 103.1 Problem: Valid Parentheses
+
+### Story
+
+A compiler checks whether brackets are correctly nested.
+
+### Hidden Operation
+
+```text
+last opened bracket must close first
+```
+
+### STL Machine
+
+```text
+stack<char>
+```
+
+### ASCII Diagram
+
+```text
+s = "([{}])"
+
+read '('   stack: (
+read '['   stack: ( [
+read '{'   stack: ( [ {
+read '}'   matches {, pop -> ( [
+read ']'   matches [, pop -> (
+read ')'   matches (, pop -> empty
+```
+
+### C++17 Code
+
+```cpp
+bool isValid(string s) {
+    stack<char> st;
+
+    auto match = [](char open, char close) {
+        return (open == '(' && close == ')') ||
+               (open == '[' && close == ']') ||
+               (open == '{' && close == '}');
+    };
+
+    for (char c : s) {
+        if (c == '(' || c == '[' || c == '{') {
+            st.push(c);
+        } else {
+            if (st.empty() || !match(st.top(), c)) return false;
+            st.pop();
+        }
+    }
+    return st.empty();
+}
+```
+
+### Bugs
+
+```text
+do not call top() on empty stack
+final stack must be empty
+nested order matters, count alone is not enough
+```
+
+---
+
+## 103.2 Problem: Next Greater Element
+
+### Story
+
+For every stock price, find the next future day with higher price.
+
+### Hidden Operation
+
+```text
+unresolved previous smaller values wait for a greater value
+```
+
+### STL Machine
+
+```text
+monotonic stack of indices
+```
+
+### ASCII Diagram
+
+```text
+prices = [70, 60, 75, 71, 80]
+
+index 0, 70 -> stack [0]
+index 1, 60 -> stack [0,1]
+index 2, 75 -> 75 resolves 60 and 70
+              ans[1]=75, ans[0]=75
+              stack [2]
+index 3, 71 -> stack [2,3]
+index 4, 80 -> resolves 71 and 75
+```
+
+### Dry Run Table
+
+```text
+i  price  action                         stack(indices)  ans
+0  70     push 0                         [0]             [-,-,-,-,-]
+1  60     push 1                         [0,1]           [-,-,-,-,-]
+2  75     pop 1 ans[1]=75; pop 0 ans[0]=75 [2]           [75,75,-,-,-]
+3  71     push 3                         [2,3]           [75,75,-,-,-]
+4  80     pop 3 ans[3]=80; pop 2 ans[2]=80 [4]           [75,75,80,80,-]
+```
+
+### C++17 Code
+
+```cpp
+vector<int> nextGreater(vector<int>& a) {
+    int n = a.size();
+    vector<int> ans(n, -1);
+    stack<int> st;
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && a[st.top()] < a[i]) {
+            ans[st.top()] = a[i];
+            st.pop();
+        }
+        st.push(i);
+    }
+    return ans;
+}
+```
+
+### Bugs
+
+```text
+store index, not value, if answer needs position/distance
+choose < or <= carefully when equal values exist
+remaining stack means no greater value
+```
+
+---
+
+# 104. Queue Deep Problem Examples
+
+## 104.1 Problem: Shortest Friendship Hops
+
+### Story
+
+Given users and friendships, find minimum hops from user A to every other user.
+
+### Hidden Operation
+
+```text
+unweighted shortest path = BFS level expansion
+```
+
+### STL Machine
+
+```text
+queue<int>
+```
+
+### ASCII Diagram
+
+```text
+Graph:
+0 -- 1 -- 3
+|    |
+2 -- 4
+
+BFS from 0:
+level 0: 0
+level 1: 1,2
+level 2: 3,4
+```
+
+### Dry Run
+
+```text
+dist[0]=0, q=[0]
+
+pop 0 -> visit 1,2
+q=[1,2]
+dist[1]=1, dist[2]=1
+
+pop 1 -> visit 3,4
+q=[2,3,4]
+dist[3]=2, dist[4]=2
+
+pop 2 -> 4 already visited
+```
+
+### C++17 Code
+
+```cpp
+vector<int> bfs(int n, vector<vector<int>>& g, int src) {
+    vector<int> dist(n, -1);
+    queue<int> q;
+
+    dist[src] = 0;
+    q.push(src);
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        for (int v : g[u]) {
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+    return dist;
+}
+```
+
+### Bugs
+
+```text
+mark visited when pushing, not when popping
+BFS only gives shortest path for unweighted edges
+for grid BFS, check boundary before accessing cell
+```
+
+---
+
+# 105. Deque Deep Problem Examples
+
+## 105.1 Problem: Sliding Window Maximum
+
+### Story
+
+A sensor gives values. For every `k` readings, output the maximum.
+
+### Hidden Operation
+
+```text
+keep candidates in decreasing order
+expire old indices
+```
+
+### STL Machine
+
+```text
+deque<int> storing indices
+```
+
+### ASCII Diagram
+
+```text
+a = [2, 1, 3, 4, 6], k=3
+
+window [2,1,3]
+max = 3
+
+Deque stores indices whose values are decreasing:
+index: 0 1 2
+value: 2 1 3
+
+when 3 arrives:
+pop 1 because 1 <= 3
+pop 0 because 2 <= 3
+push 2
+front = 2 => max 3
+```
+
+### Dry Run Table
+
+```text
+i  a[i]  operation                         deque(index:value)  output
+0  2     push 0                            [0:2]               -
+1  1     push 1                            [0:2,1:1]           -
+2  3     pop 1, pop 0, push 2              [2:3]               3
+3  4     pop 2, push 3                     [3:4]               4
+4  6     pop 3, push 4                     [4:6]               6
+```
+
+### C++17 Code
+
+```cpp
+vector<int> maxSlidingWindow(vector<int>& a, int k) {
+    deque<int> dq;
+    vector<int> ans;
+
+    for (int i = 0; i < (int)a.size(); i++) {
+        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
+        while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back();
+
+        dq.push_back(i);
+
+        if (i >= k - 1) ans.push_back(a[dq.front()]);
+    }
+    return ans;
+}
+```
+
+### Bugs
+
+```text
+store indices, not values
+expire old index before answering
+for minimum window, reverse inequality
+```
+
+---
+
+## 105.2 Problem: 0-1 BFS
+
+### Story
+
+Roads have toll cost 0 or 1. Find minimum toll from source.
+
+### Hidden Operation
+
+```text
+0-cost edge should be processed immediately
+1-cost edge waits behind current distance layer
+```
+
+### STL Machine
+
+```text
+deque<int>
+```
+
+### ASCII Diagram
+
+```text
+edge weight 0 -> push_front
+edge weight 1 -> push_back
+
+front [same distance nodes | +1 distance nodes] back
+```
+
+### C++17 Code
+
+```cpp
+vector<int> zeroOneBFS(int n, vector<vector<pair<int,int>>>& g, int src) {
+    const int INF = 1e9;
+    vector<int> dist(n, INF);
+    deque<int> dq;
+
+    dist[src] = 0;
+    dq.push_front(src);
+
+    while (!dq.empty()) {
+        int u = dq.front();
+        dq.pop_front();
+
+        for (auto [v, w] : g[u]) {
+            if (dist[v] > dist[u] + w) {
+                dist[v] = dist[u] + w;
+                if (w == 0) dq.push_front(v);
+                else dq.push_back(v);
+            }
+        }
+    }
+    return dist;
+}
+```
+
+---
+
+# 106. Priority Queue Deep Problem Examples
+
+## 106.1 Problem: Meeting Rooms II
+
+### Story
+
+Given meeting intervals, find the minimum rooms needed.
+
+### Hidden Operation
+
+```text
+reuse the room that ends earliest
+```
+
+### STL Machine
+
+```text
+sort intervals + min heap of end times
+```
+
+### ASCII Diagram
+
+```text
+meetings sorted by start:
+[1,4], [2,5], [6,8]
+
+heap = room end times
+
+start 1: heap empty -> add end 4        heap [4]
+start 2: earliest end 4 > 2 -> new room heap [4,5]
+start 6: earliest end 4 <= 6 -> reuse   pop 4, push 8 => [5,8]
+
+max heap size = 2 rooms
+```
+
+### C++17 Code
+
+```cpp
+int minMeetingRooms(vector<pair<int,int>>& intervals) {
+    sort(intervals.begin(), intervals.end());
+
+    priority_queue<int, vector<int>, greater<int>> ends;
+    int best = 0;
+
+    for (auto [s, e] : intervals) {
+        while (!ends.empty() && ends.top() <= s) ends.pop();
+        ends.push(e);
+        best = max(best, (int)ends.size());
+    }
+    return best;
+}
+```
+
+### Bugs
+
+```text
+use min heap, not max heap
+sort by start time
+if end == start, room can be reused for half-open intervals
+```
+
+---
+
+## 106.2 Problem: Top K Frequent Error Codes
+
+### Story
+
+Given API error logs, return top `K` most frequent error codes.
+
+### Hidden Operation
+
+```text
+count frequency, keep best K
+```
+
+### STL Machine
+
+```text
+unordered_map + min heap size K
+```
+
+### ASCII Diagram
+
+```text
+freq:
+500 -> 5
+404 -> 3
+401 -> 2
+503 -> 7
+
+K=2
+min heap keeps only top 2 by count:
+[500:5, 503:7]
+```
+
+### C++17 Code
+
+```cpp
+vector<int> topKFrequent(vector<int>& logs, int k) {
+    unordered_map<int,int> freq;
+    for (int x : logs) freq[x]++;
+
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+
+    for (auto [code, count] : freq) {
+        pq.push({count, code});
+        if ((int)pq.size() > k) pq.pop();
+    }
+
+    vector<int> ans;
+    while (!pq.empty()) {
+        ans.push_back(pq.top().second);
+        pq.pop();
+    }
+    reverse(ans.begin(), ans.end());
+    return ans;
+}
+```
+
+---
+
+# 107. Set / Multiset Deep Problem Examples
+
+## 107.1 Problem: Concert Tickets
+
+### Story
+
+Each customer has a max budget `x`. Give the most expensive ticket with price `<= x`. Each ticket can be used once.
+
+### Hidden Operation
+
+```text
+largest value <= x with duplicates and deletion
+```
+
+### STL Machine
+
+```text
+multiset<int>
+```
+
+### ASCII Diagram
+
+```text
+tickets: 5 7 7 10
+customer x = 8
+
+upper_bound(8) points to 10
+previous points to 7
+sell one 7
+
+after erase one copy:
+5 7 10
+```
+
+### Dry Run
+
+```text
+customer 8:
+it = upper_bound(8) -> 10
+it != begin, --it -> 7
+answer 7
+erase(iterator to one 7)
+
+customer 6:
+upper_bound(6) -> 7
+previous -> 5
+answer 5
+```
+
+### C++17 Code
+
+```cpp
+int sellTicket(multiset<int>& tickets, int x) {
+    auto it = tickets.upper_bound(x);
+    if (it == tickets.begin()) return -1;
+
+    --it;
+    int price = *it;
+    tickets.erase(it); // erase one copy only
+    return price;
+}
+```
+
+### Bugs
+
+```text
+multiset needed because duplicate prices exist
+ms.erase(value) removes all copies
+check it == begin before --it
+```
+
+---
+
+## 107.2 Problem: Traffic Lights
+
+### Story
+
+A road initially has lights at `0` and `X`. Insert lights one by one. After each insertion, output longest segment without a light.
+
+### Hidden Operation
+
+```text
+insert point, split containing segment, query maximum segment length
+```
+
+### STL Machine
+
+```text
+set positions + multiset lengths
+```
+
+### ASCII Diagram
+
+```text
+road length 10
+initial:
+0 -------------------- 10
+lengths = {10}
+
+insert 4:
+0 -------- 4 ------------ 10
+remove 10
+insert 4 and 6
+max = 6
+
+insert 7:
+0 -------- 4 ------ 7 ---- 10
+old segment 4..10 length 6 removed
+insert 3 and 3
+lengths = {4,3,3}
+max = 4
+```
+
+### C++17 Code
+
+```cpp
+struct TrafficLights {
+    set<int> pos;
+    multiset<int> len;
+
+    TrafficLights(int x) {
+        pos.insert(0);
+        pos.insert(x);
+        len.insert(x);
+    }
+
+    int add(int p) {
+        auto r = pos.upper_bound(p);
+        auto l = prev(r);
+
+        int old = *r - *l;
+        len.erase(len.find(old));
+
+        len.insert(p - *l);
+        len.insert(*r - p);
+        pos.insert(p);
+
+        return *len.rbegin();
+    }
+};
+```
+
+### Bugs
+
+```text
+remove exactly one old length using len.find(old)
+insert boundaries 0 and X first
+use upper_bound to find right boundary
+```
+
+---
+
+# 108. Map / Unordered Map Deep Problem Examples
+
+## 108.1 Problem: Count Subarrays With Sum K
+
+### Story
+
+Given daily balance changes, count continuous periods whose total change is exactly `K`.
+
+### Hidden Math
+
+```text
+sum(l..r) = pref[r] - pref[l-1]
+need pref[l-1] = pref[r] - K
+```
+
+### STL Machine
+
+```text
+unordered_map<long long,long long> prefix frequency
+```
+
+### ASCII Diagram
+
+```text
+a = [1, 2, 1, 2], K=3
+
+prefix sequence:
+0, 1, 3, 4, 6
+
+At pref=3:
+need 0 -> seen once -> subarray [1,2]
+
+At pref=4:
+need 1 -> seen once -> subarray [2,1]
+
+At pref=6:
+need 3 -> seen once -> subarray [1,2]
+```
+
+### Dry Run Table
+
+```text
+start: freq[0]=1, pref=0, ans=0
+
+x=1 -> pref=1, need=-2, ans+=0, freq[1]=1
+x=2 -> pref=3, need=0,  ans+=1, freq[3]=1
+x=1 -> pref=4, need=1,  ans+=1, freq[4]=1
+x=2 -> pref=6, need=3,  ans+=1, freq[6]=1
+
+answer = 3
+```
+
+### C++17 Code
+
+```cpp
+long long countSubarraySumK(vector<int>& a, long long k) {
+    unordered_map<long long,long long> freq;
+    freq[0] = 1;
+
+    long long pref = 0;
+    long long ans = 0;
+
+    for (int x : a) {
+        pref += x;
+        ans += freq[pref - k];
+        freq[pref]++;
+    }
+    return ans;
+}
+```
+
+### Bugs
+
+```text
+must initialize freq[0] = 1
+use long long for prefix and answer
+this works even with negative numbers
+sliding window does not work generally with negative numbers
+```
+
+---
+
+# 109. Binary Search Deep Problem Examples
+
+## 109.1 Problem: Find First Price At Least X
+
+### Story
+
+A shop has sorted product prices. For each customer budget target `x`, find the first product price `>= x`.
+
+### Hidden Operation
+
+```text
+first element >= x in sorted static array
+```
+
+### STL Machine
+
+```text
+lower_bound on vector
+```
+
+### ASCII Diagram
+
+```text
+prices = [2, 4, 4, 7, 10]
+x = 5
+
+lower_bound(5):
+[2, 4, 4, 7, 10]
+          ^ first >= 5 is 7
+```
+
+### Dry Run
+
+```text
+x=4 -> lower_bound points to first 4 at index 1
+x=5 -> points to 7 at index 3
+x=11 -> points to end, no answer
+```
+
+### C++17 Code
+
+```cpp
+int firstAtLeast(vector<int>& a, int x) {
+    auto it = lower_bound(a.begin(), a.end(), x);
+    if (it == a.end()) return -1;
+    return *it;
+}
+```
+
+### Bugs
+
+```text
+vector must be sorted
+lower_bound = first >= x
+upper_bound = first > x
+on set, use s.lower_bound(x), not std::lower_bound
+```
+
+---
+
+# 110. Two Pointers Deep Problem Examples
+
+## 110.1 Problem: Pair Sum In Sorted Array
+
+### Story
+
+Find whether two product prices sum exactly to customer budget.
+
+### Hidden Operation
+
+```text
+sorted pair search
+if sum too small, increase left
+if sum too large, decrease right
+```
+
+### STL Machine
+
+```text
+vector + sort + two indices
+```
+
+### ASCII Diagram
+
+```text
+a = [1,2,4,7,9,11], target=13
+
+l                 r
+1  2  4  7  9  11   sum=12 < 13 -> l++
+
+   l              r
+1  2  4  7  9  11   sum=13 -> found
+```
+
+### C++17 Code
+
+```cpp
+bool hasPairSum(vector<int>& a, int target) {
+    sort(a.begin(), a.end());
+
+    int l = 0, r = (int)a.size() - 1;
+    while (l < r) {
+        int sum = a[l] + a[r];
+        if (sum == target) return true;
+        if (sum < target) l++;
+        else r--;
+    }
+    return false;
+}
+```
+
+### Bugs
+
+```text
+works after sorting
+if original indices needed, store pair(value,index)
+use long long if values are large
+```
+
+---
+
+# 111. Sliding Window Deep Problem Examples
+
+## 111.1 Problem: Longest Substring Without Repeating Characters
+
+### Story
+
+A browser session has page codes. Find longest continuous session without visiting the same page twice.
+
+### Hidden Operation
+
+```text
+contiguous window remains valid while all counts <= 1
+```
+
+### STL Machine
+
+```text
+unordered_map / vector frequency + two pointers
+```
+
+### ASCII Diagram
+
+```text
+s = "abca"
+
+window grows:
+[a]
+[a b]
+[a b c]
+[a b c a] invalid because a repeated
+shrink left until valid:
+[b c a]
+
+best length = 3
+```
+
+### Dry Run Table
+
+```text
+r  char  window before fix  action             best
+0  a     a                  valid              1
+1  b     ab                 valid              2
+2  c     abc                valid              3
+3  a     abca               remove left a      3
+                       final window bca
+```
+
+### C++17 Code
+
+```cpp
+int longestUnique(string s) {
+    vector<int> cnt(256, 0);
+    int l = 0, best = 0;
+
+    for (int r = 0; r < (int)s.size(); r++) {
+        cnt[(unsigned char)s[r]]++;
+
+        while (cnt[(unsigned char)s[r]] > 1) {
+            cnt[(unsigned char)s[l]]--;
+            l++;
+        }
+
+        best = max(best, r - l + 1);
+    }
+    return best;
+}
+```
+
+### Bugs
+
+```text
+always decrement the leaving character
+window problems are usually contiguous
+if negative numbers affect sum, simple sliding window may fail
+```
+
+---
+
+# 112. Sweep Line Deep Problem Examples
+
+## 112.1 Problem: Maximum Active Connections
+
+### Story
+
+Each server connection has start and end time. Find maximum simultaneous connections.
+
+### Hidden Operation
+
+```text
+convert intervals to events, scan active count
+```
+
+### STL Machine
+
+```text
+vector<pair<int,int>> events + sort
+```
+
+### ASCII Diagram
+
+```text
+connections:
+[1----5]
+  [2------7]
+      [5---8]
+
+events:
+1 +1
+2 +1
+5 -1
+5 +1
+7 -1
+8 -1
+
+active count changes over time
+```
+
+### C++17 Code
+
+```cpp
+int maxActive(vector<pair<int,int>>& intervals) {
+    vector<pair<int,int>> events;
+
+    for (auto [l, r] : intervals) {
+        events.push_back({l, +1});
+        events.push_back({r, -1});
+    }
+
+    sort(events.begin(), events.end());
+
+    int active = 0, best = 0;
+    for (auto [time, delta] : events) {
+        active += delta;
+        best = max(best, active);
+    }
+    return best;
+}
+```
+
+### Important Tie Rule
+
+```text
+If intervals are [start,end), process end before start at same time.
+Using pair(time, delta) with -1 before +1 naturally does this.
+
+If intervals are closed [start,end], process start before end.
+```
+
+### Bugs
+
+```text
+tie-breaking changes answer
+sort events by time and type carefully
+active can be large but int usually fine for n<=2e5
+```
+
+---
+
+# 113. Graph STL Deep Problem Examples
+
+## 113.1 Problem: Dijkstra Delivery Route
+
+### Story
+
+A delivery app has positive road costs. Find cheapest route from warehouse to every city.
+
+### Hidden Operation
+
+```text
+always expand current smallest known distance
+```
+
+### STL Machine
+
+```text
+priority_queue<pair<dist,node>, vector<...>, greater<...>>
+```
+
+### ASCII Diagram
+
+```text
+0 --4-- 1
+|       |
+1       2
+|       |
+2 --1-- 3
+
+start 0
+pq: (0,0)
+relax neighbors:
+dist[1]=4, dist[2]=1
+pq: (1,2), (4,1)
+
+pop 2 first because distance 1 is smaller
+```
+
+### C++17 Code
+
+```cpp
+vector<long long> dijkstra(int n, vector<vector<pair<int,int>>>& g, int src) {
+    const long long INF = 4e18;
+    vector<long long> dist(n, INF);
+
+    priority_queue<pair<long long,int>,
+                   vector<pair<long long,int>>,
+                   greater<pair<long long,int>>> pq;
+
+    dist[src] = 0;
+    pq.push({0, src});
+
+    while (!pq.empty()) {
+        auto [d, u] = pq.top();
+        pq.pop();
+
+        if (d != dist[u]) continue; // stale heap entry
+
+        for (auto [v, w] : g[u]) {
+            if (dist[v] > d + w) {
+                dist[v] = d + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    return dist;
+}
+```
+
+### Bugs
+
+```text
+Dijkstra requires non-negative weights
+use long long for distances
+skip stale heap entries
+priority_queue is max heap by default, use greater for min heap
+```
+
+---
+
+# 114. LRU Cache Deep Design Example
+
+## 114.1 Problem: LRU Cache
+
+### Story
+
+A cache has capacity `C`. When full, evict the least recently used key.
+
+### Hidden Operation
+
+```text
+get/put must move key to most recent position in O(1)
+evict least recent in O(1)
+```
+
+### STL Machine
+
+```text
+list<pair<key,value>> + unordered_map<key, list iterator>
+```
+
+### ASCII Diagram
+
+```text
+Most recent                                  Least recent
+front                                             back
+[3:30] -> [5:50] -> [2:20] -> [9:90]
+
+map:
+3 -> iterator to [3:30]
+5 -> iterator to [5:50]
+2 -> iterator to [2:20]
+9 -> iterator to [9:90]
+
+get(2): move [2:20] to front
+[2:20] -> [3:30] -> [5:50] -> [9:90]
+```
+
+### Dry Run
+
+```text
+capacity = 2
+put(1,10): [1]
+put(2,20): [2,1]
+get(1):    [1,2], return 10
+put(3,30): cache full, evict back=2
+           [3,1]
+get(2):    -1
+```
+
+### C++17 Code
+
+```cpp
+class LRUCache {
+    int cap;
+    list<pair<int,int>> dll; // {key, value}; front = most recent
+    unordered_map<int, list<pair<int,int>>::iterator> mp;
+
+public:
+    LRUCache(int capacity) : cap(capacity) {}
+
+    int get(int key) {
+        if (!mp.count(key)) return -1;
+
+        auto it = mp[key];
+        int val = it->second;
+
+        dll.erase(it);
+        dll.push_front({key, val});
+        mp[key] = dll.begin();
+
+        return val;
+    }
+
+    void put(int key, int value) {
+        if (mp.count(key)) {
+            dll.erase(mp[key]);
+        } else if ((int)dll.size() == cap) {
+            auto [oldKey, oldVal] = dll.back();
+            dll.pop_back();
+            mp.erase(oldKey);
+        }
+
+        dll.push_front({key, value});
+        mp[key] = dll.begin();
+    }
+};
+```
+
+### Bugs
+
+```text
+list iterator remains valid after other list operations
+must update map after moving node
+erase old key from map after eviction
+capacity 0 needs special handling if allowed
+```
+
+---
+
+# 115. Full STL Decision Drills
+
+Use this section as speed training before contests/interviews.
+
+```text
+01. Count equal pairs in array
+    -> unordered_map frequency
+
+02. Count subarrays with sum K
+    -> prefix sum + unordered_map
+
+03. Find first value >= x in sorted array
+    -> lower_bound vector
+
+04. Dynamic nearest free seat >= x
+    -> set.lower_bound
+
+05. Give most expensive ticket <= x, duplicates exist
+    -> multiset + upper_bound + erase(iterator)
+
+06. For every day find next warmer day
+    -> monotonic stack
+
+07. For every window find maximum
+    -> monotonic deque
+
+08. Find top K frequent values
+    -> unordered_map + min heap
+
+09. Find minimum meeting rooms
+    -> sort + min heap of end times
+
+10. Find max overlap of intervals
+    -> sweep line events
+
+11. Dynamic median of stream
+    -> two heaps
+
+12. Sliding window median with deletion
+    -> two multisets
+
+13. Shortest path unweighted graph
+    -> BFS queue
+
+14. Shortest path positive weighted graph
+    -> Dijkstra priority_queue
+
+15. LRU cache
+    -> list + unordered_map
+
+16. Merge intervals
+    -> vector + sort
+
+17. Same remainder pairs
+    -> vector<long long> freq(k)
+
+18. Longest at most K distinct values
+    -> sliding window + unordered_map
+
+19. Traffic lights longest gap after insert
+    -> set + multiset
+
+20. Dynamic MEX
+    -> set of missing numbers + frequency
+```
+
+---
+
+# 116. Container Debugging Atlas With Visual Bugs
+
+## 116.1 vector Bug: Erase Front In Loop
+
+```text
+Bad:
+while (!v.empty()) v.erase(v.begin());
+
+Cost picture:
+erase first -> shift N-1 elements
+erase first -> shift N-2 elements
+erase first -> shift N-3 elements
+...
+Total O(N^2)
+
+Fix:
+use deque if popping front repeatedly
+```
+
+## 116.2 multiset Bug: Erase Value Removes All Copies
+
+```text
+ms = {5,5,5,7}
+
+ms.erase(5)
+result: {7}
+
+Correct:
+auto it = ms.find(5);
+if (it != ms.end()) ms.erase(it);
+
+result: {5,5,7}
+```
+
+## 116.3 set Bug: Decrement begin
+
+```text
+s = {10,20,30}
+x = 5
+
+it = s.upper_bound(5) -> 10, which is begin()
+--it is invalid
+
+Correct:
+if (it == s.begin()) no value <= x
+```
+
+## 116.4 priority_queue Bug: Stale Entries
+
+```text
+Dijkstra heap may contain old distance:
+(10,node 5) inserted first
+later better (4,node 5) inserted
+
+heap eventually pops (10,node 5)
+This is stale because dist[5] = 4
+
+Fix:
+if (d != dist[u]) continue;
+```
+
+## 116.5 deque Bug: Storing Values Instead Of Indices
+
+```text
+Window max needs expiry.
+If you store value only, you cannot know whether it left the window.
+
+Correct deque:
+store indices, compare values using a[index]
+```
+
+---
+
+# 117. One Page Final Visual Summary
+
+```text
+                                 STL PROBLEM ENGINE
+                                         |
+        ----------------------------------------------------------------
+        |              |               |                |               |
+     Sequence        Hash           Ordered            Heap           Flow
+        |              |               |                |               |
+ vector/string   unordered_map     set/multiset     priority_queue  stack/queue
+        |              |               |                |               |
+ sort/prefix      freq/prefix       nearest/delete    topK/Dijkstra  BFS/NGE
+        |
+ lower_bound / compression
+
+        ----------------------------------------------------------------
+        |                         |                         |
+      Window                   Interval                  Design
+        |                         |                         |
+ deque / map / multiset        sweep line                list + map
+ max/min/K distinct/median      overlap/merge            LRU/LFU
+```
+
+## Final Rule
+
+```text
+Never ask: which STL do I remember?
+Always ask: what operation must be fast?
+```
