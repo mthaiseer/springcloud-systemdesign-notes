@@ -1,4 +1,4 @@
-# Competitive Programming STL & Problem Solving Notes
+# Competitive Programming STL & Problem Solving Notes — ASCII 10/10 CM + FAANG Edition
 
 ## Clickable Index
 
@@ -27,7 +27,77 @@
 - [20. One-Minute CP Mental Checklist](#20-one-minute-cp-mental-checklist)
 - [21. Final Golden Rules](#21-final-golden-rules)
 
-> Clean markdown notes with Mermaid diagrams, intuition, examples, C++ templates, one-minute mental tricks, and dry-run blocks placed directly after relevant code.
+> Upgraded from the original STL AZ note: same core content, Mermaid diagrams converted to ASCII, plus CM/FAANG decision rules, failure traps, pattern recognition cues, and contest-ready revision blocks.
+
+---
+
+## 0A. CM + FAANG Upgrade Layer
+
+This section turns the note from “STL syntax notes” into a pattern-recognition playbook. Use it before contests, FAANG screens, and hard implementation rounds.
+
+```text
+PROBLEM STATEMENT
+      |
+      v
+CONSTRAINTS + OPERATIONS
+      |
+      v
+Can I maintain answer while moving?
+      |
+      +-- fixed/variable window ----> sliding window / deque / multiset
+      +-- prefix relationship ------> prefix sum + map
+      +-- nearest greater/smaller --> monotonic stack
+      +-- dynamic median/top-k -----> two multisets / heaps
+      +-- intervals coverage -------> sorted endpoints / merged set
+      +-- nested grammar -----------> stack / recursion / parser
+      +-- contribution count -------> count appearances, not objects
+```
+
+### CM recognition rules
+
+| Signal in problem | First pattern to test | STL tool | Typical complexity |
+|---|---|---|---|
+| “every subarray/window of size k” | sliding window | deque / multiset / map | O(n) or O(n log k) |
+| “next greater/smaller” | monotonic stack | stack/vector | O(n) |
+| “sum equals x, negative allowed” | prefix + frequency | map/unordered_map | O(n log n) / O(n) |
+| “minimum absolute deviation” | median | two multisets | O(n log k) |
+| “top k with deletes” | two buckets | multiset | O(log n) |
+| “merge/cover intervals” | ordered interval set | set<pair<int,int>> | O(log n + merges) |
+| “nested brackets/formula” | parser | stack/recursion/map | O(n log alphabet) |
+| “too many subarrays/subsequences” | contribution | arithmetic/modular math | O(n) |
+
+### FAANG implementation expectations
+
+```text
+Interview-grade answer =
+    brute force explanation
+  + bottleneck
+  + optimal invariant
+  + clean C++ code
+  + edge cases
+  + complexity
+  + dry run
+```
+
+### 5 bugs that separate 1400 from CM
+
+```text
+1. multiset.erase(x) removes all x?
+   In C++, multiset.erase(value) removes all matching values.
+   Use ms.erase(ms.find(x)) for one occurrence.
+
+2. int overflow in contribution/prefix/cost.
+   Use long long when values, n, or products can reach 1e9 * 2e5.
+
+3. unordered_map hacked / worst case.
+   For Codeforces, prefer map or custom_hash when adversarial input is possible.
+
+4. monotonic stack equality wrong.
+   Decide whether duplicates should be popped based on strict/non-strict requirement.
+
+5. window remove before answer vs after answer.
+   Keep one invariant: after insert and optional remove, window represents [i-k+1, i].
+```
 
 ---
 
@@ -35,15 +105,43 @@
 
 ### Time split in contest
 
-```mermaid
-flowchart TD
-    A[Read Problem] --> B[Understand statement]
-    B --> C[Input format]
-    C --> D[Sample cases]
-    D --> E[Ideate]
-    E --> F[Formulate code structure]
-    F --> G[Implement]
-    G --> H[Debug]
+```text
+ASCII FLOW
+
+Read Problem
+  |
+  v
+Understand statement
+
+
+  |
+  v
+Input format
+
+
+  |
+  v
+Sample cases
+
+
+  |
+  v
+Ideate
+
+
+  |
+  v
+Formulate code structure
+
+
+  |
+  v
+Implement
+
+
+  |
+  v
+Debug
 ```
 
 | Step | Goal | Time |
@@ -72,32 +170,19 @@ Replace bottleneck using known pattern
 
 ### Ideation checklist
 
-```mermaid
-mindmap
-  root((Problem))
-    Read
-      Statement
-      Input
-      Samples
-    Ideate
-      Past similar problem
-      Pattern
-      Constraints
-      Eliminate bad approaches
-    Paradigm
-      Brute force
-      Divide and conquer
-      Greedy
-      DP
-      Graph
-      Math
-    Code
-      Global variables
-      Function parameters
-      STL choice
-    Debug
-      Sample tests
-      Edge cases
+```text
+ASCII MIND MAP
+
+  └─ Problem
+      └─ similar problem
+      └─ bad approaches
+      └─ force
+      └─ and conquer
+      └─ variables
+      └─ parameters
+      └─ choice
+      └─ tests
+      └─ cases
 ```
 
 ### Example
@@ -154,18 +239,58 @@ For only `(` and `)`, maintain `depth`:
 - At the end, depth must be `0`.
 - During scanning, depth must never become negative.
 
-```mermaid
-flowchart LR
-    A[Start depth = 0] --> B{Read char}
-    B -->|open bracket| C[depth plus 1]
-    B -->|close bracket| D[depth minus 1]
-    D --> E{depth negative?}
-    E -->|yes| F[Invalid]
-    E -->|no| B
-    C --> B
-    B -->|end| G{depth equals 0?}
-    G -->|yes| H[Valid]
-    G -->|no| I[Invalid]
+```text
+ASCII FLOW
+
+Start depth = 0
+  |
+  v
+Read char?
+
+
+  | open bracket
+  v
+depth plus 1
+
+
+  | close bracket
+  v
+depth minus 1
+
+
+  |
+  v
+depth negative??
+
+
+  | yes
+  v
+Invalid
+
+
+  | no
+  v
+
+
+
+  |
+  v
+
+
+
+  | end
+  v
+depth equals 0??
+
+
+  | yes
+  v
+Valid
+
+
+  | no
+  v
+Invalid
 ```
 
 ### Intuition
@@ -238,22 +363,69 @@ s = (()())
 
 Result: depth never becomes negative and final depth is zero, so valid.
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Start depth zero] --> B[Read character]
-    B --> C{Open bracket}
-    C -->|Yes| D[Increase depth]
-    C -->|No| E[Decrease depth]
-    D --> F{More characters}
-    E --> G{Depth negative}
-    G -->|Yes| X[Invalid]
-    G -->|No| F
-    F -->|Yes| B
-    F -->|No| H{Depth zero}
-    H -->|Yes| V[Valid]
-    H -->|No| X
+```text
+ASCII FLOW
+
+Start depth zero
+  |
+  v
+Read character
+
+
+  |
+  v
+Open bracket?
+
+
+  | Yes
+  v
+Increase depth
+
+
+  | No
+  v
+Decrease depth
+
+
+  |
+  v
+More characters?
+
+
+  |
+  v
+Depth negative?
+
+
+  | Yes
+  v
+Invalid
+
+
+  | No
+  v
+
+
+
+  | Yes
+  v
+
+
+
+  | No
+  v
+Depth zero?
+
+
+  | Yes
+  v
+Valid
+
+
+  | No
+  v
 ```
 
 
@@ -261,20 +433,67 @@ flowchart TD
 
 For `()`, `{}`, `[]`, use stack. The last opened bracket must match the first incoming closing bracket.
 
-```mermaid
-flowchart TD
-    A[Scan string] --> B{Opening bracket?}
-    B -->|yes| C[Push to stack]
-    B -->|closing bracket| D{Stack empty?}
-    D -->|yes| X[Invalid]
-    D -->|no| E{Top matches closing?}
-    E -->|yes| F[Pop stack]
-    E -->|no| X
-    C --> A
-    F --> A
-    A -->|end| G{Stack empty?}
-    G -->|yes| V[Valid]
-    G -->|no| X
+```text
+ASCII FLOW
+
+Scan string
+  |
+  v
+Opening bracket??
+
+
+  | yes
+  v
+Push to stack
+
+
+  | closing bracket
+  v
+Stack empty??
+
+
+  | yes
+  v
+Invalid
+
+
+  | no
+  v
+Top matches closing??
+
+
+  | yes
+  v
+Pop stack
+
+
+  | no
+  v
+
+
+
+  |
+  v
+
+
+
+  |
+  v
+
+
+
+  | end
+  v
+Stack empty??
+
+
+  | yes
+  v
+Valid
+
+
+  | no
+  v
 ```
 
 ### Example
@@ -352,24 +571,79 @@ s = [{()}]
 
 Result: stack is empty, so valid.
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Start empty stack] --> B[Read character]
-    B --> C{Opening bracket}
-    C -->|Yes| D[Push to stack]
-    C -->|No| E{Stack empty}
-    E -->|Yes| X[Invalid]
-    E -->|No| F{Top matches closing}
-    F -->|Yes| G[Pop stack]
-    F -->|No| X
-    D --> H{More characters}
-    G --> H
-    H -->|Yes| B
-    H -->|No| I{Stack empty}
-    I -->|Yes| V[Valid]
-    I -->|No| X
+```text
+ASCII FLOW
+
+Start empty stack
+  |
+  v
+Read character
+
+
+  |
+  v
+Opening bracket?
+
+
+  | Yes
+  v
+Push to stack
+
+
+  | No
+  v
+Stack empty?
+
+
+  | Yes
+  v
+Invalid
+
+
+  | No
+  v
+Top matches closing?
+
+
+  | Yes
+  v
+Pop stack
+
+
+  | No
+  v
+
+
+
+  |
+  v
+More characters?
+
+
+  |
+  v
+
+
+
+  | Yes
+  v
+
+
+
+  | No
+  v
+Stack empty?
+
+
+  | Yes
+  v
+Valid
+
+
+  | No
+  v
 ```
 
 
@@ -382,14 +656,46 @@ For a range `[l, r]` in a parentheses string, using prefix depth:
   - `depth[l-1] == depth[r]`
   - minimum depth inside range never goes below `depth[l-1]`.
 
-```mermaid
-flowchart LR
-    A[Query l,r] --> B[base = depth before l]
-    B --> C{depth at r equals base?}
-    C -->|no| D[Not balanced]
-    C -->|yes| E{minimum depth in l..r >= base?}
-    E -->|yes| F[Balanced]
-    E -->|no| D
+```text
+ASCII FLOW
+
+Query l,r
+  |
+  v
+base = depth before l
+
+
+  |
+  v
+depth at r equals base??
+
+
+  | no
+  v
+Not balanced
+
+
+  | yes
+  v
+minimum depth in l..r >= base??
+
+
+  | yes
+  v
+Balanced
+
+
+  | no
+  v
+```
+
+### CM + FAANG edge cases
+
+```text
+Empty string: valid if no unmatched brackets.
+Mixed characters: either ignore non-brackets or reject based on statement.
+Multiple types: counter is not enough; use stack.
+Range bracket queries: need prefix depth + range minimum, not stack per query.
 ```
 
 ### One-minute mental trick
@@ -418,17 +724,52 @@ Sliding window is used when we need answers for every window/subarray of length 
 
 ### General template
 
-```mermaid
-flowchart TD
-    A[Loop i from 0 to n-1] --> B[Insert current value]
-    B --> C{i-k >= 0?}
-    C -->|yes| D[Remove outgoing value]
-    C -->|no| E[Skip remove]
-    D --> F{i >= k-1?}
-    E --> F
-    F -->|yes| G[Answer current window]
-    F -->|no| A
-    G --> A
+```text
+ASCII FLOW
+
+Loop i from 0 to n-1
+  |
+  v
+Insert current value
+
+
+  |
+  v
+i-k >= 0??
+
+
+  | yes
+  v
+Remove outgoing value
+
+
+  | no
+  v
+Skip remove
+
+
+  |
+  v
+i >= k-1??
+
+
+  |
+  v
+
+
+
+  | yes
+  v
+Answer current window
+
+
+  | no
+  v
+
+
+
+  |
+  v
 ```
 
 ```cpp
@@ -463,20 +804,59 @@ a = [4, 2, 1, 5, 3], k = 3
 | 3 | 5 | 4 | `[2, 1, 5]` | yes |
 | 4 | 3 | 2 | `[1, 5, 3]` | yes |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Loop index i] --> B[Insert current element]
-    B --> C{Window too large}
-    C -->|Yes| D[Remove outgoing element]
-    C -->|No| E[Skip removal]
-    D --> F{Window size is k}
-    E --> F
-    F -->|Yes| G[Compute answer]
-    F -->|No| H[Continue]
-    G --> H
-    H --> A
+```text
+ASCII FLOW
+
+Loop index i
+  |
+  v
+Insert current element
+
+
+  |
+  v
+Window too large?
+
+
+  | Yes
+  v
+Remove outgoing element
+
+
+  | No
+  v
+Skip removal
+
+
+  |
+  v
+Window size is k?
+
+
+  |
+  v
+
+
+
+  | Yes
+  v
+Compute answer
+
+
+  | No
+  v
+Continue
+
+
+  |
+  v
+
+
+
+  |
+  v
 ```
 
 
@@ -517,6 +897,15 @@ If asking minimum:
 
 ```text
 1, 1, 1
+```
+
+### CM + FAANG edge cases
+
+```text
+k = 1: every element is its own window.
+k = n: only one window.
+Negative values: sum window works; variable sliding window may fail.
+Duplicates: map/multiset erase must remove one occurrence.
 ```
 
 ### One-minute mental trick
@@ -592,17 +981,45 @@ a = [4, 2, 1, 5, 3], k = 3
 | 3 | 5 | 4 | `{1,2,5}` | 1 |
 | 4 | 3 | 2 | `{1,3,5}` | 1 |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Insert current value] --> B{Need remove old value}
-    B -->|Yes| C[Erase one occurrence]
-    B -->|No| D[Skip erase]
-    C --> E{Window ready}
-    D --> E
-    E -->|Yes| F[Minimum is begin of multiset]
-    E -->|No| G[Continue]
+```text
+ASCII FLOW
+
+Insert current value
+  |
+  v
+Need remove old value?
+
+
+  | Yes
+  v
+Erase one occurrence
+
+
+  | No
+  v
+Skip erase
+
+
+  |
+  v
+Window ready?
+
+
+  |
+  v
+
+
+
+  | Yes
+  v
+Minimum is begin of multiset
+
+
+  | No
+  v
+Continue
 ```
 
 
@@ -612,16 +1029,48 @@ Complexity: `O(n log k)`.
 
 Maintain elements in increasing order. The minimum is always at the front.
 
-```mermaid
-flowchart TD
-    A[Insert x] --> B{back > x?}
-    B -->|yes| C[pop back]
-    C --> B
-    B -->|no| D[push back x]
-    D --> E[Front is current minimum]
-    F[Remove outgoing x] --> G{front == x?}
-    G -->|yes| H[pop front]
-    G -->|no| I[Do nothing]
+```text
+ASCII FLOW
+
+Insert x
+  |
+  v
+back > x??
+
+
+  | yes
+  v
+pop back
+
+
+  |
+  v
+
+
+
+  | no
+  v
+push back x
+
+
+  |
+  v
+Front is current minimum
+
+Remove outgoing x
+  |
+  v
+front == x??
+
+
+  | yes
+  v
+pop front
+
+
+  | no
+  v
+Do nothing
 ```
 
 ### Intuition
@@ -701,23 +1150,67 @@ a = [4, 2, 1, 5, 3], k = 3
 | 3 | 5 | push 5 | `[1,5]` | 1 |
 | 4 | 3 | pop 5, push 3 | `[1,3]` | 1 |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Insert x] --> B{Back greater than x}
-    B -->|Yes| C[Pop back]
-    C --> B
-    B -->|No| D[Push x]
-    D --> E{Outgoing equals front}
-    E -->|Yes| F[Pop front]
-    E -->|No| G[Keep front]
-    F --> H[Front is minimum]
-    G --> H
+```text
+ASCII FLOW
+
+Insert x
+  |
+  v
+Back greater than x?
+
+
+  | Yes
+  v
+Pop back
+
+
+  |
+  v
+
+
+
+  | No
+  v
+Push x
+
+
+  |
+  v
+Outgoing equals front?
+
+
+  | Yes
+  v
+Pop front
+
+
+  | No
+  v
+Keep front
+
+
+  |
+  v
+Front is minimum
+
+
+  |
+  v
 ```
 
 
 Complexity: `O(n)`.
+
+### CM + FAANG edge cases
+
+```text
+For deque, store indices when expiry is by position.
+Store values only when outgoing value is known and duplicates are handled carefully.
+For max deque, reverse comparison.
+For equal values, choose >= or > based on whether you want stable indices.
+```
 
 ### One-minute mental trick
 
@@ -753,11 +1246,23 @@ Minimize:
 
 The minimum occurs at the median.
 
-```mermaid
-flowchart TD
-    A[Window values] --> B[Find median]
-    B --> C[Cost = sum abs ai - median]
-    C --> D[Maintain two multisets]
+```text
+ASCII FLOW
+
+Window values
+  |
+  v
+Find median
+
+
+  |
+  v
+Cost = sum abs ai - median
+
+
+  |
+  v
+Maintain two multisets
 ```
 
 ### Intuition
@@ -919,16 +1424,40 @@ window = [1, 2, 10, 20, 30]
 | right cost | `50 - 10 * 2` | 30 |
 | total | `17 + 30` | 47 |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Insert or erase value] --> B[Put in lo or hi]
-    B --> C[Rebalance sizes]
-    C --> D[Median is max of lo]
-    D --> E[Compute left cost]
-    E --> F[Compute right cost]
-    F --> G[Return total cost]
+```text
+ASCII FLOW
+
+Insert or erase value
+  |
+  v
+Put in lo or hi
+
+
+  |
+  v
+Rebalance sizes
+
+
+  |
+  v
+Median is max of lo
+
+
+  |
+  v
+Compute left cost
+
+
+  |
+  v
+Compute right cost
+
+
+  |
+  v
+Return total cost
 ```
 
 
@@ -958,16 +1487,47 @@ Design a dynamic structure supporting:
 - `median()`
 - `mode()`
 
-```mermaid
-flowchart TD
-    A[Data Dashboard] --> B[insert x]
-    A --> C[remove x]
-    A --> D[mean]
-    A --> E[variance]
-    A --> F[median]
-    A --> G[mode]
-    B --> H[Update sum squareSum frequency halves]
-    C --> H
+```text
+ASCII FLOW
+
+Data Dashboard
+  |
+  v
+insert x
+
+
+  |
+  v
+remove x
+
+
+  |
+  v
+mean
+
+
+  |
+  v
+variance
+
+
+  |
+  v
+median
+
+
+  |
+  v
+mode
+
+
+  |
+  v
+Update sum squareSum frequency halves
+
+
+  |
+  v
 ```
 
 ### Intuition
@@ -1129,17 +1689,45 @@ insert 1, insert 2, insert 2, insert 5
 Final mean is `10 / 4 = 2.5`.
 Final variance is `34 / 4 - 2.5 * 2.5 = 2.25`.
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Insert or remove x] --> B[Update count]
-    B --> C[Update sum]
-    C --> D[Update square sum]
-    D --> E[Update frequency map]
-    E --> F[Update ordered frequency set]
-    F --> G[Update median halves]
-    G --> H[Queries are ready]
+```text
+ASCII FLOW
+
+Insert or remove x
+  |
+  v
+Update count
+
+
+  |
+  v
+Update sum
+
+
+  |
+  v
+Update square sum
+
+
+  |
+  v
+Update frequency map
+
+
+  |
+  v
+Update ordered frequency set
+
+
+  |
+  v
+Update median halves
+
+
+  |
+  v
+Queries are ready
 ```
 
 
@@ -1176,11 +1764,23 @@ To count subarrays with sum `x`, for every `r` find how many previous prefix sum
 pref[l-1] = pref[r] - x
 ```
 
-```mermaid
-flowchart TD
-    A[Compute running prefix sum] --> B[Need previous prefix = current - x]
-    B --> C[Add frequency of current-x to answer]
-    C --> D[Store current prefix in map]
+```text
+ASCII FLOW
+
+Compute running prefix sum
+  |
+  v
+Need previous prefix = current - x
+
+
+  |
+  v
+Add frequency of current-x to answer
+
+
+  |
+  v
+Store current prefix in map
 ```
 
 ### Intuition
@@ -1261,17 +1861,45 @@ a = [1, 2, 3, -2, 5], x = 3
 | 3 | -2 | 4 | 1 | 1 | 3 |
 | 4 | 5 | 9 | 6 | 1 | 4 |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Initialize frequency of zero prefix] --> B[Add value to prefix]
-    B --> C[Need equals prefix minus target]
-    C --> D[Add frequency of need]
-    D --> E[Store current prefix]
-    E --> F{More elements}
-    F -->|Yes| B
-    F -->|No| G[Return answer]
+```text
+ASCII FLOW
+
+Initialize frequency of zero prefix
+  |
+  v
+Add value to prefix
+
+
+  |
+  v
+Need equals prefix minus target
+
+
+  |
+  v
+Add frequency of need
+
+
+  |
+  v
+Store current prefix
+
+
+  |
+  v
+More elements?
+
+
+  | Yes
+  v
+
+
+
+  | No
+  v
+Return answer
 ```
 
 
@@ -1316,19 +1944,55 @@ a = [1, 2, 3], x = 3
 | 1 | 2 | 3 | 0 | `-1` | `[0,1]` |
 | 2 | 3 | 6 | 3 | `1` | `[2,2]` |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Keep map from prefix to positions] --> B[Update prefix]
-    B --> C[Find need prefix]
-    C --> D{Need exists}
-    D -->|Yes| E[Print all ranges]
-    D -->|No| F[Print none]
-    E --> G[Store current index]
-    F --> G
+```text
+ASCII FLOW
+
+Keep map from prefix to positions
+  |
+  v
+Update prefix
+
+
+  |
+  v
+Find need prefix
+
+
+  |
+  v
+Need exists?
+
+
+  | Yes
+  v
+Print all ranges
+
+
+  | No
+  v
+Print none
+
+
+  |
+  v
+Store current index
+
+
+  |
+  v
 ```
 
+
+### CM + FAANG edge cases
+
+```text
+Initialize freq[0] = 1, otherwise subarrays starting at index 0 are missed.
+Use long long for prefix.
+If all numbers are positive, two pointers may work; with negatives, use prefix+map.
+For modulo subarray problems, store prefix % mod carefully: (x % m + m) % m.
+```
 
 ### One-minute mental trick
 
@@ -1354,17 +2018,52 @@ For each index, find the next greater element to the right.
 
 Use a monotonic stack of indices. Traverse from right to left.
 
-```mermaid
-flowchart TD
-    A[Start from right] --> B{top value <= current?}
-    B -->|yes| C[pop]
-    C --> B
-    B -->|no| D{stack empty?}
-    D -->|yes| E[nge of i = n]
-    D -->|no| F[nge of i = top]
-    E --> G[push i]
-    F --> G
-    G --> A
+```text
+ASCII FLOW
+
+Start from right
+  |
+  v
+top value <= current??
+
+
+  | yes
+  v
+pop
+
+
+  |
+  v
+
+
+
+  | no
+  v
+stack empty??
+
+
+  | yes
+  v
+nge of i = n
+
+
+  | no
+  v
+nge of i = top
+
+
+  |
+  v
+push i
+
+
+  |
+  v
+
+
+
+  |
+  v
 ```
 
 ### Intuition
@@ -1428,21 +2127,65 @@ a = [2, 1, 3, 2]
 | 1 | 1 | 3 | top is greater, push 1 | 3 |
 | 0 | 2 | 3, 1 | pop 1, top is greater, push 2 | 3 |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Scan from right] --> B[Current value]
-    B --> C{Top less or equal current}
-    C -->|Yes| D[Pop stack]
-    D --> C
-    C -->|No| E{Stack empty}
-    E -->|Yes| F[No next greater]
-    E -->|No| G[Top is answer]
-    F --> H[Push current]
-    G --> H
+```text
+ASCII FLOW
+
+Scan from right
+  |
+  v
+Current value
+
+
+  |
+  v
+Top less or equal current?
+
+
+  | Yes
+  v
+Pop stack
+
+
+  |
+  v
+
+
+
+  | No
+  v
+Stack empty?
+
+
+  | Yes
+  v
+No next greater
+
+
+  | No
+  v
+Top is answer
+
+
+  |
+  v
+Push current
+
+
+  |
+  v
 ```
 
+
+### CM + FAANG edge cases
+
+```text
+Greater vs greater-or-equal changes pop condition.
+Circular next greater: scan 2n times and use i % n.
+Distance answer: store indices, not values.
+Value answer: convert index to value at the end.
+```
 
 ### One-minute mental trick
 
@@ -1473,18 +2216,58 @@ For each bar, trapped water depends on boundary bars.
 
 When current bar is greater than the stack top, the popped bar can become the bottom of trapped water.
 
-```mermaid
-flowchart TD
-    A[Loop i from 0 to n-1] --> B{top height < current height?}
-    B -->|yes| C[bottom = pop]
-    C --> D{stack empty?}
-    D -->|yes| E[break]
-    D -->|no| F[left = stack.top]
-    F --> G[width = i-left-1]
-    G --> H[bounded height = min left current - bottom]
-    H --> I[ans += width*height]
-    I --> B
-    B -->|no| J[push i]
+```text
+ASCII FLOW
+
+Loop i from 0 to n-1
+  |
+  v
+top height < current height??
+
+
+  | yes
+  v
+bottom = pop
+
+
+  |
+  v
+stack empty??
+
+
+  | yes
+  v
+break
+
+
+  | no
+  v
+left = stack.top
+
+
+  |
+  v
+width = i-left-1
+
+
+  |
+  v
+bounded height = min left current - bottom
+
+
+  |
+  v
+ans += width*height
+
+
+  |
+  v
+
+
+
+  | no
+  v
+push i
 ```
 
 ### Intuition
@@ -1562,20 +2345,60 @@ height = [3, 0, 2, 0, 4]
 
 Total water is `7`.
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Read current bar] --> B{Current higher than stack top}
-    B -->|Yes| C[Pop bottom]
-    C --> D{Stack empty}
-    D -->|Yes| E[Stop inner loop]
-    D -->|No| F[New top is left wall]
-    F --> G[Compute width]
-    G --> H[Compute bounded height]
-    H --> I[Add water]
-    I --> B
-    B -->|No| J[Push current index]
+```text
+ASCII FLOW
+
+Read current bar
+  |
+  v
+Current higher than stack top?
+
+
+  | Yes
+  v
+Pop bottom
+
+
+  |
+  v
+Stack empty?
+
+
+  | Yes
+  v
+Stop inner loop
+
+
+  | No
+  v
+New top is left wall
+
+
+  |
+  v
+Compute width
+
+
+  |
+  v
+Compute bounded height
+
+
+  |
+  v
+Add water
+
+
+  |
+  v
+
+
+
+  | No
+  v
+Push current index
 ```
 
 
@@ -1681,17 +2504,45 @@ ranges = [1,3], [6,8], x = 2
 
 Result: covered.
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Sort starts and ends] --> B[Query point x]
-    B --> C[Count starts greater than x]
-    C --> D[Count ends less than x]
-    D --> E[Covered count equals total minus both]
-    E --> F{Covered count positive}
-    F -->|Yes| G[Covered]
-    F -->|No| H[Not covered]
+```text
+ASCII FLOW
+
+Sort starts and ends
+  |
+  v
+Query point x
+
+
+  |
+  v
+Count starts greater than x
+
+
+  |
+  v
+Count ends less than x
+
+
+  |
+  v
+Covered count equals total minus both
+
+
+  |
+  v
+Covered count positive?
+
+
+  | Yes
+  v
+Covered
+
+
+  | No
+  v
+Not covered
 ```
 
 
@@ -1699,18 +2550,58 @@ flowchart TD
 
 Use `set<pair<int,int>>` containing non-overlapping intervals.
 
-```mermaid
-flowchart TD
-    A[Insert l,r] --> B{Already covered?}
-    B -->|yes| C[Do nothing]
-    B -->|no| D[Find intervals that overlap]
-    D --> E[Merge them into l,r]
-    E --> F[Erase old intervals]
-    F --> G[Insert merged interval]
-    H[Query x] --> I[Find interval with start <= x]
-    I --> J{end >= x?}
-    J -->|yes| K[Covered]
-    J -->|no| L[Not covered]
+```text
+ASCII FLOW
+
+Insert l,r
+  |
+  v
+Already covered??
+
+
+  | yes
+  v
+Do nothing
+
+
+  | no
+  v
+Find intervals that overlap
+
+
+  |
+  v
+Merge them into l,r
+
+
+  |
+  v
+Erase old intervals
+
+
+  |
+  v
+Insert merged interval
+
+Query x
+  |
+  v
+Find interval with start <= x
+
+
+  |
+  v
+end >= x??
+
+
+  | yes
+  v
+Covered
+
+
+  | no
+  v
+Not covered
 ```
 
 ### Example
@@ -1788,20 +2679,60 @@ insert [1,3], insert [6,8], insert [2,7], query 5
 | insert `[2,7]` | `[1,8]` |
 | query `5` | covered |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Insert range] --> B[Find overlap candidate]
-    B --> C{Overlaps}
-    C -->|Yes| D[Merge boundaries]
-    D --> E[Erase old interval]
-    E --> C
-    C -->|No| F[Insert merged interval]
-    G[Query point] --> H[Find previous interval]
-    H --> I{End covers point}
-    I -->|Yes| J[Covered]
-    I -->|No| K[Not covered]
+```text
+ASCII FLOW
+
+Insert range
+  |
+  v
+Find overlap candidate
+
+
+  |
+  v
+Overlaps?
+
+
+  | Yes
+  v
+Merge boundaries
+
+
+  |
+  v
+Erase old interval
+
+
+  |
+  v
+
+
+
+  | No
+  v
+Insert merged interval
+
+Query point
+  |
+  v
+Find previous interval
+
+
+  |
+  v
+End covers point?
+
+
+  | Yes
+  v
+Covered
+
+
+  | No
+  v
+Not covered
 ```
 
 
@@ -1835,17 +2766,52 @@ Two common implementations:
 - `rest`: contains the overflow elements.
 - `sumTop`: sum of elements in `top`.
 
-```mermaid
-flowchart TD
-    A[Insert x] --> B[Put into top]
-    B --> C[Balance]
-    C --> D{top size > k?}
-    D -->|yes| E[Move smallest top to rest]
-    D -->|no| F{top size < k and rest nonempty?}
-    F -->|yes| G[Move largest rest to top]
-    F -->|no| H[Done]
-    E --> C
-    G --> C
+```text
+ASCII FLOW
+
+Insert x
+  |
+  v
+Put into top
+
+
+  |
+  v
+Balance
+
+
+  |
+  v
+top size > k??
+
+
+  | yes
+  v
+Move smallest top to rest
+
+
+  | no
+  v
+top size < k and rest nonempty??
+
+
+  | yes
+  v
+Move largest rest to top
+
+
+  | no
+  v
+Done
+
+
+  |
+  v
+
+
+
+  |
+  v
 ```
 
 ### Intuition
@@ -1959,19 +2925,54 @@ k = 3, insert values [5, 1, 10, 3, 8]
 | 3 | `3,5,10` | `1` | 18 |
 | 8 | `5,8,10` | `1,3` | 23 |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Insert value] --> B[Put into top]
-    B --> C[Balance size]
-    C --> D{Top larger than k}
-    D -->|Yes| E[Move smallest top to rest]
-    D -->|No| F{Rest has larger value}
-    E --> F
-    F -->|Yes| G[Swap smallest top and largest rest]
-    F -->|No| H[sumTop is answer]
-    G --> H
+```text
+ASCII FLOW
+
+Insert value
+  |
+  v
+Put into top
+
+
+  |
+  v
+Balance size
+
+
+  |
+  v
+Top larger than k?
+
+
+  | Yes
+  v
+Move smallest top to rest
+
+
+  | No
+  v
+Rest has larger value?
+
+
+  |
+  v
+
+
+
+  | Yes
+  v
+Swap smallest top and largest rest
+
+
+  | No
+  v
+sumTop is answer
+
+
+  |
+  v
 ```
 
 
@@ -2085,17 +3086,16 @@ bool empty = q.empty();
 
 ### Visual
 
-```mermaid
-flowchart LR
-    subgraph Stack[LIFO Stack]
-        S3[3 top]
-        S2[2]
-        S1[1 bottom]
-    end
+```text
+ASCII FLOW
 
-    subgraph Queue[FIFO Queue]
-        Q1[1 front] --> Q2[2] --> Q3[3 back]
-    end
+3 top
+2
+1 bottom
+1 front
+  |
+  v
+2
 ```
 
 ### Implement stack using two queues
@@ -2161,17 +3161,45 @@ push 1, push 2, push 3, pop
 
 Returned value is `3`.
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Pop stack using queues] --> B{q1 size greater than one}
-    B -->|Yes| C[Move front from q1 to q2]
-    C --> B
-    B -->|No| D[Remaining front is stack top]
-    D --> E[Pop it]
-    E --> F[Swap q1 and q2]
-    F --> G[Return value]
+```text
+ASCII FLOW
+
+Pop stack using queues
+  |
+  v
+q1 size greater than one?
+
+
+  | Yes
+  v
+Move front from q1 to q2
+
+
+  |
+  v
+
+
+
+  | No
+  v
+Remaining front is stack top
+
+
+  |
+  v
+Pop it
+
+
+  |
+  v
+Swap q1 and q2
+
+
+  |
+  v
+Return value
 ```
 
 
@@ -2195,16 +3223,16 @@ Queue:
 
 Instead of enumerating every subarray/subsequence, calculate how much each element contributes to the final answer.
 
-```mermaid
-mindmap
-  root((Contribution Technique))
-    Sum of all subarrays
-    Sum of all subsequences
-    Pair contribution
-      Inversions
-      Pairwise counts
-    Extended contribution
-      Product of subarrays
+```text
+ASCII MIND MAP
+
+  └─ Contribution Technique
+    └─ of all subarrays
+    └─ of all subsequences
+    └─ contribution
+      └─ counts
+    └─ contribution
+      └─ of subarrays
 ```
 
 ### Intuition
@@ -2299,17 +3327,45 @@ a = [1, 2, 3]
 
 Total is `20`.
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Pick index i] --> B[Count left choices]
-    B --> C[Count right choices]
-    C --> D[Multiply by value]
-    D --> E[Add to answer]
-    E --> F{More elements}
-    F -->|Yes| A
-    F -->|No| G[Return total]
+```text
+ASCII FLOW
+
+Pick index i
+  |
+  v
+Count left choices
+
+
+  |
+  v
+Count right choices
+
+
+  |
+  v
+Multiply by value
+
+
+  |
+  v
+Add to answer
+
+
+  |
+  v
+More elements?
+
+
+  | Yes
+  v
+
+
+
+  | No
+  v
+Return total
 ```
 
 
@@ -2351,14 +3407,30 @@ a = [1, 2, 3]
 
 Total is `24`.
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[For each element] --> B[Each appears in power of two choices]
-    B --> C[Multiply element by ways]
-    C --> D[Add contribution]
-    D --> E[Return total]
+```text
+ASCII FLOW
+
+For each element
+  |
+  v
+Each appears in power of two choices
+
+
+  |
+  v
+Multiply element by ways
+
+
+  |
+  v
+Add contribution
+
+
+  |
+  v
+Return total
 ```
 
 
@@ -2440,17 +3512,45 @@ a = [2, 3, 4]
 
 Formula: `sop = sop * x + x`.
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Read x] --> B[Extend previous products]
-    B --> C[Add new single element subarray]
-    C --> D[Update sop]
-    D --> E[Add sop to answer]
-    E --> F{More elements}
-    F -->|Yes| A
-    F -->|No| G[Return answer]
+```text
+ASCII FLOW
+
+Read x
+  |
+  v
+Extend previous products
+
+
+  |
+  v
+Add new single element subarray
+
+
+  |
+  v
+Update sop
+
+
+  |
+  v
+Add sop to answer
+
+
+  |
+  v
+More elements?
+
+
+  | Yes
+  v
+
+
+
+  | No
+  v
+Return answer
 ```
 
 
@@ -2476,14 +3576,38 @@ For star-pattern questions, first define the canvas:
 
 Then write a function deciding whether a coordinate prints `*` or space.
 
-```mermaid
-flowchart TD
-    A[Pattern Question] --> B[Define canvas rows x cols]
-    B --> C[Loop over i rows]
-    C --> D[Loop over j cols]
-    D --> E{func i,j true?}
-    E -->|yes| F[print star]
-    E -->|no| G[print space]
+```text
+ASCII FLOW
+
+Pattern Question
+  |
+  v
+Define canvas rows x cols
+
+
+  |
+  v
+Loop over i rows
+
+
+  |
+  v
+Loop over j cols
+
+
+  |
+  v
+func i,j true??
+
+
+  | yes
+  v
+print star
+
+
+  | no
+  v
+print space
 ```
 
 ### Intuition
@@ -2536,18 +3660,50 @@ rows = 5, cols = 5, condition i equals j
 | `(1,1)` | true | star |
 | `(2,2)` | true | star |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Loop row i] --> B[Loop column j]
-    B --> C{Condition true}
-    C -->|Yes| D[Print star]
-    C -->|No| E[Print space]
-    D --> F{More columns}
-    E --> F
-    F -->|Yes| B
-    F -->|No| G[Next row]
+```text
+ASCII FLOW
+
+Loop row i
+  |
+  v
+Loop column j
+
+
+  |
+  v
+Condition true?
+
+
+  | Yes
+  v
+Print star
+
+
+  | No
+  v
+Print space
+
+
+  |
+  v
+More columns?
+
+
+  |
+  v
+
+
+
+  | Yes
+  v
+
+
+
+  | No
+  v
+Next row
 ```
 
 
@@ -2610,19 +3766,62 @@ Expected output is sorted by element names with counts.
 - Parse number after element/bracket; default count is `1`.
 - Merge maps by adding counts.
 
-```mermaid
-flowchart TD
-    A[parse range l..r] --> B{Current char}
-    B -->|Capital letter| C[Parse element]
-    C --> D[Parse number if any]
-    D --> E[Add to map]
-    B -->|open parenthesis| F[Find matching bracket]
-    F --> G[Parse inside recursively]
-    G --> H[Parse multiplier]
-    H --> I[Multiply inside map]
-    I --> J[Merge]
-    E --> A
-    J --> A
+```text
+ASCII FLOW
+
+parse range l..r
+  |
+  v
+Current char?
+
+
+  | Capital letter
+  v
+Parse element
+
+
+  |
+  v
+Parse number if any
+
+
+  |
+  v
+Add to map
+
+
+  | open parenthesis
+  v
+Find matching bracket
+
+
+  |
+  v
+Parse inside recursively
+
+
+  |
+  v
+Parse multiplier
+
+
+  |
+  v
+Multiply inside map
+
+
+  |
+  v
+Merge
+
+
+  |
+  v
+
+
+
+  |
+  v
 ```
 
 ### Intuition
@@ -2752,22 +3951,70 @@ formula = Mg(OH)2
 | 5 | `)2` | multiply inside | `O:2 H:2` |
 | 6 | merge | merge maps | `H:2 Mg:1 O:2` |
 
-#### Mermaid Dry Run Diagram
+#### ASCII Dry Run Diagram
 
-```mermaid
-flowchart TD
-    A[Start parse] --> B{Current character}
-    B -->|Capital| C[Read element]
-    C --> D[Read number]
-    D --> E[Add count]
-    B -->|Open parenthesis| F[Parse inside recursively]
-    F --> G[Read multiplier]
-    G --> H[Multiply inside map]
-    H --> I[Merge map]
-    E --> J{More characters}
-    I --> J
-    J -->|Yes| B
-    J -->|No| K[Return map]
+```text
+ASCII FLOW
+
+Start parse
+  |
+  v
+Current character?
+
+
+  | Capital
+  v
+Read element
+
+
+  |
+  v
+Read number
+
+
+  |
+  v
+Add count
+
+
+  | Open parenthesis
+  v
+Parse inside recursively
+
+
+  |
+  v
+Read multiplier
+
+
+  |
+  v
+Multiply inside map
+
+
+  |
+  v
+Merge map
+
+
+  |
+  v
+More characters?
+
+
+  |
+  v
+
+
+
+  | Yes
+  v
+
+
+
+  | No
+  v
+Return map
 ```
 
 
@@ -2813,16 +4060,40 @@ Stack always stores increasing heights.
 
 ---
 
-### Mermaid Flow
+### ASCII Flow
 
-```mermaid
-flowchart TD
-    A[Loop through bars] --> B{Current height smaller than stack top}
-    B -->|Yes| C[Pop height]
-    C --> D[Calculate width]
-    D --> E[Update max area]
-    E --> B
-    B -->|No| F[Push current index]
+```text
+ASCII FLOW
+
+Loop through bars
+  |
+  v
+Current height smaller than stack top?
+
+
+  | Yes
+  v
+Pop height
+
+
+  |
+  v
+Calculate width
+
+
+  |
+  v
+Update max area
+
+
+  |
+  v
+
+
+
+  | No
+  v
+Push current index
 ```
 
 ---
@@ -2930,18 +4201,50 @@ Largest histogram rectangle
 | median dynamically | two multisets |
 | top k dynamically with remove | two multisets |
 
-### STL decision diagram
+### STL decision diagram — ASCII
 
-```mermaid
-flowchart TB
-    A[What do you need?] --> B{Order matters?}
-    B -->|LIFO| ST[stack]
-    B -->|FIFO| QU[queue]
-    B -->|sorted order| SE[set / multiset]
-    B -->|top priority only| PQ[priority_queue]
-    B -->|key-value count| MP[map / unordered_map]
-    B -->|range query/update| FW[Fenwick / Segment Tree]
-    B -->|window min/max| DQ[monotonic deque]
+```text
+ASCII FLOW
+
+What do you need?
+  |
+  v
+Order matters??
+
+
+  | LIFO
+  v
+stack
+
+
+  | FIFO
+  v
+queue
+
+
+  | sorted order
+  v
+set / multiset
+
+
+  | top priority only
+  v
+priority_queue
+
+
+  | key-value count
+  v
+map / unordered_map
+
+
+  | range query/update
+  v
+Fenwick / Segment Tree
+
+
+  | window min/max
+  v
+monotonic deque
 ```
 
 ### One-minute mental trick
@@ -3023,22 +4326,78 @@ Before prefix-map subarray count:
 
 ## 18. Final Revision Flow
 
-```mermaid
-flowchart TD
-    A[New Problem] --> B{Is it about subarray/window?}
-    B -->|fixed size k| C[Sliding Window]
-    B -->|sum x| D[Prefix Sum + Map]
-    A --> E{Nearest greater/smaller?}
-    E -->|yes| F[Monotonic Stack]
-    A --> G{Dynamic median/top k?}
-    G -->|median| H[Two Multisets]
-    G -->|top k| I[Two Multisets / PQ]
-    A --> J{Intervals?}
-    J -->|coverage| K[Sorted endpoints or set of merged ranges]
-    A --> L{Nested formula/brackets?}
-    L -->|yes| M[Stack or Recursion]
-    A --> N{Too many subarrays/subsequences?}
-    N -->|yes| O[Contribution Technique]
+```text
+ASCII FLOW
+
+New Problem
+  |
+  v
+Is it about subarray/window??
+
+
+  | fixed size k
+  v
+Sliding Window
+
+
+  | sum x
+  v
+Prefix Sum + Map
+
+
+  |
+  v
+Nearest greater/smaller??
+
+
+  | yes
+  v
+Monotonic Stack
+
+
+  |
+  v
+Dynamic median/top k??
+
+
+  | median
+  v
+Two Multisets
+
+
+  | top k
+  v
+Two Multisets / PQ
+
+
+  |
+  v
+Intervals??
+
+
+  | coverage
+  v
+Sorted endpoints or set of merged ranges
+
+
+  |
+  v
+Nested formula/brackets??
+
+
+  | yes
+  v
+Stack or Recursion
+
+
+  |
+  v
+Too many subarrays/subsequences??
+
+
+  | yes
+  v
+Contribution Technique
 ```
 
 ### Quick pattern recognition table
@@ -3097,35 +4456,26 @@ Before coding, ask:
 
 ### Final memory hook
 
-```mermaid
-mindmap
-  root((CP Mental Tricks))
-    Range sum
-      Prefix sum
-    Range update
-      Difference array
-    Dynamic range query
-      Fenwick
-      Segment tree
-    Window
-      Sliding window
-      Deque
-      Multiset
-    Nearest greater
-      Monotonic stack
-    Median
-      Two multisets
-    Top K
-      Heap
-      Two multisets
-    Intervals
-      Sort endpoints
-      Set merged ranges
-    Nested parsing
-      Stack
-      Recursion
-    Too many objects
-      Contribution
+```text
+ASCII MIND MAP
+
+  └─ CP Mental Tricks
+    └─ sum
+      └─ sum
+    └─ update
+      └─ array
+    └─ range query
+      └─ tree
+      └─ window
+    └─ greater
+      └─ stack
+      └─ multisets
+    └─ K
+      └─ multisets
+      └─ endpoints
+      └─ merged ranges
+    └─ parsing
+    └─ many objects
 ```
 
 ---
@@ -3140,4 +4490,74 @@ Choose STL by required operations.
 Keep templates short.
 Test edge cases.
 Never trust first AC-looking code without dry run.
+```
+
+---
+
+## 22. CM + FAANG Final Revision Grid
+
+### Pattern ladder
+
+```text
+800-1000  : vector, sort, map frequency, prefix sum basics
+1100-1300 : stack/queue, two pointers, simple sliding window
+1400-1600 : monotonic stack/deque, prefix+map, intervals
+1700-1900 : two multisets, top-k dynamic, contribution, parser
+1900+     : combine 2-3 patterns + edge-case heavy implementation
+FAANG     : explain invariant clearly and write bug-free code fast
+```
+
+### Fast decision tree
+
+```text
+Need best element only?
+  ├─ arbitrary delete? yes -> multiset
+  └─ no -> priority_queue
+
+Need ordered unique values?
+  ├─ duplicates? yes -> multiset
+  └─ no -> set
+
+Need frequency?
+  ├─ ordered keys? yes -> map
+  └─ speed only? -> unordered_map/custom_hash
+
+Need window min/max?
+  ├─ simplest accepted? -> multiset O(n log k)
+  └─ optimal? -> monotonic deque O(n)
+
+Need median/cost/top-k with delete?
+  └─ two multisets / two buckets
+
+Need all ranges/subarrays count?
+  ├─ sum relation -> prefix + map
+  └─ occurrence count -> contribution
+```
+
+### Final contest checklist
+
+```text
+Before submit:
+[ ] Did I use long long where multiplication/prefix appears?
+[ ] Did I handle empty stack/queue/set before top/front/begin?
+[ ] Did I erase one duplicate from multiset, not all duplicates?
+[ ] Did I initialize prefix frequency with freq[0] = 1?
+[ ] Did I test n = 1, k = 1, all equal, strictly increasing, strictly decreasing?
+[ ] Did I verify 0-based vs 1-based index in output?
+[ ] Did I understand strict < vs <= in monotonic logic?
+[ ] Did I avoid O(n^2) when n can be 2e5?
+```
+
+### One picture
+
+```text
+CP STL MASTERY
+
+Array movement       -> sliding window -> deque/multiset/map
+Range memory         -> prefix sum     -> map/frequency
+Nearest boundary     -> mono stack     -> next greater/histogram/water
+Dynamic order        -> multiset       -> median/top-k/intervals
+Best next state      -> heap           -> Dijkstra/scheduler/kth
+Nested structure     -> stack/parser   -> brackets/formula
+Too many objects     -> contribution   -> count each element's role
 ```
