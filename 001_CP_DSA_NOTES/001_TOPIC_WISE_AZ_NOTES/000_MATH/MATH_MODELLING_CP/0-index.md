@@ -1,367 +1,465 @@
 # CP Mathematical Modeling Mini-Course
 
-> **Goal:** Convert a Codeforces problem from **English/story →
-> mathematical model → observation → algorithm**.
+# Course Index
+
+> **Purpose:** This file is the single navigation page for the complete CP Mathematical Modeling repository.
 >
-> **Scope:** Mathematical modeling only. Number Theory and Combinatorics
-> are intentionally excluded because they are studied separately.
+> Use each chapter as a focused reference. Keep the detailed teaching material inside the individual chapter files.
 
-------------------------------------------------------------------------
+---
 
-## Learning Path
+## Complete Course Tree
 
-``` text
-0. Foundation
+```text
+CP MATHEMATICAL MODELING
+│
+├── 00. Foundation
+│   ├── Variables & expressions
+│   ├── Basic equations
+│   ├── Rearranging equations
+│   ├── Inequalities
+│   ├── Min / Max
+│   ├── Absolute value
+│   └── Floor / Ceil
+│
+├── 01. Story -> Mathematics
+│   └── Remove the story and expose the mathematical problem
+│
+├── 02. Operation Modeling
+│   └── Represent one operation as a mathematical change
+│
+├── 03. Conditions & Structure
+│   └── Convert rules into exact conditions and identify structure
+│
+├── 04. Algebra -> Smaller Search
+│   └── Eliminate variables and reduce brute-force dimensions
+│
+├── 05. Resource & Optimization Modeling
+│   └── Model consumption, capacity, limits, and bottlenecks
+│
+├── 06. Feasibility Modeling
+│   └── Determine whether a valid solution can exist
+│
+├── 07. Counting & Contribution Modeling
+│   └── Count globally by understanding local contributions
+│
+├── 08. Remainder / Modulo Modeling
+│   └── Compress values into remainder classes and cycles
+│
+├── 09. Interval & Boundary Modeling
+│   └── Model ranges, overlaps, endpoints, and boundary behavior
+│
+├── 10. Rate, Time & Work Modeling
+│   └── Translate speed/rate/work stories into equations
+│
+├── 11. Invariant & Conservation Modeling
+│   ├── Sum invariants
+│   ├── Parity invariants
+│   ├── Difference invariants
+│   ├── Operation-effect tables
+│   ├── Necessary conditions
+│   └── Impossibility proofs
+│
+├── 12. Transformation & Operation Modeling
+│   ├── Before -> after equations
+│   ├── Net change
+│   ├── Repeated operations
+│   ├── Reverse operations
+│   ├── Reachability
+│   └── Minimum operations
+│
+├── 13. Greedy Mathematical Modeling
+│   ├── Local choices
+│   ├── Exchange intuition
+│   ├── Sort -> choose
+│   ├── Cheapest / largest first
+│   ├── Pair extremes
+│   ├── Bottlenecks
+│   └── Greedy correctness
+│
+├── 14. Prefix / Difference Modeling
+│   ├── Prefix as accumulated state
+│   ├── Range = prefix difference
+│   ├── Transform subarray conditions
+│   ├── Prefix frequencies
+│   ├── Difference arrays
+│   └── Local changes -> global reconstruction
+│
+├── 15. Coordinate & Distance Modeling
+│   ├── Number line
+│   ├── Absolute difference
+│   ├── Manhattan distance
+│   ├── Movement equations
+│   ├── Coordinate normalization
+│   └── Geometry-like stories
+│
+├── 16. Min / Max & Extremal Modeling
+│   ├── Smallest / largest
+│   ├── Extremes and feasibility
+│   ├── Range = max - min
+│   ├── Pairing extremes
+│   ├── Worst-case constraints
+│   └── Extremal arguments
+│
+├── 17. State Compression & Equivalence Modeling
+│   ├── Keep only relevant information
+│   ├── Categories
+│   ├── Parity states
+│   ├── Remainder states
+│   ├── Sign / comparison states
+│   ├── Frequency vectors
+│   └── Huge state -> tiny state
+│
+├── 18. Bounds / Monotonicity / Answer-Space Modeling
+│   ├── Lower and upper bounds
+│   ├── Candidate answer X
+│   ├── Feasibility predicates
+│   ├── Monotonicity
+│   └── Binary search on answer
+│
+├── 19. Final Integration / Complete CP Math Modeling Engine
+│   └── Earlier integration checkpoint already present in repository
+│
+├── 20. Constructive Mathematical Modeling
+│   ├── Work backward from required output
+│   ├── Necessary conditions
+│   ├── Sufficient conditions
+│   ├── Build one valid answer
+│   ├── Baseline + leftover
+│   ├── Pairing / blocks / patterns
+│   ├── Local repair
+│   └── Prove construction works
+│
+├── 21. Casework & Piecewise Modeling
+│   ├── Split by parity
+│   ├── Split by sign
+│   ├── Split by ordering
+│   ├── Split by remainder
+│   ├── Boundary cases
+│   ├── Exhaustive small states
+│   ├── Normalize / symmetry
+│   └── Merge cases
+│
+└── 22. Final Modeling Engine
+    ├── Story -> state
+    ├── State -> target
+    ├── Target -> equations / constraints
+    ├── Analyze operations
+    ├── Eliminate / compress / normalize
+    ├── Identify mathematical structure
+    ├── Choose algorithm
+    ├── Prove correctness
+    ├── Check complexity
+    └── CF 800 -> 1900 modeling workflow
+```
+
+---
+
+# Repository Files
+
+| # | Chapter | File |
+|---:|---|---|
+| 00 | Foundation | `00-foundation.md` |
+| 01 | Story -> Mathematics | `01-story-to-mathematics.md` |
+| 02 | Operation Modeling | `02-operation-modeling.md` |
+| 03 | Conditions & Structure | `03-conditions-and-structure.md` |
+| 04 | Algebra -> Smaller Search | `04-algebra-to-smaller-search.md` |
+| 05 | Resource & Optimization Modeling | `05-resource-and-optimization-modeling.md` |
+| 06 | Feasibility Modeling | `06-feasibility-modeling.md` |
+| 07 | Counting & Contribution Modeling | `07-counting-and-contribution-modeling.md` |
+| 08 | Remainder / Modulo Modeling | `08-remainder-modulo-modeling.md` |
+| 09 | Interval & Boundary Modeling | `09-interval-and-boundary-modeling.md` |
+| 10 | Rate, Time & Work Modeling | `10-rate-time-work-modeling.md` |
+| 11 | Invariant & Conservation Modeling | `11-invariant-conservation-modeling.md` |
+| 12 | Transformation & Operation Modeling | `12-transformation-operation-modeling.md` |
+| 13 | Greedy Mathematical Modeling | `13-greedy-mathematical-modeling.md` |
+| 14 | Prefix / Difference Modeling | `14-prefix-difference-modeling.md` |
+| 15 | Coordinate & Distance Modeling | `15-coordinate-distance-modeling.md` |
+| 16 | Min / Max & Extremal Modeling | `16-min-max-extremal-modeling.md` |
+| 17 | State Compression & Equivalence | `17-state-compression-equivalence-modeling.md` |
+| 18 | Bounds / Monotonicity / Answer Space | `18-bounds-monotonicity-answer-space-modeling.md` |
+| 19 | Earlier Final Integration | `19-final-integration-complete-cp-math-modeling-engine.md` |
+| 20 | Constructive Mathematical Modeling | `20-constructive-mathematical-modeling.md` |
+| 21 | Casework & Piecewise Modeling | `21-casework-piecewise-modeling.md` |
+| 22 | Final Modeling Engine | `22-final-modeling-engine.md` |
+
+---
+
+# Learning Flow
+
+```text
+FOUNDATION
+00
+ │
+ ▼
+TRANSLATION
+01 -> 04
+ │
+ ▼
+CORE MODELING
+05 -> 10
+ │
+ ▼
+DEEPER STRUCTURE
+11 -> 18
+ │
+ ▼
+INTEGRATION
+19
+ │
+ ▼
+OUTPUT + CASE STRUCTURE
+20 -> 21
+ │
+ ▼
+FINAL CONTEST ENGINE
+22
+```
+
+---
+
+# What to Ask First in a Problem
+
+```text
+Problem statement
       ↓
-1. Story → Mathematics
+What are the objects?
       ↓
-2. Operation Modeling
+What variables describe them?
       ↓
-3. Conditions & Structure
+What exactly must become true?
       ↓
-4. Algebra → Smaller Search
+Can I write it as:
+=  <=  >=  %  abs  min  max ?
       ↓
-5. Resource & Optimization Modeling
+What does one operation change?
       ↓
-6. Feasibility Modeling
+What stays unchanged?
       ↓
-7. Collection Modeling
+Can I eliminate variables?
       ↓
-8. Constructive Modeling
+Can I compress the state?
       ↓
-9. Constraints → Model → Algorithm
+Can I normalize the ordering?
       ↓
-10. Complete CF Modeling Practice
+What structure remains?
+      ↓
+Algorithm
 ```
 
-------------------------------------------------------------------------
+---
 
-# 0. Foundation
+# Modeling Toolbox by Trigger
 
-The minimum algebra toolkit needed for CP mathematical modeling.
+```text
+"total / together"
+    -> equation / contribution
 
--   **0.1 Variables & Expressions**
--   **0.2 Basic Equations**
--   **0.3 Rearranging Equations**
--   **0.4 Inequalities**
--   **0.5 Min / Max**
--   **0.6 Absolute Value**
--   **0.7 Floor / Ceil**
+"remaining"
+    -> total - used
 
-**Target:** Make simple algebraic translation automatic before moving to
-Codeforces-style modeling.
+"at least / at most"
+    -> inequality / bounds
 
-------------------------------------------------------------------------
+"maximum possible groups"
+    -> resource limits / min bottleneck
 
-# 1. Story → Mathematics
+"minimum containers"
+    -> ceil
 
-Learn to remove the story and expose the mathematical problem.
+"same parity"
+    -> modulo 2 / state compression
 
--   **1.1 Identify quantities**
--   **1.2 Give quantities variables**
--   **1.3 Translate relationships**
-    -   Sum / total
-    -   Difference
-    -   More / less
-    -   At least / at most
-    -   Ratio / proportion
--   **1.4 Build equations**
--   **1.5 Build inequalities and bounds**
--   **1.6 Remove irrelevant story information**
+"divisible"
+    -> modulo
 
-**Core transformation:**
+"repeated operation"
+    -> one-step delta / invariant
 
-``` text
-Story → Quantities → Variables → Relationships → Mathematical model
+"can we reach?"
+    -> feasibility + invariant + direction
+
+"subarray / range"
+    -> prefix / difference
+
+"distance / movement"
+    -> coordinates / absolute difference
+
+"minimum / maximum"
+    -> extremes / greedy / answer space
+
+"print any valid"
+    -> constructive modeling
+
+"formula works differently"
+    -> casework / piecewise
+
+"maximize minimum / minimize maximum"
+    -> candidate X + feasibility + monotonicity
 ```
 
-------------------------------------------------------------------------
+---
 
-# 2. Operation Modeling
+# CF 800 -> 1900 Progression
 
-Turn repeated operations into mathematics instead of blindly simulating
-them.
+```text
+800–1000
+│
+├── direct arithmetic
+├── conditions
+├── parity
+├── floor / ceil
+├── min / max
+└── tiny casework
 
--   **2.1 Model one operation**
--   **2.2 Model `k` operations**
--   **2.3 Repeated operations → formula**
--   **2.4 Final-state equations**
--   **2.5 Reverse operations**
--   **2.6 Simulation → mathematics**
+1000–1200
+│
+├── operation effects
+├── modulo
+├── counting
+├── sorting
+└── simple construction
 
-Example pattern:
+1200–1400
+│
+├── combine two observations
+├── state compression
+├── prefix modeling
+├── extremal reasoning
+└── invariant + feasibility
 
-``` text
-One operation:
-(a, b) → (a + x, b - y)
+1400–1600
+│
+├── chained observations
+├── greedy + proof
+├── normalization + casework
+├── constructive reasoning
+└── stronger prefix / counting transformations
 
-After k operations:
-a' = a + kx
-b' = b - ky
+1600–1900
+│
+├── multiple modeling layers
+├── compressed states
+├── non-obvious invariants
+├── greedy feasibility
+├── answer-space monotonicity
+├── constructive + casework
+└── observation chains
 ```
 
-------------------------------------------------------------------------
+---
 
-# 3. Conditions & Structure
+# The Final Contest Engine
 
-Learn to discover what must remain true.
-
--   **3.1 Necessary conditions**
--   **3.2 Sufficient conditions**
--   **3.3 Case splitting**
--   **3.4 Parity as state**
--   **3.5 Absolute difference / distance**
--   **3.6 Conservation**
--   **3.7 Invariants**
-
-**Key question:** What changes, and what cannot change?
-
-------------------------------------------------------------------------
-
-# 4. Algebra → Smaller Search
-
-Use equations to eliminate unnecessary brute force.
-
--   **4.1 Rearrange relationships**
--   **4.2 Substitute variables**
--   **4.3 Eliminate variables**
--   **4.4 Reduce search dimensions**
--   **4.5 Pair modeling**
--   **4.6 Triple modeling**
--   **4.7 Brute force → formula**
-
-Example:
-
-``` text
-x + y + z = S
-
-        ↓
-
-z = S - x - y
-
-        ↓
-
-Search x and y; calculate z.
+```text
+STORY
+  ↓
+STATE
+  ↓
+TARGET
+  ↓
+RELATIONS
+  ↓
+SIMPLIFY
+  │
+  ├── eliminate
+  ├── compress
+  └── normalize
+  ↓
+STRUCTURE
+  │
+  ├── modulo
+  ├── invariant
+  ├── counting
+  ├── prefix
+  ├── greedy
+  ├── extrema
+  ├── monotonicity
+  ├── construction
+  └── casework
+  ↓
+PROOF
+  ↓
+COMPLEXITY
+  ↓
+BOUNDARY TESTS
+  ↓
+C++
 ```
 
-Potential transformation:
+---
 
-``` text
-O(n³) → O(n²)
+# When Stuck
+
+```text
+STOP searching for algorithm names
+              ↓
+Remove the story
+              ↓
+Write variables
+              ↓
+Write the target mathematically
+              ↓
+Try n = 1, 2, 3
+              ↓
+Analyze one operation
+              ↓
+Track:
+sum / difference / parity /
+remainder / min / max
+              ↓
+Compress irrelevant information
+              ↓
+Normalize ordering
+              ↓
+Find necessary conditions
+              ↓
+Ask whether they are sufficient
+              ↓
+Look again for the algorithm
 ```
 
-------------------------------------------------------------------------
+---
 
-# 5. Resource & Optimization Modeling
+# Practice Rule
 
-Translate limited resources into mathematical bounds.
+The theory is complete.
 
--   **5.1 Resource consumption**
--   **5.2 Capacity**
--   **5.3 Define `k` = number of operations/items**
--   **5.4 Derive lower bounds**
--   **5.5 Derive upper bounds**
--   **5.6 Identify the limiting resource**
--   **5.7 Min / Max answer**
+The main training loop should now be:
 
-Typical thinking:
-
-``` text
-Suppose the answer is k.
-
-What resources are required for k?
-What inequalities must k satisfy?
-Which condition limits k?
+```text
+CF problem
+   ↓
+understand statement
+   ↓
+draw / create tiny cases
+   ↓
+model mathematically
+   ↓
+derive observations
+   ↓
+check constraints
+   ↓
+prove approach
+   ↓
+implement
+   ↓
+review the key transformation
 ```
 
-------------------------------------------------------------------------
+Do not try to consciously memorize all chapters.
 
-# 6. Feasibility Modeling
+The target is to repeatedly practice until transformations such as:
 
-Turn optimization problems into yes/no checks.
-
--   **6.1 Can `k` work?**
--   **6.2 Requirements → conditions**
--   **6.3 Optimization → decision problem**
--   **6.4 Monotonicity**
--   **6.5 Binary Search on Answer connection**
-
-Typical question:
-
-``` text
-If k works, do all smaller k also work?
+```text
+same parity        -> modulo 2
+equal counts       -> difference / balance
+range condition    -> prefix difference
+repeated operation -> net delta
+resource limit     -> inequality
+many upper bounds  -> min
+print any          -> construction
+max-min objective  -> candidate answer + feasibility
 ```
 
-------------------------------------------------------------------------
-
-# 7. Collection Modeling
-
-Replace unnecessary element-level detail with useful aggregate
-information.
-
--   **7.1 Values → frequencies**
--   **7.2 State reduction**
--   **7.3 Contribution of one element**
--   **7.4 Total contribution**
--   **7.5 Prefix relationships**
--   **7.6 Suffix relationships**
-
-**Goal:** Keep only the information that actually affects the answer.
-
-------------------------------------------------------------------------
-
-# 8. Constructive Modeling
-
-Work backward from the required result.
-
--   **8.1 Start from the required answer**
--   **8.2 Determine conditions that must hold**
--   **8.3 Build objects satisfying those conditions**
--   **8.4 Reverse thinking**
--   **8.5 Greedy choice from inequalities**
--   **8.6 Prove the construction works**
-
-Typical thinking:
-
-``` text
-What must the final object look like?
-        ↓
-What conditions guarantee that?
-        ↓
-How can I construct something satisfying them?
-```
-
-------------------------------------------------------------------------
-
-# 9. Constraints → Model → Algorithm
-
-Connect mathematical modeling to algorithm selection.
-
--   **9.1 Read constraints mathematically**
--   **9.2 Estimate allowed complexity**
--   **9.3 Start with brute force**
--   **9.4 Identify the mathematical bottleneck**
--   **9.5 Simplify the model**
--   **9.6 Derive the algorithm**
-
-Core process:
-
-``` text
-Brute force
-    ↓
-Why is it slow?
-    ↓
-Which search/work is unnecessary?
-    ↓
-Can mathematics eliminate it?
-    ↓
-Efficient algorithm
-```
-
-------------------------------------------------------------------------
-
-# 10. Complete CF Modeling Practice
-
-Apply the modeling engine to progressively harder Codeforces-style
-problems.
-
--   **10.1 800--1000:** Direct translation
--   **10.2 1000--1200:** Equations + operations
--   **10.3 1200--1400:** Bounds + parity + cases
--   **10.4 1400--1600:** Invariants + variable elimination
--   **10.5 1600--1800:** Feasibility + optimization + constructive
-    modeling
--   **10.6 1800--1900:** Mixed modeling + proof
-
-> Ratings are approximate. Codeforces difficulty and required techniques
-> vary from problem to problem.
-
-------------------------------------------------------------------------
-
-# The CP Mathematical Modeling Engine
-
-``` text
-                    CF PROBLEM
-                        │
-                        ▼
-                 Remove the story
-                        │
-                        ▼
-              Identify quantities
-                        │
-                        ▼
-                Define variables
-                        │
-                        ▼
-              Write relationships
-                 /      |      \
-                /       |       \
-          Equation  Inequality  Operation
-                \       |       /
-                 \      |      /
-                        ▼
-                 Find structure
-          ┌─────────────┼─────────────┐
-          │             │             │
-       Invariant      Bounds        Cases
-          │             │             │
-          └─────────────┼─────────────┘
-                        ▼
-              Simplify algebraically
-                        │
-                        ▼
-          Eliminate variable / search?
-                        │
-                        ▼
-          Feasibility / Optimization
-                        │
-                        ▼
-                    Algorithm
-                        │
-                        ▼
-                 Proof + Code
-```
-
-------------------------------------------------------------------------
-
-# How Each Lesson Will Work
-
-Each lesson should be practice-oriented:
-
-1.  **Tiny concept**
-2.  **Two simple examples**
-3.  **English → Math translation drills**
-4.  **CP-style modeling exercises**
-5.  **You solve before seeing the solution**
-6.  **Reasoning review**
-7.  **Mini challenge**
-8.  **Short takeaway**
-
-The objective is not formula memorization. The objective is to make this
-automatic:
-
-``` text
-English → Math → Observation → Algorithm
-```
-
-------------------------------------------------------------------------
-
-# Completion Goal
-
-By the end of this mini-course, when reading a new CP problem you should
-naturally ask:
-
--   What are the actual quantities?
--   What variables should represent them?
--   What equations or inequalities describe the problem?
--   What does one operation do?
--   What happens after `k` operations?
--   What stays invariant?
--   What are the lower and upper bounds?
--   Can I eliminate a variable?
--   Can I replace simulation with a formula?
--   Can I turn optimization into a feasibility check?
--   What algorithm follows from this model?
-
-The course is complete when this reasoning becomes part of your normal
-problem-solving process rather than a separate checklist.
+become automatic.
