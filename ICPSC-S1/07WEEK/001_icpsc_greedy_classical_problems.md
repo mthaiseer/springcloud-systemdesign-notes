@@ -75,6 +75,48 @@ So:
 
 # 1. Pick Two Integers With Maximum Sum
 
+
+## Exchange / Mathematical Proof
+
+Let the greedy pair be the two largest values:
+
+```text
+M1 >= M2 >= every other candidate X
+G = M1 + M2
+```
+
+Assume another solution replaces `M2` by `X`:
+
+```text
+A = M1 + X
+```
+
+Compare:
+
+```text
+A - G
+= (M1 + X) - (M1 + M2)
+= X - M2
+```
+
+Since:
+
+```text
+X <= M2
+```
+
+therefore:
+
+```text
+A - G <= 0
+=> A <= G
+```
+
+So exchanging `M2` for any smaller value cannot improve the answer.
+
+**Mental proof:** replacing one of the top two values by a smaller value cannot increase the sum.
+
+
 ## Problem
 
 Given an array of `N` integers, choose two different elements such that their sum is maximum.
@@ -223,6 +265,54 @@ O(N)
 ---
 
 # 2. Split N Into Two Numbers With Maximum Product
+
+
+## Exchange / Mathematical Proof
+
+Let the balanced greedy solution be:
+
+```text
+x + x = N
+G = x^2
+```
+
+Any other split with the same sum can be represented as:
+
+```text
+x + delta
+x - delta
+```
+
+Alternative product:
+
+```text
+A = (x + delta)(x - delta)
+  = x^2 - delta^2
+```
+
+Compare:
+
+```text
+A - G
+= (x^2 - delta^2) - x^2
+= -delta^2
+<= 0
+```
+
+Therefore:
+
+```text
+A <= G
+```
+
+So moving weight from one side to the other can never improve the product.
+
+For integer odd `N`, equality is impossible, so use the two closest integers:
+
+```text
+floor(N/2), ceil(N/2)
+```
+
 
 ## Problem
 
@@ -389,6 +479,78 @@ int main() {
 ---
 
 # 3. Maximum Number of Non-Overlapping Jobs
+
+
+## Exchange Argument + Mathematical Condition
+
+Let:
+
+```text
+G = greedy first job (earliest finishing)
+O = first job of an optimal schedule
+```
+
+By definition of `G`:
+
+```text
+end(G) <= end(O)
+```
+
+Suppose OPT is:
+
+```text
+[ O ] -> J2 -> J3 -> ... -> Jk
+```
+
+Since `J2` was valid after `O`:
+
+```text
+start(J2) >= end(O)
+```
+
+and:
+
+```text
+end(G) <= end(O)
+```
+
+we also have:
+
+```text
+start(J2) >= end(G)
+```
+
+Therefore replace:
+
+```text
+O -> G
+```
+
+without removing any later job:
+
+```text
+Before: [ O ] -> J2 -> J3 -> ...
+After : [ G ] -> J2 -> J3 -> ...
+```
+
+The number of selected jobs remains the same.
+
+So there exists an optimal schedule beginning with the greedy job. Apply the same argument to the remaining jobs.
+
+**Mathematical heart:**
+
+```text
+end(G) <= end(O) <= start(next)
+```
+
+therefore:
+
+```text
+end(G) <= start(next)
+```
+
+So the rest of the optimal schedule still fits.
+
 
 Also called:
 
@@ -590,6 +752,104 @@ O(N log N)
 
 # 4. Can All Jobs Finish Before Their Deadlines?
 
+
+## Exchange Argument + Mathematical Proof
+
+Assume two adjacent jobs are in this order:
+
+```text
+B -> A
+```
+
+but:
+
+```text
+deadline(A) <= deadline(B)
+```
+
+So `A` is more urgent but appears later.
+
+Let:
+
+```text
+T  = time before these jobs
+pA = duration of A
+pB = duration of B
+dA = deadline of A
+dB = deadline of B
+```
+
+Because the original schedule is feasible:
+
+```text
+T + pB + pA <= dA
+```
+
+Now swap them:
+
+```text
+A -> B
+```
+
+A finishes at:
+
+```text
+T + pA
+```
+
+and:
+
+```text
+T + pA
+<= T + pB + pA
+<= dA
+```
+
+So A is safe.
+
+B finishes at:
+
+```text
+T + pA + pB
+```
+
+This is the same total finishing time that A had before. Since:
+
+```text
+T + pA + pB <= dA
+```
+
+and:
+
+```text
+dA <= dB
+```
+
+we get:
+
+```text
+T + pA + pB <= dB
+```
+
+So B is also safe.
+
+Therefore:
+
+```text
+later-deadline -> earlier-deadline
+```
+
+can safely be exchanged into:
+
+```text
+earlier-deadline -> later-deadline
+```
+
+Repeating this removes all deadline inversions and produces deadline-sorted order.
+
+**Mental proof:** the more urgent job can safely move left.
+
+
 ## Problem
 
 You are given `N` jobs.
@@ -789,6 +1049,94 @@ O(N log N)
 ---
 
 # 5. Job Sequencing With Deadline and Profit
+
+
+## Exchange / Mathematical Safety Argument
+
+There are two greedy decisions here:
+
+```text
+1. Prefer higher-profit jobs.
+2. Put an accepted job in the latest free slot <= its deadline.
+```
+
+### Why place it as late as possible?
+
+Suppose job `J` with deadline `d` is currently placed in an earlier free slot `s`, while a later slot `t` is also free:
+
+```text
+s < t <= d
+```
+
+Move `J` from `s` to `t`:
+
+```text
+Before:
+slot s = J
+slot t = EMPTY
+
+After:
+slot s = EMPTY
+slot t = J
+```
+
+Validity is unchanged because:
+
+```text
+t <= d
+```
+
+Profit is unchanged:
+
+```text
+newProfit = oldProfit
+```
+
+But now the earlier slot `s` is free, which is at least as useful for future jobs because any job that can only meet an early deadline may need it.
+
+Therefore an accepted job can always be pushed to its latest available valid slot without hurting profit.
+
+### Why process higher profit first?
+
+Suppose one available slot can hold either:
+
+```text
+H: profit = PH
+L: profit = PL
+```
+
+with:
+
+```text
+PH >= PL
+```
+
+If a feasible schedule uses `L` in that contested slot while `H` can legally occupy it, exchanging:
+
+```text
+L -> H
+```
+
+changes profit by:
+
+```text
+new - old
+= PH - PL
+>= 0
+```
+
+So the exchange does not reduce profit.
+
+Combined with latest-slot placement, this gives the classical greedy strategy.
+
+**Mental proof:**
+
+```text
+higher profit gets priority
++
+push chosen job right as far as its deadline allows
+```
+
 
 ## Problem
 
@@ -1020,6 +1368,77 @@ There is a faster DSU-based version, but this implementation is best for learnin
 
 # 6. Fractional Knapsack
 
+
+## Exchange Argument + Mathematical Proof
+
+Let item `A` have a higher value density than item `B`:
+
+```text
+vA / wA >= vB / wB
+```
+
+Suppose a candidate solution contains some amount `x` of B while some amount of A is still available.
+
+Exchange the same weight `x`:
+
+```text
+remove x weight of B
+add    x weight of A
+```
+
+Value removed:
+
+```text
+x * (vB / wB)
+```
+
+Value added:
+
+```text
+x * (vA / wA)
+```
+
+Change in total value:
+
+```text
+NEW - OLD
+
+= x * (vA/wA) - x * (vB/wB)
+
+= x * [(vA/wA) - (vB/wB)]
+```
+
+Because:
+
+```text
+vA/wA >= vB/wB
+```
+
+and:
+
+```text
+x >= 0
+```
+
+therefore:
+
+```text
+NEW - OLD >= 0
+```
+
+So replacing lower-density weight with equal weight of higher-density material never decreases value.
+
+That is why the optimal fractional solution takes:
+
+```text
+highest value/weight first
+```
+
+until the bag is full.
+
+**Real-world interpretation:** if gold pays more per kg than silver, carrying silver while unused gold is available cannot be optimal.
+
+
 ## Problem
 
 You have `N` items.
@@ -1249,6 +1668,121 @@ NO  -> 0/1 Knapsack -> usually Dynamic Programming
 ---
 
 # 7. Minimum Dot Product of Two Arrays
+
+
+## Exchange Argument — Full Algebra
+
+Assume:
+
+```text
+a[i] <= a[k]
+b[i] <= b[k]
+```
+
+The same-direction pairing is:
+
+```text
+OLD = a[i] * b[i] + a[k] * b[k]
+```
+
+Swap the two `b` values:
+
+```text
+NEW = a[i] * b[k] + a[k] * b[i]
+```
+
+Now compare step by step:
+
+```text
+NEW - OLD
+
+= a[i]b[k] + a[k]b[i]
+  - (a[i]b[i] + a[k]b[k])
+
+= a[i]b[k] + a[k]b[i]
+  - a[i]b[i] - a[k]b[k]
+
+= a[i]b[k] - a[i]b[i]
+  + a[k]b[i] - a[k]b[k]
+
+= a[i](b[k] - b[i])
+  + a[k](b[i] - b[k])
+
+= a[i](b[k] - b[i])
+  - a[k](b[k] - b[i])
+
+= (a[i] - a[k]) * (b[k] - b[i])
+```
+
+Now inspect the signs:
+
+```text
+a[i] <= a[k]
+=> a[i] - a[k] <= 0
+
+b[i] <= b[k]
+=> b[k] - b[i] >= 0
+```
+
+Therefore:
+
+```text
+NEW - OLD <= 0
+```
+
+Hence:
+
+```text
+NEW <= OLD
+```
+
+So swapping a same-direction pair into an opposite-direction pair cannot increase the dot product.
+
+Repeatedly perform these exchanges until:
+
+```text
+A: ascending
+B: descending
+```
+
+### Numeric example
+
+```text
+a[i] = 2
+a[k] = 5
+b[i] = 3
+b[k] = 8
+```
+
+Old:
+
+```text
+2*3 + 5*8
+= 46
+```
+
+New:
+
+```text
+2*8 + 5*3
+= 31
+```
+
+Formula:
+
+```text
+NEW - OLD
+= (2 - 5)(8 - 3)
+= (-3)(5)
+= -15
+```
+
+Therefore:
+
+```text
+31 = 46 - 15
+```
+
 
 ## Problem
 
