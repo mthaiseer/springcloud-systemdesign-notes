@@ -27,164 +27,729 @@ Constructive is different from pure greedy:
 
 # 1. Constructive Toolbox
 
-## 1.1 Think in Reverse
-
-When forward choices branch too much:
+The toolbox is not a list of tricks to memorize. Use it as a **recognition system**:
 
 ```text
-start
- ├─ choice 1
- ├─ choice 2
- └─ choice 3
+Problem signal
+      ↓
+What structure is hiding?
+      ↓
+Choose a construction tool
+      ↓
+Build a simple valid answer
+      ↓
+Prove why it works
 ```
 
-try thinking from the target backwards.
+Quick map:
 
-Sometimes reverse moves are forced or much simpler.
+```text
+                     CONSTRUCTIVE
+                          |
+     ------------------------------------------------
+     |          |          |         |              |
+   Reverse    Sorting     Bits      Setup      Prefix/Suffix
+     |          |          |         |              |
+ undo ops    AB vs BA    2^i       tiny n       keep future
+     |
+     +---------------- Build/Spend ----------------+
+                          |
+                    Two Pointers
+```
+
+---
+
+## 1.1 Think in Reverse
+
+### Signal
+
+Use reverse thinking when the problem says **reach a target using operations**, but forward choices branch.
+
+```text
+START
+  |
+  +--> choice A
+  +--> choice B
+  +--> choice C
+
+Forward = many possible paths
+```
+
+Ask:
+
+> Can I undo the operations from the target?
+
+### Tiny example
+
+Operations:
+
+```text
+x → x + 1
+x → 2x
+```
+
+Forward from `1`:
+
+```text
+          1
+        /   \
+       2     2
+      / \
+     3   4
+        / \
+       5   8
+       ...
+```
+
+But reverse from `13`:
+
+```text
+13 --odd--> 12 --even--> 6 --even--> 3
+                                      |
+                                    odd
+                                      ↓
+                                      2 --even--> 1
+```
+
+Why?
+
+```text
+odd target
+    ↓
+cannot come from ×2
+    ↓
+previous move MUST be +1
+    ↓
+reverse: -1
+```
+
+### Memory hook
+
+```text
+Forward branches?
+      ↓
+Undo operations.
+      ↓
+Reverse may become forced.
+```
+
+**Remember:** “Too many roads forward? Walk backward from the destination.”
 
 ---
 
 ## 1.2 Decode the Operation
 
-Ask:
+Before designing an algorithm, translate every operation into its **real effect**.
 
 ```text
-What exactly changes?
-What remains unchanged?
-Can I undo the operation?
-What mathematical property appears?
+OPERATION
+    |
+    +--> What changes?
+    +--> What stays unchanged?
+    +--> Can it be undone?
+    +--> Does it build/spend something?
+    +--> Does it affect parity/bits/divisibility?
 ```
 
-Examples:
+### Tiny examples
 
-- `+1` ↔ reverse `-1`
-- `×2` ↔ reverse `/2` if divisible
-- bit operations ↔ reason bit by bit
-- swapping ↔ look for ordering/invariant
+```text
+x → x + 1
+meaning: small growth
+reverse: x → x - 1
+```
+
+```text
+x → Kx
+meaning: large jump
+reverse: x → x/K, only if x % K == 0
+```
+
+So a problem containing `+1` and `×K` should make you notice:
+
+```text
+×K
+ ↓
+divisibility
+ ↓
+B % K
+```
+
+Another operation pair:
+
+```text
+normal attack          ultimate
+     |                    |
+kill 1                  kill x
+combo +1                combo → 0
+     |                    |
+BUILD                  SPEND
+```
+
+The statement may look complicated, but decoding exposes the structure.
+
+### Memory hook
+
+> Don't simulate the wording. Translate each operation into mathematics first.
 
 ---
 
-## 1.3 Greedy / Sorting
+## 1.3 Greedy / Sorting — Discover the Comparator
 
-If the answer is an ordering:
+If the answer is an **ordering**, sorting is a strong candidate.
+
+But never guess the comparator.
 
 ```text
-Need optimal order
+Need best order
       ↓
-Maybe sort
+Maybe sorting
       ↓
-But what comparator?
+Sort by WHAT?
       ↓
-Compare only two elements
+Take only A and B
+      ↓
+compare A→B vs B→A
 ```
 
-A very powerful technique is:
+### Tiny example
 
-> Compare `A → B` versus `B → A`, derive an inequality, and use that inequality as the sorting comparator.
+Two contest problems:
+
+```text
+A = (decay D1, time T1)
+B = (decay D2, time T2)
+```
+
+Only two orders exist:
+
+```text
+A → B
+
+0 ----- T1 -------- T1+T2
+    A          B
+```
+
+or:
+
+```text
+B → A
+
+0 ----- T2 -------- T2+T1
+    B          A
+```
+
+Compare their scores. After cancelling common terms, suppose we obtain:
+
+```text
+D2*T1 <= D1*T2
+```
+
+which is:
+
+```text
+T1/D1 <= T2/D2
+```
+
+Now the comparator has been **derived**, not guessed:
+
+```text
+sort by T/D ascending
+```
+
+### Memory hook
+
+```text
+Don't know what to sort by?
+          ↓
+        A B
+         vs
+        B A
+          ↓
+derive inequality
+          ↓
+sorting comparator
+```
 
 ---
 
-## 1.4 Exchange Argument
+## 1.4 Exchange Argument — Prove the Sorting Rule
 
-Used to prove sorting-based greedy strategies.
+After deriving a comparator, prove that the entire sorted order is optimal.
 
-If two adjacent elements are in the "wrong" order:
+Suppose greedy says:
+
+```text
+A should be before B
+```
+
+but an alleged optimal order contains:
 
 ```text
 ... B A ...
 ```
 
-and swapping them:
+Exchange them:
 
 ```text
-... A B ...
+before:  P1 P2 [ B A ] P5 P6
+                    ↓ swap
+after:   P1 P2 [ A B ] P5 P6
 ```
 
-does not make the answer worse, then repeatedly fixing such inversions gives the greedy sorted order.
+Why can we focus only on `A` and `B`?
+
+```text
+before pair → unchanged
+
+pair:
+B then A
+vs
+A then B
+
+after pair → unchanged starting time
+because
+
+TA + TB = TB + TA
+```
+
+If `A B` is at least as good as `B A`, the inversion can be removed.
 
 ```text
 wrong adjacent pair
        ↓
-exchange
+     swap
        ↓
 objective does not worsen
        ↓
-repeat
+repeat for every inversion
        ↓
-globally sorted optimal order
+greedy sorted order
 ```
+
+### Mental model
+
+```text
+Exchange argument
+       =
+Bubble Sort + proof
+```
+
+### Memory hook
+
+> To prove a global ordering, prove that every locally wrong adjacent pair can be safely swapped.
 
 ---
 
-## 1.5 Bit-by-Bit
+## 1.5 Bit-by-Bit Construction
 
-Typical signals:
+### Signals
 
-- `2^i`
-- AND / OR / XOR
-- powers of two
-- binary representation
-- coefficients per bit
+Immediately think about bits when you see:
 
-Ask:
+```text
+2^i
+AND / OR / XOR
+powers of two
+binary coefficients
+```
 
-> What does the condition mean independently at each bit?
+Mental conversion:
+
+```text
+number condition
+      ↓
+write binary
+      ↓
+look at each bit / local bit pattern
+```
+
+### Tiny example
+
+```text
+14 = 1110₂
+```
+
+Suppose adjacent non-zero coefficients are forbidden.
+
+Normal binary contains:
+
+```text
+bits:  3 2 1 0
+       -------
+       1 1 1 0
+       ^^^^^
+       bad run
+```
+
+Use the identity:
+
+```text
+111₂ = 1000₂ - 1
+```
+
+More generally:
+
+```text
+111...111
+=
+1000...000 - 1
+```
+
+For `14`:
+
+```text
+14 = 8 + 4 + 2
+   = 16 - 2
+```
+
+So instead of:
+
+```text
+0  1  1  1
+```
+
+we can represent it LSB-first as:
+
+```text
+index: 0   1   2   3   4
+       ------------------
+a[i]:  0  -1   0   0   1
+```
+
+Check:
+
+```text
+-1*2^1 + 1*2^4
+= -2 + 16
+= 14
+```
+
+### Pattern
+
+```text
+2^i appears
+    ↓
+write binary
+    ↓
+find forbidden local pattern
+    ↓
+find identity preserving value
+    ↓
+repair bits locally
+```
+
+### Memory hook
+
+**Decimal:** `999 = 1000 - 1`  
+**Binary:** `111₂ = 1000₂ - 1`
 
 ---
 
 ## 1.6 Dimensions / Setup
 
-Try:
+Sometimes the construction is hidden in the **shape of n**, not in a sophisticated algorithm.
+
+Before coding, test:
 
 ```text
 n = 1
 n = 2
 n = 3
 n = 4
-...
+n = 5
+n = 6
 ```
 
 Look for:
 
-- parity
-- `n % k`
-- pairing
-- leftovers
-- rows / columns
-- structural constraints
-
----
-
-## 1.7 Prefix / Suffix
-
-After fixing one prefix:
-
 ```text
-[ fixed prefix ][ remaining suffix ]
+parity      n % k
+pairing     leftovers
+groups      rows/columns
 ```
 
-ask whether the remaining suffix is still feasible.
-
-Look for prefix sums, suffix conditions, or invariants.
-
----
-
-## 1.8 Two-Pointer Construction
-
-Useful when sorted elements play different roles:
+### Tiny example — pairing
 
 ```text
-small ---------------- large
-  ↑                      ↑
-resource                 target
+n = 6
+
+[1 2] [3 4] [5 6]
+  ✓     ✓     ✓
 ```
 
-Very common pattern:
+But:
 
-- small side builds something
-- large side consumes/uses it
+```text
+n = 5
+
+[1 2] [3 4] [5]
+               ↑
+            leftover
+```
+
+This immediately suggests:
+
+```text
+even n → perfect pairing possible
+odd n  → one element needs special handling
+```
+
+### Tiny example — groups of 3
+
+```text
+n = 6
+[1 2 3] [4 5 6]
+```
+
+```text
+n = 7
+[1 2 3] [4 5 6] [7]
+                   ↑
+                leftover
+```
+
+Signal:
+
+```text
+n % 3
+```
+
+### Memory hook
+
+> Before inventing complicated logic, draw constructions for `n = 1..6`.
 
 ---
+
+## 1.7 Prefix / Suffix Observation
+
+When constructing left to right, a locally valid choice may destroy the possibility of completing the rest.
+
+Always visualize:
+
+```text
+[ already fixed ][ not built yet ]
+      prefix          suffix
+```
+
+Ask:
+
+> After fixing this prefix, is the suffix still feasible?
+
+### Tiny example
+
+Suppose final sum must be `10`.
+
+After some choices:
+
+```text
+prefix sum = 8
+
+remaining positions can add at most 1
+
+[ prefix = 8 ][ max suffix = 1 ]
+
+8 + 1 = 9 < 10
+```
+
+So the prefix choice was impossible even if it looked locally valid.
+
+Think of an invariant:
+
+```text
+choose next value
+      ↓
+prefix remains valid?
+      ↓
+suffix still has enough freedom?
+      ↓
+YES → continue
+NO  → reject choice
+```
+
+### Recognition signal
+
+Look for prefix/suffix reasoning when the statement says:
+
+```text
+for every i...
+all prefixes...
+all suffixes...
+after every operation...
+```
+
+### Memory hook
+
+> Don't fix the present in a way that makes the future impossible.
+
+---
+
+## 1.8 Build / Spend Resource → Two Pointers
+
+Some problems contain two complementary operations:
+
+```text
+Operation A → BUILD resource
+Operation B → SPEND resource
+```
+
+After sorting, different ends may naturally play different roles:
+
+```text
+small ---------------------------- large
+  ↑                                  ↑
+build resource                    use resource
+```
+
+### Tiny example
+
+Monster hordes:
+
+```text
+[1, 2, 3, 10]
+
+ L           R
+```
+
+Normal attacks on small hordes build combo:
+
+```text
+kill 1  → combo = 1
+kill 2  → combo = 3
+kill 3  → combo = 6
+```
+
+Then the accumulated combo is valuable against a large horde:
+
+```text
+small hordes              large horde
+     |                          |
+     v                          v
+  BUILD x  ---------------->  SPEND x
+```
+
+This suggests:
+
+```text
+sort
+ ↓
+L = smallest
+R = largest
+ ↓
+small side builds
+large side receives/spends
+ ↓
+two pointers
+```
+
+Important refinement: do not always consume the whole left side.
+
+```text
+combo = 7
+left  = 5
+right = 10
+
+need = right - combo
+     = 3
+
+consume only 3 from left:
+
+left:  5 → 2
+combo: 7 → 10
+```
+
+Now use the resource immediately.
+
+### Memory hook
+
+```text
+Small = fuel
+Large = target
+```
+
+---
+
+## 1.9 Fast Recognition Decision Tree
+
+Use this during contests:
+
+```text
+                   CONSTRUCTIVE PROBLEM
+                           |
+                           v
+                 What is the main signal?
+                           |
+        ---------------------------------------------
+        |            |            |                 |
+   Reach target   Need order     2^i/bits      Build + Spend
+        |            |            |                 |
+        v            v            v                 v
+ forward messy?   compare AB    binary/local      sort values
+        |          vs BA          pattern            |
+        v            |            |                 v
+    REVERSE           v            v          TWO POINTERS
+                  comparator    transform
+                      |
+                      v
+                exchange proof
+```
+
+And if none fits:
+
+```text
+Construction depends on n?
+        ↓
+try n = 1..6
+        ↓
+parity / modulo / grouping
+
+Condition depends on earlier choices?
+        ↓
+prefix / suffix invariant
+```
+
+---
+
+## 1.10 Toolbox Memory Card
+
+```text
+REVERSE
+Forward branches → undo operations.
+
+DECODE
+Translate statement operations into mathematics.
+
+SORTING
+Need order → compare AB vs BA.
+
+EXCHANGE
+Wrong adjacent pair → swap → prove not worse.
+
+BITS
+2^i appears → binary → find bad local pattern.
+
+SETUP
+Try tiny n → parity / modulo / leftovers.
+
+PREFIX/SUFFIX
+Fix prefix → make sure suffix remains possible.
+
+TWO POINTERS
+One side builds → other side consumes.
+```
+
+The goal during a contest is:
+
+```text
+Don't remember the old solution.
+
+Remember the SIGNAL
+        ↓
+recognize the TOOL
+        ↓
+derive the construction again.
+```
+
 
 # 2. General Constructive Workflow
 
