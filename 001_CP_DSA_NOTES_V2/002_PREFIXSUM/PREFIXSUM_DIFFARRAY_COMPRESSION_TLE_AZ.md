@@ -80,9 +80,9 @@ The uploaded lecture states the same high-level goal: prefix sums preprocess arr
 
 Given an array `A` and many queries `[L,R]`, return:
 
-\[
-A_L + A_{L+1}+\cdots+A_R
-\]
+```text
+A[L] + A[L+1] + ... + A[R]
+```
 
 A direct loop for every query is O(NQ), which is too slow when both are large.
 
@@ -90,17 +90,17 @@ A direct loop for every query is O(NQ), which is too slow when both are large.
 
 For 1-based indexing define:
 
-\[
-P[i]=A_1+A_2+\cdots+A_i
-\]
+```text
+P[i] = A[1] + A[2] + ... + A[i]
+```
 
 and `P[0]=0`.
 
 Then:
 
-\[
-P[i]=P[i-1]+A_i
-\]
+```text
+P[i] = P[i-1] + A[i]
+```
 
 ### Dry run
 
@@ -137,19 +137,19 @@ answer = P[5] - P[2]
 
 ## Why `P[R] - P[L-1]` works
 
-\[
-P[R]=A_1+\cdots+A_{L-1}+A_L+\cdots+A_R
-\]
+```text
+P[R] = A[1] + ... + A[L-1] + A[L] + ... + A[R]
+```
 
-\[
-P[L-1]=A_1+\cdots+A_{L-1}
-\]
+```text
+P[L-1] = A[1] + ... + A[L-1]
+```
 
 Subtract:
 
-\[
-P[R]-P[L-1]=A_L+\cdots+A_R
-\]
+```text
+P[R] - P[L-1] = A[L] + ... + A[R]
+```
 
 ## C++
 
@@ -194,9 +194,9 @@ Space:   O(N)
 
 For a grid, define:
 
-\[
-P[i][j] = \text{sum of rectangle } (1,1) \text{ to } (i,j)
-\]
+```text
+P[i][j] = sum of rectangle from (1,1) to (i,j)
+```
 
 ## Building the table
 
@@ -216,13 +216,9 @@ At `(i,j)`:
 
 If we add the rectangle above and the rectangle left, the top-left overlap is counted twice. Therefore:
 
-\[
-P[i][j]
-= A[i][j]
-+ P[i-1][j]
-+ P[i][j-1]
-- P[i-1][j-1]
-\]
+```text
+P[i][j] = A[i][j] + P[i-1][j] + P[i][j-1] - P[i-1][j-1]
+```
 
 ## Rectangle query
 
@@ -242,15 +238,15 @@ Suppose we want `(r1,c1)` to `(r2,c2)`.
 
 Start with everything up to `(r2,c2)`:
 
-\[
+```text
 P[r2][c2]
-\]
+```
 
 Subtract top and left. Their overlap was subtracted twice, so add it back:
 
-\[
-ans=P[r2][c2]-P[r1-1][c2]-P[r2][c1-1]+P[r1-1][c1-1]
-\]
+```text
+ans = P[r2][c2] - P[r1-1][c2] - P[r2][c1-1] + P[r1-1][c1-1]
+```
 
 ## C++
 
@@ -301,9 +297,9 @@ This is one of the most useful algebraic prefix-sum patterns.
 
 For each query `[L,R]`, compute:
 
-\[
-1A_L + 2A_{L+1}+3A_{L+2}+\cdots+(R-L+1)A_R
-\]
+```text
+1*A[L] + 2*A[L+1] + 3*A[L+2] + ... + (R-L+1)*A[R]
+```
 
 The lecture/GitHub solution uses **two prefix sums**.
 
@@ -321,61 +317,61 @@ Distance from `L` is `i-L`.
 
 Since `L` itself must have weight `1`:
 
-\[
-weight(i)=i-L+1
-\]
+```text
+weight(i) = i - L + 1
+```
 
 Therefore:
 
-\[
-ans=\sum_{i=L}^{R} A_i(i-L+1)
-\]
+```text
+ans = Σ(i=L..R) A[i] * (i - L + 1)
+```
 
 ## Step 2 — Expand the bracket
 
-\[
-i-L+1=i-(L-1)
-\]
+```text
+i - L + 1 = i - (L - 1)
+```
 
 So:
 
-\[
-ans=\sum_{i=L}^{R} A_i[i-(L-1)]
-\]
+```text
+ans = Σ(i=L..R) A[i] * [i - (L - 1)]
+```
 
 Distribute `A_i`:
 
-\[
-ans=\sum_{i=L}^{R} iA_i-(L-1)\sum_{i=L}^{R}A_i
-\]
+```text
+ans = Σ(i=L..R) i*A[i] - (L-1) * Σ(i=L..R) A[i]
+```
 
 This is the key transformation.
 
 We need only two prefix arrays:
 
-\[
-P_0[i]=\sum_{j=1}^{i} A_j
-\]
+```text
+P0[i] = Σ(j=1..i) A[j]
+```
 
-\[
-P_1[i]=\sum_{j=1}^{i} jA_j
-\]
+```text
+P1[i] = Σ(j=1..i) j*A[j]
+```
 
 Then:
 
-\[
-S_0=P_0[R]-P_0[L-1]
-\]
+```text
+S0 = P0[R] - P0[L-1]
+```
 
-\[
-S_1=P_1[R]-P_1[L-1]
-\]
+```text
+S1 = P1[R] - P1[L-1]
+```
 
 and:
 
-\[
-\boxed{ans=S_1-(L-1)S_0}
-\]
+```text
+FINAL: ans = S1 - (L - 1) * S0
+```
 
 ## Dry run
 
@@ -424,31 +420,31 @@ ans = S1 - (L-1)*S0
 
 Suppose weights are:
 
-\[
-a,\ a+d,\ a+2d,\ldots
-\]
+```text
+a, a+d, a+2d, ...
+```
 
 At index `i`:
 
-\[
-w_i=a+(i-L)d
-\]
+```text
+w[i] = a + (i - L) * d
+```
 
 Expand:
 
-\[
-w_i = di + (a-dL)
-\]
+```text
+w[i] = d*i + (a - d*L)
+```
 
 Therefore:
 
-\[
-ans=\sum A_i[di+(a-dL)]
-\]
+```text
+ans = Σ A[i] * [d*i + (a - d*L)]
+```
 
-\[
-\boxed{ans=d\sum iA_i+(a-dL)\sum A_i}
-\]
+```text
+FINAL: ans = d * Σ(i*A[i]) + (a - d*L) * Σ(A[i])
+```
 
 Again: only two prefix sums.
 
@@ -486,47 +482,47 @@ prefix(A[i]) + prefix(i*A[i])
 
 Now suppose the local weights are geometric:
 
-\[
-1,r,r^2,r^3,\ldots
-\]
+```text
+1, r, r^2, r^3, ...
+```
 
 For query `[L,R]`:
 
-\[
-ans=\sum_{i=L}^{R} A_i r^{i-L}
-\]
+```text
+ans = Σ(i=L..R) A[i] * r^(i-L)
+```
 
 ## Algebra
 
 Because:
 
-\[
-r^{i-L}=r^i\cdot r^{-L}
-\]
+```text
+r^(i-L) = r^i * r^(-L)
+```
 
 we can write:
 
-\[
-ans=r^{-L}\sum_{i=L}^{R} A_i r^i
-\]
+```text
+ans = r^(-L) * Σ(i=L..R) A[i] * r^i
+```
 
 Define:
 
-\[
-G[i]=\sum_{j=1}^{i} A_j r^j
-\]
+```text
+G[i] = Σ(j=1..i) A[j] * r^j
+```
 
 Then:
 
-\[
-\sum_{i=L}^{R}A_i r^i=G[R]-G[L-1]
-\]
+```text
+Σ(i=L..R) A[i] * r^i = G[R] - G[L-1]
+```
 
 So:
 
-\[
-\boxed{ans=(G[R]-G[L-1])r^{-L}}
-\]
+```text
+FINAL: ans = (G[R] - G[L-1]) * r^(-L)
+```
 
 ## Important modular condition
 
@@ -534,17 +530,17 @@ In CP this is usually done modulo a prime `MOD`.
 
 `r^{-L}` means modular inverse:
 
-\[
-r^{-L}=(r^{-1})^L \pmod{MOD}
-\]
+```text
+r^(-L) = (r^(-1))^L mod MOD
+```
 
 This requires `gcd(r,MOD)=1`.
 
 For prime MOD and `r % MOD != 0`:
 
-\[
-r^{-1}=r^{MOD-2}\pmod{MOD}
-\]
+```text
+r^(-1) = r^(MOD-2) mod MOD   (when MOD is prime)
+```
 
 ## Example
 
@@ -638,15 +634,15 @@ A = 0  1  0  1  1  0  0  1
 
 We want:
 
-\[
-\#1 = \#0
-\]
+```text
+count(1) = count(0)
+```
 
 Move one side:
 
-\[
-\#1-\#0=0
-\]
+```text
+count(1) - count(0) = 0
+```
 
 So map:
 
@@ -661,15 +657,15 @@ Now we need the **longest subarray with sum 0**.
 
 If:
 
-\[
-prefix[j]=prefix[i]
-\]
+```text
+prefix[j] = prefix[i]
+```
 
 then:
 
-\[
-prefix[j]-prefix[i]=0
-\]
+```text
+prefix[j] - prefix[i] = 0
+```
 
 so subarray `(i+1 ... j)` has sum 0.
 
@@ -1067,21 +1063,21 @@ Doing this directly is O(length).
 
 At global index `i`:
 
-\[
-add(i)=a+(i-L)d
-\]
+```text
+add(i) = a + (i - L) * d
+```
 
 Expand:
 
-\[
-add(i)=di+(a-dL)
-\]
+```text
+add(i) = d*i + (a - d*L)
+```
 
 This is a linear function:
 
-\[
-add(i)=C\cdot i+B
-\]
+```text
+add(i) = C*i + B
+```
 
 where:
 
@@ -1109,9 +1105,9 @@ diffB[R + 1] -= a - d*L
 
 After prefixing both arrays:
 
-\[
-add(i)=C_i i+B_i
-\]
+```text
+add(i) = C[i]*i + B[i]
+```
 
 ## Dry run
 
@@ -1205,15 +1201,15 @@ a, a*r, a*r^2, ...
 
 So contribution at `i` is:
 
-\[
-x_i=a r^{i-L}
-\]
+```text
+x[i] = a * r^(i-L)
+```
 
 A normal difference `x_i-x_{i-1}` is not constant. But a GP has a recurrence:
 
-\[
-x_i=r x_{i-1}
-\]
+```text
+x[i] = r * x[i-1]
+```
 
 That tells us what “difference” to store.
 
@@ -1221,15 +1217,15 @@ That tells us what “difference” to store.
 
 Let:
 
-\[
-D_i=x_i-rx_{i-1}
-\]
+```text
+D[i] = x[i] - r*x[i-1]
+```
 
 Inside a pure GP:
 
-\[
-D_i=0
-\]
+```text
+D[i] = 0
+```
 
 except at boundaries.
 
@@ -1242,9 +1238,9 @@ D[R + 1] -= a * r^(R-L+1)
 
 Then reconstruct with:
 
-\[
-x_i=D_i+r x_{i-1}
-\]
+```text
+x[i] = D[i] + r*x[i-1]
+```
 
 ## Dry run
 
@@ -1440,9 +1436,9 @@ You can instead pay a daily cap `C`.
 
 For each day:
 
-\[
-cost(day)=\min(C,\sum c_i\text{ of active services})
-\]
+```text
+cost(day) = min(C, sum of c[i] over all active services)
+```
 
 Coordinates can be very large, so iterating every day is impossible.
 
@@ -1565,9 +1561,9 @@ Sweep:       O(N)
 
 You have array:
 
-\[
-A_1,A_2,\ldots,A_N
-\]
+```text
+A[1], A[2], ..., A[N]
+```
 
 and `M` ranges `[l_i,r_i]`.
 
@@ -1594,9 +1590,9 @@ Ask:
 
 Let:
 
-\[
-f_i=\#\{\text{ranges covering index }i\}
-\]
+```text
+f[i] = number of ranges covering index i
+```
 
 Then `A[i]` appears exactly `f_i` times in `S`.
 
@@ -1863,9 +1859,9 @@ int main() {
 
 Maximum total size of conceptual `S` can be roughly:
 
-\[
-M\cdot N=10^5\cdot10^5=10^{10}
-\]
+```text
+M * N = 10^5 * 10^5 = 10^10
+```
 
 So 32-bit `int` is unsafe for cumulative frequency.
 
