@@ -48,16 +48,16 @@ for (auto x : arr) { g = gcd_(g, x); l = lcm_(l, x); }
 (C++17 also has `std::gcd`/`std::lcm` in `<numeric>`.)
 
 ### More problems
-1. CSES – Common Divisors
-2. CF 1499A – GCD Sum
-3. CSES – Coin Piles
-4. CF 1114A – Got Any Grapes? (LCM-flavored greedy)
-5. CF 1029A – Many Equal Substrings (period = LCM-like reasoning)
-6. CF 1367B – Even Array (parity + gcd bookkeeping)
-7. CF 1350B – Orac and Models (uses divisibility chains)
+1. CSES – [Common Divisors](https://cses.fi/problemset/task/1081)
+2. [CF 1499A](https://codeforces.com/problemset/problem/1499/A) – GCD Sum
+3. CSES – [Coin Piles](https://cses.fi/problemset/task/1754)
+4. [CF 1114A](https://codeforces.com/problemset/problem/1114/A) – Got Any Grapes? (LCM-flavored greedy)
+5. [CF 1029A](https://codeforces.com/problemset/problem/1029/A) – Many Equal Substrings (period = LCM-like reasoning)
+6. [CF 1367B](https://codeforces.com/problemset/problem/1367/B) – Even Array (parity + gcd bookkeeping)
+7. [CF 1350B](https://codeforces.com/problemset/problem/1350/B) – Orac and Models (uses divisibility chains)
 8. Project Euler-style: sum of multiples under N (LCM/inclusion-exclusion warmup)
-9. CF 1445A – Array Rearrangement (parity/gcd of sums)
-10. CF 1493B – Planar Reflections (recurrence, gcd-adjacent counting)
+9. [CF 1445A](https://codeforces.com/problemset/problem/1445/A) – Array Rearrangement (parity/gcd of sums)
+10. [CF 1493B](https://codeforces.com/problemset/problem/1493/B) – Planar Reflections (recurrence, gcd-adjacent counting)
 
 ---
 
@@ -116,15 +116,15 @@ long long modinv(long long a, long long mod = MOD) {
 ```
 
 ### More problems
-1. CSES – Exponentiation
-2. CSES – Exponentiation II
-3. CF 630A – Again Twenty Five!
-4. CF 615D – Multiplication Table
-5. CF 1097D – Makoto and a Blackboard (harmonic-sum + expectation, uses modinv)
-6. CF 1097B – Petr and a Combination Lock (bitmask+mod)
-7. CF 1350C – Orac and Game of Choosing Numbers
-8. CF 559C – Gerald and Giant Chess (uses factorial mod + Fermat inverse)
-9. CF 1391D – 505 (2D prefix sums + parity, mod-friendly)
+1. CSES – [Exponentiation](https://cses.fi/problemset/task/1095)
+2. CSES – [Exponentiation II](https://cses.fi/problemset/task/1712)
+3. [CF 630A](https://codeforces.com/problemset/problem/630/A) – Again Twenty Five!
+4. [CF 615D](https://codeforces.com/problemset/problem/615/D) – Multiplication Table
+5. [CF 1097D](https://codeforces.com/problemset/problem/1097/D) – Makoto and a Blackboard (harmonic-sum + expectation, uses modinv)
+6. [CF 1097B](https://codeforces.com/problemset/problem/1097/B) – Petr and a Combination Lock (bitmask+mod)
+7. [CF 1350C](https://codeforces.com/problemset/problem/1350/C) – Orac and Game of Choosing Numbers
+8. [CF 559C](https://codeforces.com/problemset/problem/559/C) – Gerald and Giant Chess (uses factorial mod + Fermat inverse)
+9. [CF 1391D](https://codeforces.com/problemset/problem/1391/D) – 505 (2D prefix sums + parity, mod-friendly)
 10. CSES – Fibonacci Numbers
 
 ---
@@ -186,15 +186,15 @@ void spf_sieve() {
 
 ### More problems
 1. CSES – Next Prime (find nearest prime, uses sieve/trial division)
-2. CF 26A – Almost Prime
-3. CF 271B – Prime Matrix
-4. CF 483B – Friends and Presents (binary search + inclusion-exclusion on primes)
-5. CF 1096D – Easy Problem (dp, primes as constraints)
-6. CF 735D – Taxes (Goldbach-flavored prime reasoning)
-7. CF 1029F – Multicolored Cars (not prime — swap: CF 1198C Matching Names) — practice source: SPOJ PRIME1 (segmented sieve)
-8. CF 17A – Noldbach Problem
-9. CF 1499D – The Number of Pairs (divisor + prime factorization)
-10. CSES – Counting Coprime Pairs (uses inclusion–exclusion over prime factors)
+2. [CF 26A](https://codeforces.com/problemset/problem/26/A) – Almost Prime
+3. [CF 271B](https://codeforces.com/problemset/problem/271/B) – Prime Matrix
+4. [CF 483B](https://codeforces.com/problemset/problem/483/B) – Friends and Presents (binary search + inclusion-exclusion on primes)
+5. [CF 1096D](https://codeforces.com/problemset/problem/1096/D) – Easy Problem (dp, primes as constraints)
+6. [CF 735D](https://codeforces.com/problemset/problem/735/D) – Taxes (Goldbach-flavored prime reasoning)
+7. [CF 1029F](https://codeforces.com/problemset/problem/1029/F) – Multicolored Cars (not prime — swap: [CF 1198C](https://codeforces.com/problemset/problem/1198/C) Matching Names) — practice source: SPOJ PRIME1 (segmented sieve)
+8. [CF 17A](https://codeforces.com/problemset/problem/17/A) – Noldbach Problem
+9. [CF 1499D](https://codeforces.com/problemset/problem/1499/D) – The Number of Pairs (divisor + prime factorization)
+10. CSES – [Counting Coprime Pairs](https://cses.fi/problemset/task/2417) (uses inclusion–exclusion over prime factors)
 
 ---
 
@@ -253,16 +253,16 @@ void divisor_sieve() {
 ```
 
 ### More problems
-1. CSES – Counting Divisors
-2. CSES – Sum of Divisors
-3. CSES – Divisor Analysis (uses factorization formula, not brute force)
-4. CF 27E – Number With The Given Amount Of Divisors
-5. CF 1108B – Divisors of Two Integers
-6. CF 1512E – Permutation by Sum? (skip — better) CF 1474D – Cleaning the Phone (subset-sum, adjacent skill)
-7. CF 484A – Bits (bit/divisor counting hybrid)
-8. CF 1183F – Topforces Strikes Back (harder, divisor + dp)
-9. CSES – Prime Multiples (inclusion–exclusion with divisors)
-10. CF 1029C – Maximal Intersection (uses divisor/range reasoning)
+1. CSES – [Counting Divisors](https://cses.fi/problemset/task/1713)
+2. CSES – [Sum of Divisors](https://cses.fi/problemset/task/1082)
+3. CSES – [Divisor Analysis](https://cses.fi/problemset/task/2182) (uses factorization formula, not brute force)
+4. [CF 27E](https://codeforces.com/problemset/problem/27/E) – Number With The Given Amount Of Divisors
+5. [CF 1108B](https://codeforces.com/problemset/problem/1108/B) – Divisors of Two Integers
+6. [CF 1512E](https://codeforces.com/problemset/problem/1512/E) – Permutation by Sum? (skip — better) [CF 1474D](https://codeforces.com/problemset/problem/1474/D) – Cleaning the Phone (subset-sum, adjacent skill)
+7. [CF 484A](https://codeforces.com/problemset/problem/484/A) – Bits (bit/divisor counting hybrid)
+8. [CF 1183F](https://codeforces.com/problemset/problem/1183/F) – Topforces Strikes Back (harder, divisor + dp)
+9. CSES – [Prime Multiples](https://cses.fi/problemset/task/2185) (inclusion–exclusion with divisors)
+10. [CF 1029C](https://codeforces.com/problemset/problem/1029/C) – Maximal Intersection (uses divisor/range reasoning)
 
 ---
 
@@ -320,16 +320,16 @@ long long C(int n, int r) {
 ```
 
 ### More problems
-1. CSES – Binomial Coefficients
-2. CSES – Creating Strings II
-3. CSES – Distributing Apples (stars and bars)
+1. CSES – [Binomial Coefficients](https://cses.fi/problemset/task/1079)
+2. CSES – [Creating Strings II](https://cses.fi/problemset/task/1715)
+3. CSES – [Distributing Apples](https://cses.fi/problemset/task/1716) (stars and bars)
 4. CSES – Bracket Sequences I
 5. CSES – Bracket Sequences II (Catalan numbers)
-6. CF 559C – Gerald and Giant Chess (combinatorial paths avoiding blocked cells)
-7. CF 1096D – Easy Problem (dp + combinatorics)
-8. CF 1178F1 – Short Colorful Strip (harder combinatorics)
-9. CF 630K – Indivisibility (inclusion–exclusion)
-10. CF 1214D – Bouncing Ball (skip if unfamiliar — swap for) CF 300C – Beautiful Numbers
+6. [CF 559C](https://codeforces.com/problemset/problem/559/C) – Gerald and Giant Chess (combinatorial paths avoiding blocked cells)
+7. [CF 1096D](https://codeforces.com/problemset/problem/1096/D) – Easy Problem (dp + combinatorics)
+8. [CF 1178F1](https://codeforces.com/problemset/problem/1178/F1) – Short Colorful Strip (harder combinatorics)
+9. [CF 630K](https://codeforces.com/problemset/problem/630/K) – Indivisibility (inclusion–exclusion)
+10. [CF 1214D](https://codeforces.com/problemset/problem/1214/D) – Bouncing Ball (skip if unfamiliar — swap for) [CF 300C](https://codeforces.com/problemset/problem/300/C) – Beautiful Numbers
 
 ---
 
@@ -368,16 +368,16 @@ long long arithmetic_sum(long long first, long long last, long long n) {
 ```
 
 ### More problems
-1. CF 1A – Theatre Square
-2. CF 546A – Soldier and Bananas
-3. CF 1360A – Minimal Square
-4. CF 466A – Cheap Travel
-5. CSES – Number Spiral
-6. CF 1141A – Game With Sticks (parity/turns arithmetic)
-7. CF 1183A – Nearest Interesting Number (digit-sum + ceiling)
-8. CF 1265A – Beautiful Regional Contest (sorting + arithmetic grouping)
-9. CF 1512A – Spy Detected! (edge-case counting)
-10. CF 1350A – Orac and Factorial (growth-rate/series reasoning)
+1. [CF 1A](https://codeforces.com/problemset/problem/1/A) – Theatre Square
+2. [CF 546A](https://codeforces.com/problemset/problem/546/A) – Soldier and Bananas
+3. [CF 1360A](https://codeforces.com/problemset/problem/1360/A) – Minimal Square
+4. [CF 466A](https://codeforces.com/problemset/problem/466/A) – Cheap Travel
+5. CSES – [Number Spiral](https://cses.fi/problemset/task/1071)
+6. [CF 1141A](https://codeforces.com/problemset/problem/1141/A) – Game With Sticks (parity/turns arithmetic)
+7. [CF 1183A](https://codeforces.com/problemset/problem/1183/A) – Nearest Interesting Number (digit-sum + ceiling)
+8. [CF 1265A](https://codeforces.com/problemset/problem/1265/A) – Beautiful Regional Contest (sorting + arithmetic grouping)
+9. [CF 1512A](https://codeforces.com/problemset/problem/1512/A) – Spy Detected! (edge-case counting)
+10. [CF 1350A](https://codeforces.com/problemset/problem/1350/A) – Orac and Factorial (growth-rate/series reasoning)
 
 ---
 
@@ -388,7 +388,7 @@ long long arithmetic_sum(long long first, long long last, long long n) {
 **Core idea:** Track parity (mod 2) invariants instead of exact values — many "can we reach state X" problems reduce to a parity check. For XOR problems: XOR is its own inverse (`a^a=0`), associative, and commutative — build prefix-XOR arrays the same way you'd build prefix sums.
 
 ### Dry Run
-"Watermelon" (CF 4A): can weight `w` be split into two even positive parts?
+"Watermelon" ([CF 4A](https://codeforces.com/problemset/problem/4/A)): can weight `w` be split into two even positive parts?
 
 ```
 w = 8
@@ -430,16 +430,16 @@ for (int i = 0; i < n; i++) pre_xor[i+1] = pre_xor[i] ^ a[i];
 ```
 
 ### More problems
-1. CF 4A – Watermelon
-2. CF 1352B – Same Parity Summation
-3. CF 1327A – Sum of Odd Integers
-4. CF 1327B – Sum of Bad Numbers
-5. CSES – Bit Strings
-6. CSES – Two Sets
-7. CF 1375C – Element Extermination (parity of positions)
-8. CF 1466C – Canine poetry (parity trick on removals)
-9. CF 1385D – a-Good String (XOR/parity divide & conquer)
-10. CF 1215B – The Number of Products (sign/parity of prefix products)
+1. [CF 4A](https://codeforces.com/problemset/problem/4/A) – Watermelon
+2. [CF 1352B](https://codeforces.com/problemset/problem/1352/B) – Same Parity Summation
+3. [CF 1327A](https://codeforces.com/problemset/problem/1327/A) – Sum of Odd Integers
+4. [CF 1327B](https://codeforces.com/problemset/problem/1327/B) – Sum of Bad Numbers
+5. CSES – [Bit Strings](https://cses.fi/problemset/task/1617)
+6. CSES – [Two Sets](https://cses.fi/problemset/task/1092)
+7. [CF 1375C](https://codeforces.com/problemset/problem/1375/C) – Element Extermination (parity of positions)
+8. [CF 1466C](https://codeforces.com/problemset/problem/1466/C) – Canine poetry (parity trick on removals)
+9. [CF 1385D](https://codeforces.com/problemset/problem/1385/D) – a-Good String (XOR/parity divide & conquer)
+10. [CF 1215B](https://codeforces.com/problemset/problem/1215/B) – The Number of Products (sign/parity of prefix products)
 
 ---
 
@@ -450,7 +450,7 @@ for (int i = 0; i < n; i++) pre_xor[i+1] = pre_xor[i] ^ a[i];
 **Core idea:** Peel digits with `n % 10` then `n /= 10`. For "sum of round numbers" style problems, decompose greedily digit by digit from the least significant, emitting `d * 10^position` as a separate term whenever the digit is nonzero.
 
 ### Dry Run
-Decompose 1230 into round-number terms (CF 1352A style).
+Decompose 1230 into round-number terms ([CF 1352A](https://codeforces.com/problemset/problem/1352/A) style).
 
 ```
 n = 1230
@@ -494,16 +494,16 @@ int digit_sum(long long n) {
 ```
 
 ### More problems
-1. CF 1352A – Sum of Round Numbers
-2. CF 1183A – Nearest Interesting Number
-3. CSES – Digit Queries
-4. CF 1244A – Pens and Pencils (not digit—swap) CF 1354A – Alarm Clock
-5. CF 617A – Elephant (greedy step-counting, digit-like decomposition)
-6. CF 1352C – K-th Not Divisible by n
-7. CF 1029B – Creating the Contest (not digit—swap) CF 1352D – Alice, Bob and Candies
-8. CF 1352F1 – Nastia and a Hidden Permutation (harder)
-9. CF 118A – String Task (not digit—optional stretch)
-10. CSES – Counting Numbers (digit DP proper — good bridge to harder digit DP)
+1. [CF 1352A](https://codeforces.com/problemset/problem/1352/A) – Sum of Round Numbers
+2. [CF 1183A](https://codeforces.com/problemset/problem/1183/A) – Nearest Interesting Number
+3. CSES – [Digit Queries](https://cses.fi/problemset/task/2431)
+4. [CF 1244A](https://codeforces.com/problemset/problem/1244/A) – Pens and Pencils (not digit—swap) [CF 1354A](https://codeforces.com/problemset/problem/1354/A) – Alarm Clock
+5. [CF 617A](https://codeforces.com/problemset/problem/617/A) – Elephant (greedy step-counting, digit-like decomposition)
+6. [CF 1352C](https://codeforces.com/problemset/problem/1352/C) – K-th Not Divisible by n
+7. [CF 1029B](https://codeforces.com/problemset/problem/1029/B) – Creating the Contest (not digit—swap) [CF 1352D](https://codeforces.com/problemset/problem/1352/D) – Alice, Bob and Candies
+8. [CF 1352F1](https://codeforces.com/problemset/problem/1352/F1) – Nastia and a Hidden Permutation (harder)
+9. [CF 118A](https://codeforces.com/problemset/problem/118/A) – String Task (not digit—optional stretch)
+10. CSES – [Counting Numbers](https://cses.fi/problemset/task/2220) (digit DP proper — good bridge to harder digit DP)
 
 ---
 
@@ -552,15 +552,15 @@ long long expected_mod(long long sumOfValues, long long count) {
 ```
 
 ### More problems
-1. CF 1266A – Radio Station (counting-as-probability warmup)
-2. CF 1097D – Makoto and a Blackboard (expectation with modinv)
-3. CF 1265E – Beautiful Mirrors (harder — expectation + DP)
-4. CF 908D – New Year and Arbitrary Arrangement (expectation, harder)
-5. CF 1540B – Tree Array (expectation over paths, harder)
-6. CF 678E – Another Sith Tournament (expectation, advanced)
-7. CF 626D – Jerry's Protest (basic probability comparison)
-8. CF 1096G – Lucky Tickets (counting; combinatorics-probability hybrid)
-9. CF 235B – Let's Play Osu! (expectation with DP)
+1. [CF 1266A](https://codeforces.com/problemset/problem/1266/A) – Radio Station (counting-as-probability warmup)
+2. [CF 1097D](https://codeforces.com/problemset/problem/1097/D) – Makoto and a Blackboard (expectation with modinv)
+3. [CF 1265E](https://codeforces.com/problemset/problem/1265/E) – Beautiful Mirrors (harder — expectation + DP)
+4. [CF 908D](https://codeforces.com/problemset/problem/908/D) – New Year and Arbitrary Arrangement (expectation, harder)
+5. [CF 1540B](https://codeforces.com/problemset/problem/1540/B) – Tree Array (expectation over paths, harder)
+6. [CF 678E](https://codeforces.com/problemset/problem/678/E) – Another Sith Tournament (expectation, advanced)
+7. [CF 626D](https://codeforces.com/problemset/problem/626/D) – Jerry's Protest (basic probability comparison)
+8. [CF 1096G](https://codeforces.com/problemset/problem/1096/G) – Lucky Tickets (counting; combinatorics-probability hybrid)
+9. [CF 235B](https://codeforces.com/problemset/problem/235/B) – Let's Play Osu! (expectation with DP)
 10. Codeforces EDU "Expected Value" section (search "Codeforces EDU probabilities") for a guided problem ladder
 
 ---
@@ -620,13 +620,13 @@ bool winsIfMovesOdd(int totalMoves) {
 1. CSES – Nim Game I
 2. CSES – Nim Game II (Sprague-Grundy)
 3. CSES – Stick Game
-4. CF 1450A – Avoid Trygub? (verify — swap if mismatched to) CF 1194A – Rewriting
-5. CF 1451B – Non-antichain Subsets? (swap for game-theory proper:) CF 1527B1 – Palindrome Game (easy version)
-6. CF 1194D – 1-2-K Game
-7. CF 1537D – Deleting Divisors (Grundy-flavored)
-8. CF 1400D1 – Zigzags (not game — optional stretch, skip if off-topic)
-9. CF 1073C – Vasya and Robot (not game — remove if you want strictly game theory only)
-10. CF 455B – A Lot of Games (multi-round game theory)
+4. [CF 1450A](https://codeforces.com/problemset/problem/1450/A) – Avoid Trygub? (verify — swap if mismatched to) [CF 1194A](https://codeforces.com/problemset/problem/1194/A) – Rewriting
+5. [CF 1451B](https://codeforces.com/problemset/problem/1451/B) – Non-antichain Subsets? (swap for game-theory proper:) [CF 1527B1](https://codeforces.com/problemset/problem/1527/B1) – Palindrome Game (easy version)
+6. [CF 1194D](https://codeforces.com/problemset/problem/1194/D) – 1-2-K Game
+7. [CF 1537D](https://codeforces.com/problemset/problem/1537/D) – Deleting Divisors (Grundy-flavored)
+8. [CF 1400D1](https://codeforces.com/problemset/problem/1400/D1) – Zigzags (not game — optional stretch, skip if off-topic)
+9. [CF 1073C](https://codeforces.com/problemset/problem/1073/C) – Vasya and Robot (not game — remove if you want strictly game theory only)
+10. [CF 455B](https://codeforces.com/problemset/problem/455/B) – A Lot of Games (multi-round game theory)
 
 ---
 
@@ -700,16 +700,16 @@ long long binarySearchAnswer(long long lo, long long hi, long long budget, long 
 ```
 
 ### More problems
-1. CSES – Factory Machines
-2. CSES – Array Division
-3. CF 1791D – Distinct Balls (binary search + greedy check)
-4. CF 1547B – Alphabetical Strings (constructive, not BS — swap: CF 1520D – Same Differences? — better) CF 1616D – Keep the Average High
-5. CF 1462E2 – Close Tuples (harder version)
-6. CF 1611E – Escape The Maze (skip if unfamiliar) — solid alt: CF 4C-adjacent, use CF 1195C – Basketball Exercise
-7. CF 1611D – Balanced Subsequences (skip) — reliable alt: CF 940B – Our Tanya is Crying Out Loud (binary-search-like greedy)
-8. CF 1373D – Maximum Sum on Even Positions (not BS, optional stretch)
-9. CF 1512D – Corrupted Array (search + verify structure)
-10. CF 1141B – Maximal Continuous Rest (sliding window, pairs well right after this pattern)
+1. CSES – [Factory Machines](https://cses.fi/problemset/task/1620)
+2. CSES – [Array Division](https://cses.fi/problemset/task/1085)
+3. [CF 1791D](https://codeforces.com/problemset/problem/1791/D) – Distinct Balls (binary search + greedy check)
+4. [CF 1547B](https://codeforces.com/problemset/problem/1547/B) – Alphabetical Strings (constructive, not BS — swap: [CF 1520D](https://codeforces.com/problemset/problem/1520/D) – Same Differences? — better) [CF 1616D](https://codeforces.com/problemset/problem/1616/D) – Keep the Average High
+5. [CF 1462E2](https://codeforces.com/problemset/problem/1462/E2) – Close Tuples (harder version)
+6. [CF 1611E](https://codeforces.com/problemset/problem/1611/E) – Escape The Maze (skip if unfamiliar) — solid alt: [CF 4C](https://codeforces.com/problemset/problem/4/C)-adjacent, use [CF 1195C](https://codeforces.com/problemset/problem/1195/C) – Basketball Exercise
+7. [CF 1611D](https://codeforces.com/problemset/problem/1611/D) – Balanced Subsequences (skip) — reliable alt: [CF 940B](https://codeforces.com/problemset/problem/940/B) – Our Tanya is Crying Out Loud (binary-search-like greedy)
+8. [CF 1373D](https://codeforces.com/problemset/problem/1373/D) – Maximum Sum on Even Positions (not BS, optional stretch)
+9. [CF 1512D](https://codeforces.com/problemset/problem/1512/D) – Corrupted Array (search + verify structure)
+10. [CF 1141B](https://codeforces.com/problemset/problem/1141/B) – Maximal Continuous Rest (sliding window, pairs well right after this pattern)
 
 ---
 
@@ -761,16 +761,16 @@ int longestSubarrayAtMostK(vector<int>& a, long long K) {
 ```
 
 ### More problems
-1. CSES – Subarray Sums II (with negatives — uses prefix+hashmap, good contrast case)
-2. CSES – Sum of Two Values (sorted two-pointer)
-3. CF 1354C – Not Adjacent Matrix (not two pointer, optional skip) — better: CF 1195C is BS not TP, use CF 1512C — swap: CF 279B – Books
-4. CF 1265B – Beautiful Numbers (two pointer on digit blocks)
-5. CF 1462D – Add to Neighbour and Remove (prefix sum + greedy grouping)
-6. CF 1526C1 – Potions (Easy Version) (greedy + running sum invariant)
-7. CF 1330B – Numbers Box (not TP, optional) — reliable: CF 1200A – Hotelier? skip if mismatched, use CF 1223C – Save the Nature
-8. CSES – Maximum Subarray Sum (Kadane, a close cousin of TP)
-9. CF 1256E – Yet Another Division Into Teams (sorted + windowed grouping)
-10. CF 1157C1 – Increasing Subsequence (Easy Version) (greedy two-ended)
+1. CSES – [Subarray Sums II](https://cses.fi/problemset/task/1661) (with negatives — uses prefix+hashmap, good contrast case)
+2. CSES – [Sum of Two Values](https://cses.fi/problemset/task/1640) (sorted two-pointer)
+3. [CF 1354C](https://codeforces.com/problemset/problem/1354/C) – Not Adjacent Matrix (not two pointer, optional skip) — better: [CF 1195C](https://codeforces.com/problemset/problem/1195/C) is BS not TP, use [CF 1512C](https://codeforces.com/problemset/problem/1512/C) — swap: [CF 279B](https://codeforces.com/problemset/problem/279/B) – Books
+4. [CF 1265B](https://codeforces.com/problemset/problem/1265/B) – Beautiful Numbers (two pointer on digit blocks)
+5. [CF 1462D](https://codeforces.com/problemset/problem/1462/D) – Add to Neighbour and Remove (prefix sum + greedy grouping)
+6. [CF 1526C1](https://codeforces.com/problemset/problem/1526/C1) – Potions (Easy Version) (greedy + running sum invariant)
+7. [CF 1330B](https://codeforces.com/problemset/problem/1330/B) – Numbers Box (not TP, optional) — reliable: [CF 1200A](https://codeforces.com/problemset/problem/1200/A) – Hotelier? skip if mismatched, use [CF 1223C](https://codeforces.com/problemset/problem/1223/C) – Save the Nature
+8. CSES – [Maximum Subarray Sum](https://cses.fi/problemset/task/1643) (Kadane, a close cousin of TP)
+9. [CF 1256E](https://codeforces.com/problemset/problem/1256/E) – Yet Another Division Into Teams (sorted + windowed grouping)
+10. [CF 1157C1](https://codeforces.com/problemset/problem/1157/C1) – Increasing Subsequence (Easy Version) (greedy two-ended)
 
 ---
 
@@ -826,13 +826,13 @@ void applyUpdates(vector<long long>& a) {
 1. CSES – Static Range Sum Queries
 2. CSES – Range Update Queries
 3. CSES – Forest Queries (2D prefix sums)
-4. CF 1512D – Corrupted Array
-5. CF 1391D – 505 (2D prefix sum + parity trick)
-6. CF 1461B – Levels (prefix-sum based greedy)
-7. CF 1512F – Education (unrelated — swap) CF 1195C – Basketball Exercise (prefix on two arrays)
-8. CF 1466D – Employment (prefix parity)
-9. CF 1478A – Nezzar and Colorful Balls (LIS-flavored, prefix-adjacent)
-10. CF 1553D – Backspace (stack + counting, prefix-like reasoning)
+4. [CF 1512D](https://codeforces.com/problemset/problem/1512/D) – Corrupted Array
+5. [CF 1391D](https://codeforces.com/problemset/problem/1391/D) – 505 (2D prefix sum + parity trick)
+6. [CF 1461B](https://codeforces.com/problemset/problem/1461/B) – Levels (prefix-sum based greedy)
+7. [CF 1512F](https://codeforces.com/problemset/problem/1512/F) – Education (unrelated — swap) [CF 1195C](https://codeforces.com/problemset/problem/1195/C) – Basketball Exercise (prefix on two arrays)
+8. [CF 1466D](https://codeforces.com/problemset/problem/1466/D) – Employment (prefix parity)
+9. [CF 1478A](https://codeforces.com/problemset/problem/1478/A) – Nezzar and Colorful Balls (LIS-flavored, prefix-adjacent)
+10. [CF 1553D](https://codeforces.com/problemset/problem/1553/D) – Backspace (stack + counting, prefix-like reasoning)
 
 ---
 
@@ -879,16 +879,16 @@ vector<int> shiftedDerangement(int n) {
 ```
 
 ### More problems
-1. CF 1360C – Similar Pairs
-2. CF 1471B – Strange Definition (not constructive — swap) CF 1512B – Almost Rectangle
-3. CF 1359B – New Theatre Square (construction on a grid)
-4. CF 1466A – Bovine Dilemma (not constructive) — swap: CF 1520C – Not Adjacent Matrix
-5. CF 1547C – Pair Programming (simulate + constructive merge rule)
-6. CF 1345C – Prefixes of LCS (construction with proof by cases)
-7. CF 1607B – Poisoned Dagger (greedy construction of hit timing)
-8. CF 1360D – Buying Shovels (constructive divisor search, bridges pattern #4)
-9. CF 1618D – Array and Operations (greedy pairing construction)
-10. CF 1512C – A. Boring Segments (harder, optional stretch)
+1. [CF 1360C](https://codeforces.com/problemset/problem/1360/C) – Similar Pairs
+2. [CF 1471B](https://codeforces.com/problemset/problem/1471/B) – Strange Definition (not constructive — swap) [CF 1512B](https://codeforces.com/problemset/problem/1512/B) – Almost Rectangle
+3. [CF 1359B](https://codeforces.com/problemset/problem/1359/B) – New Theatre Square (construction on a grid)
+4. [CF 1466A](https://codeforces.com/problemset/problem/1466/A) – Bovine Dilemma (not constructive) — swap: [CF 1520C](https://codeforces.com/problemset/problem/1520/C) – Not Adjacent Matrix
+5. [CF 1547C](https://codeforces.com/problemset/problem/1547/C) – Pair Programming (simulate + constructive merge rule)
+6. [CF 1345C](https://codeforces.com/problemset/problem/1345/C) – Prefixes of LCS (construction with proof by cases)
+7. [CF 1607B](https://codeforces.com/problemset/problem/1607/B) – Poisoned Dagger (greedy construction of hit timing)
+8. [CF 1360D](https://codeforces.com/problemset/problem/1360/D) – Buying Shovels (constructive divisor search, bridges pattern #4)
+9. [CF 1618D](https://codeforces.com/problemset/problem/1618/D) – Array and Operations (greedy pairing construction)
+10. [CF 1512C](https://codeforces.com/problemset/problem/1512/C) – A. Boring Segments (harder, optional stretch)
 
 ---
 
@@ -940,13 +940,13 @@ double dist(Point A, Point B) {
 1. CSES – Point Location Test
 2. CSES – Line Segment Intersection
 3. CSES – Polygon Area
-4. CF 1195D – Submarine in the Rybinsk Sea (not geometry) — swap: CF 1025B – Weakened Common Divisor? — better: CF 1266B – Han Solo and Lazer Gun
-5. CF 1354C2 – Not So Simple Polygon Embedding (harder, optional)
-6. CF 1523B – Lord of the Values (not geometry, skip) — reliable: CF 1027B – Numbers on the Chessboard (grid geometry)
-7. CF 598C – Nearest vectors (angle sorting)
-8. CF 1548B – Integers Have Friends (not geometry, optional)
-9. CF 1017D – The Wu (not geometry, skip) — swap: CF 1C – Ancient Berland Circus (geometry + combinatorics)
-10. CF 1091D – New Year and the Permutation Concatenation (skip, unrelated) — swap: CF 1C is enough as capstone
+4. [CF 1195D](https://codeforces.com/problemset/problem/1195/D) – Submarine in the Rybinsk Sea (not geometry) — swap: [CF 1025B](https://codeforces.com/problemset/problem/1025/B) – Weakened Common Divisor? — better: [CF 1266B](https://codeforces.com/problemset/problem/1266/B) – Han Solo and Lazer Gun
+5. [CF 1354C2](https://codeforces.com/problemset/problem/1354/C2) – Not So Simple Polygon Embedding (harder, optional)
+6. [CF 1523B](https://codeforces.com/problemset/problem/1523/B) – Lord of the Values (not geometry, skip) — reliable: [CF 1027B](https://codeforces.com/problemset/problem/1027/B) – Numbers on the Chessboard (grid geometry)
+7. [CF 598C](https://codeforces.com/problemset/problem/598/C) – Nearest vectors (angle sorting)
+8. [CF 1548B](https://codeforces.com/problemset/problem/1548/B) – Integers Have Friends (not geometry, optional)
+9. [CF 1017D](https://codeforces.com/problemset/problem/1017/D) – The Wu (not geometry, skip) — swap: [CF 1C](https://codeforces.com/problemset/problem/1/C) – Ancient Berland Circus (geometry + combinatorics)
+10. [CF 1091D](https://codeforces.com/problemset/problem/1091/D) – New Year and the Permutation Concatenation (skip, unrelated) — swap: [CF 1C](https://codeforces.com/problemset/problem/1/C) is enough as capstone
 
 ---
 
@@ -994,15 +994,15 @@ long long extgcd(long long a, long long b, long long &x, long long &y) {
 ```
 
 ### More problems
-1. CSES – Exponentiation (modinv is a special case of this idea)
-2. CF 1244D – Paint the Tree (unrelated, skip) — reliable set instead:
-3. CF 1225D – Power Products (uses factorization + gcd)
-4. CF 1264B – Beautiful Numbers (not diophantine, optional)
-5. CF 1349A – Orac and Factors (gcd/lcm adjacent)
+1. CSES – [Exponentiation](https://cses.fi/problemset/task/1095) (modinv is a special case of this idea)
+2. [CF 1244D](https://codeforces.com/problemset/problem/1244/D) – Paint the Tree (unrelated, skip) — reliable set instead:
+3. [CF 1225D](https://codeforces.com/problemset/problem/1225/D) – Power Products (uses factorization + gcd)
+4. [CF 1264B](https://codeforces.com/problemset/problem/1264/B) – Beautiful Numbers (not diophantine, optional)
+5. [CF 1349A](https://codeforces.com/problemset/problem/1349/A) – Orac and Factors (gcd/lcm adjacent)
 6. SPOJ – CEQU (Ax+By=C, classic extended Euclid problem)
-7. CF 1478D – Nezzar and Nice Beatmap (geometry+number theory hybrid)
+7. [CF 1478D](https://codeforces.com/problemset/problem/1478/D) – Nezzar and Nice Beatmap (geometry+number theory hybrid)
 8. UVa 10090 – Marbles (classic Diophantine word problem)
-9. CF 1091A – New Year and the Christmas Ornament (not diophantine, optional)
+9. [CF 1091A](https://codeforces.com/problemset/problem/1091/A) – New Year and the Christmas Ornament (not diophantine, optional)
 10. Codeforces EDU: search "extended euclidean algorithm codeforces edu" for a guided problem set
 
 ---
@@ -1060,13 +1060,13 @@ double ternarySearchMin(double lo, double hi) {
 ```
 
 ### More problems
-1. CF 1420D2 – Rescue Nibel (Hard Version) (uses ternary-search-like monotonic structure)
-2. CF 1355E – Restorer Distance (classic ternary search on a convex cost function)
-3. CF 936B – Sleepy Game (skip if unrelated) — swap: CF 1189A – Keanu's Basement (not TS, optional)
-4. CF 1099F – Cookies (harder — TS + DP)
-5. CF 1237C – Balanced Removals (Easier) (not TS, optional skip)
+1. [CF 1420D2](https://codeforces.com/problemset/problem/1420/D2) – Rescue Nibel (Hard Version) (uses ternary-search-like monotonic structure)
+2. [CF 1355E](https://codeforces.com/problemset/problem/1355/E) – Restorer Distance (classic ternary search on a convex cost function)
+3. [CF 936B](https://codeforces.com/problemset/problem/936/B) – Sleepy Game (skip if unrelated) — swap: [CF 1189A](https://codeforces.com/problemset/problem/1189/A) – Keanu's Basement (not TS, optional)
+4. [CF 1099F](https://codeforces.com/problemset/problem/1099/F) – Cookies (harder — TS + DP)
+5. [CF 1237C](https://codeforces.com/problemset/problem/1237/C) – Balanced Removals (Easier) (not TS, optional skip)
 6. Codeforces EDU: search "ternary search codeforces edu" for a guided ladder
-7. CF 1601B – Frog Jumps (not TS, optional — good BS pairing instead)
+7. [CF 1601B](https://codeforces.com/problemset/problem/1601/B) – Frog Jumps (not TS, optional — good BS pairing instead)
 8. SPOJ – TRICOIN (classic unimodal optimization, ternary search practice)
 9. CF 1425 series (search "ternary search" tag on Codeforces problemset for current matches)
 10. CF 1355 series (Div2 rated ~1400-1700 often features convex-function TS problems)
@@ -1122,16 +1122,16 @@ long long fromBase(vector<int>& digits, int b) {
 ```
 
 ### More problems
-1. CSES – Bit Strings (binary reasoning)
-2. CF 1178A – Handshakes? (skip, unrelated) — swap: CF 1195C not base — reliable: CF 900A – Find Extra One (skip, geometry) — use: CF 1114C – Trailing Loves (or L'oeufs?) (base-p trailing zero counting)
-3. CF 1163A – Eating Soup (not base, skip) — swap: CF 1183A – Nearest Interesting Number (digit/base adjacent)
-4. CF 27B – Tournament (not base) — reliable: CF 149B – Martian Clock (custom base conversion, classic)
-5. CF 1359A – Berland Poker (not base, optional skip)
+1. CSES – [Bit Strings](https://cses.fi/problemset/task/1617) (binary reasoning)
+2. [CF 1178A](https://codeforces.com/problemset/problem/1178/A) – Handshakes? (skip, unrelated) — swap: [CF 1195C](https://codeforces.com/problemset/problem/1195/C) not base — reliable: [CF 900A](https://codeforces.com/problemset/problem/900/A) – Find Extra One (skip, geometry) — use: [CF 1114C](https://codeforces.com/problemset/problem/1114/C) – Trailing Loves (or L'oeufs?) (base-p trailing zero counting)
+3. [CF 1163A](https://codeforces.com/problemset/problem/1163/A) – Eating Soup (not base, skip) — swap: [CF 1183A](https://codeforces.com/problemset/problem/1183/A) – Nearest Interesting Number (digit/base adjacent)
+4. [CF 27B](https://codeforces.com/problemset/problem/27/B) – Tournament (not base) — reliable: [CF 149B](https://codeforces.com/problemset/problem/149/B) – Martian Clock (custom base conversion, classic)
+5. [CF 1359A](https://codeforces.com/problemset/problem/1359/A) – Berland Poker (not base, optional skip)
 6. UVa 343 – What Base Is This? (classic base-detection problem)
-7. CF 1215A – Yellow Cards (not base, optional)
-8. CF 1029A is not base — for a genuine base ladder search Codeforces tag "number theory" + keyword "base" in problemset filter
+7. [CF 1215A](https://codeforces.com/problemset/problem/1215/A) – Yellow Cards (not base, optional)
+8. [CF 1029A](https://codeforces.com/problemset/problem/1029/A) is not base — for a genuine base ladder search Codeforces tag "number theory" + keyword "base" in problemset filter
 9. Project Euler 205-style base/digit problems (good supplementary practice outside CF)
-10. CF 1548A – Digits Sequence (Easy Edition) (digit-position + base-adjacent indexing)
+10. [CF 1548A](https://codeforces.com/problemset/problem/1548/A) – Digits Sequence (Easy Edition) (digit-position + base-adjacent indexing)
 
 ---
 
@@ -1200,14 +1200,14 @@ Matrix matpow(Matrix M, long long p, long long mod) {
 
 ### More problems
 1. CSES – Fibonacci Numbers
-2. CF 185A – Plant (matrix recurrence)
-3. CF 450B – Jzzhu and Sequences (linear recurrence, matrix exponentiation)
-4. CF 1182E – Product Oriented Recurrence (recurrence -> transform -> matrix power)
-5. CF 947G – Amount of Degrees (not matrix, skip) — swap: CF 954E – Water Taps (not matrix) — reliable: CF 1370C is DP not matrix — use: CF 793E – Problem of offices (advanced, optional)
-6. CF 678E – Another Sith Tournament (harder, expectation+recurrence)
-7. CF 1225E – Rock Is Push (DP not matrix, optional skip)
+2. [CF 185A](https://codeforces.com/problemset/problem/185/A) – Plant (matrix recurrence)
+3. [CF 450B](https://codeforces.com/problemset/problem/450/B) – Jzzhu and Sequences (linear recurrence, matrix exponentiation)
+4. [CF 1182E](https://codeforces.com/problemset/problem/1182/E) – Product Oriented Recurrence (recurrence -> transform -> matrix power)
+5. [CF 947G](https://codeforces.com/problemset/problem/947/G) – Amount of Degrees (not matrix, skip) — swap: [CF 954E](https://codeforces.com/problemset/problem/954/E) – Water Taps (not matrix) — reliable: [CF 1370C](https://codeforces.com/problemset/problem/1370/C) is DP not matrix — use: [CF 793E](https://codeforces.com/problemset/problem/793/E) – Problem of offices (advanced, optional)
+6. [CF 678E](https://codeforces.com/problemset/problem/678/E) – Another Sith Tournament (harder, expectation+recurrence)
+7. [CF 1225E](https://codeforces.com/problemset/problem/1225/E) – Rock Is Push (DP not matrix, optional skip)
 8. SPOJ – FIBOSUM (matrix exponentiation practice)
-9. CF 1097D bridges here if you extend expectation into recurrence form (optional cross-reference)
+9. [CF 1097D](https://codeforces.com/problemset/problem/1097/D) bridges here if you extend expectation into recurrence form (optional cross-reference)
 10. Codeforces EDU: search "matrix exponentiation codeforces edu" for a guided problem ladder
 
 ---
@@ -1255,14 +1255,14 @@ int findDuplicateRemainder(vector<long long>& nums, int m) {
 ```
 
 ### More problems
-1. CF 1220E – Tourism (not pigeonhole, optional skip)
-2. CF 1462F2 – The Treasure of The Segments (Hard Version) (uses bounding argument)
-3. CF 1408D – Searchlights (not pigeonhole, optional)
-4. CF 1359E – Modular Stability (uses counting/pigeonhole-style structure)
-5. CF 1091D – New Year and the Permutation Concatenation (existence argument)
-6. CF 1225C – p-binary (uses bounded search justified by counting)
-7. CF 1288B – Yet Another Meme Problem (digit + pigeonhole-flavored bound)
-8. CF 1354B2 – Ternary String (Hard Version) (bounded window via counting argument)
-9. CF 300C – Beautiful Numbers (combinatorial bound)
+1. [CF 1220E](https://codeforces.com/problemset/problem/1220/E) – Tourism (not pigeonhole, optional skip)
+2. [CF 1462F2](https://codeforces.com/problemset/problem/1462/F2) – The Treasure of The Segments (Hard Version) (uses bounding argument)
+3. [CF 1408D](https://codeforces.com/problemset/problem/1408/D) – Searchlights (not pigeonhole, optional)
+4. [CF 1359E](https://codeforces.com/problemset/problem/1359/E) – Modular Stability (uses counting/pigeonhole-style structure)
+5. [CF 1091D](https://codeforces.com/problemset/problem/1091/D) – New Year and the Permutation Concatenation (existence argument)
+6. [CF 1225C](https://codeforces.com/problemset/problem/1225/C) – p-binary (uses bounded search justified by counting)
+7. [CF 1288B](https://codeforces.com/problemset/problem/1288/B) – Yet Another Meme Problem (digit + pigeonhole-flavored bound)
+8. [CF 1354B2](https://codeforces.com/problemset/problem/1354/B2) – Ternary String (Hard Version) (bounded window via counting argument)
+9. [CF 300C](https://codeforces.com/problemset/problem/300/C) – Beautiful Numbers (combinatorial bound)
 10. Classic textbook set: search "codeforces pigeonhole principle problems" for a curated list, since this pattern is more often embedded inside a harder problem than tagged standalone
 
