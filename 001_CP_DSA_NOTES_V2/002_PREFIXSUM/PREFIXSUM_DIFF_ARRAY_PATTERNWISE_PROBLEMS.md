@@ -10,28 +10,28 @@
 
 ## Table of Contents
 
-- [How to use this sheet](#how-to-use-this-sheet)
+- [How to use this sheet](#how-to-use)
 - [PREFIX SUM PATTERNS](#prefix-sum-patterns)
-  - [Pattern 1 — Basic Range Sum / Static Queries](#pattern-1-basic-range-sum-static-queries)
-  - [Pattern 2 — Prefix + Suffix / Split at i](#pattern-2-prefix-suffix-split-at-i)
-  - [Pattern 3 — Prefix Sum + Hash Map: Subarray Sum = K](#pattern-3-prefix-sum-hash-map-subarray-sum-k)
-  - [Pattern 4 — Prefix Modulo / Divisibility](#pattern-4-prefix-modulo-divisibility)
-  - [Pattern 5 — Transform Values, Then Prefix](#pattern-5-transform-values-then-prefix)
-  - [Pattern 6 — Prefix XOR / Prefix State](#pattern-6-prefix-xor-prefix-state)
-  - [Pattern 7 — Weighted Prefix Sum / Index * A[i]](#pattern-7-weighted-prefix-sum-index-ai)
-  - [Pattern 8 — Prefix of Prefix / Double Prefix](#pattern-8-prefix-of-prefix-double-prefix)
-  - [Pattern 9 — 2D Prefix Sum](#pattern-9-2d-prefix-sum)
+  - [Pattern 1 — Basic Range Sum / Static Queries](#pattern-1)
+  - [Pattern 2 — Prefix + Suffix / Split at i](#pattern-2)
+  - [Pattern 3 — Prefix Sum + Hash Map: Subarray Sum = K](#pattern-3)
+  - [Pattern 4 — Prefix Modulo / Divisibility](#pattern-4)
+  - [Pattern 5 — Transform Values, Then Prefix](#pattern-5)
+  - [Pattern 6 — Prefix XOR / Prefix State](#pattern-6)
+  - [Pattern 7 — Weighted Prefix Sum / Index * A[i]](#pattern-7)
+  - [Pattern 8 — Prefix of Prefix / Double Prefix](#pattern-8)
+  - [Pattern 9 — 2D Prefix Sum](#pattern-9)
 - [DIFFERENCE ARRAY PATTERNS](#difference-array-patterns)
-  - [Pattern 10 — Basic Range Addition](#pattern-10-basic-range-addition)
-  - [Pattern 11 — Difference Array as Event / Sweep Line](#pattern-11-difference-array-as-event-sweep-line)
-  - [Pattern 12 — Difference + Prefix + Another Prefix](#pattern-12-difference-prefix-another-prefix)
-  - [Pattern 13 — Difference Array + Coordinate Compression](#pattern-13-difference-array-coordinate-compression)
-  - [Pattern 14 — Difference of a Prefix Array / Reconstruct Original](#pattern-14-difference-of-a-prefix-array-reconstruct-original)
-  - [Pattern 15 — AP Range Update (Linear Difference)](#pattern-15-ap-range-update-linear-difference)
-  - [Pattern 16 — GP / Recurrence-Based Range Update](#pattern-16-gp-recurrence-based-range-update)
-- [Pattern 17 — Prefix Sum + Binary Search / K-th Value](#pattern-17-prefix-sum-binary-search-k-th-value)
-- [Pattern 18 — Prefix Sum + Monotonic Stack / Boundaries](#pattern-18-prefix-sum-monotonic-stack-boundaries)
-- [Pattern 19 — Prefix on Trees / Paths](#pattern-19-prefix-on-trees-paths)
+  - [Pattern 10 — Basic Range Addition](#pattern-10)
+  - [Pattern 11 — Difference Array as Event / Sweep Line](#pattern-11)
+  - [Pattern 12 — Difference + Prefix + Another Prefix](#pattern-12)
+  - [Pattern 13 — Difference Array + Coordinate Compression](#pattern-13)
+  - [Pattern 14 — Difference of a Prefix Array / Reconstruct Original](#pattern-14)
+  - [Pattern 15 — AP Range Update (Linear Difference)](#pattern-15)
+  - [Pattern 16 — GP / Recurrence-Based Range Update](#pattern-16)
+- [Pattern 17 — Prefix Sum + Binary Search / K-th Value](#pattern-17)
+- [Pattern 18 — Prefix Sum + Monotonic Stack / Boundaries](#pattern-18)
+- [Pattern 19 — Prefix on Trees / Paths](#pattern-19)
 - [CM-Level Recognition Map](#cm-level-recognition-map)
 - [Suggested Order to CM](#suggested-order-to-cm)
   - [Stage 1 — automatic fundamentals](#stage-1-automatic-fundamentals)
@@ -42,6 +42,7 @@
 - [Final rule](#final-rule)
 
 ---
+<a id="how-to-use"></a>
 # How to use this sheet
 
 For every problem:
@@ -75,11 +76,90 @@ A[i] = A[i-1] + diff[i]
 
 ---
 
+<a id="prefix-sum-patterns"></a>
 # PREFIX SUM PATTERNS
 
+<a id="pattern-1"></a>
 ## Pattern 1 — Basic Range Sum / Static Queries
 
-### Recognition signal
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- many queries ask about [L,R]
+- array is static: values do not change between queries
+- query asks sum / count / cost / number of marked items in a range
+- N and Q are large enough that O(length of range) per query is too slow
+```
+
+**Translate the statement**
+
+```text
+"What is inside [L,R]?"
+        ↓
+"Take everything up to R"
+        -
+"remove everything before L"
+
+answer = pref[R] - pref[L-1]
+```
+
+**Mini dry run**
+
+```text
+A:      3   1   4   2   5
+index:  1   2   3   4   5
+
+pref:   0   3   4   8  10  15
+index:  0   1   2   3   4   5
+
+query [2,4]
+
+whole prefix to 4:  3 + 1 + 4 + 2 = 10
+remove before L=2:  3               =  3
+                                         --
+answer                                  =  7
+```
+
+Visualization:
+
+```text
+[ 3 ][ 1 ][ 4 ][ 2 ][ 5 ]
+  X   |<---- target ---->|
+      L                 R
+
+pref[R]      = [3 1 4 2]
+pref[L-1]    = [3]
+subtract     =   [1 4 2]
+```
+
+**Real-world mapping**
+
+Imagine daily spending. `pref[d]` is total money spent from day 1 through day `d`.
+Spending from day `L` to day `R` is total-through-R minus total-before-L.
+
+**60-second question**
+
+> Is the data static, and am I repeatedly asking for an additive quantity over a contiguous range?
+
+If yes, basic prefix sum should be your first thought.
+
+**C++ template**
+
+```cpp
+vector<long long> pref(n + 1, 0);
+for (int i = 1; i <= n; ++i) {
+    pref[i] = pref[i - 1] + a[i];
+}
+
+auto rangeSum = [&](int L, int R) -> long long {
+    return pref[R] - pref[L - 1];
+};
+```
+
+
+### Core idea
 
 ```text
 many queries
@@ -117,9 +197,73 @@ answer = pref[R] - pref[L-1]
 
 ---
 
+<a id="pattern-2"></a>
 ## Pattern 2 — Prefix + Suffix / Split at i
 
-### Recognition signal
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- choose / remove / split at index i
+- compare left side with right side
+- answer for every possible split
+- contribution of i depends on everything before and/or after i
+```
+
+**Mental picture**
+
+```text
+            i
+            |
+[ LEFT LEFT ][A[i]][ RIGHT RIGHT ]
+<-- known -->       <-- known -->
+
+left  = pref[i-1]
+right = total - pref[i]
+```
+
+**Mini dry run**
+
+```text
+A = [2, 5, 1, 4, 2]
+total = 14
+
+Try i = 3, A[i] = 1
+
+left  = 2 + 5 = 7
+right = 4 + 2 = 6
+
+[ 2  5 ] [ 1 ] [ 4  2 ]
+   7       i       6
+```
+
+If the problem says “find a pivot”, “split into two sides”, or “remove one item and compare both sides”, this picture is often enough to expose the formula.
+
+**Real-world mapping**
+
+A balance scale: position `i` is the fulcrum, and prefix/suffix information tells you the total weight on each side without rescanning.
+
+**60-second question**
+
+> If I freeze one index, can I describe everything on its left and right from cumulative information?
+
+**C++ template**
+
+```cpp
+vector<long long> pref(n + 1);
+for (int i = 1; i <= n; ++i) pref[i] = pref[i - 1] + a[i];
+
+long long total = pref[n];
+for (int i = 1; i <= n; ++i) {
+    long long left  = pref[i - 1];
+    long long right = total - pref[i];
+    // test/use left, a[i], right
+}
+```
+
+
+### Core idea
 
 ```text
 left of i vs right of i
@@ -152,7 +296,86 @@ ASCII:
 
 ---
 
+<a id="pattern-3"></a>
 ## Pattern 3 — Prefix Sum + Hash Map: Subarray Sum = K
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- count subarrays whose sum is exactly K
+- longest subarray with a required sum/state
+- values may be negative, so sliding window is unsafe
+- need to know whether a previous cumulative state existed
+```
+
+Start from the equation, not the template:
+
+```text
+sum(L..R) = K
+
+pref[R] - pref[L-1] = K
+pref[L-1] = pref[R] - K
+```
+
+So at position `R` you ask:
+
+```text
+"How many OLD prefixes equal currentPrefix - K?"
+```
+
+**Mini dry run**
+
+```text
+A = [1, 2, 1, 2], K = 3
+
+prefix while scanning:
+start: 0
+after 1: 1
+after 2: 3   need 0  -> found
+after 1: 4   need 1  -> found
+after 2: 6   need 3  -> found
+
+subarrays:
+[1,2]
+    [2,1]
+        [1,2]
+```
+
+State visualization:
+
+```text
+old prefix ----------- current prefix
+     P                     P+K
+      \_____________________/
+            subarray K
+```
+
+**Real-world mapping**
+
+Your bank balance is cumulative. If your balance is `P` now and you want an interval where net change was `K`, you need an earlier balance of `P-K`.
+
+**60-second question**
+
+> Does a valid subarray correspond to “current cumulative value minus a required previous cumulative value”?
+
+**C++ template — count subarrays**
+
+```cpp
+unordered_map<long long, long long> freq;
+freq[0] = 1;
+
+long long pref = 0, ans = 0;
+for (long long x : a) {
+    pref += x;
+    if (freq.count(pref - K)) ans += freq[pref - K];
+    ++freq[pref];
+}
+```
+
+For **longest** subarray, store the earliest index of each prefix instead of a frequency.
+
 
 This is one of the most important prefix patterns.
 
@@ -191,7 +414,74 @@ How many previous prefixes equal pref[R] - K?
 
 ---
 
+<a id="pattern-4"></a>
 ## Pattern 4 — Prefix Modulo / Divisibility
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- subarray sum divisible by K
+- sum % K must equal 0 / some remainder
+- count pairs of prefixes with compatible remainders
+- actual prefix values are huge, but only remainder classes matter
+```
+
+**Derivation**
+
+```text
+(pref[R] - pref[L-1]) % K = 0
+        ↓
+pref[R] % K = pref[L-1] % K
+```
+
+So equal prefix remainders form a valid divisible subarray.
+
+**Mini dry run**
+
+```text
+A = [4, 5, 0, -2, -3, 1], K = 5
+
+prefix sums:      0  4  9  9  7  4  5
+normalized rem:   0  4  4  4  2  4  0
+
+Every pair of equal remainders encloses
+a subarray whose sum is divisible by 5.
+```
+
+Visualization:
+
+```text
+prefix state:
+0 ---- 4 ---- 4 ---- 4 ---- 2 ---- 4 ---- 0
+^                                          ^
+same remainder 0 => middle sum % 5 == 0
+```
+
+**Real-world mapping**
+
+Think of a clock. Two cumulative totals landing on the same clock position differ by a whole number of rotations; modulo works the same way.
+
+**60-second question**
+
+> Does the condition care only about a sum modulo `K`, rather than its exact value?
+
+**C++ template**
+
+```cpp
+vector<long long> cnt(k, 0);
+cnt[0] = 1;
+
+long long pref = 0, ans = 0;
+for (long long x : a) {
+    pref += x;
+    int r = (int)((pref % k + k) % k);
+    ans += cnt[r];
+    ++cnt[r];
+}
+```
+
 
 Derivation:
 
@@ -228,7 +518,82 @@ rem = ((sum % k) + k) % k;
 
 ---
 
+<a id="pattern-5"></a>
 ## Pattern 5 — Transform Values, Then Prefix
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- original condition mixes counts/types and looks awkward
+- "equal number of X and Y"
+- average / sum should equal length
+- good/bad, odd/even, win/loss can be encoded as small contributions
+```
+
+The key move is:
+
+```text
+statement property
+      ↓ encode each item
+numeric invariant
+      ↓
+normal prefix problem
+```
+
+**Mini dry run — equal 0s and 1s**
+
+```text
+original:   0   1   0   0   1   1
+transform: -1  +1  -1  -1  +1  +1
+
+prefix:     0  -1   0  -1  -2  -1   0
+            ^                         ^
+same prefix => transformed sum 0
+            => equal zeros and ones
+```
+
+ASCII mapping:
+
+```text
+0 contributes -1
+1 contributes +1
+
+balanced subarray
+= pushes left and right cancel
+= transformed sum 0
+```
+
+**Real-world mapping**
+
+Treat wins as `+1` and losses as `-1`. A period with equal wins and losses has net score `0`, which is much easier to detect with prefixes than counting two categories independently.
+
+**60-second question**
+
+> Can I assign each element a contribution so the weird condition becomes `sum = 0`, `sum = K`, or an equal-prefix state?
+
+**C++ template**
+
+```cpp
+unordered_map<long long, int> first;
+first[0] = 0;
+
+long long pref = 0;
+int best = 0;
+
+for (int i = 1; i <= n; ++i) {
+    long long v = transform(a[i]);   // e.g. 0 -> -1, 1 -> +1
+    pref += v;
+
+    if (first.count(pref)) {
+        best = max(best, i - first[pref]);
+    } else {
+        first[pref] = i;
+    }
+}
+```
+
 
 Very common CF trick:
 
@@ -276,7 +641,87 @@ sum(A[L..R]) = length
 
 ---
 
+<a id="pattern-6"></a>
 ## Pattern 6 — Prefix XOR / Prefix State
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- range XOR queries
+- parity/even-odd state for several categories
+- toggling a property matters more than its count
+- operation is reversible/cancels with itself
+```
+
+For XOR:
+
+```text
+px[i] = A[1] ^ ... ^ A[i]
+
+xor(L..R) = px[R] ^ px[L-1]
+```
+
+because everything before `L` appears twice and cancels.
+
+**Mini dry run**
+
+```text
+A = [5, 2, 7, 2]
+
+px:
+px[0] = 0
+px[1] = 5
+px[2] = 5^2
+px[3] = 5^2^7
+px[4] = 5^2^7^2
+
+query [2,4]:
+
+px[4] ^ px[1]
+= (5^2^7^2) ^ 5
+= 2^7^2
+```
+
+Visualization:
+
+```text
+prefix R:    [5][2][7][2]
+prefix L-1:  [5]
+XOR them:      [2][7][2]
+
+5 ^ 5 = 0
+```
+
+For parity masks:
+
+```text
+bit j = whether count of category j is odd so far
+same mask twice => every category changed an even number of times
+```
+
+**Real-world mapping**
+
+A light switch is XOR: press once = on, twice = back off. Prefix XOR records the current collection of toggle states.
+
+**60-second question**
+
+> Is the state based on toggles/parity, where applying the same thing twice cancels?
+
+**C++ template**
+
+```cpp
+vector<int> px(n + 1, 0);
+for (int i = 1; i <= n; ++i) {
+    px[i] = px[i - 1] ^ a[i];
+}
+
+auto rangeXor = [&](int L, int R) {
+    return px[R] ^ px[L - 1];
+};
+```
+
 
 Generalization:
 
@@ -308,9 +753,88 @@ x ^ x = 0
 
 ---
 
+<a id="pattern-7"></a>
 ## Pattern 7 — Weighted Prefix Sum / Index * A[i]
 
-Recognition:
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- coefficient depends on position inside [L,R]
+- 1*A[L] + 2*A[L+1] + ...
+- contribution contains index * value
+- after expanding, weight is linear in global index i
+```
+
+Local index is the clue:
+
+```text
+local position = i-L+1
+               = i-(L-1)
+```
+
+**Mini dry run**
+
+```text
+A = [2, 4, 3, 6, 9]
+query [2,4]
+
+wanted:
+1*4 + 2*3 + 3*6
+= 4 + 6 + 18
+= 28
+
+global indices:
+i:       2   3   4
+A[i]:    4   3   6
+local:   1   2   3
+
+local = i-(L-1) = i-1
+```
+
+Therefore:
+
+```text
+Σ A[i]*(i-(L-1))
+= Σ i*A[i] - (L-1)*Σ A[i]
+```
+
+Visualization:
+
+```text
+Need two cumulative "lenses":
+
+P0 = Σ A[i]        -> ordinary mass
+P1 = Σ i*A[i]      -> index-weighted mass
+```
+
+**Real-world mapping**
+
+Shipping cost might be `itemWeight × shelfPosition`. If every query re-labels the first shelf as position 1, algebra converts local shelf numbers into global indices.
+
+**60-second question**
+
+> Can the coefficient be written as `c*i + d` after converting local position to global index?
+
+**C++ template**
+
+```cpp
+vector<long long> P0(n + 1), P1(n + 1);
+for (int i = 1; i <= n; ++i) {
+    P0[i] = P0[i - 1] + a[i];
+    P1[i] = P1[i - 1] + 1LL * i * a[i];
+}
+
+auto weighted = [&](int L, int R) -> long long {
+    long long s0 = P0[R] - P0[L - 1];
+    long long s1 = P1[R] - P1[L - 1];
+    return s1 - 1LL * (L - 1) * s0;
+};
+```
+
+
+**Quick recap:**
 
 ```text
 A[L] + 2*A[L+1] + ... + len*A[R]
@@ -361,7 +885,75 @@ answer = S1 - (L-1)*S0
 
 ---
 
+<a id="pattern-8"></a>
 ## Pattern 8 — Prefix of Prefix / Double Prefix
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- need sum of many prefix sums
+- each answer itself contains range sums repeatedly
+- contribution formula contains Σ pref[i]
+- one prefix layer still leaves an O(N) summation
+```
+
+Think one level higher:
+
+```text
+A  --prefix-->  P  --prefix again-->  PP
+```
+
+**Mini dry run**
+
+```text
+A  = [2, 1, 3, 4]
+P  = [2, 3, 6, 10]
+PP = [2, 5, 11, 21]
+
+Need P[2] + P[3] + P[4]
+= 3 + 6 + 10
+= 19
+
+Using PP:
+PP[4] - PP[1]
+= 21 - 2
+= 19
+```
+
+Visualization:
+
+```text
+A:      2   1   3   4
+        \___ cumulative ___/
+P:      2   3   6  10
+        \___ cumulative ___/
+PP:     2   5  11  21
+```
+
+**Real-world mapping**
+
+`A` could be daily sales, `P` total sales-to-date, and `PP` the sum of all historical running totals. If queries ask about accumulated cumulative totals, prefix the prefix.
+
+**60-second question**
+
+> After building a normal prefix, do I still need to sum a contiguous range of those prefix values?
+
+**C++ template**
+
+```cpp
+vector<long long> pref(n + 1), pref2(n + 1);
+for (int i = 1; i <= n; ++i) {
+    pref[i]  = pref[i - 1] + a[i];
+    pref2[i] = pref2[i - 1] + pref[i];
+}
+
+auto sumOfPrefixes = [&](int L, int R) {
+    return pref2[R] - pref2[L - 1];
+};
+```
+
 
 Think:
 
@@ -398,7 +990,95 @@ or when contributions themselves contain range sums.
 
 ---
 
+<a id="pattern-9"></a>
 ## Pattern 9 — 2D Prefix Sum
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- grid / matrix / board
+- many rectangle queries
+- each query gives top-left and bottom-right corners
+- ask sum/count inside a rectangle
+- grid is static
+```
+
+**Mini dry run**
+
+```text
+Grid:
+1 0 2 1
+3 1 0 2
+0 2 1 1
+4 0 1 0
+
+Query rows 2..3, cols 2..4
+
+selected:
+      c2 c3 c4
+r2 ->  1  0  2
+r3 ->  2  1  1
+
+sum = 7
+```
+
+Rectangle visualization:
+
+```text
+P[r2][c2]
+= big rectangle from (1,1)
+- strip above target
+- strip left of target
++ top-left overlap removed twice
+
++----------------------+
+| overlap |   top      |
+|---------+------------|
+| left    |  TARGET    |
++----------------------+
+```
+
+Formula:
+
+```text
+ans = P[r2][c2]
+    - P[r1-1][c2]
+    - P[r2][c1-1]
+    + P[r1-1][c1-1]
+```
+
+**Real-world mapping**
+
+A map divided into cells: each cell stores population. A rectangle query asks population inside a district box. 2D prefix gives each district total in O(1).
+
+**60-second question**
+
+> Is this a static grid with many axis-aligned rectangle sum/count queries?
+
+**C++ template**
+
+```cpp
+vector<vector<long long>> p(n + 1, vector<long long>(m + 1));
+
+for (int r = 1; r <= n; ++r) {
+    for (int c = 1; c <= m; ++c) {
+        p[r][c] = a[r][c]
+                + p[r - 1][c]
+                + p[r][c - 1]
+                - p[r - 1][c - 1];
+    }
+}
+
+auto rectSum = [&](int r1, int c1, int r2, int c2) {
+    return p[r2][c2]
+         - p[r1 - 1][c2]
+         - p[r2][c1 - 1]
+         + p[r1 - 1][c1 - 1];
+};
+```
+
 
 Definition:
 
@@ -441,11 +1121,80 @@ Last term restores the area subtracted twice.
 
 ---
 
+<a id="difference-array-patterns"></a>
 # DIFFERENCE ARRAY PATTERNS
 
+<a id="pattern-10"></a>
 ## Pattern 10 — Basic Range Addition
 
-Recognition:
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- many offline updates
+- each update adds the same X to every position in [L,R]
+- only final array / final values are needed
+- no need to answer arbitrary queries between updates
+```
+
+Instead of touching every cell, mark only where the effect changes.
+
+**Mini dry run**
+
+```text
+n = 6
+update: add 5 to [2,4]
+
+wanted:
+A:   0   5   5   5   0   0
+
+diff events:
+     0  +5   0   0  -5   0
+         ^           ^
+         L          R+1
+
+prefix diff:
+     0   5   5   5   0   0
+```
+
+Visualization:
+
+```text
+effect is ON:
+        L==============R
+        +5             |
+                       stop at R+1
+
+Store transitions, not every affected point.
+```
+
+**Real-world mapping**
+
+Turning a water pipe on at position `L` and off after `R`: you record the valve changes, then sweep to know the current flow at every position.
+
+**60-second question**
+
+> Are there many constant range additions and can I postpone reconstruction until the end?
+
+**C++ template**
+
+```cpp
+vector<long long> diff(n + 2, 0);
+
+auto addRange = [&](int L, int R, long long x) {
+    diff[L] += x;
+    diff[R + 1] -= x;
+};
+
+for (int i = 1; i <= n; ++i) {
+    diff[i] += diff[i - 1];
+    a[i] += diff[i];
+}
+```
+
+
+**Quick recap:**
 
 ```text
 many operations:
@@ -486,7 +1235,86 @@ Prefixing `diff` spreads X through the range.
 
 ---
 
+<a id="pattern-11"></a>
 ## Pattern 11 — Difference Array as Event / Sweep Line
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- intervals on time/position/year/temperature
+- need active count/load at each point
+- maximum overlap / capacity / population
+- value changes only at starts and ends
+```
+
+Difference arrays and sweep lines are the same idea:
+
+```text
+start event: +X
+end event:   -X
+scan in sorted coordinate order
+```
+
+**Mini dry run**
+
+```text
+meetings:
+[1,4)  +1
+[2,5)  +1
+[4,6)  +1
+
+events:
+1:+1
+2:+1
+4:-1 and +1
+5:-1
+6:-1
+
+sweep active:
+time 1 -> 1
+time 2 -> 2
+time 4 -> 2
+time 5 -> 1
+time 6 -> 0
+```
+
+Timeline:
+
+```text
+1----4
+  2------5
+       4----6
+
+active count is just the prefix sum of endpoint events.
+```
+
+**Real-world mapping**
+
+People entering/leaving a room: entry is `+1`, exit is `-1`; cumulative events give the number currently inside.
+
+**60-second question**
+
+> Does the answer change only when an interval starts or ends?
+
+**C++ template — ordered events**
+
+```cpp
+map<long long, long long> event;
+
+for (auto [L, R, x] : updates) {
+    event[L] += x;
+    event[R] -= x; // for half-open [L,R)
+}
+
+long long cur = 0;
+for (auto [pos, delta] : event) {
+    cur += delta;
+    // use cur on the interval starting at pos
+}
+```
+
 
 Intervals become events:
 
@@ -516,7 +1344,89 @@ This is conceptually the same as a difference array, even when coordinates repre
 
 ---
 
+<a id="pattern-12"></a>
 ## Pattern 12 — Difference + Prefix + Another Prefix
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- one set of range updates creates a frequency/value array
+- then queries ask over a transformed version of that result
+- "how many positions are covered at least K times?"
+- operations themselves are selected by ranges (Greg and Array style)
+```
+
+Look for a pipeline rather than one data structure:
+
+```text
+range updates
+   ↓ diff
+frequency/value per position
+   ↓ transform
+0/1, cost, weight, good/bad
+   ↓ prefix
+fast range queries
+```
+
+**Mini dry run — coverage >= 2**
+
+```text
+intervals:
+[1,3]
+[2,4]
+[2,5]
+
+coverage after diff+prefix:
+index:     1 2 3 4 5
+coverage:  1 3 3 2 1
+
+mark "good" if coverage >= 2:
+good:      0 1 1 1 0
+
+prefix good:
+            0 1 2 3 3
+
+query [2,5] -> 3 good positions
+```
+
+Visualization:
+
+```text
+RAW UPDATES -> DIFF -> ACTUAL COUNTS -> TRANSFORM -> PREFIX -> QUERIES
+```
+
+**Real-world mapping**
+
+First compute how many buses pass each stop. Then mark stops with at least 3 buses. Finally answer “how many well-served stops between L and R?”
+
+**60-second question**
+
+> Do I need one cumulative pass to materialize an intermediate array and another cumulative pass to answer final queries?
+
+**C++ template**
+
+```cpp
+vector<long long> diff(n + 2), prefGood(n + 1);
+
+for (auto [L, R] : ranges) {
+    ++diff[L];
+    --diff[R + 1];
+}
+
+long long cur = 0;
+for (int i = 1; i <= n; ++i) {
+    cur += diff[i];
+    int good = (cur >= K);
+    prefGood[i] = prefGood[i - 1] + good;
+}
+
+auto query = [&](int L, int R) {
+    return prefGood[R] - prefGood[L - 1];
+};
+```
+
 
 Pipeline:
 
@@ -551,7 +1461,94 @@ This is a major CF pattern.
 
 ---
 
+<a id="pattern-13"></a>
 ## Pattern 13 — Difference Array + Coordinate Compression
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- coordinates up to 1e9 / 1e18
+- only O(N) interval endpoints are present
+- need sweep/difference logic
+- allocating one cell per coordinate is impossible
+```
+
+Core observation:
+
+```text
+Nothing changes between consecutive important coordinates.
+Therefore store only important coordinates.
+```
+
+**Mini dry run**
+
+```text
+intervals:
+[10, 1,000,000]
+[500, 900]
+
+Important coordinates:
+10, 500, 901, 1,000,001
+
+compress:
+10        -> 0
+500       -> 1
+901       -> 2
+1000001   -> 3
+```
+
+Visualization:
+
+```text
+real line:
+10 ---------------- 500 ---- 900 ---------------- 1,000,000
+^                    ^       ^                    ^
+only boundaries matter
+
+compressed:
+0 --------- 1 ------- 2 -------------------------- 3
+```
+
+Do not forget:
+
+```text
+compressed-index gap 1
+does NOT mean real distance 1.
+```
+
+**Real-world mapping**
+
+A train route may span 1,000 km, but if trains only start/stop at 20 stations, the system state changes only at those stations.
+
+**60-second question**
+
+> Is the coordinate universe huge but the number of change-points small?
+
+**C++ template**
+
+```cpp
+vector<long long> xs;
+for (auto [L, R] : segs) {
+    xs.push_back(L);
+    xs.push_back(R + 1); // when safe / appropriate
+}
+
+sort(xs.begin(), xs.end());
+xs.erase(unique(xs.begin(), xs.end()), xs.end());
+
+auto id = [&](long long x) {
+    return lower_bound(xs.begin(), xs.end(), x) - xs.begin();
+};
+
+vector<long long> diff(xs.size() + 1);
+for (auto [L, R] : segs) {
+    ++diff[id(L)];
+    --diff[id(R + 1)];
+}
+```
+
 
 Use when coordinates are huge:
 
@@ -599,7 +1596,67 @@ compressed index distance != original coordinate distance
 
 ---
 
+<a id="pattern-14"></a>
 ## Pattern 14 — Difference of a Prefix Array / Reconstruct Original
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- given prefix sums rather than original values
+- recover/check the original sequence
+- consecutive prefix values encode one local element
+- one prefix may be missing/corrupted
+```
+
+Prefix sum is discrete integration; consecutive difference reverses it.
+
+```text
+pref[i] = pref[i-1] + A[i]
+A[i]    = pref[i] - pref[i-1]
+```
+
+**Mini dry run**
+
+```text
+pref = [0, 3, 8, 10, 17]
+
+recover:
+A1 = 3  - 0  = 3
+A2 = 8  - 3  = 5
+A3 = 10 - 8  = 2
+A4 = 17 - 10 = 7
+
+A = [3,5,2,7]
+```
+
+Visualization:
+
+```text
+A:       3    5    2    7
+          \    \    \    \
+pref: 0 --3----8---10---17
+        differences recover A
+```
+
+**Real-world mapping**
+
+If an odometer shows total distance after each day, subtract consecutive readings to recover distance driven that day.
+
+**60-second question**
+
+> Am I given cumulative totals and asked about the increments that created them?
+
+**C++ template**
+
+```cpp
+vector<long long> a(n + 1);
+for (int i = 1; i <= n; ++i) {
+    a[i] = pref[i] - pref[i - 1];
+}
+```
+
 
 Prefix sums can be reversed:
 
@@ -613,7 +1670,7 @@ A[i] = pref[i] - pref[i-1]
 
 This is discrete differentiation.
 
-Recognition:
+**Quick recap:**
 
 ```text
 given prefix sums
@@ -638,7 +1695,92 @@ restore/check original sequence
 
 ---
 
+<a id="pattern-15"></a>
 ## Pattern 15 — AP Range Update (Linear Difference)
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- range update is not constant
+- it adds x, x+d, x+2d, ... across [L,R]
+- update contribution changes linearly with index
+- many such updates are processed offline
+```
+
+Convert local AP position into a global linear function:
+
+```text
+value at i
+= x + (i-L)*d
+= d*i + (x-d*L)
+= p*i + q
+```
+
+So store the two coefficients separately.
+
+**Mini dry run**
+
+```text
+update [2,5]
+x = 3, d = 2
+
+desired additions:
+index: 2  3  4  5
+add:   3  5  7  9
+
+formula:
+2*i - 1
+
+i=2 -> 3
+i=3 -> 5
+i=4 -> 7
+i=5 -> 9
+```
+
+Visualization:
+
+```text
+AP inside range:
+3 -> 5 -> 7 -> 9
+     +2   +2   +2
+
+global form:
+P*i + Q
+P = 2
+Q = -1
+```
+
+**Real-world mapping**
+
+A promotion gives day 1 = 3 points, then 2 extra points each following day. Rather than update every day, store the slope and intercept active over the range.
+
+**60-second question**
+
+> Is every update value a linear function of position?
+
+**C++ template — offline AP additions**
+
+```cpp
+vector<long long> dP(n + 2), dQ(n + 2);
+
+auto addAP = [&](int L, int R, long long x, long long d) {
+    long long p = d;
+    long long q = x - d * L;
+
+    dP[L] += p;       dP[R + 1] -= p;
+    dQ[L] += q;       dQ[R + 1] -= q;
+};
+
+long long P = 0, Q = 0;
+for (int i = 1; i <= n; ++i) {
+    P += dP[i];
+    Q += dQ[i];
+    a[i] += P * i + Q;
+}
+```
+
 
 Suppose every update adds:
 
@@ -704,7 +1846,109 @@ A[i] += P[i]*i + Q[i]
 
 ---
 
+<a id="pattern-16"></a>
 ## Pattern 16 — GP / Recurrence-Based Range Update
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- update adds GP/Fibonacci/another recurrence over a range
+- next contribution depends on previous contribution(s)
+- ordinary diff cannot describe the interior with a constant
+- need to start a recurrence and cancel it after R
+```
+
+For GP:
+
+```text
+x[i] = r*x[i-1]
+```
+
+Define recurrence deviation:
+
+```text
+D[i] = x[i] - r*x[i-1]
+```
+
+Inside a perfect GP, `D[i] = 0`; only boundaries need explicit events.
+
+**Mini dry run — GP**
+
+```text
+Range [2,5], start=3, r=2
+
+wanted:
+index: 1  2  3   4   5   6
+value: 0  3  6  12  24   0
+
+start event at 2 = +3
+without cancellation, recurrence would make index 6 = 48
+so cancel 48 at 6
+```
+
+Reconstruction:
+
+```text
+x[i] = D[i] + r*x[i-1]
+
+i=1: 0
+i=2: 3 + 2*0  = 3
+i=3: 0 + 2*3  = 6
+i=4: 0 + 2*6  = 12
+i=5: 0 + 2*12 = 24
+i=6: -48 + 2*24 = 0
+```
+
+Visualization:
+
+```text
+START
+  |
+  3 -> 6 -> 12 -> 24 -> 48 ...
+                       |
+                    CANCEL
+```
+
+**Real-world mapping**
+
+Compound growth starts on day `L`: each day doubles the previous contribution. You only need to seed the process and later inject the exact cancellation that stops propagation.
+
+**60-second question**
+
+> Does the range update obey a recurrence instead of adding an independent value at each point?
+
+**C++ template — simple GP boundary idea**
+
+```cpp
+// Fixed ratio r for all GP updates.
+// For modular problems, apply MOD to multiplication/addition.
+long long r;                     // given by the problem
+vector<long long> powR(n + 2, 1);
+vector<long long> D(n + 2, 0);
+
+for (int i = 1; i <= n + 1; ++i) {
+    powR[i] = powR[i - 1] * r;
+}
+
+auto addGP = [&](int L, int R, long long x) {
+    D[L] += x;
+
+    // Without cancellation, the next term at R+1 would be:
+    // x * r^(R-L+1)
+    D[R + 1] -= x * powR[R - L + 1];
+};
+
+long long cur = 0;
+for (int i = 1; i <= n; ++i) {
+    cur = D[i] + r * cur;
+    a[i] += cur;
+}
+```
+
+> This is the boundary model for a fixed-ratio GP. Fibonacci or other recurrences need enough state to represent their recurrence and a matching cancellation at `R+1`.
+
 
 GP updates look like:
 
@@ -714,7 +1958,7 @@ x, x*r, x*r^2, ...
 
 Unlike AP, the next value depends multiplicatively on the previous value.
 
-Recognition:
+**Quick recap:**
 
 ```text
 range update follows a recurrence
@@ -753,9 +1997,71 @@ difference-like boundary state
 
 ---
 
+<a id="pattern-17"></a>
 # Pattern 17 — Prefix Sum + Binary Search / K-th Value
 
-Recognition:
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- find K-th element in an implicitly repeated multiset
+- each value has a frequency/count
+- ask first position where cumulative count reaches K
+- predicate "are there at least K items <= X?" is monotone
+```
+
+**Mini dry run**
+
+```text
+value:       2   5   8   10
+frequency:   3   2   4    1
+prefix:      3   5   9   10
+
+K = 7
+
+positions 1..3 -> value 2
+positions 4..5 -> value 5
+positions 6..9 -> value 8
+                ^
+                K=7 lives here
+
+first prefix >= 7 is 9
+answer = 8
+```
+
+Visualization:
+
+```text
+2 2 2 | 5 5 | 8 8 8 8 | 10
+1 2 3   4 5   6 7 8 9    10
+                    ^
+                    K=7
+```
+
+**Real-world mapping**
+
+Movie seats are sold in blocks by price category. If each category has a count, the K-th customer belongs to the first category whose cumulative capacity reaches K.
+
+**60-second question**
+
+> Can I sort by value, accumulate frequencies, and locate K with `lower_bound`?
+
+**C++ template**
+
+```cpp
+vector<long long> pref(m);
+pref[0] = freq[0];
+for (int i = 1; i < m; ++i) {
+    pref[i] = pref[i - 1] + freq[i];
+}
+
+int idx = lower_bound(pref.begin(), pref.end(), K) - pref.begin();
+long long answer = values[idx];
+```
+
+
+**Quick recap:**
 
 ```text
 K-th item
@@ -803,7 +2109,81 @@ idx = lower_bound(pref.begin(), pref.end(), K) - pref.begin();
 
 ---
 
+<a id="pattern-18"></a>
 # Pattern 18 — Prefix Sum + Monotonic Stack / Boundaries
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- score of a subarray depends on its sum AND min/max/boundary
+- for each A[i], find the maximal range where it is minimum/maximum
+- prefix sum can evaluate a range once another technique finds its ends
+```
+
+Separate the jobs:
+
+```text
+monotonic stack -> WHERE can i extend?
+prefix sum      -> WHAT is the sum/value there?
+combine         -> score/contribution
+```
+
+**Mini dry run — min-product idea**
+
+```text
+A = [3, 1, 5, 6, 4, 2]
+
+For value 4 at index 5:
+left smaller = index 2 (value 1)
+right smaller = index 6 (value 2)
+
+So the range where 4 is minimum is:
+indices 3..5 -> [5,6,4]
+
+prefix quickly gives:
+sum(3..5) = 15
+
+candidate score = 4 * 15
+```
+
+Visualization:
+
+```text
+          [5  6  4]
+           ^     ^
+        bounded by smaller elements
+
+stack -> [L,R]
+prefix -> sum(L,R)
+```
+
+**Real-world mapping**
+
+A bridge segment's capacity is controlled by its weakest support (minimum), but its total load comes from all spans in the segment. One structure finds the weakest-support boundaries; prefix computes total load.
+
+**60-second question**
+
+> Does one technique naturally find candidate boundaries while prefix sum evaluates each candidate range?
+
+**C++ template skeleton**
+
+```cpp
+vector<long long> pref(n + 1);
+for (int i = 1; i <= n; ++i) pref[i] = pref[i - 1] + a[i];
+
+// Compute previous/next smaller (or greater) with monotonic stacks.
+vector<int> L(n + 1), R(n + 1);
+
+// ... stack logic fills L[i], R[i] ...
+
+for (int i = 1; i <= n; ++i) {
+    long long rangeSum = pref[R[i] - 1] - pref[L[i]];
+    // combine rangeSum with a[i]
+}
+```
+
 
 At higher CF/LC levels, prefix sum often does **not** solve the whole problem. Another technique finds boundaries, while prefix sums evaluate the chosen range.
 
@@ -832,7 +2212,97 @@ combine         -> contribution / score
 
 ---
 
+<a id="pattern-19"></a>
 # Pattern 19 — Prefix on Trees / Paths
+
+### Recognition signal — detailed
+
+**Statement clues**
+
+```text
+- queries are on tree paths or subtrees
+- additive/parity state from root to node
+- subtree should become a contiguous interval
+- path formula uses LCA plus root-prefix information
+```
+
+Two common conversions:
+
+```text
+PATH:
+root-prefix + LCA
+
+SUBTREE:
+Euler tour -> contiguous array interval
+```
+
+**Mini dry run — root prefix**
+
+```text
+        1(5)
+       /    \
+    2(3)    3(4)
+      |
+    4(2)
+
+root sums:
+pref[1] = 5
+pref[2] = 8
+pref[3] = 9
+pref[4] = 10
+
+path 4 -> 3
+LCA = 1
+
+sum =
+pref[4] + pref[3] - 2*pref[1] + value[1]
+= 10 + 9 - 10 + 5
+= 14
+
+actual path values:
+4(2) -> 2(3) -> 1(5) -> 3(4)
+2+3+5+4 = 14
+```
+
+Euler visualization:
+
+```text
+DFS entry order:
+node: 1 2 4 3
+time: 1 2 3 4
+
+subtree(2) = times [2,3]
+            = contiguous range
+```
+
+**Real-world mapping**
+
+A company org chart is a tree. Root-prefix can represent accumulated budget/permission from CEO to employee; Euler tour makes every manager's team occupy one continuous interval.
+
+**60-second question**
+
+> Can I convert the tree query into either root-to-node cumulative states or an Euler-tour array range?
+
+**C++ template — root additive prefix**
+
+```cpp
+vector<long long> pref(n + 1);
+vector<int> tin(n + 1), tout(n + 1);
+int timer = 0;
+
+function<void(int,int)> dfs = [&](int u, int p) {
+    tin[u] = ++timer;
+    pref[u] = (p == 0 ? 0 : pref[p]) + value[u];
+
+    for (int v : g[u]) {
+        if (v != p) dfs(v, u);
+    }
+    tout[u] = timer;
+};
+
+// Path sums additionally need LCA preprocessing.
+```
+
 
 Prefix is not limited to arrays.
 
@@ -872,6 +2342,7 @@ path(u,v)
 
 ---
 
+<a id="cm-level-recognition-map"></a>
 # CM-Level Recognition Map
 
 ```text
@@ -899,8 +2370,10 @@ tree path/subtree                         root prefix / Euler tour
 
 ---
 
+<a id="suggested-order-to-cm"></a>
 # Suggested Order to CM
 
+<a id="stage-1-automatic-fundamentals"></a>
 ## Stage 1 — automatic fundamentals
 
 ```text
@@ -913,6 +2386,7 @@ Pattern 10 Basic difference
 
 Target: solve these without notes.
 
+<a id="stage-2-div2-bc-strength"></a>
 ## Stage 2 — Div2 B/C strength
 
 ```text
@@ -926,6 +2400,7 @@ Pattern 14 Recover from prefix
 Pattern 17 K-th/cumulative frequency
 ```
 
+<a id="stage-3-expert-cm"></a>
 ## Stage 3 — Expert → CM
 
 ```text
@@ -951,6 +2426,7 @@ binary search / stack / sweep / tree flattening."
 
 ---
 
+<a id="60-second-contest-checklist"></a>
 # 60-Second Contest Checklist
 
 When you see an array/range problem, ask in this order:
@@ -990,6 +2466,7 @@ When you see an array/range problem, ask in this order:
 
 ---
 
+<a id="high-value-cf-core-set"></a>
 # High-value CF core set
 
 If you want a compact first pass before doing every table, prioritize:
@@ -1009,6 +2486,7 @@ Then move to the advanced combination problems.
 
 ---
 
+<a id="final-rule"></a>
 # Final rule
 
 Do not memorize 19 independent templates.
