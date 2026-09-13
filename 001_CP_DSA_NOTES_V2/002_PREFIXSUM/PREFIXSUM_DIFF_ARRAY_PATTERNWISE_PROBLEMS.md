@@ -8,6 +8,40 @@
 
 ---
 
+## Table of Contents
+
+- [How to use this sheet](#how-to-use-this-sheet)
+- [PREFIX SUM PATTERNS](#prefix-sum-patterns)
+  - [Pattern 1 — Basic Range Sum / Static Queries](#pattern-1-basic-range-sum-static-queries)
+  - [Pattern 2 — Prefix + Suffix / Split at i](#pattern-2-prefix-suffix-split-at-i)
+  - [Pattern 3 — Prefix Sum + Hash Map: Subarray Sum = K](#pattern-3-prefix-sum-hash-map-subarray-sum-k)
+  - [Pattern 4 — Prefix Modulo / Divisibility](#pattern-4-prefix-modulo-divisibility)
+  - [Pattern 5 — Transform Values, Then Prefix](#pattern-5-transform-values-then-prefix)
+  - [Pattern 6 — Prefix XOR / Prefix State](#pattern-6-prefix-xor-prefix-state)
+  - [Pattern 7 — Weighted Prefix Sum / Index * A[i]](#pattern-7-weighted-prefix-sum-index-ai)
+  - [Pattern 8 — Prefix of Prefix / Double Prefix](#pattern-8-prefix-of-prefix-double-prefix)
+  - [Pattern 9 — 2D Prefix Sum](#pattern-9-2d-prefix-sum)
+- [DIFFERENCE ARRAY PATTERNS](#difference-array-patterns)
+  - [Pattern 10 — Basic Range Addition](#pattern-10-basic-range-addition)
+  - [Pattern 11 — Difference Array as Event / Sweep Line](#pattern-11-difference-array-as-event-sweep-line)
+  - [Pattern 12 — Difference + Prefix + Another Prefix](#pattern-12-difference-prefix-another-prefix)
+  - [Pattern 13 — Difference Array + Coordinate Compression](#pattern-13-difference-array-coordinate-compression)
+  - [Pattern 14 — Difference of a Prefix Array / Reconstruct Original](#pattern-14-difference-of-a-prefix-array-reconstruct-original)
+  - [Pattern 15 — AP Range Update (Linear Difference)](#pattern-15-ap-range-update-linear-difference)
+  - [Pattern 16 — GP / Recurrence-Based Range Update](#pattern-16-gp-recurrence-based-range-update)
+- [Pattern 17 — Prefix Sum + Binary Search / K-th Value](#pattern-17-prefix-sum-binary-search-k-th-value)
+- [Pattern 18 — Prefix Sum + Monotonic Stack / Boundaries](#pattern-18-prefix-sum-monotonic-stack-boundaries)
+- [Pattern 19 — Prefix on Trees / Paths](#pattern-19-prefix-on-trees-paths)
+- [CM-Level Recognition Map](#cm-level-recognition-map)
+- [Suggested Order to CM](#suggested-order-to-cm)
+  - [Stage 1 — automatic fundamentals](#stage-1-automatic-fundamentals)
+  - [Stage 2 — Div2 B/C strength](#stage-2-div2-bc-strength)
+  - [Stage 3 — Expert → CM](#stage-3-expert-cm)
+- [60-Second Contest Checklist](#60-second-contest-checklist)
+- [High-value CF core set](#high-value-cf-core-set)
+- [Final rule](#final-rule)
+
+---
 # How to use this sheet
 
 For every problem:
