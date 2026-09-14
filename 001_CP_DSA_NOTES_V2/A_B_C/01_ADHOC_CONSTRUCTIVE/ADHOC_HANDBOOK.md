@@ -13,19 +13,24 @@ case split.
 
 ## Table of Contents
 
-1.  Ad-hoc mental model
-2.  60-second scanner
-3.  Parity and modulo
-4.  Counting / frequency / presence
-5.  Min-max / extreme observation
-6.  Small casework + direct simulation
-7.  Sort to reveal structure
-8.  Invariants under operations
-9.  Reverse thinking
-10. Difference modeling / normalization
-11. Decode a long CF statement
-12. 60-second recognition drill
-13. Ad-hoc learning order
+- [1. Ad-hoc Mental Model](#1-ad-hoc-mental-model)
+- [2. The 60-Second Scanner](#2-the-60-second-scanner)
+- [3. Div2 A Ad-hoc Patterns](#3-core-div2-a-ad-hoc-patterns)
+  - [A1. Parity and Modulo](#a1-parity-and-modulo)
+  - [A2. Counting / Frequency / Presence](#a2-counting--frequency--presence)
+  - [A3. Min / Max / Extreme Observation](#a3-min--max--extreme-observation)
+  - [A4. Small Casework + Direct Simulation](#a4-small-casework--direct-simulation)
+- [4. Div2 B Ad-hoc Bridge](#4-div2-b-ad-hoc-bridge)
+  - [B4. Sort to Reveal Structure](#b4-sort-to-reveal-structure)
+- [5. Div2 C Ad-hoc Bridge](#5-div2-c-ad-hoc-bridge)
+  - [C1. Invariants Under Operations](#c1-invariants-under-operations)
+  - [C2. Reverse Thinking](#c2-reverse-thinking)
+  - [C3. Difference Modeling / Normalization](#c3-difference-modeling--normalization)
+- [8. How to Decode a Long CF Statement](#8-how-to-decode-a-long-cf-statement)
+- [9. The 60-Second Pattern Recognition Drill](#9-the-60-second-pattern-recognition-drill)
+- [13. Ad-hoc Learning Order](#13-ad-hoc-learning-order)
+
+> Learn each pattern as **picture -> compressed state -> algebra -> code decision**. Do not memorize the final `if`.
 
 ------------------------------------------------------------------------
 
@@ -61,7 +66,7 @@ one small observation
 
 ------------------------------------------------------------------------
 
-# 1. The 60-Second Scanner
+# 2. The 60-Second Scanner
 
 When you open a problem, **do not code immediately**.
 
@@ -202,9 +207,78 @@ or invariant + data structure / greedy
 
 ------------------------------------------------------------------------
 
+## Visual Problem-Solving Worksheet
+
+Use this before opening a hint:
+
+```text
++----------------------------------------------------------+
+| 1. OUTPUT: What exactly must I print/find?               |
+| 2. OPERATION: Rewrite the story in ONE math line.        |
+| 3. THROW AWAY: order? exact values? positions?           |
+| 4. COMPRESS: parity/count/min-max/remainder/difference?  |
+| 5. DRAW: number line / buckets / state transition.       |
+| 6. TINY CASES: n=1,2,3; all same; one exceptional.       |
+| 7. ALGEBRA: after x operations, what is the new state?   |
+| 8. CLASSIFY: parity/count/extreme/sort/invariant/reverse? |
++----------------------------------------------------------+
+
+STATEMENT -> MATH OPERATION -> PICTURE -> TINY STATE
+          -> CONDITION/FORMULA -> CODE
+```
+
+------------------------------------------------------------------------
+
 # 3. Core Div2 A Ad-hoc Patterns
 
 # A1. Parity and Modulo
+
+## Visual Learning Map
+
+Think of parity as **two train tracks**:
+
+```text
+EVEN TRACK: ... -4 -2  0  2  4  6  8 ...
+ODD  TRACK: ... -3 -1  1  3  5  7  9 ...
+
+1,000,002 --compress--> E
+999,999   --compress--> O
+```
+
+**Real world:** every number wears only an EVEN or ODD team shirt. If the question only cares about parity, the printed number is irrelevant.
+
+For two group sums `L` and `R` to have the same parity:
+
+```text
+L=E, R=E -> L+R=E
+L=O, R=O -> L+R=E
+                 |
+                 +--> total must be EVEN
+```
+
+Algebra:
+
+```text
+S = L + R
+L % 2 == R % 2
+=> S % 2 == 0
+```
+
+Recognition:
+
+```text
+odd/even/divisibility/fixed +/-k
+              |
+              v
+      discard exact values
+              |
+              v
+       keep x%2 or x%k
+              |
+              v
+       derive condition
+```
+
 
 ## 60-second signal
 
@@ -556,9 +630,58 @@ derive invariant / necessary condition
 5.  [CF 1475A --- Odd
     Divisor](https://codeforces.com/problemset/problem/1475/A)
 
+### Hints - open only after your own attempt
+
+1. 959A: Test only n parity.
+2. 1857A: Same-parity group sums force a condition on the total sum.
+3. 1296A: An odd sum needs an odd number of odd elements.
+4. 1899A: Tabulate n mod 3 for tiny n.
+5. 1475A: Repeatedly divide by 2; identify the one special number class.
+
 ------------------------------------------------------------------------
 
 # A2. Counting / Frequency / Presence
+
+## Visual Learning Map
+
+If positions do not matter, pour equal objects into **buckets**:
+
+```text
+- + - - + + -
+      |
+      v
+NEG bucket: o o o o   neg=4
+POS bucket: o o o     pos=3
+```
+
+**Real world:** a flip `-1 -> +1` is one person changing teams.
+
+```text
+before: NEG=5  POS=1  gap=4
+after : NEG=4  POS=2  gap=2
+```
+
+Why did the gap fall by 2?
+
+```text
+newGap = (neg-1) - (pos+1)
+       = neg-pos-2
+```
+
+After `x` flips:
+
+```text
+neg' = neg-x
+pos' = pos+x
+
+need pos' >= neg'
+pos+x >= neg-x
+2x >= neg-pos
+x >= ceil((neg-pos)/2)
+```
+
+Recognition test: **If I randomly shuffle the array, does the answer stay the same?** If yes, counts/frequencies are strong candidates.
+
 
 ## 60-second signal
 
@@ -940,9 +1063,51 @@ That is classic ad-hoc compression.
 5.  [CF 1703A --- YES or
     YES?](https://codeforces.com/problemset/problem/1703/A)
 
+### Hints - open only after your own attempt
+
+1. 1220A: Which letters uniquely identify one and zero?
+2. 1878A: Existence needs only one boolean.
+3. 1877A: Write the total-sum equation.
+4. 1791A: Membership in a fixed tiny string is enough.
+5. 1703A: Normalize case, then compare.
+
 ------------------------------------------------------------------------
 
 # A3. Min / Max / Extreme Observation
+
+## Visual Learning Map
+
+Draw a number line:
+
+```text
+2 ---- 4 ---- 6 ---- 8 ---- 10
+^                             ^
+MIN                           MAX
+
+largest separation = MAX-MIN = 8
+```
+
+**Real world:** the farthest two houses on one straight road must be at the two extreme occupied positions.
+
+Algebra:
+
+```text
+min <= x,y <= max
+=> |x-y| <= max-min
+```
+
+Boundary variant:
+
+```text
+G G G B B B G G
+      ^   ^
+    first last
+
+outside [first,last] may already be irrelevant
+```
+
+Recognition: maximum/minimum/spread/boundary -> draw a number line -> test min/max or first/last before checking all pairs.
+
 
 ## 60-second signal
 
@@ -1202,9 +1367,51 @@ min/max or first/last
 5.  [CF 1896A --- Jagged
     Swaps](https://codeforces.com/problemset/problem/1896/A)
 
+### Hints - open only after your own attempt
+
+1. 1838A: Inspect what an extreme value tells you about possible differences.
+2. 1805A: XOR all elements and examine n parity.
+3. 1848A: Convert coordinates to parity classes.
+4. 1858A: Consume the shared resource first, then compare turns.
+5. 1896A: Ask which element must be movable to the front.
+
 ------------------------------------------------------------------------
 
 # A4. Small Casework + Direct Simulation
+
+## Visual Learning Map
+
+Good casework is a small **decision tree**:
+
+```text
+              special condition?
+                /          \
+              YES          NO
+               |            |
+          special world   normal world
+```
+
+**Real world:** an elevator may have a special rule only on floor 1; separating that case is clearer than forcing one giant formula.
+
+Simulation example `x <- x+x`:
+
+```text
+step 0: ab                len=2
+          | double
+step 1: abab              len=4
+          | double
+step 2: abababab          len=8
+```
+
+If a transition repeats regularly, upgrade simulation to algebra:
+
+```text
+pos' = pos+x
+neg' = neg-x
+need pos' >= neg'
+=> 2x >= neg-pos
+```
+
 
 ## 60-second signal
 
@@ -1539,6 +1746,14 @@ derive algebra
 5.  [CF 1845A --- Forbidden
     Integer](https://codeforces.com/problemset/problem/1845/A)
 
+### Hints - open only after your own attempt
+
+1. 1881A: Double the string a bounded number of times.
+2. 1900A: Find the structural condition that immediately fixes the answer.
+3. 1862B: Compare adjacent pairs and repair only violations.
+4. 1858A: Split by who receives the extra move.
+5. 1845A: Try all 1s; repair the x=1 failure with 2/3.
+
 ------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
@@ -1546,6 +1761,32 @@ derive algebra
 # 4. Div2 B Ad-hoc Bridge
 
 # B4. Sort to Reveal Structure
+
+## Visual Learning Map
+
+Sorting turns scattered values into a visible number line:
+
+```text
+raw:    8  1  7  3  2
+sort
+  |
+  v
+        1--2--3----------7--8
+        gap1 gap1  gap4   gap1
+```
+
+**Real world:** line people up by height before looking for the closest heights.
+
+For sorted `a[i] <= a[j] <= a[k]`:
+
+```text
+a[k]-a[i] = (a[j]-a[i]) + (a[k]-a[j])
+```
+
+So many closest-pair/conflict questions become adjacent checks.
+
+Recognition: original order irrelevant -> sort -> inspect adjacent gaps, blocks, or extreme pairings. **Do not sort if original indices/order matter.**
+
 
 ## 60-second signal
 
@@ -1795,6 +2036,14 @@ adjacent gaps / extreme pairs / groups
 5.  [CF 1538C --- Challenging
     Cliffs](https://codeforces.com/problemset/problem/1538/C)
 
+### Hints - open only after your own attempt
+
+1. 1798A: Normalize each swappable pair into small/large roles.
+2. 1833B: Sort while preserving the output indices that matter.
+3. 1793C: Track current min/max and inspect the two ends.
+4. 1353B: Pair smallest candidates with largest replacements.
+5. 1538C: The smallest adjacent gap after sorting is central.
+
 ------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
@@ -1802,6 +2051,38 @@ adjacent gaps / extreme pairs / groups
 # 5. Div2 C Ad-hoc Bridge
 
 # C1. Invariants Under Operations
+
+## Visual Learning Map
+
+An invariant is a label the operation cannot erase.
+
+For `x <- x+2`:
+
+```text
+ODD ROAD : 1 -> 3 -> 5 -> 7 -> 9 -> ...
+EVEN ROAD: 2 -> 4 -> 6 -> 8 -> 10 -> ...
+
+             NO BRIDGE
+```
+
+**Real world:** two train lines with no interchange. Riding longer cannot move you to the other line.
+
+Algebra:
+
+```text
+x' = x+2
+x' mod 2 = (x+2) mod 2 = x mod 2
+```
+
+General:
+
+```text
+x' = x + m*k
+=> x' mod k = x mod k
+```
+
+Recognition: repeated operation -> write one operation algebraically -> ask what cannot change -> parity/mod/gcd/xor/sign/order.
+
 
 ## 60-second signal
 
@@ -2096,9 +2377,48 @@ into:
 5.  [CF 1624C --- Division by Two and
     Permutation](https://codeforces.com/problemset/problem/1624/C)
 
+### Hints - open only after your own attempt
+
+1. 1367B: Count parity mismatches between values and indices.
+2. 1475A: Powers of two form the special invariant class.
+3. 1690F: Work cycle-by-cycle and combine periods with LCM.
+4. 1669C: Check parity consistency inside index-parity classes.
+5. 1624C: Repeated /2 shrinks values toward assignable targets.
+
 ------------------------------------------------------------------------
 
 # C2. Reverse Thinking
+
+## Visual Learning Map
+
+Forward may be a tree; backward may be a path:
+
+```text
+FORWARD from 5
+             5
+          /     \
+        10       6
+       /  \     / \
+     20   11   12   7
+          ...branches...
+
+BACKWARD from 23
+23 --(-1)--> 22 --(/2)--> 11 --(-1)--> 10 --(/2)--> 5
+```
+
+**Real world:** reconstruct the last move of a puzzle instead of listing every possible future move.
+
+For forward rules `x->2x` and `x->x+1`:
+
+```text
+target t is odd
+=> t cannot be 2*x
+=> last move was +1
+=> predecessor = t-1
+```
+
+Recognition: forward choices explode -> inspect target -> ask **what could the last move be?**
+
 
 ## 60-second signal
 
@@ -2397,9 +2717,57 @@ ask "what could the last move be?"
 5.  [CF 1791C --- Prepend and
     Append](https://codeforces.com/problemset/problem/1791/C)
 
+### Hints - open only after your own attempt
+
+1. 727A: Start at b; undo append-1 or doubling.
+2. 1703C: Reverse U/D or accumulate net movement mod 10.
+3. 1881A: Doubling gives a tiny search depth.
+4. 1624C: Shrink values by /2 instead of trying to grow targets.
+5. 1791C: Peel compatible boundary characters from both ends.
+
 ------------------------------------------------------------------------
 
 # C3. Difference Modeling / Normalization
+
+## Visual Learning Map
+
+When two arrays look noisy, draw **movement arrows**:
+
+```text
+A:  3       7       10
+    |       |        |
+   +5      +5       +5
+    |       |        |
+B:  8      12       15
+```
+
+Hidden state:
+
+```text
+D[i] = B[i]-A[i] = [5,5,5]
+```
+
+**Real world:** three houses were moved east by the same 5 km. One different movement would break the common translation.
+
+Algebra:
+
+```text
+A[i] + x = B[i]
+=> x = B[i]-A[i]
+```
+
+Same `x` everywhere means all differences must agree.
+
+Normalization removes irrelevant absolute position:
+
+```text
+10 ---- 20 ---- 30
+subtract 10
+0  ---- 10 ---- 20
+```
+
+Recognition: current vs target -> subtract/divide/normalize -> compare relative structure.
+
 
 ## 60-second signal
 
@@ -2747,6 +3115,14 @@ difference / offset / gcd normalization
     Array](https://codeforces.com/problemset/problem/1833/C)
 5.  [CF 1618C --- Paint the
     Array](https://codeforces.com/problemset/problem/1618/C)
+
+### Hints - open only after your own attempt
+
+1. 1832C: Remove duplicates, then keep only direction changes.
+2. 1772D: Each adjacent relation imposes a bound on one common x.
+3. 1862B: Model a local adjacent violation and repair it locally.
+4. 1833C: Subtract the minimum mentally and inspect parity.
+5. 1618C: Separate position groups and test a GCD candidate.
 
 ------------------------------------------------------------------------
 
