@@ -52,6 +52,36 @@
 
 # How to use this sheet
 
+## Visual memory method
+
+For maximum retention, use the same four-step decoding loop for every
+pattern:
+
+``` text
+PROBLEM STORY
+     ↓
+WHAT CHANGES / WHAT IS ASKED?
+     ↓
+ARRAY / PREFIX / EVENT STATE
+     ↓
+ONE EQUATION OR INVARIANT
+     ↓
+CODE
+```
+
+When reviewing, do **not** memorize the final pseudocode first. Cover it
+and try to recall:
+
+``` text
+1. Recognition signal
+2. Real-world picture
+3. One-line invariant
+4. Pseudocode
+```
+
+The diagrams are deliberately simple: the goal is to make the pattern
+image appear in your head during a contest.
+
 For every problem:
 
 1.  Spend 3–5 minutes decoding the statement into an
@@ -175,6 +205,32 @@ Imagine daily spending. `pref[d]` is total money spent from day 1
 through day `d`. Spending from day `L` to day `R` is total-through-R
 minus total-before-L.
 
+### 🧠 Retention diagram — **STORE THE PAST, SUBTRACT THE UNWANTED**
+
+``` text
+Daily spending
+Day:      1    2    3    4    5
+Spend:   €3   €1   €4   €2   €5
+
+Running wallet total:
+          3    4    8   10   15
+
+Question: spending on days 2..4?
+
+        everything through day 4
+        [ 3 | 1  4  2 ] = 10
+          ^ remove this     -3
+                            ---
+                              7
+
+MEMORY HOOK:
+RANGE = BIG PREFIX - PREFIX BEFORE RANGE
+```
+
+**Real-world trigger:** bank statements, website visits per day,
+calories per day, tickets sold per hour — static data with many interval
+questions.
+
 **60-second question**
 
 > Is the data static, and am I repeatedly asking for an additive
@@ -221,13 +277,16 @@ answer = pref[R] - pref[L-1]
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                 | Site  | Why it maps to this pattern                       | Approach                                                      | Reference pseudocode                                    |
-|-----|-----------------------------------------------------------------------------------------|-------|---------------------------------------------------|---------------------------------------------------------------|---------------------------------------------------------|
-| 1   | [Range Sum Query - Immutable](https://leetcode.com/problems/range-sum-query-immutable/) | LC    | Store one extra zero before the array.            | Precompute once, answer each static contiguous range in O(1). | `build pref; for query(L,R): ans = pref[R] - pref[L-1]` |
-| 2   | [K Radius Subarray Averages](https://leetcode.com/problems/k-radius-subarray-averages/) | LC    | Every valid answer is one fixed-length range sum. | Precompute once, answer each static contiguous range in O(1). | `build pref; for query(L,R): ans = pref[R] - pref[L-1]` |
-| 3   | [Kuriyama Mirai's Stones](https://codeforces.com/problemset/problem/433/B)              | CF    | Build prefix sums for original and sorted arrays. | Precompute once, answer each static contiguous range in O(1). | `build pref; for query(L,R): ans = pref[R] - pref[L-1]` |
-| 4   | [Static Range Sum Queries](https://cses.fi/problemset/task/1646)                        | Bonus | Pure `pref[R]-pref[L-1]` drill.                   | Precompute once, answer each static contiguous range in O(1). | `build pref; for query(L,R): ans = pref[R] - pref[L-1]` |
+| \#  | Problem                                                                                 | Site  | Why it maps to this pattern                       | Approach                                                      | Reference pseudocode                                                                                                                    |
+|-----|-----------------------------------------------------------------------------------------|-------|---------------------------------------------------|---------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Range Sum Query - Immutable](https://leetcode.com/problems/range-sum-query-immutable/) | LC    | Store one extra zero before the array.            | Precompute once, answer each static contiguous range in O(1). | <code>pref\[0\]=0<br>↓<br>build pref<br>↓<br>sumRange(L,R)=pref\[R+1\]-pref\[L\]</code>                                                 |
+| 2   | [K Radius Subarray Averages](https://leetcode.com/problems/k-radius-subarray-averages/) | LC    | Every valid answer is one fixed-length range sum. | Precompute once, answer each static contiguous range in O(1). | <code>build pref<br>↓<br>for i=k..n-k-1: L=i-k,R=i+k<br>↓<br>ans\[i\]=(pref\[R+1\]-pref\[L\])/(2\*k+1)</code>                           |
+| 3   | [Kuriyama Mirai's Stones](https://codeforces.com/problemset/problem/433/B)              | CF    | Build prefix sums for original and sorted arrays. | Precompute once, answer each static contiguous range in O(1). | <code>p1=prefix(a)<br>↓<br>sort b=a<br>↓<br>p2=prefix(b)<br>↓<br>type1 -\> p1\[R\]-p1\[L-1\]<br>↓<br>type2 -\> p2\[R\]-p2\[L-1\]</code> |
+| 4   | [Static Range Sum Queries](https://cses.fi/problemset/task/1646)                        | Bonus | Pure `pref[R]-pref[L-1]` drill.                   | Precompute once, answer each static contiguous range in O(1). | <code>pref\[0\]=0<br>↓<br>for i=1..n: pref\[i\]=pref\[i-1\]+a\[i\]<br>↓<br>query(L,R)=pref\[R\]-pref\[L-1\]</code>                      |
 
 #### How to practice this section
 
@@ -317,6 +376,28 @@ the formula.
 A balance scale: position `i` is the fulcrum, and prefix/suffix
 information tells you the total weight on each side without rescanning.
 
+### 🧠 Retention diagram — **FREEZE THE DIVIDER**
+
+``` text
+Workers/tasks:
+[ 2 ][ 5 ] | [ 1 ] | [ 4 ][ 2 ]
+   LEFT        i        RIGHT
+     7                    6
+
+                 total = 14
+left  = prefix before i
+right = total - prefix through i
+
+Think of moving a wall:
+
+[LEFT] | [RIGHT]
+         ^
+      try every split
+```
+
+**Real-world trigger:** divide workload between two teams, balance money
+before/after a date, compare traffic before/after a checkpoint.
+
 **60-second question**
 
 > If I freeze one index, can I describe everything on its left and right
@@ -359,14 +440,17 @@ ASCII:
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                                                       | Site | Why it maps to this pattern                                          | Approach                                                             | Reference pseudocode                                                                    |
-|-----|-------------------------------------------------------------------------------------------------------------------------------|------|----------------------------------------------------------------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
-| 1   | [Find Pivot Index](https://leetcode.com/problems/find-pivot-index/)                                                           | LC   | Need equality of left and right sums.                                | Freeze the split/index and derive both sides from cumulative totals. | `build pref; total=pref[n]; for i: left=pref[i-1]; right=total-pref[i]; evaluate split` |
-| 2   | [Minimum Average Difference](https://leetcode.com/problems/minimum-average-difference/)                                       | LC   | Prefix gives left sum; total-prefix gives right.                     | Freeze the split/index and derive both sides from cumulative totals. | `build pref; total=pref[n]; for i: left=pref[i-1]; right=total-pref[i]; evaluate split` |
-| 3   | [Sum of Absolute Differences in a Sorted Array](https://leetcode.com/problems/sum-of-absolute-differences-in-a-sorted-array/) | LC   | Sorted order lets you split absolute values into left/right algebra. | Freeze the split/index and derive both sides from cumulative totals. | `build pref; total=pref[n]; for i: left=pref[i-1]; right=total-pref[i]; evaluate split` |
-| 4   | [Number of Ways to Split Array](https://leetcode.com/problems/number-of-ways-to-split-array/)                                 | LC   | `left >= right`.                                                     | Freeze the split/index and derive both sides from cumulative totals. | `build pref; total=pref[n]; for i: left=pref[i-1]; right=total-pref[i]; evaluate split` |
-| 5   | [Array Division](https://codeforces.com/problemset/problem/808/D)                                                             | CF   | Prefix sums + membership lookup on the opposite side.                | Freeze the split/index and derive both sides from cumulative totals. | `build pref; total=pref[n]; for i: left=pref[i-1]; right=total-pref[i]; evaluate split` |
+| \#  | Problem                                                                                                                       | Site | Why it maps to this pattern                                          | Approach                                                             | Reference pseudocode                                                                                                                                         |
+|-----|-------------------------------------------------------------------------------------------------------------------------------|------|----------------------------------------------------------------------|----------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Find Pivot Index](https://leetcode.com/problems/find-pivot-index/)                                                           | LC   | Need equality of left and right sums.                                | Freeze the split/index and derive both sides from cumulative totals. | <code>total=sum(a)<br>↓<br>left=0<br>↓<br>for i: right=total-left-a\[i\]<br>↓<br>if left==right return i<br>↓<br>left+=a\[i\]</code>                         |
+| 2   | [Minimum Average Difference](https://leetcode.com/problems/minimum-average-difference/)                                       | LC   | Prefix gives left sum; total-prefix gives right.                     | Freeze the split/index and derive both sides from cumulative totals. | \`pref=0,total=sum(a); for i: pref+=a\[i\]; left=pref/(i+1); right=(i==n-1?0:(total-pref)/(n-i-1)); minimize                                                 |
+| 3   | [Sum of Absolute Differences in a Sorted Array](https://leetcode.com/problems/sum-of-absolute-differences-in-a-sorted-array/) | LC   | Sorted order lets you split absolute values into left/right algebra. | Freeze the split/index and derive both sides from cumulative totals. | <code>pref=prefix(nums)<br>↓<br>for i: left=nums\[i\]*i-pref\[i\]<br>↓<br>right=(pref\[n\]-pref\[i+1\])-nums\[i\]*(n-i-1)<br>↓<br>ans\[i\]=left+right</code> |
+| 4   | [Number of Ways to Split Array](https://leetcode.com/problems/number-of-ways-to-split-array/)                                 | LC   | `left >= right`.                                                     | Freeze the split/index and derive both sides from cumulative totals. | <code>total=sum(a)<br>↓<br>left=0<br>↓<br>for i=0..n-2: left+=a\[i\]<br>↓<br>if left\>=total-left: ans++</code>                                              |
+| 5   | [Array Division](https://codeforces.com/problemset/problem/808/D)                                                             | CF   | Prefix sums + membership lookup on the opposite side.                | Freeze the split/index and derive both sides from cumulative totals. | \`total=sum(a); scan split with sets of seen/unseen values; diff=                                                                                            |
 
 #### How to practice this section
 
@@ -465,6 +549,27 @@ Your bank balance is cumulative. If your balance is `P` now and you want
 an interval where net change was `K`, you need an earlier balance of
 `P-K`.
 
+### 🧠 Retention diagram — **CURRENT PREFIX LOOKS FOR AN OLD PREFIX**
+
+``` text
+Need subarray sum = K
+
+old prefix                  current prefix
+     P -------------------------- P + K
+       |<------ subarray K ------>|
+
+Equation:
+current - old = K
+old = current - K
+
+At every position:
+"Have I seen currentPrefix - K before?"
+```
+
+**Real-world trigger:** bank-balance history. To find a period where
+your balance changed by exactly K, find an earlier balance exactly K
+below the current balance.
+
 **60-second question**
 
 > Does a valid subarray correspond to “current cumulative value minus a
@@ -512,14 +617,17 @@ How many previous prefixes equal pref[R] - K?
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                                 | Site  | Why it maps to this pattern                      | Approach                                                                   | Reference pseudocode                                                 |
-|-----|---------------------------------------------------------------------------------------------------------|-------|--------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------|
-| 1   | [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)                           | LC    | Frequency map of previous prefix sums.           | Turn the subarray equation into a required previous prefix and look it up. | `freq[0]=1; pref=0; for x: pref+=x; ans+=freq[pref-K]; freq[pref]++` |
-| 2   | [Binary Subarrays With Sum](https://leetcode.com/problems/binary-subarrays-with-sum/)                   | LC    | Same equation; binary values are not essential.  | Turn the subarray equation into a required previous prefix and look it up. | `freq[0]=1; pref=0; for x: pref+=x; ans+=freq[pref-K]; freq[pref]++` |
-| 3   | [Maximum Size Subarray Sum Equals k](https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/) | LC    | Store earliest index, not frequency.             | Turn the subarray equation into a required previous prefix and look it up. | `freq[0]=1; pref=0; for x: pref+=x; ans+=freq[pref-K]; freq[pref]++` |
-| 4   | [Subarray Sums II](https://cses.fi/problemset/task/1661)                                                | Bonus | Canonical arbitrary-integer version.             | Turn the subarray equation into a required previous prefix and look it up. | `freq[0]=1; pref=0; for x: pref+=x; ans+=freq[pref-K]; freq[pref]++` |
-| 5   | [Good Subarrays](https://codeforces.com/problemset/problem/1398/C)                                      | CF    | Transform so required subarray sum becomes zero. | Turn the subarray equation into a required previous prefix and look it up. | `freq[0]=1; pref=0; for x: pref+=x; ans+=freq[pref-K]; freq[pref]++` |
+| \#  | Problem                                                                                                 | Site  | Why it maps to this pattern                      | Approach                                                                   | Reference pseudocode                                                                                                                                                 |
+|-----|---------------------------------------------------------------------------------------------------------|-------|--------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)                           | LC    | Frequency map of previous prefix sums.           | Turn the subarray equation into a required previous prefix and look it up. | <code>freq\[0\]=1<br>↓<br>pref=ans=0<br>↓<br>for x: pref+=x<br>↓<br>ans+=freq\[pref-k\]<br>↓<br>freq\[pref\]++</code>                                                |
+| 2   | [Binary Subarrays With Sum](https://leetcode.com/problems/binary-subarrays-with-sum/)                   | LC    | Same equation; binary values are not essential.  | Turn the subarray equation into a required previous prefix and look it up. | <code>freq\[0\]=1<br>↓<br>pref=ans=0<br>↓<br>for bit: pref+=bit<br>↓<br>ans+=freq\[pref-goal\]<br>↓<br>freq\[pref\]++</code>                                         |
+| 3   | [Maximum Size Subarray Sum Equals k](https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/) | LC    | Store earliest index, not frequency.             | Turn the subarray equation into a required previous prefix and look it up. | <code>first\[0\]=-1<br>↓<br>pref=0<br>↓<br>for i: pref+=a\[i\]<br>↓<br>if first has pref-k: best=max(best,i-first\[pref-k\])<br>↓<br>store first\[pref\] once</code> |
+| 4   | [Subarray Sums II](https://cses.fi/problemset/task/1661)                                                | Bonus | Canonical arbitrary-integer version.             | Turn the subarray equation into a required previous prefix and look it up. | <code>freq\[0\]=1<br>↓<br>pref=ans=0<br>↓<br>for x: pref+=x<br>↓<br>ans+=freq\[pref-target\]<br>↓<br>freq\[pref\]++</code>                                           |
+| 5   | [Good Subarrays](https://codeforces.com/problemset/problem/1398/C)                                      | CF    | Transform so required subarray sum becomes zero. | Turn the subarray equation into a required previous prefix and look it up. | <code>pref=0<br>↓<br>freq\[0\]=1<br>↓<br>for i=1..n: pref += digit\[i\]-1<br>↓<br>ans += freq\[pref\]<br>↓<br>freq\[pref\]++</code>                                  |
 
 #### How to practice this section
 
@@ -610,6 +718,27 @@ Think of a clock. Two cumulative totals landing on the same clock
 position differ by a whole number of rotations; modulo works the same
 way.
 
+### 🧠 Retention diagram — **SAME CLOCK POSITION = WHOLE ROTATIONS**
+
+``` text
+Modulo 5 clock:
+
+          0
+      4       1
+       \     /
+        3---2
+
+prefix A lands at remainder 4
+prefix B later also lands at remainder 4
+
+4 ---- full rotations ----> 4
+
+difference is divisible by 5
+```
+
+**Real-world trigger:** clocks, repeating weekly schedules, circular
+counters. Exact totals do not matter; only the remainder state matters.
+
 **60-second question**
 
 > Does the condition care only about a sum modulo `K`, rather than its
@@ -655,13 +784,16 @@ rem = ((sum % k) + k) % k;
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                     | Site  | Why it maps to this pattern                                    | Approach                                                                   | Reference pseudocode                                                           |
-|-----|---------------------------------------------------------------------------------------------|-------|----------------------------------------------------------------|----------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| 1   | [Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/) | LC    | Count equal prefix remainders.                                 | Keep only the prefix remainder/state needed by the divisibility condition. | `cnt[0]=1; pref=0; for x: pref+=x; r=normalize(pref%K); ans+=cnt[r]; cnt[r]++` |
-| 2   | [Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)           | LC    | Store earliest index for each remainder; enforce length \>= 2. | Keep only the prefix remainder/state needed by the divisibility condition. | `cnt[0]=1; pref=0; for x: pref+=x; r=normalize(pref%K); ans+=cnt[r]; cnt[r]++` |
-| 3   | [Make Sum Divisible by P](https://leetcode.com/problems/make-sum-divisible-by-p/)           | LC    | What remainder must the removed subarray have?.                | Keep only the prefix remainder/state needed by the divisibility condition. | `cnt[0]=1; pref=0; for x: pref+=x; r=normalize(pref%K); ans+=cnt[r]; cnt[r]++` |
-| 4   | [Subarray Divisibility](https://cses.fi/problemset/task/1662)                               | Bonus | Handle negative modulo carefully.                              | Keep only the prefix remainder/state needed by the divisibility condition. | `cnt[0]=1; pref=0; for x: pref+=x; r=normalize(pref%K); ans+=cnt[r]; cnt[r]++` |
+| \#  | Problem                                                                                     | Site  | Why it maps to this pattern                                    | Approach                                                                   | Reference pseudocode                                                                                                                                                                                   |
+|-----|---------------------------------------------------------------------------------------------|-------|----------------------------------------------------------------|----------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/) | LC    | Count equal prefix remainders.                                 | Keep only the prefix remainder/state needed by the divisibility condition. | <code>cnt\[0\]=1<br>↓<br>pref=ans=0<br>↓<br>for x: pref+=x<br>↓<br>r=((pref%k)+k)%k<br>↓<br>ans+=cnt\[r\]<br>↓<br>cnt\[r\]++</code>                                                                    |
+| 2   | [Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)           | LC    | Store earliest index for each remainder; enforce length \>= 2. | Keep only the prefix remainder/state needed by the divisibility condition. | <code>first\[0\]=-1<br>↓<br>pref=0<br>↓<br>for i: pref+=a\[i\]<br>↓<br>r=(k==0?pref:pref%k)<br>↓<br>if seen r and i-first\[r\]\>=2 return true<br>↓<br>else store earliest</code>                      |
+| 3   | [Make Sum Divisible by P](https://leetcode.com/problems/make-sum-divisible-by-p/)           | LC    | What remainder must the removed subarray have?.                | Keep only the prefix remainder/state needed by the divisibility condition. | <code>need=sum(a)%p<br>↓<br>last\[0\]=-1<br>↓<br>pref=0<br>↓<br>for i: pref=(pref+a\[i\])%p<br>↓<br>want=(pref-need+p)%p<br>↓<br>if want in last minimize i-last\[want\]<br>↓<br>last\[pref\]=i</code> |
+| 4   | [Subarray Divisibility](https://cses.fi/problemset/task/1662)                               | Bonus | Handle negative modulo carefully.                              | Keep only the prefix remainder/state needed by the divisibility condition. | <code>cnt\[0\]=1<br>↓<br>pref=ans=0<br>↓<br>for x: pref+=x<br>↓<br>r=((pref%n)+n)%n<br>↓<br>ans+=cnt\[r\]<br>↓<br>cnt\[r\]++</code>                                                                    |
 
 #### How to practice this section
 
@@ -751,6 +883,32 @@ Treat wins as `+1` and losses as `-1`. A period with equal wins and
 losses has net score `0`, which is much easier to detect with prefixes
 than counting two categories independently.
 
+### 🧠 Retention diagram — **CHANGE THE LANGUAGE OF THE PROBLEM**
+
+``` text
+Story:
+0  1  0  0  1  1
+
+Translate:
+0 -> -1
+1 -> +1
+
+-1 +1 -1 -1 +1 +1
+ |_________________|
+       sum = 0
+       ↓
+equal number of 0 and 1
+
+STORY CONDITION
+      ↓ encode
+NUMERIC CONDITION
+      ↓
+PREFIX PATTERN
+```
+
+**Real-world trigger:** wins/losses, success/failure, odd/even, good/bad
+days. Give opposite categories opposite numerical contributions.
+
 **60-second question**
 
 > Can I assign each element a contribution so the weird condition
@@ -813,14 +971,17 @@ sum(A[L..R]) = length
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                             | Site | Why it maps to this pattern                               | Approach                                                                       | Reference pseudocode                                                             |
-|-----|-----------------------------------------------------------------------------------------------------|------|-----------------------------------------------------------|--------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
-| 1   | [Contiguous Array](https://leetcode.com/problems/contiguous-array/)                                 | LC   | Convert 0→-1. Find repeated prefix sum.                   | Encode each element so the awkward condition becomes a normal prefix equation. | `for each x: v=transform(x); pref+=v; use repeated/required prefix state in map` |
-| 2   | [Count Number of Nice Subarrays](https://leetcode.com/problems/count-number-of-nice-subarrays/)     | LC   | Odd/even becomes binary.                                  | Encode each element so the awkward condition becomes a normal prefix equation. | `for each x: v=transform(x); pref+=v; use repeated/required prefix state in map` |
-| 3   | [Good Subarrays](https://codeforces.com/problemset/problem/1398/C)                                  | CF   | Digit sum = length; subtract 1 from every digit.          | Encode each element so the awkward condition becomes a normal prefix equation. | `for each x: v=transform(x); pref+=v; use repeated/required prefix state in map` |
-| 4   | [Longest Well-Performing Interval](https://leetcode.com/problems/longest-well-performing-interval/) | LC   | \>8 hours → +1, otherwise -1. Need positive subarray sum. | Encode each element so the awkward condition becomes a normal prefix equation. | `for each x: v=transform(x); pref+=v; use repeated/required prefix state in map` |
-| 5   | [Count Subarrays With Median K](https://leetcode.com/problems/count-subarrays-with-median-k/)       | LC   | Relative to k: smaller=-1, larger=+1.                     | Encode each element so the awkward condition becomes a normal prefix equation. | `for each x: v=transform(x); pref+=v; use repeated/required prefix state in map` |
+| \#  | Problem                                                                                             | Site | Why it maps to this pattern                               | Approach                                                                       | Reference pseudocode                                                                                                                                                     |
+|-----|-----------------------------------------------------------------------------------------------------|------|-----------------------------------------------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Contiguous Array](https://leetcode.com/problems/contiguous-array/)                                 | LC   | Convert 0→-1. Find repeated prefix sum.                   | Encode each element so the awkward condition becomes a normal prefix equation. | <code>first\[0\]=-1<br>↓<br>bal=0<br>↓<br>for i: bal += (a\[i\]==1?1:-1)<br>↓<br>if seen bal: best=max(best,i-first\[bal\])<br>↓<br>else first\[bal\]=i</code>           |
+| 2   | [Count Number of Nice Subarrays](https://leetcode.com/problems/count-number-of-nice-subarrays/)     | LC   | Odd/even becomes binary.                                  | Encode each element so the awkward condition becomes a normal prefix equation. | <code>freq\[0\]=1<br>↓<br>odd=ans=0<br>↓<br>for x: odd+=(x%2)<br>↓<br>ans+=freq\[odd-k\]<br>↓<br>freq\[odd\]++</code>                                                    |
+| 3   | [Good Subarrays](https://codeforces.com/problemset/problem/1398/C)                                  | CF   | Digit sum = length; subtract 1 from every digit.          | Encode each element so the awkward condition becomes a normal prefix equation. | <code>transform each digit d -\> d-1<br>↓<br>count zero-sum subarrays by repeated prefix frequencies</code>                                                              |
+| 4   | [Longest Well-Performing Interval](https://leetcode.com/problems/longest-well-performing-interval/) | LC   | \>8 hours → +1, otherwise -1. Need positive subarray sum. | Encode each element so the awkward condition becomes a normal prefix equation. | <code>score += (hours\[i\]\>8?1:-1)<br>↓<br>if score\>0 best=i+1<br>↓<br>else if first has score-1 best=max(best,i-first\[score-1\])<br>↓<br>store earliest score</code> |
+| 5   | [Count Subarrays With Median K](https://leetcode.com/problems/count-subarrays-with-median-k/)       | LC   | Relative to k: smaller=-1, larger=+1.                     | Encode each element so the awkward condition becomes a normal prefix equation. | <code>map x\<k -\> -1, x==k -\> 0, x\>k -\> +1<br>↓<br>count left balances around position(k)<br>↓<br>combine left/right balances so total is 0 or 1</code>              |
 
 #### How to practice this section
 
@@ -923,6 +1084,26 @@ same mask twice => every category changed an even number of times
 A light switch is XOR: press once = on, twice = back off. Prefix XOR
 records the current collection of toggle states.
 
+### 🧠 Retention diagram — **XOR IS A TOGGLE SWITCH**
+
+``` text
+Light:
+OFF --press--> ON --press--> OFF
+
+Same toggle twice cancels:
+x ^ x = 0
+
+prefix R:    [5][2][7][2]
+prefix L-1:  [5]
+              ^ cancels
+result:         [2][7][2]
+
+Range XOR = prefixR ^ prefixBeforeL
+```
+
+**Real-world trigger:** switches, parity states, "odd/even number of
+occurrences", masks where only whether something was toggled matters.
+
 **60-second question**
 
 > Is the state based on toggles/parity, where applying the same thing
@@ -961,14 +1142,17 @@ x ^ x = 0
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                                                                                   | Site | Why it maps to this pattern                        | Approach                                                                           | Reference pseudocode                                  |
-|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------|------|----------------------------------------------------|------------------------------------------------------------------------------------|-------------------------------------------------------|
-| 1   | [XOR Queries of a Subarray](https://leetcode.com/problems/xor-queries-of-a-subarray/)                                                                     | LC   | Direct prefix XOR.                                 | Use XOR/parity state because identical earlier state cancels the interval between. | `px[0]=0; px[i]=px[i-1]^A[i]; xor(L,R)=px[R]^px[L-1]` |
-| 2   | [Count Triplets That Can Form Two Arrays of Equal XOR](https://leetcode.com/problems/count-triplets-that-can-form-two-arrays-of-equal-xor/)               | LC   | Equal prefix XOR means the middle split can vary.  | Use XOR/parity state because identical earlier state cancels the interval between. | `px[0]=0; px[i]=px[i-1]^A[i]; xor(L,R)=px[R]^px[L-1]` |
-| 3   | [Find the Longest Substring Containing Vowels in Even Counts](https://leetcode.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/) | LC   | Five parity bits form the prefix state.            | Use XOR/parity state because identical earlier state cancels the interval between. | `px[0]=0; px[i]=px[i-1]^A[i]; xor(L,R)=px[R]^px[L-1]` |
-| 4   | [Number of Wonderful Substrings](https://leetcode.com/problems/number-of-wonderful-substrings/)                                                           | LC   | Equal mask or masks differing by one bit.          | Use XOR/parity state because identical earlier state cancels the interval between. | `px[0]=0; px[i]=px[i-1]^A[i]; xor(L,R)=px[R]^px[L-1]` |
-| 5   | [Beautiful Subarrays](https://leetcode.com/problems/count-the-number-of-beautiful-subarrays/)                                                             | LC   | Operation condition collapses to equal prefix XOR. | Use XOR/parity state because identical earlier state cancels the interval between. | `px[0]=0; px[i]=px[i-1]^A[i]; xor(L,R)=px[R]^px[L-1]` |
+| \#  | Problem                                                                                                                                                   | Site | Why it maps to this pattern                        | Approach                                                                           | Reference pseudocode                                                                                                                                        |
+|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------|------|----------------------------------------------------|------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [XOR Queries of a Subarray](https://leetcode.com/problems/xor-queries-of-a-subarray/)                                                                     | LC   | Direct prefix XOR.                                 | Use XOR/parity state because identical earlier state cancels the interval between. | <code>px\[0\]=0<br>↓<br>px\[i+1\]=px\[i\]^a\[i\]<br>↓<br>query(L,R)=px\[R+1\]^px\[L\]</code>                                                                |
+| 2   | [Count Triplets That Can Form Two Arrays of Equal XOR](https://leetcode.com/problems/count-triplets-that-can-form-two-arrays-of-equal-xor/)               | LC   | Equal prefix XOR means the middle split can vary.  | Use XOR/parity state because identical earlier state cancels the interval between. | <code>px\[0\]=0<br>↓<br>build prefix XOR<br>↓<br>for i\<k with px\[i\]==px\[k+1\]: add k-i possible middle splits</code>                                    |
+| 3   | [Find the Longest Substring Containing Vowels in Even Counts](https://leetcode.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/) | LC   | Five parity bits form the prefix state.            | Use XOR/parity state because identical earlier state cancels the interval between. | <code>first\[0\]=-1<br>↓<br>mask=0<br>↓<br>toggle vowel bit<br>↓<br>if mask seen best=max(best,i-first\[mask\])<br>↓<br>else first\[mask\]=i</code>         |
+| 4   | [Number of Wonderful Substrings](https://leetcode.com/problems/number-of-wonderful-substrings/)                                                           | LC   | Equal mask or masks differing by one bit.          | Use XOR/parity state because identical earlier state cancels the interval between. | <code>cnt\[0\]=1<br>↓<br>mask=0<br>↓<br>for c: mask^=1\<\<bit(c)<br>↓<br>ans+=cnt\[mask\]+sum(cnt\[mask^(1\<\<b)\] for b=0..9)<br>↓<br>cnt\[mask\]++</code> |
+| 5   | [Beautiful Subarrays](https://leetcode.com/problems/count-the-number-of-beautiful-subarrays/)                                                             | LC   | Operation condition collapses to equal prefix XOR. | Use XOR/parity state because identical earlier state cancels the interval between. | <code>cnt\[0\]=1<br>↓<br>px=0<br>↓<br>for x: px^=x<br>↓<br>ans+=cnt\[px\]<br>↓<br>cnt\[px\]++</code>                                                        |
 
 #### How to practice this section
 
@@ -1068,6 +1252,30 @@ Shipping cost might be `itemWeight × shelfPosition`. If every query
 re-labels the first shelf as position 1, algebra converts local shelf
 numbers into global indices.
 
+### 🧠 Retention diagram — **VALUE × HOW MUCH IT PARTICIPATES**
+
+``` text
+Query [L..R]
+local weights:     1     2     3
+values:            4     3     6
+                   |     |     |
+contribution:     1*4   2*3   3*6
+
+local weight = i - (L-1)
+
+Σ A[i]*(i-(L-1))
+        ↓ expand
+Σ i*A[i] - (L-1)ΣA[i]
+
+Need TWO lenses:
+P0 = Σ A[i]
+P1 = Σ i*A[i]
+```
+
+**Real-world trigger:** shipping cost by shelf position, commission by
+rank, or any situation where each value is multiplied by its
+position/frequency/number of uses.
+
 **60-second question**
 
 > Can the coefficient be written as `c*i + d` after converting local
@@ -1130,14 +1338,17 @@ answer = S1 - (L-1)*S0
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                                                                   | Site    | Why it maps to this pattern                                           | Approach                                                                     | Reference pseudocode                                      |
-|-----|-------------------------------------------------------------------------------------------------------------------------------------------|---------|-----------------------------------------------------------------------|------------------------------------------------------------------------------|-----------------------------------------------------------|
-| 1   | [Sum of Absolute Differences in a Sorted Array](https://leetcode.com/problems/sum-of-absolute-differences-in-a-sorted-array/)             | LC      | Algebra creates `i*A[i] - prefix`.                                    | Expand the local weight algebraically into ordinary and index-weighted sums. | `P0+=A[i]; P1+=i*A[i]; range weighted = ΔP1 - offset*ΔP0` |
-| 2   | [Minimum Operations to Make All Array Elements Equal](https://leetcode.com/problems/minimum-operations-to-make-all-array-elements-equal/) | LC      | Sort + prefix; split at lower_bound(query).                           | Expand the local weight algebraically into ordinary and index-weighted sums. | `P0+=A[i]; P1+=i*A[i]; range weighted = ΔP1 - offset*ΔP0` |
-| 3   | [Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C)                                                            | CF      | Frequency is effectively a weight per position.                       | Expand the local weight algebraically into ordinary and index-weighted sums. | `P0+=A[i]; P1+=i*A[i]; range weighted = ΔP1 - offset*ΔP0` |
-| 4   | [Maximum Sum Obtained of Any Permutation](https://leetcode.com/problems/maximum-sum-obtained-of-any-permutation/)                         | LC      | Difference array computes position weights.                           | Expand the local weight algebraically into ordinary and index-weighted sums. | `P0+=A[i]; P1+=i*A[i]; range weighted = ΔP1 - offset*ΔP0` |
-| 5   | [Sum of Total Strength of Wizards](https://leetcode.com/problems/sum-of-total-strength-of-wizards/)                                       | LC Hard | Prefix-of-prefix sums are needed for weighted interval contributions. | Expand the local weight algebraically into ordinary and index-weighted sums. | `P0+=A[i]; P1+=i*A[i]; range weighted = ΔP1 - offset*ΔP0` |
+| \#  | Problem                                                                                                                                   | Site    | Why it maps to this pattern                                           | Approach                                                                     | Reference pseudocode                                                                                                                                                                                            |
+|-----|-------------------------------------------------------------------------------------------------------------------------------------------|---------|-----------------------------------------------------------------------|------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Sum of Absolute Differences in a Sorted Array](https://leetcode.com/problems/sum-of-absolute-differences-in-a-sorted-array/)             | LC      | Algebra creates `i*A[i] - prefix`.                                    | Expand the local weight algebraically into ordinary and index-weighted sums. | <code>pref=prefix(nums)<br>↓<br>ans\[i\]=nums\[i\]*i-pref\[i\] + (pref\[n\]-pref\[i+1\])-nums\[i\]*(n-i-1)</code>                                                                                               |
+| 2   | [Minimum Operations to Make All Array Elements Equal](https://leetcode.com/problems/minimum-operations-to-make-all-array-elements-equal/) | LC      | Sort + prefix; split at lower_bound(query).                           | Expand the local weight algebraically into ordinary and index-weighted sums. | <code>sort a<br>↓<br>pref=prefix(a)<br>↓<br>for q: p=lower_bound(a,q)<br>↓<br>cost=q*p-pref\[p\] + (pref\[n\]-pref\[p\])-q*(n-p)</code>                                                                         |
+| 3   | [Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C)                                                            | CF      | Frequency is effectively a weight per position.                       | Expand the local weight algebraically into ordinary and index-weighted sums. | <code>for query(L,R): diff\[L\]++,diff\[R+1\]--<br>↓<br>prefix diff -\> freq<br>↓<br>sort(freq),sort(a)<br>↓<br>ans=sum(freq\[i\]\*a\[i\])</code>                                                               |
+| 4   | [Maximum Sum Obtained of Any Permutation](https://leetcode.com/problems/maximum-sum-obtained-of-any-permutation/)                         | LC      | Difference array computes position weights.                           | Expand the local weight algebraically into ordinary and index-weighted sums. | <code>range requests -\> diff frequencies<br>↓<br>prefix freq<br>↓<br>sort nums and freq<br>↓<br>ans=sum(nums\[i\]\*freq\[i\]) mod M</code>                                                                     |
+| 5   | [Sum of Total Strength of Wizards](https://leetcode.com/problems/sum-of-total-strength-of-wizards/)                                       | LC Hard | Prefix-of-prefix sums are needed for weighted interval contributions. | Expand the local weight algebraically into ordinary and index-weighted sums. | <code>monotonic stack -\> L,R where a\[i\] is minimum<br>↓<br>build prefix and prefix-of-prefix<br>↓<br>use double-prefix formula for sum of subarray sums containing i<br>↓<br>add a\[i\]\*contribution</code> |
 
 #### How to practice this section
 
@@ -1227,6 +1438,30 @@ PP:     2   5  11  21
 all historical running totals. If queries ask about accumulated
 cumulative totals, prefix the prefix.
 
+### 🧠 Retention diagram — **PREFIX THE PREFIX**
+
+``` text
+Daily sales A
+      ↓ cumulative
+running sales P
+      ↓ cumulative again
+sum of running sales PP
+
+A :   2   1   3   4
+      ↓   ↓   ↓   ↓
+P :   2   3   6  10
+      ↓   ↓   ↓   ↓
+PP:   2   5  11  21
+
+If the formula still says:
+P[L] + P[L+1] + ... + P[R]
+
+then P itself needs a prefix.
+```
+
+**Real-world trigger:** daily sales → sales-to-date → total of
+historical running totals; repeated accumulation is the clue.
+
 **60-second question**
 
 > After building a normal prefix, do I still need to sum a contiguous
@@ -1271,13 +1506,16 @@ or when contributions themselves contain range sums.
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                             | Site    | Why it maps to this pattern                                           | Approach                                                                  | Reference pseudocode                                            |
-|-----|-----------------------------------------------------------------------------------------------------|---------|-----------------------------------------------------------------------|---------------------------------------------------------------------------|-----------------------------------------------------------------|
-| 1   | [Sum of Total Strength of Wizards](https://leetcode.com/problems/sum-of-total-strength-of-wizards/) | LC Hard | Need sums of prefix sums on left/right of each minimum.               | If one prefix still leaves a range sum over prefixes, prefix that prefix. | `P[i]=P[i-1]+A[i]; PP[i]=PP[i-1]+P[i]; sumP(L,R)=PP[R]-PP[L-1]` |
-| 2   | [Greg and Array](https://codeforces.com/problemset/problem/295/A)                                   | CF      | Difference/prefix once for operation counts, again for array changes. | If one prefix still leaves a range sum over prefixes, prefix that prefix. | `P[i]=P[i-1]+A[i]; PP[i]=PP[i-1]+P[i]; sumP(L,R)=PP[R]-PP[L-1]` |
-| 3   | [Karen and Coffee](https://codeforces.com/problemset/problem/816/B)                                 | CF      | Diff → prefix temperatures → prefix “good” indicator.                 | If one prefix still leaves a range sum over prefixes, prefix that prefix. | `P[i]=P[i-1]+A[i]; PP[i]=PP[i-1]+P[i]; sumP(L,R)=PP[R]-PP[L-1]` |
-| 4   | [Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C)                      | CF      | Diff → prefix usage counts → weighted sum.                            | If one prefix still leaves a range sum over prefixes, prefix that prefix. | `P[i]=P[i-1]+A[i]; PP[i]=PP[i-1]+P[i]; sumP(L,R)=PP[R]-PP[L-1]` |
+| \#  | Problem                                                                                             | Site    | Why it maps to this pattern                                           | Approach                                                                  | Reference pseudocode                                                                                                                                                                 |
+|-----|-----------------------------------------------------------------------------------------------------|---------|-----------------------------------------------------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Sum of Total Strength of Wizards](https://leetcode.com/problems/sum-of-total-strength-of-wizards/) | LC Hard | Need sums of prefix sums on left/right of each minimum.               | If one prefix still leaves a range sum over prefixes, prefix that prefix. | <code>P=prefix(a)<br>↓<br>PP=prefix(P)<br>↓<br>stack gives L,R<br>↓<br>contribution uses ranges of PP on both sides of i</code>                                                      |
+| 2   | [Greg and Array](https://codeforces.com/problemset/problem/295/A)                                   | CF      | Difference/prefix once for operation counts, again for array changes. | If one prefix still leaves a range sum over prefixes, prefix that prefix. | <code>opCntDiff\[x\]++,opCntDiff\[y+1\]--<br>↓<br>prefix -\> times\[j\]<br>↓<br>for op j: arrDiff\[l\]+=d*times\[j\], arrDiff\[r+1\]-=d*times\[j\]<br>↓<br>prefix arrDiff</code>     |
+| 3   | [Karen and Coffee](https://codeforces.com/problemset/problem/816/B)                                 | CF      | Diff → prefix temperatures → prefix “good” indicator.                 | If one prefix still leaves a range sum over prefixes, prefix that prefix. | <code>tempDiff\[l\]++,tempDiff\[r+1\]--<br>↓<br>prefix -\> cover<br>↓<br>good\[i\]=(cover\[i\]\>=k)<br>↓<br>prefGood=prefix(good)<br>↓<br>query=prefGood\[b\]-prefGood\[a-1\]</code> |
+| 4   | [Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C)                      | CF      | Diff → prefix usage counts → weighted sum.                            | If one prefix still leaves a range sum over prefixes, prefix that prefix. | <code>query diff -\> prefix usageCount<br>↓<br>sort usageCount and a<br>↓<br>sum a\[i\]\*usageCount\[i\]</code>                                                                      |
 
 #### How to practice this section
 
@@ -1380,6 +1618,27 @@ A map divided into cells: each cell stores population. A rectangle query
 asks population inside a district box. 2D prefix gives each district
 total in O(1).
 
+### 🧠 Retention diagram — **BIG RECTANGLE − TWO STRIPS + CORNER**
+
+``` text
++-----------------------+
+| CORNER |     TOP      |
+|--------+--------------|
+| LEFT   |    TARGET    |
+|        |              |
++-----------------------+
+
+Start with BIG rectangle.
+Subtract TOP.
+Subtract LEFT.
+CORNER was removed twice → add it back.
+
+TARGET = BIG - TOP - LEFT + CORNER
+```
+
+**Real-world trigger:** population maps, heat maps, pixels, seats, trees
+on a grid — many static rectangle queries.
+
 **60-second question**
 
 > Is this a static grid with many axis-aligned rectangle sum/count
@@ -1438,14 +1697,17 @@ Last term restores the area subtracted twice.
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                                             | Site    | Why it maps to this pattern                                | Approach                                                                                   | Reference pseudocode                                                    |
-|-----|---------------------------------------------------------------------------------------------------------------------|---------|------------------------------------------------------------|--------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| 1   | [Range Sum Query 2D - Immutable](https://leetcode.com/problems/range-sum-query-2d-immutable/)                       | LC      | Canonical 2D prefix.                                       | Use 2D inclusion-exclusion: big rectangle minus two strips plus the double-removed corner. | `build P[r][c]; rect = P[r2][c2]-P[r1-1][c2]-P[r2][c1-1]+P[r1-1][c1-1]` |
-| 2   | [Matrix Block Sum](https://leetcode.com/problems/matrix-block-sum/)                                                 | LC      | Every cell asks one clipped rectangle query.               | Use 2D inclusion-exclusion: big rectangle minus two strips plus the double-removed corner. | `build P[r][c]; rect = P[r2][c2]-P[r1-1][c2]-P[r2][c1-1]+P[r1-1][c1-1]` |
-| 3   | [Number of Submatrices That Sum to Target](https://leetcode.com/problems/number-of-submatrices-that-sum-to-target/) | LC Hard | Fix two row boundaries; collapse columns into 1D.          | Use 2D inclusion-exclusion: big rectangle minus two strips plus the double-removed corner. | `build P[r][c]; rect = P[r2][c2]-P[r1-1][c2]-P[r2][c1-1]+P[r1-1][c1-1]` |
-| 4   | [Forest Queries](https://cses.fi/problemset/task/1652)                                                              | Bonus   | Pure 2D prefix drill.                                      | Use 2D inclusion-exclusion: big rectangle minus two strips plus the double-removed corner. | `build P[r][c]; rect = P[r2][c2]-P[r1-1][c2]-P[r2][c1-1]+P[r1-1][c1-1]` |
-| 5   | [Counting Rectangles](https://codeforces.com/problemset/problem/1722/E)                                             | CF      | Build a 2D table by height/width, then rectangle-query it. | Use 2D inclusion-exclusion: big rectangle minus two strips plus the double-removed corner. | `build P[r][c]; rect = P[r2][c2]-P[r1-1][c2]-P[r2][c1-1]+P[r1-1][c1-1]` |
+| \#  | Problem                                                                                                             | Site    | Why it maps to this pattern                                | Approach                                                                                   | Reference pseudocode                                                                                                                                                 |
+|-----|---------------------------------------------------------------------------------------------------------------------|---------|------------------------------------------------------------|--------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Range Sum Query 2D - Immutable](https://leetcode.com/problems/range-sum-query-2d-immutable/)                       | LC      | Canonical 2D prefix.                                       | Use 2D inclusion-exclusion: big rectangle minus two strips plus the double-removed corner. | <code>build P\[r+1\]\[c+1\]<br>↓<br>rect(r1,c1,r2,c2)=P\[r2+1\]\[c2+1\]-P\[r1\]\[c2+1\]-P\[r2+1\]\[c1\]+P\[r1\]\[c1\]</code>                                         |
+| 2   | [Matrix Block Sum](https://leetcode.com/problems/matrix-block-sum/)                                                 | LC      | Every cell asks one clipped rectangle query.               | Use 2D inclusion-exclusion: big rectangle minus two strips plus the double-removed corner. | <code>build 2D prefix<br>↓<br>for each cell (i,j): clip r1=i-k,c1=j-k,r2=i+k,c2=j+k<br>↓<br>answer with rectangle formula</code>                                     |
+| 3   | [Number of Submatrices That Sum to Target](https://leetcode.com/problems/number-of-submatrices-that-sum-to-target/) | LC Hard | Fix two row boundaries; collapse columns into 1D.          | Use 2D inclusion-exclusion: big rectangle minus two strips plus the double-removed corner. | <code>for top=0..R-1: colSum=0<br>↓<br>for bottom=top..R-1: add row\[bottom\] into colSum<br>↓<br>count 1D subarrays of colSum with sum=target via prefix map</code> |
+| 4   | [Forest Queries](https://cses.fi/problemset/task/1652)                                                              | Bonus   | Pure 2D prefix drill.                                      | Use 2D inclusion-exclusion: big rectangle minus two strips plus the double-removed corner. | <code>build 2D prefix of tree indicator<br>↓<br>each rectangle query uses inclusion-exclusion</code>                                                                 |
+| 5   | [Counting Rectangles](https://codeforces.com/problemset/problem/1722/E)                                             | CF      | Build a 2D table by height/width, then rectangle-query it. | Use 2D inclusion-exclusion: big rectangle minus two strips plus the double-removed corner. | <code>grid\[h\]\[w\]+=h\*w for each rectangle<br>↓<br>build 2D prefix<br>↓<br>query strict bounds using P\[h2-1\]\[w2-1\]-P\[h1\]\[...\]-...</code>                  |
 
 #### How to practice this section
 
@@ -1537,6 +1799,26 @@ Turning a water pipe on at position `L` and off after `R`: you record
 the valve changes, then sweep to know the current flow at every
 position.
 
+### 🧠 Retention diagram — **TURN THE EFFECT ON, THEN OFF**
+
+``` text
+add +5 to [2..4]
+
+position: 1   2   3   4   5   6
+effect:       +5==========+5
+              ON           OFF
+
+diff:      0  +5   0   0  -5   0
+               ^           ^
+               L          R+1
+
+prefix(diff):
+           0   5   5   5   0   0
+```
+
+**Real-world trigger:** roadworks, discounts, temperature changes, buffs
+— many offline constant updates over intervals.
+
 **60-second question**
 
 > Are there many constant range additions and can I postpone
@@ -1589,14 +1871,17 @@ Prefixing `diff` spreads X through the range.
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                               | Site | Why it maps to this pattern                  | Approach                                                                           | Reference pseudocode                                           |
-|-----|---------------------------------------------------------------------------------------|------|----------------------------------------------|------------------------------------------------------------------------------------|----------------------------------------------------------------|
-| 1   | [Range Addition](https://leetcode.com/problems/range-addition/)                       | LC   | Canonical diff array.                        | Store only where a constant range effect starts and stops; reconstruct at the end. | `diff[L]+=x; diff[R+1]-=x; after all updates prefix diff once` |
-| 2   | [Corporate Flight Bookings](https://leetcode.com/problems/corporate-flight-bookings/) | LC   | Each booking is one range addition.          | Store only where a constant range effect starts and stops; reconstruct at the end. | `diff[L]+=x; diff[R+1]-=x; after all updates prefix diff once` |
-| 3   | [Shifting Letters II](https://leetcode.com/problems/shifting-letters-ii/)             | LC   | Convert each shift to +1/-1 range update.    | Store only where a constant range effect starts and stops; reconstruct at the end. | `diff[L]+=x; diff[R+1]-=x; after all updates prefix diff once` |
-| 4   | [Greg and Array](https://codeforces.com/problemset/problem/295/A)                     | CF   | Two layers of difference arrays.             | Store only where a constant range effect starts and stops; reconstruct at the end. | `diff[L]+=x; diff[R+1]-=x; after all updates prefix diff once` |
-| 5   | [Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C)        | CF   | Difference counts query frequency per index. | Store only where a constant range effect starts and stops; reconstruct at the end. | `diff[L]+=x; diff[R+1]-=x; after all updates prefix diff once` |
+| \#  | Problem                                                                               | Site | Why it maps to this pattern                  | Approach                                                                           | Reference pseudocode                                                                                                                                               |
+|-----|---------------------------------------------------------------------------------------|------|----------------------------------------------|------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Range Addition](https://leetcode.com/problems/range-addition/)                       | LC   | Canonical diff array.                        | Store only where a constant range effect starts and stops; reconstruct at the end. | <code>for \[L,R,val\]: diff\[L\]+=val<br>↓<br>diff\[R+1\]-=val<br>↓<br>prefix diff<br>↓<br>a\[i\]+=diff\[i\]</code>                                                |
+| 2   | [Corporate Flight Bookings](https://leetcode.com/problems/corporate-flight-bookings/) | LC   | Each booking is one range addition.          | Store only where a constant range effect starts and stops; reconstruct at the end. | <code>for \[first,last,seats\]: diff\[first\]+=seats<br>↓<br>diff\[last+1\]-=seats<br>↓<br>prefix -\> seats per flight</code>                                      |
+| 3   | [Shifting Letters II](https://leetcode.com/problems/shifting-letters-ii/)             | LC   | Convert each shift to +1/-1 range update.    | Store only where a constant range effect starts and stops; reconstruct at the end. | <code>for \[L,R,dir\]: d=(dir?1:-1)<br>↓<br>diff\[L\]+=d<br>↓<br>diff\[R+1\]-=d<br>↓<br>prefix shift<br>↓<br>s\[i\]=(s\[i\]+shift mod 26)</code>                   |
+| 4   | [Greg and Array](https://codeforces.com/problemset/problem/295/A)                     | CF   | Two layers of difference arrays.             | Store only where a constant range effect starts and stops; reconstruct at the end. | <code>first diff counts how many times each operation runs<br>↓<br>second diff applies d\*count over each operation's \[l,r\]<br>↓<br>prefix to final array</code> |
+| 5   | [Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C)        | CF   | Difference counts query frequency per index. | Store only where a constant range effect starts and stops; reconstruct at the end. | <code>for each query: diff\[L\]++,diff\[R+1\]--<br>↓<br>prefix -\> use count per index<br>↓<br>sort counts and values<br>↓<br>dot product</code>                   |
 
 #### How to practice this section
 
@@ -1693,6 +1978,30 @@ active count is just the prefix sum of endpoint events.
 People entering/leaving a room: entry is `+1`, exit is `-1`; cumulative
 events give the number currently inside.
 
+### 🧠 Retention diagram — **EVENTS CHANGE THE ACTIVE COUNT**
+
+``` text
+Customer A:   [----------)
+Customer B:       [-------------)
+Customer C:            [-----)
+
+timeline:
+A start  +1
+B start  +1
+C start  +1
+A end    -1
+C end    -1
+B end    -1
+
+Sweep left → right:
+active += event[x]
+answer = max(active)
+```
+
+**Real-world trigger:** people entering/leaving, meetings
+starting/ending, cars picking up/dropping passengers, overlapping
+bookings.
+
 **60-second question**
 
 > Does the answer change only when an interval starts or ends?
@@ -1734,14 +2043,17 @@ coordinates represent **time**, **position**, **year**, or
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                           | Site  | Why it maps to this pattern                       | Approach                                                               | Reference pseudocode                                          |
-|-----|-----------------------------------------------------------------------------------|-------|---------------------------------------------------|------------------------------------------------------------------------|---------------------------------------------------------------|
-| 1   | [Car Pooling](https://leetcode.com/problems/car-pooling/)                         | LC    | Capacity is maximum active load during the sweep. | Convert intervals to endpoint events and sweep cumulative active load. | `event[start]+=x; event[end]-=x; sort/sweep; cur+=event[pos]` |
-| 2   | [Maximum Population Year](https://leetcode.com/problems/maximum-population-year/) | LC    | Treat lifespan endpoints as events.               | Convert intervals to endpoint events and sweep cumulative active load. | `event[start]+=x; event[end]-=x; sort/sweep; cur+=event[pos]` |
-| 3   | [Describe the Painting](https://leetcode.com/problems/describe-the-painting/)     | LC    | Coordinate events; maintain active color sum.     | Convert intervals to endpoint events and sweep cumulative active load. | `event[start]+=x; event[end]-=x; sort/sweep; cur+=event[pos]` |
-| 4   | [My Calendar III](https://leetcode.com/problems/my-calendar-iii/)                 | LC    | Start +1, end -1; maximum prefix is max overlap.  | Convert intervals to endpoint events and sweep cumulative active load. | `event[start]+=x; event[end]-=x; sort/sweep; cur+=event[pos]` |
-| 5   | [Restaurant Customers](https://cses.fi/problemset/task/1619)                      | Bonus | Classic +1 arrival / -1 departure sweep.          | Convert intervals to endpoint events and sweep cumulative active load. | `event[start]+=x; event[end]-=x; sort/sweep; cur+=event[pos]` |
+| \#  | Problem                                                                           | Site  | Why it maps to this pattern                       | Approach                                                               | Reference pseudocode                                                                                                                                                              |
+|-----|-----------------------------------------------------------------------------------|-------|---------------------------------------------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Car Pooling](https://leetcode.com/problems/car-pooling/)                         | LC    | Capacity is maximum active load during the sweep. | Convert intervals to endpoint events and sweep cumulative active load. | <code>event\[start\]+=passengers<br>↓<br>event\[end\]-=passengers<br>↓<br>sweep positions<br>↓<br>if active\>capacity return false</code>                                         |
+| 2   | [Maximum Population Year](https://leetcode.com/problems/maximum-population-year/) | LC    | Treat lifespan endpoints as events.               | Convert intervals to endpoint events and sweep cumulative active load. | <code>diff\[birth\]++<br>↓<br>diff\[death\]--<br>↓<br>sweep years<br>↓<br>track earliest year with maximum population</code>                                                      |
+| 3   | [Describe the Painting](https://leetcode.com/problems/describe-the-painting/)     | LC    | Coordinate events; maintain active color sum.     | Convert intervals to endpoint events and sweep cumulative active load. | <code>event\[start\]+=color<br>↓<br>event\[end\]-=color<br>↓<br>sweep sorted coordinates<br>↓<br>if activeSum\>0 output \[prev,x,activeSum\]<br>↓<br>activeSum+=event\[x\]</code> |
+| 4   | [My Calendar III](https://leetcode.com/problems/my-calendar-iii/)                 | LC    | Start +1, end -1; maximum prefix is max overlap.  | Convert intervals to endpoint events and sweep cumulative active load. | <code>delta\[start\]++<br>↓<br>delta\[end\]--<br>↓<br>sweep ordered deltas after each booking<br>↓<br>answer=max prefix overlap</code>                                            |
+| 5   | [Restaurant Customers](https://cses.fi/problemset/task/1619)                      | Bonus | Classic +1 arrival / -1 departure sweep.          | Convert intervals to endpoint events and sweep cumulative active load. | <code>events.push(arrival,+1), (departure,-1)<br>↓<br>sort with departure before arrival at same time<br>↓<br>sweep and maximize active</code>                                    |
 
 #### How to practice this section
 
@@ -1838,6 +2150,30 @@ First compute how many buses pass each stop. Then mark stops with at
 least 3 buses. Finally answer “how many well-served stops between L and
 R?”
 
+### 🧠 Retention diagram — **UPDATE → RECONSTRUCT → QUERY**
+
+``` text
+interval updates
+      ↓ difference
+change markers
+      ↓ prefix #1
+actual coverage/value
+      ↓ transform if needed
+good / bad / count
+      ↓ prefix #2
+fast range answers
+
+Example:
+coffee temperature intervals
+→ coverage count
+→ is coverage >= K?
+→ prefix of GOOD temperatures
+→ answer [A,B]
+```
+
+**Real-world trigger:** first accumulate how many effects hit each
+position, then answer many queries about the reconstructed result.
+
 **60-second question**
 
 > Do I need one cumulative pass to materialize an intermediate array and
@@ -1888,14 +2224,17 @@ This is a major CF pattern.
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                                           | Site | Why it maps to this pattern                                                        | Approach                                                                                                   | Reference pseudocode                                                                         |
-|-----|-------------------------------------------------------------------------------------------------------------------|------|------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
-| 1   | [Karen and Coffee](https://codeforces.com/problemset/problem/816/B)                                               | CF   | Coverage count → mark coverage\>=k → prefix again.                                 | Treat the solution as a pipeline: materialize coverage/state, transform it, then prefix for final queries. | `updates -> diff; prefix -> actual; transform actual -> good/value; prefix again -> queries` |
-| 2   | [Greg and Array](https://codeforces.com/problemset/problem/295/A)                                                 | CF   | First diff counts operation applications; second diff applies weighted operations. | Treat the solution as a pipeline: materialize coverage/state, transform it, then prefix for final queries. | `updates -> diff; prefix -> actual; transform actual -> good/value; prefix again -> queries` |
-| 3   | [Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C)                                    | CF   | Query diff → usage counts → sort with A.                                           | Treat the solution as a pipeline: materialize coverage/state, transform it, then prefix for final queries. | `updates -> diff; prefix -> actual; transform actual -> good/value; prefix again -> queries` |
-| 4   | [Maximum Sum Obtained of Any Permutation](https://leetcode.com/problems/maximum-sum-obtained-of-any-permutation/) | LC   | Same usage-frequency idea.                                                         | Treat the solution as a pipeline: materialize coverage/state, transform it, then prefix for final queries. | `updates -> diff; prefix -> actual; transform actual -> good/value; prefix again -> queries` |
-| 5   | [Shifting Letters II](https://leetcode.com/problems/shifting-letters-ii/)                                         | LC   | Diff shifts → prefix net shift → transform chars.                                  | Treat the solution as a pipeline: materialize coverage/state, transform it, then prefix for final queries. | `updates -> diff; prefix -> actual; transform actual -> good/value; prefix again -> queries` |
+| \#  | Problem                                                                                                           | Site | Why it maps to this pattern                                                        | Approach                                                                                                   | Reference pseudocode                                                                                                                                       |
+|-----|-------------------------------------------------------------------------------------------------------------------|------|------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Karen and Coffee](https://codeforces.com/problemset/problem/816/B)                                               | CF   | Coverage count → mark coverage\>=k → prefix again.                                 | Treat the solution as a pipeline: materialize coverage/state, transform it, then prefix for final queries. | <code>diff intervals -\> coverage<br>↓<br>good\[i\]=(coverage\>=k)<br>↓<br>prefGood=prefix(good)<br>↓<br>each query = prefGood\[R\]-prefGood\[L-1\]</code> |
+| 2   | [Greg and Array](https://codeforces.com/problemset/problem/295/A)                                                 | CF   | First diff counts operation applications; second diff applies weighted operations. | Treat the solution as a pipeline: materialize coverage/state, transform it, then prefix for final queries. | <code>diff over operation-index ranges -\> times per operation<br>↓<br>then diff over array ranges using times\*d<br>↓<br>prefix to final values</code>    |
+| 3   | [Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C)                                    | CF   | Query diff → usage counts → sort with A.                                           | Treat the solution as a pipeline: materialize coverage/state, transform it, then prefix for final queries. | `query diff -> prefix frequency array -> sort frequency and values -> maximize weighted sum`                                                               |
+| 4   | [Maximum Sum Obtained of Any Permutation](https://leetcode.com/problems/maximum-sum-obtained-of-any-permutation/) | LC   | Same usage-frequency idea.                                                         | Treat the solution as a pipeline: materialize coverage/state, transform it, then prefix for final queries. | `request diff -> prefix requestCount -> sort counts and nums -> dot product mod M`                                                                         |
+| 5   | [Shifting Letters II](https://leetcode.com/problems/shifting-letters-ii/)                                         | LC   | Diff shifts → prefix net shift → transform chars.                                  | Treat the solution as a pipeline: materialize coverage/state, transform it, then prefix for final queries. | `shift diff -> prefix netShift -> apply normalized shift to each character`                                                                                |
 
 #### How to practice this section
 
@@ -1995,6 +2334,26 @@ does NOT mean real distance 1.
 A train route may span 1,000 km, but if trains only start/stop at 20
 stations, the system state changes only at those stations.
 
+### 🧠 Retention diagram — **ONLY IMPORTANT COORDINATES EXIST**
+
+``` text
+Huge coordinate line:
+0 ..................................... 10^9
+
+But events occur only at:
+        12      1000       9000000
+         ^        ^            ^
+
+Compress/sort these event points:
+index:   0        1            2
+
+Sweep only where something changes.
+The empty millions of coordinates need no storage.
+```
+
+**Real-world trigger:** sparse street lights, bookings over huge
+timestamps, intervals on coordinates up to 1e9/1e18.
+
 **60-second question**
 
 > Is the coordinate universe huge but the number of change-points small?
@@ -2058,13 +2417,16 @@ compressed index distance != original coordinate distance
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                     | Site  | Why it maps to this pattern                                     | Approach                                                                                   | Reference pseudocode                                                                                |
-|-----|---------------------------------------------------------------------------------------------|-------|-----------------------------------------------------------------|--------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| 1   | [Describe the Painting](https://leetcode.com/problems/describe-the-painting/)               | LC    | Endpoints are the only places active sum changes.               | Compress only coordinates where state changes; preserve real gap lengths during the sweep. | `collect endpoints; sort+unique; map endpoint->id; diff on ids; sweep and use real coordinate gaps` |
-| 2   | [Brightest Position on Street](https://leetcode.com/problems/brightest-position-on-street/) | LC    | Light creates +1/-1 events.                                     | Compress only coordinates where state changes; preserve real gap lengths during the sweep. | `collect endpoints; sort+unique; map endpoint->id; diff on ids; sweep and use real coordinate gaps` |
-| 3   | [Covered Points Count](https://codeforces.com/problemset/problem/1000/C)                    | CF    | Sweep sorted endpoints and multiply active count by gap length. | Compress only coordinates where state changes; preserve real gap lengths during the sweep. | `collect endpoints; sort+unique; map endpoint->id; diff on ids; sweep and use real coordinate gaps` |
-| 4   | [Snuke Prime](https://atcoder.jp/contests/abc188/tasks/abc188_d)                            | Bonus | Canonical coordinate-compressed difference/sweep problem.       | Compress only coordinates where state changes; preserve real gap lengths during the sweep. | `collect endpoints; sort+unique; map endpoint->id; diff on ids; sweep and use real coordinate gaps` |
+| \#  | Problem                                                                                     | Site  | Why it maps to this pattern                                     | Approach                                                                                   | Reference pseudocode                                                                                                                                            |
+|-----|---------------------------------------------------------------------------------------------|-------|-----------------------------------------------------------------|--------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Describe the Painting](https://leetcode.com/problems/describe-the-painting/)               | LC    | Endpoints are the only places active sum changes.               | Compress only coordinates where state changes; preserve real gap lengths during the sweep. | <code>store ordered endpoint deltas (coordinate compression/map)<br>↓<br>sweep consecutive coordinates<br>↓<br>active color sum is constant on \[prev,x)</code> |
+| 2   | [Brightest Position on Street](https://leetcode.com/problems/brightest-position-on-street/) | LC    | Light creates +1/-1 events.                                     | Compress only coordinates where state changes; preserve real gap lengths during the sweep. | <code>for light(pos,r): event\[pos-r\]++, event\[pos+r+1\]--<br>↓<br>sweep sorted events<br>↓<br>track smallest coordinate with max active</code>               |
+| 3   | [Covered Points Count](https://codeforces.com/problemset/problem/1000/C)                    | CF    | Sweep sorted endpoints and multiply active count by gap length. | Compress only coordinates where state changes; preserve real gap lengths during the sweep. | <code>events\[l\]++,events\[r+1\]--<br>↓<br>sweep sorted x<br>↓<br>before applying event\[x\], add x-prev to ans\[active\]<br>↓<br>active+=event\[x\]</code>    |
+| 4   | [Snuke Prime](https://atcoder.jp/contests/abc188/tasks/abc188_d)                            | Bonus | Canonical coordinate-compressed difference/sweep problem.       | Compress only coordinates where state changes; preserve real gap lengths during the sweep. | <code>event\[a\]+=c<br>↓<br>event\[b+1\]-=c<br>↓<br>sweep sorted days<br>↓<br>add (day-prev)\*min(active,C)<br>↓<br>active+=event\[day\]</code>                 |
 
 #### How to practice this section
 
@@ -2151,6 +2513,30 @@ pref: 0 --3----8---10---17
 If an odometer shows total distance after each day, subtract consecutive
 readings to recover distance driven that day.
 
+### 🧠 Retention diagram — **PREFIX VALUES ARE CHECKPOINTS; DIFFERENCES ARE STEPS**
+
+``` text
+Original steps:
+a1   a2   a3   a4
+ |    |    |    |
+ v    v    v    v
+P1   P2   P3   P4
+
+Recover:
+a1 = P1
+a2 = P2 - P1
+a3 = P3 - P2
+a4 = P4 - P3
+
+CHECKPOINT TOTALS
+      ↓ subtract neighbors
+INDIVIDUAL MOVES
+```
+
+**Real-world trigger:** odometer readings, cumulative revenue reports,
+cumulative distances — recover each individual increment from
+consecutive totals.
+
 **60-second question**
 
 > Am I given cumulative totals and asked about the increments that
@@ -2192,12 +2578,15 @@ restore/check original sequence
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                     | Site | Why it maps to this pattern                                             | Approach                                                                                  | Reference pseudocode                                                                     |
-|-----|-----------------------------------------------------------------------------|------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
-| 1   | [Prefix Permutation Sums](https://codeforces.com/problemset/problem/1851/D) | CF   | Consecutive differences should mostly be unused values 1..n.            | Differentiate cumulative information: consecutive prefix differences reveal local values. | `A[i]=P[i]-P[i-1]; validate/reconstruct local values from consecutive cumulative states` |
-| 2   | [Prefix Sum Addicts](https://codeforces.com/problemset/problem/1738/B)      | CF   | Differences of known suffix-prefix values impose monotonic constraints. | Differentiate cumulative information: consecutive prefix differences reveal local values. | `A[i]=P[i]-P[i-1]; validate/reconstruct local values from consecutive cumulative states` |
-| 3   | [Array Recovery](https://codeforces.com/problemset/problem/1739/B)          | CF   | Reconstruct local values from an encoded difference-like array.         | Differentiate cumulative information: consecutive prefix differences reveal local values. | `A[i]=P[i]-P[i-1]; validate/reconstruct local values from consecutive cumulative states` |
+| \#  | Problem                                                                     | Site | Why it maps to this pattern                                             | Approach                                                                                  | Reference pseudocode                                                                                                                                                                                          |
+|-----|-----------------------------------------------------------------------------|------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Prefix Permutation Sums](https://codeforces.com/problemset/problem/1851/D) | CF   | Consecutive differences should mostly be unused values 1..n.            | Differentiate cumulative information: consecutive prefix differences reveal local values. | <code>diff consecutive given prefixes<br>↓<br>valid diffs in \[1,n\] mark used<br>↓<br>one abnormal/missing diff must equal sum of the two missing permutation values</code>                                  |
+| 2   | [Prefix Sum Addicts](https://codeforces.com/problemset/problem/1738/B)      | CF   | Differences of known suffix-prefix values impose monotonic constraints. | Differentiate cumulative information: consecutive prefix differences reveal local values. | <code>known prefix suffix sums -\> consecutive differences are forced elements<br>↓<br>require these differences nondecreasing<br>↓<br>check earliest unknown prefix can fit before first forced value</code> |
+| 3   | [Array Recovery](https://codeforces.com/problemset/problem/1739/B)          | CF   | Reconstruct local values from an encoded difference-like array.         | Differentiate cumulative information: consecutive prefix differences reveal local values. | <code>a\[0\]=d\[0\]<br>↓<br>for i\>0: candidates=a\[i-1\]+d\[i\] and a\[i-1\]-d\[i\]<br>↓<br>if both nonnegative and distinct -\> -1<br>↓<br>else choose valid candidate</code>                               |
 
 #### How to practice this section
 
@@ -2298,6 +2687,29 @@ A promotion gives day 1 = 3 points, then 2 extra points each following
 day. Rather than update every day, store the slope and intercept active
 over the range.
 
+### 🧠 Retention diagram — **THE UPDATE ITSELF HAS A SLOPE**
+
+``` text
+Add AP on [L..R]:
+
+position:  L   L+1 L+2 L+3
+add:       1    2   3   4
+            \   \   \   \
+             +1 each step
+
+constant update:
+5 5 5 5      slope = 0
+
+AP update:
+1 2 3 4      slope = +1
+
+So store enough information to reconstruct:
+START VALUE + CHANGE PER STEP
+```
+
+**Real-world trigger:** salary/price increases that grow by a fixed
+amount each day, staircase bonuses, linearly increasing range effects.
+
 **60-second question**
 
 > Is every update value a linear function of position?
@@ -2377,12 +2789,15 @@ A[i] += P[i]*i + Q[i]
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                                                                       | Site       | Why it maps to this pattern                                 | Approach                                                                    | Reference pseudocode                                                                                    |
-|-----|-------------------------------------------------------------------------------------------------------------------------------|------------|-------------------------------------------------------------|-----------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| 1   | [Polynomial Queries](https://cses.fi/problemset/task/1736)                                                                    | Bonus Core | Range update adds `1,2,3,...`; canonical AP update problem. | An AP is linear in position; maintain boundary changes for value and slope. | `encode start value and slope changes at boundaries; prefix slope; prefix value; apply AP contribution` |
-| 2   | [Greg and Array](https://codeforces.com/problemset/problem/295/A)                                                             | CF Prep    | Layer difference arrays before adding linear coefficients.  | An AP is linear in position; maintain boundary changes for value and slope. | `encode start value and slope changes at boundaries; prefix slope; prefix value; apply AP contribution` |
-| 3   | [Sum of Absolute Differences in a Sorted Array](https://leetcode.com/problems/sum-of-absolute-differences-in-a-sorted-array/) | LC         | Derive linear terms involving index and prefix sum.         | An AP is linear in position; maintain boundary changes for value and slope. | `encode start value and slope changes at boundaries; prefix slope; prefix value; apply AP contribution` |
+| \#  | Problem                                                                                                                       | Site       | Why it maps to this pattern                                 | Approach                                                                    | Reference pseudocode                                                                                                                                                                                           |
+|-----|-------------------------------------------------------------------------------------------------------------------------------|------------|-------------------------------------------------------------|-----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Polynomial Queries](https://cses.fi/problemset/task/1736)                                                                    | Bonus Core | Range update adds `1,2,3,...`; canonical AP update problem. | An AP is linear in position; maintain boundary changes for value and slope. | <code>lazy segment tree node stores sum<br>↓<br>AP update \[L,R\] adds (i-L+1)<br>↓<br>update overlap \[l,r\] by arithmetic-series sum using first=l-L+1, len=r-l+1<br>↓<br>propagate shifted AP lazily</code> |
+| 2   | [Greg and Array](https://codeforces.com/problemset/problem/295/A)                                                             | CF Prep    | Layer difference arrays before adding linear coefficients.  | An AP is linear in position; maintain boundary changes for value and slope. | <code>use diff twice: operation-range diff -\> execution count<br>↓<br>array-range diff -\> constant d\*count updates<br>↓<br>prefix both layers</code>                                                        |
+| 3   | [Sum of Absolute Differences in a Sorted Array](https://leetcode.com/problems/sum-of-absolute-differences-in-a-sorted-array/) | LC         | Derive linear terms involving index and prefix sum.         | An AP is linear in position; maintain boundary changes for value and slope. | <code>prefix sums + linear index algebra: left=a\[i\]*i-pref\[i\]<br>↓<br>right=(pref\[n\]-pref\[i+1\])-a\[i\]*(n-i-1)</code>                                                                                  |
 
 #### How to practice this section
 
@@ -2491,6 +2906,27 @@ Compound growth starts on day `L`: each day doubles the previous
 contribution. You only need to seed the process and later inject the
 exact cancellation that stops propagation.
 
+### 🧠 Retention diagram — **THE NEXT UPDATE VALUE DEPENDS ON PREVIOUS VALUES**
+
+``` text
+Fibonacci-like effect:
+
+1, 1, 2, 3, 5, 8, ...
+      ^  ^
+      |  |
+next = previous two combined
+
+Unlike AP:
+1, 2, 3, 4, 5
+   +1 +1 +1
+
+Recurrence update must remember a STATE,
+not only one constant difference.
+```
+
+**Real-world trigger:** processes where tomorrow's effect depends on
+earlier effects — recurrence growth rather than constant/linear growth.
+
 **60-second question**
 
 > Does the range update obey a recurrence instead of adding an
@@ -2566,12 +3002,15 @@ difference-like boundary state
 > These are intentionally filtered to problems that directly exercise
 > this pattern. Warm-ups that mainly belong to another topic were
 > removed from this section.
+>
+> **Reference pseudocode is problem-specific**: it shows how this exact
+> problem uses the pattern, not merely the generic pattern template.
 
-| \#  | Problem                                                                        | Site        | Why it maps to this pattern                                        | Approach                                                                                  | Reference pseudocode                                                                                             |
-|-----|--------------------------------------------------------------------------------|-------------|--------------------------------------------------------------------|-------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| 1   | [Polynomial Queries](https://cses.fi/problemset/task/1736)                     | Bonus Prep  | AP is the next step before recurrence updates.                     | Represent the update by its recurrence state rather than independent per-position values. | `store recurrence seed/state at L and cancellation state after R; sweep/segment structure propagates recurrence` |
-| 2   | [DZY Loves Fibonacci Numbers](https://codeforces.com/problemset/problem/446/C) | CF Advanced | Range updates add Fibonacci sequence; propagate recurrence lazily. | Represent the update by its recurrence state rather than independent per-position values. | `store recurrence seed/state at L and cancellation state after R; sweep/segment structure propagates recurrence` |
-| 3   | [Fibonacci Segment](https://codeforces.com/problemset/problem/365/C)           | CF Advanced | Treat sequence update as recurrence state, not independent values. | Represent the update by its recurrence state rather than independent per-position values. | `store recurrence seed/state at L and cancellation state after R; sweep/segment structure propagates recurrence` |
+| \#  | Problem                                                                        | Site        | Why it maps to this pattern                                        | Approach                                                                                  | Reference pseudocode                                                                                                                                                                                              |
+|-----|--------------------------------------------------------------------------------|-------------|--------------------------------------------------------------------|-------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Polynomial Queries](https://cses.fi/problemset/task/1736)                     | Bonus Prep  | AP is the next step before recurrence updates.                     | Represent the update by its recurrence state rather than independent per-position values. | <code>AP preparation: lazy node keeps first term and common difference<br>↓<br>shift first term when pushing to right child</code>                                                                                |
+| 2   | [DZY Loves Fibonacci Numbers](https://codeforces.com/problemset/problem/446/C) | CF Advanced | Range updates add Fibonacci sequence; propagate recurrence lazily. | Represent the update by its recurrence state rather than independent per-position values. | <code>segment tree with lazy Fibonacci seeds (f1,f2)<br>↓<br>range update adds Fibonacci sequence<br>↓<br>combine/push seeds using Fibonacci transition<br>↓<br>node sum updated by recurrence-sum formula</code> |
+| 3   | [Fibonacci Segment](https://codeforces.com/problemset/problem/365/C)           | CF Advanced | Treat sequence update as recurrence state, not independent values. | Represent the update by its recurrence state rather than independent per-position values. | <code>represent each Fibonacci-range update by recurrence state<br>↓<br>segment tree/lazy propagation shifts recurrence seeds by child offset and maintains range sum</code>                                      |
 
 #### How to practice this section
 
@@ -2655,6 +3094,28 @@ Movie seats are sold in blocks by price category. If each category has a
 count, the K-th customer belongs to the first category whose cumulative
 capacity reaches K.
 
+### 🧠 Retention diagram — **PREFIX COUNTS CREATE A MONOTONE ANSWER SPACE**
+
+``` text
+candidate x:
+1 2 3 4 5 6 7 8 ...
+      ↓
+count of valid items <= x:
+0 1 1 2 3 3 4 5 ...
+      nondecreasing
+      ───────────►
+
+Need k-th valid item:
+find FIRST x where countValid(x) >= k
+
+false false false | true true true
+                  ^
+             binary search
+```
+
+**Real-world trigger:** find the k-th ticket/number/time satisfying a
+rule when you can quickly count how many valid choices exist up to `x`.
+
 **60-second question**
 
 > Can I sort by value, accumulate frequencies, and locate K with
@@ -2711,12 +3172,12 @@ idx = lower_bound(pref.begin(), pref.end(), K) - pref.begin();
 > Filtered to problems that directly exercise this pattern; unrelated
 > warm-ups are removed.
 
-| \#  | Problem                                                                     | Site   | Why it maps to this pattern                                                              | Approach                                                                                       | Reference pseudocode                                                                                    |
-|-----|-----------------------------------------------------------------------------|--------|------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| 1   | [Interesting drink](https://codeforces.com/problemset/problem/706/B)        | CF     | Count how many values \<= query using upper_bound.                                       | Use monotonic cumulative information to locate the first position/value whose count reaches K. | `build cumulative count/value pref; answer k-th with lower_bound(pref >= K) or binary search on answer` |
-| 2   | [K-th Not Divisible by n](https://codeforces.com/problemset/problem/1352/C) | CF     | Count valid numbers up to X / derive direct formula.                                     | Use monotonic cumulative information to locate the first position/value whose count reaches K. | `build cumulative count/value pref; answer k-th with lower_bound(pref >= K) or binary search on answer` |
-| 3   | [K-th Beautiful String](https://codeforces.com/problemset/problem/1328/B)   | CF     | Cumulative combinatorial blocks determine the K-th object.                               | Use monotonic cumulative information to locate the first position/value whose count reaches K. | `build cumulative count/value pref; answer k-th with lower_bound(pref >= K) or binary search on answer` |
-| 4   | Kth Val (your lecture problem)                                              | Course | Diff range coverage → `(A[i],freq[i])` → sort/merge → prefix frequency → lower_bound(K). | Use monotonic cumulative information to locate the first position/value whose count reaches K. | `build cumulative count/value pref; answer k-th with lower_bound(pref >= K) or binary search on answer` |
+| \#  | Problem                                                                     | Site   | Why it maps to this pattern                                                              | Approach                                                                                       | Reference pseudocode                                                                                                                                                  |
+|-----|-----------------------------------------------------------------------------|--------|------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Interesting drink](https://codeforces.com/problemset/problem/706/B)        | CF     | Count how many values \<= query using upper_bound.                                       | Use monotonic cumulative information to locate the first position/value whose count reaches K. | <code>sort prices<br>↓<br>for each budget x: answer=upper_bound(prices,x)-begin</code>                                                                                |
+| 2   | [K-th Not Divisible by n](https://codeforces.com/problemset/problem/1352/C) | CF     | Count valid numbers up to X / derive direct formula.                                     | Use monotonic cumulative information to locate the first position/value whose count reaches K. | <code>binary search smallest x with countValid(x)=x-floor(x/n) \>= k<br>↓<br>answer=x (or use closed-form k+(k-1)/(n-1))</code>                                       |
+| 3   | [K-th Beautiful String](https://codeforces.com/problemset/problem/1328/B)   | CF     | Cumulative combinatorial blocks determine the K-th object.                               | Use monotonic cumulative information to locate the first position/value whose count reaches K. | <code>for first b position from right: blockSize=#choices for second b<br>↓<br>subtract blocks from k until containing block<br>↓<br>place two b's accordingly</code> |
+| 4   | Kth Val (your lecture problem)                                              | Course | Diff range coverage → `(A[i],freq[i])` → sort/merge → prefix frequency → lower_bound(K). | Use monotonic cumulative information to locate the first position/value whose count reaches K. | `build cumulative count/value pref; answer k-th with lower_bound(pref >= K) or binary search on answer`                                                               |
 
 #### How to practice this section
 
@@ -2808,6 +3269,29 @@ A bridge segment's capacity is controlled by its weakest support
 structure finds the weakest-support boundaries; prefix computes total
 load.
 
+### 🧠 Retention diagram — **EACH ELEMENT OWNS A REGION**
+
+``` text
+          6
+      4       5
+   2     3
+         ^
+       A[i]
+
+Monotonic stack finds:
+nearest smaller on LEFT
+nearest smaller on RIGHT
+
+L <--------- i ---------> R
+
+Inside this region, A[i] can be the minimum.
+Prefix sums then measure the intervals that A[i] owns.
+```
+
+**Real-world trigger:** each building/product/value contributes to every
+interval where it remains the minimum/maximum; stack finds boundaries,
+prefix measures the interval.
+
 **60-second question**
 
 > Does one technique naturally find candidate boundaries while prefix
@@ -2849,12 +3333,12 @@ combine         -> contribution / score
 > Filtered to problems that directly exercise this pattern; unrelated
 > warm-ups are removed.
 
-| \#  | Problem                                                                                             | Site    | Why it maps to this pattern                                              | Approach                                                                                             | Reference pseudocode                                                                                         |
-|-----|-----------------------------------------------------------------------------------------------------|---------|--------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| 1   | [Maximum Subarray Min-Product](https://leetcode.com/problems/maximum-subarray-min-product/)         | LC      | Stack finds maximal range where A\[i\] is minimum; prefix gives its sum. | Use the stack for ownership boundaries and prefix sums for the aggregate inside each owned interval. | `stack -> left/right boundary for each i; prefix -> range sum; combine boundary span with A[i] contribution` |
-| 2   | [Sum of Subarray Minimums](https://leetcode.com/problems/sum-of-subarray-minimums/)                 | LC      | Count how many subarrays choose each element as minimum.                 | Use the stack for ownership boundaries and prefix sums for the aggregate inside each owned interval. | `stack -> left/right boundary for each i; prefix -> range sum; combine boundary span with A[i] contribution` |
-| 3   | [Sum of Total Strength of Wizards](https://leetcode.com/problems/sum-of-total-strength-of-wizards/) | LC Hard | Stack boundaries + double prefix.                                        | Use the stack for ownership boundaries and prefix sums for the aggregate inside each owned interval. | `stack -> left/right boundary for each i; prefix -> range sum; combine boundary span with A[i] contribution` |
-| 4   | [Imbalanced Array](https://codeforces.com/problemset/problem/817/D)                                 | CF      | Count each element's contribution as max minus min.                      | Use the stack for ownership boundaries and prefix sums for the aggregate inside each owned interval. | `stack -> left/right boundary for each i; prefix -> range sum; combine boundary span with A[i] contribution` |
+| \#  | Problem                                                                                             | Site    | Why it maps to this pattern                                              | Approach                                                                                             | Reference pseudocode                                                                                                                                                |
+|-----|-----------------------------------------------------------------------------------------------------|---------|--------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Maximum Subarray Min-Product](https://leetcode.com/problems/maximum-subarray-min-product/)         | LC      | Stack finds maximal range where A\[i\] is minimum; prefix gives its sum. | Use the stack for ownership boundaries and prefix sums for the aggregate inside each owned interval. | <code>prefix sums<br>↓<br>monotonic stack finds prevSmaller and nextSmaller<br>↓<br>sum=pref\[R\]-pref\[L\]<br>↓<br>ans=max(ans,a\[i\]\*sum)</code>                 |
+| 2   | [Sum of Subarray Minimums](https://leetcode.com/problems/sum-of-subarray-minimums/)                 | LC      | Count how many subarrays choose each element as minimum.                 | Use the stack for ownership boundaries and prefix sums for the aggregate inside each owned interval. | <code>stack finds distance to previous strictly smaller and next smaller-or-equal<br>↓<br>contribution=a\[i\]*leftCount*rightCount<br>↓<br>sum contributions</code> |
+| 3   | [Sum of Total Strength of Wizards](https://leetcode.com/problems/sum-of-total-strength-of-wizards/) | LC Hard | Stack boundaries + double prefix.                                        | Use the stack for ownership boundaries and prefix sums for the aggregate inside each owned interval. | <code>stack gives minimum boundaries<br>↓<br>double prefix gives sum of all subarray sums on left/right<br>↓<br>combine counts, multiply by strength\[i\]</code>    |
+| 4   | [Imbalanced Array](https://codeforces.com/problemset/problem/817/D)                                 | CF      | Count each element's contribution as max minus min.                      | Use the stack for ownership boundaries and prefix sums for the aggregate inside each owned interval. | <code>use monotonic stacks to count subarrays where a\[i\] is maximum and minimum<br>↓<br>ans += a\[i\]\*(countMax-countMin)</code>                                 |
 
 #### How to practice this section
 
@@ -2958,6 +3442,35 @@ A company org chart is a tree. Root-prefix can represent accumulated
 budget/permission from CEO to employee; Euler tour makes every manager's
 team occupy one continuous interval.
 
+### 🧠 Retention diagram — **A ROOT-TO-NODE PATH IS A PREFIX**
+
+``` text
+root
+ |
+ +-- A
+ |    |
+ |    +-- C
+ |
+ +-- B
+      |
+      +-- D
+
+prefix(C) = root → A → C
+prefix(D) = root → B → D
+
+For a path:
+
+u -------- LCA -------- v
+
+path information
+= prefix(u) + prefix(v)
+  - shared root/LCA contribution
+```
+
+**Real-world trigger:** folder paths, organization trees, or roads
+rooted at HQ — cumulative information from the root behaves like a 1D
+prefix.
+
 **60-second question**
 
 > Can I convert the tree query into either root-to-node cumulative
@@ -3011,14 +3524,14 @@ path(u,v)
 > Filtered to problems that directly exercise this pattern; unrelated
 > warm-ups are removed.
 
-| \#  | Problem                                                                                                                               | Site       | Why it maps to this pattern                              | Approach                                                                                                            | Reference pseudocode                                                                                             |
-|-----|---------------------------------------------------------------------------------------------------------------------------------------|------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| 1   | [Path Sum III](https://leetcode.com/problems/path-sum-iii/)                                                                           | LC         | Prefix-frequency map along current DFS path.             | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | `DFS: state[v]=state[parent]+value/edge; path(u,v)=state[u]+state[v]-2*state[lca] (+ node correction if needed)` |
-| 2   | [Count Paths That Can Form a Palindrome in a Tree](https://leetcode.com/problems/count-paths-that-can-form-a-palindrome-in-a-tree/)   | LC Hard    | Root-to-node parity masks; compare masks.                | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | `DFS: state[v]=state[parent]+value/edge; path(u,v)=state[u]+state[v]-2*state[lca] (+ node correction if needed)` |
-| 3   | [Minimum Edge Weight Equilibrium Queries in a Tree](https://leetcode.com/problems/minimum-edge-weight-equilibrium-queries-in-a-tree/) | LC Hard    | Prefix frequency vector from root to each node + LCA.    | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | `DFS: state[v]=state[parent]+value/edge; path(u,v)=state[u]+state[v]-2*state[lca] (+ node correction if needed)` |
-| 4   | [Military Problem](https://codeforces.com/problemset/problem/1006/E)                                                                  | CF         | Flatten subtree into contiguous Euler-tour interval.     | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | `DFS: state[v]=state[parent]+value/edge; path(u,v)=state[u]+state[v]-2*state[lca] (+ node correction if needed)` |
-| 5   | [Tree Cutting](https://codeforces.com/problemset/problem/1118/F1)                                                                     | CF         | Subtree prefix/count contribution.                       | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | `DFS: state[v]=state[parent]+value/edge; path(u,v)=state[u]+state[v]-2*state[lca] (+ node correction if needed)` |
-| 6   | [Blood Cousins](https://codeforces.com/problemset/problem/208/E)                                                                      | CF Stretch | Euler intervals + depth-indexed prefix/count structures. | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | `DFS: state[v]=state[parent]+value/edge; path(u,v)=state[u]+state[v]-2*state[lca] (+ node correction if needed)` |
+| \#  | Problem                                                                                                                               | Site       | Why it maps to this pattern                              | Approach                                                                                                            | Reference pseudocode                                                                                                                                                                                             |
+|-----|---------------------------------------------------------------------------------------------------------------------------------------|------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | [Path Sum III](https://leetcode.com/problems/path-sum-iii/)                                                                           | LC         | Prefix-frequency map along current DFS path.             | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | <code>DFS with path prefix sum<br>↓<br>freq\[0\]=1<br>↓<br>at node: pref+=val<br>↓<br>ans+=freq\[pref-target\]<br>↓<br>freq\[pref\]++<br>↓<br>recurse<br>↓<br>freq\[pref\]-- on backtrack</code>                 |
+| 2   | [Count Paths That Can Form a Palindrome in a Tree](https://leetcode.com/problems/count-paths-that-can-form-a-palindrome-in-a-tree/)   | LC Hard    | Root-to-node parity masks; compare masks.                | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | <code>DFS/root mask where edge char toggles one bit<br>↓<br>for each mask count earlier same mask and masks differing by one bit</code>                                                                          |
+| 3   | [Minimum Edge Weight Equilibrium Queries in a Tree](https://leetcode.com/problems/minimum-edge-weight-equilibrium-queries-in-a-tree/) | LC Hard    | Prefix frequency vector from root to each node + LCA.    | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | <code>DFS stores root-\>node frequency vector for edge weights + binary-lifting LCA<br>↓<br>pathFreq=cnt\[u\]+cnt\[v\]-2\*cnt\[lca\]<br>↓<br>answer=pathLen-max(pathFreq)</code>                                 |
+| 4   | [Military Problem](https://codeforces.com/problemset/problem/1006/E)                                                                  | CF         | Flatten subtree into contiguous Euler-tour interval.     | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | <code>DFS preorder flatten tree<br>↓<br>tin\[v\]=position, subtreeSize\[v\]<br>↓<br>k-th node in subtree = order\[tin\[v\]+k-1\] if k\<=subtreeSize\[v\]</code>                                                  |
+| 5   | [Tree Cutting](https://codeforces.com/problemset/problem/1118/F1)                                                                     | CF         | Subtree prefix/count contribution.                       | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | <code>DFS subtree counts of red/blue<br>↓<br>edge above v is valid when subtree contains all of one color and none of the other<br>↓<br>count such v</code>                                                      |
+| 6   | [Blood Cousins](https://codeforces.com/problemset/problem/208/E)                                                                      | CF Stretch | Euler intervals + depth-indexed prefix/count structures. | Generalize array prefix to root-to-node state; use DFS/Euler/LCA depending on whether the query is path or subtree. | <code>DFS Euler tin/tout and depth<br>↓<br>group tin values by depth<br>↓<br>for query(v,p): u=p-th ancestor(v)<br>↓<br>count nodes at depth\[v\] with tin in subtree(u) via two binary searches, minus v</code> |
 
 #### How to practice this section
 
