@@ -201,6 +201,40 @@ Think: LSB
 
 **Core tools:** `x & 1`, `(x & 1) == (y & 1)`.
 
+### Bit-by-bit form example
+
+```text
+Example: x = 13
+
+x       = 1101
+bits      3210
+             ↑
+           bit 0
+
+x & 1:
+
+x       = 1101
+mask    = 0001
+          &
+          ────
+result  = 0001
+             ↑
+             1 → ODD
+
+Compare x = 12:
+
+x       = 1100
+mask    = 0001
+          &
+          ────
+result  = 0000
+             ↑
+             0 → EVEN
+```
+
+**Pattern:** parity → inspect only the last bit.
+
+
 <a id="form-1-problem-1"></a>
 
 ## Problem 1 — [1367B — Even Array](https://codeforces.com/problemset/problem/1367/B)
@@ -225,22 +259,16 @@ The condition is parity only. Compare the least-significant bit of the index and
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ Example: a = [3,2,7,6]
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ index      0    1    2    3
 ├─ index LSB  0    1    0    1
@@ -251,15 +279,43 @@ STEP 2
 │
 ▼
 
-STEP 3
+STEP 3 — MAKE THE DECISION
 │
 ├─ odd value at even index  = 2
 ├─ Even value at odd index  = 2
 ├─ Each swap consumes one of each -> answer = 2.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -313,16 +369,10 @@ A number has no odd divisor greater than 1 exactly when it is a power of two. Us
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 8
 ├─ 8   = 1000
@@ -331,16 +381,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ n = 12
 ├─ 12  = 1100
 ├─ 11  = 1011
 ├─ &     1000 -> more than one set bit -> has odd factor 3 -> YES.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -387,16 +465,10 @@ Parity is the first split. If at least one number is odd, every even number can 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[4,8,12]
 ├─ 4 =0100 -> trailing zeros 2
@@ -409,13 +481,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If a=[3,4,8], odd already exists -> answer = number of evens =2.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -471,16 +571,10 @@ Let S be XOR of the array. After XORing every element with x, total becomes `S ^
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,5]
 ├─ 1=001
@@ -491,16 +585,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ 001^110=111
 ├─ 010^110=100
 ├─ 101^110=011
 ├─ 111^100^011=000.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -557,6 +679,33 @@ Think: x & (x-1)
 
 **Core tools:** `x > 0 && (x & (x-1)) == 0`, `x &= x-1`.
 
+### Bit-by-bit form example
+
+```text
+Example: x = 12
+
+x       = 1100
+x - 1   = 1011
+          &
+          ────
+result  = 1000
+             ↑
+the lowest 1-bit of x disappeared
+
+Now x = 8:
+
+x       = 1000
+x - 1   = 0111
+          &
+          ────
+result  = 0000
+
+Only one 1-bit existed → power of two.
+```
+
+**Pattern:** `x & (x-1)` removes one set bit; result `0` means exactly one set bit.
+
+
 <a id="form-2-problem-1"></a>
 
 ## Problem 1 — [1475A — Odd Divisor](https://codeforces.com/problemset/problem/1475/A)
@@ -580,16 +729,10 @@ A number has no odd divisor greater than 1 exactly when it is a power of two. Us
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 8
 ├─ 8   = 1000
@@ -598,16 +741,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ n = 12
 ├─ 12  = 1100
 ├─ 11  = 1011
 ├─ &     1000 -> more than one set bit -> has odd factor 3 -> YES.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -653,16 +824,10 @@ For maximum `k<n` with `n & (n-1) & ... & k = 0`, find the highest power of two 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 10 = 1010
 ├─ highest power of 2 <= n = 8 = 1000
@@ -670,14 +835,42 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The interval 10,9,8,7 contains values that clear every bit in the cumulative AND.
 ├─ The boundary is determined by the MSB of n.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -725,16 +918,10 @@ The XOR of `0..a-1` is obtained from the 4-cycle. If it already equals b, length
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ Suppose a=4, b=2.
 ├─ Need array containing 0,1,2,3.
@@ -745,13 +932,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If d==a, appending a would make MEX > a, so use two extra values -> a+2.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -812,16 +1027,10 @@ Try powers of two. `x mod 2^k` is exactly the last k bits. Increase suffix lengt
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[8,14,22,30]
 ├─ 8 =001000
@@ -831,15 +1040,43 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ mod2 -> last1: 0,0,0,0 -> {0}
 ├─ mod4 -> last2: 00,10,10,10 -> {0,2}
 ├─ Exactly two -> answer 4.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -906,6 +1143,36 @@ Build mask 1 << k
 
 **Core tools:** `1LL<<k`, `x&(1LL<<k)`, `x|=1LL<<k`, `x^=1LL<<k`.
 
+### Bit-by-bit form example
+
+```text
+Example: x = 10, check bit k = 1
+
+x       = 1010
+bits      3210
+
+mask = 1 << 1
+
+mask    = 0010
+x       = 1010
+          &
+          ────
+result  = 0010
+            ↑
+          bit 1 is ON
+
+SET bit 2:
+
+x       = 1010
+mask    = 0100
+          |
+          ────
+result  = 1110
+```
+
+**Pattern:** `1 << k` isolates exactly one bit column.
+
+
 <a id="form-3-problem-1"></a>
 
 ## Problem 1 — [1669H — Maximal AND](https://codeforces.com/problemset/problem/1669/H)
@@ -930,16 +1197,10 @@ To put bit b into the final AND, every element must have bit b=1. Cost is the nu
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[2,1,1], k=2
 ├─ 2=10
@@ -948,7 +1209,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ bit1 column: 1,0,0 -> need 2 operations
 ├─ k=2 -> buy bit1
@@ -956,9 +1217,37 @@ STEP 2
 ├─ AND =10 =2
 ├─ No budget remains.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1017,16 +1306,10 @@ Choose y[i] so `(x[i] xor y[i]) & (x[i+1] xor y[i+1]) = x[i] xor y[i]`. This mea
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ previous transformed p=1011
 ├─ current x=0010
@@ -1039,9 +1322,37 @@ STEP 1
 ├─ x^y=0010^1001=1011
 ├─ Now p & z =1011 = p.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1096,16 +1407,10 @@ Two values can pair when their lowest 31 bits are opposite. Partner is `x xor ((
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ 5-bit illustration:
 ├─ x=10110
@@ -1114,7 +1419,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ 10110
 ├─ 01001
@@ -1122,9 +1427,37 @@ STEP 2
 ├─ every column is 1/0 or 0/1.
 ├─ If partner already waits, pair them; otherwise start a new group with x.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1183,16 +1516,10 @@ Encode vitamins A,B,C as bits 0,1,2. Each juice is a mask. OR combines acquired 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ A=001,B=010,C=100
 ├─ juice AB ->011 cost5
@@ -1201,9 +1528,37 @@ STEP 1
 ├─ 011 |100 =111
 ├─ cost=8, all vitamins covered.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1264,6 +1619,36 @@ Think: cancellation
 
 **Core tools:** accumulate with `xr ^= x`.
 
+### Bit-by-bit form example
+
+```text
+Example: 13 ^ 6
+
+x       = 1101
+y       = 0110
+          ^
+          ────
+result  = 1011
+
+Column rule:
+
+1 ^ 0 = 1
+1 ^ 1 = 0   ← equal bits cancel
+0 ^ 1 = 1
+1 ^ 0 = 1
+
+Cancellation example:
+
+x       = 1101
+x       = 1101
+          ^
+          ────
+result  = 0000
+```
+
+**Pattern:** equal XOR values cancel: `x ^ x = 0`.
+
+
 <a id="form-4-problem-1"></a>
 
 ## Problem 1 — [1698A — XOR Mixup](https://codeforces.com/problemset/problem/1698/A)
@@ -1287,16 +1672,10 @@ The appended value is XOR of all original values. XORing the final array gives z
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ Example final array: [4,3,2,5]
 ├─ 4=100
@@ -1310,13 +1689,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The full XOR is 0 because original-XOR x appears once in addition to the originals whose XOR is x. A valid x can be obtained using the problem's guaranteed construction; the standard implementation XORs the required subset relation.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1365,16 +1772,10 @@ Let S be XOR of the array. After XORing every element with x, total becomes `S ^
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,5]
 ├─ 1=001
@@ -1385,16 +1786,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ 001^110=111
 ├─ 010^110=100
 ├─ 101^110=011
 ├─ 111^100^011=000.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1447,16 +1876,10 @@ Partition into at least two segments with equal XOR. If total XOR is 0, two part
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,3]
 ├─ 1=01,2=10,3=11
@@ -1464,7 +1887,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If total S!=0, look for:
 ├─ segment1 XOR=S
@@ -1472,9 +1895,37 @@ STEP 2
 ├─ then remaining XOR = S^S^S = S,
 ├─ so three segments have equal XOR.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1538,16 +1989,10 @@ Maintain XOR of the two groups defined by a binary string. Flipping a whole subs
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,3], s=010
 ├─ binary: 1=01,2=10,3=11
@@ -1556,7 +2001,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ Flip [1,2] (0-based values 2,3): segment XOR=2^3=01
 ├─ Both group XORs ^=01:
@@ -1564,9 +2009,37 @@ STEP 2
 ├─ g1:10^01=11=3
 ├─ Membership swapped only inside range.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1650,6 +2123,36 @@ Collapse globally first
 
 **Core tools:** XOR all elements; use associativity and self-inverse property.
 
+### Bit-by-bit form example
+
+```text
+Equation:
+
+S ^ X = T
+
+S = 6 = 110
+T = 3 = 011
+
+X = S ^ T
+
+S       = 110
+T       = 011
+          ^
+          ───
+X       = 101 = 5
+
+Verify:
+
+S       = 110
+X       = 101
+          ^
+          ───
+T       = 011
+```
+
+**Pattern:** XOR is its own inverse.
+
+
 <a id="form-5-problem-1"></a>
 
 ## Problem 1 — [1805A — We Need the Zero](https://codeforces.com/problemset/problem/1805/A)
@@ -1673,16 +2176,10 @@ Let S be XOR of the array. After XORing every element with x, total becomes `S ^
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,5]
 ├─ 1=001
@@ -1693,16 +2190,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ 001^110=111
 ├─ 010^110=100
 ├─ 101^110=011
 ├─ 111^100^011=000.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1754,16 +2279,10 @@ The appended value is XOR of all original values. XORing the final array gives z
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ Example final array: [4,3,2,5]
 ├─ 4=100
@@ -1777,13 +2296,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The full XOR is 0 because original-XOR x appears once in addition to the originals whose XOR is x. A valid x can be obtained using the problem's guaranteed construction; the standard implementation XORs the required subset relation.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1832,16 +2379,10 @@ The XOR of `0..a-1` is obtained from the 4-cycle. If it already equals b, length
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ Suppose a=4, b=2.
 ├─ Need array containing 0,1,2,3.
@@ -1852,13 +2393,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If d==a, appending a would make MEX > a, so use two extra values -> a+2.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -1919,16 +2488,10 @@ Partition into at least two segments with equal XOR. If total XOR is 0, two part
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,3]
 ├─ 1=01,2=10,3=11
@@ -1936,7 +2499,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If total S!=0, look for:
 ├─ segment1 XOR=S
@@ -1944,9 +2507,37 @@ STEP 2
 ├─ then remaining XOR = S^S^S = S,
 ├─ so three segments have equal XOR.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2013,6 +2604,35 @@ Think: 4-cycle
 
 **Core tool:** prefix-XOR formula by `n & 3`.
 
+### Bit-by-bit form example
+
+```text
+XOR from 0..n repeats every 4 values.
+
+n = 0: 0             = 0
+n = 1: 0 ^ 1         = 1
+n = 2: 0 ^ 1 ^ 2     = 3
+n = 3: 0 ^ 1 ^ 2 ^ 3 = 0
+
+Then the pattern restarts:
+
+n % 4 = 0 → n
+n % 4 = 1 → 1
+n % 4 = 2 → n + 1
+n % 4 = 3 → 0
+
+Example n = 6:
+
+6 % 4 = 2
+XOR(0..6) = 6 + 1 = 7
+
+6       = 110
+answer  = 111
+```
+
+**Pattern:** recognize the 4-cycle instead of looping.
+
+
 <a id="form-6-problem-1"></a>
 
 ## Problem 1 — [1567B — MEXor Mixup](https://codeforces.com/problemset/problem/1567/B)
@@ -2036,16 +2656,10 @@ The XOR of `0..a-1` is obtained from the 4-cycle. If it already equals b, length
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ Suppose a=4, b=2.
 ├─ Need array containing 0,1,2,3.
@@ -2056,13 +2670,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If d==a, appending a would make MEX > a, so use two extra values -> a+2.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2122,16 +2764,10 @@ For maximum `k<n` with `n & (n-1) & ... & k = 0`, find the highest power of two 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 10 = 1010
 ├─ highest power of 2 <= n = 8 = 1000
@@ -2139,14 +2775,42 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The interval 10,9,8,7 contains values that clear every bit in the cumulative AND.
 ├─ The boundary is determined by the MSB of n.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2195,16 +2859,10 @@ Try powers of two. `x mod 2^k` is exactly the last k bits. Increase suffix lengt
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[8,14,22,30]
 ├─ 8 =001000
@@ -2214,15 +2872,43 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ mod2 -> last1: 0,0,0,0 -> {0}
 ├─ mod4 -> last2: 00,10,10,10 -> {0,2}
 ├─ Exactly two -> answer 4.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2278,16 +2964,10 @@ Each angle has two choices: + or -. Encode the choice for angle i in bit i of a 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n=3, angles=[10,20,30]
 ├─ mask=101
@@ -2297,9 +2977,37 @@ STEP 1
 ├─ sum=20, not divisible by360.
 ├─ Try every mask 000..111 until one gives sum%360=0.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2358,6 +3066,41 @@ Think: Prefix XOR
 
 **Core tool:** `px[i+1] = px[i] ^ a[i]`.
 
+### Bit-by-bit form example
+
+```text
+a = [5, 2, 7, 3]
+
+5 = 101
+2 = 010
+7 = 111
+3 = 011
+
+Prefix XOR:
+
+px[0] = 000
+px[1] = 000 ^ 101 = 101
+px[2] = 101 ^ 010 = 111
+px[3] = 111 ^ 111 = 000
+px[4] = 000 ^ 011 = 011
+
+Range [1..2]:
+
+px[3]  = 000
+px[1]  = 101
+          ^
+          ───
+answer = 101
+
+Why?
+(a0 ^ a1 ^ a2) ^ a0
+       ↓ a0 cancels
+      a1 ^ a2
+```
+
+**Pattern:** range XOR = `px[R+1] ^ px[L]`.
+
+
 <a id="form-7-problem-1"></a>
 
 ## Problem 1 — [1872E — Data Structures Fan](https://codeforces.com/problemset/problem/1872/E)
@@ -2381,16 +3124,10 @@ Maintain XOR of the two groups defined by a binary string. Flipping a whole subs
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,3], s=010
 ├─ binary: 1=01,2=10,3=11
@@ -2399,7 +3136,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ Flip [1,2] (0-based values 2,3): segment XOR=2^3=01
 ├─ Both group XORs ^=01:
@@ -2407,9 +3144,37 @@ STEP 2
 ├─ g1:10^01=11=3
 ├─ Membership swapped only inside range.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2486,16 +3251,10 @@ Partition into at least two segments with equal XOR. If total XOR is 0, two part
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,3]
 ├─ 1=01,2=10,3=11
@@ -2503,7 +3262,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If total S!=0, look for:
 ├─ segment1 XOR=S
@@ -2511,9 +3270,37 @@ STEP 2
 ├─ then remaining XOR = S^S^S = S,
 ├─ so three segments have equal XOR.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2577,16 +3364,10 @@ The appended value is XOR of all original values. XORing the final array gives z
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ Example final array: [4,3,2,5]
 ├─ 4=100
@@ -2600,13 +3381,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The full XOR is 0 because original-XOR x appears once in addition to the originals whose XOR is x. A valid x can be obtained using the problem's guaranteed construction; the standard implementation XORs the required subset relation.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2655,16 +3464,10 @@ Let S be XOR of the array. After XORing every element with x, total becomes `S ^
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,5]
 ├─ 1=001
@@ -2675,16 +3478,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ 001^110=111
 ├─ 010^110=100
 ├─ 101^110=011
 ├─ 111^100^011=000.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2744,6 +3575,30 @@ Think: A ^ B
 
 **Core tools:** `diff=a^b`, `__builtin_popcount(diff)`.
 
+### Bit-by-bit form example
+
+```text
+A = 13, B = 10
+
+A       = 1101
+B       = 1010
+          ^
+          ────
+diff    = 0111
+           ↑↑↑
+           these bit positions differ
+
+bit      3 2 1 0
+A        1 1 0 1
+B        1 0 1 0
+XOR      0 1 1 1
+
+popcount(A ^ B) = 3
+```
+
+**Pattern:** a `1` in `A ^ B` marks one disagreement.
+
+
 <a id="form-8-problem-1"></a>
 
 ## Problem 1 — [1918C — XOR-distance](https://codeforces.com/problemset/problem/1918/C)
@@ -2767,16 +3622,10 @@ Only differing bits of a and b matter. Keep the highest differing bit unchanged 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=10=1010, b=3=0011. a>b.
 ├─ Highest differing bit is bit3:
@@ -2786,16 +3635,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ x starts 0000. If 0001<=r, choose it:
 ├─ a^x=1011=11
 ├─ b^x=0010=2
 ├─ Here it increased gap, so direction of lower bits matters: flip only bits where the larger number has 1 and smaller has 0, subject to r. Process from high to low.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2855,16 +3732,10 @@ Find positive x such that XORing every set element by x produces the same set. T
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ S={1,2,3,4}
 ├─ Try x=5 (101):
@@ -2873,13 +3744,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ For a candidate x, every bit where x has 1 toggles that column for all numbers. The transformed collection must exactly match the original collection.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -2941,28 +3840,22 @@ Minimize `(a xor x) + (b xor x)`. At every bit where both `a` and `b` are 1, bot
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=5=101, b=3=011
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ a^b = 110 = 6
 │
 ▼
 
-STEP 3
+STEP 3 — MAKE THE DECISION
 │
 ├─ Try x = a&b = 001:
 ├─ a^x = 100 = 4
@@ -2979,9 +3872,37 @@ STEP 4
 ├─ bit0: 1/1 -> choose x=1 -> both become 0
 ├─ Total = 6.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3028,16 +3949,10 @@ Choose y[i] so `(x[i] xor y[i]) & (x[i+1] xor y[i+1]) = x[i] xor y[i]`. This mea
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ previous transformed p=1011
 ├─ current x=0010
@@ -3050,9 +3965,37 @@ STEP 1
 ├─ x^y=0010^1001=1011
 ├─ Now p & z =1011 = p.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3113,6 +4056,30 @@ Look at last k bits
 
 **Core identity:** `x % (1<<k) == x & ((1<<k)-1)` for nonnegative `x`.
 
+### Bit-by-bit form example
+
+```text
+x = 22 = 10110
+
+22 % 8:
+8 = 2^3 → keep the last 3 bits
+
+x       = 10110
+mask    = 00111
+          &
+          ─────
+result  = 00110 = 6
+
+So:
+
+10110
+  └──┘
+ last 3 bits = 110 = 6
+```
+
+**Pattern:** `% 2^k` means keep the last `k` bits.
+
+
 <a id="form-9-problem-1"></a>
 
 ## Problem 1 — [1909B — Make Almost Equal With Mod](https://codeforces.com/problemset/problem/1909/B)
@@ -3137,16 +4104,10 @@ Try powers of two. `x mod 2^k` is exactly the last k bits. Increase suffix lengt
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[8,14,22,30]
 ├─ 8 =001000
@@ -3156,15 +4117,43 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ mod2 -> last1: 0,0,0,0 -> {0}
 ├─ mod4 -> last2: 00,10,10,10 -> {0,2}
 ├─ Exactly two -> answer 4.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3220,16 +4209,10 @@ A number has no odd divisor greater than 1 exactly when it is a power of two. Us
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 8
 ├─ 8   = 1000
@@ -3238,16 +4221,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ n = 12
 ├─ 12  = 1100
 ├─ 11  = 1011
 ├─ &     1000 -> more than one set bit -> has odd factor 3 -> YES.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3293,16 +4304,10 @@ For maximum `k<n` with `n & (n-1) & ... & k = 0`, find the highest power of two 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 10 = 1010
 ├─ highest power of 2 <= n = 8 = 1000
@@ -3310,14 +4315,42 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The interval 10,9,8,7 contains values that clear every bit in the cumulative AND.
 ├─ The boundary is determined by the MSB of n.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3366,16 +4399,10 @@ Two values can pair when their lowest 31 bits are opposite. Partner is `x xor ((
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ 5-bit illustration:
 ├─ x=10110
@@ -3384,7 +4411,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ 10110
 ├─ 01001
@@ -3392,9 +4419,37 @@ STEP 2
 ├─ every column is 1/0 or 0/1.
 ├─ If partner already waits, pair them; otherwise start a new group with x.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3460,6 +4515,31 @@ Think: MSB
 
 **Core tools:** `63-__builtin_clzll(x)`, powers-of-two boundaries.
 
+### Bit-by-bit form example
+
+```text
+x = 13
+
+x       = 1101
+          ↑
+          highest set bit = bit 3
+
+Numbers with the same MSB:
+
+8   = 1000
+9   = 1001
+10  = 1010
+...
+15  = 1111
+      ↑
+      same leading 1
+
+MSB value = 2^3 = 8
+```
+
+**Pattern:** the highest differing bit often decides which whole number is larger.
+
+
 <a id="form-10-problem-1"></a>
 
 ## Problem 1 — [1420B — Rock and Lever](https://codeforces.com/problemset/problem/1420/B)
@@ -3483,16 +4563,10 @@ A valid pair is characterized by the same highest set bit. Group numbers into MS
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[4,5,6,9]
 ├─ 4=0100 -> MSB2
@@ -3502,15 +4576,43 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ MSB2 bucket size=3 -> C(3,2)=3
 ├─ MSB3 bucket size=1 -> 0
 ├─ answer=3.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3566,16 +4668,10 @@ For maximum `k<n` with `n & (n-1) & ... & k = 0`, find the highest power of two 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 10 = 1010
 ├─ highest power of 2 <= n = 8 = 1000
@@ -3583,14 +4679,42 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The interval 10,9,8,7 contains values that clear every bit in the cumulative AND.
 ├─ The boundary is determined by the MSB of n.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3638,16 +4762,10 @@ Only differing bits of a and b matter. Keep the highest differing bit unchanged 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=10=1010, b=3=0011. a>b.
 ├─ Highest differing bit is bit3:
@@ -3657,16 +4775,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ x starts 0000. If 0001<=r, choose it:
 ├─ a^x=1011=11
 ├─ b^x=0010=2
 ├─ Here it increased gap, so direction of lower bits matters: flip only bits where the larger number has 1 and smaller has 0, subject to r. Process from high to low.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3727,16 +4873,10 @@ To put bit b into the final AND, every element must have bit b=1. Cost is the nu
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[2,1,1], k=2
 ├─ 2=10
@@ -3745,7 +4885,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ bit1 column: 1,0,0 -> need 2 operations
 ├─ k=2 -> buy bit1
@@ -3753,9 +4893,37 @@ STEP 2
 ├─ AND =10 =2
 ├─ No budget remains.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3822,6 +4990,31 @@ Think: x & -x / ctz
 
 **Core tools:** `x & -x`, `__builtin_ctzll(x)`.
 
+### Bit-by-bit form example
+
+```text
+x = 40
+
+x       = 00101000
+-x      = 11011000
+          &
+          ────────
+lowbit  = 00001000 = 8
+
+40 = 5 × 8 = 5 × 2^3
+
+Trailing-zero view:
+
+101000
+   ↑↑↑
+3 zeros → divisible by 2 three times
+
+40 → 20 → 10 → 5
+```
+
+**Pattern:** `x & -x` isolates the lowest set bit.
+
+
 <a id="form-11-problem-1"></a>
 
 ## Problem 1 — [1475A — Odd Divisor](https://codeforces.com/problemset/problem/1475/A)
@@ -3845,16 +5038,10 @@ A number has no odd divisor greater than 1 exactly when it is a power of two. Us
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 8
 ├─ 8   = 1000
@@ -3863,16 +5050,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ n = 12
 ├─ 12  = 1100
 ├─ 11  = 1011
 ├─ &     1000 -> more than one set bit -> has odd factor 3 -> YES.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -3919,16 +5134,10 @@ Try powers of two. `x mod 2^k` is exactly the last k bits. Increase suffix lengt
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[8,14,22,30]
 ├─ 8 =001000
@@ -3938,15 +5147,43 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ mod2 -> last1: 0,0,0,0 -> {0}
 ├─ mod4 -> last2: 00,10,10,10 -> {0,2}
 ├─ Exactly two -> answer 4.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4002,16 +5239,10 @@ For maximum `k<n` with `n & (n-1) & ... & k = 0`, find the highest power of two 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 10 = 1010
 ├─ highest power of 2 <= n = 8 = 1000
@@ -4019,14 +5250,42 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The interval 10,9,8,7 contains values that clear every bit in the cumulative AND.
 ├─ The boundary is determined by the MSB of n.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4075,16 +5334,10 @@ Parity is the first split. If at least one number is odd, every even number can 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[4,8,12]
 ├─ 4 =0100 -> trailing zeros 2
@@ -4097,13 +5350,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If a=[3,4,8], odd already exists -> answer = number of evens =2.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4164,6 +5445,33 @@ Think: OR is monotonic
 
 **Core condition:** an item is safe for target `x` when `(item | x) == x`.
 
+### Bit-by-bit form example
+
+```text
+Target = 1011
+
+current = 0001
+item    = 0010
+          |
+          ────
+result  = 0011   ✓ still inside target
+
+Forbidden item:
+
+current = 0011
+item    = 0100
+          |
+          ────
+result  = 0111
+           ↑
+           forbidden bit became 1
+
+OR cannot turn it back to 0.
+```
+
+**Pattern:** with OR, bits move only `0 → 1`.
+
+
 <a id="form-12-problem-1"></a>
 
 ## Problem 1 — [1842B — Tenzing and Books](https://codeforces.com/problemset/problem/1842/B)
@@ -4188,16 +5496,10 @@ OR can only add 1-bits. A book is usable only if all its 1-bits are already allo
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ target x=101
 ├─ book v=001: 001|101=101 -> safe
@@ -4207,14 +5509,42 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ book 010 would be forbidden:
 ├─ 010|101=111 !=101, and OR could never remove that bit1.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4268,16 +5598,10 @@ Choose y[i] so `(x[i] xor y[i]) & (x[i+1] xor y[i+1]) = x[i] xor y[i]`. This mea
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ previous transformed p=1011
 ├─ current x=0010
@@ -4290,9 +5614,37 @@ STEP 1
 ├─ x^y=0010^1001=1011
 ├─ Now p & z =1011 = p.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4347,16 +5699,10 @@ Encode vitamins A,B,C as bits 0,1,2. Each juice is a mask. OR combines acquired 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ A=001,B=010,C=100
 ├─ juice AB ->011 cost5
@@ -4365,9 +5711,37 @@ STEP 1
 ├─ 011 |100 =111
 ├─ cost=8, all vitamins covered.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4421,16 +5795,10 @@ Two skills are a 2-bit mask: 01,10,11. Keep cheapest cost for each mask. Answer 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ book1 skill 10 cost4 -> mask2
 ├─ book2 skill 01 cost3 -> mask1
@@ -4438,9 +5806,37 @@ STEP 1
 ├─ Combine mask2|mask1=11 cost7
 ├─ min(7,10)=7.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4505,6 +5901,36 @@ Think: unanimous bits
 
 **Core idea:** evaluate candidate bits from high to low and ensure all required elements support them.
 
+### Bit-by-bit form example
+
+```text
+a = 14 = 1110
+b = 11 = 1011
+c = 10 = 1010
+
+a       = 1110
+b       = 1011
+          &
+          ────
+a&b     = 1010
+
+a&b     = 1010
+c       = 1010
+          &
+          ────
+result  = 1010
+
+Column view:
+
+bit3: 1 & 1 & 1 = 1 ✓
+bit2: 1 & 0 & 0 = 0
+bit1: 1 & 1 & 1 = 1 ✓
+bit0: 0 & 1 & 0 = 0
+```
+
+**Pattern:** an AND bit survives only if everybody has `1` there.
+
+
 <a id="form-13-problem-1"></a>
 
 ## Problem 1 — [1669H — Maximal AND](https://codeforces.com/problemset/problem/1669/H)
@@ -4529,16 +5955,10 @@ To put bit b into the final AND, every element must have bit b=1. Cost is the nu
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[2,1,1], k=2
 ├─ 2=10
@@ -4547,7 +5967,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ bit1 column: 1,0,0 -> need 2 operations
 ├─ k=2 -> buy bit1
@@ -4555,9 +5975,37 @@ STEP 2
 ├─ AND =10 =2
 ├─ No budget remains.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4615,16 +6063,10 @@ For every bit position, not all n numbers may have that bit=1, otherwise total A
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n=3, one bit column has 2^3=8 assignments:
 ├─ 000 001 010 011 100 101 110 111
@@ -4632,9 +6074,37 @@ STEP 1
 ├─ So 7 valid assignments per bit.
 ├─ For k independent bits -> 7^k.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4691,16 +6161,10 @@ Given b[i]=a[i]&a[i+1], construct a. A standard candidate uses OR of adjacent co
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ b=[2,0]
 ├─ 2=10, 0=00
@@ -4713,9 +6177,37 @@ STEP 1
 ├─ a1&a2=10&00=00 = b1
 ├─ works.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4777,16 +6269,10 @@ Need `a[i] | a[j] = M[i][j]`. For each i, AND all M[i][j] over j!=i to build the
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ One bit only, three nodes:
 ├─ M01=1, M02=0, M12=1
@@ -4797,13 +6283,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ Construction followed by full verification catches inconsistent matrices.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4871,6 +6385,36 @@ Think: frequency[bit]
 
 **Core pattern:** loop bits, then loop elements and count `(x>>b)&1`.
 
+### Bit-by-bit form example
+
+```text
+Numbers:
+
+5 = 101
+7 = 111
+1 = 001
+4 = 100
+
+          b2 b1 b0
+5          1  0  1
+7          1  1  1
+1          0  0  1
+4          1  0  0
+           --------
+ones       3  1  3
+zeros      1  3  1
+
+Majority:
+b2 → 1
+b1 → 0
+b0 → 1
+
+answer = 101 = 5
+```
+
+**Pattern:** solve each bit column independently by counting `0`s and `1`s.
+
+
 <a id="form-14-problem-1"></a>
 
 ## Problem 1 — [1625A — Ancient Civilization](https://codeforces.com/problemset/problem/1625/A)
@@ -4893,16 +6437,10 @@ For each bit independently, choose the majority bit to minimize total differing 
 2. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 3. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ numbers:
 ├─ 1011
@@ -4911,7 +6449,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ bit3:1,1,0 -> ones2 -> answer bit=1
 ├─ bit2:0,1,1 -> ones2 -> 1
@@ -4919,9 +6457,37 @@ STEP 2
 ├─ bit0:1,0,1 -> ones2 -> 1
 ├─ answer=1111.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -4976,16 +6542,10 @@ To put bit b into the final AND, every element must have bit b=1. Cost is the nu
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[2,1,1], k=2
 ├─ 2=10
@@ -4994,7 +6554,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ bit1 column: 1,0,0 -> need 2 operations
 ├─ k=2 -> buy bit1
@@ -5002,9 +6562,37 @@ STEP 2
 ├─ AND =10 =2
 ├─ No budget remains.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5062,16 +6650,10 @@ For every bit position, not all n numbers may have that bit=1, otherwise total A
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n=3, one bit column has 2^3=8 assignments:
 ├─ 000 001 010 011 100 101 110 111
@@ -5079,9 +6661,37 @@ STEP 1
 ├─ So 7 valid assignments per bit.
 ├─ For k independent bits -> 7^k.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5138,22 +6748,16 @@ The condition is parity only. Compare the least-significant bit of the index and
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ Example: a = [3,2,7,6]
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ index      0    1    2    3
 ├─ index LSB  0    1    0    1
@@ -5164,15 +6768,43 @@ STEP 2
 │
 ▼
 
-STEP 3
+STEP 3 — MAKE THE DECISION
 │
 ├─ odd value at even index  = 2
 ├─ Even value at odd index  = 2
 ├─ Each swap consumes one of each -> answer = 2.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5235,6 +6867,36 @@ Split equation into independent bit columns
 
 **Core method:** for each bit, write the 0/1 truth table, derive allowed states, set answer bit, then verify.
 
+### Bit-by-bit form example
+
+```text
+Construct minimum x such that:
+
+x | A = B
+
+A = 0101
+B = 1101
+
+bit      3 2 1 0
+A        0 1 0 1
+B        1 1 0 1
+x        ? ? ? ?
+
+bit3: 0 | ? must become 1 → x3 = 1
+bit2: 1 already gives 1      → x2 = 0
+bit1: target is 0            → x1 = 0
+bit0: 1 already gives 1      → x0 = 0
+
+x       = 1000
+A       = 0101
+          |
+          ────
+B       = 1101
+```
+
+**Pattern:** convert the equation into one tiny constraint per bit.
+
+
 <a id="form-15-problem-1"></a>
 
 ## Problem 1 — [1903B — StORage room](https://codeforces.com/problemset/problem/1903/B)
@@ -5258,16 +6920,10 @@ Need `a[i] | a[j] = M[i][j]`. For each i, AND all M[i][j] over j!=i to build the
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ One bit only, three nodes:
 ├─ M01=1, M02=0, M12=1
@@ -5278,13 +6934,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ Construction followed by full verification catches inconsistent matrices.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5342,16 +7026,10 @@ Given b[i]=a[i]&a[i+1], construct a. A standard candidate uses OR of adjacent co
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ b=[2,0]
 ├─ 2=10, 0=00
@@ -5364,9 +7042,37 @@ STEP 1
 ├─ a1&a2=10&00=00 = b1
 ├─ works.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5429,16 +7135,10 @@ Choose y[i] so `(x[i] xor y[i]) & (x[i+1] xor y[i+1]) = x[i] xor y[i]`. This mea
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ previous transformed p=1011
 ├─ current x=0010
@@ -5451,9 +7151,37 @@ STEP 1
 ├─ x^y=0010^1001=1011
 ├─ Now p & z =1011 = p.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5508,16 +7236,10 @@ OR can only add 1-bits. A book is usable only if all its 1-bits are already allo
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ target x=101
 ├─ book v=001: 001|101=101 -> safe
@@ -5527,14 +7249,42 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ book 010 would be forbidden:
 ├─ 010|101=111 !=101, and OR could never remove that bit1.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5595,6 +7345,34 @@ Count zeros/ones per bit
 
 **Core idea:** independent contribution of every bit.
 
+### Bit-by-bit form example
+
+```text
+At bit b = 3, four numbers have:
+
+values   A B C D
+bit3     0 1 0 1
+
+zeros = 2
+ones  = 2
+
+XOR is 1 only for opposite bits:
+
+0 ^ 1 = 1
+1 ^ 0 = 1
+
+opposite pairs = zeros × ones
+               = 2 × 2
+               = 4
+
+Each contributes 2^3 = 8.
+
+bit3 contribution = 4 × 8 = 32
+```
+
+**Pattern:** pairwise XOR contribution per bit = `zeros × ones × 2^b`.
+
+
 <a id="form-16-problem-1"></a>
 
 ## Problem 1 — [1421A — XORwice](https://codeforces.com/problemset/problem/1421/A)
@@ -5619,28 +7397,22 @@ Minimize `(a xor x) + (b xor x)`. At every bit where both `a` and `b` are 1, bot
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=5=101, b=3=011
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ a^b = 110 = 6
 │
 ▼
 
-STEP 3
+STEP 3 — MAKE THE DECISION
 │
 ├─ Try x = a&b = 001:
 ├─ a^x = 100 = 4
@@ -5657,9 +7429,37 @@ STEP 4
 ├─ bit0: 1/1 -> choose x=1 -> both become 0
 ├─ Total = 6.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5705,16 +7505,10 @@ Only differing bits of a and b matter. Keep the highest differing bit unchanged 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=10=1010, b=3=0011. a>b.
 ├─ Highest differing bit is bit3:
@@ -5724,16 +7518,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ x starts 0000. If 0001<=r, choose it:
 ├─ a^x=1011=11
 ├─ b^x=0010=2
 ├─ Here it increased gap, so direction of lower bits matters: flip only bits where the larger number has 1 and smaller has 0, subject to r. Process from high to low.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5793,16 +7615,10 @@ The appended value is XOR of all original values. XORing the final array gives z
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ Example final array: [4,3,2,5]
 ├─ 4=100
@@ -5816,13 +7632,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The full XOR is 0 because original-XOR x appears once in addition to the originals whose XOR is x. A valid x can be obtained using the problem's guaranteed construction; the standard implementation XORs the required subset relation.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5872,16 +7716,10 @@ Partition into at least two segments with equal XOR. If total XOR is 0, two part
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,3]
 ├─ 1=01,2=10,3=11
@@ -5889,7 +7727,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If total S!=0, look for:
 ├─ segment1 XOR=S
@@ -5897,9 +7735,37 @@ STEP 2
 ├─ then remaining XOR = S^S^S = S,
 ├─ so three segments have equal XOR.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -5969,6 +7835,35 @@ Count ones and zeros
 
 **Core idea:** multiply number of qualifying pairs by `2^b`.
 
+### Bit-by-bit form example
+
+```text
+One bit column:
+
+bits = [1, 1, 1, 0]
+
+ones  = 3
+zeros = 1
+total pairs = C(4,2) = 6
+
+AND:
+only (1,1) produces 1
+active pairs = C(3,2) = 3
+
+OR:
+only (0,0) produces 0
+active pairs = 6 - C(1,2)
+             = 6
+
+If b = 2, value = 2^2 = 4
+
+AND contribution = 3 × 4 = 12
+OR  contribution = 6 × 4 = 24
+```
+
+**Pattern:** count qualifying pairs in each bit column.
+
+
 <a id="form-17-problem-1"></a>
 
 ## Problem 1 — [1514B — AND 0, Sum Big](https://codeforces.com/problemset/problem/1514/B)
@@ -5992,16 +7887,10 @@ For every bit position, not all n numbers may have that bit=1, otherwise total A
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n=3, one bit column has 2^3=8 assignments:
 ├─ 000 001 010 011 100 101 110 111
@@ -6009,9 +7898,37 @@ STEP 1
 ├─ So 7 valid assignments per bit.
 ├─ For k independent bits -> 7^k.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6068,16 +7985,10 @@ To put bit b into the final AND, every element must have bit b=1. Cost is the nu
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[2,1,1], k=2
 ├─ 2=10
@@ -6086,7 +7997,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ bit1 column: 1,0,0 -> need 2 operations
 ├─ k=2 -> buy bit1
@@ -6094,9 +8005,37 @@ STEP 2
 ├─ AND =10 =2
 ├─ No budget remains.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6154,16 +8093,10 @@ Need `a[i] | a[j] = M[i][j]`. For each i, AND all M[i][j] over j!=i to build the
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ One bit only, three nodes:
 ├─ M01=1, M02=0, M12=1
@@ -6174,13 +8107,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ Construction followed by full verification catches inconsistent matrices.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6238,16 +8199,10 @@ Given b[i]=a[i]&a[i+1], construct a. A standard candidate uses OR of adjacent co
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ b=[2,0]
 ├─ 2=10, 0=00
@@ -6260,9 +8215,37 @@ STEP 1
 ├─ a1&a2=10&00=00 = b1
 ├─ works.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6336,6 +8319,44 @@ Ask: what cannot distinguish the operations?
 
 **Core habit:** test parity, XOR-total, sum parity, bit counts, gcd, or another invariant before simulating states.
 
+### Bit-by-bit form example
+
+```text
+Allowed operation:
+
+d = d + a
+or
+d = d ^ a
+
+Example:
+d = 5 = 101
+a = 3 = 011
+
+Addition:
+
+d       = 0101
+a       = 0011
+          +
+          ────
+result  = 1000
+LSB       0
+
+XOR:
+
+d       = 0101
+a       = 0011
+          ^
+          ────
+result  = 0110
+LSB       0
+
+Different full values,
+same parity.
+```
+
+**Pattern:** when operations branch, search for a property conserved by every branch.
+
+
 <a id="form-18-problem-1"></a>
 
 ## Problem 1 — [1805A — We Need the Zero](https://codeforces.com/problemset/problem/1805/A)
@@ -6359,16 +8380,10 @@ Let S be XOR of the array. After XORing every element with x, total becomes `S ^
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,5]
 ├─ 1=001
@@ -6379,16 +8394,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ 001^110=111
 ├─ 010^110=100
 ├─ 101^110=011
 ├─ 111^100^011=000.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6441,16 +8484,10 @@ Partition into at least two segments with equal XOR. If total XOR is 0, two part
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,3]
 ├─ 1=01,2=10,3=11
@@ -6458,7 +8495,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If total S!=0, look for:
 ├─ segment1 XOR=S
@@ -6466,9 +8503,37 @@ STEP 2
 ├─ then remaining XOR = S^S^S = S,
 ├─ so three segments have equal XOR.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6532,16 +8597,10 @@ The appended value is XOR of all original values. XORing the final array gives z
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ Example final array: [4,3,2,5]
 ├─ 4=100
@@ -6555,13 +8614,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The full XOR is 0 because original-XOR x appears once in addition to the originals whose XOR is x. A valid x can be obtained using the problem's guaranteed construction; the standard implementation XORs the required subset relation.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6611,16 +8698,10 @@ Choose y[i] so `(x[i] xor y[i]) & (x[i+1] xor y[i+1]) = x[i] xor y[i]`. This mea
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ previous transformed p=1011
 ├─ current x=0010
@@ -6633,9 +8714,37 @@ STEP 1
 ├─ x^y=0010^1001=1011
 ├─ Now p & z =1011 = p.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6697,6 +8806,36 @@ Try bits high → low
 
 **Core method:** tentatively take a high bit if constraints/budget still permit a valid solution.
 
+### Bit-by-bit form example
+
+```text
+Suppose only one bit can be chosen.
+
+High bit:
+1000 = 8
+
+ALL lower bits together:
+0111 = 7
+
+Therefore:
+
+1000
+>
+0111
+
+Greedy decision:
+
+bit3 (8) → try first
+bit2 (4)
+bit1 (2)
+bit0 (1)
+
+A successful higher bit dominates every possible lower-bit combination.
+```
+
+**Pattern:** maximizing a binary number usually means deciding from MSB to LSB.
+
+
 <a id="form-19-problem-1"></a>
 
 ## Problem 1 — [1669H — Maximal AND](https://codeforces.com/problemset/problem/1669/H)
@@ -6721,16 +8860,10 @@ To put bit b into the final AND, every element must have bit b=1. Cost is the nu
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[2,1,1], k=2
 ├─ 2=10
@@ -6739,7 +8872,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ bit1 column: 1,0,0 -> need 2 operations
 ├─ k=2 -> buy bit1
@@ -6747,9 +8880,37 @@ STEP 2
 ├─ AND =10 =2
 ├─ No budget remains.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6807,16 +8968,10 @@ Only differing bits of a and b matter. Keep the highest differing bit unchanged 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=10=1010, b=3=0011. a>b.
 ├─ Highest differing bit is bit3:
@@ -6826,16 +8981,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ x starts 0000. If 0001<=r, choose it:
 ├─ a^x=1011=11
 ├─ b^x=0010=2
 ├─ Here it increased gap, so direction of lower bits matters: flip only bits where the larger number has 1 and smaller has 0, subject to r. Process from high to low.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6895,16 +9078,10 @@ For maximum `k<n` with `n & (n-1) & ... & k = 0`, find the highest power of two 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 10 = 1010
 ├─ highest power of 2 <= n = 8 = 1000
@@ -6912,14 +9089,42 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The interval 10,9,8,7 contains values that clear every bit in the cumulative AND.
 ├─ The boundary is determined by the MSB of n.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -6967,16 +9172,10 @@ A valid pair is characterized by the same highest set bit. Group numbers into MS
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[4,5,6,9]
 ├─ 4=0100 -> MSB2
@@ -6986,15 +9185,43 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ MSB2 bucket size=3 -> C(3,2)=3
 ├─ MSB3 bucket size=1 -> 0
 ├─ answer=3.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7057,6 +9284,32 @@ Prefix count each bit
 
 **Core complexity:** preprocessing `O(N·B)`, each query `O(B)`.
 
+### Bit-by-bit form example
+
+```text
+a = [5,2,7]
+
+5 = 101
+2 = 010
+7 = 111
+
+Prefix count for bit0:
+
+index        0  1  2
+value        5  2  7
+bit0         1  0  1
+prefix    0  1  1  2
+
+How many bit0=1 in range [1..2]?
+
+pref[3] - pref[1]
+= 2 - 1
+= 1
+```
+
+**Pattern:** per-bit prefix counts answer range bit-frequency queries by subtraction.
+
+
 <a id="form-20-problem-1"></a>
 
 ## Problem 1 — [1872E — Data Structures Fan](https://codeforces.com/problemset/problem/1872/E)
@@ -7080,16 +9333,10 @@ Maintain XOR of the two groups defined by a binary string. Flipping a whole subs
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,3], s=010
 ├─ binary: 1=01,2=10,3=11
@@ -7098,7 +9345,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ Flip [1,2] (0-based values 2,3): segment XOR=2^3=01
 ├─ Both group XORs ^=01:
@@ -7106,9 +9353,37 @@ STEP 2
 ├─ g1:10^01=11=3
 ├─ Membership swapped only inside range.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7183,16 +9458,10 @@ For each bit independently, choose the majority bit to minimize total differing 
 2. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 3. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ numbers:
 ├─ 1011
@@ -7201,7 +9470,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ bit3:1,1,0 -> ones2 -> answer bit=1
 ├─ bit2:0,1,1 -> ones2 -> 1
@@ -7209,9 +9478,37 @@ STEP 2
 ├─ bit0:1,0,1 -> ones2 -> 1
 ├─ answer=1111.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7266,16 +9563,10 @@ To put bit b into the final AND, every element must have bit b=1. Cost is the nu
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[2,1,1], k=2
 ├─ 2=10
@@ -7284,7 +9575,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ bit1 column: 1,0,0 -> need 2 operations
 ├─ k=2 -> buy bit1
@@ -7292,9 +9583,37 @@ STEP 2
 ├─ AND =10 =2
 ├─ No budget remains.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7353,16 +9672,10 @@ Partition into at least two segments with equal XOR. If total XOR is 0, two part
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[1,2,3]
 ├─ 1=01,2=10,3=11
@@ -7370,7 +9683,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ If total S!=0, look for:
 ├─ segment1 XOR=S
@@ -7378,9 +9691,37 @@ STEP 2
 ├─ then remaining XOR = S^S^S = S,
 ├─ so three segments have equal XOR.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7450,6 +9791,41 @@ Find common binary prefix of L and R
 
 **Core method:** right-shift `L` and `R` until equal; shift the common prefix back.
 
+### Bit-by-bit form example
+
+```text
+Range AND of [12..15]
+
+12 = 1100
+13 = 1101
+14 = 1110
+15 = 1111
+     ^^
+     common prefix
+
+AND:
+
+1100
+1101
+1110
+1111
+----
+1100
+
+Endpoint shifting:
+
+12 = 1100    15 = 1111
+     >>1          >>1
+ 6 = 110      7 = 111
+     >>1          >>1
+ 3 = 11       3 = 11  ← same
+
+11 << 2 = 1100
+```
+
+**Pattern:** range AND preserves only the common binary prefix.
+
+
 <a id="form-21-problem-1"></a>
 
 ## Problem 1 — [1527A — And Then There Were K](https://codeforces.com/problemset/problem/1527/A)
@@ -7473,16 +9849,10 @@ For maximum `k<n` with `n & (n-1) & ... & k = 0`, find the highest power of two 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 10 = 1010
 ├─ highest power of 2 <= n = 8 = 1000
@@ -7490,14 +9860,42 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ The interval 10,9,8,7 contains values that clear every bit in the cumulative AND.
 ├─ The boundary is determined by the MSB of n.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7545,16 +9943,10 @@ A valid pair is characterized by the same highest set bit. Group numbers into MS
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[4,5,6,9]
 ├─ 4=0100 -> MSB2
@@ -7564,15 +9956,43 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ MSB2 bucket size=3 -> C(3,2)=3
 ├─ MSB3 bucket size=1 -> 0
 ├─ answer=3.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7629,16 +10049,10 @@ To put bit b into the final AND, every element must have bit b=1. Cost is the nu
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=[2,1,1], k=2
 ├─ 2=10
@@ -7647,7 +10061,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ bit1 column: 1,0,0 -> need 2 operations
 ├─ k=2 -> buy bit1
@@ -7655,9 +10069,37 @@ STEP 2
 ├─ AND =10 =2
 ├─ No budget remains.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7715,16 +10157,10 @@ A number has no odd divisor greater than 1 exactly when it is a power of two. Us
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n = 8
 ├─ 8   = 1000
@@ -7733,16 +10169,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ n = 12
 ├─ 12  = 1100
 ├─ 11  = 1011
 ├─ &     1000 -> more than one set bit -> has odd factor 3 -> YES.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7793,6 +10257,32 @@ Build all-ones width mask
 
 **Core tools:** `mask=(1LL<<k)-1`, `partner=x^mask`.
 
+### Bit-by-bit form example
+
+```text
+Use exactly 5 bits.
+
+x       = 10110
+mask    = 11111
+          ^
+          ─────
+comp    = 01001
+
+Every bit flips:
+
+1 → 0
+0 → 1
+1 → 0
+1 → 0
+0 → 1
+
+Fixed-width mask:
+(1 << 5) - 1 = 11111
+```
+
+**Pattern:** XOR with an all-ones mask complements only the chosen width.
+
+
 <a id="form-22-problem-1"></a>
 
 ## Problem 1 — [1926D — Vlad and Division](https://codeforces.com/problemset/problem/1926/D)
@@ -7817,16 +10307,10 @@ Two values can pair when their lowest 31 bits are opposite. Partner is `x xor ((
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ 5-bit illustration:
 ├─ x=10110
@@ -7835,7 +10319,7 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ 10110
 ├─ 01001
@@ -7843,9 +10327,37 @@ STEP 2
 ├─ every column is 1/0 or 0/1.
 ├─ If partner already waits, pair them; otherwise start a new group with x.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7904,28 +10416,22 @@ Minimize `(a xor x) + (b xor x)`. At every bit where both `a` and `b` are 1, bot
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=5=101, b=3=011
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ a^b = 110 = 6
 │
 ▼
 
-STEP 3
+STEP 3 — MAKE THE DECISION
 │
 ├─ Try x = a&b = 001:
 ├─ a^x = 100 = 4
@@ -7942,9 +10448,37 @@ STEP 4
 ├─ bit0: 1/1 -> choose x=1 -> both become 0
 ├─ Total = 6.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -7990,16 +10524,10 @@ Only differing bits of a and b matter. Keep the highest differing bit unchanged 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ a=10=1010, b=3=0011. a>b.
 ├─ Highest differing bit is bit3:
@@ -8009,16 +10537,44 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ x starts 0000. If 0001<=r, choose it:
 ├─ a^x=1011=11
 ├─ b^x=0010=2
 ├─ Here it increased gap, so direction of lower bits matters: flip only bits where the larger number has 1 and smaller has 0, subject to r. Process from high to low.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8078,16 +10634,10 @@ Find positive x such that XORing every set element by x produces the same set. T
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ S={1,2,3,4}
 ├─ Try x=5 (101):
@@ -8096,13 +10646,41 @@ STEP 1
 │
 ▼
 
-STEP 2
+STEP 2 — TRACE THE BIT RULE
 │
 ├─ For a candidate x, every bit where x has 1 toggles that column for all numbers. The transformed collection must exactly match the original collection.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8170,6 +10748,34 @@ for mask = 0 .. (1<<n)-1
 
 **Core complexity:** `O(2^n · n)`.
 
+### Bit-by-bit form example
+
+```text
+Three items: A, B, C
+
+mask bits:
+bit2 bit1 bit0
+ C    B    A
+
+000 → {}
+001 → {A}
+010 → {B}
+011 → {A,B}
+100 → {C}
+101 → {A,C}
+110 → {B,C}
+111 → {A,B,C}
+
+Example mask = 101:
+
+101
+↑ ↑
+C A selected
+```
+
+**Pattern:** one `n`-bit number represents one subset of `n` items.
+
+
 <a id="form-23-problem-1"></a>
 
 ## Problem 1 — [1097B — Petr and a Combination Lock](https://codeforces.com/problemset/problem/1097/B)
@@ -8193,16 +10799,10 @@ Each angle has two choices: + or -. Encode the choice for angle i in bit i of a 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n=3, angles=[10,20,30]
 ├─ mask=101
@@ -8212,9 +10812,37 @@ STEP 1
 ├─ sum=20, not divisible by360.
 ├─ Try every mask 000..111 until one gives sum%360=0.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8264,16 +10892,10 @@ Enumerate every subset. A mask chooses problems; test count>=2, total difficulty
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ d=[800,1000,1300], mask=101
 ├─ chosen bits: problem0 and problem2
@@ -8282,9 +10904,37 @@ STEP 1
 ├─ max-min=1300-800=500
 ├─ Check all three conditions. Each mask is one candidate team.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8338,16 +10988,10 @@ Encode vitamins A,B,C as bits 0,1,2. Each juice is a mask. OR combines acquired 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ A=001,B=010,C=100
 ├─ juice AB ->011 cost5
@@ -8356,9 +11000,37 @@ STEP 1
 ├─ 011 |100 =111
 ├─ cost=8, all vitamins covered.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8412,16 +11084,10 @@ Two skills are a 2-bit mask: 01,10,11. Keep cheapest cost for each mask. Answer 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ book1 skill 10 cost4 -> mask2
 ├─ book2 skill 01 cost3 -> mask1
@@ -8429,9 +11095,37 @@ STEP 1
 ├─ Combine mask2|mask1=11 cost7
 ├─ min(7,10)=7.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8500,6 +11194,39 @@ Encode state as bits
 
 **Core operation:** combine states using OR.
 
+### Bit-by-bit form example
+
+```text
+Skills:
+A = 001
+B = 010
+C = 100
+
+Current state has A:
+
+state   = 001
+
+Acquire C:
+
+state   = 001
+C       = 100
+          |
+          ───
+new     = 101
+
+Decode:
+bit2 = 1 → C ✓
+bit1 = 0 → B ✗
+bit0 = 1 → A ✓
+
+Acquire B:
+
+101 | 010 = 111
+```
+
+**Pattern:** a mask stores many yes/no states in one integer.
+
+
 <a id="form-24-problem-1"></a>
 
 ## Problem 1 — [1042B — Vitamins](https://codeforces.com/problemset/problem/1042/B)
@@ -8524,16 +11251,10 @@ Encode vitamins A,B,C as bits 0,1,2. Each juice is a mask. OR combines acquired 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ A=001,B=010,C=100
 ├─ juice AB ->011 cost5
@@ -8542,9 +11263,37 @@ STEP 1
 ├─ 011 |100 =111
 ├─ cost=8, all vitamins covered.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8598,16 +11347,10 @@ Two skills are a 2-bit mask: 01,10,11. Keep cheapest cost for each mask. Answer 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ book1 skill 10 cost4 -> mask2
 ├─ book2 skill 01 cost3 -> mask1
@@ -8615,9 +11358,37 @@ STEP 1
 ├─ Combine mask2|mask1=11 cost7
 ├─ min(7,10)=7.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8676,16 +11447,10 @@ Each angle has two choices: + or -. Encode the choice for angle i in bit i of a 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n=3, angles=[10,20,30]
 ├─ mask=101
@@ -8695,9 +11460,37 @@ STEP 1
 ├─ sum=20, not divisible by360.
 ├─ Try every mask 000..111 until one gives sum%360=0.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8747,16 +11540,10 @@ Enumerate every subset. A mask chooses problems; test count>=2, total difficulty
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ d=[800,1000,1300], mask=101
 ├─ chosen bits: problem0 and problem2
@@ -8765,9 +11552,37 @@ STEP 1
 ├─ max-min=1300-800=500
 ├─ Check all three conditions. Each mask is one candidate team.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8828,6 +11643,36 @@ Use (s-1) & mask
 
 **Core complexity:** all submasks of one mask = `O(2^k)` where `k=popcount(mask)`; over all masks often `O(3^n)`.
 
+### Bit-by-bit form example
+
+```text
+mask = 1011
+
+Enumerate only its submasks:
+
+s = 1011
+    ↓ (s-1)&mask
+    1010
+    ↓
+    1001
+    ↓
+    1000
+    ↓
+    0011
+    ↓
+    0010
+    ↓
+    0001
+    ↓
+    0000
+
+Notice bit2 of mask is 0,
+so bit2 is 0 in every submask.
+```
+
+**Pattern:** `s = (s-1) & mask` visits every submask and nothing outside the mask.
+
+
 <a id="form-25-problem-1"></a>
 
 ## Problem 1 — [1042B — Vitamins](https://codeforces.com/problemset/problem/1042/B)
@@ -8852,16 +11697,10 @@ Encode vitamins A,B,C as bits 0,1,2. Each juice is a mask. OR combines acquired 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ A=001,B=010,C=100
 ├─ juice AB ->011 cost5
@@ -8870,9 +11709,37 @@ STEP 1
 ├─ 011 |100 =111
 ├─ cost=8, all vitamins covered.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -8926,16 +11793,10 @@ Two skills are a 2-bit mask: 01,10,11. Keep cheapest cost for each mask. Answer 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ book1 skill 10 cost4 -> mask2
 ├─ book2 skill 01 cost3 -> mask1
@@ -8943,9 +11804,37 @@ STEP 1
 ├─ Combine mask2|mask1=11 cost7
 ├─ min(7,10)=7.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -9004,16 +11893,10 @@ Enumerate every subset. A mask chooses problems; test count>=2, total difficulty
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ d=[800,1000,1300], mask=101
 ├─ chosen bits: problem0 and problem2
@@ -9022,9 +11905,37 @@ STEP 1
 ├─ max-min=1300-800=500
 ├─ Check all three conditions. Each mask is one candidate team.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -9077,16 +11988,10 @@ Each angle has two choices: + or -. Encode the choice for angle i in bit i of a 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n=3, angles=[10,20,30]
 ├─ mask=101
@@ -9096,9 +12001,37 @@ STEP 1
 ├─ sum=20, not divisible by360.
 ├─ Try every mask 000..111 until one gives sum%360=0.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -9160,6 +12093,42 @@ DP[mask]
 
 **Core pattern:** transition from `mask` to `mask | (1<<i)` and keep the best value.
 
+### Bit-by-bit form example
+
+```text
+Goal: collect A,B,C with minimum cost.
+
+A=001, B=010, C=100
+
+dp[mask] = cheapest cost to reach mask
+
+Start:
+dp[000] = 0
+
+Buy AB=011 for 5:
+
+000 | 011 = 011
+dp[011] = 5
+
+Then buy C=100 for 3:
+
+011 | 100 = 111
+dp[111] = 8
+
+State path:
+
+000
+ │ +011 (5)
+ ▼
+011
+ │ +100 (3)
+ ▼
+111  ← goal
+```
+
+**Pattern:** bitmask DP = compact state + transitions + best value per state.
+
+
 <a id="form-26-problem-1"></a>
 
 ## Problem 1 — [1042B — Vitamins](https://codeforces.com/problemset/problem/1042/B)
@@ -9184,16 +12153,10 @@ Encode vitamins A,B,C as bits 0,1,2. Each juice is a mask. OR combines acquired 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ A=001,B=010,C=100
 ├─ juice AB ->011 cost5
@@ -9202,9 +12165,37 @@ STEP 1
 ├─ 011 |100 =111
 ├─ cost=8, all vitamins covered.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -9258,16 +12249,10 @@ Two skills are a 2-bit mask: 01,10,11. Keep cheapest cost for each mask. Answer 
 4. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 5. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ book1 skill 10 cost4 -> mask2
 ├─ book2 skill 01 cost3 -> mask1
@@ -9275,9 +12260,37 @@ STEP 1
 ├─ Combine mask2|mask1=11 cost7
 ├─ min(7,10)=7.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -9336,16 +12349,10 @@ Each angle has two choices: + or -. Encode the choice for angle i in bit i of a 
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ n=3, angles=[10,20,30]
 ├─ mask=101
@@ -9355,9 +12362,37 @@ STEP 1
 ├─ sum=20, not divisible by360.
 ├─ Try every mask 000..111 until one gives sum%360=0.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
@@ -9407,16 +12442,10 @@ Enumerate every subset. A mask chooses problems; test count>=2, total difficulty
 3. Write the relevant values in binary and inspect only the bit positions that affect the condition.
 4. Apply the rule shown in the dry run below, then implement the same decision with bit operations.
 
-### Bit-by-bit ASCII dry run
+### Bit-by-bit dry run — understand it, then code it
 
 ```text
-READ THE EXAMPLE AS BIT COLUMNS
--------------------------------
-decimal value  -> binary switches
-bit = 1        -> switch ON
-bit = 0        -> switch OFF
-
-STEP 1
+STEP 1 — WRITE THE SMALL EXAMPLE
 │
 ├─ d=[800,1000,1300], mask=101
 ├─ chosen bits: problem0 and problem2
@@ -9425,9 +12454,37 @@ STEP 1
 ├─ max-min=1300-800=500
 ├─ Check all three conditions. Each mask is one candidate team.
 
-RESULT
-```
+FINAL RESULT
 
+────────────────────────────────────────
+HOW TO TURN THIS DRY RUN INTO CODE
+────────────────────────────────────────
+
+1. Identify the STATE / VARIABLE that changed in the trace.
+   Examples: xr, mask, ans, count, prefix, current bit, remaining k.
+
+2. Identify the BIT TEST / TRANSITION used above.
+   Translate that exact line into one C++ expression.
+
+3. Identify the DECISION.
+   The final YES/NO, answer bit, count, or constructed value comes
+   directly from the state after the last step.
+
+4. While coding, keep the same order as this dry run:
+
+   READ INPUT
+       ↓
+   BUILD / UPDATE BIT STATE
+       ↓
+   APPLY THE FORM'S BIT RULE
+       ↓
+   CHECK THE CONDITION
+       ↓
+   PRINT / STORE THE ANSWER
+
+The C++ solution immediately below implements this same flow.
+
+```
 ### C++ solution
 
 ```cpp
