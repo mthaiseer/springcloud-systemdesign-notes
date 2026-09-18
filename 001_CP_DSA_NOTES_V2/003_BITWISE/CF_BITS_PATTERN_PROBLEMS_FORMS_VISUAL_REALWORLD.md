@@ -169,6 +169,38 @@
 
 # Form 1 — Parity / LSB
 
+## Form explained visually
+
+**What this form means:** Only the last binary bit matters. `0` means even, `1` means odd.
+
+**Daily-life mapping — odd/even parking gates**
+```text
+Car number             Binary tail          Gate
+----------------------------------------------------
+12 = ...1100               0              EVEN gate
+13 = ...1101               1              ODD gate
+
+Number
+  │
+  ▼
+Look only at bit 0
+  │
+  ├── 0 → EVEN
+  └── 1 → ODD
+```
+
+**Recognition signal**
+```text
+odd / even / parity
+index parity must match value parity
+operation changes parity
+divisible by 2
+        ↓
+Think: LSB
+```
+
+**Core tools:** `x & 1`, `(x & 1) == (y & 1)`.
+
 <a id="form-1-problem-1"></a>
 
 ## Problem 1 — [1367B — Even Array](https://codeforces.com/problemset/problem/1367/B)
@@ -495,6 +527,31 @@ int main(){
 
 # Form 2 — Power of Two / Remove Lowest Set Bit
 
+## Form explained visually
+
+**What this form means:** A power of two has exactly one `1` bit. `x & (x-1)` removes the lowest set bit.
+
+**Daily-life mapping — one light ON**
+```text
+8  = 1000   → exactly ONE light ON → power of 2
+12 = 1100   → TWO lights ON        → not power of 2
+
+12        1100
+11        1011
+AND       1000   ← lowest ON light removed
+```
+
+**Recognition signal**
+```text
+power of two / exactly one set bit
+repeatedly remove a set bit
+odd divisor after removing powers of 2
+        ↓
+Think: x & (x-1)
+```
+
+**Core tools:** `x > 0 && (x & (x-1)) == 0`, `x &= x-1`.
+
 <a id="form-2-problem-1"></a>
 
 ## Problem 1 — [1475A — Odd Divisor](https://codeforces.com/problemset/problem/1475/A)
@@ -801,6 +858,37 @@ int main(){
 <a id="form-3"></a>
 
 # Form 3 — Kth-bit Masking
+
+## Form explained visually
+
+**What this form means:** Inspect, set, clear, or toggle one chosen bit without disturbing the others.
+
+**Daily-life mapping — apartment switchboard**
+```text
+bits:     b3 b2 b1 b0
+number:    1  0  1  0
+                 ↑
+              inspect b1
+
+mask = 1 << 1 = 0010
+
+CHECK : x & mask
+SET   : x | mask
+CLEAR : x & ~mask
+TOGGLE: x ^ mask
+```
+
+**Recognition signal**
+```text
+"for every bit"
+"does bit k exist?"
+"make bit k = 1"
+"flip bit k"
+        ↓
+Build mask 1 << k
+```
+
+**Core tools:** `1LL<<k`, `x&(1LL<<k)`, `x|=1LL<<k`, `x^=1LL<<k`.
 
 <a id="form-3-problem-1"></a>
 
@@ -1122,6 +1210,34 @@ cout<<(dp[7]>=INF?-1:dp[7])<<'\n';
 <a id="form-4"></a>
 
 # Form 4 — XOR Cancellation
+
+## Form explained visually
+
+**What this form means:** Equal XOR values cancel: `x ^ x = 0`, and `x ^ 0 = x`.
+
+**Daily-life mapping — matching socks**
+```text
+A ^ A → pair disappears
+B ^ B → pair disappears
+
+A A B B C
+↓ ↓ ↓ ↓ ↓
+0   0   C
+        ↓
+only C remains
+```
+
+**Recognition signal**
+```text
+pairs / duplicates
+one value appears differently
+same value applied twice
+undo an XOR
+        ↓
+Think: cancellation
+```
+
+**Core tools:** accumulate with `xr ^= x`.
 
 <a id="form-4-problem-1"></a>
 
@@ -1471,6 +1587,34 @@ cout<<'\n';
 
 # Form 5 — Global XOR / Solve for X
 
+## Form explained visually
+
+**What this form means:** Collapse the whole array into one XOR equation, then isolate the unknown using XOR again.
+
+**Daily-life mapping — checksum equation**
+```text
+known checksum S
+unknown mask   X
+
+S ^ X = target
+    │
+XOR S on both sides
+    ▼
+X = S ^ target
+```
+
+**Recognition signal**
+```text
+same x XORed with many elements
+find x
+whole-array XOR condition
+target XOR must become 0/value
+        ↓
+Collapse globally first
+```
+
+**Core tools:** XOR all elements; use associativity and self-inverse property.
+
 <a id="form-5-problem-1"></a>
 
 ## Problem 1 — [1805A — We Need the Zero](https://codeforces.com/problemset/problem/1805/A)
@@ -1799,6 +1943,29 @@ cout<<(cnt>=2?"YES":"NO")<<'\n';
 
 # Form 6 — XOR 1..N Cycle
 
+## Form explained visually
+
+**What this form means:** `0 ^ 1 ^ ... ^ n` repeats a four-case pattern based on `n % 4`.
+
+**Daily-life mapping — four-stop circular bus**
+```text
+n % 4:   0      1      2      3
+answer:  n      1     n+1     0
+          └──────── repeats ────────┘
+```
+
+**Recognition signal**
+```text
+XOR of 1..n
+XOR of 0..n
+consecutive XOR from 1
+huge n, cannot loop
+        ↓
+Think: 4-cycle
+```
+
+**Core tool:** prefix-XOR formula by `n & 3`.
+
 <a id="form-6-problem-1"></a>
 
 ## Problem 1 — [1567B — MEXor Mixup](https://codeforces.com/problemset/problem/1567/B)
@@ -2103,6 +2270,35 @@ cout<<"NO\n";
 <a id="form-7"></a>
 
 # Form 7 — Prefix XOR
+
+## Form explained visually
+
+**What this form means:** Precompute XOR from the start so any range XOR is answered in O(1).
+
+**Daily-life mapping — cumulative security checksum**
+```text
+a:      [a0] [a1] [a2] [a3] [a4]
+prefix:  0 → p1 → p2 → p3 → p4 → p5
+
+Want XOR [L..R]
+
+prefix before L  ^  prefix through R
+        │                    │
+        └──── common part cancels ────┘
+
+rangeXor = px[R+1] ^ px[L]
+```
+
+**Recognition signal**
+```text
+many [L,R] XOR queries
+subarray XOR repeatedly
+Q up to 1e5
+        ↓
+Think: Prefix XOR
+```
+
+**Core tool:** `px[i+1] = px[i] ^ a[i]`.
 
 <a id="form-7-problem-1"></a>
 
@@ -2452,6 +2648,34 @@ int main(){
 
 # Form 8 — XOR Difference Mask / Hamming Bits
 
+## Form explained visually
+
+**What this form means:** `a ^ b` marks exactly the bit positions where `a` and `b` differ.
+
+**Daily-life mapping — compare two switchboards**
+```text
+A       101101
+B       100011
+XOR     001110
+          ↑↑↑
+       different switches
+
+0 in XOR → same
+1 in XOR → different
+```
+
+**Recognition signal**
+```text
+which bits differ?
+minimum flips
+binary distance
+transform A into B
+        ↓
+Think: A ^ B
+```
+
+**Core tools:** `diff=a^b`, `__builtin_popcount(diff)`.
+
 <a id="form-8-problem-1"></a>
 
 ## Problem 1 — [1918C — XOR-distance](https://codeforces.com/problemset/problem/1918/C)
@@ -2786,6 +3010,33 @@ int main(){
 
 # Form 9 — Modulo 2^k = Binary Suffix
 
+## Form explained visually
+
+**What this form means:** Modulo `2^k` keeps exactly the last `k` binary bits.
+
+**Daily-life mapping — window showing only last k digits**
+```text
+x = 11010110
+
+mod 2   →       0
+mod 4   →      10
+mod 8   →     110
+mod 16  →    0110
+              ↑
+       suffix window grows
+```
+
+**Recognition signal**
+```text
+modulus must be power of two
+remainders under 2^k
+group by binary suffix
+        ↓
+Look at last k bits
+```
+
+**Core identity:** `x % (1<<k) == x & ((1<<k)-1)` for nonnegative `x`.
+
 <a id="form-9-problem-1"></a>
 
 ## Problem 1 — [1909B — Make Almost Equal With Mod](https://codeforces.com/problemset/problem/1909/B)
@@ -3096,6 +3347,34 @@ cout<<ans<<'\n';
 <a id="form-10"></a>
 
 # Form 10 — Highest Set Bit / MSB Grouping
+
+## Form explained visually
+
+**What this form means:** The highest `1` bit tells the magnitude class of a positive number.
+
+**Daily-life mapping — floors in a building**
+```text
+8..15   → MSB bit3 → floor 3
+4..7    → MSB bit2 → floor 2
+2..3    → MSB bit1 → floor 1
+1       → MSB bit0 → floor 0
+
+10 = 1010
+     ↑
+   highest 1 = bit3
+```
+
+**Recognition signal**
+```text
+group numbers by magnitude
+highest differing bit dominates
+same leading bit
+largest power of two <= x
+        ↓
+Think: MSB
+```
+
+**Core tools:** `63-__builtin_clzll(x)`, powers-of-two boundaries.
 
 <a id="form-10-problem-1"></a>
 
@@ -3423,6 +3702,35 @@ cout<<ans<<'\n';
 
 # Form 11 — Lowest Set Bit / 2-adic Structure
 
+## Form explained visually
+
+**What this form means:** The lowest `1` bit tells how many times a number is divisible by 2.
+
+**Daily-life mapping — trailing-zero staircase**
+```text
+40 = 101000
+          ↑
+      3 zeros
+
+40 / 2 = 20
+20 / 2 = 10
+10 / 2 = 5  ← odd
+
+lowest set bit = 8
+```
+
+**Recognition signal**
+```text
+trailing zeros
+divide by 2 repeatedly
+largest power of 2 dividing x
+first differing low bit
+        ↓
+Think: x & -x / ctz
+```
+
+**Core tools:** `x & -x`, `__builtin_ctzll(x)`.
+
 <a id="form-11-problem-1"></a>
 
 ## Problem 1 — [1475A — Odd Divisor](https://codeforces.com/problemset/problem/1475/A)
@@ -3734,6 +4042,31 @@ else cout<<n-1+mn<<'\n';
 
 # Form 12 — OR Monotonicity / Required Bits
 
+## Form explained visually
+
+**What this form means:** OR can turn `0→1`, but once a bit is `1`, OR cannot turn it back to `0`.
+
+**Daily-life mapping — permanent checklist**
+```text
+current features  00101
+new item          01010
+OR                01111
+
+Once checked ✓, OR never unchecks it.
+```
+
+**Recognition signal**
+```text
+build exact target using OR
+forbidden extra bits
+accumulate features
+once bad bit appears cannot remove
+        ↓
+Think: OR is monotonic
+```
+
+**Core condition:** an item is safe for target `x` when `(item | x) == x`.
+
 <a id="form-12-problem-1"></a>
 
 ## Problem 1 — [1842B — Tenzing and Books](https://codeforces.com/problemset/problem/1842/B)
@@ -4039,6 +4372,32 @@ cout<<(ans>=INF?-1:ans)<<'\n';
 <a id="form-13"></a>
 
 # Form 13 — AND Monotonicity / Maximal AND
+
+## Form explained visually
+
+**What this form means:** A bit survives AND only if every participating number has that bit set.
+
+**Daily-life mapping — unanimous team vote**
+```text
+Member A   1110
+Member B   1011
+Member C   1010
+AND        1010
+
+bit survives ⇔ EVERY member voted 1
+```
+
+**Recognition signal**
+```text
+maximize AND
+common bits
+all elements must contain bit
+adding more numbers can only remove 1s
+        ↓
+Think: unanimous bits
+```
+
+**Core idea:** evaluate candidate bits from high to low and ensure all required elements support them.
 
 <a id="form-13-problem-1"></a>
 
@@ -4364,6 +4723,37 @@ int main(){
 <a id="form-14"></a>
 
 # Form 14 — Bit Frequency / Majority Per Bit
+
+## Form explained visually
+
+**What this form means:** Count zeros/ones independently in each bit column.
+
+**Daily-life mapping — election per switch**
+```text
+numbers:
+101
+111
+001
+100
+---
+bit2 votes: 1 1 0 1 → majority 1
+bit1 votes: 0 1 0 0 → majority 0
+bit0 votes: 1 1 1 0 → majority 1
+
+result = 101
+```
+
+**Recognition signal**
+```text
+majority bit
+minimum changes per bit
+count how many numbers contain bit b
+construct answer column by column
+        ↓
+Think: frequency[bit]
+```
+
+**Core pattern:** loop bits, then loop elements and count `(x>>b)&1`.
 
 <a id="form-14-problem-1"></a>
 
@@ -4692,6 +5082,35 @@ cout<<(y==z?y:-1)<<'\n';
 
 # Form 15 — Bit-by-Bit Constraint Construction
 
+## Form explained visually
+
+**What this form means:** Construct an answer by deciding each bit independently from the constraints.
+
+**Daily-life mapping — building from a specification sheet**
+```text
+Specification:
+bit3 must be 1
+bit2 may be 0/1
+bit1 must be 0
+bit0 must be 1
+
+        ↓ decide column by column
+
+answer: 1 ? 0 1
+```
+
+**Recognition signal**
+```text
+construct x
+AND/OR/XOR equations
+requirements on individual bits
+need any valid answer
+        ↓
+Split equation into independent bit columns
+```
+
+**Core method:** for each bit, write the 0/1 truth table, derive allowed states, set answer bit, then verify.
+
 <a id="form-15-problem-1"></a>
 
 ## Problem 1 — [1903B — StORage room](https://codeforces.com/problemset/problem/1903/B)
@@ -5016,6 +5435,34 @@ int main(){
 <a id="form-16"></a>
 
 # Form 16 — Pairwise XOR Contribution
+
+## Form explained visually
+
+**What this form means:** For a fixed bit, pair XOR is 1 only when one number has 0 and the other has 1.
+
+**Daily-life mapping — pair people wearing opposite badges**
+```text
+At bit b:
+zeros = Z
+ones  = O
+
+valid opposite pairs = Z * O
+
+Each such pair contributes 2^b
+        ↓
+contribution = Z * O * 2^b
+```
+
+**Recognition signal**
+```text
+sum XOR over all pairs
+count pair contribution
+n too large for O(n²)
+        ↓
+Count zeros/ones per bit
+```
+
+**Core idea:** independent contribution of every bit.
 
 <a id="form-16-problem-1"></a>
 
@@ -5358,6 +5805,32 @@ cout<<(cnt>=2?"YES":"NO")<<'\n';
 
 # Form 17 — Pairwise AND / OR Contribution
 
+## Form explained visually
+
+**What this form means:** Count how many pairs activate each bit under AND or OR instead of checking every pair.
+
+**Daily-life mapping — two-person access rules**
+```text
+AND badge:
+both must have badge
+pairs = C(ones,2)
+
+OR badge:
+at least one has badge
+pairs = totalPairs - C(zeros,2)
+```
+
+**Recognition signal**
+```text
+sum AND/OR over all pairs
+O(n²) impossible
+pair contribution per bit
+        ↓
+Count ones and zeros
+```
+
+**Core idea:** multiply number of qualifying pairs by `2^b`.
+
 <a id="form-17-problem-1"></a>
 
 ## Problem 1 — [1514B — AND 0, Sum Big](https://codeforces.com/problemset/problem/1514/B)
@@ -5682,6 +6155,38 @@ int main(){
 <a id="form-18"></a>
 
 # Form 18 — Conservation / Operation Decoding
+
+## Form explained visually
+
+**What this form means:** When many operation choices look exponential, search for a property that all operations preserve or change identically.
+
+**Daily-life mapping — different roads, same destination color**
+```text
+Operation A ─┐
+             ├──► invariant stays SAME
+Operation B ─┘
+
+Example parity:
+(d + a) bit0 = d_bit0 XOR a_bit0
+(d ^ a) bit0 = d_bit0 XOR a_bit0
+
+Different operations
+        ↓
+same parity behavior
+        ↓
+track parity only
+```
+
+**Recognition signal**
+```text
+choose operation A or B repeatedly
+2^n possibilities
+only YES/NO or small property asked
+        ↓
+Ask: what cannot distinguish the operations?
+```
+
+**Core habit:** test parity, XOR-total, sum parity, bit counts, gcd, or another invariant before simulating states.
 
 <a id="form-18-problem-1"></a>
 
@@ -6009,6 +6514,34 @@ int main(){
 
 # Form 19 — Highest Bit -> Lowest Bit Greedy
 
+## Form explained visually
+
+**What this form means:** When higher bits are worth more than all lower bits combined, make decisions from MSB to LSB.
+
+**Daily-life mapping — choose banknotes first**
+```text
+bit value:
+2^5 = 32   ← decide first
+2^4 = 16
+2^3 =  8
+2^2 =  4
+2^1 =  2
+2^0 =  1
+
+A high-bit decision dominates lower-bit gains.
+```
+
+**Recognition signal**
+```text
+maximize/minimize integer
+budget to set bits
+lexicographically maximize binary answer
+        ↓
+Try bits high → low
+```
+
+**Core method:** tentatively take a high bit if constraints/budget still permit a valid solution.
+
 <a id="form-19-problem-1"></a>
 
 ## Problem 1 — [1669H — Maximal AND](https://codeforces.com/problemset/problem/1669/H)
@@ -6334,6 +6867,33 @@ cout<<ans<<'\n';
 <a id="form-20"></a>
 
 # Form 20 — Prefix Counts of Bits
+
+## Form explained visually
+
+**What this form means:** Build a prefix count for every bit so a range can instantly tell how many values have that bit set.
+
+**Daily-life mapping — attendance register per skill**
+```text
+          bit2 bit1 bit0
+prefix 0    0    0    0
+prefix 1    1    0    1
+prefix 2    1    1    2
+prefix 3    2    2    2
+
+count bit b in [L,R]
+= pref[R+1][b] - pref[L][b]
+```
+
+**Recognition signal**
+```text
+many range queries
+need count of set bits in [L,R]
+range AND/OR/XOR-related statistics
+        ↓
+Prefix count each bit
+```
+
+**Core complexity:** preprocessing `O(N·B)`, each query `O(B)`.
 
 <a id="form-20-problem-1"></a>
 
@@ -6692,6 +7252,32 @@ cout<<(cnt>=2?"YES":"NO")<<'\n';
 
 # Form 21 — Common Binary Prefix / Range AND
 
+## Form explained visually
+
+**What this form means:** AND of all integers in a range keeps only the leading bits that never change across the range.
+
+**Daily-life mapping — common address prefix**
+```text
+12 = 1100
+13 = 1101
+14 = 1110
+15 = 1111
+     ^^
+common stable prefix = 11
+changing suffix bits eventually AND to 0
+```
+
+**Recognition signal**
+```text
+AND of every number L..R
+common leading bits
+range crosses power-of-two boundary
+        ↓
+Find common binary prefix of L and R
+```
+
+**Core method:** right-shift `L` and `R` until equal; shift the common prefix back.
+
 <a id="form-21-problem-1"></a>
 
 ## Problem 1 — [1527A — And Then There Were K](https://codeforces.com/problemset/problem/1527/A)
@@ -7003,6 +7589,31 @@ int main(){
 <a id="form-22"></a>
 
 # Form 22 — Complement Within Fixed Width
+
+## Form explained visually
+
+**What this form means:** Flip every bit only inside a chosen width; do not accidentally flip infinitely many leading zeros.
+
+**Daily-life mapping — invert switches inside one control panel**
+```text
+width = 5
+x     = 10110
+mask  = 11111
+x^mask= 01001
+
+Only these 5 switches are inverted.
+```
+
+**Recognition signal**
+```text
+opposite bits
+binary complement partner
+flip lowest k/31 bits
+        ↓
+Build all-ones width mask
+```
+
+**Core tools:** `mask=(1LL<<k)-1`, `partner=x^mask`.
 
 <a id="form-22-problem-1"></a>
 
@@ -7344,6 +7955,33 @@ cout<<ans<<'\n';
 
 # Form 23 — Subset Enumeration
 
+## Form explained visually
+
+**What this form means:** A bitmask represents which items are selected; enumerate every subset when `n` is small.
+
+**Daily-life mapping — packing a travel bag**
+```text
+items:    A B C D
+mask:     1 0 1 1
+
+1 = pack item
+0 = leave item
+
+1011 → choose A, C, D
+```
+
+**Recognition signal**
+```text
+n around 20
+choose any subset
+try all combinations
+include/exclude each item
+        ↓
+for mask = 0 .. (1<<n)-1
+```
+
+**Core complexity:** `O(2^n · n)`.
+
 <a id="form-23-problem-1"></a>
 
 ## Problem 1 — [1097B — Petr and a Combination Lock](https://codeforces.com/problemset/problem/1097/B)
@@ -7634,6 +8272,36 @@ cout<<(ans>=INF?-1:ans)<<'\n';
 <a id="form-24"></a>
 
 # Form 24 — Bitmask as State
+
+## Form explained visually
+
+**What this form means:** Several boolean properties are compressed into one integer state.
+
+**Daily-life mapping — three-feature membership card**
+```text
+A = 001
+B = 010
+C = 100
+
+Have A+C:
+001 | 100 = 101
+
+state 101 means:
+A ✓
+B ✗
+C ✓
+```
+
+**Recognition signal**
+```text
+small number of yes/no features
+skills / keys / vitamins / visited categories
+combine feature sets
+        ↓
+Encode state as bits
+```
+
+**Core operation:** combine states using OR.
 
 <a id="form-24-problem-1"></a>
 
@@ -7926,6 +8594,34 @@ cout<<ans<<'\n';
 
 # Form 25 — Submask Enumeration
 
+## Form explained visually
+
+**What this form means:** Enumerate only subsets that are contained inside an existing mask.
+
+**Daily-life mapping — choose a team only from available employees**
+```text
+available mask = 10110
+
+Allowed submasks may use ONLY those 1 positions.
+
+s = mask
+s = (s-1) & mask
+s = (s-1) & mask
+...
+0
+```
+
+**Recognition signal**
+```text
+iterate all subsets of a given set/mask
+partition mask
+DP transition over contained subsets
+        ↓
+Use (s-1) & mask
+```
+
+**Core complexity:** all submasks of one mask = `O(2^k)` where `k=popcount(mask)`; over all masks often `O(3^n)`.
+
 <a id="form-25-problem-1"></a>
 
 ## Problem 1 — [1042B — Vitamins](https://codeforces.com/problemset/problem/1042/B)
@@ -8216,6 +8912,38 @@ cout<<"NO\n";
 <a id="form-26"></a>
 
 # Form 26 — Bitmask DP
+
+## Form explained visually
+
+**What this form means:** DP state is a bitmask describing what has already been collected/assigned/visited.
+
+**Daily-life mapping — delivery checklist**
+```text
+4 deliveries:
+state = 0101
+
+delivery 0 ✓
+delivery 1 ✗
+delivery 2 ✓
+delivery 3 ✗
+
+DP[state] = best cost to reach this checklist
+        │
+        ├─ add delivery 1 → 0111
+        └─ add delivery 3 → 1101
+```
+
+**Recognition signal**
+```text
+n/features small
+order/assignment matters
+need min/max/count over subsets
+same subset reached in many ways
+        ↓
+DP[mask]
+```
+
+**Core pattern:** transition from `mask` to `mask | (1<<i)` and keep the best value.
 
 <a id="form-26-problem-1"></a>
 
