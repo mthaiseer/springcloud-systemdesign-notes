@@ -35,7 +35,7 @@ A compact Codeforces-focused recognition library organized like the Prefix Sum p
 ### Form 1 — Sort + Rearrange / Pairing
 **Recognition:** Sorting removes irrelevant ordering and lets you pair/reassign elements based on relative order.
 
-**Problems: 5**
+**Problems: 6**
 
 | # | Problem | Platform |
 | ---: | --- | :---: |
@@ -46,6 +46,7 @@ A compact Codeforces-focused recognition library organized like the Prefix Sum p
 | 5 | [Shoe Shuffling](https://codeforces.com/problemset/problem/1691/B) | CF |
 
 
+| 6 | [Sort the Subarray](https://codeforces.com/problemset/problem/1821/B) | CF |
 [↑ Back to TOC](#toc)
 
 ---
@@ -301,7 +302,7 @@ can I ALWAYS solve it?   → sufficient
 ### Form 12 — Construct Valid Answer
 **Recognition:** There may be many correct answers. You don't need to find an optimum—just construct **one valid configuration**.
 
-**Problems: 6**
+**Problems: 7**
 
 | # | Problem | Platform |
 | ---: | --- | :---: |
@@ -313,6 +314,7 @@ can I ALWAYS solve it?   → sufficient
 | 6 | [Co-prime Array](https://codeforces.com/problemset/problem/660/A) | CF |
 
 
+| 7 | [Constructive Problem](https://codeforces.com/problemset/problem/1905/A) | CF |
 [↑ Back to TOC](#toc)
 
 ---
@@ -362,7 +364,7 @@ can I ALWAYS solve it?   → sufficient
 ### Form 15 — Binary / String Construction
 **Recognition:** Rather than brute-forcing strings, exploit counts, alternating structure, runs, mismatches, or required local patterns.
 
-**Problems: 6**
+**Problems: 9**
 
 | # | Problem | Platform |
 | ---: | --- | :---: |
@@ -373,6 +375,9 @@ can I ALWAYS solve it?   → sufficient
 | 5 | [Make it Alternating](https://codeforces.com/problemset/problem/1879/C) | CF |
 | 6 | [Binary String To Subsequences](https://codeforces.com/problemset/problem/1399/D) | CF |
 
+| 7 | [ABSP1](https://www.codechef.com/problems/ABSP1) | CC |
+| 8 | [Gray Code](https://cses.fi/problemset/task/2205) | CSES |
+| 9 | [Five, Five Everywhere](https://atcoder.jp/contests/abc327/tasks/abc327_a) | AtCoder |
 ---
 
 [↑ Back to TOC](#toc)
