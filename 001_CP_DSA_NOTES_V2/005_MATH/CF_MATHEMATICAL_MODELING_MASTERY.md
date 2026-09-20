@@ -12,23 +12,23 @@
 - [Part 0. How to Mathematically Read a Codeforces Problem](#part-0-how-to-mathematically-read-a-codeforces-problem)
 - [Part 1. Arithmetic Foundations](#part-1-arithmetic-foundations)
 - [Part 2. Algebra for Competitive Programming](#part-2-algebra-for-competitive-programming)
-  - [Algebra Form 1. Rearranging Equations](#algebra-form-1-rearranging-equations)
-  - [Algebra Form 2. Variable Isolation](#algebra-form-2-variable-isolation)
+  - [Algebra Form 1. Rearranging equations (sum and difference)](#algebra-form-1-rearranging-equations-sum-and-difference)
+  - [Algebra Form 2. Isolating a variable](#algebra-form-2-isolating-a-variable)
   - [Algebra Form 3. Substitution](#algebra-form-3-substitution)
-  - [Algebra Form 4. Difference of Squares](#algebra-form-4-difference-of-squares)
+  - [Algebra Form 4. Difference of squares](#algebra-form-4-difference-of-squares)
   - [Algebra Form 5. Expansions](#algebra-form-5-expansions)
-  - [Algebra Form 6. Pairwise Sum Transformations](#algebra-form-6-pairwise-sum-transformations)
-  - [Algebra Form 7. Linear Equations `ax+by=c`](#algebra-form-7-linear-equations-axbyc)
-  - [Algebra Form 8. Systems of Equations](#algebra-form-8-systems-of-equations)
-  - [Algebra Form 9. Inequality Modeling](#algebra-form-9-inequality-modeling)
-  - [Algebra Form 10. Bounding](#algebra-form-10-bounding)
+  - [Algebra Form 6. Pairwise sums](#algebra-form-6-pairwise-sums)
+  - [Algebra Form 7. Linear equation `ax + by = c`](#algebra-form-7-linear-equation-ax--by--c)
+  - [Algebra Form 8. Systems of equations](#algebra-form-8-systems-of-equations)
+  - [Algebra Form 9. Inequalities (intersection of constraints)](#algebra-form-9-inequalities-intersection-of-constraints)
+  - [Algebra Form 10. Bounding (lower bound + construction)](#algebra-form-10-bounding-lower-bound--construction)
 - [Part 3. Number Theory Foundations](#part-3-number-theory-foundations)
 - [Part 4. Modular Arithmetic](#part-4-modular-arithmetic)
 - [Part 5. Parity](#part-5-parity)
 - [Part 6. Counting & Combinatorics](#part-6-counting--combinatorics)
 - [Part 7. Sequences & Series](#part-7-sequences--series)
 - [Part 8. Coordinate & Distance Mathematics](#part-8-coordinate--distance-mathematics)
-- [Part 9. Min/Max Transformations](#part-9-minmax-transformations)
+- [Part 9. Min/Max Mathematical Transformations](#part-9-minmax-mathematical-transformations)
 - [Part 10. Invariants](#part-10-invariants)
 - [Part 11. Operation Modeling](#part-11-operation-modeling)
 - [Part 12. Decoupling Variables](#part-12-decoupling-variables)
@@ -87,25 +87,11 @@
   - [Form 39. Stars and Bars](#form-39-stars-and-bars)
   - [Form 40. Diophantine Equation](#form-40-diophantine-equation)
 - [Part 27. Problem Modeling Library](#part-27-problem-modeling-library)
-- [P01. Watermelon (CF 4A)](#p01-watermelon-cf-4a)
-- [P02. Yet Another Two Integers Problem (CF 1409A)](#p02-yet-another-two-integers-problem-cf-1409a)
-- [P03. Friends and Candies (CF 1538B)](#p03-friends-and-candies-cf-1538b)
-- [P04. EhAb AnD gCd (CF 1325A)](#p04-ehab-and-gcd-cf-1325a)
-- [P05. Odd Divisor (CF 1475A)](#p05-odd-divisor-cf-1475a)
-- [P06. Honest Coach (CF 1360B)](#p06-honest-coach-cf-1360b)
-- [P07. Required Remainder (CF 1374A)](#p07-required-remainder-cf-1374a)
-- [P08. New Year's Number (CF 1475B)](#p08-new-years-number-cf-1475b)
-- [P09. Exciting Bets (CF 1543A)](#p09-exciting-bets-cf-1543a)
-- [P10. K-divisible Sum (CF 1476A)](#p10-k-divisible-sum-cf-1476a)
-- [P11. Distance and Axis (CF 1401A)](#p11-distance-and-axis-cf-1401a)
-- [P12. K-th Not Divisible by n (CF 1352C)](#p12-k-th-not-divisible-by-n-cf-1352c)
-- [P13. Sweet Problem (CF 1263A)](#p13-sweet-problem-cf-1263a)
-- [P14. Same Differences (CF 1520D)](#p14-same-differences-cf-1520d)
-- [P15. Number of Pairs (CF 1538C)](#p15-number-of-pairs-cf-1538c)
-- [P16. Pair of Topics (CF 1324D)](#p16-pair-of-topics-cf-1324d)
-- [P17. Maximum Median (CF 1201C)](#p17-maximum-median-cf-1201c)
-- [P18. Modulo Sum (CF 577B)](#p18-modulo-sum-cf-577b)
-- [Problem index by band (to extend)](#problem-index-by-band-to-extend)
+  - [Pattern A: Parity & Formula Bounds (Lower Bound + Construction)](#pattern-a-parity--formula-bounds-lower-bound--construction)
+  - [Pattern B: Invariants (Sum / GCD / Difference)](#pattern-b-invariants-sum--gcd--difference)
+  - [Pattern C: Number Theory, Modulo & Diophantine Formulas](#pattern-c-number-theory-modulo--diophantine-formulas)
+  - [Pattern D: Pair Conditions -> Algebra + Sorting/Frequency](#pattern-d-pair-conditions---algebra--sortingfrequency)
+  - [Pattern E: Binary Search on the Answer](#pattern-e-binary-search-on-the-answer)
 - [Part 28. Same Problem, Multiple Models](#part-28-same-problem-multiple-models)
 - [Part 29. Constraints → Expected Mathematics](#part-29-constraints--expected-mathematics)
 - [Part 30. How to Discover the Equation](#part-30-how-to-discover-the-equation)
@@ -475,86 +461,215 @@ round(a / b) = (2*a + b) / (2*b)      for a >= 0, b > 0
 
 ## Part 2. Algebra for Competitive Programming
 
-### Algebra Form 1. Rearranging Equations
+> **Why algebra?** Many statements hide an equation. If you can move terms around, an `O(n^2)` loop over pairs often becomes an `O(n)` formula.
+> Every form below has: **Idea / Rule / Worked example / Where it shows up / Watch out.**
+
+### Algebra Form 1. Rearranging equations (sum and difference)
+
+**Idea.** If you know a sum and a difference of two numbers, you can find both numbers.
+
+**Rule.**
 
 ```text
 x + y = S
 x - y = D
-add:       2x = S + D   ->  x = (S+D)/2
-subtract:  2y = S - D   ->  y = (S-D)/2
+-----------
+add both:        2x = S + D    ->  x = (S + D) / 2
+subtract them:   2y = S - D    ->  y = (S - D) / 2
 ```
 
-**Feasibility:** `S+D` even (equivalently `S`, `D` same parity), and `x,y` in range (`x>=0`, `y>=0` ⇒ `S>=D`).
-**Signals:** "sum is S and difference is D", "two numbers, given sum and max−min".
-**Example:** S=10, D=4 → x=7, y=3.
-
-### Algebra Form 2. Variable Isolation
+**Checks.**
 
 ```text
-a*x + b = c   ->  a*x = c-b  ->  x = (c-b)/a   requires (c-b) % a == 0
+S + D must be even          (so x is an integer)
+x >= 0 and y >= 0           (if the numbers must be non-negative)
 ```
 
-Turns a loop over `x` into O(1). **Signal:** unknown appears linearly.
+**Worked example.** `S = 10`, `D = 4`.
+
+```text
+x = (10 + 4) / 2 = 7
+y = (10 - 4) / 2 = 3         check: 7 + 3 = 10, 7 - 3 = 4
+```
+
+**Where it shows up.** "two numbers with given sum and difference", "sum and max-min are known".
+
+---
+
+### Algebra Form 2. Isolating a variable
+
+**Idea.** If an unknown appears once, solve for it. This replaces a loop over all values of the unknown.
+
+**Rule.**
+
+```text
+a*x + b = c
+a*x     = c - b
+x       = (c - b) / a        valid only if (c - b) % a == 0
+```
+
+**Worked example.** `3x + 5 = 20` -> `3x = 15` -> `x = 5`. For `3x + 5 = 21`: `16 % 3 != 0`, so no integer `x`.
+
+**Watch out.** Always check divisibility, and `a != 0`.
+
+---
 
 ### Algebra Form 3. Substitution
 
-Two unknowns, one relation → one unknown. Example: `x + y = n`, minimize `3x + 5y` ⇒ substitute `y = n-x`, cost `= 5n - 2x`, linear in `x` ⇒ extremes only.
+**Idea.** Use one equation to remove a variable.
 
-### Algebra Form 4. Difference of Squares
+**Worked example.** Minimize `3x + 5y` with `x + y = n`.
 
 ```text
-a^2 - b^2 = (a-b)(a+b)
+y = n - x
+cost = 3x + 5(n - x) = 5n - 2x
 ```
 
-If `N = a^2 - b^2` then `N = d*e` with `d=a-b`, `e=a+b`, same parity. Enumerate divisors `d<=sqrt N`, `a=(d+e)/2`, `b=(e-d)/2`.
+The cost only depends on `x` and decreases as `x` grows, so take `x` as large as allowed.
+
+---
+
+### Algebra Form 4. Difference of squares
+
+**Rule.**
+
+```text
+a^2 - b^2 = (a - b) * (a + b)
+```
+
+**Idea.** If `N = a^2 - b^2`, then `N` splits into two factors `d = a - b` and `e = a + b`.
+
+```text
+N = d * e                 (d <= e, d and e have the same parity)
+a = (d + e) / 2
+b = (e - d) / 2
+```
+
+**Worked example.** `N = 15 = 3 * 5`: `a = 4`, `b = 1`, check `16 - 1 = 15`.
+
+---
 
 ### Algebra Form 5. Expansions
 
 ```text
-(a+b)^2 = a^2 + 2ab + b^2
-(a-b)^2 = a^2 - 2ab + b^2
-(a+b+c)^2 = a^2+b^2+c^2 + 2(ab+bc+ca)
-=> sum_{i<j} A_i A_j = ((sum A)^2 - sum A^2) / 2
+(a + b)^2 = a^2 + 2ab + b^2
+(a - b)^2 = a^2 - 2ab + b^2
+(a + b + c)^2 = a^2 + b^2 + c^2 + 2(ab + bc + ca)
 ```
 
-The last identity replaces O(n²) pair enumeration by O(n).
-
-### Algebra Form 6. Pairwise Sum Transformations
+**Useful consequence (sum of all pair products).**
 
 ```text
-sum_{i<j} (A_i - A_j)^2 = n * sum A_i^2 - (sum A_i)^2
+sum over i<j of A_i * A_j  =  ( (sum A)^2 - (sum of A_i^2) ) / 2
 ```
 
-**Derivation.** `sum_{i<j}(A_i^2 + A_j^2) = (n-1) sum A^2`; `sum_{i<j} 2 A_i A_j = (sum A)^2 - sum A^2`. Subtract: `(n-1)ΣA² - (ΣA)² + ΣA² = nΣA² - (ΣA)²`.
-Also `sum_{i<j} |A_i - A_j|` after sorting = `sum_k A_k * (2k - n - 1)` (1-indexed): each element is added `k-1` times and subtracted `n-k` times.
-
-### Algebra Form 7. Linear Equations `ax+by=c`
-
-Integer solutions exist iff `gcd(a,b) | c`. (Part 20.)
-
-### Algebra Form 8. Systems of Equations
-
-`k` independent equations determine `k` unknowns. If unknowns > equations, one free parameter remains → search that parameter within bounds.
-
-### Algebra Form 9. Inequality Modeling
+**Worked example.** `A = [1, 2, 4]`.
 
 ```text
-x >= L,  x <= R   =>  L <= x <= R
-several constraints => intersect intervals
-"at least k of ..." => sum of indicators >= k
+sum A = 7, sum of squares = 1 + 4 + 16 = 21
+formula: (49 - 21) / 2 = 14
+direct:  1*2 + 1*4 + 2*4 = 2 + 4 + 8 = 14
 ```
 
-### Algebra Form 10. Bounding
+An `O(n^2)` pair loop becomes `O(n)`.
 
-Most min-answers are solved by **two steps**:
+---
+
+### Algebra Form 6. Pairwise sums
+
+**Goal.** Compute `sum over all pairs i<j of (A_i - A_j)^2` fast.
+
+**Result.**
 
 ```text
-(1) Prove answer >= X     (lower bound: something must be paid)
-(2) Construct a solution using exactly X
-=> answer = X
+sum_{i<j} (A_i - A_j)^2  =  n * (sum of A_i^2)  -  (sum of A_i)^2
 ```
 
-Example (CF 1263A): can't do better than `(a+b+c)/2` because each move uses 2 candies; can't do better than `a+b+c-max` because the largest pile needs partners. Take the min of the two bounds; a construction shows it is achievable.
+**Derivation, step by step.** Let `Q = sum of A_i^2` and `S = sum of A_i`.
+
+```text
+Step 1: expand each pair
+        (A_i - A_j)^2 = A_i^2 + A_j^2 - 2*A_i*A_j
+
+Step 2: add the squares over all pairs
+        each A_k^2 appears in (n - 1) pairs
+        sum of (A_i^2 + A_j^2) = (n - 1) * Q
+
+Step 3: add the cross terms over all pairs
+        sum of 2*A_i*A_j = S^2 - Q            (from Form 5)
+
+Step 4: subtract
+        (n - 1)*Q - (S^2 - Q) = n*Q - S^2
+```
+
+**Check.** `A = [1, 2, 4]`, `n = 3`.
+
+```text
+direct:  (1-2)^2 + (1-4)^2 + (2-4)^2 = 1 + 9 + 4 = 14
+formula: 3 * 21 - 7^2 = 63 - 49 = 14
+```
+
+**Second useful identity: sum of absolute differences.** Sort `A`. With 1-indexed position `k`:
+
+```text
+sum_{i<j} |A_i - A_j|  =  sum over k of  A_k * (2k - n - 1)
+```
+
+**Why.** In sorted order, `A_k` is the larger element in `k - 1` pairs (added) and the smaller in `n - k` pairs (subtracted). Net count: `(k - 1) - (n - k) = 2k - n - 1`.
+
+**Check.** `A = [1, 2, 4]`.
+
+```text
+k=1: 1 * (2 - 3 - 1) = -2
+k=2: 2 * (4 - 3 - 1) =  0
+k=3: 4 * (6 - 3 - 1) =  8
+total = 6      direct: 1 + 3 + 2 = 6
+```
+
+---
+
+### Algebra Form 7. Linear equation `ax + by = c`
+
+**Rule.** Integer solutions exist exactly when `gcd(a, b)` divides `c`. Details in Part 20.
+
+**Worked example.** `4x + 6y = 10`: `gcd = 2` divides 10 -> solvable (`x=1, y=1`). `4x + 6y = 9`: `2` does not divide 9 -> impossible.
+
+---
+
+### Algebra Form 8. Systems of equations
+
+**Idea.** `k` independent equations fix `k` unknowns. If you have more unknowns than equations, one variable stays free: loop over that one only (within its bounds).
+
+---
+
+### Algebra Form 9. Inequalities (intersection of constraints)
+
+```text
+x >= L,   x <= R        ->  L <= x <= R
+several ranges          ->  L = max of lower bounds,  R = min of upper bounds
+empty if L > R
+"at least k of them"    ->  count of true conditions >= k
+```
+
+---
+
+### Algebra Form 10. Bounding (lower bound + construction)
+
+**Idea.** Many "minimum" or "maximum" answers are found in two steps.
+
+```text
+Step 1 (lower bound):  prove the answer cannot be smaller than X.
+Step 2 (construction): build a solution that achieves exactly X.
+Result:                the answer is X.
+```
+
+**Worked example (CF 1263A).** Piles `a, b, c`, each day eat one candy from two different piles.
+
+```text
+Bound 1: each day uses 2 candies          ->  days <= S / 2
+Bound 2: the largest pile M needs partners ->  days <= S - M
+answer = min(S / 2, S - M)      (and a construction shows it is reachable)
+```
 
 
 ---
@@ -947,263 +1062,424 @@ sum of all subarray sums = Σ A_i * i * (n - i + 1)
 
 ## Part 7. Sequences & Series
 
+> **What is it?** A sequence is a list of numbers that follows a rule. Two rules appear constantly: *add the same amount each time* (arithmetic) and *multiply by the same amount each time* (geometric).
+
+### 7.1 Arithmetic progression (AP)
+
+**Picture.** `2, 5, 8, 11, 14` (add 3 each time).
+
+**Rules.**
+
 ```text
-AP:  a_n = a + (n-1)d        S_n = n/2 * (2a + (n-1)d) = n(a + a_n)/2
-1+2+...+n = n(n+1)/2
-GP:  a_n = a r^(n-1)         S_n = a (r^n - 1)/(r - 1)   (r != 1)
-1+2+4+...+2^(k-1) = 2^k - 1
-1^2+...+n^2 = n(n+1)(2n+1)/6
-harmonic: sum_{i=1}^n n/i ~ n ln n  (why sieve-like loops are O(n log n))
+n-th term:   a_n = a + (n - 1) * d
+sum of n:    S_n = n * (first + last) / 2
+special:     1 + 2 + ... + n = n * (n + 1) / 2
 ```
 
-**Signals.** "1st day 1, 2nd day 2, ...", "each step adds one more than last" → AP/triangular. "doubling" → GP, `≈ log2` steps. Triangular bound: find smallest `k` with `k(k+1)/2 >= n` → `k ~ sqrt(2n)`.
+**Worked example.** Sum of `1..100`.
 
-**Mistake:** GP sum with `r=1` division by zero; overflow of `2^k` for `k>=63`.
+```text
+pair first and last:  1 + 100 = 101,  2 + 99 = 101, ...   50 pairs
+S = 50 * 101 = 5050         formula: 100 * 101 / 2 = 5050
+```
+
+**Where it shows up.** "day 1 gets 1, day 2 gets 2, ...", "each step adds one more than the last" (triangular numbers). To find the smallest `k` with `k(k+1)/2 >= n`, note `k` is about `sqrt(2n)`.
+
+### 7.2 Geometric progression (GP)
+
+**Picture.** `1, 2, 4, 8, 16` (multiply by 2).
+
+**Rules.**
+
+```text
+n-th term:   a_n = a * r^(n-1)
+sum of n:    S_n = a * (r^n - 1) / (r - 1)         (r != 1)
+special:     1 + 2 + 4 + ... + 2^(k-1) = 2^k - 1
+```
+
+**Where it shows up.** "doubles each step" -> only about `log2(value)` steps.
+
+### 7.3 Other sums to remember
+
+```text
+1^2 + 2^2 + ... + n^2 = n(n+1)(2n+1) / 6
+n/1 + n/2 + ... + n/n  is about  n * ln(n)         (why sieve loops cost O(n log n))
+```
+
+**Watch out.** `2^k` overflows at `k >= 63`; GP formula divides by `r - 1`.
 
 ---
 
 ## Part 8. Coordinate & Distance Mathematics
 
-```text
-Number line: |x-y|
-Manhattan:  |x1-x2| + |y1-y2|
-Chebyshev:  max(|x1-x2|, |y1-y2|)     (king moves)
-Euclid^2:   (x1-x2)^2 + (y1-y2)^2     (compare squared; avoid sqrt)
-Interval overlap: [l1,r1] & [l2,r2] = [max(l1,l2), min(r1,r2)], nonempty iff max<=min
-```
+> **What is it?** Turning "how far", "which cells", "where do they meet" into formulas on numbers.
 
-**Median minimizes `Σ|x - a_i|`.** *Proof:* for two points `a<=b`, `|x-a|+|x-b| >= b-a` with equality iff `x∈[a,b]`. Pair smallest with largest, second smallest with second largest, …; the median lies in every pair interval ⇒ all lower bounds tight simultaneously.
-
-**Mean minimizes `Σ(x-a_i)^2`:** derivative `2Σ(x-a_i)=0 ⇒ x=mean`. Or: `Σ(x-a_i)^2 = n(x-μ)^2 + Σ(a_i-μ)^2`.
-
-**Rotation trick (Manhattan → Chebyshev):** `u=x+y, v=x-y`: `|dx|+|dy| = max(|du|,|dv|)`.
+### 8.1 Distance formulas
 
 ```text
-grid movement: one step changes x+y by ±1 -> parity of (x+y) flips each step
-reach (a,b) from (0,0) in exactly k steps <=> |a|+|b| <= k and (k-|a|-|b|) even
+number line:     |x - y|
+Manhattan:       |x1 - x2| + |y1 - y2|          (grid moves up/down/left/right)
+Chebyshev:       max(|x1 - x2|, |y1 - y2|)      (king moves)
+Euclidean^2:     (x1 - x2)^2 + (y1 - y2)^2      (compare squares, skip sqrt)
 ```
 
-Coordinate normalization: shift so start = origin; compression maps large coordinates to ranks.
+**Worked example.** Points `(1, 2)` and `(4, 6)`: Manhattan `= 3 + 4 = 7`, Chebyshev `= max(3, 4) = 4`.
 
-**Problems:** CF 1401A, 1201C (uses median).
+### 8.2 Interval overlap
+
+```text
+[l1, r1] and [l2, r2]
+intersection = [max(l1, l2), min(r1, r2)]
+non-empty when max(l1, l2) <= min(r1, r2)
+```
+
+### 8.3 Median minimizes total distance
+
+**Question.** Choose `x` to minimize `|x - a_1| + ... + |x - a_n|`.
+
+**Answer.** `x` = the median of the sorted values.
+
+**Why (two points).** For `a <= b`: `|x - a| + |x - b| >= b - a`, with equality when `x` is between them. Pair smallest with largest, second smallest with second largest, and so on. The median lies inside every pair's interval, so every pair is minimal at the same time.
+
+**Worked example.** `[1, 2, 10]`: median `2` -> cost `1 + 0 + 8 = 9`. Try `x = 5`: `4 + 3 + 5 = 12`, larger.
+
+**Mean and squares.** The mean minimizes `(x - a_1)^2 + ... + (x - a_n)^2`.
+
+### 8.4 Grid movement
+
+```text
+one step changes (x + y) by exactly 1, so it flips the parity of (x + y)
+reach (a, b) from (0, 0) in exactly k steps  <=>  |a| + |b| <= k  and  (k - |a| - |b|) is even
+```
+
+### 8.5 Rotating coordinates
+
+```text
+u = x + y,   v = x - y      ->   |dx| + |dy| = max(|du|, |dv|)
+```
+
+Manhattan distance becomes Chebyshev distance.
+
+**Problems using this part:** CF 1401A, 1201C.
 
 ---
 
-## Part 9. Min/Max Transformations
+## Part 9. Min/Max Mathematical Transformations
+
+**Identities.**
 
 ```text
-max(a,b) = (a+b+|a-b|)/2      min(a,b) = (a+b-|a-b|)/2
-max(a,b)+min(a,b) = a+b       max*min = a*b
-max_i(a_i - i) style:  separate variables:  max over pairs (a_i+i)-(a_j+j)
+max(a, b) = (a + b + |a - b|) / 2
+min(a, b) = (a + b - |a - b|) / 2
+max(a, b) + min(a, b) = a + b
+max(a, b) * min(a, b) = a * b
 ```
 
-* **Minimize the maximum / maximize the minimum:** guess `X`, test feasibility, binary search (Part 25).
-* **Balancing:** to minimize `max(x, S-x)` set `x≈S/2`.
-* **Extremal argument:** look at the max / min element – it constrains everything (e.g. largest pile in CF 1263A).
-* **Bound by both sides:** `answer = min(bound1, bound2)` where each bound is a resource limit.
+**Ideas that appear often.**
+
+| Idea | What to do |
+|---|---|
+| minimize the maximum | guess the answer `X`, test if possible, binary search |
+| maximize the minimum | same, other direction |
+| balance two quantities | make them close to `total / 2` |
+| extremal argument | look at the largest or smallest element first |
+| two upper bounds | answer is the `min` of the bounds |
+
+**Separating variables.** To maximize `(a_i + i) - (a_j + j)`, take the max of `a_i + i` and the min of `a_j + j` separately.
 
 ---
 
 ## Part 10. Invariants
 
-> **Invariant:** a quantity unchanged by every allowed operation. **Monovariant:** a quantity that only moves one way.
+> **What is it?** An **invariant** is something an operation never changes. If the start and the target have different invariant values, the target is unreachable.
 
-Template for each form:
+**Checklist for every operation.**
 
 ```text
-Before operation   |   After operation   |   What changed?   |   What did NOT change?
+1. Write "before" and "after".
+2. Compute what changed (the delta).
+3. Whatever has delta 0 is an invariant.
 ```
 
-| Form | Operation | Preserved | Consequence |
+| Type | Operation | What never changes | Consequence |
 |---|---|---|---|
-| **1. Sum** | `Ai+=x, Aj-=x` | `ΣA` | target all-equal needs `ΣA % n == 0` (CF 1538B) |
-| **2. Parity** | `Ai±=2` | `Ai mod 2` | reachable only if same parity |
-| **3. XOR** | `Ai^=x, Aj^=x` | total XOR | final XOR = initial XOR |
-| **4. GCD** | `Ai-=Aj` (or `Ai=Ai-k*Aj`) | `gcd(all)` | final elements all multiples of g |
-| **5. Modulo** | `Ai+=m` | `Ai mod m` | classes never merge |
-| **6. Difference** | add `c` to all | `Ai-Aj` | only relative structure matters |
-| **7. Count** | swap two elements | multiset | frequency same before/after |
-| **8. Ordering** | swap only equal-parity neighbors | relative order of opposite parity | check the parity-subsequence sorted |
-| **9. Coloring** | domino tiles 2 adjacent cells | #black - #white | balanced board needed |
-| **10. Monovariant** | each step reduces `ΣA` | strictly decreasing | process terminates; bound #steps |
+| Sum | `A_i += x`, `A_j -= x` | total sum | equal array needs `sum % n == 0` |
+| Parity | `A_i += 2` | `A_i % 2` | parity of each element is fixed |
+| XOR | `A_i ^= x`, `A_j ^= x` | XOR of all | final XOR = initial XOR |
+| GCD | `A_i -= A_j` | gcd of all | all elements stay multiples of gcd |
+| Modulo | `A_i += m` | `A_i % m` | remainder classes never merge |
+| Difference | add `c` to every element | `A_i - A_j` | only relative shape matters |
+| Count | swap two elements | the multiset | frequencies same |
+| Ordering | swap equal-parity neighbours | order of odd-vs-even elements | check sortedness inside classes |
+| Coloring | domino on a chessboard | black count minus white count | needs balanced board |
+| Monovariant | each step lowers the sum | strictly decreasing quantity | process must stop |
 
-**Worked derivations**
+**Worked example (GCD).**
 
 ```text
-Form 4:  op: Ai := Ai - Aj.   Let g = gcd(Ai, Aj).
-         g | Ai and g | Aj  ->  g | Ai-Aj.  So g still divides everything.
-         Reverse op (Ai := Ai + Aj) shows gcd cannot shrink. gcd(Ai,Aj) = gcd(Ai-Aj, Aj). Preserved.
-Form 9:  chessboard minus 2 opposite corners: 32 white... 30 black/32 white; each domino covers 1 each -> impossible.
+Operation:  A_i := A_i - A_j.   Let g = gcd(A_i, A_j).
+g divides A_i and A_j, so g divides A_i - A_j.
+So gcd cannot get smaller. Doing the reverse (add back) shows it cannot get bigger.
+Result: gcd of the array is invariant.
 ```
 
-**Mistake:** confusing "necessary" with "sufficient" – an invariant proves impossibility; you still need construction for possibility.
+**Watch out.** An invariant proves *impossible*. To prove *possible* you must also give a construction.
 
-**Problems:** CF 1538B, 1401A, 4A.
+**Problems using this part:** CF 1538B, 1401A, 4A.
 
 ---
 
 ## Part 11. Operation Modeling
 
+> **When the statement says "you may perform this operation any number of times".**
+
+**Method.**
+
 ```text
-State before op -> algebraic form -> delta -> check parity -> sum -> modulo
--> gcd -> ordering/counts -> invariant -> reachable states
+1. Write the operation as a formula (before -> after).
+2. Compute the delta of: sum, parity, mod, gcd, XOR, counts, order.
+3. Whatever has delta 0 is an invariant.
+4. Describe what states are reachable, then check the target.
 ```
 
-| Operation | Delta | Preserved |
+| Operation | Delta | What is preserved |
 |---|---|---|
-| `Ai+=x, Aj-=x` | `0` on sum | sum |
-| `Ai+=2` | `+2` | parity of `Ai` |
-| `Ai+=1, Aj+=1` | `+2` on sum | parity of sum |
-| `Ai:=Ai-Aj` | — | gcd |
-| `Ai^=x, Aj^=x` | — | XOR of all |
-| `swap(Ai,Aj)` | — | multiset |
-| `Ai*=2` | — | odd part of each element |
-| `Ai:=Ai+Ai+1` (merge) | — | sum |
-| `remove k, add k-1` | `-1` | count decreases by one each step (monovariant) |
+| `A_i += x`, `A_j -= x` | sum change 0 | sum |
+| `A_i += 2` | +2 | parity of `A_i` |
+| `A_i += 1`, `A_j += 1` | sum +2 | parity of the sum |
+| `A_i := A_i - A_j` | | gcd |
+| `A_i ^= x`, `A_j ^= x` | | XOR of all |
+| swap `A_i`, `A_j` | | multiset |
+| `A_i *= 2` | | odd part of `A_i` |
+| merge two into their sum | count -1 | sum (count decreases: monovariant) |
 
-**Reachability in linear ops:** if operation adds vector `v`, reachable = `{start + t*v}`; with two vectors it is a lattice ⇒ gcd of coefficients decides.
-
-**Example.** `Ai+=1, Aj-=1` any `i≠j`: reachable arrays = same sum, same length (when values may go negative).
+**Worked example.** `A_i += 1`, `A_j -= 1` for any `i != j`: the sum is fixed and the length is fixed. Any array with the same sum and length is reachable (if negative values are allowed).
 
 ---
 
 ## Part 12. Decoupling Variables
 
+> **What is it?** Split one hard problem with linked variables into several small independent problems.
+
+**Coordinate change.**
+
 ```text
-u = x+y, v = x-y   =>  x=(u+v)/2, y=(u-v)/2      (need u≡v mod 2)
+u = x + y,   v = x - y      ->   x = (u + v) / 2,   y = (u - v) / 2      (need u and v same parity)
 ```
 
-Use when a constraint mixes `x,y` but is simple in `u,v` (e.g. `|x|+|y|<=k` becomes `max(|u|,|v|)<=k`, a square).
+Constraint `|x| + |y| <= k` becomes `max(|u|, |v|) <= k`, a simple square.
 
-Decoupling catalog:
+**Kinds of decoupling.**
 
-* **x/y independence:** grid path counts, `dx` and `dy` handled separately.
-* **Bit-by-bit:** AND/OR/XOR act per bit; solve 30 independent 0/1 problems.
-* **Digit-by-digit:** carries link digits – only decouple when no carries.
-* **Prime-factor independence:** `gcd`, `lcm`, divisibility act per prime exponent (`min`, `max`, `≤`).
-* **Frequency decoupling:** positions don't matter → work with counts.
+| Kind | Meaning |
+|---|---|
+| x and y separately | horizontal and vertical movement are independent |
+| bit by bit | AND / OR / XOR act on each bit alone |
+| digit by digit | only when there are no carries |
+| prime by prime | gcd uses `min` of exponents, lcm uses `max` |
+| by frequency | when positions do not matter, use counts |
 
 ---
 
 ## Part 13. Frequency Modeling
 
+> **What is it?** Turn an array into "how many of each value" when order does not matter.
+
 ```text
-array -> cnt[v] -> counting problem
+array  ->  cnt[value]  ->  formula on counts
 ```
 
-* equal pairs: `Σ cnt[v](cnt[v]-1)/2`
-* complementary pairs `Ai+Aj=K`: `Σ cnt[v]*cnt[K-v]` (`v<K-v`), plus `C(cnt[K/2],2)` if `K` even
-* mex: smallest `v` with `cnt[v]=0`
-* permutation check: all `cnt[v]=1` for `v=1..n`
-* multiset equality: compare count maps
-* frequency parity: odd-count values determine XOR-like behaviour
+| Question | Formula from counts |
+|---|---|
+| equal pairs | `sum of cnt[v] * (cnt[v] - 1) / 2` |
+| pairs with `A_i + A_j = K` | `sum of cnt[v] * cnt[K - v]` for `v < K - v`, plus `C(cnt[K/2], 2)` if `K` is even |
+| mex (smallest missing value) | first `v` with `cnt[v] = 0` |
+| is it a permutation of `1..n` | every `cnt[v] = 1` |
+| same multiset | equal count maps |
 
-Ordering is irrelevant when the operation/target is symmetric in positions.
+**Worked example.** `[1, 1, 2, 2, 2]` -> `cnt = {1: 2, 2: 3}` -> pairs `1 + 3 = 4`.
 
 ---
 
 ## Part 14. Sorting as a Mathematical Transformation
 
-After sorting: `a1<=a2<=...<=an` creates monotonic structure.
+> **What is it?** Sorting gives you `a_1 <= a_2 <= ... <= a_n`, which turns messy conditions into simple ones.
 
-* **Adjacent differences** give min gap (CF 1360B).
-* **Pair extremes** (smallest with largest) balances sums; **pair neighbors** minimizes gaps.
-* **Median** = position `⌈n/2⌉`.
-* **Rearrangement inequality:** `Σ a_i b_σ(i)` maximized with same order, minimized with opposite order.
-* **Two pointers** on sorted arrays turn `O(n²)` pair conditions into `O(n)` (CF 1538C, 1324D).
-* **Sorted prefix/suffix:** "take k largest" = last `k` elements.
+| After sorting | You get |
+|---|---|
+| neighbours | the smallest difference is between adjacent elements (CF 1360B) |
+| extremes | pair smallest with largest to balance sums |
+| middle element | the median |
+| a condition `a_i + a_j <= X` | for each `i`, valid `j` form a contiguous range (binary search or two pointers) |
+| "take the k largest" | the last `k` elements |
+
+**Rearrangement idea.** The sum of products `a_i * b_i` is largest when both arrays are sorted the same way, smallest when opposite.
+
+**Problems using this part:** CF 1360B, 1538C, 1324D.
 
 ---
 
 ## Part 15. Prefix Mathematics
 
+> **What is it?** Precompute running totals so any range sum becomes one subtraction.
+
 ```text
-P[i] = A1+...+Ai         sum(l,r) = P[r]-P[l-1]
+P[i] = A_1 + ... + A_i          P[0] = 0
+sum of A[l..r] = P[r] - P[l - 1]
 ```
 
-Same idea for XOR (`X[r]^X[l-1]`), counts, min/max (prefix max), 2D (`P[i][j]`, inclusion–exclusion on rectangles), modulo, difference arrays.
+**Picture.**
 
-**Global repeated queries → subtraction.** Equation form: "subarray sum = K" ⇔ `P[r]-P[l-1]=K` ⇔ `P[l-1]=P[r]-K` → hash map lookup. "Sum divisible by m" ⇔ equal prefix remainders. "Equal number of 0 and 1" ⇔ map 0→-1 and look for `P[l-1]=P[r]`.
+```text
+A:  3  1  4  1  5
+P:  0  3  4  8  9  14           sum of A[2..4] = P[4] - P[1] = 9 - 3 = 6   (1 + 4 + 1)
+```
 
-2D: `S(x1..x2,y1..y2) = P[x2][y2]-P[x1-1][y2]-P[x2][y1-1]+P[x1-1][y1-1]`.
+**Same idea for other things.**
 
----
+| Prefix of | Range answer |
+|---|---|
+| sums | `P[r] - P[l-1]` |
+| XOR | `X[r] ^ X[l-1]` |
+| counts of a value | count in range by subtraction |
+| remainders | subarray divisible by `m` when `P[r] % m == P[l-1] % m` |
+
+**Turning a condition into an equation.**
+
+```text
+subarray sum equals K   ->   P[r] - P[l-1] = K   ->   P[l-1] = P[r] - K      (look up in a hash map)
+equal number of 0 and 1 ->   replace 0 by -1, need P[r] = P[l-1]
+```
+
+**2D rectangle sum.**
+
+```text
+S = P[x2][y2] - P[x1-1][y2] - P[x2][y1-1] + P[x1-1][y1-1]
+```
+
+**Watch out.** Start the map with `P[0] = 0`.
+
 
 ## Part 16. Difference Arrays
 
-```text
-D[i] = A[i]-A[i-1]      A[i] = D[1]+...+D[i]
-add v on [l,r]:   D[l]+=v,  D[r+1]-=v
-```
+> **What is it?** The opposite of prefix sums. Store *changes* between neighbours so that "add `v` to a whole range" costs two updates.
 
 ```text
-A:      0 0 5 5 5 0 0        add 5 on [3,5]
-D:      0 0 5 0 0 -5 0       (two events: +5 at 3, -5 at 6)
+D[i] = A[i] - A[i-1]              A[i] = D[1] + D[2] + ... + D[i]
+add v to A[l..r]:   D[l] += v,   D[r+1] -= v
 ```
 
-Sweep view: each range is `(+v at l, -v at r+1)`; prefix sum of events = current value. AP range update: second difference (`D2`). "Repeated range updates then final read" → difference array.
+**Picture.** Add 5 on `[3, 5]` in an array of 7 zeros.
+
+```text
+D:      0  0  +5  0  0  -5  0
+prefix: 0  0   5  5  5   0  0     <- final A
+```
+
+**Where it shows up.** "many range updates, then read the array" -> difference array. Think of the `+v` at `l` and `-v` at `r+1` as sweep-line events.
 
 ---
 
 ## Part 17. Bitwise Mathematical Modeling
 
-Integer = vector of independent bits. Key question: **can each bit be solved independently?**
+> **What is it?** An integer is a row of independent bits. Ask: *can each bit be solved alone?*
+
+**Rules.**
 
 ```text
-x&y bit b = 1 iff both 1        x|y: either        x^y: exactly one (parity)
-a^a = 0, a^0 = a                      => XOR cancels pairs
-a+b = (a^b) + 2(a&b)                  a|b = (a^b) + (a&b)
-Σ over pairs of (Ai xor Aj): per bit b, ones*zeros*2^b
+x & y : bit is 1 if both are 1        x | y : if either is 1        x ^ y : if exactly one is 1
+a ^ a = 0,   a ^ 0 = a               (XOR cancels equal pairs)
+a + b = (a ^ b) + 2 * (a & b)
 ```
 
-Bit contribution: `answer = Σ_b 2^b * (count of structures with bit b)`.
-Subset masks: `for mask in [0,2^n)`; inclusion–exclusion over masks; `mask & (mask-1)` clears lowest set bit; popcount parity = XOR of bits.
+**Bit-by-bit counting.** For each bit `b`, count how many numbers have it set (`ones`) and how many do not (`zeros`).
 
-**Mistake:** `1<<b` with `b>=31` needs `1LL<<b`.
+```text
+sum over pairs of (A_i ^ A_j) = sum over b of  2^b * ones_b * zeros_b
+```
+
+**Worked example.** `[1, 2, 3]`. Bit 0: ones = 2 (1, 3), zeros = 1 -> `1 * 2 * 1 = 2`. Bit 1: ones = 2 (2, 3), zeros = 1 -> `2 * 2 * 1 = 4`. Total `6`. Check: `1^2 = 3`, `1^3 = 2`, `2^3 = 1` -> `6`.
+
+**Masks and subsets.** `for (mask = 0; mask < (1 << n); mask++)` lists all subsets of `n` items (`n <= 20`).
+
+**Watch out.** Use `1LL << b` when `b >= 31`.
 
 ---
 
 ## Part 18. Greedy Through Mathematical Proofs
 
-Every greedy needs three answers:
+> **What is it?** A greedy algorithm is correct only if you can prove the greedy choice is never worse.
+
+**For every greedy, answer three questions.**
 
 ```text
-Why this choice?   What inequality proves it?   What if we swap?
+1. Why this choice?
+2. What inequality proves it is not worse?
+3. What happens if we swap it with another choice? (exchange argument)
 ```
 
-**Exchange argument template:** take an optimal solution that differs from greedy at the first place; swap; show cost does not increase.
+**Exchange argument, in words.** Take any optimal solution. If it differs from greedy at some place, swap that choice to the greedy one. Show the cost does not get worse. Repeat until the solution equals greedy.
 
-Example (cheapest first): buy items with budget `B`, maximize count. Take sorted ascending; any optimal set with `k` items has cost ≥ sum of the `k` smallest ⇒ greedy count is optimal.
-Example (CF 1360B): min difference of pair from sorted array is adjacent: `a_j-a_i >= a_{i+1}-a_i` for `j>i`.
-Others: largest first (fill big before small), interval greedy (earliest end), resource balancing (always feed the smallest).
+**Worked example (cheapest first).** Buy as many items as possible with budget `B`.
+
+```text
+Sort prices ascending. Any set of k items costs at least the sum of the k cheapest.
+So if greedy cannot afford k items, no set can.
+```
+
+**Worked example (CF 1360B).** In sorted order, `a_j - a_i >= a_{i+1} - a_i` for `j > i`, so the smallest difference is between neighbours.
 
 ---
 
 ## Part 19. Constructive Mathematics
 
+> **What is it?** "Output any array / string / permutation that satisfies the rules."
+
+**Method.**
+
 ```text
-Required properties -> Necessary conditions -> Invariant/bound
--> Build simplest structure -> Verify mathematically
+1. List the required properties.
+2. Find necessary conditions (bounds, parity, sum).
+3. Choose the simplest family of objects.
+4. Verify every property by algebra.
+5. Test on small cases with a brute-force checker.
 ```
 
-Patterns: alternating `a,b,a,b`; cyclic shift permutation `2,3,...,n,1` (no fixed point); gcd constructions (`1, x-1`; consecutive integers are coprime; `n, n-1`); parity constructions (put odds first); modulo construction (`a_i = i*m`); prefix/suffix (`0,1,...,k` to get mex `k+1`).
+**Simple families to try first.**
 
-**Check both**: necessary conditions rule out impossible; the construction proves rest possible. Test on tiny brute-force.
+| Need | Try |
+|---|---|
+| gcd / lcm equation | `1`, `x - 1`, or equal numbers |
+| permutation with no fixed point | shift `2, 3, ..., n, 1` |
+| parity pattern | odds first, then evens |
+| mex equal to `k` | `0, 1, ..., k-1` |
+| coprime pair | consecutive numbers `n, n - 1` |
 
 ---
 
 ## Part 20. Diophantine Modeling
 
+> **What is it?** Find integers `x, y` with `a*x + b*y = c`.
+
+**Rules.**
+
 ```text
-ax + by = c
-1) solvable iff gcd(a,b) | c
-2) extended Euclid gives (x0,y0) with a x0 + b y0 = gcd
-3) scale by c/g; general solution: x = x0 + (b/g)t, y = y0 - (a/g)t
-4) non-negative: bound t
+1. Solvable in integers  <=>  gcd(a, b) divides c
+2. Extended Euclid finds x0, y0 with a*x0 + b*y0 = gcd(a, b)
+3. Scale by c / gcd to get one solution (x0', y0')
+4. All solutions:  x = x0' + (b/g)*t,   y = y0' - (a/g)*t   for integer t
 ```
 
-**Simple alternative (CF-friendly):** if `a` large, enumerate `x` from `0` to `c/a` and check `(c-ax)%b==0`; `O(c/a)`.
-Signals: "coins of value a and b to pay exactly c", "packs of 3 and 7". Example: 2020a+2021b=n ⇒ substitute (CF 1475B).
+**Easy method for contests.** If `a` is large, loop `x = 0 .. c / a` and check `(c - a*x) % b == 0`.
+
+**Worked example (CF 1475B).** `2020a + 2021b = n`.
+
+```text
+t = a + b          ->   n = 2020*t + b
+b = n % 2020,  t = n / 2020      valid when  b <= t
+```
+
+**Extended Euclid code.**
 
 ```cpp
 // returns g = gcd(a, b) and sets x, y so that a*x + b*y = g
@@ -1225,69 +1501,141 @@ long long extgcd(long long a, long long b, long long &x, long long &y) {
 
 ## Part 21. Geometric / Grid Modeling
 
-Coordinates, Manhattan distance, parity of cells (`(x+y)&1`), reachable set `{|dx|+|dy|<=k, parity matches}`, rectangle area `w*h`, perimeter `2(w+h)`, lattice points on segment `gcd(|dx|,|dy|)+1`, slope compare via cross-multiplication (avoid floats), overlap area of two rectangles = `max(0,overlapX)*max(0,overlapY)`, coordinate compression to rank space.
+> **What is it?** Turning grid and coordinate statements into short formulas.
+
+| Topic | Formula |
+|---|---|
+| Manhattan distance | `\|dx\| + \|dy\|` |
+| cell color / parity | `(x + y) % 2` |
+| cells reachable in `k` steps | `\|dx\| + \|dy\| <= k` and same parity as `k` |
+| rectangle area | `w * h` |
+| rectangle perimeter | `2 * (w + h)` |
+| lattice points on a segment | `gcd(\|dx\|, \|dy\|) + 1` |
+| compare slopes | cross-multiply, avoid floats |
+| coordinate compression | replace values by their ranks |
+
+**Overlap of two rectangles.**
+
+```text
+overlap_x = max(0, min(r1, r2) - max(l1, l2))
+overlap_y = max(0, min(t1, t2) - max(b1, b2))
+overlap area = overlap_x * overlap_y
+```
+
+**Worked example.** Segment from `(0, 0)` to `(6, 4)`: `gcd(6, 4) + 1 = 3` lattice points.
 
 ---
 
 ## Part 22. Game Mathematics
 
+> **What is it?** Decide who wins with perfect play.
+
+**Definitions.**
+
 ```text
-Position is LOSING if all moves lead to WINNING positions; WINNING if some move leads to LOSING.
+losing position:  every move leads to a winning position for the opponent
+winning position: some move leads to a losing position
 ```
 
-Backward reasoning from terminal positions; find periodic pattern by brute-force table for small n, then generalize.
-Take-away `{1..k}` game: losing iff `n % (k+1) == 0` (mirror strategy).
-Parity games: winner decided by parity of total moves when the total is fixed.
-- **Nim:** piles `a_i`, first player wins iff `XOR a_i != 0`.
-- **Grundy:** independent games' values combine by XOR; `g(pos)=mex{g(next)}`.
+**Method.** Start from the end (terminal positions), label backwards, then look for a repeating pattern.
 
+**Worked example.** A pile of `n`, each turn remove 1 to `k` stones, the player who cannot move loses.
+
+```text
+losing positions:  n % (k + 1) == 0
+strategy: after the opponent removes x, you remove k + 1 - x
+```
+
+**Nim.** Several piles, remove any number from one pile.
+
+```text
+first player wins  <=>  XOR of pile sizes != 0
+```
+
+**Grundy value.** `g(position) = mex of g of the next positions`. Independent games combine with XOR.
 
 ---
 
 ## Part 23. Recurrences
 
+> **What is it?** Describe a step-by-step process by a formula for the next value.
+
 ```text
-Process -> f(n) = f(n-1) + ... ; compute iteratively O(n)
-Fibonacci: f(n)=f(n-1)+f(n-2)
-Linear recurrence of order k -> k x k matrix, power by fast exponentiation O(k^3 log n)
+f(n) = f(n-1) + f(n-2)         (Fibonacci)
 ```
 
-Signals: "number of ways for length n where last step ...", huge `n`. Introduction: `[f(n+1),f(n)]^T = M^n [f(1),f(0)]^T`, `M=[[1,1],[1,0]]`.
+**Method.**
+
+```text
+1. Define f(n) in words.
+2. Say what the last step can be.
+3. Write f(n) from smaller values.
+4. Compute in a loop from small n to large n.
+```
+
+**Huge `n`.** A linear recurrence of order `k` is one `k x k` matrix raised to the power `n` with fast exponentiation: time `O(k^3 log n)`.
+
+```text
+[f(n+1)]   [1 1]^n  [f(1)]
+[f(n)  ] = [1 0]    [f(0)]
+```
 
 ---
 
 ## Part 24. Expectation / Probability Basics
 
+**Rules.**
+
 ```text
-P(A) = favorable/total          P(not A) = 1 - P(A)
-independent: P(A∩B)=P(A)P(B)
-Linearity: E[X+Y] = E[X]+E[Y]   ALWAYS (no independence needed)
-E[count] = Σ P(indicator_i = 1)
+P(A) = favorable outcomes / all outcomes
+P(not A) = 1 - P(A)
+independent events:  P(A and B) = P(A) * P(B)
 ```
 
-Expected contribution: for each element/pair, compute probability it contributes, sum. In modular problems `P = a * b^{-1} mod p`.
+**Linearity of expectation (the key tool).**
+
+```text
+E[X + Y] = E[X] + E[Y]          always true, even if X and Y are dependent
+E[number of successes] = sum of P(item i succeeds)
+```
+
+**Worked example.** Flip 10 fair coins. Expected heads `= 10 * 1/2 = 5` (each coin contributes `1/2`).
+
+**Modular answers.** A fraction `a/b` mod `p` is `a * b^(p-2) mod p`.
 
 ---
 
 ## Part 25. Mathematical Optimization
 
+> **What is it?** Finding the best value by reasoning about how the answer changes.
+
+**Binary search on the answer.**
+
 ```text
-optimization -> guess X -> can(X)? -> monotone? -> binary search
+1. Guess X.
+2. Write can(X): is X achievable?
+3. If can(X) true implies can(X-1) true (monotone), binary search works.
 ```
 
-Monotone means `can(X)` true ⇒ `can(X+1)` (or reversed). Check by asking: "if X works, does a weaker requirement work?"
-Discrete convexity: unimodal cost `f(x)` ⇒ ternary/binary search on `f(x+1)-f(x)`. Minimizing `Σ|x-a_i|` ⇒ median. Balancing two quantities ⇒ meet near `S/2`. Every optimum needs a lower bound + achieving construction.
-
 ```cpp
-// find the maximum x with can(x) == true   (can is monotone: true ... true false ... false)
+// find the maximum x with can(x) == true  (can is true ... true false ... false)
 long long lo = 0, hi = INF;
 while (lo < hi) {
-    long long mid = lo + (hi - lo + 1) / 2;   // upper mid avoids infinite loop
+    long long mid = lo + (hi - lo + 1) / 2;   // upper mid avoids an infinite loop
     if (can(mid)) lo = mid;
     else          hi = mid - 1;
 }
 // answer = lo
 ```
+
+**Other tools.**
+
+| Situation | Tool |
+|---|---|
+| minimize total distance | median |
+| minimize sum of squares | mean |
+| two quantities to balance | meet near `total / 2` |
+| any optimum | prove a lower bound, then show a construction |
 
 
 ---
