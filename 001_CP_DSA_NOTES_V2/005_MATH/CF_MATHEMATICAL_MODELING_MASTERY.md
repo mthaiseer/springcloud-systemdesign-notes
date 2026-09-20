@@ -870,8 +870,19 @@ Each form: Recognition → Model → Transformation → Why → Visual → Examp
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""total is S"" -> unknowns named -> `ΣA = S`; target all equal `t` ⇒ `n·t = S` -> `t = S/n`, need `S % n == 0` -> O(cheap) check -> code
+Statement:     "total is S", "sum of all", "equalize"
+        |
+        v
+Math model:    ΣA = S; target all equal t ⇒ n·t = S
+        |
+        v
+Transform:     t = S/n, need S % n == 0
+        |
+        v
+Check on:      S=12,n=4 → t=3; S=13 → impossible
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** S=12,n=4 → t=3; S=13 → impossible
@@ -895,8 +906,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""differ by"" -> unknowns named -> `Ai - Aj = d` -> `Ai = Aj + d` ⇒ lookup in map -> O(cheap) check -> code
+Statement:     "differ by", "gap", |Ai-Aj|=d
+        |
+        v
+Math model:    Ai - Aj = d
+        |
+        v
+Transform:     Ai = Aj + d ⇒ lookup in map
+        |
+        v
+Check on:      A=[1,5,3], d=2 → (1,3),(3,5)
+        |
+        v
+Algorithm:     complexity O(n)–O(n log n)
 ```
 
 **Example:** A=[1,5,3], d=2 → (1,3),(3,5)
@@ -920,8 +942,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""product"" -> unknowns named -> `Ai*Aj = K` -> `Aj = K/Ai`, need `K % Ai == 0`; or factor into primes -> O(cheap) check -> code
+Statement:     "product", Ai*Aj=K
+        |
+        v
+Math model:    Ai*Aj = K
+        |
+        v
+Transform:     Aj = K/Ai, need K % Ai == 0; or factor into primes
+        |
+        v
+Check on:      K=12 → (1,12),(2,6),(3,4)
+        |
+        v
+Algorithm:     complexity O(√K) or O(n)
 ```
 
 **Example:** K=12 → (1,12),(2,6),(3,4)
@@ -945,8 +978,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""twice as many"" -> unknowns named -> `x/y = a/b` ⇒ `x b = y a` -> Cross-multiply (no floats); `x=a t, y=b t` with `t` integer -> O(cheap) check -> code
+Statement:     "twice as many", "ratio a:b"
+        |
+        v
+Math model:    x/y = a/b ⇒ x b = y a
+        |
+        v
+Transform:     Cross-multiply (no floats); x=a t, y=b t with t integer
+        |
+        v
+Check on:      x:y = 2:3, x+y=20 → t=4 → 8,12
+        |
+        v
+Algorithm:     complexity O(1)
 ```
 
 **Example:** x:y = 2:3, x+y=20 → t=4 → 8,12
@@ -970,8 +1014,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""even/odd"" -> unknowns named -> `x mod 2 = p` -> Reduce every quantity to `mod 2`; count odds -> O(cheap) check -> code
+Statement:     "even/odd", "alternating", "can't be split"
+        |
+        v
+Math model:    x mod 2 = p
+        |
+        v
+Transform:     Reduce every quantity to mod 2; count odds
+        |
+        v
+Check on:      n=6 even, split into two even positive → yes
+        |
+        v
+Algorithm:     complexity O(1)–O(n)
 ```
 
 **Example:** n=6 even, split into two even positive → yes
@@ -995,8 +1050,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""divisible by d"" -> unknowns named -> `x = d k` -> Round: `x = ceil(a/d)*d` (smallest multiple ≥ a) -> O(cheap) check -> code
+Statement:     "divisible by d", "multiple of"
+        |
+        v
+Math model:    x = d k
+        |
+        v
+Transform:     Round: x = ceil(a/d)*d (smallest multiple ≥ a)
+        |
+        v
+Check on:      d=5,a=23 → 25
+        |
+        v
+Algorithm:     complexity O(1)
 ```
 
 **Example:** d=5,a=23 → 25
@@ -1020,8 +1086,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""common divisor"" -> unknowns named -> `g | Ai ∀i` -> `g = gcd(A1..An)`; ops like `Ai-=Aj` preserve it -> O(cheap) check -> code
+Statement:     "common divisor", "equal parts", subtraction ops
+        |
+        v
+Math model:    g | Ai ∀i
+        |
+        v
+Transform:     g = gcd(A1..An); ops like Ai-=Aj preserve it
+        |
+        v
+Check on:      gcd(12,18)=6
+        |
+        v
+Algorithm:     complexity O(n log V)
 ```
 
 **Example:** gcd(12,18)=6
@@ -1045,8 +1122,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""divisible by both"" -> unknowns named -> `X mod a = X mod b = 0` -> `X = k·lcm(a,b)`, `lcm = a/gcd·b` -> O(cheap) check -> code
+Statement:     "divisible by both", "synchronize", "every a and every b"
+        |
+        v
+Math model:    X mod a = X mod b = 0
+        |
+        v
+Transform:     X = k·lcm(a,b), lcm = a/gcd·b
+        |
+        v
+Check on:      a=4,b=6 → lcm 12
+        |
+        v
+Algorithm:     complexity O(log V)
 ```
 
 **Example:** a=4,b=6 → lcm 12
@@ -1070,8 +1158,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""remainder"" -> unknowns named -> `x mod m = r` -> Largest ≤n: `k = n - ((n-r) mod m)`; class representative -> O(cheap) check -> code
+Statement:     "remainder", "mod k", "each k-th"
+        |
+        v
+Math model:    x mod m = r
+        |
+        v
+Transform:     Largest ≤n: k = n - ((n-r) mod m); class representative
+        |
+        v
+Check on:      n=7,m=5,r=3 → 3
+        |
+        v
+Algorithm:     complexity O(1)
 ```
 
 **Example:** n=7,m=5,r=3 → 3
@@ -1095,8 +1194,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""equal numbers of"" -> unknowns named -> `cntA = cntB` -> Assign +1 to A, −1 to B; need `Σ=0` -> O(cheap) check -> code
+Statement:     "equal numbers of", "same count"
+        |
+        v
+Math model:    cntA = cntB
+        |
+        v
+Transform:     Assign +1 to A, −1 to B; need Σ=0
+        |
+        v
+Check on:      ABBA → +1−1−1+1=0 ✓
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** `ABBA` → +1−1−1+1=0 ✓
@@ -1120,8 +1230,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""number of pairs (i<j)"" -> unknowns named -> `C(n,2)` or Σ over frequency -> Group by key; `f(f-1)/2` per group -> O(cheap) check -> code
+Statement:     "number of pairs (i<j)"
+        |
+        v
+Math model:    C(n,2) or Σ over frequency
+        |
+        v
+Transform:     Group by key; f(f-1)/2 per group
+        |
+        v
+Check on:      [1,1,2,2,2] → 1+3=4
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** [1,1,2,2,2] → 1+3=4
@@ -1145,8 +1266,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-"`Ai+Aj=K`" -> unknowns named -> `Aj = K - Ai` -> Frequency lookup; handle `Ai=K/2` with `C(f,2)` -> O(cheap) check -> code
+Statement:     Ai+Aj=K
+        |
+        v
+Math model:    Aj = K - Ai
+        |
+        v
+Transform:     Frequency lookup; handle Ai=K/2 with C(f,2)
+        |
+        v
+Check on:      K=10,[3,7,5,5] → (3,7),(5,5)
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** K=10,[3,7,5,5] → (3,7),(5,5)
@@ -1170,8 +1302,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-"`Ai-Aj=K`" -> unknowns named -> `Aj=Ai-K` -> Hash lookup / two-pointer on sorted -> O(cheap) check -> code
+Statement:     Ai-Aj=K
+        |
+        v
+Math model:    Aj=Ai-K
+        |
+        v
+Transform:     Hash lookup / two-pointer on sorted
+        |
+        v
+Check on:      K=2,[1,3,5] → 2 pairs
+        |
+        v
+Algorithm:     complexity O(n log n)
 ```
 
 **Example:** K=2,[1,3,5] → 2 pairs
@@ -1195,8 +1338,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""same remainder mod m"" -> unknowns named -> `Ai ≡ Aj (mod m)` -> `m | (Ai-Aj)`; bucket by remainder -> O(cheap) check -> code
+Statement:     "same remainder mod m"
+        |
+        v
+Math model:    Ai ≡ Aj (mod m)
+        |
+        v
+Transform:     m | (Ai-Aj); bucket by remainder
+        |
+        v
+Check on:      m=3,[1,4,7,2] → class 1 has 3
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** m=3,[1,4,7,2] → class 1 has 3
@@ -1220,8 +1374,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""consecutive integers"" -> unknowns named -> after sorting `a_{i+1}=a_i+1` -> Check `max-min = n-1` and all distinct -> O(cheap) check -> code
+Statement:     "consecutive integers", "forms 1..k"
+        |
+        v
+Math model:    after sorting a_{i+1}=a_i+1
+        |
+        v
+Transform:     Check max-min = n-1 and all distinct
+        |
+        v
+Check on:      [3,5,4] → 5-3=2=n-1 ✓
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** [3,5,4] → 5-3=2=n-1 ✓
@@ -1245,8 +1410,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""increase by d each step"" -> unknowns named -> `a_k = a+(k-1)d` -> Sum `n(2a+(n-1)d)/2`; find `n` from quadratic bound -> O(cheap) check -> code
+Statement:     "increase by d each step"
+        |
+        v
+Math model:    a_k = a+(k-1)d
+        |
+        v
+Transform:     Sum n(2a+(n-1)d)/2; find n from quadratic bound
+        |
+        v
+Check on:      1+2+…+100=5050
+        |
+        v
+Algorithm:     complexity O(1) / O(log)
 ```
 
 **Example:** 1+2+…+100=5050
@@ -1270,8 +1446,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""doubles"" -> unknowns named -> `a_k = a r^k` -> steps ≈ `log_r`; sum `(r^k-1)/(r-1)` -> O(cheap) check -> code
+Statement:     "doubles", "halves"
+        |
+        v
+Math model:    a_k = a r^k
+        |
+        v
+Transform:     steps ≈ log_r; sum (r^k-1)/(r-1)
+        |
+        v
+Check on:      1→1e9 by ×2 takes 30 steps
+        |
+        v
+Algorithm:     complexity O(log)
 ```
 
 **Example:** 1→1e9 by ×2 takes 30 steps
@@ -1295,8 +1482,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""minimum total distance"" -> unknowns named -> `min_x Σ|x-ai|` -> `x = median` of sorted array -> O(cheap) check -> code
+Statement:     "minimum total distance", "gather at a point"
+        |
+        v
+Math model:    min_x Σ|x-ai|
+        |
+        v
+Transform:     x = median of sorted array
+        |
+        v
+Check on:      [1,2,10] → x=2, cost 9
+        |
+        v
+Algorithm:     complexity O(n log n)
 ```
 
 **Example:** [1,2,10] → x=2, cost 9
@@ -1320,8 +1518,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""subarray with sum K"" -> unknowns named -> `P[r]-P[l-1]=K` -> `P[l-1]=P[r]-K` map lookup -> O(cheap) check -> code
+Statement:     "subarray with sum K"
+        |
+        v
+Math model:    P[r]-P[l-1]=K
+        |
+        v
+Transform:     P[l-1]=P[r]-K map lookup
+        |
+        v
+Check on:      [1,2,3],K=3 → (1,2),(3)
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** [1,2,3],K=3 → (1,2),(3)
@@ -1345,8 +1554,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""sum over all subarrays/pairs"" -> unknowns named -> `Σ_i A_i * ways_i` -> count structures containing each element -> O(cheap) check -> code
+Statement:     "sum over all subarrays/pairs"
+        |
+        v
+Math model:    Σ_i A_i * ways_i
+        |
+        v
+Transform:     count structures containing each element
+        |
+        v
+Check on:      n=3 subarray sums: coeffs 3,4,3
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** n=3 subarray sums: coeffs 3,4,3
@@ -1370,8 +1590,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""prove/decide existence"" -> unknowns named -> `n objects > m boxes` -> If `n>=m` answer is yes -> O(cheap) check -> code
+Statement:     "prove/decide existence", huge n vs small modulus
+        |
+        v
+Math model:    n objects > m boxes
+        |
+        v
+Transform:     If n>=m answer is yes
+        |
+        v
+Check on:      n=5,m=3 → YES
+        |
+        v
+Algorithm:     complexity O(1) then DP
 ```
 
 **Example:** n=5,m=3 → YES
@@ -1395,8 +1626,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""none of"" -> unknowns named -> `|∪Ai|` -> alternate signs over masks -> O(cheap) check -> code
+Statement:     "none of", "at least one of", "divisible by any of"
+        |
+        v
+Math model:    |∪Ai|
+        |
+        v
+Transform:     alternate signs over masks
+        |
+        v
+Check on:      multiples of 2 or 3 up to 10: 5+3-1=7
+        |
+        v
+Algorithm:     complexity O(2^k)
 ```
 
 **Example:** multiples of 2 or 3 up to 10: 5+3-1=7
@@ -1420,8 +1662,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""any number of times"" -> unknowns named -> `I(before)=I(after)` -> Find preserved quantity -> O(cheap) check -> code
+Statement:     "any number of times", "can transform"
+        |
+        v
+Math model:    I(before)=I(after)
+        |
+        v
+Transform:     Find preserved quantity
+        |
+        v
+Check on:      See Part 10
+        |
+        v
+Algorithm:     complexity O(1)–O(n)
 ```
 
 **Example:** See Part 10
@@ -1445,8 +1698,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""process ends?"" -> unknowns named -> strictly decreasing potential -> Bound steps by initial potential -> O(cheap) check -> code
+Statement:     "process ends?", "how many steps at most"
+        |
+        v
+Math model:    strictly decreasing potential
+        |
+        v
+Transform:     Bound steps by initial potential
+        |
+        v
+Check on:      Each step reduces ΣA by ≥1
+        |
+        v
+Algorithm:     complexity O(potential)
 ```
 
 **Example:** Each step reduces ΣA by ≥1
@@ -1470,8 +1734,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""can reach"" -> unknowns named -> state graph -> Characterize reachable set by invariants -> O(cheap) check -> code
+Statement:     "can reach", "is it possible"
+        |
+        v
+Math model:    state graph
+        |
+        v
+Transform:     Characterize reachable set by invariants
+        |
+        v
+Check on:      Coins a,b make all multiples of gcd
+        |
+        v
+Algorithm:     complexity O(1)
 ```
 
 **Example:** Coins a,b make all multiples of gcd
@@ -1495,8 +1770,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""construct any"" -> unknowns named -> find `x` with `f(x)=target` -> Choose simplest satisfying family -> O(cheap) check -> code
+Statement:     "construct any"
+        |
+        v
+Math model:    find x with f(x)=target
+        |
+        v
+Transform:     Choose simplest satisfying family
+        |
+        v
+Check on:      a+b=x, min lcm → 1, x-1
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** `a+b=x`, min lcm → `1, x-1`
@@ -1520,8 +1806,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""minimum/maximum possible"" -> unknowns named -> `lower <= ans <= upper` -> Prove lower bound, build matching solution -> O(cheap) check -> code
+Statement:     "minimum/maximum possible"
+        |
+        v
+Math model:    lower <= ans <= upper
+        |
+        v
+Transform:     Prove lower bound, build matching solution
+        |
+        v
+Check on:      CF 1263A
+        |
+        v
+Algorithm:     complexity O(1)
 ```
 
 **Example:** CF 1263A
@@ -1545,8 +1842,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""largest/smallest element"" -> unknowns named -> look at max/min -> Its constraint dominates -> O(cheap) check -> code
+Statement:     "largest/smallest element"
+        |
+        v
+Math model:    look at max/min
+        |
+        v
+Transform:     Its constraint dominates
+        |
+        v
+Check on:      largest pile needs partners
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** largest pile needs partners
@@ -1570,8 +1878,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""|x|+|y|"" -> unknowns named -> `u=x+y,v=x-y` -> Manhattan → Chebyshev -> O(cheap) check -> code
+Statement:     "|x|+|y|", diagonal moves
+        |
+        v
+Math model:    u=x+y,v=x-y
+        |
+        v
+Transform:     Manhattan → Chebyshev
+        |
+        v
+Check on:      (3,1)→u=4,v=2
+        |
+        v
+Algorithm:     complexity O(1)
 ```
 
 **Example:** (3,1)→u=4,v=2
@@ -1595,8 +1914,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-"AND/OR/XOR" -> unknowns named -> per-bit problems -> Solve 30 bit-problems, combine `2^b` -> O(cheap) check -> code
+Statement:     AND/OR/XOR
+        |
+        v
+Math model:    per-bit problems
+        |
+        v
+Transform:     Solve 30 bit-problems, combine 2^b
+        |
+        v
+Check on:      XOR of pairs by bit counts
+        |
+        v
+Algorithm:     complexity O(30 n)
 ```
 
 **Example:** XOR of pairs by bit counts
@@ -1620,8 +1950,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-"gcd/lcm/divisibility" -> unknowns named -> exponent vectors -> Per prime: `min`/`max`/compare -> O(cheap) check -> code
+Statement:     gcd/lcm/divisibility
+        |
+        v
+Math model:    exponent vectors
+        |
+        v
+Transform:     Per prime: min/max/compare
+        |
+        v
+Check on:      12=2²·3, 18=2·3²
+        |
+        v
+Algorithm:     complexity O(n log V)
 ```
 
 **Example:** 12=2²·3, 18=2·3²
@@ -1645,8 +1986,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-"order irrelevant" -> unknowns named -> `cnt[v]` -> Work over distinct values -> O(cheap) check -> code
+Statement:     order irrelevant
+        |
+        v
+Math model:    cnt[v]
+        |
+        v
+Transform:     Work over distinct values
+        |
+        v
+Check on:      [1,1,2] → {1:2,2:1}
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** [1,1,2] → {1:2,2:1}
@@ -1670,8 +2022,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""permutation of 1..n"" -> unknowns named -> each value once -> `Σ=n(n+1)/2`, cycles, fixed points -> O(cheap) check -> code
+Statement:     "permutation of 1..n"
+        |
+        v
+Math model:    each value once
+        |
+        v
+Transform:     Σ=n(n+1)/2, cycles, fixed points
+        |
+        v
+Check on:      [2,3,1]: one 3-cycle
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** [2,3,1]: one 3-cycle
@@ -1695,8 +2058,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""mex"" -> unknowns named -> smallest missing -> `mex ≤ n`; need `0..k-1` present -> O(cheap) check -> code
+Statement:     "mex"
+        |
+        v
+Math model:    smallest missing
+        |
+        v
+Transform:     mex ≤ n; need 0..k-1 present
+        |
+        v
+Check on:      [0,1,3] → 2
+        |
+        v
+Algorithm:     complexity O(n)
 ```
 
 **Example:** [0,1,3] → 2
@@ -1720,8 +2094,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-"segments" -> unknowns named -> `[l,r]` -> Intersection `[max l, min r]`, sort by endpoint, sweep -> O(cheap) check -> code
+Statement:     segments, overlaps
+        |
+        v
+Math model:    [l,r]
+        |
+        v
+Transform:     Intersection [max l, min r], sort by endpoint, sweep
+        |
+        v
+Check on:      [1,5]&[3,8]→[3,5]
+        |
+        v
+Algorithm:     complexity O(n log n)
 ```
 
 **Example:** [1,5]&[3,8]→[3,5]
@@ -1745,8 +2130,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-"grid moves" -> unknowns named -> `(x+y)%2` -> Reachability by parity and Manhattan -> O(cheap) check -> code
+Statement:     grid moves, tilings
+        |
+        v
+Math model:    (x+y)%2
+        |
+        v
+Transform:     Reachability by parity and Manhattan
+        |
+        v
+Check on:      (0,0)→(1,2) in 3 steps ✓
+        |
+        v
+Algorithm:     complexity O(1)
 ```
 
 **Example:** (0,0)→(1,2) in 3 steps ✓
@@ -1770,8 +2166,20 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""wraps around"" -> unknowns named -> index `i mod n` -> Position after `t` steps: `(s+t·d) mod n`; cycle length `n/gcd(d,n)` -> O(cheap) check -> code
+Statement:     "wraps around", "every k-th"
+        |
+        v
+Math model:    index i mod n
+        |
+        v
+Transform:     Position after t steps: (s+t·d) mod n; cycle length
+               n/gcd(d,n)
+        |
+        v
+Check on:      n=6,d=4 → orbit size 3
+        |
+        v
+Algorithm:     complexity O(1)
 ```
 
 **Example:** n=6,d=4 → orbit size 3
@@ -1795,8 +2203,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""maximize the minimum"" -> unknowns named -> `can(X)` monotone -> Binary search over answer -> O(cheap) check -> code
+Statement:     "maximize the minimum"
+        |
+        v
+Math model:    can(X) monotone
+        |
+        v
+Transform:     Binary search over answer
+        |
+        v
+Check on:      CF 1201C
+        |
+        v
+Algorithm:     complexity O(n log V)
 ```
 
 **Example:** CF 1201C
@@ -1820,8 +2239,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""distribute identical objects"" -> unknowns named -> `Σxi=n` -> `C(n+k-1,k-1)` -> O(cheap) check -> code
+Statement:     "distribute identical objects"
+        |
+        v
+Math model:    Σxi=n
+        |
+        v
+Transform:     C(n+k-1,k-1)
+        |
+        v
+Check on:      n=4,k=3 → C(6,2)=15
+        |
+        v
+Algorithm:     complexity O(1) with precomputed factorials
 ```
 
 **Example:** n=4,k=3 → C(6,2)=15
@@ -1845,8 +2275,19 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 **Visual Example:**
 
 ```text
-Statement -> Variables -> Equation -> Transformation -> Simplified condition -> Algorithm
-""pay exactly"" -> unknowns named -> `ax+by=c` -> gcd test, bounded enumeration -> O(cheap) check -> code
+Statement:     "pay exactly", "packs of"
+        |
+        v
+Math model:    ax+by=c
+        |
+        v
+Transform:     gcd test, bounded enumeration
+        |
+        v
+Check on:      2020a+2021b=4041 ✓
+        |
+        v
+Algorithm:     complexity O(c/a)
 ```
 
 **Example:** 2020a+2021b=4041 ✓
