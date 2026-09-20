@@ -159,7 +159,7 @@ Story -> Objects -> Variables -> Allowed Operations -> Constraints
 | subarray / segment | contiguous interval `[l,r]` → prefix sums |
 | subsequence | ordered selection, `2^n` subsets |
 | subset | bitmask / combinatorics |
-| distance | absolute difference `|x-y|` |
+| distance | absolute difference `\|x-y\|` |
 | minimum number of operations | lower bound + construction |
 | maximum possible minimum | binary search on answer |
 | can transform / is it possible | reachability → invariant |
@@ -203,67 +203,273 @@ Answer: (a+b) % 2 == 0
 
 ## Part 1. Arithmetic Foundations
 
-### 1.1 Integer division, quotient, remainder
+> **Who this is for:** you are new to competitive-programming math. Every idea below is explained in the same six steps, so you always know where to look:
+>
+> 1. **What is it?** (plain words)
+> 2. **Picture** (everyday example)
+> 3. **Rule** (the formula)
+> 4. **Worked example** (numbers, step by step)
+> 5. **Where it shows up in Codeforces**
+> 6. **Watch out** (mistakes) + **C++ note**
 
-**Definition.** For `b>0`: `a = q*b + r`, `0 <= r < b`. `q = floor(a/b)`, `r = a mod b`.
-**Intuition.** `q` = how many full groups of size `b`; `r` = leftover.
-**Signals.** "groups of", "each box holds", "every k-th", "remainder".
-**Example.** `17 = 3*5 + 2`: 3 full boxes of 5, 2 left.
-**C++ notes.** `/` truncates toward 0, `%` can be **negative** for negative `a`. Normalize: `((a % m) + m) % m`.
+### 1.0 Reading the symbols (cheat sheet)
 
-### 1.2 Floor, ceiling, ceil-division
+| Symbol / word | Say it as | Meaning | Example |
+|---|---|---|---|
+| `a % b` | "a mod b" | remainder after dividing `a` by `b` | `17 % 5 = 2` |
+| `a / b` (C++ ints) | "integer division" | quotient, fraction thrown away | `17 / 5 = 3` |
+| `floor(x)` | "round down" | biggest integer `<= x` | `floor(3.7) = 3` |
+| `ceil(x)` | "round up" | smallest integer `>= x` | `ceil(3.2) = 4` |
+| `abs(x)` or `\|x\|` | "absolute value" | distance from 0, never negative | `\|-5\| = 5` |
+| `a \| b` | "a divides b" | `b` is a multiple of `a` | `3 \| 12` |
+| `Σ` | "sum of" | add many terms | `Σ A_i = A_1 + ... + A_n` |
+| `≡` | "congruent" | same remainder | `17 ≡ 2 (mod 5)` |
+| `=>` | "implies" | if left is true, right is true | |
+| `<=>` | "if and only if" | both directions true | |
+| `n!` | "n factorial" | `n * (n-1) * ... * 1` | `4! = 24` |
+
+---
+
+### 1.1 Quotient and remainder
+
+**What is it?**
+Dividing `a` by `b` gives two answers: how many *complete groups* of size `b` fit (quotient) and how many items are *left over* (remainder).
+
+**Picture.** 17 candies, boxes hold 5.
 
 ```text
-ceil(a/b) = (a + b - 1) / b     for a >= 0, b > 0   (integer division)
-ceil(a/b) = floor((a-1)/b) + 1  for a >= 1
-floor(a/b + 0.5) is rounding; avoid doubles: use (2a+b)/(2b)
+[ooooo] [ooooo] [ooooo]  oo
+  box1    box2    box3   left over
+
+quotient  q = 3   (full boxes)
+remainder r = 2   (candies left)
 ```
 
-**Derivation.** Write `a = qb + r`. If `r=0`: `(a+b-1)/b = (qb+b-1)/b = q`. If `r>0`: `(qb+r+b-1)/b = q+1` since `r+b-1 >= b`.
-**Signals.** "minimum number of trips/boxes/moves so that everything is covered".
-**Example.** 23 items, boxes of 5 → `(23+4)/5 = 5`.
-**Mistake.** `ceil(a/b)` with `a/b` already integer-divided in C++ → wrong; `ceil(1.0*a/b)` risks precision for `1e18`.
-
-### 1.3 Absolute value, min/max
+**Rule.**
 
 ```text
-|x| = max(x, -x)
-|x-y| = distance on number line
-max(a,b) = (a+b+|a-b|)/2      min(a,b) = (a+b-|a-b|)/2
+a = q * b + r        with  0 <= r < b
+q = a / b            (C++ integer division)
+r = a % b
 ```
+
+**Worked example.** `a = 17`, `b = 5`.
+
+```text
+Step 1: how many 5s fit in 17?   3  (3*5 = 15, 4*5 = 20 is too big)
+Step 2: what is left?            17 - 15 = 2
+Result: 17 = 3*5 + 2
+```
+
+**Where it shows up in CF.** Words like "groups of", "each box holds", "every k-th", "remainder", "cycle", "wraps around".
+
+**Watch out.**
+- In C++ `%` can be **negative** for negative numbers: `-7 % 5 = -2`.
+- Safe non-negative remainder: `((a % m) + m) % m`.
+
+---
+
+### 1.2 Floor, ceiling and ceil-division
+
+**What is it?**
+`floor` rounds down, `ceil` rounds up. **Ceil division** answers: *"how many boxes do I need to hold everything?"*
+
+**Picture.** 23 items, boxes of 5.
+
+```text
+[ooooo][ooooo][ooooo][ooooo][ooo..]
+   1      2      3      4     5      -> 5 boxes needed
+```
+
+`23 / 5 = 4.6`, but you cannot buy 0.6 of a box, so round **up** to 5.
+
+**Rule (memorize this).**
+
+```text
+ceil(a / b) = (a + b - 1) / b        for a >= 0, b > 0, integer division
+```
+
+**Why it works (two cases).**
+
+```text
+Case 1: a divides evenly, a = q*b
+        (q*b + b - 1) / b = q + (b-1)/b = q      (the extra b-1 is too small to add a box)
+
+Case 2: a = q*b + r with r > 0
+        (q*b + r + b - 1) / b = q + 1            (r + b - 1 >= b, so it adds exactly one box)
+```
+
+**Worked example.** `a = 23`, `b = 5`.
+
+```text
+(23 + 5 - 1) / 5 = 27 / 5 = 5
+```
+
+**Where it shows up in CF.** "Minimum number of trips / boxes / moves so that everything is covered", "each move changes by at most K" (CF 1409A).
+
+**Watch out.**
+- `ceil(a / b)` in C++ with integers does **not** work, because `a / b` already rounded down.
+- Do not use `double` for big numbers (`1e18` loses precision). Use the integer formula.
+
+**Try yourself.** `ceil(10/3)`? `ceil(12/4)`? `ceil(1/100)`?
+*(answers: 4, 3, 1)*
+
+---
+
+### 1.3 Absolute value, min and max
+
+**What is it?**
+`|x|` is the **distance from 0**. `|x - y|` is the **distance between x and y** on a number line. `min` and `max` pick the smaller or larger of two.
+
+**Picture.**
+
+```text
+ -5   -4   -3   -2   -1    0    1    2    3
+  *                        |              *
+ x=-5                     zero           y=3
+
+|x - y| = |-5 - 3| = 8   (8 steps between them)
+```
+
+**Rules.**
+
+```text
+|x|        = x   if x >= 0,  else -x
+|x - y|    = |y - x|                     (order does not matter)
+max(a, b)  = (a + b + |a - b|) / 2
+min(a, b)  = (a + b - |a - b|) / 2
+max(a, b) + min(a, b) = a + b
+```
+
+**Worked example.** `a = 3`, `b = 8`.
+
+```text
+|a - b| = 5
+max = (3 + 8 + 5) / 2 = 8
+min = (3 + 8 - 5) / 2 = 3
+```
+
+**Where it shows up in CF.** "distance", "difference", "how far apart", "minimum total moves".
+
+**Watch out.** In C++ use `abs()` for `int` and `llabs()` (or `abs` on `long long`) for `long long`.
+
+---
 
 ### 1.4 Intervals and inequalities
 
-```text
-L <= x <= R      intersect two constraints:  max(L1,L2) <= x <= min(R1,R2)
-empty if max(L) > min(R)
-```
+**What is it?**
+An interval is a range of allowed values. `L <= x <= R` means "x is at least L **and** at most R".
 
-### 1.5 Powers, logarithms, bounds
+**Picture.**
 
 ```text
-2^10 ~ 1e3, 2^20 ~ 1e6, 2^30 ~ 1e9, 2^60 ~ 1e18
-log2(1e9) ~ 30, so "repeated doubling/halving" takes ~30 steps.
+constraint 1:   3 <= x <= 10        [3 ................. 10]
+constraint 2:   6 <= x <= 15                [6 ................. 15]
+both together:  6 <= x <= 10                [6 ........ 10]
 ```
 
-### 1.6 Overflow
+**Rule (intersection).**
 
-| Quantity | Max magnitude | Type |
+```text
+L = max(L1, L2)
+R = min(R1, R2)
+if L > R  ->  no valid x (empty)
+else      ->  x can be any value from L to R
+```
+
+**Worked example.** Ranges `[3,10]` and `[6,15]`: `L = max(3,6) = 6`, `R = min(10,15) = 10` -> valid `x` in `[6,10]` (5 integers: 6,7,8,9,10, count = `R - L + 1`).
+
+**Where it shows up in CF.** "at least", "at most", "between", "no more than". Each phrase gives one bound.
+
+| Phrase | Inequality |
+|---|---|
+| at least k | `x >= k` |
+| at most k | `x <= k` |
+| strictly more than k | `x > k` |
+| between l and r inclusive | `l <= x <= r` |
+
+**Watch out.** Number of integers in `[L, R]` is `R - L + 1` (not `R - L`).
+
+---
+
+### 1.5 Powers, logarithms and size estimates
+
+**What is it?**
+`2^k` = 2 multiplied by itself `k` times. `log2(n)` answers: *"how many times can I double 1 to reach n?"* or *"how many times can I halve n until 1?"*
+
+**Picture.**
+
+```text
+1 -> 2 -> 4 -> 8 -> 16 -> 32 -> ...     (k doublings give 2^k)
+1,000,000,000 halved again and again reaches 1 after about 30 steps
+```
+
+**Numbers to memorize.**
+
+```text
+2^10 ~ 1e3      2^20 ~ 1e6      2^30 ~ 1e9      2^60 ~ 1e18
+log2(1e9) ~ 30      log2(1e18) ~ 60
+```
+
+**Where it shows up in CF.** "repeatedly doubles", "repeatedly halves", "each step divides by 2" -> the process takes only about **30 to 60 steps**, so you may simulate it.
+
+**Watch out.** `1 << 31` overflows `int`. Use `1LL << b` for `b >= 31`.
+
+---
+
+### 1.6 Overflow: choosing `int` or `long long`
+
+**What is it?**
+`int` holds up to about `2.1e9`. If your answer can be bigger, the number wraps around to garbage.
+
+**Rule.** Estimate the *largest possible value* before choosing the type.
+
+| Quantity (n = 2e5, values up to 1e9) | Biggest value | Type |
 |---|---|---|
-| `n*(n+1)/2`, n=2e5 | 2e10 | `long long` |
-| sum of `2e5` values of `1e9` | 2e14 | `long long` |
-| product of two 1e9 | 1e18 | `long long` (fits, < 9.2e18) |
-| `C(n,2)`, n=2e5 | 2e10 | `long long` |
+| `n * (n + 1) / 2` | about 2e10 | `long long` |
+| sum of `n` numbers of size 1e9 | about 2e14 | `long long` |
+| product of two numbers up to 1e9 | about 1e18 | `long long` (fits, max 9.2e18) |
+| number of pairs `n(n-1)/2` | about 2e10 | `long long` |
+| `a + b` with `a, b <= 1e9` | 2e9 | `long long` (close to the `int` limit) |
 
-**Rule:** the moment a formula multiplies two input-size numbers, use `long long`.
+**Worked example.**
 
-```text
-ASCII: ceil-division as packing
-items:  ●●●●● ●●●●● ●●●●● ●●●●● ●●●
-boxes:   [5]    [5]    [5]    [5]  [3]   -> 5 boxes = ceil(23/5)
+```cpp
+int a = 1000000000, b = 1000000000;
+long long bad  = a * b;           // WRONG: multiplied as int first, overflows
+long long good = 1LL * a * b;     // RIGHT: 1LL makes the multiplication long long
 ```
 
-**Representative problems:** CF 4A (parity), CF 1409A (ceil), CF 1476A (ceil + lower bound).
+**Rule of thumb.** If a formula multiplies two input-size numbers, use `long long`.
+
+---
+
+### 1.7 Rounding without decimals
+
+**What is it?**
+Sometimes a statement says "round to the nearest integer". Use integers only.
+
+```text
+round(a / b) = (2*a + b) / (2*b)      for a >= 0, b > 0
+```
+
+**Worked example.** `round(7 / 2) = (14 + 2) / 4 = 4` (3.5 rounds to 4).
+
+---
+
+### 1.8 Section summary (what to remember)
+
+```text
+"boxes needed"                 -> ceil division  (a + b - 1) / b
+"remainder", "every k-th"      -> a % b
+"distance"                     -> |x - y|
+"at least / at most"           -> intervals, intersect with max/min
+"doubles / halves"             -> about 30 to 60 steps
+"answer may be large"          -> long long
+```
+
+**Practice problems (in this file):** CF 4A (parity), CF 1409A (ceil), CF 1476A (ceil + lower bound).
+
 
 ---
 
@@ -355,72 +561,204 @@ Example (CF 1263A): can't do better than `(a+b+c)/2` because each move uses 2 ca
 
 ## Part 3. Number Theory Foundations
 
-| Concept | Definition | Modeling sentence |
-|---|---|---|
-| divisor `d | n` | `n % d == 0` | "each group has equal size d" |
-| multiple | `n = k*d` | "every d-th", "period d" |
-| prime | exactly 2 divisors | "no split possible" |
-| gcd(a,b) | largest common divisor | "both numbers must be divisible by / split into equal pieces" |
-| lcm(a,b) | smallest common multiple | "both events coincide", "divisible by both" |
+> Same six-step layout as Part 1: **What is it? / Picture / Rule / Worked example / Where it shows up / Watch out.**
 
-**Key identities**
+### 3.1 Divisors and multiples
+
+**What is it?**
+`d` is a **divisor** of `n` if `n` splits into equal groups of size `d` with nothing left over. Then `n` is a **multiple** of `d`.
+
+**Picture.** 12 items in groups of 4:
 
 ```text
-gcd(a,b) = gcd(b, a mod b)          (Euclid, O(log))
-gcd(a,b) * lcm(a,b) = a*b
-lcm(a,b) = a / gcd(a,b) * b         (divide first to avoid overflow)
-gcd(a,b) = gcd(a, b-a) = gcd(a, b - k*a)     <- makes gcd an INVARIANT of subtraction ops
-a x + b y = c solvable in integers  <=>  gcd(a,b) | c        (Bezout)
+[oooo] [oooo] [oooo]     3 groups, 0 left   -> 4 divides 12
 ```
 
-**Divisor enumeration** – O(√n): for `d` from 1 while `d*d<=n`, both `d` and `n/d`.
-**Number of divisors** – `prod (e_i+1)` from `n = prod p_i^e_i`. **Sum** – `prod (p^(e+1)-1)/(p-1)`.
-**Perfect square ⇔ every exponent even ⇔ divisor count odd** (divisors pair `d ↔ n/d`, except `d=√n`).
-**Sieve / SPF:** `spf[x]` smallest prime factor; factor by repeated `x /= spf[x]` in O(log x).
+**Rule.**
+
+```text
+d divides n   <=>   n % d == 0   <=>   n = d * k  for some integer k
+```
+
+**Worked example.** Divisors of 12: try `d = 1..12`, keep those where `12 % d == 0`: **1, 2, 3, 4, 6, 12**.
+
+**Fast way (O(√n)).** Divisors come in pairs `(d, n/d)`. Only test `d` up to `√n`.
+
+```cpp
+for (long long d = 1; d * d <= n; d++) {
+    if (n % d == 0) {
+        // d is a divisor
+        if (d != n / d) {
+            // n / d is a different divisor
+        }
+    }
+}
+```
+
+**Where it shows up in CF.** "divisible by", "every k-th", "equal groups", "period".
+
+**Watch out.** When `d * d == n`, do not count the same divisor twice.
+
+---
+
+### 3.2 Prime numbers and factorization
+
+**What is it?**
+A **prime** has exactly two divisors: 1 and itself (2, 3, 5, 7, 11, ...). Every number is a product of primes in exactly one way.
+
+**Picture.**
+
+```text
+60 = 2 * 30 = 2 * 2 * 15 = 2 * 2 * 3 * 5      ->   60 = 2^2 * 3 * 5
+```
+
+**Rules.**
+
+```text
+number of divisors of n = (e1 + 1) * (e2 + 1) * ...      where n = p1^e1 * p2^e2 * ...
+n is a perfect square    <=>   every exponent is even   <=>   n has an odd number of divisors
+```
+
+**Worked example.** `60 = 2^2 * 3^1 * 5^1` -> divisors = `(2+1)(1+1)(1+1) = 12`.
+
+**Trial division (factor one number, O(√n)).**
+
+```cpp
+for (long long p = 2; p * p <= n; p++) {
+    while (n % p == 0) {
+        // p is a prime factor
+        n /= p;
+    }
+}
+if (n > 1) {
+    // what remains is one big prime factor
+}
+```
+
+**Sieve with smallest prime factor (many numbers up to N).**
 
 ```cpp
 vector<int> spf(N + 1, 0);
 for (int i = 2; i <= N; i++) {
-    if (spf[i] != 0) continue;          // i is composite, already marked
+    if (spf[i] != 0) continue;           // already marked: i is composite
     for (int j = i; j <= N; j += i)
-        if (spf[j] == 0) spf[j] = i;    // smallest prime factor of j
+        if (spf[j] == 0) spf[j] = i;     // smallest prime factor of j
 }
+// factor x quickly: while (x > 1) { p = spf[x]; x /= p; }
 ```
 
-**Modeling examples**
+**Where it shows up in CF.** "prime", "number of divisors", "odd divisor" (CF 1475A), "perfect square".
+
+**Watch out.** 1 is **not** prime.
+
+---
+
+### 3.3 GCD and LCM
+
+**What is it?**
+- **gcd(a, b)** = the biggest number that divides both.
+- **lcm(a, b)** = the smallest positive number that both divide.
+
+**Picture.** `a = 4`, `b = 6`.
 
 ```text
-"Both numbers must divide X"        -> X is a common multiple, candidates related to lcm
-"Split into equal parts, both"      -> part size divides gcd
-"Every number becomes multiple of g"-> g | gcd of all
-"a+b = x, minimize lcm(a,b)"        -> a=1? no: a=1,b=x-1 gives lcm=x-1; (CF 1325A)
+multiples of 4:  4  8  12  16  20  24 ...
+multiples of 6:  6  12  18  24 ...
+first common multiple: 12   -> lcm = 12
+common divisors: 1, 2      -> gcd = 2
 ```
 
-**Mistakes:** overflow in `a*b/gcd`; treating 1 as prime; forgetting `d=n/d` duplicate when enumerating divisors.
-**Problems:** CF 1543A, 1325A, 1475A, 1474B.
+**Rules.**
+
+```text
+gcd(a, b) = gcd(b, a % b)          (Euclid: repeat until the second is 0)
+gcd(a, b) * lcm(a, b) = a * b
+lcm(a, b) = a / gcd(a, b) * b      (divide first: avoids overflow)
+gcd(a, b) = gcd(a, b - a)          (subtracting keeps gcd)
+```
+
+**Worked example (Euclid).** `gcd(48, 18)`:
+
+```text
+gcd(48, 18) -> gcd(18, 12) -> gcd(12, 6) -> gcd(6, 0) = 6
+```
+
+**Where it shows up in CF.**
+
+| Statement says | Think |
+|---|---|
+| "divisible by both A and B" | multiples of `lcm(A, B)` |
+| "split into equal parts for both" | part size divides `gcd(A, B)` |
+| operation `A_i -= A_j` | `gcd` of the array never changes |
+| both numbers shift by the same amount | `a - b` fixed, gcd divides it (CF 1543A) |
+| `lcm(a,b) + gcd(a,b) = x` | try `a = 1` (CF 1325A) |
+
+**Watch out.** `a * b` can overflow; use `a / gcd(a,b) * b`.
+
+**Try yourself.** `gcd(30, 12)`? `lcm(6, 8)`? *(answers: 6, 24)*
+
+---
+
+### 3.4 Extra facts
+
+- **Sum of divisors:** `prod (p^(e+1) - 1) / (p - 1)` over the factorization.
+- **Bezout:** `a*x + b*y = c` has integer solutions exactly when `gcd(a, b)` divides `c` (Part 20).
+- **Coprime:** `gcd(a, b) = 1`. Consecutive numbers are always coprime.
+
+**Problems using this part:** CF 1543A, 1325A, 1475A, 1474B.
+
 
 ---
 
 ## Part 4. Modular Arithmetic
 
-```text
-a ≡ b (mod m)  <=>  m | (a-b)  <=>  a mod m = b mod m
-(a+b) mod m = ((a mod m)+(b mod m)) mod m         same for -, *
-division: a/b mod p = a * b^(p-2) mod p           (p prime, b not multiple of p)
-Fermat: a^(p-1) ≡ 1 (mod p)
-```
+> **What is it in one sentence?** Working with **remainders** instead of full numbers.
 
-**Recognition**
+### 4.1 The idea: clock arithmetic
+
+**Picture.** A 12-hour clock. 9 o'clock + 5 hours = 2 o'clock, because `14 % 12 = 2`.
 
 ```text
-repeated cyclic process                   -> modulo
-"same remainder"                          -> (A-B) % M == 0
-"last digit", "every k-th"                -> mod 10 / mod k
-huge exponent                             -> fast power
-counting answer "mod 998244353"           -> every op mod, inverse via Fermat
+   11 12  1
+ 10        2
+ 9          3        9 + 5 = 14  ->  14 % 12 = 2
+  8        4
+    7  6  5
 ```
 
-**Fast exponentiation (binary):** `a^e`: process bits of `e`; O(log e).
+**Rules.**
+
+```text
+a ≡ b (mod m)   means   a % m == b % m   means   m divides (a - b)
+(a + b) % m = ((a % m) + (b % m)) % m
+(a * b) % m = ((a % m) * (b % m)) % m
+(a - b) % m = ((a % m) - (b % m) + m) % m        <- the + m keeps it non-negative
+```
+
+**Worked example.** `m = 7`: `(23 + 40) % 7`.
+
+```text
+23 % 7 = 2,   40 % 7 = 5,   (2 + 5) % 7 = 0      (and 63 % 7 = 0 ✓)
+```
+
+**Where it shows up in CF.** "remainder", "divisible", "last digit" (`% 10`), "even/odd" (`% 2`), "every k-th", "cyclic", "answer modulo 998244353".
+
+**Recognition table.**
+
+| Statement clue | Math |
+|---|---|
+| "same remainder" | `(A - B) % M == 0` |
+| "repeated cyclic process" | position `(s + t*d) % n` |
+| "sum of subarray divisible by m" | equal prefix remainders |
+| "answer modulo p" | apply `% p` after every step |
+
+**Watch out.** Negative remainders in C++, and `a * b` overflow before `%` (use `long long`).
+
+### 4.2 Fast exponentiation
+
+**What is it?** Compute `a^e mod m` in `O(log e)` steps by squaring.
+
+**Picture.** `3^13`: write 13 in binary `1101` -> `3^13 = 3^8 * 3^4 * 3^1`.
 
 ```cpp
 long long power(long long a, long long e, long long mod) {
@@ -429,88 +767,181 @@ long long power(long long a, long long e, long long mod) {
     while (e > 0) {
         if (e & 1) result = result * a % mod;   // current bit is 1
         a = a * a % mod;                        // square the base
-        e >>= 1;
+        e >>= 1;                                // next bit
     }
     return result;
 }
 ```
 
-**Prefix modulo:** subarray `(l,r]` divisible by `m` ⇔ `P[r] ≡ P[l] (mod m)`. Count pairs of equal prefix remainders.
-**Pigeonhole + modulo:** among any `m` numbers some non-empty subsequence has sum ≡ 0 (mod m) (prefix sums `P0..Pm`: m+1 values, m remainders).
-**Mistakes:** negative remainder; `a*b` overflow before `%` (use `long long`, or `__int128` if mod ~1e18); dividing without inverse.
-**Problems:** CF 577B (Part 27), CF 1475B.
+### 4.3 Division modulo a prime (inverse)
+
+```text
+Fermat:    a^(p-1) ≡ 1 (mod p)        (p prime, a not a multiple of p)
+inverse:   a^(-1) ≡ a^(p-2) (mod p)
+a / b  mod p  =  a * power(b, p - 2, p) % p
+```
+
+### 4.4 Prefix remainders and pigeonhole
+
+**Idea.** Prefix sums `P_0 = 0, P_1, ..., P_n`. A subarray `(l, r]` has sum divisible by `m` exactly when `P_r % m == P_l % m`.
+
+**Pigeonhole.** If `n >= m`, then `n + 1` prefix values sit in only `m` remainder boxes, so two must match. So a non-empty subarray with sum divisible by `m` **always** exists (CF 577B).
+
+**Problems using this part:** CF 577B, 1475B, 1374A.
+
 
 ---
 
 ## Part 5. Parity
 
-```text
-even+even=even   even+odd=odd   odd+odd=even
-even*any=even    odd*odd=odd
-parity of sum = (# odd terms) mod 2
-```
+> **What is it in one sentence?** Parity = "is it even or odd?" = the remainder mod 2. Many hard-looking problems collapse into one parity check.
 
-**Tools:** parity invariant, parity flip, checkerboard parity (`(x+y)%2`), odd/even counts, permutation parity (each swap flips it).
-**Signal:** operation changes every affected quantity by a fixed amount (±1, ±2, ±even).
-**Collapse example:** "Can you make all equal by adding 2 to any element?" → parity of every element is preserved, so all elements must already share parity.
+### 5.1 The rules
 
 ```text
-Watermelon: split n into two even positive parts.
-even+even=even -> n even; positive -> each >=2 -> n>=4.  (n=2 fails.)
+even + even = even        odd + odd = even        even + odd = odd
+even * anything = even    odd * odd = odd
+sum of numbers is even  <=>  the count of odd numbers is even
 ```
 
-**Mistake:** `x%2==1` fails for negative `x` (C++ gives -1); test `x%2!=0` or `x&1`.
-**Problems:** CF 4A, 1401A.
+**Picture.**
+
+```text
+2 + 4 = 6     (even)         3 + 5 = 8     (even)
+2 + 3 = 5     (odd)          3 * 5 = 15    (odd)
+```
+
+### 5.2 How parity turns into a solution
+
+**Steps to use every time.**
+
+1. Find the quantity that the operation changes.
+2. Ask: does one operation flip its parity, or keep it?
+3. Compare the parity of the start and of the target.
+
+**Worked example (CF 4A Watermelon).** Split `w` into two positive even parts.
+
+```text
+even + even = even         ->  w must be even
+each part >= 2             ->  w >= 4
+w = 8 -> (2, 6) works;   w = 2 -> impossible;   w = 7 -> odd, impossible
+```
+
+**Worked example (invariant).** "Add 2 to any element any number of times. Can you make all elements equal?"
+
+```text
+adding 2 never changes A_i % 2
+so elements with different parity can never become equal
+answer: YES only if all elements already have the same parity (and then more checks)
+```
+
+### 5.3 Where it shows up in CF
+
+| Clue | Parity idea |
+|---|---|
+| grid step by step | each step flips `(x + y) % 2` |
+| add/subtract 2 | parity of each element is fixed |
+| swap two elements | parity of the permutation flips |
+| pair elements | need an even count |
+
+**Watch out.** In C++ `x % 2 == 1` fails for negative `x`; use `x % 2 != 0` or `x & 1`.
+
+**Problems using this part:** CF 4A, 1401A.
+
 
 ---
 
 ## Part 6. Counting & Combinatorics
 
-```text
-Addition principle:       disjoint cases -> add
-Multiplication principle: independent choices -> multiply
-n! = n(n-1)...1           P(n,k) = n!/(n-k)!         C(n,k) = n!/(k!(n-k)!)
-C(n,2) = n(n-1)/2         C(n,3) = n(n-1)(n-2)/6
-Pascal: C(n,k) = C(n-1,k-1) + C(n-1,k)
-Equal pairs from frequency f: f(f-1)/2
-Complement: desired = total - bad
-Multiset permutations: n!/(c1! c2! ...)
-```
+> **What is it in one sentence?** Counting *how many ways* without listing them.
 
-**Stars and bars**
+### 6.1 Two basic rules
+
+**Addition rule.** If choices are separate cases, **add**.
+**Multiplication rule.** If choices happen one after another, **multiply**.
 
 ```text
-x1+...+k xk = n, xi>=0   ->  C(n+k-1, k-1)
-xi >= 1                  ->  C(n-1, k-1)   (substitute yi = xi-1)
-xi >= li                 ->  subtract sum li from n first
+3 shirts and 2 pants                    ->  3 * 2 = 6 outfits           (multiply)
+either 3 shirts or 2 hats (not both)    ->  3 + 2 = 5 choices           (add)
 ```
+
+### 6.2 Factorial, permutation, combination
 
 ```text
-n=5, k=3, xi>=0:   ***|*|*  ~ (3,1,1)      choose positions of 2 bars among 7 slots = C(7,2)=21
+n! = n * (n-1) * ... * 1                    5! = 120
+P(n, k) = n! / (n-k)!                        ordered choices of k from n
+C(n, k) = n! / (k! * (n-k)!)                 unordered choices of k from n
 ```
 
-**Inclusion–Exclusion**
+**Worked example.** Choose 2 people from 5 for a team (order does not matter): `C(5,2) = 5*4/2 = 10`.
+
+### 6.3 Pairs (the most useful formula in CF)
 
 ```text
-|A∪B|   = |A|+|B|-|A∩B|
-|A∪B∪C| = |A|+|B|+|C| -|A∩B|-|A∩C|-|B∩C| + |A∩B∩C|
-general: sum over non-empty masks S of (-1)^(|S|+1) |∩_{i in S} A_i|      (2^k terms)
+C(n, 2) = n * (n - 1) / 2       number of unordered pairs from n items
 ```
 
-**Pigeonhole:** `n+1` objects in `n` boxes ⇒ some box has 2. Signals: "prove/decide existence", "among any ... there exist two with ...", prefix remainders.
-**Double counting:** count pairs (x, group) two ways. Example: `sum over pairs i<j [A_i=A_j]` = `sum over values f_v(f_v-1)/2`.
-**Contribution technique**
+**Picture.** 4 items A, B, C, D:
 
 ```text
-Instead of: for each subarray, compute value
-Do:         for each element, count subarrays where it plays the role, multiply
+AB AC AD BC BD CD      ->  6 pairs = 4*3/2
 ```
 
-Example: sum of all subarray sums: element at index `i` (1-indexed) lies in `i*(n-i+1)` subarrays ⇒ `sum A_i * i * (n-i+1)`.
-More: sum over pairs `|Ai-Aj|` (sorted coefficient trick, Part 2.6); sum over bits `2^b * (#numbers with bit b set)` for OR/XOR contributions; "number of subarrays where max is A_i" = `left_i * right_i` (monotonic stack).
-**Modular combinatorics:** precompute `fact`, `inv_fact` up to N mod p; `C(n,k)=fact[n]*ifact[k]*ifact[n-k]`.
-**Mistakes:** `n(n-1)/2` overflowing `int`; overcounting ordered vs unordered; forgetting complement is easier when "at least one".
-**Problems:** CF 1520D, 1538C, 1324D.
+**Equal pairs from frequency.** If a value appears `f` times, pairs of equal elements = `f * (f - 1) / 2`.
+
+```text
+[1, 1, 2, 2, 2]   ->   value 1: 1 pair,  value 2: 3 pairs   ->  total 4
+```
+
+**Use `long long`.** `C(2e5, 2)` is about `2e10`.
+
+### 6.4 Complement counting
+
+```text
+desired = total - bad
+```
+
+Use it when "at least one" is hard but "none" is easy.
+
+### 6.5 Stars and bars (distribute identical objects)
+
+```text
+x1 + x2 + ... + xk = n,   xi >= 0     ->   C(n + k - 1, k - 1)
+same but xi >= 1                       ->   C(n - 1, k - 1)
+```
+
+**Picture.** `n = 5` stars into `k = 3` boxes using 2 bars:
+
+```text
+***|*|*     ->  (3, 1, 1)
+```
+
+### 6.6 Inclusion-Exclusion
+
+```text
+|A ∪ B|     = |A| + |B| - |A ∩ B|
+|A ∪ B ∪ C| = |A| + |B| + |C| - |A∩B| - |A∩C| - |B∩C| + |A∩B∩C|
+```
+
+**Worked example.** Numbers `1..10` divisible by 2 or 3: `5 + 3 - 1 = 7`.
+
+### 6.7 Pigeonhole and contribution
+
+- **Pigeonhole:** `n + 1` objects in `n` boxes -> some box holds 2.
+- **Contribution technique:** instead of looping over all subarrays/pairs, ask *"for each element, in how many structures does it appear?"* and add up.
+
+```text
+element at index i (1-indexed) lies in  i * (n - i + 1)  subarrays
+sum of all subarray sums = Σ A_i * i * (n - i + 1)
+```
+
+- **Multiset permutations:** arrangements of `n` items with repeats: `n! / (c1! c2! ...)`.
+- **Modular combinatorics:** precompute `fact` and `inv_fact`, then `C(n,k) = fact[n] * inv_fact[k] * inv_fact[n-k] mod p`.
+
+**Watch out.** Ordered vs unordered pairs; forgetting `long long`.
+
+**Problems using this part:** CF 1520D, 1538C, 1324D.
+
 
 ---
 
@@ -526,6 +957,7 @@ harmonic: sum_{i=1}^n n/i ~ n ln n  (why sieve-like loops are O(n log n))
 ```
 
 **Signals.** "1st day 1, 2nd day 2, ...", "each step adds one more than last" → AP/triangular. "doubling" → GP, `≈ log2` steps. Triangular bound: find smallest `k` with `k(k+1)/2 >= n` → `k ~ sqrt(2n)`.
+
 **Mistake:** GP sum with `r=1` division by zero; overflow of `2^k` for `k>=63`.
 
 ---
@@ -552,6 +984,7 @@ reach (a,b) from (0,0) in exactly k steps <=> |a|+|b| <= k and (k-|a|-|b|) even
 ```
 
 Coordinate normalization: shift so start = origin; compression maps large coordinates to ranks.
+
 **Problems:** CF 1401A, 1201C (uses median).
 
 ---
@@ -604,6 +1037,7 @@ Form 9:  chessboard minus 2 opposite corners: 32 white... 30 black/32 white; eac
 ```
 
 **Mistake:** confusing "necessary" with "sufficient" – an invariant proves impossibility; you still need construction for possibility.
+
 **Problems:** CF 1538B, 1401A, 4A.
 
 ---
@@ -628,6 +1062,7 @@ State before op -> algebraic form -> delta -> check parity -> sum -> modulo
 | `remove k, add k-1` | `-1` | count decreases by one each step (monovariant) |
 
 **Reachability in linear ops:** if operation adds vector `v`, reachable = `{start + t*v}`; with two vectors it is a lattice ⇒ gcd of coefficients decides.
+
 **Example.** `Ai+=1, Aj-=1` any `i≠j`: reachable arrays = same sum, same length (when values may go negative).
 
 ---
@@ -723,6 +1158,7 @@ a+b = (a^b) + 2(a&b)                  a|b = (a^b) + (a&b)
 
 Bit contribution: `answer = Σ_b 2^b * (count of structures with bit b)`.
 Subset masks: `for mask in [0,2^n)`; inclusion–exclusion over masks; `mask & (mask-1)` clears lowest set bit; popcount parity = XOR of bits.
+
 **Mistake:** `1<<b` with `b>=31` needs `1LL<<b`.
 
 ---
@@ -751,6 +1187,7 @@ Required properties -> Necessary conditions -> Invariant/bound
 ```
 
 Patterns: alternating `a,b,a,b`; cyclic shift permutation `2,3,...,n,1` (no fixed point); gcd constructions (`1, x-1`; consecutive integers are coprime; `n, n-1`); parity constructions (put odds first); modulo construction (`a_i = i*m`); prefix/suffix (`0,1,...,k` to get mex `k+1`).
+
 **Check both**: necessary conditions rule out impossible; the construction proves rest possible. Test on tiny brute-force.
 
 ---
@@ -801,7 +1238,9 @@ Position is LOSING if all moves lead to WINNING positions; WINNING if some move 
 Backward reasoning from terminal positions; find periodic pattern by brute-force table for small n, then generalize.
 Take-away `{1..k}` game: losing iff `n % (k+1) == 0` (mirror strategy).
 Parity games: winner decided by parity of total moves when the total is fixed.
-**Nim:** piles `a_i`, first player wins iff `XOR a_i != 0`. **Grundy:** independent games' values combine by XOR; `g(pos)=mex{g(next)}`.
+- **Nim:** piles `a_i`, first player wins iff `XOR a_i != 0`.
+- **Grundy:** independent games' values combine by XOR; `g(pos)=mex{g(next)}`.
+
 
 ---
 
@@ -3480,7 +3919,7 @@ int main() {
 | Number of Pairs (CF 1538C) | count pair sums by frequency of values | sort + binary search | B when values are huge |
 | Friends and Candies (CF 1538B) | simulate redistribution | sum invariant | B (no simulation) |
 | Subarray sum divisible by m | enumerate all (l,r) | prefix remainders equal | B |
-| Manhattan reach | BFS on grid | `|dx|+|dy|<=k` + parity | B |
+| Manhattan reach | BFS on grid | `\|dx\|+\|dy\|<=k` + parity | B |
 | Sum over subarrays | loop all subarrays | contribution `i(n-i+1)` | B |
 | Distinct pair counting | pairs O(n²) | `Σ f(f-1)/2` | B |
 
@@ -3594,7 +4033,7 @@ Signal phrase: **"n ≤ 2e5 but the naive method is O(n²)"** ⇒ some part of t
 | Extremal | "take max/min" | look at extreme, it's constrained | largest pile |
 | Pigeonhole | forced repeat | count objects vs boxes | prefix remainders |
 | Parity | "can/cannot" | count parity change per op | (n−k) even |
-| Divisibility | integrality | show `d | expr` | `gcd | difference` |
+| Divisibility | integrality | show `d \| expr` | `gcd \| difference` |
 | Lower bound + construction | min answer | (i) ≥X, (ii) achieve X | K-divisible Sum |
 | Necessity & sufficiency | "iff" conditions | prove both directions separately | Odd Divisor |
 
