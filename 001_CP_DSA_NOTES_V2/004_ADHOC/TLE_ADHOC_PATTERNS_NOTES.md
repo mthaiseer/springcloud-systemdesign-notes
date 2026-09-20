@@ -1,194 +1,142 @@
-# Ad-hoc & Patterns (Level 2) — Comprehensive Competitive Programming Notes
+# Ad-hoc & Patterns — Level 2
 
-> Lecture-derived pattern notes for fast revision and contest recognition.  
-> The six problems below combine the two supplied TLE Ad-hoc & Patterns lecture PDFs.
+> Pattern-wise Competitive Programming revision notes.  
+> Format: **Pattern Overview → Recognition → Problem Summary → Core Invariant → Step-by-Step Logic → ASCII Dry Run → Pseudocode → C++**.  
+> Formula style: renderer-safe inline code such as `O(N log N)`, `n % 4`, and `2^(x - 1)`.
+
+---
 
 ## Table of Contents
 
-- [Problem 1: Modulo Summation](#problem-1-modulo-summation)
-- [Problem 2: Rectangle Filling](#problem-2-rectangle-filling)
-- [Problem 3: Missing Coin Sum](#problem-3-missing-coin-sum)
-- [Problem 4: Multiple Powers of Two](#problem-4-multiple-powers-of-two)
-- [Problem 5: Stick Lengths](#problem-5-stick-lengths)
-- [Problem 6: Odd Grasshopper](#problem-6-odd-grasshopper)
+- [Pattern Overview — Ad-hoc & Patterns](#pattern-overview--ad-hoc--patterns)
+- [Modulo Summation (Modulo Extremum / AtCoder / ABC103 C)](#modulo-summation-modulo-extremum--atcoder--abc103-c)
+- [Rectangle Filling (Boundary Invariant / Codeforces / Div. 2 B)](#rectangle-filling-boundary-invariant--codeforces--div-2-b)
+- [Missing Coin Sum (Greedy Reachable Range / CSES / Sorting + Greedy)](#missing-coin-sum-greedy-reachable-range--cses--sorting-greedy)
+- [Multiple Powers of Two (Bit Pattern + Query Dominance / HackerRank / Bit Manipulation)](#multiple-powers-of-two-bit-pattern-query-dominance--hackerrank--bit-manipulation)
+- [Stick Lengths (Median / CSES / Greedy-Math)](#stick-lengths-median--cses--greedy-math)
+- [Odd Grasshopper (Periodicity / Codeforces / 900)](#odd-grasshopper-periodicity--codeforces--900)
 - [Final Pattern Recognition Sheet](#final-pattern-recognition-sheet)
 
 ---
 
-### Problem 1: Modulo Summation
+# Pattern Overview — Ad-hoc & Patterns
 
-**Problem Title:** Modulo Summation  
-**Source Link:** https://atcoder.jp/contests/abc103/tasks/abc103_c
+Ad-hoc problems usually do **not** require a heavy data structure or a standard algorithm such as Dijkstra or DP. The main challenge is finding a small mathematical observation, invariant, boundary condition, greedy rule, bit property, or repeating pattern that collapses the brute-force solution.
 
-#### Problem Overview
-
-Given `N` positive integers `a_1,a_2,\ldots,a_N`, consider
-
+### Main Recognition Flow
 
 ```text
-f(m)=sum_{i=1}^{N}(mmod a_i).
+Read the statement
+      |
+      v
+What would brute force simulate / enumerate?
+      |
+      v
+Look for a property that does NOT require simulation
+      |
+      +--> Mathematical upper/lower bound?
+      |
+      +--> Boundary / corner invariant?
+      |
+      +--> Continuous reachable interval?
+      |
+      +--> Binary / divisibility pattern?
+      |
+      +--> Median / absolute-distance property?
+      |
+      +--> Periodicity / modulo cycle?
+      |
+      v
+Turn the observation into O(N), O(N log N), or O(1)
 ```
 
+### Forms Covered in This Note
 
-Find the maximum possible value of `f(m)` over positive integer choices of `m`.
+| Form | Recognition Signal | Representative Problem |
+|---|---|---|
+| Modulo Extremum | Maximize a sum of remainders | Modulo Summation |
+| Boundary / Corner Invariant | Grid operation looks expensive to simulate | Rectangle Filling |
+| Greedy Reachable Range | Smallest positive value that cannot be formed | Missing Coin Sum |
+| Powers of Two / Query Dominance | Repeated divisibility by `2^x` | Multiple Powers of Two |
+| Median / Absolute Difference | Minimize `sum(abs(ai - x))` | Stick Lengths |
+| Periodicity / Modulo Cycle | Huge deterministic process | Odd Grasshopper |
 
-#### Core Observation / Pattern
-
-For every positive integer `a_i`,
-
+### Contest Checklist
 
 ```text
-0<= mmod a_i<= a_i-1.
+1. Can I write the brute force?
+2. What makes the brute force repetitive?
+3. Is there an upper/lower bound that is achievable?
+4. Is only the boundary important?
+5. Can I maintain a reachable interval instead of all subset sums?
+6. Does divisibility by powers of two reveal a bit pattern?
+7. Is the objective sum(abs(ai - x))? -> median.
+8. Does the process repeat every 2 / 4 / 8 steps?
 ```
 
+---
 
-Therefore the theoretical maximum contribution of the `i`-th term is
+Problem Link: [AtCoder ABC103 C — Modulo Summation](https://atcoder.jp/contests/abc103/tasks/abc103_c)
 
+**Problem Summary:** Given `N` positive integers `a[i]`, maximize `sum(m % a[i])` over a positive integer `m` and output the maximum possible sum. **Input/Output:** read `N` and the array, then print one integer; the supplied lecture notes do not reproduce the official numeric constraints, so use the linked statement for exact limits.
+
+<a id="modulo-summation-modulo-extremum--atcoder--abc103-c"></a>
+
+### Modulo Summation (Modulo Extremum / AtCoder / ABC103 C)
+
+* **Core Invariant / Key Insight:** For every `a[i]`, the largest possible remainder is `a[i] - 1`. All these maxima can be achieved simultaneously by choosing a common multiple of all `a[i]` minus `1`, so the answer is simply `sum(a[i] - 1)`.
+
+* **Step-by-Step Logic:**
+1. For each value `a[i]`, observe that `m % a[i] <= a[i] - 1`.
+2. A value such as `(a[0] * a[1] * ... * a[n-1]) - 1` is congruent to `-1` modulo every `a[i]`, so every remainder can simultaneously become `a[i] - 1`.
+3. Add `a[i] - 1` for every element and output the sum in `O(N)` time.
+
+* **ASCII Execution Trace / Visual Dry Run:**
 
 ```text
-a_i-1.
+Initial:        a = [3, 4, 6]
+
+Step 1:         Maximum remainder for each value
+
+                a[i] = 3  --> max remainder = 2
+                a[i] = 4  --> max remainder = 3
+                a[i] = 6  --> max remainder = 5
+
+Step 2:         Conceptually choose a common multiple - 1
+
+                m = (3 * 4 * 6) - 1
+                  = 71
+
+Step 3:         Check each remainder
+
+                71 % 3 = 2
+                71 % 4 = 3
+                71 % 6 = 5
+
+Final Answer:   2 + 3 + 5 = 10
+
+Shortcut:       sum(a[i] - 1)
+                = (3 - 1) + (4 - 1) + (6 - 1)
+                = 10
 ```
 
-
-The key ad-hoc observation is that **all terms can reach their individual maximum simultaneously**.
-
-Choose
-
-
-```text
-m=<=ft(product_{i=1}^{N}a_i)-1.
-```
-
-
-Since `product a_i` is divisible by every `a_i`,
-
-
-```text
-m\equiv -1\pmod{a_i}.
-```
-
-
-Hence
-
-
-```text
-mmod a_i=a_i-1.
-```
-
-
-Therefore
-
-
-```text
-max f(m)
-=sum_{i=1}^{N}(a_i-1)
-=sum_{i=1}^{N}a_i-N.
-```
-
-
-**Important:** We never actually need to calculate `product a_i`. It is only a proof that such an `m` exists.
-
-#### Step-by-Step Dry Run
-
-Take:
-
-```text
-N = 3
-a = [3, 4, 6]
-```
-
-Individual maximum remainders:
-
-| `a_i` | Maximum possible `mmod a_i` |
-|---:|---:|
-| `3` | `2` |
-| `4` | `3` |
-| `6` | `5` |
-
-Choose conceptually:
-
-
-```text
-m=(3*4*6)-1=71.
-```
-
-
-Then:
-
-| Expression | Result |
-|---|---:|
-| `71mod3` | `2` |
-| `71mod4` | `3` |
-| `71mod6` | `5` |
-
-Thus:
-
-
-```text
-f(71)=2+3+5=10.
-```
-
-
-Direct formula:
-
-
-```text
-(3+4+6)-3=13-3=10.
-```
-
-
-**Edge case:** If `a=[1]`, then
-
-
-```text
-1-1=0,
-```
-
-
-which is correct because every integer modulo `1` is `0`.
-
-#### Algorithm
-
-1. Read `N`.
-2. Read every `a_i`.
-3. Accumulate `sum a_i`.
-4. Output `sum a_i-N`.
-
-#### Pseudocode
+* **Pseudocode:**
 
 ```text
 read N
-sum = 0
 
-repeat N times:
+answer = 0
+
+for i = 0 to N - 1:
     read x
-    sum = sum + x
+    answer = answer + (x - 1)
 
-answer = sum - N
 print answer
 ```
 
-#### Complexity
+* **Complexity:** `O(N)` time and `O(1)` extra space.
 
-Sorting or searching is unnecessary.
-
-
-```text
-T(N)=O(N)
-```
-
-
-because every value is read once.
-
-
-```text
-S(N)=O(1)
-```
-
-
-extra space if values are accumulated directly.
-
-#### Complete C++ Implementation
+* **Complete C++ Code:**
 
 ```cpp
 #include <bits/stdc++.h>
@@ -201,230 +149,129 @@ int main() {
     int n;
     cin >> n;
 
-    long long sum = 0;
+    long long answer = 0;
 
     for (int i = 0; i < n; ++i) {
         long long x;
         cin >> x;
-        sum += x;
+
+        // Maximum possible contribution of x is x - 1.
+        answer += x - 1;
     }
 
-    // Maximum = Σ(ai - 1) = Σai - n.
-    cout << sum - n << '\n';
+    cout << answer << '\n';
 
     return 0;
 }
 ```
 
-#### Recognition Trigger
-
-```text
-maximize Σ(m mod ai)
-        ↓
-each remainder ≤ ai - 1
-        ↓
-can all maxima happen together?
-        ↓
-choose a common multiple - 1
-        ↓
-answer = Σ(ai - 1)
-```
-
 ---
 
-### Problem 2: Rectangle Filling
+Problem Link: [Codeforces 1966B — Rectangle Filling](https://codeforces.com/contest/1966/problem/B)
 
-**Problem Title:** Rectangle Filling  
-**Source Link:** https://codeforces.com/contest/1966/problem/B
+**Problem Summary:** For each test case, given an `N x M` grid containing only `W` and `B`, determine whether rectangle-coloring operations can eventually make the entire grid one color and output `YES` or `NO`. **Input/Output:** read the test cases and grids, then print one answer per case; exact numeric constraints are not reproduced in the supplied notes.
 
-#### Problem Overview
+<a id="rectangle-filling-boundary-invariant--codeforces--div-2-b"></a>
 
-A grid contains only two colors, `W` and `B`. An operation chooses two cells of the **same color** and recolors every cell in the axis-aligned rectangle determined by those cells with that color.
+### Rectangle Filling (Boundary Invariant / Codeforces / Div. 2 B)
 
-Determine whether it is possible, after any number of operations, to make the whole grid one color.
+* **Core Invariant / Key Insight:** Do not simulate rectangle operations. The impossible cases are determined by opposite extreme borders: if the first and last rows are monochromatic with different colors, or the first and last columns are monochromatic with different colors, the required color cannot bridge that dimension.
 
-#### Core Observation / Pattern
+* **Step-by-Step Logic:**
+1. Check whether the first row is monochromatic and whether the last row is monochromatic.
+2. Do the same for the first and last columns; if either opposite-border pair is forced to different colors, output `NO`.
+3. Otherwise output `YES`, because the blocking boundary configuration does not exist.
 
-The decisive information lies on **opposite borders**, not in the interior.
-
-An impossible configuration exists if either:
-
-1. the entire top row is one color and the entire bottom row is the opposite color, or
-2. the entire left column is one color and the entire right column is the opposite color.
-
-Equivalent test:
+* **ASCII Execution Trace / Visual Dry Run:**
 
 ```text
-If top-left and bottom-right have the same color -> YES.
-If top-right and bottom-left have the same color -> YES.
+Initial Grid:
 
-Otherwise inspect whether opposite borders can provide
-matching-color endpoints.
+                BBB
+                BWB
+                WWW
+
+Step 1:         First row = BBB
+                --> monochromatic B
+
+Step 2:         Last row  = WWW
+                --> monochromatic W
+
+Step 3:         Opposite extreme rows are forced
+                to different colors
+
+                BBB
+                ...
+                WWW
+                ^^^
+                cannot bridge the full height
+                using same-colored endpoints
+
+Final Answer:   NO
 ```
 
-A compact standard implementation checks whether each color occurring on one opposite border can also occur on the other.
-
-For the row condition, there must be some color that appears in both the first and last rows.  
-For the column condition, there must be some color that appears in both the first and last columns.
-
-If either orientation supplies such matching endpoints, the grid can be filled.
-
-#### Border View
+Another quick case:
 
 ```text
-      FIRST ROW
-  +---------------+
-  |               |
-L |               | R
-E |               | I
-F |               | G
-T |               | H
-  |               | T
-  +---------------+
-       LAST ROW
+Initial Grid:
+
+                BWW
+                WBW
+                WWB
+
+Step 1:         No opposite monochromatic border
+                creates the blocking condition.
+
+Final Answer:   YES
 ```
 
-The interior does not need exhaustive simulation.
-
-#### Dry Run 1 — Impossible Opposite Rows
-
-```text
-WWW
-BWB
-BBB
-```
-
-First row:
-
-```text
-WWW
-```
-
-Last row:
-
-```text
-BBB
-```
-
-They have no common color.
-
-Now inspect columns:
-
-```text
-left  = W B B
-right = W B B
-```
-
-Both columns contain common colors, so a valid border pairing exists through columns; this case is therefore not rejected solely by the row mismatch.
-
-The lesson is important:
-
-> A bad pair of rows alone is not enough. We need the border conditions that prevent both orientations.
-
-#### Dry Run 2 — Corner Shortcut
-
-```text
-BWW
-WBW
-WWB
-```
-
-Corners:
-
-```text
-top-left     = B
-bottom-right = B
-```
-
-They already form same-colored opposite rectangle corners.
-
-```text
-answer = YES
-```
-
-#### Robust Algorithm
-
-Track which colors occur on each boundary.
-
-```text
-topW, topB
-bottomW, bottomB
-leftW, leftB
-rightW, rightB
-```
-
-There is a usable horizontal pair if:
-
-
-```text
-(top has W}ANDbottom has W})
-OR
-(top has B}ANDbottom has B}).
-```
-
-
-There is a usable vertical pair if:
-
-
-```text
-(left has W}ANDright has W})
-OR
-(left has B}ANDright has B}).
-```
-
-
-The answer is `YES` when both necessary opposite-side color compatibility conditions are not blocked; equivalently, reject the known impossible situation where one pair of opposite borders is forced to opposite monochromatic colors.
-
-A particularly concise implementation uses the four corners plus monochromatic-border tests.
-
-#### Pseudocode
+* **Pseudocode:**
 
 ```text
 for each test case:
-    read n, m
+
+    read N, M
     read grid
 
+    topSame = true
+    bottomSame = true
+
+    for each column j:
+        if grid[0][j] != grid[0][0]:
+            topSame = false
+
+        if grid[N-1][j] != grid[N-1][0]:
+            bottomSame = false
+
+    leftSame = true
+    rightSame = true
+
+    for each row i:
+        if grid[i][0] != grid[0][0]:
+            leftSame = false
+
+        if grid[i][M-1] != grid[0][M-1]:
+            rightSame = false
+
     badRows =
-        first row is monochromatic
-        AND last row is monochromatic
-        AND their colors differ
+        topSame AND
+        bottomSame AND
+        grid[0][0] != grid[N-1][0]
 
     badCols =
-        first column is monochromatic
-        AND last column is monochromatic
-        AND their colors differ
+        leftSame AND
+        rightSame AND
+        grid[0][0] != grid[0][M-1]
 
     if badRows OR badCols:
-        print "NO"
+        print NO
     else:
-        print "YES"
+        print YES
 ```
 
-#### Why This Works
+* **Complexity:** `O(NM)` time to read/process the grid and `O(NM)` storage for the grid.
 
-If an entire extreme border is color `X` and the opposite extreme border is entirely color `Y\ne X`, there is no pair of same-colored cells spanning those two extremes. Consequently no rectangle operation can bridge that full dimension in the required color.
-
-If this obstruction does not exist for either dimension, the boundary supplies the matching-color structure required by the operation.
-
-#### Complexity
-
-Every cell is read once and the four borders are inspected.
-
-
-```text
-T=O(NM)
-```
-
-
-
-```text
-S=O(NM)
-```
-
-
-for storing the grid. It can also be implemented with reduced auxiliary storage.
-
-#### Complete C++ Implementation
+* **Complete C++ Code:**
 
 ```cpp
 #include <bits/stdc++.h>
@@ -441,9 +288,9 @@ int main() {
         int n, m;
         cin >> n >> m;
 
-        vector<string> g(n);
+        vector<string> grid(n);
 
-        for (string &row : g) {
+        for (string &row : grid) {
             cin >> row;
         }
 
@@ -451,11 +298,11 @@ int main() {
         bool bottomSame = true;
 
         for (int j = 1; j < m; ++j) {
-            if (g[0][j] != g[0][0]) {
+            if (grid[0][j] != grid[0][0]) {
                 topSame = false;
             }
 
-            if (g[n - 1][j] != g[n - 1][0]) {
+            if (grid[n - 1][j] != grid[n - 1][0]) {
                 bottomSame = false;
             }
         }
@@ -464,11 +311,11 @@ int main() {
         bool rightSame = true;
 
         for (int i = 1; i < n; ++i) {
-            if (g[i][0] != g[0][0]) {
+            if (grid[i][0] != grid[0][0]) {
                 leftSame = false;
             }
 
-            if (g[i][m - 1] != g[0][m - 1]) {
+            if (grid[i][m - 1] != grid[0][m - 1]) {
                 rightSame = false;
             }
         }
@@ -476,12 +323,12 @@ int main() {
         bool badRows =
             topSame &&
             bottomSame &&
-            g[0][0] != g[n - 1][0];
+            grid[0][0] != grid[n - 1][0];
 
         bool badCols =
             leftSame &&
             rightSame &&
-            g[0][0] != g[0][m - 1];
+            grid[0][0] != grid[0][m - 1];
 
         cout << ((badRows || badCols) ? "NO" : "YES") << '\n';
     }
@@ -490,191 +337,70 @@ int main() {
 }
 ```
 
-#### Recognition Trigger
-
-```text
-grid operation paints rectangles
-        ↓
-do not simulate operations
-        ↓
-ask what cannot be changed / crossed
-        ↓
-inspect extreme rows and columns
-        ↓
-opposite monochromatic borders of different colors -> NO
-```
-
 ---
 
-### Problem 3: Missing Coin Sum
+Problem Link: [CSES 2183 — Missing Coin Sum](https://cses.fi/problemset/task/2183)
 
-**Problem Title:** Missing Coin Sum  
-**Source Link:** https://cses.fi/problemset/task/2183
+**Problem Summary:** Given `N` positive coin values, with each coin usable at most once, find and output the smallest positive sum that cannot be formed by a subset. **Input/Output:** read `N` and the coin array, then print one integer; exact numeric constraints are not reproduced in the supplied notes.
 
-#### Problem Overview
+<a id="missing-coin-sum-greedy-reachable-range--cses--sorting-greedy"></a>
 
-Given `N` positive coin values, each coin may be used at most once. Find the smallest positive integer that cannot be represented as a subset sum.
+### Missing Coin Sum (Greedy Reachable Range / CSES / Sorting + Greedy)
 
-#### Core Observation / Greedy Invariant
+* **Core Invariant / Key Insight:** Maintain `X` as the smallest positive value that cannot currently be formed. If processed coins can form every value in `[1, X - 1]`, then a new coin `a[i] <= X` extends the reachable interval to `[1, X + a[i] - 1]`; if `a[i] > X`, then `X` is the first unavoidable gap.
 
-Maintain:
+* **Step-by-Step Logic:**
+1. Sort the coins and initialize `X = 1`, meaning no positive value is currently guaranteed reachable.
+2. For each coin, if `coin > X`, stop because `X` cannot be formed; otherwise update `X += coin`.
+3. After the scan, output `X` as the smallest missing positive subset sum.
 
-
-```text
-X=smallest positive sum that cannot currently be formed}.
-```
-
-
-Equivalently, before processing the next coin, we can construct every sum in:
-
+* **ASCII Execution Trace / Visual Dry Run:**
 
 ```text
-[1,X-1].
+Initial:        coins = [1, 2, 2, 7, 9]
+
+Step 1:         Sort
+                [1, 2, 2, 7, 9]
+
+                X = 1
+                reachable = [1, X - 1] = empty
+
+Step 2:         coin = 1
+                1 <= X(1)
+
+                reachable expands:
+                [1, 0] --> [1, 1]
+
+                X = 1 + 1 = 2
+
+Step 3:         coin = 2
+                2 <= X(2)
+
+                reachable:
+                [1, 1] --> [1, 3]
+
+                X = 2 + 2 = 4
+
+Step 4:         coin = 2
+                2 <= X(4)
+
+                reachable:
+                [1, 3] --> [1, 5]
+
+                X = 4 + 2 = 6
+
+Step 5:         coin = 7
+                7 > X(6)
+
+                GAP FOUND:
+                1..5 are constructible
+                6 is not constructible
+                next coin already starts at 7
+
+Final Answer:   6
 ```
 
-
-Initially:
-
-
-```text
-X=1.
-```
-
-
-Sort the coins.
-
-For next coin `a_i`:
-
-- If `a_i>X`, then `X` cannot be formed.
-- If `a_i<= X`, the reachable interval expands.
-
-Before adding `a_i`:
-
-
-```text
-[1,X-1]
-```
-
-
-is reachable.
-
-Using `a_i`, we can additionally reach:
-
-
-```text
-[a_i,a_i+X-1].
-```
-
-
-When `a_i<= X`, these intervals touch or overlap, giving:
-
-
-```text
-[1,X+a_i-1].
-```
-
-
-Therefore update:
-
-
-```text
-X<=ftarrow X+a_i.
-```
-
-
-#### Step-by-Step Dry Run
-
-Input:
-
-```text
-5
-1 2 2 7 9
-```
-
-Already sorted:
-
-```text
-[1, 2, 2, 7, 9]
-```
-
-Start:
-
-```text
-X = 1
-reachable = empty
-```
-
-| Coin | Current `X` | Check | New reachable interval | New `X` |
-|---:|---:|---|---|---:|
-| `1` | `1` | `1<=1` | `[1,1]` | `2` |
-| `2` | `2` | `2<=2` | `[1,3]` | `4` |
-| `2` | `4` | `2<=4` | `[1,5]` | `6` |
-| `7` | `6` | `7>6` | gap at `6` | stop |
-
-Answer:
-
-
-```text
-6.
-```
-
-
-Why can `6` not be formed?
-
-The processed coins total only:
-
-
-```text
-1+2+2=5.
-```
-
-
-The next coin is already `7`, so there is no way to bridge the gap.
-
-#### Edge Cases
-
-If the smallest coin is greater than `1`:
-
-```text
-coins = [2, 3, 10]
-```
-
-then immediately:
-
-
-```text
-X=1
-```
-
-
-and
-
-
-```text
-2>1.
-```
-
-
-Answer:
-
-
-```text
-1.
-```
-
-
-If no gap occurs during processing, final `X` is the answer.
-
-#### Algorithm
-
-1. Sort the coins.
-2. Set `X=1`.
-3. For each coin:
-   - if `a_i>X`, stop and output `X`;
-   - otherwise set `X=X+a_i`.
-4. Output `X`.
-
-#### Pseudocode
+* **Pseudocode:**
 
 ```text
 read N
@@ -685,6 +411,7 @@ sort A
 X = 1
 
 for coin in A:
+
     if coin > X:
         break
 
@@ -693,33 +420,9 @@ for coin in A:
 print X
 ```
 
-#### Complexity
+* **Complexity:** `O(N log N)` time because of sorting and `O(N)` space for the coin array.
 
-Sorting dominates:
-
-
-```text
-T(N)=O(N\log N).
-```
-
-
-The scan is:
-
-
-```text
-O(N).
-```
-
-
-If the array is stored:
-
-
-```text
-S(N)=O(N).
-```
-
-
-#### Complete C++ Implementation
+* **Complete C++ Code:**
 
 ```cpp
 #include <bits/stdc++.h>
@@ -740,17 +443,21 @@ int main() {
 
     sort(coins.begin(), coins.end());
 
-    // All values in [1, missing - 1] are currently constructible.
+    // All values in [1, missing - 1] are constructible.
     long long missing = 1;
 
     for (long long coin : coins) {
-        // A gap appears: 'missing' cannot be formed.
+
+        // If coin is larger than the first missing value,
+        // this gap can never be filled.
         if (coin > missing) {
             break;
         }
 
-        // Extend constructible interval:
-        // [1, missing - 1] -> [1, missing + coin - 1].
+        // Extend:
+        // [1, missing - 1]
+        // to
+        // [1, missing + coin - 1].
         missing += coin;
     }
 
@@ -760,209 +467,98 @@ int main() {
 }
 ```
 
-#### Recognition Trigger
-
-```text
-smallest impossible subset sum
-        ↓
-sort
-        ↓
-maintain continuous reachable interval [1, X-1]
-        ↓
-ai <= X -> extend
-ai > X  -> X is first gap
-```
-
 ---
 
-### Problem 4: Multiple Powers of Two
+Problem Link: [HackerRank — Multiple Powers of Two](https://www.hackerrank.com/contests/dcc-lab-30-jan/challenges/multiple-powers-of-two/problem)
 
-**Problem Title:** Multiple Powers of Two  
-**Source Link:** https://www.hackerrank.com/contests/dcc-lab-30-jan/challenges/multiple-powers-of-two/problem
+**Problem Summary:** Process repeated power-of-two queries over an array. For an effective exponent `x`, values divisible by `2^x` receive `+2^(x - 1)`, and the final array is output. **Input/Output:** the lecture shows test cases with `N`, `Q`, an array, and query exponents; the supplied notes do not contain a complete clean statement or exact constraints, so no unsupported limits are invented here.
 
-#### Problem Overview
+<a id="multiple-powers-of-two-bit-pattern-query-dominance--hackerrank--bit-manipulation"></a>
 
-The lecture studies repeated queries involving powers of two and array elements, with the key transformation based on numbers divisible by `2^x` and adding:
+### Multiple Powers of Two (Bit Pattern + Query Dominance / HackerRank / Bit Manipulation)
 
+* **Core Invariant / Key Insight:** Divisibility by `2^x` means the binary number has at least `x` trailing zero bits. After applying exponent `x`, affected values gain bit `x - 1`, so future queries with exponent `>= x` are redundant; only a strictly decreasing sequence of query exponents needs full processing.
 
-```text
-2^{x-1}.
-```
+* **Step-by-Step Logic:**
+1. Maintain `minProcessed`, the smallest effective exponent processed so far.
+2. For query `x`, skip it when `x >= minProcessed`; otherwise scan the array, and for every `a[i]` divisible by `2^x`, add `2^(x - 1)`.
+3. Set `minProcessed = x`; because effective exponents strictly decrease, only a small number of full scans are needed.
 
-
-A direct implementation can repeatedly scan all `N` elements for every query, producing roughly `O(NQ)` work. The lecture develops a bit-pattern optimization.
-
-> The supplied PDF is diagram-heavy and does not contain a clean machine-readable full statement. The notes below preserve the lecture's supported transformation and optimization rather than inventing omitted input constraints.
-
-#### Core Bit Observation
-
-Divisibility by:
-
+* **ASCII Execution Trace / Visual Dry Run:**
 
 ```text
-2^x
+Initial:        value = 24
+                x = 3
+
+Binary:         24 = 11000
+                         ^^^
+                3 trailing zero bits
+
+Step 1:         divisor = 2^3 = 8
+
+                24 % 8 = 0
+                --> query affects 24
+
+Step 2:         add = 2^(3 - 1)
+                    = 2^2
+                    = 4
+
+Binary Add:     11000     (24)
+              + 00100     (4)
+              -------
+                11100     (28)
+
+Step 3:         value becomes 28
+
+                minProcessed = 3
+
+Later Query:    x = 4
+
+                4 >= minProcessed(3)
+                --> redundant
+                --> skip
+
+Later Query:    x = 2
+
+                2 < minProcessed(3)
+                --> effective
+                --> process
+
+Final Idea:     effective query exponents are
+                strictly decreasing
 ```
 
-
-means the binary representation has at least `x` trailing zero bits.
-
-Example:
+Query filtering example:
 
 ```text
-x = 3
+Queries:        29  30  31   4   6   2
+Effective?:      Y   N   N   Y   N   Y
 
-divisible by 2^3 = 8
-        ↓
-binary ends in at least 3 zeroes
-
-...xxxxx000
+Kept:           29 -> 4 -> 2
+                strictly decreasing
 ```
 
-The update uses:
-
-
-```text
-2^{x-1}.
-```
-
-
-Adding this value to a number divisible by `2^x` changes the trailing pattern:
-
-```text
-before: ...0000
-add:    ...0100    (example x = 3)
-after:  ...0100
-```
-
-After this update, the resulting number is no longer divisible by the same or any larger relevant power in the same way.
-
-#### Query-Dominance Observation
-
-The lecture maintains a threshold such as the smallest processed exponent.
-
-If a new query exponent is not smaller than an already effective exponent, it may have no new effect and can be skipped.
-
-Example query sequence from the lecture style:
-
-```text
-29 30 31 4 6 2
-✓  ×  ×  ✓ × ✓
-```
-
-The useful exponents form a strictly decreasing sequence.
-
-Why?
-
-After processing exponent `x`, affected values gain the bit:
-
-
-```text
-2^{x-1}.
-```
-
-
-Therefore later queries with exponent at least `x` do not newly satisfy the required divisibility condition for those already transformed values.
-
-This collapses the number of effective queries to at most the number of bit positions.
-
-#### Bit-by-Bit Example
-
-Suppose:
-
-```text
-value = 24
-x = 3
-```
-
-Binary:
-
-```text
-24 = 11000₂
-```
-
-It has at least three trailing zeroes:
-
-```text
-11000
-   ^^^
-```
-
-so it is divisible by:
-
-
-```text
-2^3=8.
-```
-
-
-Add:
-
-
-```text
-2^{3-1}=4.
-```
-
-
-Binary:
-
-```text
-11000
-00100
------
-11100
-```
-
-Decimal:
-
-
-```text
-24+4=28.
-```
-
-
-Now the lower-bit structure has changed, which explains why subsequent larger/equal exponent queries can become redundant.
-
-#### Optimized Algorithm
-
-1. Read the array.
-2. Process query exponents in order.
-3. Keep `minProcessed`, initially larger than every possible exponent.
-4. If `x>=minProcessed}`, skip the query.
-5. Otherwise:
-   - for every array value divisible by `2^x`,
-   - add `2^{x-1}`;
-   - set `minProcessed = x`.
-6. Print the final array.
-
-The divisibility test can be written as:
-
-
-```text
-a_imod 2^x=0
-```
-
-
-or via an appropriate low-bit mask.
-
-#### Pseudocode
+* **Pseudocode:**
 
 ```text
 read N, Q
-read A
-read queries
+read array A
 
-minProcessed = infinity
+minProcessed = INF
 
-for x in queries:
+repeat Q times:
+
+    read x
 
     if x >= minProcessed:
         continue
 
-    add = 2^(x - 1)
     divisor = 2^x
+    add = 2^(x - 1)
 
     for i = 0 to N - 1:
-        if A[i] is divisible by divisor:
+
+        if A[i] % divisor == 0:
             A[i] = A[i] + add
 
     minProcessed = x
@@ -970,31 +566,9 @@ for x in queries:
 print A
 ```
 
-#### Complexity
+* **Complexity:** If there are `B` relevant bit positions, only `B` effective exponents can survive, giving approximately `O(N * B + Q)` time and `O(1)` extra working space apart from the input array.
 
-If the integer domain contains `B` relevant bits, only a strictly decreasing sequence of exponents is processed.
-
-Thus the expensive scan occurs at most `B` times:
-
-
-```text
-T=O(NB+Q).
-```
-
-
-For 32-bit-style exponents, `B` is a small constant around `31`.
-
-Extra space:
-
-
-```text
-O(1)
-```
-
-
-apart from the input arrays.
-
-#### Complete C++ Implementation
+* **Complete C++ Code:**
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1013,11 +587,11 @@ int main() {
 
         vector<long long> a(n);
 
-        for (long long &x : a) {
-            cin >> x;
+        for (long long &value : a) {
+            cin >> value;
         }
 
-        // Any exponent >= minProcessed is redundant.
+        // Larger/equal future exponents become redundant.
         int minProcessed = 31;
 
         while (q--) {
@@ -1041,7 +615,7 @@ int main() {
         }
 
         for (int i = 0; i < n; ++i) {
-            if (i) {
+            if (i > 0) {
                 cout << ' ';
             }
 
@@ -1055,151 +629,73 @@ int main() {
 }
 ```
 
-#### Recognition Trigger
-
-```text
-queries use powers of two
-        ↓
-divisible by 2^x
-        ↓
-look at trailing zeroes
-        ↓
-update inserts bit x-1
-        ↓
-many future exponents become redundant
-        ↓
-keep only strictly decreasing effective x values
-```
+> **Source-note limitation:** The supplied lecture material is diagram-heavy for this problem and does not expose a complete clean text statement. The presentation above preserves the transformation and optimization shown in the lecture rather than inventing unsupported statement details.
 
 ---
 
-### Problem 5: Stick Lengths
+Problem Link: [CSES 1074 — Stick Lengths](https://cses.fi/problemset/task/1074)
 
-**Problem Title:** Stick Lengths  
-**Source Link:** https://cses.fi/problemset/task/1074
+**Problem Summary:** Given `N` stick lengths, choose one final length for all sticks so that the total number of unit increases/decreases is minimum, and output that minimum cost. **Input/Output:** read `N` and the lengths, then print one integer; exact numeric constraints are not reproduced in the supplied notes.
 
-#### Problem Overview
+<a id="stick-lengths-median--cses--greedy-math"></a>
 
-Given `N` stick lengths, one operation changes a stick length by `1` at cost `1`. Make all sticks equal while minimizing total cost.
+### Stick Lengths (Median / CSES / Greedy-Math)
 
-For target length `x`, the cost is:
+* **Core Invariant / Key Insight:** The target minimizing `sum(abs(a[i] - x))` is a median of the array. After sorting, choosing `a[N / 2]` is sufficient.
 
+* **Step-by-Step Logic:**
+1. Sort all stick lengths and select the median `a[N / 2]`.
+2. For every stick, calculate `abs(a[i] - median)` and add it to the total cost.
+3. Output the accumulated cost in `O(N log N)` time.
 
-```text
-C(x)=sum_{i=1}^{N}|a_i-x|.
-```
-
-
-#### Core Observation / Pattern
-
-The value minimizing the sum of absolute deviations is a **median**.
-
-Therefore:
-
-1. sort the values;
-2. choose a median;
-3. sum absolute distances to it.
-
-For odd `N`, the median is unique.
-
-For even `N`, every integer between the two middle values minimizes the `L_1` cost. Choosing `a[n/2]` is sufficient.
-
-#### Why Median?
-
-Imagine every value pulls the target toward itself with unit force.
-
-Moving `x` one step to the right:
-
-- distance to every point on the left increases by `1`;
-- distance to every point on the right decreases by `1`.
-
-The minimum occurs around the equilibrium where neither side has more than half the points — precisely the median region.
-
-#### Step-by-Step Dry Run
-
-Input:
+* **ASCII Execution Trace / Visual Dry Run:**
 
 ```text
-5
-2 3 1 5 2
+Initial:        a = [2, 3, 1, 5, 2]
+
+Step 1:         Sort
+
+                [1, 2, 2, 3, 5]
+
+Step 2:         Pick median
+
+                index  = N / 2
+                       = 5 / 2
+                       = 2
+
+                median = a[2]
+                       = 2
+
+Step 3:         Compute absolute distances
+
+                |1 - 2| = 1
+                |2 - 2| = 0
+                |2 - 2| = 0
+                |3 - 2| = 1
+                |5 - 2| = 3
+
+                total = 1 + 0 + 0 + 1 + 3
+                      = 5
+
+Final Answer:   5
+Final State:    all sticks conceptually become length 2
 ```
 
-Sort:
+Why not the average?
 
 ```text
-[1, 2, 2, 3, 5]
+Objective:      sum(abs(a[i] - x))
+                ^^^^^^^^^^^^^^^^^^
+                absolute distance / L1
+
+Recognition:    L1 minimization --> MEDIAN
 ```
 
-Median:
-
-```text
-index = 5 / 2 = 2
-median = 2
-```
-
-Distances:
-
-| Stick | `|a_i-2|` |
-|---:|---:|
-| `1` | `1` |
-| `2` | `0` |
-| `2` | `0` |
-| `3` | `1` |
-| `5` | `3` |
-
-Total:
-
-
-```text
-1+0+0+1+3=5.
-```
-
-
-#### Compare With a Bad Target
-
-Choose `x=3`:
-
-
-```text
-|1-3|+|2-3|+|2-3|+|3-3|+|5-3|
-```
-
-
-
-```text
-=2+1+1+0+2=6.
-```
-
-
-Median gives the lower cost.
-
-#### Even-Length Example
-
-```text
-[1, 2, 10, 12]
-```
-
-Middle values:
-
-```text
-2 and 10
-```
-
-Any `xin[2,10]` has the same minimum total absolute-distance cost.
-
-So selecting:
-
-```text
-a[n / 2] = 10
-```
-
-is valid.
-
-#### Pseudocode
+* **Pseudocode:**
 
 ```text
 read N
-read A
+read array A
 
 sort A
 
@@ -1208,46 +704,14 @@ median = A[N / 2]
 answer = 0
 
 for value in A:
-    answer += abs(value - median)
+    answer = answer + abs(value - median)
 
 print answer
 ```
 
-#### Complexity
+* **Complexity:** `O(N log N)` time due to sorting and `O(N)` storage for the input array.
 
-Sorting:
-
-
-```text
-O(N\log N).
-```
-
-
-Distance accumulation:
-
-
-```text
-O(N).
-```
-
-
-Total:
-
-
-```text
-O(N\log N).
-```
-
-
-Array storage:
-
-
-```text
-O(N).
-```
-
-
-#### Complete C++ Implementation
+* **Complete C++ Code:**
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1268,276 +732,142 @@ int main() {
 
     sort(a.begin(), a.end());
 
-    // Any median minimizes Σ|ai - x|.
+    // A median minimizes the sum of absolute deviations.
     long long median = a[n / 2];
 
-    long long cost = 0;
+    long long answer = 0;
 
     for (long long x : a) {
-        cost += llabs(x - median);
+        answer += llabs(x - median);
     }
 
-    cout << cost << '\n';
+    cout << answer << '\n';
 
     return 0;
 }
 ```
 
-#### Recognition Trigger
-
-```text
-choose one value x
-minimize Σ |ai - x|
-        ↓
-L1 / absolute distance
-        ↓
-MEDIAN
-```
-
 ---
 
-### Problem 6: Odd Grasshopper
+Problem Link: [Codeforces 1607B — Odd Grasshopper](https://codeforces.com/problemset/problem/1607/B)
 
-**Problem Title:** Odd Grasshopper  
-**Source Link:** https://codeforces.com/problemset/problem/1607/B
+**Problem Summary:** For each test case, a grasshopper starts at coordinate `x0`; on jump `i`, it moves left by `i` from an even coordinate and right by `i` from an odd coordinate. Output its coordinate after `n` jumps; the supplied notes do not reproduce the exact official numeric limits.
 
-#### Problem Overview
+<a id="odd-grasshopper-periodicity--codeforces--900"></a>
 
-A grasshopper starts at coordinate `x_0`. During jump number `i`:
+### Odd Grasshopper (Periodicity / Codeforces / 900)
 
-- if its current coordinate is even, it moves left by `i`;
-- if its current coordinate is odd, it moves right by `i`.
+* **Core Invariant / Key Insight:** The movement has a cycle of length `4`, so simulating all `n` jumps is unnecessary. Determine the displacement from `n % 4`, then reverse its sign when the initial coordinate is odd.
 
-Find its coordinate after `n` jumps.
+* **Step-by-Step Logic:**
+1. Compute `r = n % 4` and derive the displacement for an even starting coordinate: `0`, `-n`, `+1`, or `n + 1`.
+2. If `x0` is odd, reverse the sign of that displacement because the left/right behavior is inverted.
+3. Output `x0 + displacement` in `O(1)` time.
 
-The constraints are large, so simulating every jump is unnecessary.
-
-#### Core Observation / Pattern
-
-The movement has a period of `4`.
-
-Start by understanding the relative displacement for a convenient base such as `x_0=0`.
-
-Since `0` is even:
+* **ASCII Execution Trace / Visual Dry Run:**
 
 ```text
-jump 1: 0 -> -1
-jump 2: -1 is odd  -> +2 => 1
-jump 3: 1 is odd   -> +3 => 4
-jump 4: 4 is even  -> -4 => 0
+Initial:        x0 = 0
+                n  = 7
+
+Step 1:         Observe the first 4 jumps
+
+                jump 1:
+                0 is even
+                0 - 1 = -1
+
+                jump 2:
+                -1 is odd
+                -1 + 2 = 1
+
+                jump 3:
+                1 is odd
+                1 + 3 = 4
+
+                jump 4:
+                4 is even
+                4 - 4 = 0
+
+                after 4 jumps -> back to relative start
+
+Step 2:         n % 4 = 7 % 4 = 3
+
+                for remainder 3:
+                displacement = n + 1
+                             = 8
+
+Step 3:         x0 is even
+                --> keep displacement sign
+
+                answer = x0 + 8
+                       = 8
+
+Final Answer:   8
 ```
 
-After four jumps:
+Remainder pattern:
 
 ```text
-0 -> -1 -> 1 -> 4 -> 0
+For EVEN x0:
+
+n % 4 = 0   --> displacement = 0
+n % 4 = 1   --> displacement = -n
+n % 4 = 2   --> displacement = +1
+n % 4 = 3   --> displacement = +(n + 1)
+
+For ODD x0:
+
+flip the sign of the displacement.
 ```
 
-The relative position returns to the start.
-
-Thus only:
-
+Odd-start example:
 
 ```text
-nmod4
+Initial:        x0 = 5
+                n  = 3
+
+Step 1:         n % 4 = 3
+
+Step 2:         even-start displacement would be:
+                n + 1 = 4
+
+Step 3:         x0 is odd
+                --> flip sign
+                displacement = -4
+
+Final Answer:   5 - 4 = 1
 ```
 
-
-matters.
-
-#### Relative Displacement for Even Start
-
-Let `r=nmod4`.
-
-The lecture's cycle gives:
-
-
-```text
-d(n)=
-
-0,&r=0\\
--n,&r=1\\
-1,&r=2\\
-n+1,&r=3
-
-```
-
-
-for an even initial coordinate.
-
-For an odd initial coordinate, directions reverse, so the displacement is negated.
-
-Therefore:
-
-
-```text
-answer}=
-
-x_0+d(n),&x_0 even}\\
-x_0-d(n),&x_0 odd}.
-
-```
-
-
-#### Step-by-Step Dry Run 1
-
-```text
-x0 = 0
-n  = 7
-```
-
-Compute:
-
-
-```text
-7mod4=3.
-```
-
-
-For an even start and remainder `3`:
-
-
-```text
-d=n+1=8.
-```
-
-
-Therefore:
-
-
-```text
-x=0+8=8.
-```
-
-
-Direct check:
-
-```text
-start = 0
-
-1: even -> 0 - 1 = -1
-2: odd  -> -1 + 2 = 1
-3: odd  -> 1 + 3 = 4
-4: even -> 4 - 4 = 0
-
-5: even -> 0 - 5 = -5
-6: odd  -> -5 + 6 = 1
-7: odd  -> 1 + 7 = 8
-```
-
-Correct:
-
-
-```text
-8.
-```
-
-
-#### Step-by-Step Dry Run 2 — Odd Start
-
-```text
-x0 = 5
-n  = 3
-```
-
-Since:
-
-
-```text
-3mod4=3,
-```
-
-
-base displacement magnitude:
-
-
-```text
-d=n+1=4.
-```
-
-
-But `x_0` is odd, so reverse the even-start direction:
-
-
-```text
-x=5-4=1.
-```
-
-
-Direct simulation:
-
-```text
-start = 5
-
-jump 1:
-5 is odd
-5 + 1 = 6
-
-jump 2:
-6 is even
-6 - 2 = 4
-
-jump 3:
-4 is even
-4 - 3 = 1
-```
-
-Matches the formula.
-
-#### Remainder Table
-
-| `nmod4` | Relative displacement for even `x_0` |
-|---:|---:|
-| `0` | `0` |
-| `1` | `-n` |
-| `2` | `+1` |
-| `3` | `+(n+1)` |
-
-For odd `x_0`, flip the sign.
-
-#### Pseudocode
+* **Pseudocode:**
 
 ```text
 read x0, n
 
-r = n mod 4
+r = n % 4
 
 if r == 0:
-    d = 0
-else if r == 1:
-    d = -n
-else if r == 2:
-    d = 1
-else:
-    d = n + 1
+    displacement = 0
 
-if x0 is even:
-    answer = x0 + d
+else if r == 1:
+    displacement = -n
+
+else if r == 2:
+    displacement = 1
+
 else:
-    answer = x0 - d
+    displacement = n + 1
+
+if x0 is odd:
+    displacement = -displacement
+
+answer = x0 + displacement
 
 print answer
 ```
 
-#### Complexity
+* **Complexity:** `O(1)` time and `O(1)` extra space per test case.
 
-Each test case uses a constant number of arithmetic operations:
-
-
-```text
-T=O(1).
-```
-
-
-Extra space:
-
-
-```text
-S=O(1).
-```
-
-
-#### Complete C++ Implementation
+* **Complete C++ Code:**
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1556,25 +886,20 @@ int main() {
 
         long long displacement = 0;
 
-        switch (n % 4) {
-            case 0:
-                displacement = 0;
-                break;
-
-            case 1:
-                displacement = -n;
-                break;
-
-            case 2:
-                displacement = 1;
-                break;
-
-            case 3:
-                displacement = n + 1;
-                break;
+        if (n % 4 == 0) {
+            displacement = 0;
+        }
+        else if (n % 4 == 1) {
+            displacement = -n;
+        }
+        else if (n % 4 == 2) {
+            displacement = 1;
+        }
+        else {
+            displacement = n + 1;
         }
 
-        // Odd starting coordinates reverse the direction pattern.
+        // Odd starting coordinate reverses the movement direction.
         if (x0 & 1LL) {
             displacement = -displacement;
         }
@@ -1586,59 +911,43 @@ int main() {
 }
 ```
 
-#### Recognition Trigger
-
-```text
-huge number of deterministic jumps
-direction depends on parity
-        ↓
-write first few transitions
-        ↓
-look for periodicity
-        ↓
-cycle length = 4
-        ↓
-reduce n using n % 4
-```
-
 ---
 
-## Final Pattern Recognition Sheet
+# Final Pattern Recognition Sheet
 
-| Problem | Main Pattern | Contest Recognition Signal |
+| Problem | Pattern | One-Line Recognition |
 |---|---|---|
-| Modulo Summation | Simultaneous modulo maximum | Each `mmod a_i` is bounded by `a_i-1` |
-| Rectangle Filling | Boundary invariant / impossibility | Rectangle operations + binary-colored grid |
-| Missing Coin Sum | Greedy reachable interval | Smallest positive subset sum that cannot be formed |
-| Multiple Powers of Two | Trailing-zero / redundant-query pattern | Divisibility by `2^x` under repeated queries |
-| Stick Lengths | Median / `L_1` minimization | Minimize `sum|a_i-x|` |
-| Odd Grasshopper | Periodicity / modulo classes | Huge deterministic process with parity-dependent moves |
+| Modulo Summation | Modulo Extremum | Each remainder has maximum `a[i] - 1`; ask whether all maxima can happen together |
+| Rectangle Filling | Boundary Invariant | Do not simulate grid operations; inspect impossible opposite-border states |
+| Missing Coin Sum | Reachable Range Greedy | Maintain the first missing value `X` and extend `[1, X - 1]` |
+| Multiple Powers of Two | Bit / Query Dominance | `2^x` divisibility = trailing zeros; effective exponents strictly decrease |
+| Stick Lengths | Median | `sum(abs(a[i] - x))` is minimized by a median |
+| Odd Grasshopper | Periodicity | Write the first few moves and reduce the process using `n % 4` |
 
-### Fast Mental Checklist
+## 30-Second Revision Map
 
 ```text
-MODULO
-Can every term reach its individual maximum simultaneously?
+MAXIMUM MODULO SUM
+    -> individual max remainder
+    -> common multiple - 1
 
-GRID OPERATIONS
-What boundary configuration is impossible to overcome?
+GRID RECTANGLE OPERATIONS
+    -> inspect borders
+    -> find impossible invariant
 
-SUBSET SUM — SMALLEST MISSING
-Can I maintain one continuous reachable interval?
+SMALLEST MISSING SUBSET SUM
+    -> sort
+    -> reachable [1, X - 1]
+    -> coin <= X ? extend : gap
 
-POWERS OF TWO
-What does divisibility mean in binary?
-Do earlier updates make later queries redundant?
+POWERS OF TWO QUERIES
+    -> trailing zeros
+    -> only decreasing effective exponents
 
-ABSOLUTE DIFFERENCE
-Σ|ai - x| -> think MEDIAN.
+MINIMUM SUM OF ABSOLUTE DIFFERENCES
+    -> median
 
-REPEATED DETERMINISTIC PROCESS
-Write 4–8 steps.
-Does the state repeat?
-Can n be reduced modulo the cycle length?
+HUGE PARITY-BASED MOVEMENT
+    -> find cycle
+    -> modulo 4
 ```
-
----
-
-# End of Notes
