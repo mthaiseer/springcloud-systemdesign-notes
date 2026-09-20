@@ -379,8 +379,12 @@ a x + b y = c solvable in integers  <=>  gcd(a,b) | c        (Bezout)
 **Sieve / SPF:** `spf[x]` smallest prime factor; factor by repeated `x /= spf[x]` in O(log x).
 
 ```cpp
-vector<int> spf(N+1);
-for (int i=2;i<=N;i++) if(!spf[i]) for(int j=i;j<=N;j+=i) if(!spf[j]) spf[j]=i;
+vector<int> spf(N + 1, 0);
+for (int i = 2; i <= N; i++) {
+    if (spf[i] != 0) continue;          // i is composite, already marked
+    for (int j = i; j <= N; j += i)
+        if (spf[j] == 0) spf[j] = i;    // smallest prime factor of j
+}
 ```
 
 **Modeling examples**
@@ -419,8 +423,16 @@ counting answer "mod 998244353"           -> every op mod, inverse via Fermat
 **Fast exponentiation (binary):** `a^e`: process bits of `e`; O(log e).
 
 ```cpp
-long long pw(long long a,long long e,long long m){long long r=1;a%=m;
-  while(e){if(e&1)r=r*a%m;a=a*a%m;e>>=1;}return r;}
+long long power(long long a, long long e, long long mod) {
+    long long result = 1;
+    a %= mod;
+    while (e > 0) {
+        if (e & 1) result = result * a % mod;   // current bit is 1
+        a = a * a % mod;                        // square the base
+        e >>= 1;
+    }
+    return result;
+}
 ```
 
 **Prefix modulo:** subarray `(l,r]` divisible by `m` ⇔ `P[r] ≡ P[l] (mod m)`. Count pairs of equal prefix remainders.
@@ -757,9 +769,19 @@ ax + by = c
 Signals: "coins of value a and b to pay exactly c", "packs of 3 and 7". Example: 2020a+2021b=n ⇒ substitute (CF 1475B).
 
 ```cpp
-long long eg(long long a,long long b,long long&x,long long&y){
-  if(!b){x=1;y=0;return a;}
-  long long x1,y1,g=eg(b,a%b,x1,y1); x=y1; y=x1-(a/b)*y1; return g;}
+// returns g = gcd(a, b) and sets x, y so that a*x + b*y = g
+long long extgcd(long long a, long long b, long long &x, long long &y) {
+    if (b == 0) {
+        x = 1;
+        y = 0;
+        return a;
+    }
+    long long x1, y1;
+    long long g = extgcd(b, a % b, x1, y1);
+    x = y1;
+    y = x1 - (a / b) * y1;
+    return g;
+}
 ```
 
 ---
@@ -818,8 +840,14 @@ Monotone means `can(X)` true ⇒ `can(X+1)` (or reversed). Check by asking: "if 
 Discrete convexity: unimodal cost `f(x)` ⇒ ternary/binary search on `f(x+1)-f(x)`. Minimizing `Σ|x-a_i|` ⇒ median. Balancing two quantities ⇒ meet near `S/2`. Every optimum needs a lower bound + achieving construction.
 
 ```cpp
-long long lo=0, hi=INF;               // find max x with can(x)
-while(lo<hi){ long long mid=lo+(hi-lo+1)/2; if(can(mid)) lo=mid; else hi=mid-1; }
+// find the maximum x with can(x) == true   (can is monotone: true ... true false ... false)
+long long lo = 0, hi = INF;
+while (lo < hi) {
+    long long mid = lo + (hi - lo + 1) / 2;   // upper mid avoids infinite loop
+    if (can(mid)) lo = mid;
+    else          hi = mid - 1;
+}
+// answer = lo
 ```
 
 
@@ -1834,1521 +1862,1171 @@ Statement -> Variables -> Equation -> Transformation -> Simplified condition -> 
 
 ## Part 27. Problem Modeling Library
 
-Each problem hides the algorithm behind steps 1–8: read only those and re-derive the solution before looking at code.
+Each problem uses one fixed layout: Link, Summary, Core Invariant, Step-by-Step Logic, ASCII Trace with pseudocode, then the C++17 solution.
 
-## P01. Watermelon (CF 4A)
+**Contents**
+
+- [Pattern A: Parity & Formula Bounds (Lower Bound + Construction)](#pattern-a-parity--formula-bounds-lower-bound--construction)
+  - [Watermelon (CF 4A)](#watermelon-parity-constraint--codeforces--800)
+  - [Yet Another Two Integers Problem (CF 1409A)](#yet-another-two-integers-problem-arithmetic--ceil-division--codeforces--800)
+  - [K-divisible Sum (CF 1476A)](#k-divisible-sum-bounding--codeforces--1000)
+  - [Sweet Problem (CF 1263A)](#sweet-problem-bounding--codeforces--1200)
+  - [Distance and Axis (CF 1401A)](#distance-and-axis-grid-parity--codeforces--1100)
+- [Pattern B: Invariants (Sum / GCD / Difference)](#pattern-b-invariants-sum--gcd--difference)
+  - [Friends and Candies (CF 1538B)](#friends-and-candies-sum-constraint--codeforces--800)
+  - [Exciting Bets (CF 1543A)](#exciting-bets-gcd-constraint--codeforces--900)
+  - [EhAb AnD gCd (CF 1325A)](#ehab-and-gcd-constructive-equation--codeforces--800)
+- [Pattern C: Number Theory, Modulo & Diophantine Formulas](#pattern-c-number-theory-modulo--diophantine-formulas)
+  - [Odd Divisor (CF 1475A)](#odd-divisor-number-theory--powers-of-two--codeforces--900)
+  - [Required Remainder (CF 1374A)](#required-remainder-modulo-constraint--codeforces--1000)
+  - [New Year's Number (CF 1475B)](#new-years-number-diophantine-equation--codeforces--900)
+  - [K-th Not Divisible by n (CF 1352C)](#k-th-not-divisible-by-n-divisibility--counting--codeforces--1200)
+  - [Modulo Sum (CF 577B)](#modulo-sum-pigeonhole--codeforces--1900)
+- [Pattern D: Pair Conditions -> Algebra + Sorting/Frequency](#pattern-d-pair-conditions---algebra--sortingfrequency)
+  - [Same Differences (CF 1520D)](#same-differences-pair-counting--codeforces--1200)
+  - [Number of Pairs (CF 1538C)](#number-of-pairs-sorting-as-transformation--codeforces--1300)
+  - [Pair of Topics (CF 1324D)](#pair-of-topics-algebra--transformation--codeforces--1400)
+  - [Honest Coach (CF 1360B)](#honest-coach-sorting-as-transformation--codeforces--800)
+- [Pattern E: Binary Search on the Answer](#pattern-e-binary-search-on-the-answer)
+  - [Maximum Median (CF 1201C)](#maximum-median-binary-search-equation--codeforces--1400)
+
+### Pattern A: Parity & Formula Bounds (Lower Bound + Construction)
+
+Many 800–1200 problems reduce to one bound argument: prove `answer >= X` (a resource or geometric limit), then show a construction that reaches `X`.
+
+* **Signals:** "minimum moves", "maximum days", "each step changes by at most K", "split into even parts".
+* **Tools:** ceil division `(a+b-1)/b`, parity (`x%2`), `min` of two independent bounds, largest-element (extremal) argument.
+* **Workflow:** write the resource limit -> write the limiting element -> take `min` -> check tiny cases.
+* **Pitfall:** forgetting the smallest legal value (e.g. `w>=4`) or overflow in `n*k`.
 
 Problem Link: [Watermelon](https://codeforces.com/problemset/problem/4/A)
 
-**Rating:** 800 (approximate)
+**Problem Summary:** Given weight `w`, decide if it can be split into two positive even parts. Output `YES` or `NO`.
 
-**Primary Mathematical Form:** Parity Constraint
+#### Watermelon (Parity Constraint / Codeforces / 800)
 
-**Secondary Forms:** Bounding
+* **Core Invariant / Key Insight:** Even+even is even and each part is at least 2, so the condition is `w % 2 == 0 && w >= 4`.
 
-### 1. Story Removed
-
-Given integer w. Decide whether w = a + b with a, b both even and positive.
-
-### 2. Variables
-
+* **Key Formula:**
 ```text
-w = weight; a, b = the two parts (integers).
+w = a + b,  a, b even, a >= 2, b >= 2
+=> w even  and  w >= 4
 ```
 
-### 3. Constraints
+* **Step-by-Step Logic:**
+1. Read `w`.
+2. Check parity: `w % 2 == 0`.
+3. Check minimum: `w >= 4` (parts `2` and `w-2`). Output in O(1).
 
-w <= 100. Anything works; O(1) formula.
-
-### 4. Direct Mathematical Model
-
+* **ASCII Execution Trace / Visual Dry Run:**
 ```text
-Need: a+b=w, a mod 2=0, b mod 2=0, a>=1, b>=1.
+Initial:        w = 8
+
+Step 1:         parity check
+                8 % 2 = 0  --> even OK
+
+Step 2:         size check
+                8 >= 4 --> OK, split = (2, 6)
+
+Step 3:         w = 2 --> even but 2 < 4 --> NO
+
+Final Answer:   w=8 -> YES,  w=2 -> NO,  w=7 -> NO
+
+Pseudocode:
+    read w
+    if w % 2 == 0 and w >= 4: print YES
+    else: print NO
 ```
 
-### 5. Transformation
-
-```text
-a,b even, positive ⇒ a>=2, b>=2 ⇒ w=a+b>=4.
-Sum of two evens is even ⇒ w even.
-Conversely, w even, w>=4 ⇒ take a=2, b=w-2 (even, >=2).
-```
-
-### 6. Feasibility Conditions
-
-```text
-w % 2 == 0 and w >= 4
-```
-
-### 7. Core Observation
-
-even+even=even, and 'positive even' means at least 2.
-
-### 8. Mathematical Invariant / Proof
-
-Necessity: derived above. Sufficiency: explicit construction (2, w-2).
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> w=a+b -> a,b even >=2 -> w even and w>=4 -> O(1) test
-```
-
-### 10. Dry Run
-
-w=8: even, >=4 → (2,6) → YES. w=2: even but <4 → NO. w=7: odd → NO.
-
-### 11. Pseudocode
-
-```text
-read w
-print (w%2==0 and w>=4) ? YES : NO
-```
-
-### 12. C++17 Solution
-
+* **C++17 Solution:**
 ```cpp
 #include <bits/stdc++.h>
-int main(){ int w; std::cin>>w; puts((w%2==0 && w>=4)?"YES":"NO"); }
+using namespace std;
+
+int main() {
+    int w;
+    cin >> w;
+
+    // even + even = even, and each part >= 2  =>  w even and w >= 4
+    if (w % 2 == 0 && w >= 4) cout << "YES\n";
+    else cout << "NO\n";
+    return 0;
+}
 ```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever I see "split into parts with a property":
-→ write the smallest allowed part (here 2), then parity of the sum.
-```
-
-## P02. Yet Another Two Integers Problem (CF 1409A)
 
 Problem Link: [Yet Another Two Integers Problem](https://codeforces.com/problemset/problem/1409/A)
 
-**Rating:** 800 (approximate)
+**Problem Summary:** Given `a` and `b`, one move changes `a` by an integer in `[-10,10]`. Output the minimum moves to reach `b`.
 
-**Primary Mathematical Form:** Arithmetic / Ceil Division
+#### Yet Another Two Integers Problem (Arithmetic / Ceil Division / Codeforces / 800)
 
-**Secondary Forms:** Bounding
+* **Core Invariant / Key Insight:** Each move covers at most 10 units of the gap `d = |a-b|`, so the answer is `ceil(d/10) = (d+9)/10`.
 
-### 1. Story Removed
-
-Given a,b. One move changes a by any integer in [-10,10]. Minimum moves to reach b.
-
-### 2. Variables
-
+* **Key Formula:**
 ```text
-a, b; d = |a-b|.
-```
-
-### 3. Constraints
-
-a,b <= 1e9; t <= 2e4 tests. Need O(1) per test.
-
-### 4. Direct Mathematical Model
-
-```text
-Each move changes the gap d by at most 10. Need smallest k with 10k >= d.
-```
-
-### 5. Transformation
-
-```text
+d = |a - b|
 k = ceil(d / 10) = (d + 9) / 10
 ```
 
-### 6. Feasibility Conditions
+* **Step-by-Step Logic:**
+1. Read `a, b`; compute `d = |a-b|`.
+2. Lower bound: `k` moves cover at most `10k`, so `k >= d/10`.
+3. Output `(d + 9) / 10` (k-1 full jumps + one partial) in O(1).
 
+* **ASCII Execution Trace / Visual Dry Run:**
 ```text
-Always possible (d=0 ⇒ 0 moves).
+Initial:        a = 13, b = 42
+
+Step 1:         d = |13 - 42| = 29
+
+Step 2:         ceil(29/10) = (29 + 9) / 10 = 38 / 10 = 3
+
+Step 3:         moves: 13 -> 23 -> 33 -> 42
+
+Final Answer:   3
+
+Pseudocode:
+    d = abs(a - b)
+    print (d + 9) / 10
 ```
 
-### 7. Core Observation
-
-Every move covers at most 10 units; use maximal steps, last one partial.
-
-### 8. Mathematical Invariant / Proof
-
-Lower bound: k moves cover <=10k, so k>=d/10. Construction: k-1 full moves + one partial move covering the rest (<=10).
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> gap d -> each move reduces d by <=10 -> k>=d/10 -> ceil -> O(1)
-```
-
-### 10. Dry Run
-
-a=13,b=42 → d=29 → (29+9)/10=3. a=5,b=5 → 0.
-
-### 11. Pseudocode
-
-```text
-d=|a-b|; print (d+9)/10
-```
-
-### 12. C++17 Solution
-
+* **C++17 Solution:**
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main(){ int t; scanf("%d",&t); while(t--){ long long a,b; scanf("%lld %lld",&a,&b);
-  long long d=llabs(a-b); printf("%lld\n",(d+9)/10);} }
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        long long a, b;
+        scanf("%lld %lld", &a, &b);
+
+        long long d = llabs(a - b);
+        printf("%lld\n", (d + 9) / 10);   // ceil(d / 10)
+    }
+    return 0;
+}
 ```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever "each move changes by at most K":
-→ answer = ceil(distance / K).
-```
-
-## P03. Friends and Candies (CF 1538B)
-
-Problem Link: [Friends and Candies](https://codeforces.com/problemset/problem/1538/B)
-
-**Rating:** 800 (approximate)
-
-**Primary Mathematical Form:** Sum Constraint
-
-**Secondary Forms:** Invariant (Sum)
-
-### 1. Story Removed
-
-n friends with a_i candies. Choose k friends, pool their candies, redistribute arbitrarily among ALL friends. Minimum k so all equal.
-
-### 2. Variables
-
-```text
-n; A_i; S = ΣA_i; t = target each.
-```
-
-### 3. Constraints
-
-n <= 2e5, sum fits in long long. O(n).
-
-### 4. Direct Mathematical Model
-
-```text
-Redistribution never changes total S. Equal ⇒ n·t = S.
-```
-
-### 5. Transformation
-
-```text
-Need S % n == 0, t = S/n.
-Friends with a_i <= t don't need to give; friends with a_i > t MUST be chosen.
-Choosing exactly those makes all equal (their excess redistributes to deficient ones).
-```
-
-### 6. Feasibility Conditions
-
-```text
-S % n == 0, else −1.
-```
-
-### 7. Core Observation
-
-Total is invariant; only above-average friends must be included.
-
-### 8. Mathematical Invariant / Proof
-
-Any friend with a_i>t must be chosen (else keeps a_i≠t). Choosing all of them is enough: pooled excess = total deficit of others.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> sum invariant S -> n t = S -> t integer? -> count a_i>t -> O(n)
-```
-
-### 10. Dry Run
-
-A=[4,5,2,5], S=16, t=4 → a_i>4: two 5s → answer 2.
-
-### 11. Pseudocode
-
-```text
-S=ΣA; if S%n: -1 else count(A_i > S/n)
-```
-
-### 12. C++17 Solution
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-int main(){ int T; scanf("%d",&T); while(T--){ int n; scanf("%d",&n);
-  vector<long long> a(n); long long s=0; for(auto&x:a){scanf("%lld",&x); s+=x;}
-  if(s%n){puts("-1"); continue;} long long t=s/n; int c=0; for(auto x:a) c+=x>t;
-  printf("%d\n",c);} }
-```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever "redistribute / equalize":
-→ sum is invariant → target = average → integrality check → count those above.
-```
-
-## P04. EhAb AnD gCd (CF 1325A)
-
-Problem Link: [EhAb AnD gCd](https://codeforces.com/problemset/problem/1325/A)
-
-**Rating:** 800 (approximate)
-
-**Primary Mathematical Form:** Constructive Equation
-
-**Secondary Forms:** GCD/LCM Constraint
-
-### 1. Story Removed
-
-Given x. Output any positive integers a,b with lcm(a,b) + gcd(a,b) = x.
-
-### 2. Variables
-
-```text
-x; a, b unknown; g=gcd(a,b), L=lcm(a,b).
-```
-
-### 3. Constraints
-
-x <= 1e9, t <= 1e4. Must be O(1): a construction, not a search.
-
-### 4. Direct Mathematical Model
-
-```text
-L + g = x, with g | a, g | b, L multiple of both.
-```
-
-### 5. Transformation
-
-```text
-Try the simplest family: a=1. Then gcd(1,b)=1 and lcm(1,b)=b.
-Equation becomes b + 1 = x ⇒ b = x-1.
-```
-
-### 6. Feasibility Conditions
-
-```text
-x >= 2 guaranteed ⇒ b = x-1 >= 1.
-```
-
-### 7. Core Observation
-
-Choose a=1 so both gcd and lcm collapse to trivial values.
-
-### 8. Mathematical Invariant / Proof
-
-gcd(1,x-1)=1, lcm(1,x-1)=x-1, sum=x. Any valid pair is accepted (checker).
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> lcm+gcd=x -> pick a=1 (kills gcd) -> b=x-1 -> O(1)
-```
-
-### 10. Dry Run
-
-x=2 → (1,1): lcm 1 + gcd 1 = 2 ✓. x=14 → (1,13): 13+1=14 ✓.
-
-### 11. Pseudocode
-
-```text
-print 1, x-1
-```
-
-### 12. C++17 Solution
-
-```cpp
-#include <bits/stdc++.h>
-int main(){ int t; scanf("%d",&t); while(t--){ long long x; scanf("%lld",&x); printf("1 %lld\n",x-1);} }
-```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever "construct any" with gcd/lcm in the equation:
-→ try 1 (and equal numbers). 1 makes gcd=1, lcm=other.
-```
-
-## P05. Odd Divisor (CF 1475A)
-
-Problem Link: [Odd Divisor](https://codeforces.com/problemset/problem/1475/A)
-
-**Rating:** 900 (approximate)
-
-**Primary Mathematical Form:** Number Theory / Powers of Two
-
-**Secondary Forms:** Parity Constraint
-
-### 1. Story Removed
-
-Given n. Does n have an odd divisor greater than 1?
-
-### 2. Variables
-
-```text
-n up to 1e14.
-```
-
-### 3. Constraints
-
-n <= 1e14, t <= 1e4 ⇒ O(√n) too slow-ish; need O(1)/O(log).
-
-### 4. Direct Mathematical Model
-
-```text
-Exists odd d>1 with d | n.
-```
-
-### 5. Transformation
-
-```text
-Write n = 2^k · m with m odd. If m>1 then m itself is an odd divisor >1.
-If m=1 then n=2^k, all divisors are powers of two: only odd divisor is 1.
-⇒ answer NO iff n is a power of two.
-```
-
-### 6. Feasibility Conditions
-
-```text
-n & (n-1) != 0 ⇒ YES.
-```
-
-### 7. Core Observation
-
-Prime factor independence: only the exponent-of-2 part is irrelevant.
-
-### 8. Mathematical Invariant / Proof
-
-Divisors of 2^k are 2^j; only odd one is 1. Otherwise m>1 odd divides n.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> odd divisor >1 -> n=2^k·m -> m>1? -> power-of-two test -> O(1)
-```
-
-### 10. Dry Run
-
-n=6=2·3 → 3 odd → YES. n=16 → NO. n=5 → YES.
-
-### 11. Pseudocode
-
-```text
-if (n & (n-1)) == 0: NO else YES
-```
-
-### 12. C++17 Solution
-
-```cpp
-#include <bits/stdc++.h>
-int main(){ int t; scanf("%d",&t); while(t--){ long long n; scanf("%lld",&n);
-  puts((n&(n-1))?"YES":"NO"); } }
-```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever "odd divisor" / "not a power of two":
-→ factor n = 2^k · odd; check the odd part.
-```
-
-## P06. Honest Coach (CF 1360B)
-
-Problem Link: [Honest Coach](https://codeforces.com/problemset/problem/1360/B)
-
-**Rating:** 800 (approximate)
-
-**Primary Mathematical Form:** Sorting as Transformation
-
-**Secondary Forms:** Greedy
-
-### 1. Story Removed
-
-Split n athletes (strengths s_i) into two non-empty teams A, B minimizing |max(A) - min(B)|.
-
-### 2. Variables
-
-```text
-s_i; max(A)=x, min(B)=y.
-```
-
-### 3. Constraints
-
-n <= 50 (tiny). Generic O(n log n).
-
-### 4. Direct Mathematical Model
-
-```text
-Minimize |max(A)-min(B)| over partitions.
-```
-
-### 5. Transformation
-
-```text
-Sort: s1<=...<=sn. Put the smallest k in A, the rest in B ⇒ value s_{k+1}-s_k.
-Any partition has |max(A)-min(B)| >= min adjacent gap (any two distinct athletes bound a gap).
-```
-
-### 6. Feasibility Conditions
-
-```text
-Always n>=2.
-```
-
-### 7. Core Observation
-
-The optimum equals the minimum gap between adjacent elements in sorted order.
-
-### 8. Mathematical Invariant / Proof
-
-Lower bound: for any pair (a∈A,b∈B), |a-b| >= smallest adjacent difference in sorted order. Upper bound: cut the sorted array at the minimizing gap.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> minimize |maxA-minB| -> sort -> gap between neighbors -> min adjacent diff -> O(n log n)
-```
-
-### 10. Dry Run
-
-[3,1,2,6,4] sorted [1,2,3,4,6]: gaps 1,1,1,2 → answer 1.
-
-### 11. Pseudocode
-
-```text
-sort s; ans=min(s[i+1]-s[i])
-```
-
-### 12. C++17 Solution
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-int main(){ int t; scanf("%d",&t); while(t--){ int n; scanf("%d",&n); vector<int> s(n);
-  for(auto&x:s) scanf("%d",&x); sort(s.begin(),s.end()); int ans=INT_MAX;
-  for(int i=0;i+1<n;i++) ans=min(ans,s[i+1]-s[i]); printf("%d\n",ans);} }
-```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever "minimize difference between two chosen groups' extremes":
-→ sort, look at adjacent gaps.
-```
-
-## P07. Required Remainder (CF 1374A)
-
-Problem Link: [Required Remainder](https://codeforces.com/problemset/problem/1374/A)
-
-**Rating:** 1000 (approximate)
-
-**Primary Mathematical Form:** Modulo Constraint
-
-**Secondary Forms:** Divisibility
-
-### 1. Story Removed
-
-Given x,y,n. Find the maximum k with 0<=k<=n and k mod x = y.
-
-### 2. Variables
-
-```text
-x, y (y<x), n (n>=y guaranteed).
-```
-
-### 3. Constraints
-
-up to 1e9, t <= 5e4; O(1).
-
-### 4. Direct Mathematical Model
-
-```text
-k = q·x + y, 0<=k<=n, maximize q.
-```
-
-### 5. Transformation
-
-```text
-q·x + y <= n ⇒ q <= (n-y)/x ⇒ q = floor((n-y)/x).
-k = floor((n-y)/x)·x + y.
-```
-
-### 6. Feasibility Conditions
-
-```text
-n>=y guaranteed, so q>=0.
-```
-
-### 7. Core Observation
-
-Numbers with remainder y form the AP y, y+x, y+2x, ...; take the last one <= n.
-
-### 8. Mathematical Invariant / Proof
-
-Monotone in q; largest feasible q is the floor.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> k≡y (mod x) -> k=qx+y -> qx+y<=n -> q=floor((n-y)/x) -> O(1)
-```
-
-### 10. Dry Run
-
-x=7,y=5,n=12345 → q=floor(12340/7)=1762 → k=1762·7+5=12339.
-
-### 11. Pseudocode
-
-```text
-print (n-y)/x*x + y
-```
-
-### 12. C++17 Solution
-
-```cpp
-#include <bits/stdc++.h>
-int main(){ int t; scanf("%d",&t); while(t--){ long long x,y,n; scanf("%lld %lld %lld",&x,&y,&n);
-  printf("%lld\n",(n-y)/x*x+y);} }
-```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever "largest/smallest number ≤ n with remainder r":
-→ AP y + q·x, solve for q by floor/ceil.
-```
-
-## P08. New Year's Number (CF 1475B)
-
-Problem Link: [New Year's Number](https://codeforces.com/problemset/problem/1475/B)
-
-**Rating:** 900 (approximate)
-
-**Primary Mathematical Form:** Diophantine Equation
-
-**Secondary Forms:** Modulo Constraint
-
-### 1. Story Removed
-
-Given n. Is n = 2020a + 2021b for non-negative integers a,b?
-
-### 2. Variables
-
-```text
-n; a,b >= 0.
-```
-
-### 3. Constraints
-
-n <= 1e6, t <= 1e4. O(1) or O(n/2020) enumeration both fine.
-
-### 4. Direct Mathematical Model
-
-```text
-2020a + 2021b = n.
-```
-
-### 5. Transformation
-
-```text
-Let t=a+b, then n = 2020(a+b) + b = 2020 t + b.
-So b = n - 2020 t. Need 0 <= b <= t.
-Choose t = floor(n/2020): then b = n mod 2020. Need n mod 2020 <= floor(n/2020).
-```
-
-### 6. Feasibility Conditions
-
-```text
-(n % 2020) <= (n / 2020)
-```
-
-### 7. Core Observation
-
-Rewrite 2021 = 2020 + 1 so both coins become 'one 2020 plus optional +1'.
-
-### 8. Mathematical Invariant / Proof
-
-Any solution has n mod 2020 ≡ b (mod 2020). Smallest b is n mod 2020 (larger b only demands larger t). Feasible iff that b ≤ t = floor(n/2020).
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> 2020a+2021b=n -> t=a+b -> n=2020t+b -> b=n%2020 -> b<=t? -> O(1)
-```
-
-### 10. Dry Run
-
-n=4041: t=2, b=1<=2 ✓ (a=1,b=1). n=4042: t=2,b=2<=2 ✓. n=2021: t=1,b=1 ✓. n=4039: t=1, b=2019 >1 ✗.
-
-### 11. Pseudocode
-
-```text
-print (n%2020 <= n/2020) ? YES : NO
-```
-
-### 12. C++17 Solution
-
-```cpp
-#include <bits/stdc++.h>
-int main(){ int t; scanf("%d",&t); while(t--){ int n; scanf("%d",&n); puts((n%2020<=n/2020)?"YES":"NO"); } }
-```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever two coin values differ by 1 (a and a+1):
-→ let t=count of coins; total = a·t + b (b = number of larger coins), bound b<=t.
-```
-
-## P09. Exciting Bets (CF 1543A)
-
-Problem Link: [Exciting Bets](https://codeforces.com/problemset/problem/1543/A)
-
-**Rating:** 900 (approximate)
-
-**Primary Mathematical Form:** GCD Constraint
-
-**Secondary Forms:** Modulo Constraint / Invariant
-
-### 1. Story Removed
-
-Given a,b. One move: both +1 or both −1 (−1 only if both >0). Maximize gcd(a,b) and output minimum moves for it.
-
-### 2. Variables
-
-```text
-a,b; d=|a-b|.
-```
-
-### 3. Constraints
-
-up to 1e18 ⇒ long long, O(1).
-
-### 4. Direct Mathematical Model
-
-```text
-Moves keep a−b constant. gcd(a+k,b+k) divides (a−b).
-```
-
-### 5. Transformation
-
-```text
-gcd(x,y) | (x−y)=±d. So gcd ≤ d.
-If d=0: gcd can grow forever ⇒ answer '0 0'.
-Else max is d, reached when a+k ≡ 0 (mod d): k = (d − a mod d) mod d forward, or a mod d backward.
-moves = min(a mod d, d − a mod d).
-```
-
-### 6. Feasibility Conditions
-
-```text
-a==b → 0 0 (infinite). Else (d, min(r, d-r)), r=a%d.
-```
-
-### 7. Core Observation
-
-Difference invariant caps the gcd at d; a shift aligns a to a multiple of d.
-
-### 8. Mathematical Invariant / Proof
-
-Upper bound gcd<=d from divisibility. Achieve by moving a to nearest multiple of d (then b is also a multiple since b=a±d). Backward moves feasible because a>=r.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> difference a-b invariant -> gcd | d -> max=d -> shift to multiple -> min(r,d-r) -> O(1)
-```
-
-### 10. Dry Run
-
-a=8,b=5: d=3, r=8%3=2 → moves min(2,1)=1 → 3 1.
-
-### 11. Pseudocode
-
-```text
-if a==b: '0 0' else d=|a-b|; r=a%d; print d, min(r,d-r)
-```
-
-### 12. C++17 Solution
-
-```cpp
-#include <bits/stdc++.h>
-int main(){ int t; scanf("%d",&t); while(t--){ long long a,b; scanf("%lld %lld",&a,&b);
-  if(a==b){puts("0 0"); continue;} long long d=llabs(a-b), r=a%d; printf("%lld %lld\n",d,std::min(r,d-r)); } }
-```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever an operation shifts both numbers equally:
-→ difference is invariant → gcd divides the difference.
-```
-
-## P10. K-divisible Sum (CF 1476A)
 
 Problem Link: [K-divisible Sum](https://codeforces.com/problemset/problem/1476/A)
 
-**Rating:** 1000 (approximate)
+**Problem Summary:** Given `n, k`, choose a positive array of length `n` with sum divisible by `k` minimizing the maximum. Output that maximum.
 
-**Primary Mathematical Form:** Bounding
+#### K-divisible Sum (Bounding / Codeforces / 1000)
 
-**Secondary Forms:** Divisibility / Ceil Division
+* **Core Invariant / Key Insight:** Use the smallest legal sum `S = ceil(n/k)*k` and spread it evenly: `max = ceil(S/n)`.
 
-### 1. Story Removed
-
-Given n,k. Choose positive array of length n with sum divisible by k minimizing the max element.
-
-### 2. Variables
-
+* **Key Formula:**
 ```text
-n,k; S=sum; M=max.
+S = ceil(n / k) * k          (smallest valid sum, S >= n)
+answer = ceil(S / n) = (S + n - 1) / n
 ```
 
-### 3. Constraints
+* **Step-by-Step Logic:**
+1. Compute `S = ((n + k - 1) / k) * k`.
+2. Note `S >= n` guarantees positivity.
+3. Print `(S + n - 1) / n` in O(1).
 
-up to 1e9 ⇒ formula.
-
-### 4. Direct Mathematical Model
-
+* **ASCII Execution Trace / Visual Dry Run:**
 ```text
-S = k·c (c>=1), S >= n (positive). Minimize M >= ceil(S/n).
+Initial:        n = 4, k = 3
+
+Step 1:         S = ceil(4/3) * 3 = 6
+
+Step 2:         spread 6 over 4 --> [2, 2, 1, 1]
+
+Final Answer:   ceil(6/4) = 2
+
+Pseudocode:
+    S = (n + k - 1) / k * k
+    print (S + n - 1) / n
 ```
 
-### 5. Transformation
-
-```text
-Smallest valid S: least multiple of k that is >= n: S = ceil(n/k)·k.
-M = ceil(S/n).
-```
-
-### 6. Feasibility Conditions
-
-```text
-Always.
-```
-
-### 7. Core Observation
-
-Smaller S can't hurt: max ≥ average.
-
-### 8. Mathematical Invariant / Proof
-
-Lower bound: M >= S/n >= S_min/n. Construction: spread S_min as evenly as possible (values ceil/floor of S/n; all ≥1 since S≥n).
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> S multiple of k, S>=n -> S_min=ceil(n/k)k -> M=ceil(S_min/n) -> O(1)
-```
-
-### 10. Dry Run
-
-n=4,k=3: S=6, M=ceil(6/4)=2. n=8,k=8: S=8, M=1.
-
-### 11. Pseudocode
-
-```text
-S=((n+k-1)/k)*k; print (S+n-1)/n
-```
-
-### 12. C++17 Solution
-
+* **C++17 Solution:**
 ```cpp
 #include <bits/stdc++.h>
-int main(){ int t; scanf("%d",&t); while(t--){ long long n,k; scanf("%lld %lld",&n,&k);
-  long long S=(n+k-1)/k*k; printf("%lld\n",(S+n-1)/n); } }
+using namespace std;
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        long long n, k;
+        scanf("%lld %lld", &n, &k);
+
+        long long S = (n + k - 1) / k * k;   // smallest multiple of k that is >= n
+        printf("%lld\n", (S + n - 1) / n);  // ceil(S / n)
+    }
+    return 0;
+}
 ```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever "minimize max, sum constrained":
-→ max ≥ ceil(sum/n); choose smallest legal sum; spread evenly.
-```
-
-## P11. Distance and Axis (CF 1401A)
-
-Problem Link: [Distance and Axis](https://codeforces.com/problemset/problem/1401/A)
-
-**Rating:** 1100 (approximate)
-
-**Primary Mathematical Form:** Grid Parity
-
-**Secondary Forms:** Parity Constraint / Bounding
-
-### 1. Story Removed
-
-O is the origin, A is at x=n on a line. Find an integer point B with |OB − AB| = k. You may move A by ±1 per step. Minimum steps until such B exists.
-
-### 2. Variables
-
-```text
-n = position of A (n>=0); k; B = b (integer).
-```
-
-### 3. Constraints
-
-n,k <= 1e6, t <= 6000 ⇒ O(1) per test.
-
-### 4. Direct Mathematical Model
-
-```text
-|OB| − |AB| = ±k  i.e. | |b| − |n−b| | = k.
-```
-
-### 5. Transformation
-
-```text
-Triangle inequality: | |OB| − |AB| | <= OA = n ⇒ need k <= n.
-For 0<=b<=n: OB−AB = b − (n−b) = 2b − n = ±k ⇒ b = (n±k)/2, integer iff (n+k) even (⇔ (n−k) even).
-So: if k<=n and (n−k) even ⇒ 0 steps.
-If k<=n and (n−k) odd ⇒ move A one step (parity flips) ⇒ 1 step.
-If k>n ⇒ move A right to n=k ⇒ k−n steps (then n=k, difference 0, even).
-```
-
-### 6. Feasibility Conditions
-
-```text
-n<k: k−n;  else (n−k) % 2
-```
-
-### 7. Core Observation
-
-Two obstacles only: too close (n<k, triangle inequality) or wrong parity (b must be an integer).
-
-### 8. Mathematical Invariant / Proof
-
-Necessity: triangle inequality and integrality of b. Sufficiency: explicit b=(n+k)/2. Lower bound for n<k: each step changes n by 1.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> |OB-AB|=k -> triangle: k<=n -> 2b-n=±k -> parity of n-k -> cases -> O(1)
-```
-
-### 10. Dry Run
-
-n=4,k=0: (4−0)%2=0. n=5,k=8: 3. n=0,k=1000000: 1000000. n=1,k=0: 1 (parity).
-
-### 11. Pseudocode
-
-```text
-if n<k: k-n else (n-k)%2
-```
-
-### 12. C++17 Solution
-
-```cpp
-#include <bits/stdc++.h>
-int main(){ int t; scanf("%d",&t); while(t--){ int n,k; scanf("%d %d",&n,&k);
-  printf("%d\n", n<k? k-n : (n-k)%2); } }
-```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever a distance-difference equation on a line appears:
-→ triangle inequality gives a size bound; halving gives an integrality (parity) condition.
-```
-
-## P12. K-th Not Divisible by n (CF 1352C)
-
-Problem Link: [K-th Not Divisible by n](https://codeforces.com/problemset/problem/1352/C)
-
-**Rating:** 1200 (approximate)
-
-**Primary Mathematical Form:** Divisibility / Counting
-
-**Secondary Forms:** Bounding / Binary Search
-
-### 1. Story Removed
-
-Given n,k. Find k-th positive integer not divisible by n.
-
-### 2. Variables
-
-```text
-n>=2; k<=1e9.
-```
-
-### 3. Constraints
-
-values up to 1e9·… → long long; O(1).
-
-### 4. Direct Mathematical Model
-
-```text
-Numbers grouped in blocks of size n; each block has n−1 non-multiples.
-```
-
-### 5. Transformation
-
-```text
-After q full blocks of (n−1) valid numbers: (q = (k−1)/(n−1)). Answer = k + q.
-Check: each skipped multiple pushes the answer up by one.
-```
-
-### 6. Feasibility Conditions
-
-```text
-Always.
-```
-
-### 7. Core Observation
-
-Among 1..x there are x − floor(x/n) non-multiples; need this = k.
-
-### 8. Mathematical Invariant / Proof
-
-Induction on skipped multiples: answer = k + (# multiples of n ≤ answer). With q=(k−1)/(n−1) multiples passed.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> count non-multiples -> blocks of n-1 valid -> q=(k-1)/(n-1) -> k+q -> O(1)
-```
-
-### 10. Dry Run
-
-n=3,k=7: valid 1,2,4,5,7,8,10 → 10. Formula: q=6/2=3 → 10 ✓.
-
-### 11. Pseudocode
-
-```text
-print k + (k-1)/(n-1)
-```
-
-### 12. C++17 Solution
-
-```cpp
-#include <bits/stdc++.h>
-int main(){ int t; scanf("%d",&t); while(t--){ long long n,k; scanf("%lld %lld",&n,&k);
-  printf("%lld\n",k+(k-1)/(n-1)); } }
-```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever "k-th number not divisible by n":
-→ blocks of n numbers hold n−1 valid; answer = k + (k−1)/(n−1).
-```
-
-## P13. Sweet Problem (CF 1263A)
 
 Problem Link: [Sweet Problem](https://codeforces.com/problemset/problem/1263/A)
 
-**Rating:** 1200 (approximate)
+**Problem Summary:** Given three candy piles, each day eat one from two different piles. Output the maximum days.
 
-**Primary Mathematical Form:** Bounding
+#### Sweet Problem (Bounding / Codeforces / 1200)
 
-**Secondary Forms:** Extremal Principle
+* **Core Invariant / Key Insight:** Two bounds: `S/2` (2 per day) and `S - M` (largest pile needs partners); answer `min(S/2, S-M)`.
 
-### 1. Story Removed
-
-Three piles of candies a,b,c. Each day eat one candy from each of two different piles. Maximum days.
-
-### 2. Variables
-
+* **Key Formula:**
 ```text
-a,b,c; S=a+b+c; M=max.
+S = a + b + c,   M = max(a, b, c)
+days <= S / 2        (2 candies per day)
+days <= S - M        (largest pile needs partners)
+answer = min(S/2, S - M)
 ```
 
-### 3. Constraints
+* **Step-by-Step Logic:**
+1. Compute `S = a+b+c`, `M = max(a,b,c)`.
+2. Bound 1: `S / 2`. Bound 2: `S - M`.
+3. Print the minimum in O(1).
 
-up to 1e8, O(1).
-
-### 4. Direct Mathematical Model
-
+* **ASCII Execution Trace / Visual Dry Run:**
 ```text
-Each day removes exactly 2 candies from 2 distinct piles.
+Initial:        (a,b,c) = (1, 1, 10)
+
+Step 1:         S = 12, M = 10
+
+Step 2:         S/2 = 6,  S - M = 2
+
+Final Answer:   min(6, 2) = 2
+
+Pseudocode:
+    S = a + b + c; M = max(a, b, c)
+    print min(S / 2, S - M)
 ```
 
-### 5. Transformation
-
-```text
-Bound 1: days <= S/2 (2 per day).
-Bound 2: the largest pile M needs partners: days <= S−M (each day uses at most one candy from M, and every day uses ≥1 candy outside M... days ≤ (others' total) if M dominates).
-Answer = min(floor(S/2), S−M).
-```
-
-### 6. Feasibility Conditions
-
-```text
-Always.
-```
-
-### 7. Core Observation
-
-Either resources (total) or the dominant pile bounds the result.
-
-### 8. Mathematical Invariant / Proof
-
-If M <= S−M pair greedily largest two ⇒ floor(S/2). Else pair M with others, S−M days.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> 2 candies/day -> S/2 bound -> largest-pile bound -> min of bounds -> O(1)
-```
-
-### 10. Dry Run
-
-(1,1,1): S=3,M=1 → min(1,2)=1. (1,2,3): S=6,M=3 → min(3,3)=3. (1,1,10): min(6,2)=2.
-
-### 11. Pseudocode
-
-```text
-print min(S/2, S-M)
-```
-
-### 12. C++17 Solution
-
-```cpp
-#include <bits/stdc++.h>
-int main(){ int t; scanf("%d",&t); while(t--){ long long a,b,c; scanf("%lld %lld %lld",&a,&b,&c);
-  long long S=a+b+c, M=std::max({a,b,c}); printf("%lld\n",std::min(S/2,S-M)); } }
-```
-
-### 13. What I Should Recognize Next Time
-
-```text
-Whenever "each step consumes from two different piles":
-→ min(total/2, total − max).
-```
-
-## P14. Same Differences (CF 1520D)
-
-Problem Link: [Same Differences](https://codeforces.com/problemset/problem/1520/D)
-
-**Rating:** 1200 (approximate)
-
-**Primary Mathematical Form:** Pair Counting
-
-**Secondary Forms:** Difference Constraint / Algebra
-
-### 1. Story Removed
-
-Array a of n. Count pairs i<j with a_j − a_i = j − i.
-
-### 2. Variables
-
-```text
-a_i, index i.
-```
-
-### 3. Constraints
-
-n <= 2e5 ⇒ O(n²) too slow; O(n) with hashing.
-
-### 4. Direct Mathematical Model
-
-```text
-a_j − a_i = j − i.
-```
-
-### 5. Transformation
-
-```text
-Rearrange: a_j − j = a_i − i. Define b_i = a_i − i.
-Count pairs with b_i = b_j.
-```
-
-### 6. Feasibility Conditions
-
-```text
-Answer = Σ_v f_v (f_v−1)/2.
-```
-
-### 7. Core Observation
-
-Separating variables i and j on opposite sides decouples the pair condition.
-
-### 8. Mathematical Invariant / Proof
-
-Equivalence: equations equal after moving terms. Pairs in same b-group are exactly valid pairs.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> a_j-a_i=j-i -> a_j-j = a_i-i -> b_i=a_i-i -> equal pairs -> frequency map -> O(n)
-```
-
-### 10. Dry Run
-
-a=[3,5,1,4,6,6], i=1..6 → b=[2,3,-2,0,1,0]; equal pairs: b=0 twice ⇒ 1.
-
-### 11. Pseudocode
-
-```text
-map cnt; for i: ans += cnt[a_i-i]++
-```
-
-### 12. C++17 Solution
-
+* **C++17 Solution:**
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main(){ int t; scanf("%d",&t); while(t--){ int n; scanf("%d",&n); map<long long,long long> c; long long ans=0;
-  for(int i=1;i<=n;i++){ long long a; scanf("%lld",&a); ans+=c[a-i]++; } printf("%lld\n",ans);} }
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        long long a, b, c;
+        scanf("%lld %lld %lld", &a, &b, &c);
+
+        long long S = a + b + c;
+        long long M = max({a, b, c});
+        printf("%lld\n", min(S / 2, S - M));
+    }
+    return 0;
+}
 ```
 
-### 13. What I Should Recognize Next Time
+Problem Link: [Distance and Axis](https://codeforces.com/problemset/problem/1401/A)
 
+**Problem Summary:** Given `n` (position of A) and `k`, find the minimum ±1 moves of A so a point `B` with `|OB - AB| = k` exists. Output the count.
+
+#### Distance and Axis (Grid Parity / Codeforces / 1100)
+
+* **Core Invariant / Key Insight:** Triangle inequality forces `k <= n`; halving forces `(n-k)` even. So the answer is `k-n` if `n<k`, else `(n-k) % 2`.
+
+* **Key Formula:**
 ```text
-Whenever a pair condition mixes value and index:
-→ move all terms of j to one side, all i to the other; count equal keys.
+| |OB| - |AB| | <= OA = n   =>   need  k <= n
+2b - n = +-k  =>  b = (n +- k) / 2   =>  need (n - k) even
+answer = k - n  (n < k),   (n - k) mod 2  (n >= k)
 ```
 
-## P15. Number of Pairs (CF 1538C)
+* **Step-by-Step Logic:**
+1. Read `n, k`.
+2. If `n < k` print `k - n`.
+3. Else print `(n - k) % 2` in O(1).
 
-Problem Link: [Number of Pairs](https://codeforces.com/problemset/problem/1538/C)
-
-**Rating:** 1300 (approximate)
-
-**Primary Mathematical Form:** Sorting as Transformation
-
-**Secondary Forms:** Pair Counting / Two Pointers
-
-### 1. Story Removed
-
-Array a. Count pairs i<j with l <= a_i + a_j <= r.
-
-### 2. Variables
-
+* **ASCII Execution Trace / Visual Dry Run:**
 ```text
-a_i; l,r.
+Initial:        n = 5, k = 8
+
+Step 1:         n < k --> need A at 8
+
+Step 2:         steps = 8 - 5 = 3
+
+Step 3:         n = 1, k = 0 --> (1 - 0) % 2 = 1
+
+Final Answer:   3   (and 1 for the second case)
+
+Pseudocode:
+    if n < k: print k - n
+    else: print (n - k) % 2
 ```
 
-### 3. Constraints
-
-n <= 2e5 ⇒ O(n log n).
-
-### 4. Direct Mathematical Model
-
-```text
-L <= a_i+a_j <= R, unordered pairs.
-```
-
-### 5. Transformation
-
-```text
-Count(≤R) − Count(≤L−1). Order is irrelevant ⇒ sort.
-For each i, j>i with a_j <= X − a_i is a prefix in sorted order ⇒ upper_bound.
-```
-
-### 6. Feasibility Conditions
-
-```text
-ans = f(r) − f(l−1)
-```
-
-### 7. Core Observation
-
-Inequality on sum + sorted array ⇒ monotone boundary.
-
-### 8. Mathematical Invariant / Proof
-
-Pair set is symmetric ⇒ sorting doesn't change the count; for fixed i the valid j form a contiguous range because a_j sorted.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> count pairs with L<=sum<=R -> complement/prefix trick f(R)-f(L-1) -> sort -> upper_bound -> O(n log n)
-```
-
-### 10. Dry Run
-
-[5,1,2], L=4,R=7: sorted [1,2,5]; sums 3,6,7 → in range: 6,7 → 2.
-
-### 11. Pseudocode
-
-```text
-sort a; f(X)=Σ_i (upper_bound(a[i+1..], X-a[i]) − (i+1)); ans=f(r)−f(l−1)
-```
-
-### 12. C++17 Solution
-
+* **C++17 Solution:**
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main(){ int t; scanf("%d",&t); while(t--){ int n; long long l,r; scanf("%d %lld %lld",&n,&l,&r);
-  vector<long long> a(n); for(auto&x:a) scanf("%lld",&x); sort(a.begin(),a.end());
-  auto f=[&](long long X){ long long c=0; for(int i=0;i<n;i++) c+= upper_bound(a.begin()+i+1,a.end(),X-a[i])-(a.begin()+i+1); return c; };
-  printf("%lld\n",f(r)-f(l-1)); } }
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        int n, k;
+        scanf("%d %d", &n, &k);
+
+        if (n < k) printf("%d\n", k - n);
+        else       printf("%d\n", (n - k) % 2);
+    }
+    return 0;
+}
 ```
 
-### 13. What I Should Recognize Next Time
+### Pattern B: Invariants (Sum / GCD / Difference)
 
+An invariant is a quantity the operation cannot change. Write `before -> after`, compute the delta, keep what is zero.
+
+* **Signals:** "any number of times", "redistribute", "add/subtract to both".
+* **Tools:** sum invariant (`S % n`), difference invariant (`a-b`), gcd divides the difference.
+* **Workflow:** delta analysis -> derive necessary condition -> construct for sufficiency.
+* **Pitfall:** an invariant is only necessary; verify sufficiency.
+
+Problem Link: [Friends and Candies](https://codeforces.com/problemset/problem/1538/B)
+
+**Problem Summary:** Given candies `a_i` for `n` friends, choose the fewest friends whose pooled candies are redistributed so everyone is equal. Output that count or `-1`.
+
+#### Friends and Candies (Sum Constraint / Codeforces / 800)
+
+* **Core Invariant / Key Insight:** Redistribution keeps `S = sum(a_i)` fixed, so equal means `S % n == 0` and target `t = S/n`; exactly the friends with `a_i > t` must be chosen.
+
+* **Key Formula:**
 ```text
-Whenever "count pairs with sum in [L,R]":
-→ sort, count ≤R minus ≤L−1, binary search / two pointers.
+S = sum(a_i)          (invariant)
+n * t = S  =>  t = S / n,  need S mod n = 0
+answer = #{ i : a_i > t }
 ```
 
-## P16. Pair of Topics (CF 1324D)
+* **Step-by-Step Logic:**
+1. Compute `S = sum(a_i)`.
+2. If `S % n != 0` print `-1`; else `t = S / n`.
+3. Count `a_i > t` and print it in O(n).
 
-Problem Link: [Pair of Topics](https://codeforces.com/problemset/problem/1324/D)
-
-**Rating:** 1400 (approximate)
-
-**Primary Mathematical Form:** Algebra / Transformation
-
-**Secondary Forms:** Sorting, Pair Counting
-
-### 1. Story Removed
-
-Two arrays a,b. Count i<j with a_i + a_j > b_i + b_j.
-
-### 2. Variables
-
+* **ASCII Execution Trace / Visual Dry Run:**
 ```text
-a_i, b_i; c_i = a_i − b_i.
+Initial:        a = [4, 5, 2, 5], n = 4
+
+Step 1:         S = 16, S % 4 = 0 OK
+
+Step 2:         t = 16 / 4 = 4
+
+Step 3:         a_i > 4 : 5 (idx2), 5 (idx4) --> count = 2
+
+Final Answer:   2
+
+Pseudocode:
+    S = sum(a)
+    if S % n != 0: print -1
+    else: print count(a_i > S / n)
 ```
 
-### 3. Constraints
-
-n <= 2e5 ⇒ O(n log n).
-
-### 4. Direct Mathematical Model
-
-```text
-a_i+a_j > b_i+b_j.
-```
-
-### 5. Transformation
-
-```text
-Move b to left: (a_i−b_i)+(a_j−b_j) > 0 ⇒ c_i + c_j > 0.
-Unordered pair ⇒ sort c; for each i count j>i with c_j > −c_i.
-```
-
-### 6. Feasibility Conditions
-
-```text
-ans=Σ_i #{j>i : c_j > −c_i}
-```
-
-### 7. Core Observation
-
-Decouple i and j: condition depends on one derived value per index.
-
-### 8. Mathematical Invariant / Proof
-
-Algebraic equivalence; counting unordered pairs is order-independent.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> a_i+a_j>b_i+b_j -> c_i=a_i-b_i -> c_i+c_j>0 -> sort -> upper_bound -> O(n log n)
-```
-
-### 10. Dry Run
-
-a=[4,8,2,6,2],b=[4,5,4,1,3]: c=[0,3,-2,5,-1] → pairs with sum>0: (0,3),(0,5),(3,-2),(3,-1),(3,5),(-2,5),(5,-1) = 7.
-
-### 11. Pseudocode
-
-```text
-c=a-b; sort; for i: ans += n − upper_bound(c[i+1..], −c[i])
-```
-
-### 12. C++17 Solution
-
+* **C++17 Solution:**
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main(){ int n; scanf("%d",&n); vector<long long> a(n),c(n); for(auto&x:a) scanf("%lld",&x);
-  for(int i=0;i<n;i++){ long long b; scanf("%lld",&b); c[i]=a[i]-b; } sort(c.begin(),c.end());
-  long long ans=0; for(int i=0;i<n;i++) ans+= c.end()-upper_bound(c.begin()+i+1,c.end(),-c[i]);
-  printf("%lld\n",ans); }
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        int n;
+        scanf("%d", &n);
+
+        vector<long long> a(n);
+        long long sum = 0;
+        for (auto &x : a) {
+            scanf("%lld", &x);
+            sum += x;
+        }
+
+        if (sum % n != 0) {           // equal split impossible
+            puts("-1");
+            continue;
+        }
+
+        long long target = sum / n;
+        int cnt = 0;
+        for (auto x : a) cnt += (x > target);
+        printf("%d\n", cnt);
+    }
+    return 0;
+}
 ```
 
-### 13. What I Should Recognize Next Time
+Problem Link: [Exciting Bets](https://codeforces.com/problemset/problem/1543/A)
 
+**Problem Summary:** Given `a, b`, a move adds or subtracts 1 from both (subtract only if both > 0). Output the maximum gcd and the minimum moves to reach it.
+
+#### Exciting Bets (GCD Constraint / Codeforces / 900)
+
+* **Core Invariant / Key Insight:** `a - b` never changes, so `gcd | d = |a-b|`; the max is `d`, reached by moving `a` to the nearest multiple of `d`.
+
+* **Key Formula:**
 ```text
-Whenever a pair condition has form f(i)+f(j) with data spread across two arrays:
-→ merge into one array c_i, then sorted pair counting.
+a - b = const  (invariant)
+gcd(a+k, b+k) divides d = |a - b|   =>   max gcd = d
+moves = min(a mod d, d - (a mod d))
 ```
 
-## P17. Maximum Median (CF 1201C)
+* **Step-by-Step Logic:**
+1. If `a == b` print `0 0` (gcd can grow forever).
+2. Else `d = |a-b|`, `r = a % d`.
+3. Print `d` and `min(r, d - r)` in O(1).
 
-Problem Link: [Maximum Median](https://codeforces.com/problemset/problem/1201/C)
-
-**Rating:** 1400 (approximate)
-
-**Primary Mathematical Form:** Binary Search Equation
-
-**Secondary Forms:** Median Optimization / Greedy
-
-### 1. Story Removed
-
-Array of odd length n, at most k +1 operations on any elements. Maximize the median.
-
-### 2. Variables
-
+* **ASCII Execution Trace / Visual Dry Run:**
 ```text
-a sorted; m=(n−1)/2 (0-index median); x = target median.
+Initial:        a = 8, b = 5
+
+Step 1:         d = 3   (difference invariant)
+
+Step 2:         r = 8 % 3 = 2
+
+Step 3:         moves = min(2, 3-2) = 1  (add 1: 9,6 -> gcd 3)
+
+Final Answer:   3 1
+
+Pseudocode:
+    if a == b: print 0 0
+    d = abs(a-b); r = a % d
+    print d, min(r, d - r)
 ```
 
-### 3. Constraints
-
-n <= 2e5, k <= 1e9 ⇒ O(n log V).
-
-### 4. Direct Mathematical Model
-
-```text
-Median ≥ x ⇔ elements at indices ≥ m all ≥ x.
-```
-
-### 5. Transformation
-
-```text
-Cost(x)=Σ_{i>=m} max(0, x − a_i) ≤ k. Cost is monotone in x ⇒ binary search x in [a_m, a_m + k].
-```
-
-### 6. Feasibility Conditions
-
-```text
-max x with cost(x) ≤ k
-```
-
-### 7. Core Observation
-
-Only upper half matters; raising smaller elements is wasteful.
-
-### 8. Mathematical Invariant / Proof
-
-Median ≥ x needs (n+1)/2 elements ≥ x; cheapest to use the largest ones already near x. Monotone ⇒ binary search valid.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> maximize median -> guess x -> can(x): cost of upper half -> monotone -> binary search -> O(n log V)
-```
-
-### 10. Dry Run
-
-[1,3,5], k=2: sorted, m=1. cost(4)=(4−3)+0=1 ✓, cost(5)=2 ✓, cost(6)=3+1=4 ✗ ⇒ answer 5.
-
-### 11. Pseudocode
-
-```text
-sort a; lo=a[m],hi=a[m]+k; binary search max x with cost(x)<=k
-```
-
-### 12. C++17 Solution
-
+* **C++17 Solution:**
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main(){ int n; long long k; scanf("%d %lld",&n,&k); vector<long long> a(n); for(auto&x:a) scanf("%lld",&x);
-  sort(a.begin(),a.end()); int m=(n-1)/2; long long lo=a[m],hi=a[m]+k;
-  while(lo<hi){ long long mid=lo+(hi-lo+1)/2, cost=0; for(int i=m;i<n;i++) if(a[i]<mid) cost+=mid-a[i];
-    if(cost<=k) lo=mid; else hi=mid-1; } printf("%lld\n",lo); }
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        long long a, b;
+        scanf("%lld %lld", &a, &b);
+
+        if (a == b) {
+            puts("0 0");                 // gcd can grow forever
+            continue;
+        }
+
+        long long d = llabs(a - b);
+        long long r = a % d;
+        printf("%lld %lld\n", d, min(r, d - r));
+    }
+    return 0;
+}
 ```
 
-### 13. What I Should Recognize Next Time
+Problem Link: [EhAb AnD gCd](https://codeforces.com/problemset/problem/1325/A)
 
+**Problem Summary:** Given `x`, output any positive `a, b` with `lcm(a,b) + gcd(a,b) = x`.
+
+#### EhAb AnD gCd (Constructive Equation / Codeforces / 800)
+
+* **Core Invariant / Key Insight:** Take `a = 1`: then `gcd = 1` and `lcm = b`, so `b = x - 1`.
+
+* **Key Formula:**
 ```text
-Whenever "maximize median / minimum with limited increments":
-→ binary search on the target; cost is a sum of shortfalls.
+a = 1  =>  gcd(1, b) = 1,  lcm(1, b) = b
+b + 1 = x  =>  b = x - 1
 ```
 
-## P18. Modulo Sum (CF 577B)
+* **Step-by-Step Logic:**
+1. Read `x`.
+2. Choose `a = 1` (collapses gcd and lcm).
+3. Output `1` and `x - 1` in O(1).
+
+* **ASCII Execution Trace / Visual Dry Run:**
+```text
+Initial:        x = 14
+
+Step 1:         choose a = 1
+                gcd(1, b) = 1,  lcm(1, b) = b
+
+Step 2:         b + 1 = 14 --> b = 13
+
+Final Answer:   (1, 13)   check: 13 + 1 = 14
+
+Pseudocode:
+    print 1, x - 1
+```
+
+* **C++17 Solution:**
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        long long x;
+        scanf("%lld", &x);
+
+        // a = 1  =>  gcd = 1, lcm = b  =>  b + 1 = x
+        printf("1 %lld\n", x - 1);
+    }
+    return 0;
+}
+```
+
+### Pattern C: Number Theory, Modulo & Diophantine Formulas
+
+Convert conditions on divisibility and remainders into arithmetic progressions, floor/ceil, or gcd tests.
+
+* **Signals:** "remainder", "divisor", "k-th number not divisible", "pay exactly with coins".
+* **Tools:** `k = qx + y`, `n = 2^k * odd`, `t=a+b` substitution, pigeonhole on prefix remainders.
+* **Workflow:** isolate the free integer -> bound it -> closed form or small DP.
+* **Pitfall:** `long long`, negative remainders, off-by-one at exact multiples.
+
+Problem Link: [Odd Divisor](https://codeforces.com/problemset/problem/1475/A)
+
+**Problem Summary:** Given `n`, decide whether `n` has an odd divisor greater than 1.
+
+#### Odd Divisor (Number Theory / Powers of Two / Codeforces / 900)
+
+* **Core Invariant / Key Insight:** Write `n = 2^k * m` with `m` odd; the answer is `NO` only when `m = 1`, i.e. `n & (n-1) == 0`.
+
+* **Key Formula:**
+```text
+n = 2^k * m   (m odd)
+odd divisor > 1 exists  <=>  m > 1  <=>  n & (n - 1) != 0
+```
+
+* **Step-by-Step Logic:**
+1. Read `n` (up to `1e14`, use `long long`).
+2. Test whether `n` is a power of two: `n & (n - 1) == 0`.
+3. Print `NO` if power of two else `YES` in O(1).
+
+* **ASCII Execution Trace / Visual Dry Run:**
+```text
+Initial:        n = 6
+
+Step 1:         6 = 2 * 3 --> odd part 3 > 1
+                6 & 5 = 0b110 & 0b101 = 0b100 != 0
+
+Step 2:         n = 16 --> 16 & 15 = 0 --> power of two
+
+Final Answer:   6 -> YES,  16 -> NO
+
+Pseudocode:
+    if (n & (n - 1)) == 0: print NO
+    else: print YES
+```
+
+* **C++17 Solution:**
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        long long n;
+        scanf("%lld", &n);
+
+        // no odd divisor > 1  <=>  n is a power of two
+        bool isPow2 = (n & (n - 1)) == 0;
+        puts(isPow2 ? "NO" : "YES");
+    }
+    return 0;
+}
+```
+
+Problem Link: [Required Remainder](https://codeforces.com/problemset/problem/1374/A)
+
+**Problem Summary:** Given `x, y, n`, find the largest `k <= n` with `k mod x = y`.
+
+#### Required Remainder (Modulo Constraint / Codeforces / 1000)
+
+* **Core Invariant / Key Insight:** Valid numbers are `y, y+x, y+2x, ...`; take `k = (n-y)/x * x + y`.
+
+* **Key Formula:**
+```text
+k = q*x + y,   k <= n
+q = floor((n - y) / x)
+k = q*x + y
+```
+
+* **Step-by-Step Logic:**
+1. Read `x, y, n` as `long long`.
+2. Compute `q = (n - y) / x` (largest step count).
+3. Print `q * x + y` in O(1).
+
+* **ASCII Execution Trace / Visual Dry Run:**
+```text
+Initial:        x = 7, y = 5, n = 12345
+
+Step 1:         q = (12345 - 5) / 7 = 12340 / 7 = 1762
+
+Step 2:         k = 1762 * 7 + 5 = 12339
+
+Final Answer:   12339
+
+Pseudocode:
+    q = (n - y) / x
+    print q * x + y
+```
+
+* **C++17 Solution:**
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        long long x, y, n;
+        scanf("%lld %lld %lld", &x, &y, &n);
+
+        long long q = (n - y) / x;       // largest number of steps
+        printf("%lld\n", q * x + y);
+    }
+    return 0;
+}
+```
+
+Problem Link: [New Year's Number](https://codeforces.com/problemset/problem/1475/B)
+
+**Problem Summary:** Given `n`, decide if `n = 2020a + 2021b` for non-negative `a, b`.
+
+#### New Year's Number (Diophantine Equation / Codeforces / 900)
+
+* **Core Invariant / Key Insight:** With `t = a+b`, `n = 2020t + b`; take `t = n / 2020`, `b = n % 2020` and require `b <= t`.
+
+* **Key Formula:**
+```text
+n = 2020a + 2021b = 2020(a + b) + b
+t = floor(n / 2020),  b = n mod 2020
+YES  <=>  b <= t
+```
+
+* **Step-by-Step Logic:**
+1. Read `n`.
+2. Compute `t = n / 2020` and `b = n % 2020`.
+3. Print `YES` iff `b <= t` in O(1).
+
+* **ASCII Execution Trace / Visual Dry Run:**
+```text
+Initial:        n = 4041
+
+Step 1:         t = 4041 / 2020 = 2,  b = 4041 % 2020 = 1
+
+Step 2:         b = 1 <= t = 2 --> OK (a=1, b=1)
+
+Step 3:         n = 4039 --> t = 1, b = 2019 > 1 --> NO
+
+Final Answer:   4041 -> YES,  4039 -> NO
+
+Pseudocode:
+    if n % 2020 <= n / 2020: print YES else NO
+```
+
+* **C++17 Solution:**
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        int n;
+        scanf("%d", &n);
+
+        int total = n / 2020;            // t = a + b
+        int extra = n % 2020;            // b
+        puts(extra <= total ? "YES" : "NO");
+    }
+    return 0;
+}
+```
+
+Problem Link: [K-th Not Divisible by n](https://codeforces.com/problemset/problem/1352/C)
+
+**Problem Summary:** Given `n, k`, find the k-th positive integer not divisible by `n`.
+
+#### K-th Not Divisible by n (Divisibility / Counting / Codeforces / 1200)
+
+* **Core Invariant / Key Insight:** Every block of `n` numbers holds `n-1` valid ones, so answer `= k + (k-1)/(n-1)`.
+
+* **Key Formula:**
+```text
+each block of n numbers has (n - 1) valid ones
+q = (k - 1) / (n - 1)
+answer = k + q
+```
+
+* **Step-by-Step Logic:**
+1. Read `n, k`.
+2. Count skipped multiples `q = (k - 1) / (n - 1)`.
+3. Print `k + q` in O(1).
+
+* **ASCII Execution Trace / Visual Dry Run:**
+```text
+Initial:        n = 3, k = 7
+
+Step 1:         valid: 1 2 4 5 7 8 10
+                7th valid = 10
+
+Step 2:         q = (7-1)/(3-1) = 3
+
+Final Answer:   7 + 3 = 10
+
+Pseudocode:
+    print k + (k - 1) / (n - 1)
+```
+
+* **C++17 Solution:**
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        long long n, k;
+        scanf("%lld %lld", &n, &k);
+
+        printf("%lld\n", k + (k - 1) / (n - 1));
+    }
+    return 0;
+}
+```
 
 Problem Link: [Modulo Sum](https://codeforces.com/problemset/problem/577/B)
 
-**Rating:** 1900 (approximate)
+**Problem Summary:** Given `n` numbers and `m`, decide if a non-empty subsequence has sum divisible by `m`.
 
-**Primary Mathematical Form:** Pigeonhole
+#### Modulo Sum (Pigeonhole / Codeforces / 1900)
 
-**Secondary Forms:** Equal Remainders / Modulo Constraint
+* **Core Invariant / Key Insight:** If `n >= m`, prefix remainders `P_0..P_n` must repeat, so `YES`; otherwise DP over remainders in `O(n*m)`.
 
-### 1. Story Removed
-
-n numbers, modulus m. Is there a non-empty subsequence with sum divisible by m?
-
-### 2. Variables
-
+* **Key Formula:**
 ```text
-a_i mod m; n,m.
+P_i = (a_1 + ... + a_i) mod m,   P_0 = 0
+n >= m  =>  n + 1 values in m boxes  =>  P_i = P_j  =>  YES
+n <  m  =>  DP over remainders, O(n * m)
 ```
 
-### 3. Constraints
+* **Step-by-Step Logic:**
+1. If `n >= m` print `YES`.
+2. Else keep reachable-remainder set `dp` (start empty).
+3. For each `a`: add `a % m` and `(r + a) % m` for all `r`; stop if `0` reachable; O(m^2).
 
-n <= 1e6, m <= 1e3 ⇒ pigeonhole for n>=m, else O(n·m)=O(m²).
-
-### 4. Direct Mathematical Model
-
+* **ASCII Execution Trace / Visual Dry Run:**
 ```text
-Non-empty subset S with Σ_{i∈S} a_i ≡ 0 (mod m).
+Initial:        n = 3, m = 5, a = [1, 2, 3]
+
+Step 1:         n < m --> use DP, dp = {}
+
+Step 2:         a=1: dp = {1}
+                a=2: dp = {1, 2, 3}
+
+Step 3:         a=3: dp = {1,2,3} + {4, 0, 1} -> contains 0
+
+Final Answer:   YES   (2 + 3 = 5)
+
+Pseudocode:
+    if n >= m: YES
+    dp = {}
+    for a: dp = dp U {a%m} U {(r+a)%m for r in dp}
+           if 0 in dp: YES
+    NO
 ```
 
-### 5. Transformation
-
-```text
-If n >= m: consider prefix sums P_0..P_n mod m: n+1 > m values ⇒ two equal ⇒ a contiguous block sums ≡ 0. So YES.
-If n < m ≤ 1e3: dp over remainders; dp[r]=reachable subset-sum remainder.
-```
-
-### 6. Feasibility Conditions
-
-```text
-n>=m ⇒ YES; else O(n·m) DP.
-```
-
-### 7. Core Observation
-
-Large n forces a repeat (pigeonhole); small n is cheap enough for DP.
-
-### 8. Mathematical Invariant / Proof
-
-Pigeonhole on prefix remainders. DP: dp'[ (r + a_i) % m ] |= dp[r], plus starting from a_i alone.
-
-### 9. Statement → Math → Algorithm
-
-```text
-Story -> subset sum ≡0 -> pigeonhole for n>=m -> else DP over remainders -> O(m²)
-```
-
-### 10. Dry Run
-
-n=3,m=5,[1,2,3]: dp remainders → {1,2,3} → {3,4,0}: 2+3=5 ✓ YES.
-
-### 11. Pseudocode
-
-```text
-if n>=m YES; dp[]={0}; for each a: new=dp ∪ {(r+a)%m} ∪ {a%m}; if dp[0] YES
-```
-
-### 12. C++17 Solution
-
+* **C++17 Solution:**
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int main(){ int n,m; scanf("%d %d",&n,&m); if(n>=m){ puts("YES"); return 0; }
-  vector<char> dp(m,0); for(int i=0;i<n;i++){ int a; scanf("%d",&a); a%=m; vector<char> nd=dp;
-    nd[a]=1; for(int r=0;r<m;r++) if(dp[r]) nd[(r+a)%m]=1; dp=nd; if(dp[0]){ puts("YES"); return 0; } }
-  puts("NO"); }
+
+int main() {
+    int n, m;
+    scanf("%d %d", &n, &m);
+
+    if (n >= m) {                        // pigeonhole on prefix remainders
+        puts("YES");
+        return 0;
+    }
+
+    vector<char> dp(m, 0);               // dp[r] = some subsequence has sum % m == r
+    for (int i = 0; i < n; i++) {
+        int a;
+        scanf("%d", &a);
+        a %= m;
+
+        vector<char> nd = dp;
+        nd[a] = 1;                       // take a alone
+        for (int r = 0; r < m; r++)
+            if (dp[r]) nd[(r + a) % m] = 1;
+        dp = nd;
+
+        if (dp[0]) {
+            puts("YES");
+            return 0;
+        }
+    }
+    puts("NO");
+    return 0;
+}
 ```
 
-### 13. What I Should Recognize Next Time
+### Pattern D: Pair Conditions -> Algebra + Sorting/Frequency
 
+If a condition couples `i` and `j`, separate the variables so each index has one derived key, then count with a map or sorted array.
+
+* **Signals:** "count pairs", `a_i + a_j`, `a_j - a_i = j - i`, unordered pairs.
+* **Tools:** move terms across `=`/`>`, `b_i = a_i - i`, `c_i = a_i - b_i`, sort + `upper_bound`, `f(r)-f(l-1)`.
+* **Workflow:** algebra -> key per index -> frequency (equality) or sort (inequality).
+* **Pitfall:** double counting ordered pairs; `int` overflow of pair counts.
+
+Problem Link: [Same Differences](https://codeforces.com/problemset/problem/1520/D)
+
+**Problem Summary:** Given array `a`, count pairs `i<j` with `a_j - a_i = j - i`.
+
+#### Same Differences (Pair Counting / Codeforces / 1200)
+
+* **Core Invariant / Key Insight:** Rearrange to `a_j - j = a_i - i`; count equal values of `b_i = a_i - i`.
+
+* **Key Formula:**
 ```text
-Whenever "sum divisible by m" and n ≥ m:
-→ pigeonhole on prefix remainders ⇒ YES immediately; else DP over remainders.
+a_j - a_i = j - i
+=> a_j - j = a_i - i
+b_i = a_i - i   =>   count pairs with b_i = b_j
 ```
 
-## Problem index by band (to extend)
+* **Step-by-Step Logic:**
+1. Define `b_i = a_i - i`.
+2. Scan left to right with a hash map of counts.
+3. Add `cnt[b_i]` before incrementing; O(n).
 
-| Band | Decoded above | Next to add (same 13-step format) |
-|---|---|---|
-| 800–1000 | P01–P10 | more parity / ceil / gcd single-observation problems |
-| 1100–1200 | P11–P14 | stars-and-bars, simple prefix, greedy-with-bounds |
-| 1300–1400 | P15–P17 | prefix-remainder counts, invariant on arrays, contribution |
-| 1500–1600 | — | number-theory transformations, contribution, difference arrays |
-| 1700–1800 | — | bit-by-bit independence, combinatorics with modulo |
-| 1900 | P18 | combined-form problems |
+* **ASCII Execution Trace / Visual Dry Run:**
+```text
+Initial:        a = [3, 5, 1, 4, 6, 6]   (1-indexed)
 
-Ask for the next batch band by band; keep the same verification discipline (brute-force small cases).
+Step 1:         b = a_i - i = [2, 3, -2, 0, 1, 0]
+
+Step 2:         map: {2:1, 3:1, -2:1, 0:1, 1:1}
+                b_6 = 0 seen once --> ans += 1
+
+Final Answer:   1
+
+Pseudocode:
+    ans = 0
+    for i in 1..n:
+        ans += cnt[a_i - i]
+        cnt[a_i - i] += 1
+```
+
+* **C++17 Solution:**
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        int n;
+        scanf("%d", &n);
+
+        map<long long, long long> cnt;
+        long long ans = 0;
+        for (int i = 1; i <= n; i++) {
+            long long a;
+            scanf("%lld", &a);
+            ans += cnt[a - i]++;         // pairs with equal key a_i - i
+        }
+        printf("%lld\n", ans);
+    }
+    return 0;
+}
+```
+
+Problem Link: [Number of Pairs](https://codeforces.com/problemset/problem/1538/C)
+
+**Problem Summary:** Given array `a` and `l, r`, count pairs `i<j` with `l <= a_i + a_j <= r`.
+
+#### Number of Pairs (Sorting as Transformation / Codeforces / 1300)
+
+* **Core Invariant / Key Insight:** Pairs are unordered, so sort; answer is `f(r) - f(l-1)` where `f(X)` counts pairs with sum `<= X` via `upper_bound`.
+
+* **Key Formula:**
+```text
+count( L <= a_i + a_j <= R ) = f(R) - f(L - 1)
+f(X) = #{ i < j : a_i + a_j <= X }   (sorted, upper_bound)
+```
+
+* **Step-by-Step Logic:**
+1. Sort `a`.
+2. For each `i`, count `j>i` with `a_j <= X - a_i` (binary search).
+3. Print `f(r) - f(l - 1)` in O(n log n).
+
+* **ASCII Execution Trace / Visual Dry Run:**
+```text
+Initial:        a = [5, 1, 2], l = 4, r = 7
+
+Step 1:         sorted = [1, 2, 5]
+
+Step 2:         f(7): i=0 -> j in {1,2}: 2 ; i=1 -> j=2: 1  --> 3
+
+Step 3:         f(3): i=0 -> a_j <= 2 : 1 ; i=1 -> a_j <= 1 : 0 --> 1
+
+Final Answer:   3 - 1 = 2
+
+Pseudocode:
+    sort(a)
+    f(X) = sum_i ( upper_bound(a[i+1..], X - a[i]) - (i+1) )
+    print f(r) - f(l - 1)
+```
+
+* **C++17 Solution:**
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        int n;
+        long long l, r;
+        scanf("%d %lld %lld", &n, &l, &r);
+
+        vector<long long> a(n);
+        for (auto &x : a) scanf("%lld", &x);
+        sort(a.begin(), a.end());
+
+        // f(X) = number of pairs i < j with a[i] + a[j] <= X
+        auto f = [&](long long X) {
+            long long cnt = 0;
+            for (int i = 0; i < n; i++) {
+                auto it = upper_bound(a.begin() + i + 1, a.end(), X - a[i]);
+                cnt += it - (a.begin() + i + 1);
+            }
+            return cnt;
+        };
+
+        printf("%lld\n", f(r) - f(l - 1));
+    }
+    return 0;
+}
+```
+
+Problem Link: [Pair of Topics](https://codeforces.com/problemset/problem/1324/D)
+
+**Problem Summary:** Given arrays `a, b`, count pairs `i<j` with `a_i + a_j > b_i + b_j`.
+
+#### Pair of Topics (Algebra / Transformation / Codeforces / 1400)
+
+* **Core Invariant / Key Insight:** Move terms: `(a_i - b_i) + (a_j - b_j) > 0`; with `c_i = a_i - b_i` count pairs with `c_i + c_j > 0` after sorting.
+
+* **Key Formula:**
+```text
+a_i + a_j > b_i + b_j
+=> (a_i - b_i) + (a_j - b_j) > 0
+c_i = a_i - b_i   =>   count pairs with c_i + c_j > 0
+```
+
+* **Step-by-Step Logic:**
+1. Build `c_i = a_i - b_i` and sort.
+2. For each `i`, count `j>i` with `c_j > -c_i` (`upper_bound`).
+3. Sum the counts in O(n log n).
+
+* **ASCII Execution Trace / Visual Dry Run:**
+```text
+Initial:        a = [4,8,2,6,2], b = [4,5,4,1,3]
+
+Step 1:         c = [0, 3, -2, 5, -1]
+                sorted c = [-2, -1, 0, 3, 5]
+
+Step 2:         i=-2: need c_j > 2  --> {3,5} = 2
+                i=-1: need c_j > 1  --> {3,5} = 2
+                i= 0: need c_j > 0  --> {3,5} = 2
+                i= 3: need c_j > -3 --> {5}   = 1
+                i= 5: no j > i      --> 0
+
+Final Answer:   2 + 2 + 2 + 1 = 7
+
+Pseudocode:
+    c = a - b; sort(c)
+    for i: ans += (n) - upper_bound(c[i+1..], -c[i])
+```
+
+* **C++17 Solution:**
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    vector<long long> a(n), c(n);
+    for (auto &x : a) scanf("%lld", &x);
+    for (int i = 0; i < n; i++) {
+        long long b;
+        scanf("%lld", &b);
+        c[i] = a[i] - b;                 // c_i = a_i - b_i
+    }
+    sort(c.begin(), c.end());
+
+    long long ans = 0;
+    for (int i = 0; i < n; i++) {
+        // count j > i with c[j] > -c[i]
+        auto it = upper_bound(c.begin() + i + 1, c.end(), -c[i]);
+        ans += c.end() - it;
+    }
+    printf("%lld\n", ans);
+    return 0;
+}
+```
+
+Problem Link: [Honest Coach](https://codeforces.com/problemset/problem/1360/B)
+
+**Problem Summary:** Given strengths `s_i`, split into two non-empty teams minimizing `|max(A) - min(B)|`. Output the minimum value.
+
+#### Honest Coach (Sorting as Transformation / Codeforces / 800)
+
+* **Core Invariant / Key Insight:** After sorting, the best split is at the smallest adjacent gap, and every split is at least that large.
+
+* **Key Formula:**
+```text
+sorted: s_1 <= s_2 <= ... <= s_n
+answer = min over i of (s_{i+1} - s_i)
+```
+
+* **Step-by-Step Logic:**
+1. Read and sort `s`.
+2. Scan adjacent differences `s[i+1] - s[i]`.
+3. Output the minimum in O(n log n).
+
+* **ASCII Execution Trace / Visual Dry Run:**
+```text
+Initial:        s = [3, 1, 2, 6, 4]
+
+Step 1:         sort --> [1, 2, 3, 4, 6]
+
+Step 2:         gaps = [1, 1, 1, 2]
+
+Final Answer:   min gap = 1
+
+Pseudocode:
+    sort(s)
+    ans = INF
+    for i in 0..n-2: ans = min(ans, s[i+1] - s[i])
+    print ans
+```
+
+* **C++17 Solution:**
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int t;
+    scanf("%d", &t);
+    while (t--) {
+        int n;
+        scanf("%d", &n);
+
+        vector<int> s(n);
+        for (auto &x : s) scanf("%d", &x);
+        sort(s.begin(), s.end());
+
+        int ans = INT_MAX;
+        for (int i = 0; i + 1 < n; i++)
+            ans = min(ans, s[i + 1] - s[i]);   // smallest adjacent gap
+        printf("%d\n", ans);
+    }
+    return 0;
+}
+```
+
+### Pattern E: Binary Search on the Answer
+
+When 'can we reach value `x`?' is monotone, binary search `x` and compute a cheap feasibility cost.
+
+* **Signals:** "maximize the minimum/median", limited operations `k`.
+* **Tools:** `cost(x)` sum of shortfalls, monotonic check, `lo + (hi-lo+1)/2`.
+* **Workflow:** guess `x` -> compute cost -> compare with budget -> shrink.
+* **Pitfall:** wrong upper bound (`a[m]+k`), overflow, infinite loop with wrong mid.
+
+Problem Link: [Maximum Median](https://codeforces.com/problemset/problem/1201/C)
+
+**Problem Summary:** Given odd-length array and `k` increments, maximize the median. Output it.
+
+#### Maximum Median (Binary Search Equation / Codeforces / 1400)
+
+* **Core Invariant / Key Insight:** Median `>= x` iff every element from the median index onward is `>= x`; cost is monotone in `x`, so binary search on `x`.
+
+* **Key Formula:**
+```text
+median >= x  <=>  a_i >= x for all i >= m,   m = (n-1)/2
+cost(x) = sum_{i >= m} max(0, x - a_i)
+answer = max x with cost(x) <= k     (cost is monotone)
+```
+
+* **Step-by-Step Logic:**
+1. Sort `a`; median index `m = (n-1)/2`.
+2. `cost(x) = sum_{i>=m} max(0, x - a_i)`.
+3. Binary search largest `x` with `cost(x) <= k`; O(n log V).
+
+* **ASCII Execution Trace / Visual Dry Run:**
+```text
+Initial:        a = [1, 3, 5], k = 2, m = 1
+
+Step 1:         cost(4) = (4-3) + 0 = 1 <= 2  OK
+Step 2:         cost(5) = (5-3) + 0 = 2 <= 2  OK
+Step 3:         cost(6) = 3 + 1 = 4  > 2  NO
+
+Final Answer:   5
+
+Pseudocode:
+    sort(a); m = (n-1)/2
+    lo = a[m]; hi = a[m] + k
+    while lo < hi:
+        mid = (lo + hi + 1) / 2
+        if cost(mid) <= k: lo = mid else hi = mid - 1
+    print lo
+```
+
+* **C++17 Solution:**
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    long long k;
+    scanf("%d %lld", &n, &k);
+
+    vector<long long> a(n);
+    for (auto &x : a) scanf("%lld", &x);
+    sort(a.begin(), a.end());
+
+    int m = (n - 1) / 2;                 // median index
+
+    auto cost = [&](long long x) {       // operations to lift upper half to x
+        long long c = 0;
+        for (int i = m; i < n; i++)
+            if (a[i] < x) c += x - a[i];
+        return c;
+    };
+
+    long long lo = a[m], hi = a[m] + k;
+    while (lo < hi) {
+        long long mid = lo + (hi - lo + 1) / 2;
+        if (cost(mid) <= k) lo = mid;
+        else                hi = mid - 1;
+    }
+    printf("%lld\n", lo);
+    return 0;
+}
+```
 
 
 ---
@@ -3357,9 +3035,9 @@ Ask for the next batch band by band; keep the same verification discipline (brut
 
 | Problem | Model A | Model B | Which is simpler |
 |---|---|---|---|
-| Same Differences (P14) | enumerate pairs `a_j-a_i=j-i` O(n²) | `b_i=a_i-i` + frequency O(n) | B (algebra removes the pair) |
-| Number of Pairs (P15) | count pair sums by frequency of values | sort + binary search | B when values are huge |
-| Friends and Candies (P03) | simulate redistribution | sum invariant | B (no simulation) |
+| Same Differences (CF 1520D) | enumerate pairs `a_j-a_i=j-i` O(n²) | `b_i=a_i-i` + frequency O(n) | B (algebra removes the pair) |
+| Number of Pairs (CF 1538C) | count pair sums by frequency of values | sort + binary search | B when values are huge |
+| Friends and Candies (CF 1538B) | simulate redistribution | sum invariant | B (no simulation) |
 | Subarray sum divisible by m | enumerate all (l,r) | prefix remainders equal | B |
 | Manhattan reach | BFS on grid | `|dx|+|dy|<=k` + parity | B |
 | Sum over subarrays | loop all subarrays | contribution `i(n-i+1)` | B |
@@ -3393,7 +3071,7 @@ Additional pairs: *prefix sum vs equation* (`P[r]-P[l-1]=K` gives a hash-map alg
 | `k ≤ log`, `k ≤ 30` | bit-by-bit |
 | `m ≤ 1e3` | DP over remainders |
 
-**These are clues, not rules.** A tiny `n` can hide a formula; large `n` with small `m` (P18) flips to pigeonhole.
+**These are clues, not rules.** A tiny `n` can hide a formula; large `n` with small `m` (CF 577B) flips to pigeonhole.
 
 ---
 
