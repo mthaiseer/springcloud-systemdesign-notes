@@ -1,5 +1,18 @@
 # Part 1. Arithmetic Foundations
 
+## Table of Contents
+- [1.0 Reading the Symbols (Cheat Sheet)](#10-reading-the-symbols-cheat-sheet)
+- [1.1 Quotient and Remainder](#11-quotient-and-remainder)
+- [1.2 Floor, Ceiling, and Ceil-Division](#12-floor-ceiling-and-ceil-division)
+- [1.3 Absolute Value, Min, and Max](#13-absolute-value-min-and-max)
+- [1.4 Intervals and Inequalities](#14-intervals-and-inequalities)
+- [1.5 Powers, Logarithms, and Size Estimates](#15-powers-logarithms-and-size-estimates)
+- [1.6 Overflow: Choosing `int` or `long long`](#16-overflow-choosing-int-or-long-long)
+- [1.7 Rounding Without Decimals](#17-rounding-without-decimals)
+- [1.8 Section Summary (What to Remember)](#18-section-summary-what-to-remember)
+
+---
+
 ## 1.0 Reading the Symbols (Cheat Sheet)
 
 ```
@@ -9,13 +22,13 @@
      ⌈-3.5⌉ = -3                     ⌈3.5⌉ = 4   [Ceil:  Shift Right →]
 ```
 
-| Symbol | Name | Formal Definition | Standard Implementation | Example |
-| :--- | :--- | :--- | :--- | :--- |
-| `⌊x⌋` | **Floor** | Largest integer $k \le x$ | `floor(x)` / `a / b` | `⌊3.9⌋ = 3`, `⌊-3.1⌋ = -4` |
-| `⌈x⌉` | **Ceiling** | Smallest integer $k \ge x$ | `ceil(x)` / `(a + b - 1) / b` | `⌈3.1⌉ = 4`, `⌈-3.9⌉ = -3` |
-| `a mod b` | **Modulo** | $r = a - b \cdot \lfloor a / b \rfloor$ | `a % b` | $17 \bmod 5 = 2$ |
-| `[a, b)` | **Half-Open Range** | All $x$ where $a \le x < b$ | `for(int i = a; i < b; ++i)` | $[0, 5) \implies \{0, 1, 2, 3, 4\}$ |
-| `≈` | **Estimate** | $2^{10} = 1024 \approx 10^3$ | `1 << 10` | $2^{30} \approx 10^9$ (1 Gigabyte) |
+| Symbol | Name | Formal Definition | Standard Implementation | Example | 
+ | ----- | ----- | ----- | ----- | ----- | 
+| `⌊x⌋` | **Floor** | Largest integer $k \le x$ | `floor(x)` / `a / b` | `⌊3.9⌋ = 3`, `⌊-3.1⌋ = -4` | 
+| `⌈x⌉` | **Ceiling** | Smallest integer $k \ge x$ | `ceil(x)` / `(a + b - 1) / b` | `⌈3.1⌉ = 4`, `⌈-3.9⌉ = -3` | 
+| `a mod b` | **Modulo** | $r = a - b \cdot \lfloor a / b \rfloor$ | `a % b` | $17 \bmod 5 = 2$ | 
+| `[a, b)` | **Half-Open Range** | All $x$ where $a \le x < b$ | `for(int i = a; i < b; ++i)` | $[0, 5) \implies \{0, 1, 2, 3, 4\}$ | 
+| `≈` | **Estimate** | $2^{10} = 1024 \approx 10^3$ | `1 << 10` | $2^{30} \approx 10^9$ (1 Gigabyte) | 
 
 ```cpp
 // Common representation in C++ / Java / Python
@@ -38,11 +51,11 @@ Dividend (a = 17)
 └───────────┴───────────┴───────────┴─────┘
 ```
 
-| Division Behavior | Mathematical Rule | Language Support | Example ($a = -17, b = 5$) |
-| :--- | :--- | :--- | :--- |
-| **Division Algorithm** | $a = b \cdot q + r$ where $0 \le r < \text{abs}(b)$ | Universal Math Standard | $q = -4, r = 3$ |
-| **Truncating Division** | Rounds fractional quotient toward zero | C, C++, Java, C# | `-17 / 5 = -3`, `-17 % 5 = -2` |
-| **Floored Division** | Rounds quotient down toward $-\infty$ | Python | `-17 // 5 = -4`, `-17 % 5 = 3` |
+| Division Behavior | Mathematical Rule | Language Support | Example ($a = -17, b = 5$) | 
+ | ----- | ----- | ----- | ----- | 
+| **Division Algorithm** | $a = b \cdot q + r$ where $0 \le r < \text{abs}(b)$ | Universal Math Standard | $q = -4, r = 3$ | 
+| **Truncating Division** | Rounds fractional quotient toward zero | C, C++, Java, C# | `-17 / 5 = -3`, `-17 % 5 = -2` | 
+| **Floored Division** | Rounds quotient down toward $-\infty$ | Python | `-17 // 5 = -4`, `-17 % 5 = 3` | 
 
 ```cpp
 // Safe positive modulo in C++/Java (guarantees output in range [0, b - 1])
@@ -60,10 +73,10 @@ Items (a = 10)  : [x][x][x] | [x][x][x] | [x][x][x] | [x]
 Bucket Size (b) :    3      |    3      |    3      |  3  ---> Requires 4 Buckets
 ```
 
-| Division Type | Real Formula | Pure Integer Code ($a, b > 0$) | Edge Case Behavior |
-| :--- | :--- | :--- | :--- |
-| **Floor Division** | $\lfloor a / b \rfloor$ | `a / b` | Direct truncated integer division |
-| **Ceil Division** | $\lceil a / b \rceil$ | `(a + b - 1) / b` | Prevents precision loss from `(double)` cast |
+| Division Type | Real Formula | Pure Integer Code ($a, b > 0$) | Edge Case Behavior | 
+ | ----- | ----- | ----- | ----- | 
+| **Floor Division** | $\lfloor a / b \rfloor$ | `a / b` | Direct truncated integer division | 
+| **Ceil Division** | $\lceil a / b \rceil$ | `(a + b - 1) / b` | Prevents precision loss from `(double)` cast | 
 
 ```cpp
 // Exact ceil-division without floating-point conversion
@@ -83,11 +96,11 @@ int total_pages = (items + page_size - 1) / page_size;
   a=-2              b=5
 ```
 
-| Function | Algebraic Formula | Property / Identity |
-| :--- | :--- | :--- |
-| **Absolute Value** | $\text{abs}(x) = x \text{ if } x \ge 0 \text{ else } -x$ | $\text{abs}(x) = \sqrt{x^2}$ |
-| **Maximum** | $\max(a, b) = (a + b + \text{abs}(a - b)) / 2$ | $\max(a, b) \ge a \text{ and } \max(a, b) \ge b$ |
-| **Minimum** | $\min(a, b) = (a + b - \text{abs}(a - b)) / 2$ | $\min(a, b) \le a \text{ and } \min(a, b) \le b$ |
+| Function | Algebraic Formula | Property / Identity | 
+ | ----- | ----- | ----- | 
+| **Absolute Value** | $\text{abs}(x) = x \text{ if } x \ge 0 \text{ else } -x$ | $\text{abs}(x) = \sqrt{x^2}$ | 
+| **Maximum** | $\max(a, b) = (a + b + \text{abs}(a - b)) / 2$ | $\max(a, b) \ge a \text{ and } \max(a, b) \ge b$ | 
+| **Minimum** | $\min(a, b) = (a + b - \text{abs}(a - b)) / 2$ | $\min(a, b) \le a \text{ and } \min(a, b) \le b$ | 
 
 ```cpp
 // Clamp coordinate 'x' strictly within interval [LOW, HIGH]
@@ -106,11 +119,11 @@ Interval 2:         [ s2 ══════════════ e2 ]
 Overlap   :         [ max(s1,s2) ── min(e1,e2) ]  ==> Valid if max(s1,s2) <= min(e1,e2)
 ```
 
-| Interval Type | Notation | Inclusion Condition | Count of Integers |
-| :--- | :--- | :--- | :--- |
-| **Closed** | $[a, b]$ | $a \le x \le b$ | $b - a + 1$ |
-| **Half-Open** | $[a, b)$ | $a \le x < b$ | $b - a$ |
-| **Open** | $(a, b)$ | $a < x < b$ | $b - a - 1$ |
+| Interval Type | Notation | Inclusion Condition | Count of Integers | 
+ | ----- | ----- | ----- | ----- | 
+| **Closed** | $[a, b]$ | $a \le x \le b$ | $b - a + 1$ | 
+| **Half-Open** | $[a, b)$ | $a \le x < b$ | $b - a$ | 
+| **Open** | $(a, b)$ | $a < x < b$ | $b - a - 1$ | 
 
 ```cpp
 // Overlap evaluation for closed intervals [s1, e1] and [s2, e2]
@@ -132,11 +145,11 @@ Giga      2^30            1,073,741,824 ≈ 10^9             GB / Billion
 Exa       2^60            1.15 × 10^18  ≈ 10^18            EB / Exabyte
 ```
 
-| Identity / Rule | Exact Equation | Algorithm Design Usage |
-| :--- | :--- | :--- |
-| **Product Property** | $\log_b(A \cdot B) = \log_b(A) + \log_b(B)$ | Decomposing search space trees |
-| **Base Conversion** | $\log_b(A) = \log_c(A) / \log_c(b)$ | Translating natural logs to binary operations |
-| **Integer Bit Length** | $\lfloor \log_2 N \rfloor + 1$ | Allocating minimal memory register sizes |
+| Identity / Rule | Exact Equation | Algorithm Design Usage | 
+ | ----- | ----- | ----- | 
+| **Product Property** | $\log_b(A \cdot B) = \log_b(A) + \log_b(B)$ | Decomposing search space trees | 
+| **Base Conversion** | $\log_b(A) = \log_c(A) / \log_c(b)$ | Translating natural logs to binary operations | 
+| **Integer Bit Length** | $\lfloor \log_2 N \rfloor + 1$ | Allocating minimal memory register sizes | 
 
 ```cpp
 // Total binary bits required to store scalar value N
@@ -154,11 +167,11 @@ int bits_required = (N == 0) ? 1 : std::floor(std::log2(N)) + 1;
 64-bit long: [-9.22 × 10^18 ──────────── 0 ──────────── 9.22 × 10^18] ≈ ±9 × 10^18
 ```
 
-| Type | Bit Width | Signed Numeric Range | Upper Bound Limit |
-| :--- | :--- | :--- | :--- |
-| `int` | 32 bits | $-2^{31} \dots 2^{31}-1$ | $\approx \pm 2.14 \times 10^9$ |
-| `unsigned int` | 32 bits | $0 \dots 2^{32}-1$ | $\approx 4.29 \times 10^9$ |
-| `long long` / `int64_t` | 64 bits | $-2^{63} \dots 2^{63}-1$ | $\approx \pm 9.22 \times 10^{18}$ |
+| Type | Bit Width | Signed Numeric Range | Upper Bound Limit | 
+ | ----- | ----- | ----- | ----- | 
+| `int` | 32 bits | $-2^{31} \dots 2^{31}-1$ | $\approx \pm 2.14 \times 10^9$ | 
+| `unsigned int` | 32 bits | $0 \dots 2^{32}-1$ | $\approx 4.29 \times 10^9$ | 
+| `long long` / `int64_t` | 64 bits | $-2^{63} \dots 2^{63}-1$ | $\approx \pm 9.22 \times 10^{18}$ | 
 
 ```cpp
 int a = 100000, b = 100000;
@@ -182,11 +195,11 @@ Number (a) = 18, Divisor (b) = 5   ==>  Exact: 3.6
   Integer Division: 20 / 5 = 4    ==>  Rounds up to 4
 ```
 
-| Rounding Target | Formula | Integer Arithmetic ($a, b > 0$) |
-| :--- | :--- | :--- |
-| **Floor (Truncate)** | $\lfloor a / b \rfloor$ | `a / b` |
-| **Ceil (Round Up)** | $\lceil a / b \rceil$ | `(a + b - 1) / b` |
-| **Nearest Integer** | $\lfloor (a + b/2) / b \rfloor$ | `(a + b / 2) / b` |
+| Rounding Target | Formula | Integer Arithmetic ($a, b > 0$) | 
+ | ----- | ----- | ----- | 
+| **Floor (Truncate)** | $\lfloor a / b \rfloor$ | `a / b` | 
+| **Ceil (Round Up)** | $\lceil a / b \rceil$ | `(a + b - 1) / b` | 
+| **Nearest Integer** | $\lfloor (a + b/2) / b \rfloor$ | `(a + b / 2) / b` | 
 
 ```cpp
 // Round division of non-negative integers to nearest whole integer
@@ -199,11 +212,11 @@ int rounded_value = (a + b / 2) / b;
 
 ## 1.8 Section Summary (What to Remember)
 
-| Goal | Formula / Pattern | Code Snippet |
-| :--- | :--- | :--- |
-| **Ceil-Division** | Group items into $b$-sized buckets | `(a + b - 1) / b` |
-| **Nearest Integer** | Divide and round to nearest | `(a + b / 2) / b` |
-| **Safe Modulo** | Wrap negative array indices safely | `(a % b + b) % b` |
-| **Interval Overlap** | Detect overlapping ranges | `max(s1, s2) <= min(e1, e2)` |
-| **Safe Midpoint** | Prevent addition overflow | `low + (high - low) / 2` |
-| **64-bit Promotion** | Prevent product overflow | `(long long)a * b` |
+| Goal | Formula / Pattern | Code Snippet | 
+ | ----- | ----- | ----- | 
+| **Ceil-Division** | Group items into $b$-sized buckets | `(a + b - 1) / b` | 
+| **Nearest Integer** | Divide and round to nearest | `(a + b / 2) / b` | 
+| **Safe Modulo** | Wrap negative array indices safely | `(a % b + b) % b` | 
+| **Interval Overlap** | Detect overlapping ranges | `max(s1, s2) <= min(e1, e2)` | 
+| **Safe Midpoint** | Prevent addition overflow | `low + (high - low) / 2` | 
+| **64-bit Promotion** | Prevent product overflow | `(long long)a * b` | 
