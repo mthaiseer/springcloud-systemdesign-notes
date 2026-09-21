@@ -1,11013 +1,9487 @@
-# 01 --- CF Mathematical Modeling Phase 1: Decode
+# CF Mathematical Modeling --- Phase 1 Practice
 
-> **130 guided Codeforces statement-decoding drills.**
->
-> Only one skill is trained here:
->
-> `story → remove nouns → extract variables → formulate mathematics → derive solution → dry run`
-
-For every problem, read the official statement first. Then use the short
-decode below. There is intentionally **no pseudocode, no C++ code, no
-generic theory, no repeated recognition checklist, and no extra everyday
-analogy**. The goal is to make the mathematical extraction itself
-automatic.
+> Goal: learn to turn a Codeforces story into variables, mathematics,
+> and a solution.
 
 ## Table of Contents
 
 -   [Pattern 1 --- Minimum Operations / Ceil
     Division](#pattern-1-minimum-operations-ceil-division)
-    -   [CF 617A --- Elephant --- 800](#problem-001-cf-617a-elephant)
-    -   [CF 1409A --- Yet Another Two Integers Problem ---
-        800](#problem-002-cf-1409a-yet-another-two-integers-problem)
-    -   [CF 1353A --- Most Unstable Array ---
-        800](#problem-003-cf-1353a-most-unstable-array)
-    -   [CF 1476A --- K-divisible Sum ---
-        1000](#problem-004-cf-1476a-k-divisible-sum)
-    -   [CF 151A --- Soft Drinking ---
-        800](#problem-005-cf-151a-soft-drinking)
-    -   [CF 996A --- Hit the Lottery ---
-        800](#problem-006-cf-996a-hit-the-lottery)
-    -   [CF 1669A --- Division? --- 800](#problem-007-cf-1669a-division)
-    -   [CF 1742A --- Sum --- 800](#problem-008-cf-1742a-sum)
-    -   [CF 1850A --- To My Critics ---
-        800](#problem-009-cf-1850a-to-my-critics)
-    -   [CF 1878A --- How Much Does Daytona Cost? ---
-        800](#problem-010-cf-1878a-how-much-does-daytona-cost)
+    -   [CF 617A --- Elephant](#problem-001-cf-617a-elephant)
+    -   [CF 1409A --- Yet Another Two Integers
+        Problem](#problem-002-cf-1409a-yet-another-two-integers-problem)
+    -   [CF 1353A --- Most Unstable
+        Array](#problem-003-cf-1353a-most-unstable-array)
+    -   [CF 1476A --- K-divisible
+        Sum](#problem-004-cf-1476a-k-divisible-sum)
+    -   [CF 151A --- Soft Drinking](#problem-005-cf-151a-soft-drinking)
+    -   [CF 996A --- Hit the
+        Lottery](#problem-006-cf-996a-hit-the-lottery)
+    -   [CF 1669A --- Division?](#problem-007-cf-1669a-division)
+    -   [CF 1742A --- Sum](#problem-008-cf-1742a-sum)
+    -   [CF 1850A --- To My
+        Critics](#problem-009-cf-1850a-to-my-critics)
+    -   [CF 1878A --- How Much Does Daytona
+        Cost?](#problem-010-cf-1878a-how-much-does-daytona-cost)
 -   [Pattern 2 --- Algebra / Equation
     Formation](#pattern-2-algebra-equation-formation)
-    -   [CF 734A --- Anton and Danik ---
-        800](#problem-011-cf-734a-anton-and-danik)
-    -   [CF 677A --- Vanya and Fence ---
-        800](#problem-012-cf-677a-vanya-and-fence)
-    -   [CF 71A --- Way Too Long Words ---
-        800](#problem-013-cf-71a-way-too-long-words)
-    -   [CF 791A --- Bear and Big Brother ---
-        800](#problem-014-cf-791a-bear-and-big-brother)
-    -   [CF 50A --- Domino piling ---
-        800](#problem-015-cf-50a-domino-piling)
-    -   [CF 231A --- Team --- 800](#problem-016-cf-231a-team)
-    -   [CF 200B --- Drinks --- 800](#problem-017-cf-200b-drinks)
-    -   [CF 318A --- Even Odds --- 900](#problem-018-cf-318a-even-odds)
-    -   [CF 486A --- Calculating Function ---
-        800](#problem-019-cf-486a-calculating-function)
-    -   [CF 1399A --- Remove Smallest ---
-        800](#problem-020-cf-1399a-remove-smallest)
+    -   [CF 734A --- Anton and
+        Danik](#problem-011-cf-734a-anton-and-danik)
+    -   [CF 677A --- Vanya and
+        Fence](#problem-012-cf-677a-vanya-and-fence)
+    -   [CF 71A --- Way Too Long
+        Words](#problem-013-cf-71a-way-too-long-words)
+    -   [CF 791A --- Bear and Big
+        Brother](#problem-014-cf-791a-bear-and-big-brother)
+    -   [CF 50A --- Domino piling](#problem-015-cf-50a-domino-piling)
+    -   [CF 231A --- Team](#problem-016-cf-231a-team)
+    -   [CF 200B --- Drinks](#problem-017-cf-200b-drinks)
+    -   [CF 318A --- Even Odds](#problem-018-cf-318a-even-odds)
+    -   [CF 486A --- Calculating
+        Function](#problem-019-cf-486a-calculating-function)
+    -   [CF 1399A --- Remove
+        Smallest](#problem-020-cf-1399a-remove-smallest)
 -   [Pattern 3 --- Bounds / Inequalities /
     Min-Max](#pattern-3-bounds-inequalities-min-max)
-    -   [CF 1690A --- Print a Pedestal ---
-        800](#problem-021-cf-1690a-print-a-pedestal)
-    -   [CF 1676A --- Lucky? --- 800](#problem-022-cf-1676a-lucky)
-    -   [CF 1742B --- Increasing ---
-        800](#problem-023-cf-1742b-increasing)
-    -   [CF 1791A --- Codeforces Checking ---
-        800](#problem-024-cf-1791a-codeforces-checking)
-    -   [CF 1829A --- Love Story ---
-        800](#problem-025-cf-1829a-love-story)
-    -   [CF 1873A --- Short Sort ---
-        800](#problem-026-cf-1873a-short-sort)
-    -   [CF 1729A --- Two Elevators ---
-        800](#problem-027-cf-1729a-two-elevators)
-    -   [CF 1805A --- We Need the Zero ---
-        900](#problem-028-cf-1805a-we-need-the-zero)
-    -   [CF 1858A --- Buttons --- 800](#problem-029-cf-1858a-buttons)
-    -   [CF 1899A --- Game with Integers ---
-        800](#problem-030-cf-1899a-game-with-integers)
+    -   [CF 1690A --- Print a
+        Pedestal](#problem-021-cf-1690a-print-a-pedestal)
+    -   [CF 1676A --- Lucky?](#problem-022-cf-1676a-lucky)
+    -   [CF 1742B --- Increasing](#problem-023-cf-1742b-increasing)
+    -   [CF 1791A --- Codeforces
+        Checking](#problem-024-cf-1791a-codeforces-checking)
+    -   [CF 1829A --- Love Story](#problem-025-cf-1829a-love-story)
+    -   [CF 1873A --- Short Sort](#problem-026-cf-1873a-short-sort)
+    -   [CF 1729A --- Two
+        Elevators](#problem-027-cf-1729a-two-elevators)
+    -   [CF 1805A --- We Need the
+        Zero](#problem-028-cf-1805a-we-need-the-zero)
+    -   [CF 1858A --- Buttons](#problem-029-cf-1858a-buttons)
+    -   [CF 1899A --- Game with
+        Integers](#problem-030-cf-1899a-game-with-integers)
 -   [Pattern 4 --- Parity Modeling](#pattern-4-parity-modeling)
-    -   [CF 4A --- Watermelon --- 800](#problem-031-cf-4a-watermelon)
-    -   [CF 1296A --- Array with Odd Sum ---
-        800](#problem-032-cf-1296a-array-with-odd-sum)
-    -   [CF 1857A --- Array Coloring ---
-        800](#problem-033-cf-1857a-array-coloring)
-    -   [CF 1834A --- Unit Array ---
-        800](#problem-034-cf-1834a-unit-array)
-    -   [CF 1367B --- Even Array ---
-        800](#problem-035-cf-1367b-even-array)
-    -   [CF 1475A --- Odd Divisor ---
-        900](#problem-036-cf-1475a-odd-divisor)
-    -   [CF 1669C --- Odd/Even Increments ---
-        800](#problem-037-cf-1669c-oddeven-increments)
-    -   [CF 1624A --- Plus One on the Subset ---
-        800](#problem-038-cf-1624a-plus-one-on-the-subset)
-    -   [CF 1788A --- One and Two ---
-        800](#problem-039-cf-1788a-one-and-two)
-    -   [CF 1845A --- Forbidden Integer ---
-        800](#problem-040-cf-1845a-forbidden-integer)
+    -   [CF 4A --- Watermelon](#problem-031-cf-4a-watermelon)
+    -   [CF 1296A --- Array with Odd
+        Sum](#problem-032-cf-1296a-array-with-odd-sum)
+    -   [CF 1857A --- Array
+        Coloring](#problem-033-cf-1857a-array-coloring)
+    -   [CF 1834A --- Unit Array](#problem-034-cf-1834a-unit-array)
+    -   [CF 1367B --- Even Array](#problem-035-cf-1367b-even-array)
+    -   [CF 1475A --- Odd Divisor](#problem-036-cf-1475a-odd-divisor)
+    -   [CF 1669C --- Odd/Even
+        Increments](#problem-037-cf-1669c-oddeven-increments)
+    -   [CF 1624A --- Plus One on the
+        Subset](#problem-038-cf-1624a-plus-one-on-the-subset)
+    -   [CF 1788A --- One and Two](#problem-039-cf-1788a-one-and-two)
+    -   [CF 1845A --- Forbidden
+        Integer](#problem-040-cf-1845a-forbidden-integer)
 -   [Pattern 5 --- Divisibility / GCD /
     LCM](#pattern-5-divisibility-gcd-lcm)
-    -   [CF 1328A --- Divisibility Problem ---
-        800](#problem-041-cf-1328a-divisibility-problem)
-    -   [CF 1343A --- Candies --- 900](#problem-042-cf-1343a-candies)
-    -   [CF 1370A --- Maximum GCD ---
-        800](#problem-043-cf-1370a-maximum-gcd)
-    -   [CF 1829C --- Mr. Perfectly Fine ---
-        800](#problem-044-cf-1829c-mr-perfectly-fine)
-    -   [CF 1618A --- Polycarp and Sums of Subsequences ---
-        800](#problem-045-cf-1618a-polycarp-and-sums-of-subsequences)
-    -   [CF 160A --- Twins --- 900](#problem-046-cf-160a-twins)
-    -   [CF 1475B --- New Year's Number ---
-        900](#problem-047-cf-1475b-new-years-number)
-    -   [CF 1593A --- Elections ---
-        800](#problem-048-cf-1593a-elections)
-    -   [CF 1829B --- Blank Space ---
-        800](#problem-049-cf-1829b-blank-space)
-    -   [CF 1877A --- Goals of Victory ---
-        800](#problem-050-cf-1877a-goals-of-victory)
+    -   [CF 1328A --- Divisibility
+        Problem](#problem-041-cf-1328a-divisibility-problem)
+    -   [CF 1343A --- Candies](#problem-042-cf-1343a-candies)
+    -   [CF 1370A --- Maximum GCD](#problem-043-cf-1370a-maximum-gcd)
+    -   [CF 1829C --- Mr. Perfectly
+        Fine](#problem-044-cf-1829c-mr-perfectly-fine)
+    -   [CF 1618A --- Polycarp and Sums of
+        Subsequences](#problem-045-cf-1618a-polycarp-and-sums-of-subsequences)
+    -   [CF 160A --- Twins](#problem-046-cf-160a-twins)
+    -   [CF 1475B --- New Year's
+        Number](#problem-047-cf-1475b-new-years-number)
+    -   [CF 1593A --- Elections](#problem-048-cf-1593a-elections)
+    -   [CF 1829B --- Blank Space](#problem-049-cf-1829b-blank-space)
+    -   [CF 1877A --- Goals of
+        Victory](#problem-050-cf-1877a-goals-of-victory)
 -   [Pattern 6 --- Modulo / Cyclic
     Modeling](#pattern-6-modulo-cyclic-modeling)
-    -   [CF 116A --- Tram --- 800](#problem-051-cf-116a-tram)
-    -   [CF 266A --- Stones on the Table ---
-        800](#problem-052-cf-266a-stones-on-the-table)
-    -   [CF 228A --- Is your horseshoe on the other hoof? ---
-        800](#problem-053-cf-228a-is-your-horseshoe-on-the-other-hoof)
-    -   [CF 443A --- Anton and Letters ---
-        800](#problem-054-cf-443a-anton-and-letters)
-    -   [CF 59A --- Word --- 800](#problem-055-cf-59a-word)
-    -   [CF 236A --- Boy or Girl ---
-        800](#problem-056-cf-236a-boy-or-girl)
-    -   [CF 785A --- Anton and Polyhedrons ---
-        800](#problem-057-cf-785a-anton-and-polyhedrons)
-    -   [CF 703A --- Mishka and Game ---
-        800](#problem-058-cf-703a-mishka-and-game)
-    -   [CF 734B --- Anton and Digits ---
-        800](#problem-059-cf-734b-anton-and-digits)
-    -   [CF 1097A --- Gennady the Card Game ---
-        800](#problem-060-cf-1097a-gennady-the-card-game)
+    -   [CF 116A --- Tram](#problem-051-cf-116a-tram)
+    -   [CF 266A --- Stones on the
+        Table](#problem-052-cf-266a-stones-on-the-table)
+    -   [CF 228A --- Is your horseshoe on the other
+        hoof?](#problem-053-cf-228a-is-your-horseshoe-on-the-other-hoof)
+    -   [CF 443A --- Anton and
+        Letters](#problem-054-cf-443a-anton-and-letters)
+    -   [CF 59A --- Word](#problem-055-cf-59a-word)
+    -   [CF 236A --- Boy or Girl](#problem-056-cf-236a-boy-or-girl)
+    -   [CF 785A --- Anton and
+        Polyhedrons](#problem-057-cf-785a-anton-and-polyhedrons)
+    -   [CF 703A --- Mishka and
+        Game](#problem-058-cf-703a-mishka-and-game)
+    -   [CF 734B --- Anton and
+        Digits](#problem-059-cf-734b-anton-and-digits)
+    -   [CF 1097A --- Gennady the Card
+        Game](#problem-060-cf-1097a-gennady-the-card-game)
 -   [Pattern 7 --- Counting / Frequency /
     Pairs](#pattern-7-counting-frequency-pairs)
-    -   [CF 1520D --- Same Differences ---
-        1200](#problem-061-cf-1520d-same-differences)
-    -   [CF 1538C --- Challenging Cliffs / Number of Pairs ---
-        1300](#problem-062-cf-1538c-challenging-cliffs-number-of-pairs)
-    -   [CF 1669B --- Triple --- 800](#problem-063-cf-1669b-triple)
-    -   [CF 1742C --- Stripes --- 800](#problem-064-cf-1742c-stripes)
-    -   [CF 1791B --- Following Directions ---
-        800](#problem-065-cf-1791b-following-directions)
-    -   [CF 1703B --- ICPC Balloons ---
-        800](#problem-066-cf-1703b-icpc-balloons)
-    -   [CF 1722A --- Spell Check ---
-        800](#problem-067-cf-1722a-spell-check)
-    -   [CF 1791C --- Prepend and Append ---
-        800](#problem-068-cf-1791c-prepend-and-append)
-    -   [CF 1829D --- Gold Rush ---
-        1000](#problem-069-cf-1829d-gold-rush)
-    -   [CF 1878B --- Aleksa and Stack ---
-        800](#problem-070-cf-1878b-aleksa-and-stack)
+    -   [CF 1520D --- Same
+        Differences](#problem-061-cf-1520d-same-differences)
+    -   [CF 1538C --- Challenging Cliffs / Number of
+        Pairs](#problem-062-cf-1538c-challenging-cliffs-number-of-pairs)
+    -   [CF 1669B --- Triple](#problem-063-cf-1669b-triple)
+    -   [CF 1742C --- Stripes](#problem-064-cf-1742c-stripes)
+    -   [CF 1791B --- Following
+        Directions](#problem-065-cf-1791b-following-directions)
+    -   [CF 1703B --- ICPC
+        Balloons](#problem-066-cf-1703b-icpc-balloons)
+    -   [CF 1722A --- Spell Check](#problem-067-cf-1722a-spell-check)
+    -   [CF 1791C --- Prepend and
+        Append](#problem-068-cf-1791c-prepend-and-append)
+    -   [CF 1829D --- Gold Rush](#problem-069-cf-1829d-gold-rush)
+    -   [CF 1878B --- Aleksa and
+        Stack](#problem-070-cf-1878b-aleksa-and-stack)
 -   [Pattern 8 --- Operation → Delta →
     Invariant](#pattern-8-operation-delta-invariant)
-    -   [CF 1538B --- Friends and Candies ---
-        800](#problem-071-cf-1538b-friends-and-candies)
-    -   [CF 1855A --- Dalton the Teacher ---
-        800](#problem-072-cf-1855a-dalton-the-teacher)
-    -   [CF 1838A --- Blackboard List ---
-        800](#problem-073-cf-1838a-blackboard-list)
-    -   [CF 1862B --- Sequence Game ---
-        800](#problem-074-cf-1862b-sequence-game)
-    -   [CF 1798A --- Showstopper ---
-        800](#problem-075-cf-1798a-showstopper)
-    -   [CF 660A --- Co-prime Array ---
-        900](#problem-076-cf-660a-co-prime-array)
-    -   [CF 1367A --- Short Substrings ---
-        800](#problem-077-cf-1367a-short-substrings)
-    -   [CF 1374A --- Required Remainder ---
-        800](#problem-078-cf-1374a-required-remainder)
-    -   [CF 1551A --- Polycarp and Coins ---
-        800](#problem-079-cf-1551a-polycarp-and-coins)
-    -   [CF 1818A --- Politics --- 800](#problem-080-cf-1818a-politics)
+    -   [CF 1538B --- Friends and
+        Candies](#problem-071-cf-1538b-friends-and-candies)
+    -   [CF 1855A --- Dalton the
+        Teacher](#problem-072-cf-1855a-dalton-the-teacher)
+    -   [CF 1838A --- Blackboard
+        List](#problem-073-cf-1838a-blackboard-list)
+    -   [CF 1862B --- Sequence
+        Game](#problem-074-cf-1862b-sequence-game)
+    -   [CF 1798A --- Showstopper](#problem-075-cf-1798a-showstopper)
+    -   [CF 660A --- Co-prime
+        Array](#problem-076-cf-660a-co-prime-array)
+    -   [CF 1367A --- Short
+        Substrings](#problem-077-cf-1367a-short-substrings)
+    -   [CF 1374A --- Required
+        Remainder](#problem-078-cf-1374a-required-remainder)
+    -   [CF 1551A --- Polycarp and
+        Coins](#problem-079-cf-1551a-polycarp-and-coins)
+    -   [CF 1818A --- Politics](#problem-080-cf-1818a-politics)
 -   [Pattern 9 --- Sorting / Coordinate / Distance
     Modeling](#pattern-9-sorting-coordinate-distance-modeling)
-    -   [CF 160A --- Twins --- 900](#problem-081-cf-160a-twins)
-    -   [CF 1399A --- Remove Smallest ---
-        800](#problem-082-cf-1399a-remove-smallest)
-    -   [CF 1760A --- Medium Number ---
-        800](#problem-083-cf-1760a-medium-number)
-    -   [CF 1538A --- Stone Game ---
-        800](#problem-084-cf-1538a-stone-game)
-    -   [CF 1729A --- Two Elevators ---
-        800](#problem-085-cf-1729a-two-elevators)
-    -   [CF 1593B --- Make it Divisible by 25 ---
-        900](#problem-086-cf-1593b-make-it-divisible-by-25)
-    -   [CF 1742F --- Smaller --- 1200](#problem-087-cf-1742f-smaller)
-    -   [CF 1831A --- Twin Permutations ---
-        800](#problem-088-cf-1831a-twin-permutations)
-    -   [CF 1900A --- Cover in Water ---
-        800](#problem-089-cf-1900a-cover-in-water)
-    -   [CF 1873B --- Good Kid --- 800](#problem-090-cf-1873b-good-kid)
+    -   [CF 160A --- Twins](#problem-081-cf-160a-twins)
+    -   [CF 1399A --- Remove
+        Smallest](#problem-082-cf-1399a-remove-smallest)
+    -   [CF 1760A --- Medium
+        Number](#problem-083-cf-1760a-medium-number)
+    -   [CF 1538A --- Stone Game](#problem-084-cf-1538a-stone-game)
+    -   [CF 1729A --- Two
+        Elevators](#problem-085-cf-1729a-two-elevators)
+    -   [CF 1593B --- Make it Divisible by
+        25](#problem-086-cf-1593b-make-it-divisible-by-25)
+    -   [CF 1742F --- Smaller](#problem-087-cf-1742f-smaller)
+    -   [CF 1831A --- Twin
+        Permutations](#problem-088-cf-1831a-twin-permutations)
+    -   [CF 1900A --- Cover in
+        Water](#problem-089-cf-1900a-cover-in-water)
+    -   [CF 1873B --- Good Kid](#problem-090-cf-1873b-good-kid)
 -   [Pattern 10 --- Prefix / Running-State
     Modeling](#pattern-10-prefix-running-state-modeling)
-    -   [CF 116A --- Tram --- 800](#problem-091-cf-116a-tram)
-    -   [CF 363B --- Fence --- 1100](#problem-092-cf-363b-fence)
+    -   [CF 116A --- Tram](#problem-091-cf-116a-tram)
+    -   [CF 363B --- Fence](#problem-092-cf-363b-fence)
     -   [CF 276C --- Little Girl and Problem on Trees / Little Girl and
-        Maximum Sum ---
-        1400](#problem-093-cf-276c-little-girl-and-problem-on-trees-little-girl-and-maximum-sum)
-    -   [CF 433B --- Kuriyama Mirai's Stones ---
-        1200](#problem-094-cf-433b-kuriyama-mirais-stones)
-    -   [CF 313B --- Ilya and Queries ---
-        1100](#problem-095-cf-313b-ilya-and-queries)
-    -   [CF 327A --- Flipping Game ---
-        1200](#problem-096-cf-327a-flipping-game)
-    -   [CF 580A --- Kefa and First Steps ---
-        900](#problem-097-cf-580a-kefa-and-first-steps)
-    -   [CF 702A --- Maximum Increase ---
-        800](#problem-098-cf-702a-maximum-increase)
-    -   [CF 1829B --- Blank Space ---
-        800](#problem-099-cf-1829b-blank-space)
-    -   [CF 1669F --- Eating Candies ---
-        1100](#problem-100-cf-1669f-eating-candies)
+        Maximum
+        Sum](#problem-093-cf-276c-little-girl-and-problem-on-trees-little-girl-and-maximum-sum)
+    -   [CF 433B --- Kuriyama Mirai's
+        Stones](#problem-094-cf-433b-kuriyama-mirais-stones)
+    -   [CF 313B --- Ilya and
+        Queries](#problem-095-cf-313b-ilya-and-queries)
+    -   [CF 327A --- Flipping Game](#problem-096-cf-327a-flipping-game)
+    -   [CF 580A --- Kefa and First
+        Steps](#problem-097-cf-580a-kefa-and-first-steps)
+    -   [CF 702A --- Maximum
+        Increase](#problem-098-cf-702a-maximum-increase)
+    -   [CF 1829B --- Blank Space](#problem-099-cf-1829b-blank-space)
+    -   [CF 1669F --- Eating
+        Candies](#problem-100-cf-1669f-eating-candies)
 -   [Pattern 11 --- Constructive / Reachability
     Modeling](#pattern-11-constructive-reachability-modeling)
-    -   [CF 1690A --- Print a Pedestal ---
-        800](#problem-101-cf-1690a-print-a-pedestal)
-    -   [CF 1845A --- Forbidden Integer ---
-        800](#problem-102-cf-1845a-forbidden-integer)
-    -   [CF 1878B --- Aleksa and Stack ---
-        800](#problem-103-cf-1878b-aleksa-and-stack)
-    -   [CF 1741A --- Compare T-Shirt Sizes ---
-        800](#problem-104-cf-1741a-compare-t-shirt-sizes)
-    -   [CF 1805B --- We Need the Zero / The String Has a Target ---
-        800](#problem-105-cf-1805b-we-need-the-zero-the-string-has-a-target)
-    -   [CF 1833B --- Restore the Weather ---
-        1000](#problem-106-cf-1833b-restore-the-weather)
-    -   [CF 1793C --- Dora and Search ---
-        1200](#problem-107-cf-1793c-dora-and-search)
-    -   [CF 1881A --- Don't Try to Count ---
-        800](#problem-108-cf-1881a-dont-try-to-count)
-    -   [CF 1858A --- Buttons --- 800](#problem-109-cf-1858a-buttons)
-    -   [CF 1899A --- Game with Integers ---
-        800](#problem-110-cf-1899a-game-with-integers)
+    -   [CF 1690A --- Print a
+        Pedestal](#problem-101-cf-1690a-print-a-pedestal)
+    -   [CF 1845A --- Forbidden
+        Integer](#problem-102-cf-1845a-forbidden-integer)
+    -   [CF 1878B --- Aleksa and
+        Stack](#problem-103-cf-1878b-aleksa-and-stack)
+    -   [CF 1741A --- Compare T-Shirt
+        Sizes](#problem-104-cf-1741a-compare-t-shirt-sizes)
+    -   [CF 1805B --- We Need the Zero / The String Has a
+        Target](#problem-105-cf-1805b-we-need-the-zero-the-string-has-a-target)
+    -   [CF 1833B --- Restore the
+        Weather](#problem-106-cf-1833b-restore-the-weather)
+    -   [CF 1793C --- Dora and
+        Search](#problem-107-cf-1793c-dora-and-search)
+    -   [CF 1881A --- Don't Try to
+        Count](#problem-108-cf-1881a-dont-try-to-count)
+    -   [CF 1858A --- Buttons](#problem-109-cf-1858a-buttons)
+    -   [CF 1899A --- Game with
+        Integers](#problem-110-cf-1899a-game-with-integers)
 -   [Pattern 12 --- Bitwise / XOR
     Modeling](#pattern-12-bitwise-xor-modeling)
-    -   [CF 1805A --- We Need the Zero ---
-        900](#problem-111-cf-1805a-we-need-the-zero)
-
-    -   [CF 1872A --- Two Vessels ---
-        800](#problem-112-cf-1872a-two-vessels)
-
-    -   [CF 1703A --- YES or YES? ---
-        800](#problem-113-cf-1703a-yes-or-yes)
-
-    -   [CF 1624A --- Plus One on the Subset ---
-        800](#problem-114-cf-1624a-plus-one-on-the-subset)
-
-    -   [CF 1220A --- Cards --- 900](#problem-115-cf-1220a-cards)
-
-    -   [CF 1362A --- Johnny and Ancient Computer ---
-        900](#problem-116-cf-1362a-johnny-and-ancient-computer)
-
-    -   [CF 1095A --- Repeating Cipher ---
-        800](#problem-117-cf-1095a-repeating-cipher)
-
-    -   [CF 1324A --- Yet Another Tetris Problem ---
-        800](#problem-118-cf-1324a-yet-another-tetris-problem)
-
-    -   [CF 1462A --- Favorite Sequence ---
-        800](#problem-119-cf-1462a-favorite-sequence)
-
-    -   ## \[CF 1619A --- Polycarp and Sums of Subsequences / Square String?
-
-        800\](#problem-120-cf-1619a-polycarp-and-sums-of-subsequences-square-string)
+    -   [CF 1805A --- We Need the
+        Zero](#problem-111-cf-1805a-we-need-the-zero)
+    -   [CF 1872A --- Two Vessels](#problem-112-cf-1872a-two-vessels)
+    -   [CF 1703A --- YES or YES?](#problem-113-cf-1703a-yes-or-yes)
+    -   [CF 1624A --- Plus One on the
+        Subset](#problem-114-cf-1624a-plus-one-on-the-subset)
+    -   [CF 1220A --- Cards](#problem-115-cf-1220a-cards)
+    -   [CF 1362A --- Johnny and Ancient
+        Computer](#problem-116-cf-1362a-johnny-and-ancient-computer)
+    -   [CF 1095A --- Repeating
+        Cipher](#problem-117-cf-1095a-repeating-cipher)
+    -   [CF 1324A --- Yet Another Tetris
+        Problem](#problem-118-cf-1324a-yet-another-tetris-problem)
+    -   [CF 1462A --- Favorite
+        Sequence](#problem-119-cf-1462a-favorite-sequence)
+    -   [CF 1619A --- Polycarp and Sums of Subsequences / Square
+        String?](#problem-120-cf-1619a-polycarp-and-sums-of-subsequences-square-string)
 -   [Pattern 13 --- Mixed Blind
     Decoding](#pattern-13-mixed-blind-decoding)
-    -   [CF 1538C --- Challenging Cliffs / Number of Pairs ---
-        1300](#problem-121-cf-1538c-challenging-cliffs-number-of-pairs)
-    -   [CF 1475B --- New Year's Number ---
-        900](#problem-122-cf-1475b-new-years-number)
-    -   [CF 1374A --- Required Remainder ---
-        800](#problem-123-cf-1374a-required-remainder)
-    -   [CF 1551A --- Polycarp and Coins ---
-        800](#problem-124-cf-1551a-polycarp-and-coins)
-    -   [CF 1593B --- Make it Divisible by 25 ---
-        900](#problem-125-cf-1593b-make-it-divisible-by-25)
-    -   [CF 1669F --- Eating Candies ---
-        1100](#problem-126-cf-1669f-eating-candies)
-    -   [CF 1793C --- Dora and Search ---
-        1200](#problem-127-cf-1793c-dora-and-search)
-    -   [CF 327A --- Flipping Game ---
-        1200](#problem-128-cf-327a-flipping-game)
-    -   [CF 1520D --- Same Differences ---
-        1200](#problem-129-cf-1520d-same-differences)
-    -   [CF 276C --- Little Girl and Maximum Sum ---
-        1400](#problem-130-cf-276c-little-girl-and-maximum-sum)
+    -   [CF 1538C --- Challenging Cliffs / Number of
+        Pairs](#problem-121-cf-1538c-challenging-cliffs-number-of-pairs)
+    -   [CF 1475B --- New Year's
+        Number](#problem-122-cf-1475b-new-years-number)
+    -   [CF 1374A --- Required
+        Remainder](#problem-123-cf-1374a-required-remainder)
+    -   [CF 1551A --- Polycarp and
+        Coins](#problem-124-cf-1551a-polycarp-and-coins)
+    -   [CF 1593B --- Make it Divisible by
+        25](#problem-125-cf-1593b-make-it-divisible-by-25)
+    -   [CF 1669F --- Eating
+        Candies](#problem-126-cf-1669f-eating-candies)
+    -   [CF 1793C --- Dora and
+        Search](#problem-127-cf-1793c-dora-and-search)
+    -   [CF 327A --- Flipping Game](#problem-128-cf-327a-flipping-game)
+    -   [CF 1520D --- Same
+        Differences](#problem-129-cf-1520d-same-differences)
+    -   [CF 276C --- Little Girl and Maximum
+        Sum](#problem-130-cf-276c-little-girl-and-maximum-sum)
+
+## How to Use Each Problem
+
+Read the official problem first. Then follow exactly this chain:
+
+``` text
+FULL STORY → REMOVE NOUNS → EXTRACT VARIABLES → FORMULA → DERIVATION → DRY RUN
+```
 
 # Pattern 1 --- Minimum Operations / Ceil Division
 
 ## Problem 001 --- CF 617A --- Elephant
 
-**Problem Link:** [CF 617A ---
-Elephant](https://codeforces.com/problemset/problem/617/A)\
+**Problem:** [CF 617A --- Elephant]()\
 **Topic / Rating:** Arithmetic / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives x. The task is to minimum moves to reach x with
++1..+5.
+
+**What must we output?** minimum moves to reach x with +1..+5
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-x
-
-ACTUAL QUESTION:
-minimum moves to reach x with +1..+5
+Story-specific names → discard them. Keep only: x. Mathematical state → D=x, K=5.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-x
-
-Useful mathematical state:
-D=x, K=5
-
-Unknown / target:
-minimum moves to reach x with +1..+5
+Given: x. Useful state: D=x, K=5. Unknown: minimum moves to reach x with +1..+5.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 5m >= x
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+5m >= x
+        ↓
 ceil(x/5)
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `5m >= x`. Then simplify/rearrange it
+to `ceil(x/5)`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-D=x, K=5
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 5m >= x
-      ↓
+  ↓ simplify
 ceil(x/5)
-      ↓
-(x+4)/5
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `5m >= x` → **ceil(x/5)**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `5m >= x`, evaluate it step by
+step, and verify the transformed condition `ceil(x/5)`. The final
+value/condition gives minimum moves to reach x with +1..+5.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Example: `x = 17`
-
-``` text
-Start = 0
-Target = 17
-Maximum per move = 5
-
-Need:
-5m >= 17
-
-m >= 17/5
-m >= 3.4
-
-m is integer
-→ m = 4
-
-Check:
-0 → 5 → 10 → 15 → 17
-
-4 moves are enough.
-3 moves are not enough because 3×5 = 15 < 17.
-
-Answer = 4
-```
 
 ## Problem 002 --- CF 1409A --- Yet Another Two Integers Problem
 
-**Problem Link:** [CF 1409A --- Yet Another Two Integers
-Problem](https://codeforces.com/problemset/problem/1409/A)\
+**Problem:** [CF 1409A --- Yet Another Two Integers Problem]()\
 **Topic / Rating:** Arithmetic / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b. The task is to minimum operations to make a=b
+using ±1..10.
+
+**What must we output?** minimum operations to make a=b using ±1..10
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b
-
-ACTUAL QUESTION:
-minimum operations to make a=b using ±1..10
+Story-specific names → discard them. Keep only: a,b. Mathematical state → D=|a-b|, K=10.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b
-
-Useful mathematical state:
-D=|a-b|, K=10
-
-Unknown / target:
-minimum operations to make a=b using ±1..10
+Given: a,b. Useful state: D=|a-b|, K=10. Unknown: minimum operations to make a=b using ±1..10.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 10m >= |a-b|
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+10m >= |a-b|
+        ↓
 ceil(|a-b|/10)
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `10m >= |a-b|`. Then simplify/rearrange
+it to `ceil(|a-b|/10)`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-D=|a-b|, K=10
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 10m >= |a-b|
-      ↓
+  ↓ simplify
 ceil(|a-b|/10)
-      ↓
-(abs(a-b)+9)/10
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `10m >= |a-b|` → **ceil(\|a-b\|/10)**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `10m >= |a-b|`, evaluate it
+step by step, and verify the transformed condition `ceil(|a-b|/10)`. The
+final value/condition gives minimum operations to make a=b using ±1..10.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Example: `a = 26, b = 9`
-
-``` text
-Required change:
-D = |26 - 9| = 17
-
-Maximum correction per operation = 10
-
-Need:
-10m >= 17
-
-m >= 1.7
-→ m = 2
-
-Check:
-26 → 16   (-10)
-16 → 9    (-7)
-
-Answer = 2
-```
 
 ## Problem 003 --- CF 1353A --- Most Unstable Array
 
-**Problem Link:** [CF 1353A --- Most Unstable
-Array](https://codeforces.com/problemset/problem/1353/A)\
+**Problem:** [CF 1353A --- Most Unstable Array]()\
 **Topic / Rating:** Formula / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,m. The task is to maximize sum of adjacent
+absolute differences under bounds.
+
+**What must we output?** maximize sum of adjacent absolute differences
+under bounds
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,m
-
-ACTUAL QUESTION:
-maximize sum of adjacent absolute differences under bounds
+Story-specific names → discard them. Keep only: n,m. Mathematical state → endpoints/bounds matter.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,m
-
-Useful mathematical state:
-endpoints/bounds matter
-
-Unknown / target:
-maximize sum of adjacent absolute differences under bounds
+Given: n,m. Useful state: endpoints/bounds matter. Unknown: maximize sum of adjacent absolute differences under bounds.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 each transition <= m
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+each transition <= m
+        ↓
 construct extremal arrangement
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `each transition <= m`. Then
+simplify/rearrange it to `construct extremal arrangement`. This is the
+point where the story disappears and the solution follows from the
+transformed condition.
 
 ``` text
-endpoints/bounds matter
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 each transition <= m
-      ↓
+  ↓ simplify
 construct extremal arrangement
-      ↓
-handle n=1,2,>=3
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `each transition <= m` → **construct extremal
-arrangement**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `each transition <= m`,
+evaluate it step by step, and verify the transformed condition
+`construct extremal arrangement`. The final value/condition gives
+maximize sum of adjacent absolute differences under bounds.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 004 --- CF 1476A --- K-divisible Sum
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-each transition <= m
-
-     ↓ evaluate / simplify
-
-construct extremal arrangement
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 004
---- CF 1476A --- K-divisible Sum
-
-**Problem Link:** [CF 1476A --- K-divisible
-Sum](https://codeforces.com/problemset/problem/1476/A)\
+**Problem:** [CF 1476A --- K-divisible Sum]()\
 **Topic / Rating:** Bounds / 1000
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,k. The task is to minimum possible maximum element
+while sum is divisible by k.
+
+**What must we output?** minimum possible maximum element while sum is
+divisible by k
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,k
-
-ACTUAL QUESTION:
-minimum possible maximum element while sum is divisible by k
+Story-specific names → discard them. Keep only: n,k. Mathematical state → total S >= n and S multiple of k.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,k
-
-Useful mathematical state:
-total S >= n and S multiple of k
-
-Unknown / target:
-minimum possible maximum element while sum is divisible by k
+Given: n,k. Useful state: total S >= n and S multiple of k. Unknown: minimum possible maximum element while sum is divisible by k.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 S = smallest multiple of k >= n
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+S = smallest multiple of k >= n
+        ↓
 ceil(S/n)
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `S = smallest multiple of k >= n`. Then
+simplify/rearrange it to `ceil(S/n)`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-total S >= n and S multiple of k
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 S = smallest multiple of k >= n
-      ↓
+  ↓ simplify
 ceil(S/n)
-      ↓
-S=((n+k-1)/k)*k
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `S = smallest multiple of k >= n` → **ceil(S/n)**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`S = smallest multiple of k >= n`, evaluate it step by step, and verify
+the transformed condition `ceil(S/n)`. The final value/condition gives
+minimum possible maximum element while sum is divisible by k.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Example: `n = 5, k = 7`
-
-``` text
-Need:
-S >= 5
-S % 7 = 0
-
-Multiples of 7:
-7, 14, 21, ...
-
-Smallest valid S = 7
-
-Distribute total 7 over 5 positive elements.
-
-minimum possible maximum
-= ceil(7/5)
-= 2
-
-Answer = 2
-```
 
 ## Problem 005 --- CF 151A --- Soft Drinking
 
-**Problem Link:** [CF 151A --- Soft
-Drinking](https://codeforces.com/problemset/problem/151/A)\
+**Problem:** [CF 151A --- Soft Drinking]()\
 **Topic / Rating:** Capacity / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,k,l,c,d,p,nl,np. The task is to number of toasts
+per friend.
+
+**What must we output?** number of toasts per friend
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,k,l,c,d,p,nl,np
-
-ACTUAL QUESTION:
-number of toasts per friend
+Story-specific names → discard them. Keep only: n,k,l,c,d,p,nl,np. Mathematical state → three resources.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,k,l,c,d,p,nl,np
-
-Useful mathematical state:
-three resources
-
-Unknown / target:
-number of toasts per friend
+Given: n,k,l,c,d,p,nl,np. Useful state: three resources. Unknown: number of toasts per friend.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 min(drink/nl,limes,salt/np)/n
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+min(drink/nl,limes,salt/np)/n
+        ↓
 limiting resource
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `min(drink/nl,limes,salt/np)/n`. Then
+simplify/rearrange it to `limiting resource`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-three resources
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 min(drink/nl,limes,salt/np)/n
-      ↓
+  ↓ simplify
 limiting resource
-      ↓
-take minimum capacity
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `min(drink/nl,limes,salt/np)/n` → **limiting
-resource**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`min(drink/nl,limes,salt/np)/n`, evaluate it step by step, and verify
+the transformed condition `limiting resource`. The final value/condition
+gives number of toasts per friend.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Example with three resources:
-
-``` text
-3 friends
-
-drink capacity = 9 toasts
-lime capacity  = 6 toasts
-salt capacity  = 12 toasts
-
-usable toasts
-= min(9, 6, 12)
-= 6
-
-per friend
-= 6 / 3
-= 2
-
-Answer = 2
-
-The smallest resource capacity controls the answer.
-```
 
 ## Problem 006 --- CF 996A --- Hit the Lottery
 
-**Problem Link:** [CF 996A --- Hit the
-Lottery](https://codeforces.com/problemset/problem/996/A)\
+**Problem:** [CF 996A --- Hit the Lottery]()\
 **Topic / Rating:** Greedy/Division / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to minimum notes using 100,20,10,5,1.
+
+**What must we output?** minimum notes using 100,20,10,5,1
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-minimum notes using 100,20,10,5,1
+Story-specific names → discard them. Keep only: n. Mathematical state → largest denomination dominates.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-largest denomination dominates
-
-Unknown / target:
-minimum notes using 100,20,10,5,1
+Given: n. Useful state: largest denomination dominates. Unknown: minimum notes using 100,20,10,5,1.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 q=n/d
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+q=n/d
+        ↓
 sum quotients
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `q=n/d`. Then simplify/rearrange it to
+`sum quotients`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-largest denomination dominates
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 q=n/d
-      ↓
+  ↓ simplify
 sum quotients
-      ↓
-repeated quotient/remainder
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `q=n/d` → **sum quotients**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `q=n/d`, evaluate it step by
+step, and verify the transformed condition `sum quotients`. The final
+value/condition gives minimum notes using 100,20,10,5,1.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 007 --- CF 1669A --- Division?
 
-Example: `n = 125`
-
-``` text
-125 / 100 = 1 note
-remainder = 25
-
-25 / 20 = 1 note
-remainder = 5
-
-5 / 5 = 1 note
-remainder = 0
-
-total = 3 notes
-```
-
-The quotient tells how many of the current largest denomination to take;
-the remainder becomes the next state. \## Problem 007 --- CF 1669A ---
-Division?
-
-**Problem Link:** [CF 1669A ---
-Division?](https://codeforces.com/problemset/problem/1669/A)\
+**Problem:** [CF 1669A --- Division?]()\
 **Topic / Rating:** Inequality / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives rating. The task is to classify rating into
+interval.
+
+**What must we output?** classify rating into interval
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-rating
-
-ACTUAL QUESTION:
-classify rating into interval
+Story-specific names → discard them. Keep only: rating. Mathematical state → numeric boundaries.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-rating
-
-Useful mathematical state:
-numeric boundaries
-
-Unknown / target:
-classify rating into interval
+Given: rating. Useful state: numeric boundaries. Unknown: classify rating into interval.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 compare rating with cutoffs
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+compare rating with cutoffs
+        ↓
 interval classification
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `compare rating with cutoffs`. Then
+simplify/rearrange it to `interval classification`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-numeric boundaries
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 compare rating with cutoffs
-      ↓
+  ↓ simplify
 interval classification
-      ↓
-if/else
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `compare rating with cutoffs` → **interval
-classification**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `compare rating with cutoffs`,
+evaluate it step by step, and verify the transformed condition
+`interval classification`. The final value/condition gives classify
+rating into interval.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 008 --- CF 1742A --- Sum
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-compare rating with cutoffs
-
-     ↓ evaluate / simplify
-
-interval classification
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 008
---- CF 1742A --- Sum
-
-**Problem Link:** [CF 1742A ---
-Sum](https://codeforces.com/problemset/problem/1742/A)\
+**Problem:** [CF 1742A --- Sum]()\
 **Topic / Rating:** Equation / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b,c. The task is to whether one number equals sum
+of other two.
+
+**What must we output?** whether one number equals sum of other two
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b,c
-
-ACTUAL QUESTION:
-whether one number equals sum of other two
+Story-specific names → discard them. Keep only: a,b,c. Mathematical state → test 3 equations.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b,c
-
-Useful mathematical state:
-test 3 equations
-
-Unknown / target:
-whether one number equals sum of other two
+Given: a,b,c. Useful state: test 3 equations. Unknown: whether one number equals sum of other two.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 a+b=c etc.
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+a+b=c etc.
+        ↓
 direct feasibility
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `a+b=c etc.`. Then simplify/rearrange
+it to `direct feasibility`. This is the point where the story disappears
+and the solution follows from the transformed condition.
 
 ``` text
-test 3 equations
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 a+b=c etc.
-      ↓
+  ↓ simplify
 direct feasibility
-      ↓
-three checks
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `a+b=c etc.` → **direct feasibility**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `a+b=c etc.`, evaluate it step
+by step, and verify the transformed condition `direct feasibility`. The
+final value/condition gives whether one number equals sum of other two.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 009 --- CF 1850A --- To My Critics
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-a+b=c etc.
-
-     ↓ evaluate / simplify
-
-direct feasibility
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 009
---- CF 1850A --- To My Critics
-
-**Problem Link:** [CF 1850A --- To My
-Critics](https://codeforces.com/problemset/problem/1850/A)\
+**Problem:** [CF 1850A --- To My Critics]()\
 **Topic / Rating:** Bounds / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b,c. The task is to whether any pair sum \>=10.
+
+**What must we output?** whether any pair sum \>=10
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b,c
-
-ACTUAL QUESTION:
-whether any pair sum >=10
+Story-specific names → discard them. Keep only: a,b,c. Mathematical state → only 3 pairs.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b,c
-
-Useful mathematical state:
-only 3 pairs
-
-Unknown / target:
-whether any pair sum >=10
+Given: a,b,c. Useful state: only 3 pairs. Unknown: whether any pair sum >=10.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 max pair sum
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+max pair sum
+        ↓
 sort or direct checks
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `max pair sum`. Then simplify/rearrange
+it to `sort or direct checks`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-only 3 pairs
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 max pair sum
-      ↓
+  ↓ simplify
 sort or direct checks
-      ↓
-a+b>=10 || ...
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `max pair sum` → **sort or direct checks**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `max pair sum`, evaluate it
+step by step, and verify the transformed condition
+`sort or direct checks`. The final value/condition gives whether any
+pair sum \>=10.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Example:
-
-``` text
-values:
-[8, 2, 6, 3]
-
-sort:
-[2, 3, 6, 8]
-
-Now apply:
-max pair sum
-
-which reduces to:
-sort or direct checks
-
-Sorting exposes the mathematical order
-that was hidden by the input arrangement.
-```
 
 ## Problem 010 --- CF 1878A --- How Much Does Daytona Cost?
 
-**Problem Link:** [CF 1878A --- How Much Does Daytona
-Cost?](https://codeforces.com/problemset/problem/1878/A)\
+**Problem:** [CF 1878A --- How Much Does Daytona Cost?]()\
 **Topic / Rating:** Existence / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,k,array. The task is to whether k appears.
+
+**What must we output?** whether k appears
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,k,array
-
-ACTUAL QUESTION:
-whether k appears
+Story-specific names → discard them. Keep only: n,k,array. Mathematical state → target is existence.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,k,array
-
-Useful mathematical state:
-target is existence
-
-Unknown / target:
-whether k appears
+Given: n,k,array. Useful state: target is existence. Unknown: whether k appears.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 ∃i: a[i]=k
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+∃i: a[i]=k
+        ↓
 linear scan
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `∃i: a[i]=k`. Then simplify/rearrange
+it to `linear scan`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-target is existence
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 ∃i: a[i]=k
-      ↓
+  ↓ simplify
 linear scan
-      ↓
-found flag
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `∃i: a[i]=k` → **linear scan**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `∃i: a[i]=k`, evaluate it step
+by step, and verify the transformed condition `linear scan`. The final
+value/condition gives whether k appears.
 
 ------------------------------------------------------------------------
 
 # Pattern 2 --- Algebra / Equation Formation
 
-### 5. Dry Run --- How It Works
+## Problem 011 --- CF 734A --- Anton and Danik
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-∃i: a[i]=k
-
-     ↓ evaluate / simplify
-
-linear scan
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 011
---- CF 734A --- Anton and Danik
-
-**Problem Link:** [CF 734A --- Anton and
-Danik](https://codeforces.com/problemset/problem/734/A)\
+**Problem:** [CF 734A --- Anton and Danik]()\
 **Topic / Rating:** Counting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,string. The task is to who won more games.
+
+**What must we output?** who won more games
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,string
-
-ACTUAL QUESTION:
-who won more games
+Story-specific names → discard them. Keep only: n,string. Mathematical state → A=count('A'), D=count('D').
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,string
-
-Useful mathematical state:
-A=count('A'), D=count('D')
-
-Unknown / target:
-who won more games
+Given: n,string. Useful state: A=count('A'), D=count('D'). Unknown: who won more games.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 compare A and D
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+compare A and D
+        ↓
 sign of A-D
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `compare A and D`. Then
+simplify/rearrange it to `sign of A-D`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-A=count('A'), D=count('D')
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 compare A and D
-      ↓
+  ↓ simplify
 sign of A-D
-      ↓
-count chars
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `compare A and D` → **sign of A-D**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `compare A and D`, evaluate it
+step by step, and verify the transformed condition `sign of A-D`. The
+final value/condition gives who won more games.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 012 --- CF 677A --- Vanya and Fence
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-compare A and D
-
-     ↓ evaluate / simplify
-
-sign of A-D
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 012
---- CF 677A --- Vanya and Fence
-
-**Problem Link:** [CF 677A --- Vanya and
-Fence](https://codeforces.com/problemset/problem/677/A)\
+**Problem:** [CF 677A --- Vanya and Fence]()\
 **Topic / Rating:** Formula / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,h,heights. The task is to total width.
+
+**What must we output?** total width
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,h,heights
-
-ACTUAL QUESTION:
-total width
+Story-specific names → discard them. Keep only: n,h,heights. Mathematical state → each person contributes 1 or 2.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,h,heights
-
-Useful mathematical state:
-each person contributes 1 or 2
-
-Unknown / target:
-total width
+Given: n,h,heights. Useful state: each person contributes 1 or 2. Unknown: total width.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 sum (a[i]>h ? 2:1)
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+sum (a[i]>h ? 2:1)
+        ↓
 contribution sum
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `sum (a[i]>h ? 2:1)`. Then
+simplify/rearrange it to `contribution sum`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-each person contributes 1 or 2
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 sum (a[i]>h ? 2:1)
-      ↓
+  ↓ simplify
 contribution sum
-      ↓
-linear scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `sum (a[i]>h ? 2:1)` → **contribution sum**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `sum (a[i]>h ? 2:1)`, evaluate
+it step by step, and verify the transformed condition
+`contribution sum`. The final value/condition gives total width.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 013 --- CF 71A --- Way Too Long Words
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-sum (a[i]>h ? 2:1)
-
-     ↓ evaluate / simplify
-
-contribution sum
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 013
---- CF 71A --- Way Too Long Words
-
-**Problem Link:** [CF 71A --- Way Too Long
-Words](https://codeforces.com/problemset/problem/71/A)\
+**Problem:** [CF 71A --- Way Too Long Words]()\
 **Topic / Rating:** String/Formula / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives word. The task is to abbreviate if length\>10.
+
+**What must we output?** abbreviate if length\>10
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-word
-
-ACTUAL QUESTION:
-abbreviate if length>10
+Story-specific names → discard them. Keep only: word. Mathematical state → first + (len-2) + last.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-word
-
-Useful mathematical state:
-first + (len-2) + last
-
-Unknown / target:
-abbreviate if length>10
+Given: word. Useful state: first + (len-2) + last. Unknown: abbreviate if length>10.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 length condition
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+length condition
+        ↓
 direct construction
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `length condition`. Then
+simplify/rearrange it to `direct construction`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-first + (len-2) + last
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 length condition
-      ↓
+  ↓ simplify
 direct construction
-      ↓
-O(len)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `length condition` → **direct construction**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `length condition`, evaluate
+it step by step, and verify the transformed condition
+`direct construction`. The final value/condition gives abbreviate if
+length\>10.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 014 --- CF 791A --- Bear and Big Brother
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-length condition
-
-     ↓ evaluate / simplify
-
-direct construction
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 014
---- CF 791A --- Bear and Big Brother
-
-**Problem Link:** [CF 791A --- Bear and Big
-Brother](https://codeforces.com/problemset/problem/791/A)\
+**Problem:** [CF 791A --- Bear and Big Brother]()\
 **Topic / Rating:** Growth / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b. The task is to years until 3\^t a \> 2\^t b.
+
+**What must we output?** years until 3\^t a \> 2\^t b
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b
-
-ACTUAL QUESTION:
-years until 3^t a > 2^t b
+Story-specific names → discard them. Keep only: a,b. Mathematical state → simulate multiplicative equation.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b
-
-Useful mathematical state:
-simulate multiplicative equation
-
-Unknown / target:
-years until 3^t a > 2^t b
+Given: a,b. Useful state: simulate multiplicative equation. Unknown: years until 3^t a > 2^t b.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 a*=3,b*=2
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+a*=3,b*=2
+        ↓
 first t with a>b
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `a*=3,b*=2`. Then simplify/rearrange it
+to `first t with a>b`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-simulate multiplicative equation
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 a*=3,b*=2
-      ↓
+  ↓ simplify
 first t with a>b
-      ↓
-loop
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `a*=3,b*=2` → **first t with a\>b**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `a*=3,b*=2`, evaluate it step
+by step, and verify the transformed condition `first t with a>b`. The
+final value/condition gives years until 3\^t a \> 2\^t b.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 015 --- CF 50A --- Domino piling
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-a*=3,b*=2
-
-     ↓ evaluate / simplify
-
-first t with a\>b
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 015
---- CF 50A --- Domino piling
-
-**Problem Link:** [CF 50A --- Domino
-piling](https://codeforces.com/problemset/problem/50/A)\
+**Problem:** [CF 50A --- Domino piling]()\
 **Topic / Rating:** Counting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives m,n. The task is to max dominoes in grid.
+
+**What must we output?** max dominoes in grid
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-m,n
-
-ACTUAL QUESTION:
-max dominoes in grid
+Story-specific names → discard them. Keep only: m,n. Mathematical state → each domino covers 2 cells.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-m,n
-
-Useful mathematical state:
-each domino covers 2 cells
-
-Unknown / target:
-max dominoes in grid
+Given: m,n. Useful state: each domino covers 2 cells. Unknown: max dominoes in grid.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 2x <= mn
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+2x <= mn
+        ↓
 floor(mn/2)
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `2x <= mn`. Then simplify/rearrange it
+to `floor(mn/2)`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-each domino covers 2 cells
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 2x <= mn
-      ↓
+  ↓ simplify
 floor(mn/2)
-      ↓
-m*n/2
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `2x <= mn` → **floor(mn/2)**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `2x <= mn`, evaluate it step
+by step, and verify the transformed condition `floor(mn/2)`. The final
+value/condition gives max dominoes in grid.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 016 --- CF 231A --- Team
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-2x <= mn
-
-     ↓ evaluate / simplify
-
-floor(mn/2)
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 016
---- CF 231A --- Team
-
-**Problem Link:** [CF 231A ---
-Team](https://codeforces.com/problemset/problem/231/A)\
+**Problem:** [CF 231A --- Team]()\
 **Topic / Rating:** Counting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives triples. The task is to count problems with \>=2
+yes.
+
+**What must we output?** count problems with \>=2 yes
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-triples
-
-ACTUAL QUESTION:
-count problems with >=2 yes
+Story-specific names → discard them. Keep only: triples. Mathematical state → sum triple >=2.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-triples
-
-Useful mathematical state:
-sum triple >=2
-
-Unknown / target:
-count problems with >=2 yes
+Given: triples. Useful state: sum triple >=2. Unknown: count problems with >=2 yes.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 indicator contribution
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+indicator contribution
+        ↓
 count
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `indicator contribution`. Then
+simplify/rearrange it to `count`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-sum triple >=2
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 indicator contribution
-      ↓
+  ↓ simplify
 count
-      ↓
-linear
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `indicator contribution` → **count**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `indicator contribution`,
+evaluate it step by step, and verify the transformed condition `count`.
+The final value/condition gives count problems with \>=2 yes.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 017 --- CF 200B --- Drinks
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-indicator contribution
-
-     ↓ evaluate / simplify
-
-count
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 017
---- CF 200B --- Drinks
-
-**Problem Link:** [CF 200B ---
-Drinks](https://codeforces.com/problemset/problem/200/B)\
+**Problem:** [CF 200B --- Drinks]()\
 **Topic / Rating:** Average / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,p. The task is to orange percentage.
+
+**What must we output?** orange percentage
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,p
-
-ACTUAL QUESTION:
-orange percentage
+Story-specific names → discard them. Keep only: n,p. Mathematical state → average of p.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,p
-
-Useful mathematical state:
-average of p
-
-Unknown / target:
-orange percentage
+Given: n,p. Useful state: average of p. Unknown: orange percentage.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 sum/n
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+sum/n
+        ↓
 mean
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `sum/n`. Then simplify/rearrange it to
+`mean`. This is the point where the story disappears and the solution
+follows from the transformed condition.
 
 ``` text
-average of p
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 sum/n
-      ↓
+  ↓ simplify
 mean
-      ↓
-double sum/n
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `sum/n` → **mean**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `sum/n`, evaluate it step by
+step, and verify the transformed condition `mean`. The final
+value/condition gives orange percentage.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 018 --- CF 318A --- Even Odds
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-sum/n
-
-     ↓ evaluate / simplify
-
-mean
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 018
---- CF 318A --- Even Odds
-
-**Problem Link:** [CF 318A --- Even
-Odds](https://codeforces.com/problemset/problem/318/A)\
+**Problem:** [CF 318A --- Even Odds]()\
 **Topic / Rating:** Index Mapping / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,k. The task is to kth in odds then evens.
+
+**What must we output?** kth in odds then evens
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,k
-
-ACTUAL QUESTION:
-kth in odds then evens
+Story-specific names → discard them. Keep only: n,k. Mathematical state → oddCount=(n+1)/2.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,k
-
-Useful mathematical state:
-oddCount=(n+1)/2
-
-Unknown / target:
-kth in odds then evens
+Given: n,k. Useful state: oddCount=(n+1)/2. Unknown: kth in odds then evens.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 piecewise index mapping
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+piecewise index mapping
+        ↓
 if k<=oddCount
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `piecewise index mapping`. Then
+simplify/rearrange it to `if k<=oddCount`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-oddCount=(n+1)/2
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 piecewise index mapping
-      ↓
+  ↓ simplify
 if k<=oddCount
-      ↓
-formula
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `piecewise index mapping` → **if k\<=oddCount**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `piecewise index mapping`,
+evaluate it step by step, and verify the transformed condition
+`if k<=oddCount`. The final value/condition gives kth in odds then
+evens.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-piecewise index mapping
-
-Then simplify to:
-if k\<=oddCount
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 019 --- CF 486A --- Calculating Function
 
-**Problem Link:** [CF 486A --- Calculating
-Function](https://codeforces.com/problemset/problem/486/A)\
+**Problem:** [CF 486A --- Calculating Function]()\
 **Topic / Rating:** Formula / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to alternating sum -1+2-3+....
+
+**What must we output?** alternating sum -1+2-3+...
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-alternating sum -1+2-3+...
+Story-specific names → discard them. Keep only: n. Mathematical state → pair terms.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-pair terms
-
-Unknown / target:
-alternating sum -1+2-3+...
+Given: n. Useful state: pair terms. Unknown: alternating sum -1+2-3+....
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 even n -> n/2; odd -> -(n+1)/2
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+even n -> n/2; odd -> -(n+1)/2
+        ↓
 closed form
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `even n -> n/2; odd -> -(n+1)/2`. Then
+simplify/rearrange it to `closed form`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-pair terms
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 even n -> n/2; odd -> -(n+1)/2
-      ↓
+  ↓ simplify
 closed form
-      ↓
-parity branch
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `even n -> n/2; odd -> -(n+1)/2` → **closed form**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`even n -> n/2; odd -> -(n+1)/2`, evaluate it step by step, and verify
+the transformed condition `closed form`. The final value/condition gives
+alternating sum -1+2-3+....
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-even n -> n/2; odd -> -(n+1)/2
-
-Then simplify to:
-closed form
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
-
 ## Problem 020 --- CF 1399A --- Remove Smallest
 
-**Problem Link:** [CF 1399A --- Remove
-Smallest](https://codeforces.com/problemset/problem/1399/A)\
+**Problem:** [CF 1399A --- Remove Smallest]()\
 **Topic / Rating:** Sorting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to can repeatedly remove smaller
+when diff\<=1.
+
+**What must we output?** can repeatedly remove smaller when diff\<=1
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-can repeatedly remove smaller when diff<=1
+Story-specific names → discard them. Keep only: array. Mathematical state → sorted adjacent gaps encode feasibility.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-sorted adjacent gaps encode feasibility
-
-Unknown / target:
-can repeatedly remove smaller when diff<=1
+Given: array. Useful state: sorted adjacent gaps encode feasibility. Unknown: can repeatedly remove smaller when diff<=1.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 max adjacent diff<=1
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+max adjacent diff<=1
+        ↓
 sort + check
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `max adjacent diff<=1`. Then
+simplify/rearrange it to `sort + check`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-sorted adjacent gaps encode feasibility
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 max adjacent diff<=1
-      ↓
+  ↓ simplify
 sort + check
-      ↓
-O(nlogn)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `max adjacent diff<=1` → **sort + check**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `max adjacent diff<=1`,
+evaluate it step by step, and verify the transformed condition
+`sort + check`. The final value/condition gives can repeatedly remove
+smaller when diff\<=1.
 
 ------------------------------------------------------------------------
 
 # Pattern 3 --- Bounds / Inequalities / Min-Max
 
-### 5. Dry Run --- How It Works
-
-Example:
-
-``` text
-values:
-[8, 2, 6, 3]
-
-sort:
-[2, 3, 6, 8]
-
-Now apply:
-max adjacent diff<=1
-
-which reduces to:
-sort + check
-
-Sorting exposes the mathematical order
-that was hidden by the input arrangement.
-```
-
 ## Problem 021 --- CF 1690A --- Print a Pedestal
 
-**Problem Link:** [CF 1690A --- Print a
-Pedestal](https://codeforces.com/problemset/problem/1690/A)\
+**Problem:** [CF 1690A --- Print a Pedestal]()\
 **Topic / Rating:** Construction / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to split n into 3 positive distinct
+heights with middle ordering.
+
+**What must we output?** split n into 3 positive distinct heights with
+middle ordering
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-split n into 3 positive distinct heights with middle ordering
+Story-specific names → discard them. Keep only: n. Mathematical state → x<y<z and sum n.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-x<y<z and sum n
-
-Unknown / target:
-split n into 3 positive distinct heights with middle ordering
+Given: n. Useful state: x<y<z and sum n. Unknown: split n into 3 positive distinct heights with middle ordering.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 near n/3 then adjust
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+near n/3 then adjust
+        ↓
 construct around thirds
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `near n/3 then adjust`. Then
+simplify/rearrange it to `construct around thirds`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-x<y<z and sum n
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 near n/3 then adjust
-      ↓
+  ↓ simplify
 construct around thirds
-      ↓
-formula/cases
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `near n/3 then adjust` → **construct around thirds**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `near n/3 then adjust`,
+evaluate it step by step, and verify the transformed condition
+`construct around thirds`. The final value/condition gives split n into
+3 positive distinct heights with middle ordering.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 022 --- CF 1676A --- Lucky?
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-near n/3 then adjust
-
-     ↓ evaluate / simplify
-
-construct around thirds
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 022
---- CF 1676A --- Lucky?
-
-**Problem Link:** [CF 1676A ---
-Lucky?](https://codeforces.com/problemset/problem/1676/A)\
+**Problem:** [CF 1676A --- Lucky?]()\
 **Topic / Rating:** Equation / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives 6-digit string. The task is to first 3 digit sum
+equals last 3.
+
+**What must we output?** first 3 digit sum equals last 3
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-6-digit string
-
-ACTUAL QUESTION:
-first 3 digit sum equals last 3
+Story-specific names → discard them. Keep only: 6-digit string. Mathematical state → S1,S2.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-6-digit string
-
-Useful mathematical state:
-S1,S2
-
-Unknown / target:
-first 3 digit sum equals last 3
+Given: 6-digit string. Useful state: S1,S2. Unknown: first 3 digit sum equals last 3.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 S1=S2
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+S1=S2
+        ↓
 direct compare
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `S1=S2`. Then simplify/rearrange it to
+`direct compare`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-S1,S2
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 S1=S2
-      ↓
+  ↓ simplify
 direct compare
-      ↓
-O(1)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `S1=S2` → **direct compare**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `S1=S2`, evaluate it step by
+step, and verify the transformed condition `direct compare`. The final
+value/condition gives first 3 digit sum equals last 3.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 023 --- CF 1742B --- Increasing
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-S1=S2
-
-     ↓ evaluate / simplify
-
-direct compare
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 023
---- CF 1742B --- Increasing
-
-**Problem Link:** [CF 1742B ---
-Increasing](https://codeforces.com/problemset/problem/1742/B)\
+**Problem:** [CF 1742B --- Increasing]()\
 **Topic / Rating:** Distinctness / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to can permute to strictly
+increasing.
+
+**What must we output?** can permute to strictly increasing
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-can permute to strictly increasing
+Story-specific names → discard them. Keep only: array. Mathematical state → strictly increasing permutation iff all distinct.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-strictly increasing permutation iff all distinct
-
-Unknown / target:
-can permute to strictly increasing
+Given: array. Useful state: strictly increasing permutation iff all distinct. Unknown: can permute to strictly increasing.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 freq<=1
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+freq<=1
+        ↓
 set size=n
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `freq<=1`. Then simplify/rearrange it
+to `set size=n`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-strictly increasing permutation iff all distinct
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 freq<=1
-      ↓
+  ↓ simplify
 set size=n
-      ↓
-set
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `freq<=1` → **set size=n**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `freq<=1`, evaluate it step by
+step, and verify the transformed condition `set size=n`. The final
+value/condition gives can permute to strictly increasing.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 024 --- CF 1791A --- Codeforces Checking
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-freq<=1
-
-     ↓ evaluate / simplify
-
-set size=n
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 024
---- CF 1791A --- Codeforces Checking
-
-**Problem Link:** [CF 1791A --- Codeforces
-Checking](https://codeforces.com/problemset/problem/1791/A)\
+**Problem:** [CF 1791A --- Codeforces Checking]()\
 **Topic / Rating:** Membership / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives char c. The task is to whether c belongs to
+'codeforces'.
+
+**What must we output?** whether c belongs to 'codeforces'
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-char c
-
-ACTUAL QUESTION:
-whether c belongs to 'codeforces'
+Story-specific names → discard them. Keep only: char c. Mathematical state → c ∈ fixed set.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-char c
-
-Useful mathematical state:
-c ∈ fixed set
-
-Unknown / target:
-whether c belongs to 'codeforces'
+Given: char c. Useful state: c ∈ fixed set. Unknown: whether c belongs to 'codeforces'.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 find char
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+find char
+        ↓
 membership
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `find char`. Then simplify/rearrange it
+to `membership`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-c ∈ fixed set
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 find char
-      ↓
+  ↓ simplify
 membership
-      ↓
-string find
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `find char` → **membership**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `find char`, evaluate it step
+by step, and verify the transformed condition `membership`. The final
+value/condition gives whether c belongs to 'codeforces'.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 025 --- CF 1829A --- Love Story
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-find char
-
-     ↓ evaluate / simplify
-
-membership
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 025
---- CF 1829A --- Love Story
-
-**Problem Link:** [CF 1829A --- Love
-Story](https://codeforces.com/problemset/problem/1829/A)\
+**Problem:** [CF 1829A --- Love Story]()\
 **Topic / Rating:** Hamming Distance / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string. The task is to positions differing from
+'codeforces'.
+
+**What must we output?** positions differing from 'codeforces'
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string
-
-ACTUAL QUESTION:
-positions differing from 'codeforces'
+Story-specific names → discard them. Keep only: string. Mathematical state → indicator [s[i]!=t[i]].
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string
-
-Useful mathematical state:
-indicator [s[i]!=t[i]]
-
-Unknown / target:
-positions differing from 'codeforces'
+Given: string. Useful state: indicator [s[i]!=t[i]]. Unknown: positions differing from 'codeforces'.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 sum indicators
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+sum indicators
+        ↓
 Hamming distance
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `sum indicators`. Then
+simplify/rearrange it to `Hamming distance`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-indicator [s[i]!=t[i]]
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 sum indicators
-      ↓
+  ↓ simplify
 Hamming distance
-      ↓
-10 checks
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `sum indicators` → **Hamming distance**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `sum indicators`, evaluate it
+step by step, and verify the transformed condition `Hamming distance`.
+The final value/condition gives positions differing from 'codeforces'.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 026 --- CF 1873A --- Short Sort
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-sum indicators
-
-     ↓ evaluate / simplify
-
-Hamming distance
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 026
---- CF 1873A --- Short Sort
-
-**Problem Link:** [CF 1873A --- Short
-Sort](https://codeforces.com/problemset/problem/1873/A)\
+**Problem:** [CF 1873A --- Short Sort]()\
 **Topic / Rating:** Permutation / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives 3-char string. The task is to can sort with \<=1
+swap.
+
+**What must we output?** can sort with \<=1 swap
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-3-char string
-
-ACTUAL QUESTION:
-can sort with <=1 swap
+Story-specific names → discard them. Keep only: 3-char string. Mathematical state → target='abc'.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-3-char string
-
-Useful mathematical state:
-target='abc'
-
-Unknown / target:
-can sort with <=1 swap
+Given: 3-char string. Useful state: target='abc'. Unknown: can sort with <=1 swap.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 mismatch count 0 or 2
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+mismatch count 0 or 2
+        ↓
 compare permutations
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `mismatch count 0 or 2`. Then
+simplify/rearrange it to `compare permutations`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-target='abc'
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 mismatch count 0 or 2
-      ↓
+  ↓ simplify
 compare permutations
-      ↓
-direct
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `mismatch count 0 or 2` → **compare permutations**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `mismatch count 0 or 2`,
+evaluate it step by step, and verify the transformed condition
+`compare permutations`. The final value/condition gives can sort with
+\<=1 swap.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 027 --- CF 1729A --- Two Elevators
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-mismatch count 0 or 2
-
-     ↓ evaluate / simplify
-
-compare permutations
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 027
---- CF 1729A --- Two Elevators
-
-**Problem Link:** [CF 1729A --- Two
-Elevators](https://codeforces.com/problemset/problem/1729/A)\
+**Problem:** [CF 1729A --- Two Elevators]()\
 **Topic / Rating:** Distance / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b,c. The task is to which elevator reaches floor1
+sooner.
+
+**What must we output?** which elevator reaches floor1 sooner
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b,c
-
-ACTUAL QUESTION:
-which elevator reaches floor1 sooner
+Story-specific names → discard them. Keep only: a,b,c. Mathematical state → t1=a-1, t2=|b-c|+c-1.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b,c
-
-Useful mathematical state:
-t1=a-1, t2=|b-c|+c-1
-
-Unknown / target:
-which elevator reaches floor1 sooner
+Given: a,b,c. Useful state: t1=a-1, t2=|b-c|+c-1. Unknown: which elevator reaches floor1 sooner.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 compare times
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+compare times
+        ↓
 min comparison
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `compare times`. Then
+simplify/rearrange it to `min comparison`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-t1=a-1, t2=|b-c|+c-1
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 compare times
-      ↓
+  ↓ simplify
 min comparison
-      ↓
-O(1)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `compare times` → **min comparison**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `compare times`, evaluate it
+step by step, and verify the transformed condition `min comparison`. The
+final value/condition gives which elevator reaches floor1 sooner.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 028 --- CF 1805A --- We Need the Zero
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-compare times
-
-     ↓ evaluate / simplify
-
-min comparison
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 028
---- CF 1805A --- We Need the Zero
-
-**Problem Link:** [CF 1805A --- We Need the
-Zero](https://codeforces.com/problemset/problem/1805/A)\
+**Problem:** [CF 1805A --- We Need the Zero]()\
 **Topic / Rating:** XOR/Bounds / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to find x making xor transformed
+zero.
+
+**What must we output?** find x making xor transformed zero
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-find x making xor transformed zero
+Story-specific names → discard them. Keep only: array. Mathematical state → xor(a_i xor x).
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-xor(a_i xor x)
-
-Unknown / target:
-find x making xor transformed zero
+Given: array. Useful state: xor(a_i xor x). Unknown: find x making xor transformed zero.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 parity of n controls x contribution
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+parity of n controls x contribution
+        ↓
 derive xor equation
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `parity of n controls x contribution`.
+Then simplify/rearrange it to `derive xor equation`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-xor(a_i xor x)
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 parity of n controls x contribution
-      ↓
+  ↓ simplify
 derive xor equation
-      ↓
-xor all
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `parity of n controls x contribution` → **derive xor
-equation**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`parity of n controls x contribution`, evaluate it step by step, and
+verify the transformed condition `derive xor equation`. The final
+value/condition gives find x making xor transformed zero.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-parity of n controls x contribution
-
-Then simplify to:
-derive xor equation
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 029 --- CF 1858A --- Buttons
 
-**Problem Link:** [CF 1858A ---
-Buttons](https://codeforces.com/problemset/problem/1858/A)\
+**Problem:** [CF 1858A --- Buttons]()\
 **Topic / Rating:** Game/Counting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b,c. The task is to winner with shared buttons.
+
+**What must we output?** winner with shared buttons
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b,c
-
-ACTUAL QUESTION:
-winner with shared buttons
+Story-specific names → discard them. Keep only: a,b,c. Mathematical state → shared moves alternate.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b,c
-
-Useful mathematical state:
-shared moves alternate
-
-Unknown / target:
-winner with shared buttons
+Given: a,b,c. Useful state: shared moves alternate. Unknown: winner with shared buttons.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 parity of c decides who gets extra
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+parity of c decides who gets extra
+        ↓
 compare effective counts
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `parity of c decides who gets extra`.
+Then simplify/rearrange it to `compare effective counts`. This is the
+point where the story disappears and the solution follows from the
+transformed condition.
 
 ``` text
-shared moves alternate
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 parity of c decides who gets extra
-      ↓
+  ↓ simplify
 compare effective counts
-      ↓
-casework
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `parity of c decides who gets extra` → **compare
-effective counts**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`parity of c decides who gets extra`, evaluate it step by step, and
+verify the transformed condition `compare effective counts`. The final
+value/condition gives winner with shared buttons.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-parity of c decides who gets extra
-
-Then simplify to:
-compare effective counts
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
-
 ## Problem 030 --- CF 1899A --- Game with Integers
 
-**Problem Link:** [CF 1899A --- Game with
-Integers](https://codeforces.com/problemset/problem/1899/A)\
+**Problem:** [CF 1899A --- Game with Integers]()\
 **Topic / Rating:** Modulo / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to winner under ±1 and divisibility
+by3.
+
+**What must we output?** winner under ±1 and divisibility by3
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-winner under ±1 and divisibility by3
+Story-specific names → discard them. Keep only: n. Mathematical state → positions mod3.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-positions mod3
-
-Unknown / target:
-winner under ±1 and divisibility by3
+Given: n. Useful state: positions mod3. Unknown: winner under ±1 and divisibility by3.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 n%3==0 is losing/winning condition per rules
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+n%3==0 is losing/winning condition per rules
+        ↓
 reduce to residue
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into
+`n%3==0 is losing/winning condition per rules`. Then simplify/rearrange
+it to `reduce to residue`. This is the point where the story disappears
+and the solution follows from the transformed condition.
 
 ``` text
-positions mod3
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 n%3==0 is losing/winning condition per rules
-      ↓
+  ↓ simplify
 reduce to residue
-      ↓
-O(1)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `n%3==0 is losing/winning condition per rules` →
-**reduce to residue**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`n%3==0 is losing/winning condition per rules`, evaluate it step by
+step, and verify the transformed condition `reduce to residue`. The
+final value/condition gives winner under ±1 and divisibility by3.
 
 ------------------------------------------------------------------------
 
 # Pattern 4 --- Parity Modeling
 
-### 5. Dry Run --- How It Works
+## Problem 031 --- CF 4A --- Watermelon
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-n%3==0 is losing/winning condition per rules
-
-     ↓ evaluate / simplify
-
-reduce to residue
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 031
---- CF 4A --- Watermelon
-
-**Problem Link:** [CF 4A ---
-Watermelon](https://codeforces.com/problemset/problem/4/A)\
+**Problem:** [CF 4A --- Watermelon]()\
 **Topic / Rating:** Parity / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives w. The task is to split into two positive even
+parts.
+
+**What must we output?** split into two positive even parts
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-w
-
-ACTUAL QUESTION:
-split into two positive even parts
+Story-specific names → discard them. Keep only: w. Mathematical state → w=a+b, a,b even >=2.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-w
-
-Useful mathematical state:
-w=a+b, a,b even >=2
-
-Unknown / target:
-split into two positive even parts
+Given: w. Useful state: w=a+b, a,b even >=2. Unknown: split into two positive even parts.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 w even and w>2
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+w even and w>2
+        ↓
 parity + positivity
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `w even and w>2`. Then
+simplify/rearrange it to `parity + positivity`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-w=a+b, a,b even >=2
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 w even and w>2
-      ↓
+  ↓ simplify
 parity + positivity
-      ↓
-w%2==0&&w>2
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `w even and w>2` → **parity + positivity**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `w even and w>2`, evaluate it
+step by step, and verify the transformed condition
+`parity + positivity`. The final value/condition gives split into two
+positive even parts.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-w even and w>2
-
-Then simplify to:
-parity + positivity
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 032 --- CF 1296A --- Array with Odd Sum
 
-**Problem Link:** [CF 1296A --- Array with Odd
-Sum](https://codeforces.com/problemset/problem/1296/A)\
+**Problem:** [CF 1296A --- Array with Odd Sum]()\
 **Topic / Rating:** Parity / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to whether required odd-sum
+selection exists.
+
+**What must we output?** whether required odd-sum selection exists
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-whether required odd-sum selection exists
+Story-specific names → discard them. Keep only: array. Mathematical state → sum odd iff odd count odd.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-sum odd iff odd count odd
-
-Unknown / target:
-whether required odd-sum selection exists
+Given: array. Useful state: sum odd iff odd count odd. Unknown: whether required odd-sum selection exists.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 reduce values to parity
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+reduce values to parity
+        ↓
 count odd/even
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `reduce values to parity`. Then
+simplify/rearrange it to `count odd/even`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-sum odd iff odd count odd
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 reduce values to parity
-      ↓
+  ↓ simplify
 count odd/even
-      ↓
-casework
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `reduce values to parity` → **count odd/even**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `reduce values to parity`,
+evaluate it step by step, and verify the transformed condition
+`count odd/even`. The final value/condition gives whether required
+odd-sum selection exists.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-reduce values to parity
-
-Then simplify to:
-count odd/even
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 033 --- CF 1857A --- Array Coloring
 
-**Problem Link:** [CF 1857A --- Array
-Coloring](https://codeforces.com/problemset/problem/1857/A)\
+**Problem:** [CF 1857A --- Array Coloring]()\
 **Topic / Rating:** Parity / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to whether can split into two
+groups with equal parity sums.
+
+**What must we output?** whether can split into two groups with equal
+parity sums
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-whether can split into two groups with equal parity sums
+Story-specific names → discard them. Keep only: array. Mathematical state → total sum must be even.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-total sum must be even
-
-Unknown / target:
-whether can split into two groups with equal parity sums
+Given: array. Useful state: total sum must be even. Unknown: whether can split into two groups with equal parity sums.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 sum%2=0
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+sum%2=0
+        ↓
 parity invariant
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `sum%2=0`. Then simplify/rearrange it
+to `parity invariant`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-total sum must be even
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 sum%2=0
-      ↓
+  ↓ simplify
 parity invariant
-      ↓
-sum check
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `sum%2=0` → **parity invariant**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `sum%2=0`, evaluate it step by
+step, and verify the transformed condition `parity invariant`. The final
+value/condition gives whether can split into two groups with equal
+parity sums.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-sum%2=0
-
-Then simplify to:
-parity invariant
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 034 --- CF 1834A --- Unit Array
 
-**Problem Link:** [CF 1834A --- Unit
-Array](https://codeforces.com/problemset/problem/1834/A)\
+**Problem:** [CF 1834A --- Unit Array]()\
 **Topic / Rating:** Parity/Greedy / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives ±1 array. The task is to minimum flips to satisfy
+sum\>=0 and product=1.
+
+**What must we output?** minimum flips to satisfy sum\>=0 and product=1
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-±1 array
-
-ACTUAL QUESTION:
-minimum flips to satisfy sum>=0 and product=1
+Story-specific names → discard them. Keep only: ±1 array. Mathematical state → product depends on #(-1) parity.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-±1 array
-
-Useful mathematical state:
-product depends on #(-1) parity
-
-Unknown / target:
-minimum flips to satisfy sum>=0 and product=1
+Given: ±1 array. Useful state: product depends on #(-1) parity. Unknown: minimum flips to satisfy sum>=0 and product=1.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 fix sum then parity
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+fix sum then parity
+        ↓
 count negatives
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `fix sum then parity`. Then
+simplify/rearrange it to `count negatives`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-product depends on #(-1) parity
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 fix sum then parity
-      ↓
+  ↓ simplify
 count negatives
-      ↓
-formula/loop
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `fix sum then parity` → **count negatives**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `fix sum then parity`,
+evaluate it step by step, and verify the transformed condition
+`count negatives`. The final value/condition gives minimum flips to
+satisfy sum\>=0 and product=1.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-fix sum then parity
-
-Then simplify to:
-count negatives
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 035 --- CF 1367B --- Even Array
 
-**Problem Link:** [CF 1367B --- Even
-Array](https://codeforces.com/problemset/problem/1367/B)\
+**Problem:** [CF 1367B --- Even Array]()\
 **Topic / Rating:** Parity / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to minimum swaps so a\[i\]%2=i%2.
+
+**What must we output?** minimum swaps so a\[i\]%2=i%2
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-minimum swaps so a[i]%2=i%2
+Story-specific names → discard them. Keep only: array. Mathematical state → mismatches of two types must balance.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-mismatches of two types must balance
-
-Unknown / target:
-minimum swaps so a[i]%2=i%2
+Given: array. Useful state: mismatches of two types must balance. Unknown: minimum swaps so a[i]%2=i%2.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 badEven=badOdd
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+badEven=badOdd
+        ↓
 answer mismatches/2
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `badEven=badOdd`. Then
+simplify/rearrange it to `answer mismatches/2`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-mismatches of two types must balance
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 badEven=badOdd
-      ↓
+  ↓ simplify
 answer mismatches/2
-      ↓
-count
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `badEven=badOdd` → **answer mismatches/2**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `badEven=badOdd`, evaluate it
+step by step, and verify the transformed condition
+`answer mismatches/2`. The final value/condition gives minimum swaps so
+a\[i\]%2=i%2.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-badEven=badOdd
-
-Then simplify to:
-answer mismatches/2
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 036 --- CF 1475A --- Odd Divisor
 
-**Problem Link:** [CF 1475A --- Odd
-Divisor](https://codeforces.com/problemset/problem/1475/A)\
+**Problem:** [CF 1475A --- Odd Divisor]()\
 **Topic / Rating:** Number Theory / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to has odd divisor \>1.
+
+**What must we output?** has odd divisor \>1
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-has odd divisor >1
+Story-specific names → discard them. Keep only: n. Mathematical state → n=2^k*m odd.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-n=2^k*m odd
-
-Unknown / target:
-has odd divisor >1
+Given: n. Useful state: n=2^k*m odd. Unknown: has odd divisor >1.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 m>1
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+m>1
+        ↓
 not power of two
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `m>1`. Then simplify/rearrange it to
+`not power of two`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-n=2^k*m odd
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 m>1
-      ↓
+  ↓ simplify
 not power of two
-      ↓
-strip twos
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `m>1` → **not power of two**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `m>1`, evaluate it step by
+step, and verify the transformed condition `not power of two`. The final
+value/condition gives has odd divisor \>1.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 037 --- CF 1669C --- Odd/Even Increments
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-m>1
-
-     ↓ evaluate / simplify
-
-not power of two
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 037
---- CF 1669C --- Odd/Even Increments
-
-**Problem Link:** [CF 1669C --- Odd/Even
-Increments](https://codeforces.com/problemset/problem/1669/C)\
+**Problem:** [CF 1669C --- Odd/Even Increments]()\
 **Topic / Rating:** Parity / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to can equalize via
+parity-constrained increments.
+
+**What must we output?** can equalize via parity-constrained increments
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-can equalize via parity-constrained increments
+Story-specific names → discard them. Keep only: array. Mathematical state → all elements need same parity class relation.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-all elements need same parity class relation
-
-Unknown / target:
-can equalize via parity-constrained increments
+Given: array. Useful state: all elements need same parity class relation. Unknown: can equalize via parity-constrained increments.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 check parity consistency
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+check parity consistency
+        ↓
 parity only
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `check parity consistency`. Then
+simplify/rearrange it to `parity only`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-all elements need same parity class relation
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 check parity consistency
-      ↓
+  ↓ simplify
 parity only
-      ↓
-scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `check parity consistency` → **parity only**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `check parity consistency`,
+evaluate it step by step, and verify the transformed condition
+`parity only`. The final value/condition gives can equalize via
+parity-constrained increments.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-check parity consistency
-
-Then simplify to:
-parity only
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 038 --- CF 1624A --- Plus One on the Subset
 
-**Problem Link:** [CF 1624A --- Plus One on the
-Subset](https://codeforces.com/problemset/problem/1624/A)\
+**Problem:** [CF 1624A --- Plus One on the Subset]()\
 **Topic / Rating:** Difference / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to minimum operations to equalize
+by incrementing subset.
+
+**What must we output?** minimum operations to equalize by incrementing
+subset
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-minimum operations to equalize by incrementing subset
+Story-specific names → discard them. Keep only: array. Mathematical state → raise to max.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-raise to max
-
-Unknown / target:
-minimum operations to equalize by incrementing subset
+Given: array. Useful state: raise to max. Unknown: minimum operations to equalize by incrementing subset.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 answer=max-min
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+answer=max-min
+        ↓
 range width
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `answer=max-min`. Then
+simplify/rearrange it to `range width`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-raise to max
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 answer=max-min
-      ↓
+  ↓ simplify
 range width
-      ↓
-min/max
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `answer=max-min` → **range width**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `answer=max-min`, evaluate it
+step by step, and verify the transformed condition `range width`. The
+final value/condition gives minimum operations to equalize by
+incrementing subset.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 039 --- CF 1788A --- One and Two
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-answer=max-min
-
-     ↓ evaluate / simplify
-
-range width
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 039
---- CF 1788A --- One and Two
-
-**Problem Link:** [CF 1788A --- One and
-Two](https://codeforces.com/problemset/problem/1788/A)\
+**Problem:** [CF 1788A --- One and Two]()\
 **Topic / Rating:** Product/Parity / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives 1/2 array. The task is to split so products equal.
+
+**What must we output?** split so products equal
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-1/2 array
-
-ACTUAL QUESTION:
-split so products equal
+Story-specific names → discard them. Keep only: 1/2 array. Mathematical state → equal #twos on both sides.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-1/2 array
-
-Useful mathematical state:
-equal #twos on both sides
-
-Unknown / target:
-split so products equal
+Given: 1/2 array. Useful state: equal #twos on both sides. Unknown: split so products equal.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 total twos even
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+total twos even
+        ↓
 find half twos
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `total twos even`. Then
+simplify/rearrange it to `find half twos`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-equal #twos on both sides
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 total twos even
-      ↓
+  ↓ simplify
 find half twos
-      ↓
-count
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `total twos even` → **find half twos**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `total twos even`, evaluate it
+step by step, and verify the transformed condition `find half twos`. The
+final value/condition gives split so products equal.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-total twos even
-
-Then simplify to:
-find half twos
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 040 --- CF 1845A --- Forbidden Integer
 
-**Problem Link:** [CF 1845A --- Forbidden
-Integer](https://codeforces.com/problemset/problem/1845/A)\
+**Problem:** [CF 1845A --- Forbidden Integer]()\
 **Topic / Rating:** Constructive / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,k,x. The task is to represent n as sum of 1..k
+excluding x.
+
+**What must we output?** represent n as sum of 1..k excluding x
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,k,x
-
-ACTUAL QUESTION:
-represent n as sum of 1..k excluding x
+Story-specific names → discard them. Keep only: n,k,x. Mathematical state → choose repeated small allowed values.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,k,x
-
-Useful mathematical state:
-choose repeated small allowed values
-
-Unknown / target:
-represent n as sum of 1..k excluding x
+Given: n,k,x. Useful state: choose repeated small allowed values. Unknown: represent n as sum of 1..k excluding x.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 cases x!=1, else 2/3
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+cases x!=1, else 2/3
+        ↓
 construct feasibility
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `cases x!=1, else 2/3`. Then
+simplify/rearrange it to `construct feasibility`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-choose repeated small allowed values
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 cases x!=1, else 2/3
-      ↓
+  ↓ simplify
 construct feasibility
-      ↓
-casework
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `cases x!=1, else 2/3` → **construct feasibility**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `cases x!=1, else 2/3`,
+evaluate it step by step, and verify the transformed condition
+`construct feasibility`. The final value/condition gives represent n as
+sum of 1..k excluding x.
 
 ------------------------------------------------------------------------
 
 # Pattern 5 --- Divisibility / GCD / LCM
 
-### 5. Dry Run --- How It Works
+## Problem 041 --- CF 1328A --- Divisibility Problem
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-cases x!=1, else 2/3
-
-     ↓ evaluate / simplify
-
-construct feasibility
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 041
---- CF 1328A --- Divisibility Problem
-
-**Problem Link:** [CF 1328A --- Divisibility
-Problem](https://codeforces.com/problemset/problem/1328/A)\
+**Problem:** [CF 1328A --- Divisibility Problem]()\
 **Topic / Rating:** Modulo / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b. The task is to minimum add to make a divisible
+by b.
+
+**What must we output?** minimum add to make a divisible by b
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b
-
-ACTUAL QUESTION:
-minimum add to make a divisible by b
+Story-specific names → discard them. Keep only: a,b. Mathematical state → need a+x ≡0 mod b.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b
-
-Useful mathematical state:
-need a+x ≡0 mod b
-
-Unknown / target:
-minimum add to make a divisible by b
+Given: a,b. Useful state: need a+x ≡0 mod b. Unknown: minimum add to make a divisible by b.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 x=(b-a%b)%b
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+x=(b-a%b)%b
+        ↓
 remainder complement
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `x=(b-a%b)%b`. Then simplify/rearrange
+it to `remainder complement`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-need a+x ≡0 mod b
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 x=(b-a%b)%b
-      ↓
+  ↓ simplify
 remainder complement
-      ↓
-O(1)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `x=(b-a%b)%b` → **remainder complement**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `x=(b-a%b)%b`, evaluate it
+step by step, and verify the transformed condition
+`remainder complement`. The final value/condition gives minimum add to
+make a divisible by b.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 042 --- CF 1343A --- Candies
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-x=(b-a%b)%b
-
-     ↓ evaluate / simplify
-
-remainder complement
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 042
---- CF 1343A --- Candies
-
-**Problem Link:** [CF 1343A ---
-Candies](https://codeforces.com/problemset/problem/1343/A)\
+**Problem:** [CF 1343A --- Candies]()\
 **Topic / Rating:** Geometric/Divisibility / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to find x where n=x(2\^k-1).
+
+**What must we output?** find x where n=x(2\^k-1)
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-find x where n=x(2^k-1)
+Story-specific names → discard them. Keep only: n. Mathematical state → geometric sum factor.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-geometric sum factor
-
-Unknown / target:
-find x where n=x(2^k-1)
+Given: n. Useful state: geometric sum factor. Unknown: find x where n=x(2^k-1).
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 x=n/(2^k-1) if divisible
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+x=n/(2^k-1) if divisible
+        ↓
 test k
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `x=n/(2^k-1) if divisible`. Then
+simplify/rearrange it to `test k`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-geometric sum factor
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 x=n/(2^k-1) if divisible
-      ↓
+  ↓ simplify
 test k
-      ↓
-loop
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `x=n/(2^k-1) if divisible` → **test k**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `x=n/(2^k-1) if divisible`,
+evaluate it step by step, and verify the transformed condition `test k`.
+The final value/condition gives find x where n=x(2\^k-1).
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 043 --- CF 1370A --- Maximum GCD
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-x=n/(2^k-1) if divisible
-
-     ↓ evaluate / simplify
-
-test k
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 043
---- CF 1370A --- Maximum GCD
-
-**Problem Link:** [CF 1370A --- Maximum
-GCD](https://codeforces.com/problemset/problem/1370/A)\
+**Problem:** [CF 1370A --- Maximum GCD]()\
 **Topic / Rating:** GCD / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to maximize gcd(a,b), a+b=n.
+
+**What must we output?** maximize gcd(a,b), a+b=n
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-maximize gcd(a,b), a+b=n
+Story-specific names → discard them. Keep only: n. Mathematical state → gcd<=floor(n/2).
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-gcd<=floor(n/2)
-
-Unknown / target:
-maximize gcd(a,b), a+b=n
+Given: n. Useful state: gcd<=floor(n/2). Unknown: maximize gcd(a,b), a+b=n.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 choose floor(n/2)
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+choose floor(n/2)
+        ↓
 tight bound
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `choose floor(n/2)`. Then
+simplify/rearrange it to `tight bound`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-gcd<=floor(n/2)
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 choose floor(n/2)
-      ↓
+  ↓ simplify
 tight bound
-      ↓
-n/2
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `choose floor(n/2)` → **tight bound**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `choose floor(n/2)`, evaluate
+it step by step, and verify the transformed condition `tight bound`. The
+final value/condition gives maximize gcd(a,b), a+b=n.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 044 --- CF 1829C --- Mr. Perfectly Fine
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-choose floor(n/2)
-
-     ↓ evaluate / simplify
-
-tight bound
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 044
---- CF 1829C --- Mr. Perfectly Fine
-
-**Problem Link:** [CF 1829C --- Mr. Perfectly
-Fine](https://codeforces.com/problemset/problem/1829/C)\
+**Problem:** [CF 1829C --- Mr. Perfectly Fine]()\
 **Topic / Rating:** Min/Bitmask / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives items. The task is to minimum time covering skills 1
+and2.
+
+**What must we output?** minimum time covering skills 1 and2
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-items
-
-ACTUAL QUESTION:
-minimum time covering skills 1 and2
+Story-specific names → discard them. Keep only: items. Mathematical state → skill masks 01,10,11.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-items
-
-Useful mathematical state:
-skill masks 01,10,11
-
-Unknown / target:
-minimum time covering skills 1 and2
+Given: items. Useful state: skill masks 01,10,11. Unknown: minimum time covering skills 1 and2.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 min(cost11,cost01+cost10)
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+min(cost11,cost01+cost10)
+        ↓
 coverage states
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `min(cost11,cost01+cost10)`. Then
+simplify/rearrange it to `coverage states`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-skill masks 01,10,11
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 min(cost11,cost01+cost10)
-      ↓
+  ↓ simplify
 coverage states
-      ↓
-track minima
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `min(cost11,cost01+cost10)` → **coverage states**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `min(cost11,cost01+cost10)`,
+evaluate it step by step, and verify the transformed condition
+`coverage states`. The final value/condition gives minimum time covering
+skills 1 and2.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 045 --- CF 1618A --- Polycarp and Sums of Subsequences
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-min(cost11,cost01+cost10)
-
-     ↓ evaluate / simplify
-
-coverage states
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 045
---- CF 1618A --- Polycarp and Sums of Subsequences
-
-**Problem Link:** [CF 1618A --- Polycarp and Sums of
-Subsequences](https://codeforces.com/problemset/problem/1618/A)\
+**Problem:** [CF 1618A --- Polycarp and Sums of Subsequences]()\
 **Topic / Rating:** Algebra / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives 7 subset sums. The task is to recover a,b,c.
+
+**What must we output?** recover a,b,c
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-7 subset sums
-
-ACTUAL QUESTION:
-recover a,b,c
+Story-specific names → discard them. Keep only: 7 subset sums. Mathematical state → smallest=a,b and total largest=a+b+c.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-7 subset sums
-
-Useful mathematical state:
-smallest=a,b and total largest=a+b+c
-
-Unknown / target:
-recover a,b,c
+Given: 7 subset sums. Useful state: smallest=a,b and total largest=a+b+c. Unknown: recover a,b,c.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 c=largest-a-b
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+c=largest-a-b
+        ↓
 sorted sums
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `c=largest-a-b`. Then
+simplify/rearrange it to `sorted sums`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-smallest=a,b and total largest=a+b+c
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 c=largest-a-b
-      ↓
+  ↓ simplify
 sorted sums
-      ↓
-formula
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `c=largest-a-b` → **sorted sums**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `c=largest-a-b`, evaluate it
+step by step, and verify the transformed condition `sorted sums`. The
+final value/condition gives recover a,b,c.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Example:
-
-``` text
-values:
-[8, 2, 6, 3]
-
-sort:
-[2, 3, 6, 8]
-
-Now apply:
-c=largest-a-b
-
-which reduces to:
-sorted sums
-
-Sorting exposes the mathematical order
-that was hidden by the input arrangement.
-```
 
 ## Problem 046 --- CF 160A --- Twins
 
-**Problem Link:** [CF 160A ---
-Twins](https://codeforces.com/problemset/problem/160/A)\
+**Problem:** [CF 160A --- Twins]()\
 **Topic / Rating:** Greedy/Sum / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives coins. The task is to minimum coins with sum \>
+remaining.
+
+**What must we output?** minimum coins with sum \> remaining
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-coins
-
-ACTUAL QUESTION:
-minimum coins with sum > remaining
+Story-specific names → discard them. Keep only: coins. Mathematical state → chosen > total-chosen.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-coins
-
-Useful mathematical state:
-chosen > total-chosen
-
-Unknown / target:
-minimum coins with sum > remaining
+Given: coins. Useful state: chosen > total-chosen. Unknown: minimum coins with sum > remaining.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 2*chosen>total
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+2*chosen>total
+        ↓
 sort descending
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `2*chosen>total`. Then
+simplify/rearrange it to `sort descending`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-chosen > total-chosen
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 2*chosen>total
-      ↓
+  ↓ simplify
 sort descending
-      ↓
-prefix
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `2*chosen>total` → **sort descending**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `2*chosen>total`, evaluate it
+step by step, and verify the transformed condition `sort descending`.
+The final value/condition gives minimum coins with sum \> remaining.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Example:
-
-``` text
-values:
-[8, 2, 6, 3]
-
-sort:
-[2, 3, 6, 8]
-
-Now apply:
-2*chosen>total
-
-which reduces to:
-sort descending
-
-Sorting exposes the mathematical order
-that was hidden by the input arrangement.
-```
 
 ## Problem 047 --- CF 1475B --- New Year's Number
 
-**Problem Link:** [CF 1475B --- New Year's
-Number](https://codeforces.com/problemset/problem/1475/B)\
+**Problem:** [CF 1475B --- New Year's Number]()\
 **Topic / Rating:** Diophantine / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to n=2020a+2021b?.
+
+**What must we output?** n=2020a+2021b?
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-n=2020a+2021b?
+Story-specific names → discard them. Keep only: n. Mathematical state → 2021=2020+1.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-2021=2020+1
-
-Unknown / target:
-n=2020a+2021b?
+Given: n. Useful state: 2021=2020+1. Unknown: n=2020a+2021b?.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 choose b=n%2020 then test
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+choose b=n%2020 then test
+        ↓
 linear diophantine shortcut
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `choose b=n%2020 then test`. Then
+simplify/rearrange it to `linear diophantine shortcut`. This is the
+point where the story disappears and the solution follows from the
+transformed condition.
 
 ``` text
-2021=2020+1
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 choose b=n%2020 then test
-      ↓
+  ↓ simplify
 linear diophantine shortcut
-      ↓
-condition
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `choose b=n%2020 then test` → **linear diophantine
-shortcut**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `choose b=n%2020 then test`,
+evaluate it step by step, and verify the transformed condition
+`linear diophantine shortcut`. The final value/condition gives
+n=2020a+2021b?.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-choose b=n%2020 then test
-
-Then simplify to:
-linear diophantine shortcut
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 048 --- CF 1593A --- Elections
 
-**Problem Link:** [CF 1593A ---
-Elections](https://codeforces.com/problemset/problem/1593/A)\
+**Problem:** [CF 1593A --- Elections]()\
 **Topic / Rating:** Max/Formula / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b,c. The task is to increments to become strictly
+largest.
+
+**What must we output?** increments to become strictly largest
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b,c
-
-ACTUAL QUESTION:
-increments to become strictly largest
+Story-specific names → discard them. Keep only: a,b,c. Mathematical state → need x+inc>max(other).
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b,c
-
-Useful mathematical state:
-need x+inc>max(other)
-
-Unknown / target:
-increments to become strictly largest
+Given: a,b,c. Useful state: need x+inc>max(other). Unknown: increments to become strictly largest.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 inc=max(0,M-x+1), except unique max
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+inc=max(0,M-x+1), except unique max
+        ↓
 per candidate bound
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `inc=max(0,M-x+1), except unique max`.
+Then simplify/rearrange it to `per candidate bound`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-need x+inc>max(other)
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 inc=max(0,M-x+1), except unique max
-      ↓
+  ↓ simplify
 per candidate bound
-      ↓
-formula
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `inc=max(0,M-x+1), except unique max` → **per candidate
-bound**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`inc=max(0,M-x+1), except unique max`, evaluate it step by step, and
+verify the transformed condition `per candidate bound`. The final
+value/condition gives increments to become strictly largest.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 049 --- CF 1829B --- Blank Space
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-inc=max(0,M-x+1), except unique max
-
-     ↓ evaluate / simplify
-
-per candidate bound
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 049
---- CF 1829B --- Blank Space
-
-**Problem Link:** [CF 1829B --- Blank
-Space](https://codeforces.com/problemset/problem/1829/B)\
+**Problem:** [CF 1829B --- Blank Space]()\
 **Topic / Rating:** Run Length / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives binary array. The task is to longest consecutive
+zeros.
+
+**What must we output?** longest consecutive zeros
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-binary array
-
-ACTUAL QUESTION:
-longest consecutive zeros
+Story-specific names → discard them. Keep only: binary array. Mathematical state → state current run.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-binary array
-
-Useful mathematical state:
-state current run
-
-Unknown / target:
-longest consecutive zeros
+Given: binary array. Useful state: state current run. Unknown: longest consecutive zeros.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 max over runs
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+max over runs
+        ↓
 scan
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `max over runs`. Then
+simplify/rearrange it to `scan`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-state current run
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 max over runs
-      ↓
+  ↓ simplify
 scan
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `max over runs` → **scan**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `max over runs`, evaluate it
+step by step, and verify the transformed condition `scan`. The final
+value/condition gives longest consecutive zeros.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 050 --- CF 1877A --- Goals of Victory
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-max over runs
-
-     ↓ evaluate / simplify
-
-scan
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 050
---- CF 1877A --- Goals of Victory
-
-**Problem Link:** [CF 1877A --- Goals of
-Victory](https://codeforces.com/problemset/problem/1877/A)\
+**Problem:** [CF 1877A --- Goals of Victory]()\
 **Topic / Rating:** Sum Invariant / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n-1 values. The task is to missing value so total
+sum zero.
+
+**What must we output?** missing value so total sum zero
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n-1 values
-
-ACTUAL QUESTION:
-missing value so total sum zero
+Story-specific names → discard them. Keep only: n-1 values. Mathematical state → x+sum=0.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n-1 values
-
-Useful mathematical state:
-x+sum=0
-
-Unknown / target:
-missing value so total sum zero
+Given: n-1 values. Useful state: x+sum=0. Unknown: missing value so total sum zero.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 x=-sum
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+x=-sum
+        ↓
 equation
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `x=-sum`. Then simplify/rearrange it to
+`equation`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-x+sum=0
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 x=-sum
-      ↓
+  ↓ simplify
 equation
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `x=-sum` → **equation**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `x=-sum`, evaluate it step by
+step, and verify the transformed condition `equation`. The final
+value/condition gives missing value so total sum zero.
 
 ------------------------------------------------------------------------
 
 # Pattern 6 --- Modulo / Cyclic Modeling
 
-### 5. Dry Run --- How It Works
+## Problem 051 --- CF 116A --- Tram
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-x=-sum
-
-     ↓ evaluate / simplify
-
-equation
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 051
---- CF 116A --- Tram
-
-**Problem Link:** [CF 116A ---
-Tram](https://codeforces.com/problemset/problem/116/A)\
+**Problem:** [CF 116A --- Tram]()\
 **Topic / Rating:** Prefix/Capacity / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives stops. The task is to minimum tram capacity.
+
+**What must we output?** minimum tram capacity
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-stops
-
-ACTUAL QUESTION:
-minimum tram capacity
+Story-specific names → discard them. Keep only: stops. Mathematical state → current += enter-exit.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-stops
-
-Useful mathematical state:
-current += enter-exit
-
-Unknown / target:
-minimum tram capacity
+Given: stops. Useful state: current += enter-exit. Unknown: minimum tram capacity.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 max prefix occupancy
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+max prefix occupancy
+        ↓
 running state
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `max prefix occupancy`. Then
+simplify/rearrange it to `running state`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-current += enter-exit
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 max prefix occupancy
-      ↓
+  ↓ simplify
 running state
-      ↓
-scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `max prefix occupancy` → **running state**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `max prefix occupancy`,
+evaluate it step by step, and verify the transformed condition
+`running state`. The final value/condition gives minimum tram capacity.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 052 --- CF 266A --- Stones on the Table
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-max prefix occupancy
-
-     ↓ evaluate / simplify
-
-running state
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 052
---- CF 266A --- Stones on the Table
-
-**Problem Link:** [CF 266A --- Stones on the
-Table](https://codeforces.com/problemset/problem/266/A)\
+**Problem:** [CF 266A --- Stones on the Table]()\
 **Topic / Rating:** Adjacent / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string. The task is to minimum removals so adjacent
+colors differ.
+
+**What must we output?** minimum removals so adjacent colors differ
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string
-
-ACTUAL QUESTION:
-minimum removals so adjacent colors differ
+Story-specific names → discard them. Keep only: string. Mathematical state → remove one from each equal adjacency.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string
-
-Useful mathematical state:
-remove one from each equal adjacency
-
-Unknown / target:
-minimum removals so adjacent colors differ
+Given: string. Useful state: remove one from each equal adjacency. Unknown: minimum removals so adjacent colors differ.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 count s[i]==s[i-1]
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+count s[i]==s[i-1]
+        ↓
 local contribution
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `count s[i]==s[i-1]`. Then
+simplify/rearrange it to `local contribution`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-remove one from each equal adjacency
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 count s[i]==s[i-1]
-      ↓
+  ↓ simplify
 local contribution
-      ↓
-scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `count s[i]==s[i-1]` → **local contribution**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `count s[i]==s[i-1]`, evaluate
+it step by step, and verify the transformed condition
+`local contribution`. The final value/condition gives minimum removals
+so adjacent colors differ.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 053 --- CF 228A --- Is your horseshoe on the other hoof?
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-count s[i]==s[i-1]
-
-     ↓ evaluate / simplify
-
-local contribution
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 053
---- CF 228A --- Is your horseshoe on the other hoof?
-
-**Problem Link:** [CF 228A --- Is your horseshoe on the other
-hoof?](https://codeforces.com/problemset/problem/228/A)\
+**Problem:** [CF 228A --- Is your horseshoe on the other hoof?]()\
 **Topic / Rating:** Distinctness / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives 4 colors. The task is to minimum replacements for
+distinct.
+
+**What must we output?** minimum replacements for distinct
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-4 colors
-
-ACTUAL QUESTION:
-minimum replacements for distinct
+Story-specific names → discard them. Keep only: 4 colors. Mathematical state → 4-distinctCount.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-4 colors
-
-Useful mathematical state:
-4-distinctCount
-
-Unknown / target:
-minimum replacements for distinct
+Given: 4 colors. Useful state: 4-distinctCount. Unknown: minimum replacements for distinct.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 set size
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+set size
+        ↓
 duplicates
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `set size`. Then simplify/rearrange it
+to `duplicates`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-4-distinctCount
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 set size
-      ↓
+  ↓ simplify
 duplicates
-      ↓
-set
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `set size` → **duplicates**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `set size`, evaluate it step
+by step, and verify the transformed condition `duplicates`. The final
+value/condition gives minimum replacements for distinct.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 054 --- CF 443A --- Anton and Letters
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-set size
-
-     ↓ evaluate / simplify
-
-duplicates
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 054
---- CF 443A --- Anton and Letters
-
-**Problem Link:** [CF 443A --- Anton and
-Letters](https://codeforces.com/problemset/problem/443/A)\
+**Problem:** [CF 443A --- Anton and Letters]()\
 **Topic / Rating:** Set / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives formatted string. The task is to number distinct
+letters.
+
+**What must we output?** number distinct letters
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-formatted string
-
-ACTUAL QUESTION:
-number distinct letters
+Story-specific names → discard them. Keep only: formatted string. Mathematical state → extract lowercase chars.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-formatted string
-
-Useful mathematical state:
-extract lowercase chars
-
-Unknown / target:
-number distinct letters
+Given: formatted string. Useful state: extract lowercase chars. Unknown: number distinct letters.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 set cardinality
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+set cardinality
+        ↓
 distinct count
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `set cardinality`. Then
+simplify/rearrange it to `distinct count`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-extract lowercase chars
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 set cardinality
-      ↓
+  ↓ simplify
 distinct count
-      ↓
-set
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `set cardinality` → **distinct count**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `set cardinality`, evaluate it
+step by step, and verify the transformed condition `distinct count`. The
+final value/condition gives number distinct letters.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 055 --- CF 59A --- Word
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-set cardinality
-
-     ↓ evaluate / simplify
-
-distinct count
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 055
---- CF 59A --- Word
-
-**Problem Link:** [CF 59A ---
-Word](https://codeforces.com/problemset/problem/59/A)\
+**Problem:** [CF 59A --- Word]()\
 **Topic / Rating:** Counting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string. The task is to convert based on upper/lower
+majority.
+
+**What must we output?** convert based on upper/lower majority
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string
-
-ACTUAL QUESTION:
-convert based on upper/lower majority
+Story-specific names → discard them. Keep only: string. Mathematical state → count uppercase vs lowercase.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string
-
-Useful mathematical state:
-count uppercase vs lowercase
-
-Unknown / target:
-convert based on upper/lower majority
+Given: string. Useful state: count uppercase vs lowercase. Unknown: convert based on upper/lower majority.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 choose case
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+choose case
+        ↓
 frequency comparison
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `choose case`. Then simplify/rearrange
+it to `frequency comparison`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-count uppercase vs lowercase
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 choose case
-      ↓
+  ↓ simplify
 frequency comparison
-      ↓
-transform
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `choose case` → **frequency comparison**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `choose case`, evaluate it
+step by step, and verify the transformed condition
+`frequency comparison`. The final value/condition gives convert based on
+upper/lower majority.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a tiny transformed sequence:
-
-``` text
-keys = [2, 2, 5, 2, 5]
-
-frequency:
-2 → 3
-5 → 2
-
-Apply:
-choose case
-
-Then:
-frequency comparison
-
-The dry run tracks frequencies/keys,
-not the original story objects.
-```
 
 ## Problem 056 --- CF 236A --- Boy or Girl
 
-**Problem Link:** [CF 236A --- Boy or
-Girl](https://codeforces.com/problemset/problem/236/A)\
+**Problem:** [CF 236A --- Boy or Girl]()\
 **Topic / Rating:** Set/Parity / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives username. The task is to output based on distinct
+char count parity.
+
+**What must we output?** output based on distinct char count parity
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-username
-
-ACTUAL QUESTION:
-output based on distinct char count parity
+Story-specific names → discard them. Keep only: username. Mathematical state → d=|set(chars)|.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-username
-
-Useful mathematical state:
-d=|set(chars)|
-
-Unknown / target:
-output based on distinct char count parity
+Given: username. Useful state: d=|set(chars)|. Unknown: output based on distinct char count parity.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 d%2
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+d%2
+        ↓
 parity of distinct count
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `d%2`. Then simplify/rearrange it to
+`parity of distinct count`. This is the point where the story disappears
+and the solution follows from the transformed condition.
 
 ``` text
-d=|set(chars)|
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 d%2
-      ↓
+  ↓ simplify
 parity of distinct count
-      ↓
-set
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `d%2` → **parity of distinct count**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `d%2`, evaluate it step by
+step, and verify the transformed condition `parity of distinct count`.
+The final value/condition gives output based on distinct char count
+parity.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-d%2
-
-Then simplify to:
-parity of distinct count
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 057 --- CF 785A --- Anton and Polyhedrons
 
-**Problem Link:** [CF 785A --- Anton and
-Polyhedrons](https://codeforces.com/problemset/problem/785/A)\
+**Problem:** [CF 785A --- Anton and Polyhedrons]()\
 **Topic / Rating:** Mapping / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives names. The task is to total faces.
+
+**What must we output?** total faces
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-names
-
-ACTUAL QUESTION:
-total faces
+Story-specific names → discard them. Keep only: names. Mathematical state → name→constant.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-names
-
-Useful mathematical state:
-name→constant
-
-Unknown / target:
-total faces
+Given: names. Useful state: name→constant. Unknown: total faces.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 sum contributions
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+sum contributions
+        ↓
 lookup
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `sum contributions`. Then
+simplify/rearrange it to `lookup`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-name→constant
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 sum contributions
-      ↓
+  ↓ simplify
 lookup
-      ↓
-map/if
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `sum contributions` → **lookup**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `sum contributions`, evaluate
+it step by step, and verify the transformed condition `lookup`. The
+final value/condition gives total faces.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 058 --- CF 703A --- Mishka and Game
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-sum contributions
-
-     ↓ evaluate / simplify
-
-lookup
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 058
---- CF 703A --- Mishka and Game
-
-**Problem Link:** [CF 703A --- Mishka and
-Game](https://codeforces.com/problemset/problem/703/A)\
+**Problem:** [CF 703A --- Mishka and Game]()\
 **Topic / Rating:** Comparison / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives round scores. The task is to winner by more round
+wins.
+
+**What must we output?** winner by more round wins
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-round scores
-
-ACTUAL QUESTION:
-winner by more round wins
+Story-specific names → discard them. Keep only: round scores. Mathematical state → count a>b and a<b.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-round scores
-
-Useful mathematical state:
-count a>b and a<b
-
-Unknown / target:
-winner by more round wins
+Given: round scores. Useful state: count a>b and a<b. Unknown: winner by more round wins.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 compare counts
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+compare counts
+        ↓
 two counters
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `compare counts`. Then
+simplify/rearrange it to `two counters`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-count a>b and a<b
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 compare counts
-      ↓
+  ↓ simplify
 two counters
-      ↓
-scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `compare counts` → **two counters**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `compare counts`, evaluate it
+step by step, and verify the transformed condition `two counters`. The
+final value/condition gives winner by more round wins.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 059 --- CF 734B --- Anton and Digits
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-compare counts
-
-     ↓ evaluate / simplify
-
-two counters
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 059
---- CF 734B --- Anton and Digits
-
-**Problem Link:** [CF 734B --- Anton and
-Digits](https://codeforces.com/problemset/problem/734/B)\
+**Problem:** [CF 734B --- Anton and Digits]()\
 **Topic / Rating:** Greedy/Counting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives counts 2,3,5,6. The task is to maximize sum using
+256 and32.
+
+**What must we output?** maximize sum using 256 and32
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-counts 2,3,5,6
-
-ACTUAL QUESTION:
-maximize sum using 256 and32
+Story-specific names → discard them. Keep only: counts 2,3,5,6. Mathematical state → make 256 first because larger.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-counts 2,3,5,6
-
-Useful mathematical state:
-make 256 first because larger
-
-Unknown / target:
-maximize sum using 256 and32
+Given: counts 2,3,5,6. Useful state: make 256 first because larger. Unknown: maximize sum using 256 and32.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 x=min(2,5,6), y=min(2left,3)
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+x=min(2,5,6), y=min(2left,3)
+        ↓
 resource allocation
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `x=min(2,5,6), y=min(2left,3)`. Then
+simplify/rearrange it to `resource allocation`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-make 256 first because larger
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 x=min(2,5,6), y=min(2left,3)
-      ↓
+  ↓ simplify
 resource allocation
-      ↓
-greedy
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `x=min(2,5,6), y=min(2left,3)` → **resource
-allocation**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`x=min(2,5,6), y=min(2left,3)`, evaluate it step by step, and verify the
+transformed condition `resource allocation`. The final value/condition
+gives maximize sum using 256 and32.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 060 --- CF 1097A --- Gennady the Card Game
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-x=min(2,5,6), y=min(2left,3)
-
-     ↓ evaluate / simplify
-
-resource allocation
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 060
---- CF 1097A --- Gennady the Card Game
-
-**Problem Link:** [CF 1097A --- Gennady the Card
-Game](https://codeforces.com/problemset/problem/1097/A)\
+**Problem:** [CF 1097A --- Gennady the Card Game]()\
 **Topic / Rating:** Matching / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives card + five cards. The task is to whether rank or
+suit matches.
+
+**What must we output?** whether rank or suit matches
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-card + five cards
-
-ACTUAL QUESTION:
-whether rank or suit matches
+Story-specific names → discard them. Keep only: card + five cards. Mathematical state → exists same first or second char.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-card + five cards
-
-Useful mathematical state:
-exists same first or second char
-
-Unknown / target:
-whether rank or suit matches
+Given: card + five cards. Useful state: exists same first or second char. Unknown: whether rank or suit matches.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 OR condition
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+OR condition
+        ↓
 scan
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `OR condition`. Then simplify/rearrange
+it to `scan`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-exists same first or second char
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 OR condition
-      ↓
+  ↓ simplify
 scan
-      ↓
-O(5)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `OR condition` → **scan**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `OR condition`, evaluate it
+step by step, and verify the transformed condition `scan`. The final
+value/condition gives whether rank or suit matches.
 
 ------------------------------------------------------------------------
 
 # Pattern 7 --- Counting / Frequency / Pairs
 
-### 5. Dry Run --- How It Works
+## Problem 061 --- CF 1520D --- Same Differences
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-OR condition
-
-     ↓ evaluate / simplify
-
-scan
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 061
---- CF 1520D --- Same Differences
-
-**Problem Link:** [CF 1520D --- Same
-Differences](https://codeforces.com/problemset/problem/1520/D)\
+**Problem:** [CF 1520D --- Same Differences]()\
 **Topic / Rating:** Algebra/Frequency / 1200
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to count i\<j with
+a\[j\]-a\[i\]=j-i.
+
+**What must we output?** count i\<j with a\[j\]-a\[i\]=j-i
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-count i<j with a[j]-a[i]=j-i
+Story-specific names → discard them. Keep only: array. Mathematical state → a[j]-j=a[i]-i.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-a[j]-j=a[i]-i
-
-Unknown / target:
-count i<j with a[j]-a[i]=j-i
+Given: array. Useful state: a[j]-j=a[i]-i. Unknown: count i<j with a[j]-a[i]=j-i.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 key=a[i]-i
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+key=a[i]-i
+        ↓
 equal-key pairs
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `key=a[i]-i`. Then simplify/rearrange
+it to `equal-key pairs`. This is the point where the story disappears
+and the solution follows from the transformed condition.
 
 ``` text
-a[j]-j=a[i]-i
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 key=a[i]-i
-      ↓
+  ↓ simplify
 equal-key pairs
-      ↓
-hash map
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `key=a[i]-i` → **equal-key pairs**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `key=a[i]-i`, evaluate it step
+by step, and verify the transformed condition `equal-key pairs`. The
+final value/condition gives count i\<j with a\[j\]-a\[i\]=j-i.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a tiny transformed sequence:
-
-``` text
-keys = [2, 2, 5, 2, 5]
-
-frequency:
-2 → 3
-5 → 2
-
-Apply:
-key=a[i]-i
-
-Then:
-equal-key pairs
-
-The dry run tracks frequencies/keys,
-not the original story objects.
-```
 
 ## Problem 062 --- CF 1538C --- Challenging Cliffs / Number of Pairs
 
-**Problem Link:** [CF 1538C --- Challenging Cliffs / Number of
-Pairs](https://codeforces.com/problemset/problem/1538/C)\
+**Problem:** [CF 1538C --- Challenging Cliffs / Number of Pairs]()\
 **Topic / Rating:** Two Pointers / 1300
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array,l,r. The task is to count pairs with sum in
+\[l,r\].
+
+**What must we output?** count pairs with sum in \[l,r\]
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array,l,r
-
-ACTUAL QUESTION:
-count pairs with sum in [l,r]
+Story-specific names → discard them. Keep only: array,l,r. Mathematical state → count<=r - count<l.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array,l,r
-
-Useful mathematical state:
-count<=r - count<l
-
-Unknown / target:
-count pairs with sum in [l,r]
+Given: array,l,r. Useful state: count<=r - count<l. Unknown: count pairs with sum in [l,r].
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 sorted pair bound
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+sorted pair bound
+        ↓
 two pointers
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `sorted pair bound`. Then
+simplify/rearrange it to `two pointers`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-count<=r - count<l
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 sorted pair bound
-      ↓
+  ↓ simplify
 two pointers
-      ↓
-O(nlogn)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `sorted pair bound` → **two pointers**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `sorted pair bound`, evaluate
+it step by step, and verify the transformed condition `two pointers`.
+The final value/condition gives count pairs with sum in \[l,r\].
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Example:
-
-``` text
-values:
-[8, 2, 6, 3]
-
-sort:
-[2, 3, 6, 8]
-
-Now apply:
-sorted pair bound
-
-which reduces to:
-two pointers
-
-Sorting exposes the mathematical order
-that was hidden by the input arrangement.
-```
 
 ## Problem 063 --- CF 1669B --- Triple
 
-**Problem Link:** [CF 1669B ---
-Triple](https://codeforces.com/problemset/problem/1669/B)\
+**Problem:** [CF 1669B --- Triple]()\
 **Topic / Rating:** Frequency / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to find value occurring \>=3.
+
+**What must we output?** find value occurring \>=3
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-find value occurring >=3
+Story-specific names → discard them. Keep only: array. Mathematical state → freq[x]>=3.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-freq[x]>=3
-
-Unknown / target:
-find value occurring >=3
+Given: array. Useful state: freq[x]>=3. Unknown: find value occurring >=3.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 frequency threshold
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+frequency threshold
+        ↓
 count
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `frequency threshold`. Then
+simplify/rearrange it to `count`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-freq[x]>=3
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 frequency threshold
-      ↓
+  ↓ simplify
 count
-      ↓
-map
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `frequency threshold` → **count**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `frequency threshold`,
+evaluate it step by step, and verify the transformed condition `count`.
+The final value/condition gives find value occurring \>=3.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 064 --- CF 1742C --- Stripes
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-frequency threshold
-
-     ↓ evaluate / simplify
-
-count
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 064
---- CF 1742C --- Stripes
-
-**Problem Link:** [CF 1742C ---
-Stripes](https://codeforces.com/problemset/problem/1742/C)\
+**Problem:** [CF 1742C --- Stripes]()\
 **Topic / Rating:** Grid/Existence / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives 8x8 grid. The task is to determine last full stripe
+color.
+
+**What must we output?** determine last full stripe color
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-8x8 grid
-
-ACTUAL QUESTION:
-determine last full stripe color
+Story-specific names → discard them. Keep only: 8x8 grid. Mathematical state → full row of R is decisive.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-8x8 grid
-
-Useful mathematical state:
-full row of R is decisive
-
-Unknown / target:
-determine last full stripe color
+Given: 8x8 grid. Useful state: full row of R is decisive. Unknown: determine last full stripe color.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 scan rows
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+scan rows
+        ↓
 existence
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `scan rows`. Then simplify/rearrange it
+to `existence`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-full row of R is decisive
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 scan rows
-      ↓
+  ↓ simplify
 existence
-      ↓
-O(64)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `scan rows` → **existence**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `scan rows`, evaluate it step
+by step, and verify the transformed condition `existence`. The final
+value/condition gives determine last full stripe color.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 065 --- CF 1791B --- Following Directions
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-scan rows
-
-     ↓ evaluate / simplify
-
-existence
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 065
---- CF 1791B --- Following Directions
-
-**Problem Link:** [CF 1791B --- Following
-Directions](https://codeforces.com/problemset/problem/1791/B)\
+**Problem:** [CF 1791B --- Following Directions]()\
 **Topic / Rating:** Coordinates / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives moves. The task is to whether path visits (1,1).
+
+**What must we output?** whether path visits (1,1)
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-moves
-
-ACTUAL QUESTION:
-whether path visits (1,1)
+Story-specific names → discard them. Keep only: moves. Mathematical state → update x,y per char.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-moves
-
-Useful mathematical state:
-update x,y per char
-
-Unknown / target:
-whether path visits (1,1)
+Given: moves. Useful state: update x,y per char. Unknown: whether path visits (1,1).
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 ∃prefix=(1,1)
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+∃prefix=(1,1)
+        ↓
 prefix state
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `∃prefix=(1,1)`. Then
+simplify/rearrange it to `prefix state`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-update x,y per char
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 ∃prefix=(1,1)
-      ↓
+  ↓ simplify
 prefix state
-      ↓
-scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `∃prefix=(1,1)` → **prefix state**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `∃prefix=(1,1)`, evaluate it
+step by step, and verify the transformed condition `prefix state`. The
+final value/condition gives whether path visits (1,1).
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 066 --- CF 1703B --- ICPC Balloons
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-∃prefix=(1,1)
-
-     ↓ evaluate / simplify
-
-prefix state
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 066
---- CF 1703B --- ICPC Balloons
-
-**Problem Link:** [CF 1703B --- ICPC
-Balloons](https://codeforces.com/problemset/problem/1703/B)\
+**Problem:** [CF 1703B --- ICPC Balloons]()\
 **Topic / Rating:** Frequency / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string. The task is to score first occurrence
+differently.
+
+**What must we output?** score first occurrence differently
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string
-
-ACTUAL QUESTION:
-score first occurrence differently
+Story-specific names → discard them. Keep only: string. Mathematical state → first char contributes2 else1.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string
-
-Useful mathematical state:
-first char contributes2 else1
-
-Unknown / target:
-score first occurrence differently
+Given: string. Useful state: first char contributes2 else1. Unknown: score first occurrence differently.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 seen set
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+seen set
+        ↓
 contribution
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `seen set`. Then simplify/rearrange it
+to `contribution`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-first char contributes2 else1
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 seen set
-      ↓
+  ↓ simplify
 contribution
-      ↓
-set
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `seen set` → **contribution**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `seen set`, evaluate it step
+by step, and verify the transformed condition `contribution`. The final
+value/condition gives score first occurrence differently.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 067 --- CF 1722A --- Spell Check
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-seen set
-
-     ↓ evaluate / simplify
-
-contribution
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 067
---- CF 1722A --- Spell Check
-
-**Problem Link:** [CF 1722A --- Spell
-Check](https://codeforces.com/problemset/problem/1722/A)\
+**Problem:** [CF 1722A --- Spell Check]()\
 **Topic / Rating:** Frequency/Sorting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string. The task is to whether permutation equals
+TimUR.
+
+**What must we output?** whether permutation equals TimUR
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string
-
-ACTUAL QUESTION:
-whether permutation equals TimUR
+Story-specific names → discard them. Keep only: string. Mathematical state → same multiset as 'Timur'.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string
-
-Useful mathematical state:
-same multiset as 'Timur'
-
-Unknown / target:
-whether permutation equals TimUR
+Given: string. Useful state: same multiset as 'Timur'. Unknown: whether permutation equals TimUR.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 sort or counts
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+sort or counts
+        ↓
 canonical form
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `sort or counts`. Then
+simplify/rearrange it to `canonical form`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-same multiset as 'Timur'
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 sort or counts
-      ↓
+  ↓ simplify
 canonical form
-      ↓
-sort
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `sort or counts` → **canonical form**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `sort or counts`, evaluate it
+step by step, and verify the transformed condition `canonical form`. The
+final value/condition gives whether permutation equals TimUR.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 068 --- CF 1791C --- Prepend and Append
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-sort or counts
-
-     ↓ evaluate / simplify
-
-canonical form
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 068
---- CF 1791C --- Prepend and Append
-
-**Problem Link:** [CF 1791C --- Prepend and
-Append](https://codeforces.com/problemset/problem/1791/C)\
+**Problem:** [CF 1791C --- Prepend and Append]()\
 **Topic / Rating:** Two Pointers / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives binary string. The task is to remove unequal ends.
+
+**What must we output?** remove unequal ends
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-binary string
-
-ACTUAL QUESTION:
-remove unequal ends
+Story-specific names → discard them. Keep only: binary string. Mathematical state → while l<r and s[l]!=s[r].
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-binary string
-
-Useful mathematical state:
-while l<r and s[l]!=s[r]
-
-Unknown / target:
-remove unequal ends
+Given: binary string. Useful state: while l<r and s[l]!=s[r]. Unknown: remove unequal ends.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 remaining length
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+remaining length
+        ↓
 two pointers
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `remaining length`. Then
+simplify/rearrange it to `two pointers`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-while l<r and s[l]!=s[r]
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 remaining length
-      ↓
+  ↓ simplify
 two pointers
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `remaining length` → **two pointers**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `remaining length`, evaluate
+it step by step, and verify the transformed condition `two pointers`.
+The final value/condition gives remove unequal ends.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 069 --- CF 1829D --- Gold Rush
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-remaining length
-
-     ↓ evaluate / simplify
-
-two pointers
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 069
---- CF 1829D --- Gold Rush
-
-**Problem Link:** [CF 1829D --- Gold
-Rush](https://codeforces.com/problemset/problem/1829/D)\
+**Problem:** [CF 1829D --- Gold Rush]()\
 **Topic / Rating:** Recursion/Reachability / 1000
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,m. The task is to can reach m by splitting x into
+x/3 and2x/3.
+
+**What must we output?** can reach m by splitting x into x/3 and2x/3
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,m
-
-ACTUAL QUESTION:
-can reach m by splitting x into x/3 and2x/3
+Story-specific names → discard them. Keep only: n,m. Mathematical state → only split divisible by3.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,m
-
-Useful mathematical state:
-only split divisible by3
-
-Unknown / target:
-can reach m by splitting x into x/3 and2x/3
+Given: n,m. Useful state: only split divisible by3. Unknown: can reach m by splitting x into x/3 and2x/3.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 DFS on decreasing states
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+DFS on decreasing states
+        ↓
 reachability
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `DFS on decreasing states`. Then
+simplify/rearrange it to `reachability`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-only split divisible by3
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 DFS on decreasing states
-      ↓
+  ↓ simplify
 reachability
-      ↓
-recursion
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `DFS on decreasing states` → **reachability**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `DFS on decreasing states`,
+evaluate it step by step, and verify the transformed condition
+`reachability`. The final value/condition gives can reach m by splitting
+x into x/3 and2x/3.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 070 --- CF 1878B --- Aleksa and Stack
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-DFS on decreasing states
-
-     ↓ evaluate / simplify
-
-reachability
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 070
---- CF 1878B --- Aleksa and Stack
-
-**Problem Link:** [CF 1878B --- Aleksa and
-Stack](https://codeforces.com/problemset/problem/1878/B)\
+**Problem:** [CF 1878B --- Aleksa and Stack]()\
 **Topic / Rating:** Construction / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to construct sequence satisfying
+divisibility condition.
+
+**What must we output?** construct sequence satisfying divisibility
+condition
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-construct sequence satisfying divisibility condition
+Story-specific names → discard them. Keep only: n. Mathematical state → choose simple arithmetic sequence.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-choose simple arithmetic sequence
-
-Unknown / target:
-construct sequence satisfying divisibility condition
+Given: n. Useful state: choose simple arithmetic sequence. Unknown: construct sequence satisfying divisibility condition.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 constant gap avoids divisibility
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+constant gap avoids divisibility
+        ↓
 construct
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `constant gap avoids divisibility`.
+Then simplify/rearrange it to `construct`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-choose simple arithmetic sequence
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 constant gap avoids divisibility
-      ↓
+  ↓ simplify
 construct
-      ↓
-formula
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `constant gap avoids divisibility` → **construct**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`constant gap avoids divisibility`, evaluate it step by step, and verify
+the transformed condition `construct`. The final value/condition gives
+construct sequence satisfying divisibility condition.
 
 ------------------------------------------------------------------------
 
 # Pattern 8 --- Operation → Delta → Invariant
 
-### 5. Dry Run --- How It Works
+## Problem 071 --- CF 1538B --- Friends and Candies
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-constant gap avoids divisibility
-
-     ↓ evaluate / simplify
-
-construct
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 071
---- CF 1538B --- Friends and Candies
-
-**Problem Link:** [CF 1538B --- Friends and
-Candies](https://codeforces.com/problemset/problem/1538/B)\
+**Problem:** [CF 1538B --- Friends and Candies]()\
 **Topic / Rating:** Invariant / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to equalize while preserving sum.
+
+**What must we output?** equalize while preserving sum
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-equalize while preserving sum
+Story-specific names → discard them. Keep only: array. Mathematical state → S=n*x.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-S=n*x
-
-Unknown / target:
-equalize while preserving sum
+Given: array. Useful state: S=n*x. Unknown: equalize while preserving sum.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 S%n=0
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+S%n=0
+        ↓
 average invariant
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `S%n=0`. Then simplify/rearrange it to
+`average invariant`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-S=n*x
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 S%n=0
-      ↓
+  ↓ simplify
 average invariant
-      ↓
-count >avg
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `S%n=0` → **average invariant**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `S%n=0`, evaluate it step by
+step, and verify the transformed condition `average invariant`. The
+final value/condition gives equalize while preserving sum.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 072 --- CF 1855A --- Dalton the Teacher
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-S%n=0
-
-     ↓ evaluate / simplify
-
-average invariant
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 072
---- CF 1855A --- Dalton the Teacher
-
-**Problem Link:** [CF 1855A --- Dalton the
-Teacher](https://codeforces.com/problemset/problem/1855/A)\
+**Problem:** [CF 1855A --- Dalton the Teacher]()\
 **Topic / Rating:** Mismatch/Operation / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives permutation. The task is to minimum operations
+fixing fixed points by pair operation.
+
+**What must we output?** minimum operations fixing fixed points by pair
+operation
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-permutation
-
-ACTUAL QUESTION:
-minimum operations fixing fixed points by pair operation
+Story-specific names → discard them. Keep only: permutation. Mathematical state → each op can fix at most2 fixed points.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-permutation
-
-Useful mathematical state:
-each op can fix at most2 fixed points
-
-Unknown / target:
-minimum operations fixing fixed points by pair operation
+Given: permutation. Useful state: each op can fix at most2 fixed points. Unknown: minimum operations fixing fixed points by pair operation.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 ceil(fixed/2)
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+ceil(fixed/2)
+        ↓
 count fixed
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `ceil(fixed/2)`. Then
+simplify/rearrange it to `count fixed`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-each op can fix at most2 fixed points
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 ceil(fixed/2)
-      ↓
+  ↓ simplify
 count fixed
-      ↓
-(cnt+1)/2
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `ceil(fixed/2)` → **count fixed**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `ceil(fixed/2)`, evaluate it
+step by step, and verify the transformed condition `count fixed`. The
+final value/condition gives minimum operations fixing fixed points by
+pair operation.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 073 --- CF 1838A --- Blackboard List
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-ceil(fixed/2)
-
-     ↓ evaluate / simplify
-
-count fixed
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 073
---- CF 1838A --- Blackboard List
-
-**Problem Link:** [CF 1838A --- Blackboard
-List](https://codeforces.com/problemset/problem/1838/A)\
+**Problem:** [CF 1838A --- Blackboard List]()\
 **Topic / Rating:** Extremal / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to recover original special
+number.
+
+**What must we output?** recover original special number
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-recover original special number
+Story-specific names → discard them. Keep only: array. Mathematical state → negative minimum survives construction; else maximum.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-negative minimum survives construction; else maximum
-
-Unknown / target:
-recover original special number
+Given: array. Useful state: negative minimum survives construction; else maximum. Unknown: recover original special number.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 extremal invariant
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+extremal invariant
+        ↓
 min if negative else max
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `extremal invariant`. Then
+simplify/rearrange it to `min if negative else max`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-negative minimum survives construction; else maximum
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 extremal invariant
-      ↓
+  ↓ simplify
 min if negative else max
-      ↓
-scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `extremal invariant` → **min if negative else max**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `extremal invariant`, evaluate
+it step by step, and verify the transformed condition
+`min if negative else max`. The final value/condition gives recover
+original special number.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 074 --- CF 1862B --- Sequence Game
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-extremal invariant
-
-     ↓ evaluate / simplify
-
-min if negative else max
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 074
---- CF 1862B --- Sequence Game
-
-**Problem Link:** [CF 1862B --- Sequence
-Game](https://codeforces.com/problemset/problem/1862/B)\
+**Problem:** [CF 1862B --- Sequence Game]()\
 **Topic / Rating:** Construction / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives sequence b. The task is to construct a so filtering
+rule returns b.
+
+**What must we output?** construct a so filtering rule returns b
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-sequence b
-
-ACTUAL QUESTION:
-construct a so filtering rule returns b
+Story-specific names → discard them. Keep only: sequence b. Mathematical state → insert bridge when b[i-1]>b[i].
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-sequence b
-
-Useful mathematical state:
-insert bridge when b[i-1]>b[i]
-
-Unknown / target:
-construct a so filtering rule returns b
+Given: sequence b. Useful state: insert bridge when b[i-1]>b[i]. Unknown: construct a so filtering rule returns b.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 local condition
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+local condition
+        ↓
 construct with extra value
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `local condition`. Then
+simplify/rearrange it to `construct with extra value`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-insert bridge when b[i-1]>b[i]
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 local condition
-      ↓
+  ↓ simplify
 construct with extra value
-      ↓
-linear
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `local condition` → **construct with extra value**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `local condition`, evaluate it
+step by step, and verify the transformed condition
+`construct with extra value`. The final value/condition gives construct
+a so filtering rule returns b.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 075 --- CF 1798A --- Showstopper
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-local condition
-
-     ↓ evaluate / simplify
-
-construct with extra value
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 075
---- CF 1798A --- Showstopper
-
-**Problem Link:** [CF 1798A ---
-Showstopper](https://codeforces.com/problemset/problem/1798/A)\
+**Problem:** [CF 1798A --- Showstopper]()\
 **Topic / Rating:** Invariant/Swap / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives two arrays. The task is to can swap pairs so last
+elements are maxima.
+
+**What must we output?** can swap pairs so last elements are maxima
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-two arrays
-
-ACTUAL QUESTION:
-can swap pairs so last elements are maxima
+Story-specific names → discard them. Keep only: two arrays. Mathematical state → each pair independently orientable.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-two arrays
-
-Useful mathematical state:
-each pair independently orientable
-
-Unknown / target:
-can swap pairs so last elements are maxima
+Given: two arrays. Useful state: each pair independently orientable. Unknown: can swap pairs so last elements are maxima.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 need max pair endpoints fit final
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+need max pair endpoints fit final
+        ↓
 normalize max/min
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `need max pair endpoints fit final`.
+Then simplify/rearrange it to `normalize max/min`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-each pair independently orientable
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 need max pair endpoints fit final
-      ↓
+  ↓ simplify
 normalize max/min
-      ↓
-check
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `need max pair endpoints fit final` → **normalize
-max/min**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`need max pair endpoints fit final`, evaluate it step by step, and
+verify the transformed condition `normalize max/min`. The final
+value/condition gives can swap pairs so last elements are maxima.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 076 --- CF 660A --- Co-prime Array
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-need max pair endpoints fit final
-
-     ↓ evaluate / simplify
-
-normalize max/min
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 076
---- CF 660A --- Co-prime Array
-
-**Problem Link:** [CF 660A --- Co-prime
-Array](https://codeforces.com/problemset/problem/660/A)\
+**Problem:** [CF 660A --- Co-prime Array]()\
 **Topic / Rating:** Construction/GCD / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to insert minimum numbers so
+adjacent gcd=1.
+
+**What must we output?** insert minimum numbers so adjacent gcd=1
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-insert minimum numbers so adjacent gcd=1
+Story-specific names → discard them. Keep only: array. Mathematical state → if gcd(a[i],a[i+1])>1 insert coprime sentinel.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-if gcd(a[i],a[i+1])>1 insert coprime sentinel
-
-Unknown / target:
-insert minimum numbers so adjacent gcd=1
+Given: array. Useful state: if gcd(a[i],a[i+1])>1 insert coprime sentinel. Unknown: insert minimum numbers so adjacent gcd=1.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 local repair
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+local repair
+        ↓
 insert 1
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `local repair`. Then simplify/rearrange
+it to `insert 1`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-if gcd(a[i],a[i+1])>1 insert coprime sentinel
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 local repair
-      ↓
+  ↓ simplify
 insert 1
-      ↓
-linear
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `local repair` → **insert 1**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `local repair`, evaluate it
+step by step, and verify the transformed condition `insert 1`. The final
+value/condition gives insert minimum numbers so adjacent gcd=1.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 077 --- CF 1367A --- Short Substrings
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-local repair
-
-     ↓ evaluate / simplify
-
-insert 1
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 077
---- CF 1367A --- Short Substrings
-
-**Problem Link:** [CF 1367A --- Short
-Substrings](https://codeforces.com/problemset/problem/1367/A)\
+**Problem:** [CF 1367A --- Short Substrings]()\
 **Topic / Rating:** String Reconstruction / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string b. The task is to recover original.
+
+**What must we output?** recover original
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string b
-
-ACTUAL QUESTION:
-recover original
+Story-specific names → discard them. Keep only: string b. Mathematical state → overlap pairs share char.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string b
-
-Useful mathematical state:
-overlap pairs share char
-
-Unknown / target:
-recover original
+Given: string b. Useful state: overlap pairs share char. Unknown: recover original.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 take first then every second char
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+take first then every second char
+        ↓
 inverse operation
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `take first then every second char`.
+Then simplify/rearrange it to `inverse operation`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-overlap pairs share char
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 take first then every second char
-      ↓
+  ↓ simplify
 inverse operation
-      ↓
-construct
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `take first then every second char` → **inverse
-operation**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`take first then every second char`, evaluate it step by step, and
+verify the transformed condition `inverse operation`. The final
+value/condition gives recover original.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 078 --- CF 1374A --- Required Remainder
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-take first then every second char
-
-     ↓ evaluate / simplify
-
-inverse operation
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 078
---- CF 1374A --- Required Remainder
-
-**Problem Link:** [CF 1374A --- Required
-Remainder](https://codeforces.com/problemset/problem/1374/A)\
+**Problem:** [CF 1374A --- Required Remainder]()\
 **Topic / Rating:** Modulo/Optimization / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives x,y,n. The task is to largest k\<=n with k%x=y.
+
+**What must we output?** largest k\<=n with k%x=y
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-x,y,n
-
-ACTUAL QUESTION:
-largest k<=n with k%x=y
+Story-specific names → discard them. Keep only: x,y,n. Mathematical state → numbers are tx+y.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-x,y,n
-
-Useful mathematical state:
-numbers are tx+y
-
-Unknown / target:
-largest k<=n with k%x=y
+Given: x,y,n. Useful state: numbers are tx+y. Unknown: largest k<=n with k%x=y.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 t=floor((n-y)/x)
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+t=floor((n-y)/x)
+        ↓
 largest feasible
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `t=floor((n-y)/x)`. Then
+simplify/rearrange it to `largest feasible`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-numbers are tx+y
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 t=floor((n-y)/x)
-      ↓
+  ↓ simplify
 largest feasible
-      ↓
-formula
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `t=floor((n-y)/x)` → **largest feasible**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `t=floor((n-y)/x)`, evaluate
+it step by step, and verify the transformed condition
+`largest feasible`. The final value/condition gives largest k\<=n with
+k%x=y.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 079 --- CF 1551A --- Polycarp and Coins
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-t=floor((n-y)/x)
-
-     ↓ evaluate / simplify
-
-largest feasible
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 079
---- CF 1551A --- Polycarp and Coins
-
-**Problem Link:** [CF 1551A --- Polycarp and
-Coins](https://codeforces.com/problemset/problem/1551/A)\
+**Problem:** [CF 1551A --- Polycarp and Coins]()\
 **Topic / Rating:** Balancing / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to split n into 1-coin and2-coin
+counts minimizing difference.
+
+**What must we output?** split n into 1-coin and2-coin counts minimizing
+difference
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-split n into 1-coin and2-coin counts minimizing difference
+Story-specific names → discard them. Keep only: n. Mathematical state → c1+2c2=n, |c1-c2| min.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-c1+2c2=n, |c1-c2| min
-
-Unknown / target:
-split n into 1-coin and2-coin counts minimizing difference
+Given: n. Useful state: c1+2c2=n, |c1-c2| min. Unknown: split n into 1-coin and2-coin counts minimizing difference.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 near n/3
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+near n/3
+        ↓
 balanced equation
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `near n/3`. Then simplify/rearrange it
+to `balanced equation`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-c1+2c2=n, |c1-c2| min
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 near n/3
-      ↓
+  ↓ simplify
 balanced equation
-      ↓
-n%3 cases
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `near n/3` → **balanced equation**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `near n/3`, evaluate it step
+by step, and verify the transformed condition `balanced equation`. The
+final value/condition gives split n into 1-coin and2-coin counts
+minimizing difference.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 080 --- CF 1818A --- Politics
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-near n/3
-
-     ↓ evaluate / simplify
-
-balanced equation
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 080
---- CF 1818A --- Politics
-
-**Problem Link:** [CF 1818A ---
-Politics](https://codeforces.com/problemset/problem/1818/A)\
+**Problem:** [CF 1818A --- Politics]()\
 **Topic / Rating:** String/Counting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives strings. The task is to count strings compatible
+with reference.
+
+**What must we output?** count strings compatible with reference
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-strings
-
-ACTUAL QUESTION:
-count strings compatible with reference
+Story-specific names → discard them. Keep only: strings. Mathematical state → positions with reference 1 impose equality.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-strings
-
-Useful mathematical state:
-positions with reference 1 impose equality
-
-Unknown / target:
-count strings compatible with reference
+Given: strings. Useful state: positions with reference 1 impose equality. Unknown: count strings compatible with reference.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 predicate per string
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+predicate per string
+        ↓
 count valid
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `predicate per string`. Then
+simplify/rearrange it to `count valid`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-positions with reference 1 impose equality
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 predicate per string
-      ↓
+  ↓ simplify
 count valid
-      ↓
-nested scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `predicate per string` → **count valid**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `predicate per string`,
+evaluate it step by step, and verify the transformed condition
+`count valid`. The final value/condition gives count strings compatible
+with reference.
 
 ------------------------------------------------------------------------
 
 # Pattern 9 --- Sorting / Coordinate / Distance Modeling
 
-### 5. Dry Run --- How It Works
+## Problem 081 --- CF 160A --- Twins
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-predicate per string
-
-     ↓ evaluate / simplify
-
-count valid
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 081
---- CF 160A --- Twins
-
-**Problem Link:** [CF 160A ---
-Twins](https://codeforces.com/problemset/problem/160/A)\
+**Problem:** [CF 160A --- Twins]()\
 **Topic / Rating:** Sorting/Greedy / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives coins. The task is to minimum selected sum \> rest.
+
+**What must we output?** minimum selected sum \> rest
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-coins
-
-ACTUAL QUESTION:
-minimum selected sum > rest
+Story-specific names → discard them. Keep only: coins. Mathematical state → sort descending.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-coins
-
-Useful mathematical state:
-sort descending
-
-Unknown / target:
-minimum selected sum > rest
+Given: coins. Useful state: sort descending. Unknown: minimum selected sum > rest.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 prefix until 2sum>total
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+prefix until 2sum>total
+        ↓
 extremal choice
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `prefix until 2sum>total`. Then
+simplify/rearrange it to `extremal choice`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-sort descending
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 prefix until 2sum>total
-      ↓
+  ↓ simplify
 extremal choice
-      ↓
-O(nlogn)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `prefix until 2sum>total` → **extremal choice**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `prefix until 2sum>total`,
+evaluate it step by step, and verify the transformed condition
+`extremal choice`. The final value/condition gives minimum selected sum
+\> rest.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 082 --- CF 1399A --- Remove Smallest
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-prefix until 2sum>total
-
-     ↓ evaluate / simplify
-
-extremal choice
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 082
---- CF 1399A --- Remove Smallest
-
-**Problem Link:** [CF 1399A --- Remove
-Smallest](https://codeforces.com/problemset/problem/1399/A)\
+**Problem:** [CF 1399A --- Remove Smallest]()\
 **Topic / Rating:** Sorting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to can delete until one remains
+under diff\<=1.
+
+**What must we output?** can delete until one remains under diff\<=1
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-can delete until one remains under diff<=1
+Story-specific names → discard them. Keep only: array. Mathematical state → sort; all adjacent gaps<=1.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-sort; all adjacent gaps<=1
-
-Unknown / target:
-can delete until one remains under diff<=1
+Given: array. Useful state: sort; all adjacent gaps<=1. Unknown: can delete until one remains under diff<=1.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 adjacent condition
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+adjacent condition
+        ↓
 check
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `adjacent condition`. Then
+simplify/rearrange it to `check`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-sort; all adjacent gaps<=1
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 adjacent condition
-      ↓
+  ↓ simplify
 check
-      ↓
-O(nlogn)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `adjacent condition` → **check**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `adjacent condition`, evaluate
+it step by step, and verify the transformed condition `check`. The final
+value/condition gives can delete until one remains under diff\<=1.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 083 --- CF 1760A --- Medium Number
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-adjacent condition
-
-     ↓ evaluate / simplify
-
-check
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 083
---- CF 1760A --- Medium Number
-
-**Problem Link:** [CF 1760A --- Medium
-Number](https://codeforces.com/problemset/problem/1760/A)\
+**Problem:** [CF 1760A --- Medium Number]()\
 **Topic / Rating:** Sorting / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b,c. The task is to middle value.
+
+**What must we output?** middle value
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b,c
-
-ACTUAL QUESTION:
-middle value
+Story-specific names → discard them. Keep only: a,b,c. Mathematical state → sort three.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b,c
-
-Useful mathematical state:
-sort three
-
-Unknown / target:
-middle value
+Given: a,b,c. Useful state: sort three. Unknown: middle value.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 second element
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+second element
+        ↓
 median
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `second element`. Then
+simplify/rearrange it to `median`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-sort three
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 second element
-      ↓
+  ↓ simplify
 median
-      ↓
-O(1)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `second element` → **median**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `second element`, evaluate it
+step by step, and verify the transformed condition `median`. The final
+value/condition gives middle value.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 084 --- CF 1538A --- Stone Game
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-second element
-
-     ↓ evaluate / simplify
-
-median
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 084
---- CF 1538A --- Stone Game
-
-**Problem Link:** [CF 1538A --- Stone
-Game](https://codeforces.com/problemset/problem/1538/A)\
+**Problem:** [CF 1538A --- Stone Game]()\
 **Topic / Rating:** Positions / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives permutation. The task is to min removals from ends
+to remove min and max.
+
+**What must we output?** min removals from ends to remove min and max
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-permutation
-
-ACTUAL QUESTION:
-min removals from ends to remove min and max
+Story-specific names → discard them. Keep only: permutation. Mathematical state → positions pmin,pmax.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-permutation
-
-Useful mathematical state:
-positions pmin,pmax
-
-Unknown / target:
-min removals from ends to remove min and max
+Given: permutation. Useful state: positions pmin,pmax. Unknown: min removals from ends to remove min and max.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 min of three strategies
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+min of three strategies
+        ↓
 distance to ends
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `min of three strategies`. Then
+simplify/rearrange it to `distance to ends`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-positions pmin,pmax
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 min of three strategies
-      ↓
+  ↓ simplify
 distance to ends
-      ↓
-formula
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `min of three strategies` → **distance to ends**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `min of three strategies`,
+evaluate it step by step, and verify the transformed condition
+`distance to ends`. The final value/condition gives min removals from
+ends to remove min and max.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 085 --- CF 1729A --- Two Elevators
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-min of three strategies
-
-     ↓ evaluate / simplify
-
-distance to ends
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 085
---- CF 1729A --- Two Elevators
-
-**Problem Link:** [CF 1729A --- Two
-Elevators](https://codeforces.com/problemset/problem/1729/A)\
+**Problem:** [CF 1729A --- Two Elevators]()\
 **Topic / Rating:** Distance / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b,c. The task is to compare travel times.
+
+**What must we output?** compare travel times
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b,c
-
-ACTUAL QUESTION:
-compare travel times
+Story-specific names → discard them. Keep only: a,b,c. Mathematical state → t1=a-1, t2=|b-c|+c-1.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b,c
-
-Useful mathematical state:
-t1=a-1, t2=|b-c|+c-1
-
-Unknown / target:
-compare travel times
+Given: a,b,c. Useful state: t1=a-1, t2=|b-c|+c-1. Unknown: compare travel times.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 absolute distance
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+absolute distance
+        ↓
 compare
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `absolute distance`. Then
+simplify/rearrange it to `compare`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-t1=a-1, t2=|b-c|+c-1
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 absolute distance
-      ↓
+  ↓ simplify
 compare
-      ↓
-O(1)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `absolute distance` → **compare**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `absolute distance`, evaluate
+it step by step, and verify the transformed condition `compare`. The
+final value/condition gives compare travel times.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 086 --- CF 1593B --- Make it Divisible by 25
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-absolute distance
-
-     ↓ evaluate / simplify
-
-compare
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 086
---- CF 1593B --- Make it Divisible by 25
-
-**Problem Link:** [CF 1593B --- Make it Divisible by
-25](https://codeforces.com/problemset/problem/1593/B)\
+**Problem:** [CF 1593B --- Make it Divisible by 25]()\
 **Topic / Rating:** Digit Pattern / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string number. The task is to min deletions for
+divisible by25.
+
+**What must we output?** min deletions for divisible by25
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string number
-
-ACTUAL QUESTION:
-min deletions for divisible by25
+Story-specific names → discard them. Keep only: string number. Mathematical state → last two digits in {00,25,50,75}.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string number
-
-Useful mathematical state:
-last two digits in {00,25,50,75}
-
-Unknown / target:
-min deletions for divisible by25
+Given: string number. Useful state: last two digits in {00,25,50,75}. Unknown: min deletions for divisible by25.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 find pair from right
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+find pair from right
+        ↓
 pattern search
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `find pair from right`. Then
+simplify/rearrange it to `pattern search`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-last two digits in {00,25,50,75}
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 find pair from right
-      ↓
+  ↓ simplify
 pattern search
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `find pair from right` → **pattern search**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `find pair from right`,
+evaluate it step by step, and verify the transformed condition
+`pattern search`. The final value/condition gives min deletions for
+divisible by25.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 087 --- CF 1742F --- Smaller
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-find pair from right
-
-     ↓ evaluate / simplify
-
-pattern search
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 087
---- CF 1742F --- Smaller
-
-**Problem Link:** [CF 1742F ---
-Smaller](https://codeforces.com/problemset/problem/1742/F)\
+**Problem:** [CF 1742F --- Smaller]()\
 **Topic / Rating:** Lexicographic/Invariant / 1200
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string append queries. The task is to whether s\<t
+possible.
+
+**What must we output?** whether s\<t possible
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string append queries
-
-ACTUAL QUESTION:
-whether s<t possible
+Story-specific names → discard them. Keep only: string append queries. Mathematical state → presence of char >'a' dominates.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string append queries
-
-Useful mathematical state:
-presence of char >'a' dominates
-
-Unknown / target:
-whether s<t possible
+Given: string append queries. Useful state: presence of char >'a' dominates. Unknown: whether s<t possible.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 track counts/flags
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+track counts/flags
+        ↓
 compressed state
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `track counts/flags`. Then
+simplify/rearrange it to `compressed state`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-presence of char >'a' dominates
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 track counts/flags
-      ↓
+  ↓ simplify
 compressed state
-      ↓
-O(q)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `track counts/flags` → **compressed state**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `track counts/flags`, evaluate
+it step by step, and verify the transformed condition
+`compressed state`. The final value/condition gives whether s\<t
+possible.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 088 --- CF 1831A --- Twin Permutations
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-track counts/flags
-
-     ↓ evaluate / simplify
-
-compressed state
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 088
---- CF 1831A --- Twin Permutations
-
-**Problem Link:** [CF 1831A --- Twin
-Permutations](https://codeforces.com/problemset/problem/1831/A)\
+**Problem:** [CF 1831A --- Twin Permutations]()\
 **Topic / Rating:** Mapping / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives permutation. The task is to construct complementary
+permutation.
+
+**What must we output?** construct complementary permutation
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-permutation
-
-ACTUAL QUESTION:
-construct complementary permutation
+Story-specific names → discard them. Keep only: permutation. Mathematical state → b[i]=n+1-a[i].
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-permutation
-
-Useful mathematical state:
-b[i]=n+1-a[i]
-
-Unknown / target:
-construct complementary permutation
+Given: permutation. Useful state: b[i]=n+1-a[i]. Unknown: construct complementary permutation.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 value reflection
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+value reflection
+        ↓
 direct transform
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `value reflection`. Then
+simplify/rearrange it to `direct transform`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-b[i]=n+1-a[i]
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 value reflection
-      ↓
+  ↓ simplify
 direct transform
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `value reflection` → **direct transform**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `value reflection`, evaluate
+it step by step, and verify the transformed condition
+`direct transform`. The final value/condition gives construct
+complementary permutation.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 089 --- CF 1900A --- Cover in Water
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-value reflection
-
-     ↓ evaluate / simplify
-
-direct transform
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 089
---- CF 1900A --- Cover in Water
-
-**Problem Link:** [CF 1900A --- Cover in
-Water](https://codeforces.com/problemset/problem/1900/A)\
+**Problem:** [CF 1900A --- Cover in Water]()\
 **Topic / Rating:** Run Length / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string. The task is to minimum operations to fill
+dots.
+
+**What must we output?** minimum operations to fill dots
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string
-
-ACTUAL QUESTION:
-minimum operations to fill dots
+Story-specific names → discard them. Keep only: string. Mathematical state → run of >=3 triggers shortcut; else count dots.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string
-
-Useful mathematical state:
-run of >=3 triggers shortcut; else count dots
-
-Unknown / target:
-minimum operations to fill dots
+Given: string. Useful state: run of >=3 triggers shortcut; else count dots. Unknown: minimum operations to fill dots.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 local pattern
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+local pattern
+        ↓
 case split
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `local pattern`. Then
+simplify/rearrange it to `case split`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-run of >=3 triggers shortcut; else count dots
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 local pattern
-      ↓
+  ↓ simplify
 case split
-      ↓
-scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `local pattern` → **case split**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `local pattern`, evaluate it
+step by step, and verify the transformed condition `case split`. The
+final value/condition gives minimum operations to fill dots.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 090 --- CF 1873B --- Good Kid
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-local pattern
-
-     ↓ evaluate / simplify
-
-case split
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 090
---- CF 1873B --- Good Kid
-
-**Problem Link:** [CF 1873B --- Good
-Kid](https://codeforces.com/problemset/problem/1873/B)\
+**Problem:** [CF 1873B --- Good Kid]()\
 **Topic / Rating:** Product/Greedy / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives digits. The task is to increment one element to
+maximize product.
+
+**What must we output?** increment one element to maximize product
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-digits
-
-ACTUAL QUESTION:
-increment one element to maximize product
+Story-specific names → discard them. Keep only: digits. Mathematical state → increment smallest.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-digits
-
-Useful mathematical state:
-increment smallest
-
-Unknown / target:
-increment one element to maximize product
+Given: digits. Useful state: increment smallest. Unknown: increment one element to maximize product.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 exchange argument intuition
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+exchange argument intuition
+        ↓
 sort/min index
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `exchange argument intuition`. Then
+simplify/rearrange it to `sort/min index`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-increment smallest
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 exchange argument intuition
-      ↓
+  ↓ simplify
 sort/min index
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `exchange argument intuition` → **sort/min index**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `exchange argument intuition`,
+evaluate it step by step, and verify the transformed condition
+`sort/min index`. The final value/condition gives increment one element
+to maximize product.
 
 ------------------------------------------------------------------------
 
 # Pattern 10 --- Prefix / Running-State Modeling
 
-### 5. Dry Run --- How It Works
-
-Example:
-
-``` text
-values:
-[8, 2, 6, 3]
-
-sort:
-[2, 3, 6, 8]
-
-Now apply:
-exchange argument intuition
-
-which reduces to:
-sort/min index
-
-Sorting exposes the mathematical order
-that was hidden by the input arrangement.
-```
-
 ## Problem 091 --- CF 116A --- Tram
 
-**Problem Link:** [CF 116A ---
-Tram](https://codeforces.com/problemset/problem/116/A)\
+**Problem:** [CF 116A --- Tram]()\
 **Topic / Rating:** Prefix / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives enter/exit. The task is to minimum capacity.
+
+**What must we output?** minimum capacity
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-enter/exit
-
-ACTUAL QUESTION:
-minimum capacity
+Story-specific names → discard them. Keep only: enter/exit. Mathematical state → cur += in-out.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-enter/exit
-
-Useful mathematical state:
-cur += in-out
-
-Unknown / target:
-minimum capacity
+Given: enter/exit. Useful state: cur += in-out. Unknown: minimum capacity.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 max(cur)
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+max(cur)
+        ↓
 prefix occupancy
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `max(cur)`. Then simplify/rearrange it
+to `prefix occupancy`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-cur += in-out
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 max(cur)
-      ↓
+  ↓ simplify
 prefix occupancy
-      ↓
-scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `max(cur)` → **prefix occupancy**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `max(cur)`, evaluate it step
+by step, and verify the transformed condition `prefix occupancy`. The
+final value/condition gives minimum capacity.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 092 --- CF 363B --- Fence
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-max(cur)
-
-     ↓ evaluate / simplify
-
-prefix occupancy
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 092
---- CF 363B --- Fence
-
-**Problem Link:** [CF 363B ---
-Fence](https://codeforces.com/problemset/problem/363/B)\
+**Problem:** [CF 363B --- Fence]()\
 **Topic / Rating:** Sliding Window / 1100
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array,k. The task is to position of minimum k-length
+sum.
+
+**What must we output?** position of minimum k-length sum
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array,k
-
-ACTUAL QUESTION:
-position of minimum k-length sum
+Story-specific names → discard them. Keep only: array,k. Mathematical state → window sum.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array,k
-
-Useful mathematical state:
-window sum
-
-Unknown / target:
-position of minimum k-length sum
+Given: array,k. Useful state: window sum. Unknown: position of minimum k-length sum.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 min over contiguous k
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+min over contiguous k
+        ↓
 prefix/sliding
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `min over contiguous k`. Then
+simplify/rearrange it to `prefix/sliding`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-window sum
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 min over contiguous k
-      ↓
+  ↓ simplify
 prefix/sliding
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `min over contiguous k` → **prefix/sliding**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `min over contiguous k`,
+evaluate it step by step, and verify the transformed condition
+`prefix/sliding`. The final value/condition gives position of minimum
+k-length sum.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 093 --- CF 276C --- Little Girl and Problem on Trees / Little Girl and Maximum Sum
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-min over contiguous k
-
-     ↓ evaluate / simplify
-
-prefix/sliding
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 093
---- CF 276C --- Little Girl and Problem on Trees / Little Girl and
-Maximum Sum
-
-**Problem Link:** [CF 276C --- Little Girl and Problem on Trees / Little
-Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C)\
+**Problem:** [CF 276C --- Little Girl and Problem on Trees / Little Girl
+and Maximum Sum]()\
 **Topic / Rating:** Difference/Contribution / 1400
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array,queries. The task is to maximize total query
+sum by permutation.
+
+**What must we output?** maximize total query sum by permutation
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array,queries
-
-ACTUAL QUESTION:
-maximize total query sum by permutation
+Story-specific names → discard them. Keep only: array,queries. Mathematical state → frequency each index used.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array,queries
-
-Useful mathematical state:
-frequency each index used
-
-Unknown / target:
-maximize total query sum by permutation
+Given: array,queries. Useful state: frequency each index used. Unknown: maximize total query sum by permutation.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 sort values and frequencies same order
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+sort values and frequencies same order
+        ↓
 rearrangement inequality
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into
+`sort values and frequencies same order`. Then simplify/rearrange it to
+`rearrangement inequality`. This is the point where the story disappears
+and the solution follows from the transformed condition.
 
 ``` text
-frequency each index used
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 sort values and frequencies same order
-      ↓
+  ↓ simplify
 rearrangement inequality
-      ↓
-diff array
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `sort values and frequencies same order` →
-**rearrangement inequality**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`sort values and frequencies same order`, evaluate it step by step, and
+verify the transformed condition `rearrangement inequality`. The final
+value/condition gives maximize total query sum by permutation.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 094 --- CF 433B --- Kuriyama Mirai's Stones
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-sort values and frequencies same order
-
-     ↓ evaluate / simplify
-
-rearrangement inequality
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 094
---- CF 433B --- Kuriyama Mirai's Stones
-
-**Problem Link:** [CF 433B --- Kuriyama Mirai's
-Stones](https://codeforces.com/problemset/problem/433/B)\
+**Problem:** [CF 433B --- Kuriyama Mirai's Stones]()\
 **Topic / Rating:** Prefix Sum / 1200
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array,queries. The task is to range sums
+original/sorted.
+
+**What must we output?** range sums original/sorted
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array,queries
-
-ACTUAL QUESTION:
-range sums original/sorted
+Story-specific names → discard them. Keep only: array,queries. Mathematical state → pref and sortedPref.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array,queries
-
-Useful mathematical state:
-pref and sortedPref
-
-Unknown / target:
-range sums original/sorted
+Given: array,queries. Useful state: pref and sortedPref. Unknown: range sums original/sorted.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 range=p[r]-p[l-1]
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+range=p[r]-p[l-1]
+        ↓
 static range query
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `range=p[r]-p[l-1]`. Then
+simplify/rearrange it to `static range query`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-pref and sortedPref
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 range=p[r]-p[l-1]
-      ↓
+  ↓ simplify
 static range query
-      ↓
-O(1)/query
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `range=p[r]-p[l-1]` → **static range query**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `range=p[r]-p[l-1]`, evaluate
+it step by step, and verify the transformed condition
+`static range query`. The final value/condition gives range sums
+original/sorted.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 095 --- CF 313B --- Ilya and Queries
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-range=p[r]-p[l-1]
-
-     ↓ evaluate / simplify
-
-static range query
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 095
---- CF 313B --- Ilya and Queries
-
-**Problem Link:** [CF 313B --- Ilya and
-Queries](https://codeforces.com/problemset/problem/313/B)\
+**Problem:** [CF 313B --- Ilya and Queries]()\
 **Topic / Rating:** Prefix / 1100
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string,queries. The task is to count equal adjacent
+pairs in range.
+
+**What must we output?** count equal adjacent pairs in range
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string,queries
-
-ACTUAL QUESTION:
-count equal adjacent pairs in range
+Story-specific names → discard them. Keep only: string,queries. Mathematical state → b[i]=[s[i]==s[i-1]].
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string,queries
-
-Useful mathematical state:
-b[i]=[s[i]==s[i-1]]
-
-Unknown / target:
-count equal adjacent pairs in range
+Given: string,queries. Useful state: b[i]=[s[i]==s[i-1]]. Unknown: count equal adjacent pairs in range.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 prefix b
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+prefix b
+        ↓
 range sum
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `prefix b`. Then simplify/rearrange it
+to `range sum`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-b[i]=[s[i]==s[i-1]]
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 prefix b
-      ↓
+  ↓ simplify
 range sum
-      ↓
-O(n+q)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `prefix b` → **range sum**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `prefix b`, evaluate it step
+by step, and verify the transformed condition `range sum`. The final
+value/condition gives count equal adjacent pairs in range.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 096 --- CF 327A --- Flipping Game
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-prefix b
-
-     ↓ evaluate / simplify
-
-range sum
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 096
---- CF 327A --- Flipping Game
-
-**Problem Link:** [CF 327A --- Flipping
-Game](https://codeforces.com/problemset/problem/327/A)\
+**Problem:** [CF 327A --- Flipping Game]()\
 **Topic / Rating:** Transform/Kadane / 1200
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives binary array. The task is to maximize ones after one
+flip.
+
+**What must we output?** maximize ones after one flip
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-binary array
-
-ACTUAL QUESTION:
-maximize ones after one flip
+Story-specific names → discard them. Keep only: binary array. Mathematical state → gain: 0→+1,1→-1.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-binary array
-
-Useful mathematical state:
-gain: 0→+1,1→-1
-
-Unknown / target:
-maximize ones after one flip
+Given: binary array. Useful state: gain: 0→+1,1→-1. Unknown: maximize ones after one flip.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 max subarray gain
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+max subarray gain
+        ↓
 transform then Kadane
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `max subarray gain`. Then
+simplify/rearrange it to `transform then Kadane`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-gain: 0→+1,1→-1
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 max subarray gain
-      ↓
+  ↓ simplify
 transform then Kadane
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `max subarray gain` → **transform then Kadane**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `max subarray gain`, evaluate
+it step by step, and verify the transformed condition
+`transform then Kadane`. The final value/condition gives maximize ones
+after one flip.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 097 --- CF 580A --- Kefa and First Steps
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-max subarray gain
-
-     ↓ evaluate / simplify
-
-transform then Kadane
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 097
---- CF 580A --- Kefa and First Steps
-
-**Problem Link:** [CF 580A --- Kefa and First
-Steps](https://codeforces.com/problemset/problem/580/A)\
+**Problem:** [CF 580A --- Kefa and First Steps]()\
 **Topic / Rating:** Run Length / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to longest nondecreasing
+contiguous segment.
+
+**What must we output?** longest nondecreasing contiguous segment
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-longest nondecreasing contiguous segment
+Story-specific names → discard them. Keep only: array. Mathematical state → current run based on a[i]>=a[i-1].
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-current run based on a[i]>=a[i-1]
-
-Unknown / target:
-longest nondecreasing contiguous segment
+Given: array. Useful state: current run based on a[i]>=a[i-1]. Unknown: longest nondecreasing contiguous segment.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 max run
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+max run
+        ↓
 state
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `max run`. Then simplify/rearrange it
+to `state`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-current run based on a[i]>=a[i-1]
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 max run
-      ↓
+  ↓ simplify
 state
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `max run` → **state**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `max run`, evaluate it step by
+step, and verify the transformed condition `state`. The final
+value/condition gives longest nondecreasing contiguous segment.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 098 --- CF 702A --- Maximum Increase
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-max run
-
-     ↓ evaluate / simplify
-
-state
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 098
---- CF 702A --- Maximum Increase
-
-**Problem Link:** [CF 702A --- Maximum
-Increase](https://codeforces.com/problemset/problem/702/A)\
+**Problem:** [CF 702A --- Maximum Increase]()\
 **Topic / Rating:** Run Length / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to longest strictly increasing
+contiguous segment.
+
+**What must we output?** longest strictly increasing contiguous segment
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-longest strictly increasing contiguous segment
+Story-specific names → discard them. Keep only: array. Mathematical state → current++ if a[i]>a[i-1].
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-current++ if a[i]>a[i-1]
-
-Unknown / target:
-longest strictly increasing contiguous segment
+Given: array. Useful state: current++ if a[i]>a[i-1]. Unknown: longest strictly increasing contiguous segment.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 max run
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+max run
+        ↓
 state
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `max run`. Then simplify/rearrange it
+to `state`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-current++ if a[i]>a[i-1]
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 max run
-      ↓
+  ↓ simplify
 state
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `max run` → **state**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `max run`, evaluate it step by
+step, and verify the transformed condition `state`. The final
+value/condition gives longest strictly increasing contiguous segment.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 099 --- CF 1829B --- Blank Space
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-max run
-
-     ↓ evaluate / simplify
-
-state
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 099
---- CF 1829B --- Blank Space
-
-**Problem Link:** [CF 1829B --- Blank
-Space](https://codeforces.com/problemset/problem/1829/B)\
+**Problem:** [CF 1829B --- Blank Space]()\
 **Topic / Rating:** Run Length / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives binary array. The task is to longest zeros.
+
+**What must we output?** longest zeros
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-binary array
-
-ACTUAL QUESTION:
-longest zeros
+Story-specific names → discard them. Keep only: binary array. Mathematical state → current zero run.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-binary array
-
-Useful mathematical state:
-current zero run
-
-Unknown / target:
-longest zeros
+Given: binary array. Useful state: current zero run. Unknown: longest zeros.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 max
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+max
+        ↓
 state
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `max`. Then simplify/rearrange it to
+`state`. This is the point where the story disappears and the solution
+follows from the transformed condition.
 
 ``` text
-current zero run
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 max
-      ↓
+  ↓ simplify
 state
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `max` → **state**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `max`, evaluate it step by
+step, and verify the transformed condition `state`. The final
+value/condition gives longest zeros.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 100 --- CF 1669F --- Eating Candies
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-max
-
-     ↓ evaluate / simplify
-
-state
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 100
---- CF 1669F --- Eating Candies
-
-**Problem Link:** [CF 1669F --- Eating
-Candies](https://codeforces.com/problemset/problem/1669/F)\
+**Problem:** [CF 1669F --- Eating Candies]()\
 **Topic / Rating:** Two Pointers/Prefix / 1100
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to max elements eaten with equal
+left/right sums.
+
+**What must we output?** max elements eaten with equal left/right sums
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-max elements eaten with equal left/right sums
+Story-specific names → discard them. Keep only: array. Mathematical state → grow smaller side sum.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-grow smaller side sum
-
-Unknown / target:
-max elements eaten with equal left/right sums
+Given: array. Useful state: grow smaller side sum. Unknown: max elements eaten with equal left/right sums.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 two monotone prefix sums
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+two monotone prefix sums
+        ↓
 two pointers
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `two monotone prefix sums`. Then
+simplify/rearrange it to `two pointers`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-grow smaller side sum
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 two monotone prefix sums
-      ↓
+  ↓ simplify
 two pointers
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `two monotone prefix sums` → **two pointers**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `two monotone prefix sums`,
+evaluate it step by step, and verify the transformed condition
+`two pointers`. The final value/condition gives max elements eaten with
+equal left/right sums.
 
 ------------------------------------------------------------------------
 
 # Pattern 11 --- Constructive / Reachability Modeling
 
-### 5. Dry Run --- How It Works
+## Problem 101 --- CF 1690A --- Print a Pedestal
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-two monotone prefix sums
-
-     ↓ evaluate / simplify
-
-two pointers
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 101
---- CF 1690A --- Print a Pedestal
-
-**Problem Link:** [CF 1690A --- Print a
-Pedestal](https://codeforces.com/problemset/problem/1690/A)\
+**Problem:** [CF 1690A --- Print a Pedestal]()\
 **Topic / Rating:** Constructive / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to three distinct positive heights
+with ordering.
+
+**What must we output?** three distinct positive heights with ordering
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-three distinct positive heights with ordering
+Story-specific names → discard them. Keep only: n. Mathematical state → a+b+c=n, a<b<c.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-a+b+c=n, a<b<c
-
-Unknown / target:
-three distinct positive heights with ordering
+Given: n. Useful state: a+b+c=n, a<b<c. Unknown: three distinct positive heights with ordering.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 near thirds
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+near thirds
+        ↓
 construct
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `near thirds`. Then simplify/rearrange
+it to `construct`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-a+b+c=n, a<b<c
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 near thirds
-      ↓
+  ↓ simplify
 construct
-      ↓
-cases
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `near thirds` → **construct**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `near thirds`, evaluate it
+step by step, and verify the transformed condition `construct`. The
+final value/condition gives three distinct positive heights with
+ordering.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 102 --- CF 1845A --- Forbidden Integer
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-near thirds
-
-     ↓ evaluate / simplify
-
-construct
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 102
---- CF 1845A --- Forbidden Integer
-
-**Problem Link:** [CF 1845A --- Forbidden
-Integer](https://codeforces.com/problemset/problem/1845/A)\
+**Problem:** [CF 1845A --- Forbidden Integer]()\
 **Topic / Rating:** Constructive / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n,k,x. The task is to sum allowed integers to n.
+
+**What must we output?** sum allowed integers to n
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n,k,x
-
-ACTUAL QUESTION:
-sum allowed integers to n
+Story-specific names → discard them. Keep only: n,k,x. Mathematical state → choose 1 if allowed else 2/3.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n,k,x
-
-Useful mathematical state:
-choose 1 if allowed else 2/3
-
-Unknown / target:
-sum allowed integers to n
+Given: n,k,x. Useful state: choose 1 if allowed else 2/3. Unknown: sum allowed integers to n.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 simple basis values
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+simple basis values
+        ↓
 construct
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `simple basis values`. Then
+simplify/rearrange it to `construct`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-choose 1 if allowed else 2/3
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 simple basis values
-      ↓
+  ↓ simplify
 construct
-      ↓
-cases
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `simple basis values` → **construct**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `simple basis values`,
+evaluate it step by step, and verify the transformed condition
+`construct`. The final value/condition gives sum allowed integers to n.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 103 --- CF 1878B --- Aleksa and Stack
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-simple basis values
-
-     ↓ evaluate / simplify
-
-construct
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 103
---- CF 1878B --- Aleksa and Stack
-
-**Problem Link:** [CF 1878B --- Aleksa and
-Stack](https://codeforces.com/problemset/problem/1878/B)\
+**Problem:** [CF 1878B --- Aleksa and Stack]()\
 **Topic / Rating:** Constructive / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to build valid sequence.
+
+**What must we output?** build valid sequence
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-build valid sequence
+Story-specific names → discard them. Keep only: n. Mathematical state → choose simple constant pattern.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-choose simple constant pattern
-
-Unknown / target:
-build valid sequence
+Given: n. Useful state: choose simple constant pattern. Unknown: build valid sequence.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 satisfy local constraint by design
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+satisfy local constraint by design
+        ↓
 construction
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `satisfy local constraint by design`.
+Then simplify/rearrange it to `construction`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-choose simple constant pattern
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 satisfy local constraint by design
-      ↓
+  ↓ simplify
 construction
-      ↓
-formula
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `satisfy local constraint by design` →
-**construction**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`satisfy local constraint by design`, evaluate it step by step, and
+verify the transformed condition `construction`. The final
+value/condition gives build valid sequence.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 104 --- CF 1741A --- Compare T-Shirt Sizes
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-satisfy local constraint by design
-
-     ↓ evaluate / simplify
-
-construction
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 104
---- CF 1741A --- Compare T-Shirt Sizes
-
-**Problem Link:** [CF 1741A --- Compare T-Shirt
-Sizes](https://codeforces.com/problemset/problem/1741/A)\
+**Problem:** [CF 1741A --- Compare T-Shirt Sizes]()\
 **Topic / Rating:** Ordering / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives size strings. The task is to compare S/M/L with X
+count.
+
+**What must we output?** compare S/M/L with X count
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-size strings
-
-ACTUAL QUESTION:
-compare S/M/L with X count
+Story-specific names → discard them. Keep only: size strings. Mathematical state → L: more X larger; S reverse.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-size strings
-
-Useful mathematical state:
-L: more X larger; S reverse
-
-Unknown / target:
-compare S/M/L with X count
+Given: size strings. Useful state: L: more X larger; S reverse. Unknown: compare S/M/L with X count.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 map to signed scale
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+map to signed scale
+        ↓
 custom ordering
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `map to signed scale`. Then
+simplify/rearrange it to `custom ordering`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-L: more X larger; S reverse
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 map to signed scale
-      ↓
+  ↓ simplify
 custom ordering
-      ↓
-O(len)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `map to signed scale` → **custom ordering**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `map to signed scale`,
+evaluate it step by step, and verify the transformed condition
+`custom ordering`. The final value/condition gives compare S/M/L with X
+count.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 105 --- CF 1805B --- We Need the Zero / The String Has a Target
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-map to signed scale
-
-     ↓ evaluate / simplify
-
-custom ordering
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 105
---- CF 1805B --- We Need the Zero / The String Has a Target
-
-**Problem Link:** [CF 1805B --- We Need the Zero / The String Has a
-Target](https://codeforces.com/problemset/problem/1805/B)\
+**Problem:** [CF 1805B --- We Need the Zero / The String Has a
+Target]()\
 **Topic / Rating:** String/Greedy / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives string. The task is to move smallest char to front
+under operation.
+
+**What must we output?** move smallest char to front under operation
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-string
-
-ACTUAL QUESTION:
-move smallest char to front under operation
+Story-specific names → discard them. Keep only: string. Mathematical state → global min char; choose rightmost occurrence.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-string
-
-Useful mathematical state:
-global min char; choose rightmost occurrence
-
-Unknown / target:
-move smallest char to front under operation
+Given: string. Useful state: global min char; choose rightmost occurrence. Unknown: move smallest char to front under operation.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 stable reconstruction
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+stable reconstruction
+        ↓
 greedy
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `stable reconstruction`. Then
+simplify/rearrange it to `greedy`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-global min char; choose rightmost occurrence
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 stable reconstruction
-      ↓
+  ↓ simplify
 greedy
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `stable reconstruction` → **greedy**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `stable reconstruction`,
+evaluate it step by step, and verify the transformed condition `greedy`.
+The final value/condition gives move smallest char to front under
+operation.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 106 --- CF 1833B --- Restore the Weather
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-stable reconstruction
-
-     ↓ evaluate / simplify
-
-greedy
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 106
---- CF 1833B --- Restore the Weather
-
-**Problem Link:** [CF 1833B --- Restore the
-Weather](https://codeforces.com/problemset/problem/1833/B)\
+**Problem:** [CF 1833B --- Restore the Weather]()\
 **Topic / Rating:** Sorting/Matching / 1000
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives arrays a,b,k. The task is to permute b so
+\|a\[i\]-b\[i\]\|\<=k.
+
+**What must we output?** permute b so \|a\[i\]-b\[i\]\|\<=k
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-arrays a,b,k
-
-ACTUAL QUESTION:
-permute b so |a[i]-b[i]|<=k
+Story-specific names → discard them. Keep only: arrays a,b,k. Mathematical state → sort indices by a and b.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-arrays a,b,k
-
-Useful mathematical state:
-sort indices by a and b
-
-Unknown / target:
-permute b so |a[i]-b[i]|<=k
+Given: arrays a,b,k. Useful state: sort indices by a and b. Unknown: permute b so |a[i]-b[i]|<=k.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 monotone matching
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+monotone matching
+        ↓
 pair sorted orders
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `monotone matching`. Then
+simplify/rearrange it to `pair sorted orders`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-sort indices by a and b
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 monotone matching
-      ↓
+  ↓ simplify
 pair sorted orders
-      ↓
-O(nlogn)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `monotone matching` → **pair sorted orders**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `monotone matching`, evaluate
+it step by step, and verify the transformed condition
+`pair sorted orders`. The final value/condition gives permute b so
+\|a\[i\]-b\[i\]\|\<=k.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Example:
-
-``` text
-values:
-[8, 2, 6, 3]
-
-sort:
-[2, 3, 6, 8]
-
-Now apply:
-monotone matching
-
-which reduces to:
-pair sorted orders
-
-Sorting exposes the mathematical order
-that was hidden by the input arrangement.
-```
 
 ## Problem 107 --- CF 1793C --- Dora and Search
 
-**Problem Link:** [CF 1793C --- Dora and
-Search](https://codeforces.com/problemset/problem/1793/C)\
+**Problem:** [CF 1793C --- Dora and Search]()\
 **Topic / Rating:** Two Pointers/Extremes / 1200
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives permutation segment. The task is to find segment
+whose ends are neither min nor max.
+
+**What must we output?** find segment whose ends are neither min nor max
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-permutation segment
-
-ACTUAL QUESTION:
-find segment whose ends are neither min nor max
+Story-specific names → discard them. Keep only: permutation segment. Mathematical state → peel if endpoint is current min/max.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-permutation segment
-
-Useful mathematical state:
-peel if endpoint is current min/max
-
-Unknown / target:
-find segment whose ends are neither min nor max
+Given: permutation segment. Useful state: peel if endpoint is current min/max. Unknown: find segment whose ends are neither min nor max.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 maintain lo,hi
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+maintain lo,hi
+        ↓
 two pointers
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `maintain lo,hi`. Then
+simplify/rearrange it to `two pointers`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-peel if endpoint is current min/max
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 maintain lo,hi
-      ↓
+  ↓ simplify
 two pointers
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `maintain lo,hi` → **two pointers**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `maintain lo,hi`, evaluate it
+step by step, and verify the transformed condition `two pointers`. The
+final value/condition gives find segment whose ends are neither min nor
+max.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 108 --- CF 1881A --- Don't Try to Count
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-maintain lo,hi
-
-     ↓ evaluate / simplify
-
-two pointers
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 108
---- CF 1881A --- Don't Try to Count
-
-**Problem Link:** [CF 1881A --- Don't Try to
-Count](https://codeforces.com/problemset/problem/1881/A)\
+**Problem:** [CF 1881A --- Don't Try to Count]()\
 **Topic / Rating:** String/Doubling / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives x,s. The task is to minimum doublings until s
+substring.
+
+**What must we output?** minimum doublings until s substring
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-x,s
-
-ACTUAL QUESTION:
-minimum doublings until s substring
+Story-specific names → discard them. Keep only: x,s. Mathematical state → length only needs bounded doublings.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-x,s
-
-Useful mathematical state:
-length only needs bounded doublings
-
-Unknown / target:
-minimum doublings until s substring
+Given: x,s. Useful state: length only needs bounded doublings. Unknown: minimum doublings until s substring.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 repeat x until long enough + margin
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+repeat x until long enough + margin
+        ↓
 simulation bound
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `repeat x until long enough + margin`.
+Then simplify/rearrange it to `simulation bound`. This is the point
+where the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-length only needs bounded doublings
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 repeat x until long enough + margin
-      ↓
+  ↓ simplify
 simulation bound
-      ↓
-few iterations
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `repeat x until long enough + margin` → **simulation
-bound**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`repeat x until long enough + margin`, evaluate it step by step, and
+verify the transformed condition `simulation bound`. The final
+value/condition gives minimum doublings until s substring.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 109 --- CF 1858A --- Buttons
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-repeat x until long enough + margin
-
-     ↓ evaluate / simplify
-
-simulation bound
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 109
---- CF 1858A --- Buttons
-
-**Problem Link:** [CF 1858A ---
-Buttons](https://codeforces.com/problemset/problem/1858/A)\
+**Problem:** [CF 1858A --- Buttons]()\
 **Topic / Rating:** Game/Constructive / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b,c. The task is to winner.
+
+**What must we output?** winner
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b,c
-
-ACTUAL QUESTION:
-winner
+Story-specific names → discard them. Keep only: a,b,c. Mathematical state → shared c allocated alternately.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b,c
-
-Useful mathematical state:
-shared c allocated alternately
-
-Unknown / target:
-winner
+Given: a,b,c. Useful state: shared c allocated alternately. Unknown: winner.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 parity c
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+parity c
+        ↓
 effective counts
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `parity c`. Then simplify/rearrange it
+to `effective counts`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-shared c allocated alternately
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 parity c
-      ↓
+  ↓ simplify
 effective counts
-      ↓
-casework
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `parity c` → **effective counts**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `parity c`, evaluate it step
+by step, and verify the transformed condition `effective counts`. The
+final value/condition gives winner.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-parity c
-
-Then simplify to:
-effective counts
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 110 --- CF 1899A --- Game with Integers
 
-**Problem Link:** [CF 1899A --- Game with
-Integers](https://codeforces.com/problemset/problem/1899/A)\
+**Problem:** [CF 1899A --- Game with Integers]()\
 **Topic / Rating:** Modulo/Game / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to winner.
+
+**What must we output?** winner
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-winner
+Story-specific names → discard them. Keep only: n. Mathematical state → moves ±1; multiples of3 structure.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-moves ±1; multiples of3 structure
-
-Unknown / target:
-winner
+Given: n. Useful state: moves ±1; multiples of3 structure. Unknown: winner.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 n%3
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+n%3
+        ↓
 residue game
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `n%3`. Then simplify/rearrange it to
+`residue game`. This is the point where the story disappears and the
+solution follows from the transformed condition.
 
 ``` text
-moves ±1; multiples of3 structure
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 n%3
-      ↓
+  ↓ simplify
 residue game
-      ↓
-O(1)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `n%3` → **residue game**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `n%3`, evaluate it step by
+step, and verify the transformed condition `residue game`. The final
+value/condition gives winner.
 
 ------------------------------------------------------------------------
 
 # Pattern 12 --- Bitwise / XOR Modeling
 
-### 5. Dry Run --- How It Works
+## Problem 111 --- CF 1805A --- We Need the Zero
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-n%3
-
-     ↓ evaluate / simplify
-
-residue game
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 111
---- CF 1805A --- We Need the Zero
-
-**Problem Link:** [CF 1805A --- We Need the
-Zero](https://codeforces.com/problemset/problem/1805/A)\
+**Problem:** [CF 1805A --- We Need the Zero]()\
 **Topic / Rating:** XOR / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to find x so xor(a\[i\]\^x)=0.
+
+**What must we output?** find x so xor(a\[i\]\^x)=0
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-find x so xor(a[i]^x)=0
+Story-specific names → discard them. Keep only: array. Mathematical state → xorAll ^ (x repeated n times).
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-xorAll ^ (x repeated n times)
-
-Unknown / target:
-find x so xor(a[i]^x)=0
+Given: array. Useful state: xorAll ^ (x repeated n times). Unknown: find x so xor(a[i]^x)=0.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 if n even x cancels; else x=xorAll
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+if n even x cancels; else x=xorAll
+        ↓
 parity of n
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `if n even x cancels; else x=xorAll`.
+Then simplify/rearrange it to `parity of n`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-xorAll ^ (x repeated n times)
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 if n even x cancels; else x=xorAll
-      ↓
+  ↓ simplify
 parity of n
-      ↓
-xor
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `if n even x cancels; else x=xorAll` → **parity of n**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`if n even x cancels; else x=xorAll`, evaluate it step by step, and
+verify the transformed condition `parity of n`. The final
+value/condition gives find x so xor(a\[i\]\^x)=0.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-if n even x cancels; else x=xorAll
-
-Then simplify to:
-parity of n
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 112 --- CF 1872A --- Two Vessels
 
-**Problem Link:** [CF 1872A --- Two
-Vessels](https://codeforces.com/problemset/problem/1872/A)\
+**Problem:** [CF 1872A --- Two Vessels]()\
 **Topic / Rating:** Arithmetic / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b,c. The task is to min moves balancing transfer
+c.
+
+**What must we output?** min moves balancing transfer c
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b,c
-
-ACTUAL QUESTION:
-min moves balancing transfer c
+Story-specific names → discard them. Keep only: a,b,c. Mathematical state → difference shrinks by 2c.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b,c
-
-Useful mathematical state:
-difference shrinks by 2c
-
-Unknown / target:
-min moves balancing transfer c
+Given: a,b,c. Useful state: difference shrinks by 2c. Unknown: min moves balancing transfer c.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 m*2c>=|a-b|
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+m*2c>=|a-b|
+        ↓
 ceil division
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `m*2c>=|a-b|`. Then simplify/rearrange
+it to `ceil division`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-difference shrinks by 2c
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 m*2c>=|a-b|
-      ↓
+  ↓ simplify
 ceil division
-      ↓
-formula
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `m*2c>=|a-b|` → **ceil division**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `m*2c>=|a-b|`, evaluate it
+step by step, and verify the transformed condition `ceil division`. The
+final value/condition gives min moves balancing transfer c.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 113 --- CF 1703A --- YES or YES?
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-m*2c>=|a-b|
-
-     ↓ evaluate / simplify
-
-ceil division
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 113
---- CF 1703A --- YES or YES?
-
-**Problem Link:** [CF 1703A --- YES or
-YES?](https://codeforces.com/problemset/problem/1703/A)\
+**Problem:** [CF 1703A --- YES or YES?]()\
 **Topic / Rating:** String / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives word. The task is to case-insensitive equality to
+yes.
+
+**What must we output?** case-insensitive equality to yes
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-word
-
-ACTUAL QUESTION:
-case-insensitive equality to yes
+Story-specific names → discard them. Keep only: word. Mathematical state → normalize case.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-word
-
-Useful mathematical state:
-normalize case
-
-Unknown / target:
-case-insensitive equality to yes
+Given: word. Useful state: normalize case. Unknown: case-insensitive equality to yes.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 compare
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+compare
+        ↓
 canonicalization
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `compare`. Then simplify/rearrange it
+to `canonicalization`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-normalize case
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 compare
-      ↓
+  ↓ simplify
 canonicalization
-      ↓
-tolower
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `compare` → **canonicalization**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `compare`, evaluate it step by
+step, and verify the transformed condition `canonicalization`. The final
+value/condition gives case-insensitive equality to yes.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 114 --- CF 1624A --- Plus One on the Subset
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-compare
-
-     ↓ evaluate / simplify
-
-canonicalization
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 114
---- CF 1624A --- Plus One on the Subset
-
-**Problem Link:** [CF 1624A --- Plus One on the
-Subset](https://codeforces.com/problemset/problem/1624/A)\
+**Problem:** [CF 1624A --- Plus One on the Subset]()\
 **Topic / Rating:** Range / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to min ops equalize.
+
+**What must we output?** min ops equalize
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-min ops equalize
+Story-specific names → discard them. Keep only: array. Mathematical state → one op can increment chosen subset.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-one op can increment chosen subset
-
-Unknown / target:
-min ops equalize
+Given: array. Useful state: one op can increment chosen subset. Unknown: min ops equalize.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 range max-min
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+range max-min
+        ↓
 potential
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `range max-min`. Then
+simplify/rearrange it to `potential`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-one op can increment chosen subset
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 range max-min
-      ↓
+  ↓ simplify
 potential
-      ↓
-min/max
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `range max-min` → **potential**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `range max-min`, evaluate it
+step by step, and verify the transformed condition `potential`. The
+final value/condition gives min ops equalize.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 115 --- CF 1220A --- Cards
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-range max-min
-
-     ↓ evaluate / simplify
-
-potential
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 115
---- CF 1220A --- Cards
-
-**Problem Link:** [CF 1220A ---
-Cards](https://codeforces.com/problemset/problem/1220/A)\
+**Problem:** [CF 1220A --- Cards]()\
 **Topic / Rating:** Frequency / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives letters. The task is to recover binary digits from
+letters.
+
+**What must we output?** recover binary digits from letters
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-letters
-
-ACTUAL QUESTION:
-recover binary digits from letters
+Story-specific names → discard them. Keep only: letters. Mathematical state → 'z' uniquely identifies zero, 'n' one after ordering.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-letters
-
-Useful mathematical state:
-'z' uniquely identifies zero, 'n' one after ordering
-
-Unknown / target:
-recover binary digits from letters
+Given: letters. Useful state: 'z' uniquely identifies zero, 'n' one after ordering. Unknown: recover binary digits from letters.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 count z and n
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+count z and n
+        ↓
 frequency signature
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `count z and n`. Then
+simplify/rearrange it to `frequency signature`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-'z' uniquely identifies zero, 'n' one after ordering
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 count z and n
-      ↓
+  ↓ simplify
 frequency signature
-      ↓
-output
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `count z and n` → **frequency signature**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `count z and n`, evaluate it
+step by step, and verify the transformed condition
+`frequency signature`. The final value/condition gives recover binary
+digits from letters.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a tiny transformed sequence:
-
-``` text
-keys = [2, 2, 5, 2, 5]
-
-frequency:
-2 → 3
-5 → 2
-
-Apply:
-count z and n
-
-Then:
-frequency signature
-
-The dry run tracks frequencies/keys,
-not the original story objects.
-```
 
 ## Problem 116 --- CF 1362A --- Johnny and Ancient Computer
 
-**Problem Link:** [CF 1362A --- Johnny and Ancient
-Computer](https://codeforces.com/problemset/problem/1362/A)\
+**Problem:** [CF 1362A --- Johnny and Ancient Computer]()\
 **Topic / Rating:** Powers/Ratio / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives a,b. The task is to min ×2/4/8 operations to
+transform.
+
+**What must we output?** min ×2/4/8 operations to transform
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-a,b
-
-ACTUAL QUESTION:
-min ×2/4/8 operations to transform
+Story-specific names → discard them. Keep only: a,b. Mathematical state → ratio must be power of2.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-a,b
-
-Useful mathematical state:
-ratio must be power of2
-
-Unknown / target:
-min ×2/4/8 operations to transform
+Given: a,b. Useful state: ratio must be power of2. Unknown: min ×2/4/8 operations to transform.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 exponent difference grouped by3
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+exponent difference grouped by3
+        ↓
 factorization
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `exponent difference grouped by3`. Then
+simplify/rearrange it to `factorization`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-ratio must be power of2
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 exponent difference grouped by3
-      ↓
+  ↓ simplify
 factorization
-      ↓
-formula
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `exponent difference grouped by3` → **factorization**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into
+`exponent difference grouped by3`, evaluate it step by step, and verify
+the transformed condition `factorization`. The final value/condition
+gives min ×2/4/8 operations to transform.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 117 --- CF 1095A --- Repeating Cipher
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-exponent difference grouped by3
-
-     ↓ evaluate / simplify
-
-factorization
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 117
---- CF 1095A --- Repeating Cipher
-
-**Problem Link:** [CF 1095A --- Repeating
-Cipher](https://codeforces.com/problemset/problem/1095/A)\
+**Problem:** [CF 1095A --- Repeating Cipher]()\
 **Topic / Rating:** Index Pattern / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives encoded string. The task is to decode chars at
+positions with jumps 1,2,3....
+
+**What must we output?** decode chars at positions with jumps 1,2,3...
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-encoded string
-
-ACTUAL QUESTION:
-decode chars at positions with jumps 1,2,3...
+Story-specific names → discard them. Keep only: encoded string. Mathematical state → index += step.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-encoded string
-
-Useful mathematical state:
-index += step
-
-Unknown / target:
-decode chars at positions with jumps 1,2,3...
+Given: encoded string. Useful state: index += step. Unknown: decode chars at positions with jumps 1,2,3....
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 triangular positions
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+triangular positions
+        ↓
 simulation
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `triangular positions`. Then
+simplify/rearrange it to `simulation`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-index += step
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 triangular positions
-      ↓
+  ↓ simplify
 simulation
-      ↓
-O(sqrt n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `triangular positions` → **simulation**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `triangular positions`,
+evaluate it step by step, and verify the transformed condition
+`simulation`. The final value/condition gives decode chars at positions
+with jumps 1,2,3....
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 118 --- CF 1324A --- Yet Another Tetris Problem
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-triangular positions
-
-     ↓ evaluate / simplify
-
-simulation
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 118
---- CF 1324A --- Yet Another Tetris Problem
-
-**Problem Link:** [CF 1324A --- Yet Another Tetris
-Problem](https://codeforces.com/problemset/problem/1324/A)\
+**Problem:** [CF 1324A --- Yet Another Tetris Problem]()\
 **Topic / Rating:** Parity / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to can equalize by subtracting 2.
+
+**What must we output?** can equalize by subtracting 2
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-can equalize by subtracting 2
+Story-specific names → discard them. Keep only: array. Mathematical state → differences preserve parity.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-differences preserve parity
-
-Unknown / target:
-can equalize by subtracting 2
+Given: array. Useful state: differences preserve parity. Unknown: can equalize by subtracting 2.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 all same parity
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+all same parity
+        ↓
 parity invariant
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `all same parity`. Then
+simplify/rearrange it to `parity invariant`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-differences preserve parity
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 all same parity
-      ↓
+  ↓ simplify
 parity invariant
-      ↓
-scan
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `all same parity` → **parity invariant**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `all same parity`, evaluate it
+step by step, and verify the transformed condition `parity invariant`.
+The final value/condition gives can equalize by subtracting 2.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-all same parity
-
-Then simplify to:
-parity invariant
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 119 --- CF 1462A --- Favorite Sequence
 
-**Problem Link:** [CF 1462A --- Favorite
-Sequence](https://codeforces.com/problemset/problem/1462/A)\
+**Problem:** [CF 1462A --- Favorite Sequence]()\
 **Topic / Rating:** Two Pointers / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to reorder alternating
+left/right.
+
+**What must we output?** reorder alternating left/right
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-reorder alternating left/right
+Story-specific names → discard them. Keep only: array. Mathematical state → take l,r,l+1,r-1.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-take l,r,l+1,r-1
-
-Unknown / target:
-reorder alternating left/right
+Given: array. Useful state: take l,r,l+1,r-1. Unknown: reorder alternating left/right.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 index pattern
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+index pattern
+        ↓
 two pointers
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `index pattern`. Then
+simplify/rearrange it to `two pointers`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-take l,r,l+1,r-1
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 index pattern
-      ↓
+  ↓ simplify
 two pointers
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `index pattern` → **two pointers**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `index pattern`, evaluate it
+step by step, and verify the transformed condition `two pointers`. The
+final value/condition gives reorder alternating left/right.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 120 --- CF 1619A --- Polycarp and Sums of Subsequences / Square String?
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-index pattern
-
-     ↓ evaluate / simplify
-
-two pointers
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 120
---- CF 1619A --- Polycarp and Sums of Subsequences / Square String?
-
-**Problem Link:** [CF 1619A --- Polycarp and Sums of Subsequences /
-Square String?](https://codeforces.com/problemset/problem/1619/A)\
+**Problem:** [CF 1619A --- Polycarp and Sums of Subsequences / Square
+String?]()\
 **Topic / Rating:** String / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives s. The task is to is s two equal halves.
+
+**What must we output?** is s two equal halves
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-s
-
-ACTUAL QUESTION:
-is s two equal halves
+Story-specific names → discard them. Keep only: s. Mathematical state → len even and first half=second.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-s
-
-Useful mathematical state:
-len even and first half=second
-
-Unknown / target:
-is s two equal halves
+Given: s. Useful state: len even and first half=second. Unknown: is s two equal halves.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 equation on substrings
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+equation on substrings
+        ↓
 direct
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `equation on substrings`. Then
+simplify/rearrange it to `direct`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-len even and first half=second
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 equation on substrings
-      ↓
+  ↓ simplify
 direct
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `equation on substrings` → **direct**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `equation on substrings`,
+evaluate it step by step, and verify the transformed condition `direct`.
+The final value/condition gives is s two equal halves.
 
 ------------------------------------------------------------------------
 
 # Pattern 13 --- Mixed Blind Decoding
 
-### 5. Dry Run --- How It Works
+## Problem 121 --- CF 1538C --- Challenging Cliffs / Number of Pairs
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-equation on substrings
-
-     ↓ evaluate / simplify
-
-direct
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 121
---- CF 1538C --- Challenging Cliffs / Number of Pairs
-
-**Problem Link:** [CF 1538C --- Challenging Cliffs / Number of
-Pairs](https://codeforces.com/problemset/problem/1538/C)\
+**Problem:** [CF 1538C --- Challenging Cliffs / Number of Pairs]()\
 **Topic / Rating:** Sorting+Counting / 1300
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array,l,r. The task is to count pair sums in
+interval.
+
+**What must we output?** count pair sums in interval
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array,l,r
-
-ACTUAL QUESTION:
-count pair sums in interval
+Story-specific names → discard them. Keep only: array,l,r. Mathematical state → F(r)-F(l-1).
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array,l,r
-
-Useful mathematical state:
-F(r)-F(l-1)
-
-Unknown / target:
-count pair sums in interval
+Given: array,l,r. Useful state: F(r)-F(l-1). Unknown: count pair sums in interval.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 sort + two pointers
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+sort + two pointers
+        ↓
 count bounded pairs
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `sort + two pointers`. Then
+simplify/rearrange it to `count bounded pairs`. This is the point where
+the story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-F(r)-F(l-1)
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 sort + two pointers
-      ↓
+  ↓ simplify
 count bounded pairs
-      ↓
-O(nlogn)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `sort + two pointers` → **count bounded pairs**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `sort + two pointers`,
+evaluate it step by step, and verify the transformed condition
+`count bounded pairs`. The final value/condition gives count pair sums
+in interval.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a tiny transformed sequence:
-
-``` text
-keys = [2, 2, 5, 2, 5]
-
-frequency:
-2 → 3
-5 → 2
-
-Apply:
-sort + two pointers
-
-Then:
-count bounded pairs
-
-The dry run tracks frequencies/keys,
-not the original story objects.
-```
 
 ## Problem 122 --- CF 1475B --- New Year's Number
 
-**Problem Link:** [CF 1475B --- New Year's
-Number](https://codeforces.com/problemset/problem/1475/B)\
+**Problem:** [CF 1475B --- New Year's Number]()\
 **Topic / Rating:** Diophantine+Modulo / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to 2020a+2021b=n.
+
+**What must we output?** 2020a+2021b=n
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-2020a+2021b=n
+Story-specific names → discard them. Keep only: n. Mathematical state → 2021=2020+1.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-2021=2020+1
-
-Unknown / target:
-2020a+2021b=n
+Given: n. Useful state: 2021=2020+1. Unknown: 2020a+2021b=n.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 b=n%2020 candidate
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+b=n%2020 candidate
+        ↓
 feasibility
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `b=n%2020 candidate`. Then
+simplify/rearrange it to `feasibility`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-2021=2020+1
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 b=n%2020 candidate
-      ↓
+  ↓ simplify
 feasibility
-      ↓
-O(1)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `b=n%2020 candidate` → **feasibility**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `b=n%2020 candidate`, evaluate
+it step by step, and verify the transformed condition `feasibility`. The
+final value/condition gives 2020a+2021b=n.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a small valid input and keep only parity:
-
-``` text
-even → 0
-odd  → 1
-
-Substitute those states into:
-b=n%2020 candidate
-
-Then simplify to:
-feasibility
-
-This shows why the exact magnitudes can be discarded
-when only odd/even behavior affects the answer.
-```
 
 ## Problem 123 --- CF 1374A --- Required Remainder
 
-**Problem Link:** [CF 1374A --- Required
-Remainder](https://codeforces.com/problemset/problem/1374/A)\
+**Problem:** [CF 1374A --- Required Remainder]()\
 **Topic / Rating:** Modulo+Optimization / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives x,y,n. The task is to largest k\<=n with k%x=y.
+
+**What must we output?** largest k\<=n with k%x=y
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-x,y,n
-
-ACTUAL QUESTION:
-largest k<=n with k%x=y
+Story-specific names → discard them. Keep only: x,y,n. Mathematical state → k=tx+y.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-x,y,n
-
-Useful mathematical state:
-k=tx+y
-
-Unknown / target:
-largest k<=n with k%x=y
+Given: x,y,n. Useful state: k=tx+y. Unknown: largest k<=n with k%x=y.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 maximize t under bound
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+maximize t under bound
+        ↓
 floor
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `maximize t under bound`. Then
+simplify/rearrange it to `floor`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-k=tx+y
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 maximize t under bound
-      ↓
+  ↓ simplify
 floor
-      ↓
-O(1)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `maximize t under bound` → **floor**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `maximize t under bound`,
+evaluate it step by step, and verify the transformed condition `floor`.
+The final value/condition gives largest k\<=n with k%x=y.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 124 --- CF 1551A --- Polycarp and Coins
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-maximize t under bound
-
-     ↓ evaluate / simplify
-
-floor
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 124
---- CF 1551A --- Polycarp and Coins
-
-**Problem Link:** [CF 1551A --- Polycarp and
-Coins](https://codeforces.com/problemset/problem/1551/A)\
+**Problem:** [CF 1551A --- Polycarp and Coins]()\
 **Topic / Rating:** Equation+Balancing / 800
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives n. The task is to c1+2c2=n with counts close.
+
+**What must we output?** c1+2c2=n with counts close
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-n
-
-ACTUAL QUESTION:
-c1+2c2=n with counts close
+Story-specific names → discard them. Keep only: n. Mathematical state → near n/3.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-n
-
-Useful mathematical state:
-near n/3
-
-Unknown / target:
-c1+2c2=n with counts close
+Given: n. Useful state: near n/3. Unknown: c1+2c2=n with counts close.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 n%3 cases
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+n%3 cases
+        ↓
 construct counts
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `n%3 cases`. Then simplify/rearrange it
+to `construct counts`. This is the point where the story disappears and
+the solution follows from the transformed condition.
 
 ``` text
-near n/3
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 n%3 cases
-      ↓
+  ↓ simplify
 construct counts
-      ↓
-O(1)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `n%3 cases` → **construct counts**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `n%3 cases`, evaluate it step
+by step, and verify the transformed condition `construct counts`. The
+final value/condition gives c1+2c2=n with counts close.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 125 --- CF 1593B --- Make it Divisible by 25
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-n%3 cases
-
-     ↓ evaluate / simplify
-
-construct counts
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 125
---- CF 1593B --- Make it Divisible by 25
-
-**Problem Link:** [CF 1593B --- Make it Divisible by
-25](https://codeforces.com/problemset/problem/1593/B)\
+**Problem:** [CF 1593B --- Make it Divisible by 25]()\
 **Topic / Rating:** Divisibility+String / 900
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives digits. The task is to min deletions.
+
+**What must we output?** min deletions
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-digits
-
-ACTUAL QUESTION:
-min deletions
+Story-specific names → discard them. Keep only: digits. Mathematical state → last2 digits pattern.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-digits
-
-Useful mathematical state:
-last2 digits pattern
-
-Unknown / target:
-min deletions
+Given: digits. Useful state: last2 digits pattern. Unknown: min deletions.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 search from right
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+search from right
+        ↓
 four targets
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `search from right`. Then
+simplify/rearrange it to `four targets`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-last2 digits pattern
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 search from right
-      ↓
+  ↓ simplify
 four targets
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `search from right` → **four targets**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `search from right`, evaluate
+it step by step, and verify the transformed condition `four targets`.
+The final value/condition gives min deletions.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 126 --- CF 1669F --- Eating Candies
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-search from right
-
-     ↓ evaluate / simplify
-
-four targets
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 126
---- CF 1669F --- Eating Candies
-
-**Problem Link:** [CF 1669F --- Eating
-Candies](https://codeforces.com/problemset/problem/1669/F)\
+**Problem:** [CF 1669F --- Eating Candies]()\
 **Topic / Rating:** Prefix+Two Pointers / 1100
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to equal left/right eaten sum
+maximize count.
+
+**What must we output?** equal left/right eaten sum maximize count
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-equal left/right eaten sum maximize count
+Story-specific names → discard them. Keep only: array. Mathematical state → monotone sums.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-monotone sums
-
-Unknown / target:
-equal left/right eaten sum maximize count
+Given: array. Useful state: monotone sums. Unknown: equal left/right eaten sum maximize count.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 advance smaller side
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+advance smaller side
+        ↓
 two pointers
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `advance smaller side`. Then
+simplify/rearrange it to `two pointers`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-monotone sums
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 advance smaller side
-      ↓
+  ↓ simplify
 two pointers
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `advance smaller side` → **two pointers**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `advance smaller side`,
+evaluate it step by step, and verify the transformed condition
+`two pointers`. The final value/condition gives equal left/right eaten
+sum maximize count.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 127 --- CF 1793C --- Dora and Search
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-advance smaller side
-
-     ↓ evaluate / simplify
-
-two pointers
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 127
---- CF 1793C --- Dora and Search
-
-**Problem Link:** [CF 1793C --- Dora and
-Search](https://codeforces.com/problemset/problem/1793/C)\
+**Problem:** [CF 1793C --- Dora and Search]()\
 **Topic / Rating:** Extremes+Two Pointers / 1200
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives permutation. The task is to find non-extreme-ended
+segment.
+
+**What must we output?** find non-extreme-ended segment
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-permutation
-
-ACTUAL QUESTION:
-find non-extreme-ended segment
+Story-specific names → discard them. Keep only: permutation. Mathematical state → peel min/max endpoints.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-permutation
-
-Useful mathematical state:
-peel min/max endpoints
-
-Unknown / target:
-find non-extreme-ended segment
+Given: permutation. Useful state: peel min/max endpoints. Unknown: find non-extreme-ended segment.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 lo/hi invariant
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+lo/hi invariant
+        ↓
 two pointers
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `lo/hi invariant`. Then
+simplify/rearrange it to `two pointers`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-peel min/max endpoints
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 lo/hi invariant
-      ↓
+  ↓ simplify
 two pointers
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `lo/hi invariant` → **two pointers**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `lo/hi invariant`, evaluate it
+step by step, and verify the transformed condition `two pointers`. The
+final value/condition gives find non-extreme-ended segment.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 128 --- CF 327A --- Flipping Game
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-lo/hi invariant
-
-     ↓ evaluate / simplify
-
-two pointers
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 128
---- CF 327A --- Flipping Game
-
-**Problem Link:** [CF 327A --- Flipping
-Game](https://codeforces.com/problemset/problem/327/A)\
+**Problem:** [CF 327A --- Flipping Game]()\
 **Topic / Rating:** Transform+Optimization / 1200
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives binary array. The task is to one flip maximize ones.
+
+**What must we output?** one flip maximize ones
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-binary array
-
-ACTUAL QUESTION:
-one flip maximize ones
+Story-specific names → discard them. Keep only: binary array. Mathematical state → gain map 0→+1,1→-1.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-binary array
-
-Useful mathematical state:
-gain map 0→+1,1→-1
-
-Unknown / target:
-one flip maximize ones
+Given: binary array. Useful state: gain map 0→+1,1→-1. Unknown: one flip maximize ones.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 maximum subarray
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+maximum subarray
+        ↓
 Kadane
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `maximum subarray`. Then
+simplify/rearrange it to `Kadane`. This is the point where the story
+disappears and the solution follows from the transformed condition.
 
 ``` text
-gain map 0→+1,1→-1
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 maximum subarray
-      ↓
+  ↓ simplify
 Kadane
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `maximum subarray` → **Kadane**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `maximum subarray`, evaluate
+it step by step, and verify the transformed condition `Kadane`. The
+final value/condition gives one flip maximize ones.
 
 ------------------------------------------------------------------------
 
-### 5. Dry Run --- How It Works
+## Problem 129 --- CF 1520D --- Same Differences
 
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-maximum subarray
-
-     ↓ evaluate / simplify
-
-Kadane
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story. \## Problem 129
---- CF 1520D --- Same Differences
-
-**Problem Link:** [CF 1520D --- Same
-Differences](https://codeforces.com/problemset/problem/1520/D)\
+**Problem:** [CF 1520D --- Same Differences]()\
 **Topic / Rating:** Algebra+Frequency / 1200
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array. The task is to count special pairs.
+
+**What must we output?** count special pairs
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array
-
-ACTUAL QUESTION:
-count special pairs
+Story-specific names → discard them. Keep only: array. Mathematical state → a[j]-j=a[i]-i.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array
-
-Useful mathematical state:
-a[j]-j=a[i]-i
-
-Unknown / target:
-count special pairs
+Given: array. Useful state: a[j]-j=a[i]-i. Unknown: count special pairs.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 equal transformed keys
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+equal transformed keys
+        ↓
 hash frequency
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `equal transformed keys`. Then
+simplify/rearrange it to `hash frequency`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-a[j]-j=a[i]-i
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 equal transformed keys
-      ↓
+  ↓ simplify
 hash frequency
-      ↓
-O(n)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `equal transformed keys` → **hash frequency**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `equal transformed keys`,
+evaluate it step by step, and verify the transformed condition
+`hash frequency`. The final value/condition gives count special pairs.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Use a tiny transformed sequence:
-
-``` text
-keys = [2, 2, 5, 2, 5]
-
-frequency:
-2 → 3
-5 → 2
-
-Apply:
-equal transformed keys
-
-Then:
-hash frequency
-
-The dry run tracks frequencies/keys,
-not the original story objects.
-```
 
 ## Problem 130 --- CF 276C --- Little Girl and Maximum Sum
 
-**Problem Link:** [CF 276C --- Little Girl and Maximum
-Sum](https://codeforces.com/problemset/problem/276/C)\
+**Problem:** [CF 276C --- Little Girl and Maximum Sum]()\
 **Topic / Rating:** Difference+Sorting / 1400
 
-### 1. Remove the Story
+### 1. Full Problem Story --- What Is Actually Happening?
+
+The statement gives array,range queries. The task is to maximize
+weighted sum.
+
+**What must we output?** maximize weighted sum
+
+### 2. Remove the Story Nouns
 
 ``` text
-IGNORE:
-story names, characters, objects, theme
-
-KEEP:
-array,range queries
-
-ACTUAL QUESTION:
-maximize weighted sum
+Story-specific names → discard them. Keep only: array,range queries. Mathematical state → usage frequency per index.
 ```
 
-### 2. Extract Variables
+The purpose of this step is not to solve yet. It is to turn the
+narrative into mathematical objects.
+
+### 3. Extract the Variables
 
 ``` text
-Given:
-array,range queries
-
-Useful mathematical state:
-usage frequency per index
-
-Unknown / target:
-maximize weighted sum
+Given: array,range queries. Useful state: usage frequency per index. Unknown: maximize weighted sum.
 ```
 
-### 3. Formulate the Mathematics
+### 4. Formulate the Mathematics
+
+Start from the rule hidden in the statement:
 
 ``` text
-Story condition
-      ↓
 sort both sequences
+```
 
-      ↓ simplify / transform
+Now simplify / rearrange / classify it:
 
+``` text
+sort both sequences
+        ↓
 rearrangement
 ```
 
-### 4. Derive the Solution
+### 5. How the Formula Leads to the Final Solution
+
+Translate the decisive rule into `sort both sequences`. Then
+simplify/rearrange it to `rearrangement`. This is the point where the
+story disappears and the solution follows from the transformed
+condition.
 
 ``` text
-usage frequency per index
-      ↓
+STORY
+  ↓ remove names
+VARIABLES
+  ↓ translate rules
 sort both sequences
-      ↓
+  ↓ simplify
 rearrangement
-      ↓
-O((n+q)logn)
+  ↓
+FINAL SOLUTION
 ```
 
-**Final model:** `sort both sequences` → **rearrangement**.
+### 6. Dry Run --- See It Work
+
+Take the smallest official/sample input. Replace the story objects by
+the variables above. Substitute them into `sort both sequences`,
+evaluate it step by step, and verify the transformed condition
+`rearrangement`. The final value/condition gives maximize weighted sum.
 
 ------------------------------------------------------------------------
-
-### 5. Dry Run --- How It Works
-
-Take the smallest valid sample from the official problem and trace only
-the mathematical state:
-
-``` text
-Sample values
-     ↓
-extract variables
-     ↓
-substitute into:
-sort both sequences
-
-     ↓ evaluate / simplify
-
-rearrangement
-
-     ↓
-answer
-```
-
-The important point is to verify **how the extracted variables move
-through the formula**, without returning to the story.
