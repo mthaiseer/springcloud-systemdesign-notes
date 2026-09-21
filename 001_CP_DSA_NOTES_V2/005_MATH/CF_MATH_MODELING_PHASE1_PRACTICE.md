@@ -295,6 +295,29 @@
 -   [Phase-1 Recognition Checklist](#phase-1-recognition-checklist)
 -   [Reusable Problem Template](#reusable-problem-template)
 
+## Added Learning Layer --- Everyday-Life Mapping
+
+Every problem is now separated into its own visual block and includes an
+**Everyday-Life Scenario Map**.
+
+Use the analogy in this direction:
+
+``` text
+EVERYDAY SITUATION
+      ↓
+identify quantities
+      ↓
+write relationship
+      ↓
+MATHEMATICAL MODEL
+      ↓
+map the same model back to Codeforces
+```
+
+The analogy is **not another story to memorize**. Its purpose is to make
+the underlying formula intuitive enough that different Codeforces
+stories collapse to the same model.
+
 # How to Use This Workbook
 
 For every problem, first read the linked Codeforces statement. Before
@@ -366,6 +389,14 @@ Same mathematical family
 Minimum Operations / Ceil Division
 ```
 
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 001 --- Problem 1
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 617A ---
 Elephant](https://codeforces.com/problemset/problem/617/A)
 
@@ -396,6 +427,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **5m \>= x**, after which the useful form is **ceil(x/5)**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 617A --- Elephant (Arithmetic / Codeforces / 800)
 
@@ -581,6 +637,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `5m >= x`, test **ceil(x/5)** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 002 --- Problem 2
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1409A --- Yet Another Two Integers
 Problem](https://codeforces.com/problemset/problem/1409/A)
 
@@ -612,6 +678,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **10m \>= \|a-b\|**, after which the useful form is
 **ceil(\|a-b\|/10)**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1409A --- Yet Another Two Integers Problem (Arithmetic / Codeforces / 800)
 
@@ -798,6 +889,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `10m >= |a-b|`, test **ceil(\|a-b\|/10)** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 003 --- Problem 3
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1353A --- Most Unstable
 Array](https://codeforces.com/problemset/problem/1353/A)
 
@@ -829,6 +930,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **each transition \<= m**, after which the useful form is **construct
 extremal arrangement**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1353A --- Most Unstable Array (Formula / Codeforces / 800)
 
@@ -1019,6 +1145,16 @@ PRINT the answer
     `each transition <= m`, test **construct extremal arrangement**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 004 --- Problem 4
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1476A --- K-divisible
 Sum](https://codeforces.com/problemset/problem/1476/A)
 
@@ -1050,6 +1186,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **S = smallest multiple of k \>= n**, after which the useful form is
 **ceil(S/n)**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1476A --- K-divisible Sum (Bounds / Codeforces / 1000)
 
@@ -1238,6 +1399,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `S = smallest multiple of k >= n`, test **ceil(S/n)** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 005 --- Problem 5
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 151A --- Soft
 Drinking](https://codeforces.com/problemset/problem/151/A)
 
@@ -1269,6 +1440,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **min(drink/nl,limes,salt/np)/n**, after which the useful form is
 **limiting resource**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 151A --- Soft Drinking (Capacity / Codeforces / 800)
 
@@ -1459,6 +1655,16 @@ PRINT the answer
     `min(drink/nl,limes,salt/np)/n`, test **limiting resource**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 006 --- Problem 6
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 996A --- Hit the
 Lottery](https://codeforces.com/problemset/problem/996/A)
 
@@ -1489,6 +1695,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **q=n/d**, after which the useful form is **sum quotients**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 996A --- Hit the Lottery (Greedy/Division / Codeforces / 800)
 
@@ -1675,6 +1906,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `q=n/d`, test **sum quotients** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 007 --- Problem 7
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1669A ---
 Division?](https://codeforces.com/problemset/problem/1669/A)
 
@@ -1706,6 +1947,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **compare rating with cutoffs**, after which the useful form is
 **interval classification**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1669A --- Division? (Inequality / Codeforces / 800)
 
@@ -1896,6 +2162,16 @@ PRINT the answer
     `compare rating with cutoffs`, test **interval classification**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 008 --- Problem 8
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1742A ---
 Sum](https://codeforces.com/problemset/problem/1742/A)
 
@@ -1927,6 +2203,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **a+b=c etc.**, after which the useful form is **direct
 feasibility**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1742A --- Sum (Equation / Codeforces / 800)
 
@@ -2113,6 +2414,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `a+b=c etc.`, test **direct feasibility** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 009 --- Problem 9
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1850A --- To My
 Critics](https://codeforces.com/problemset/problem/1850/A)
 
@@ -2144,6 +2455,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **max pair sum**, after which the useful form is **sort or direct
 checks**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1850A --- To My Critics (Bounds / Codeforces / 800)
 
@@ -2331,6 +2667,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `max pair sum`, test **sort or direct checks** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 010 --- Problem 10
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1878A --- How Much Does Daytona
 Cost?](https://codeforces.com/problemset/problem/1878/A)
 
@@ -2361,6 +2707,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **∃i: a\[i\]=k**, after which the useful form is **linear scan**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1878A --- How Much Does Daytona Cost? (Existence / Codeforces / 800)
 
@@ -2561,6 +2932,16 @@ Same mathematical family
 Algebra / Equation Formation
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 011 --- Problem 11
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 734A --- Anton and
 Danik](https://codeforces.com/problemset/problem/734/A)
 
@@ -2591,6 +2972,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **compare A and D**, after which the useful form is **sign of A-D**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 734A --- Anton and Danik (Counting / Codeforces / 800)
 
@@ -2776,6 +3182,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `compare A and D`, test **sign of A-D** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 012 --- Problem 12
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 677A --- Vanya and
 Fence](https://codeforces.com/problemset/problem/677/A)
 
@@ -2807,6 +3223,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **sum (a\[i\]\>h ? 2:1)**, after which the useful form is
 **contribution sum**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 677A --- Vanya and Fence (Formula / Codeforces / 800)
 
@@ -2993,6 +3434,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `sum (a[i]>h ? 2:1)`, test **contribution sum** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 013 --- Problem 13
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 71A --- Way Too Long
 Words](https://codeforces.com/problemset/problem/71/A)
 
@@ -3024,6 +3475,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **length condition**, after which the useful form is **direct
 construction**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 71A --- Way Too Long Words (String/Formula / Codeforces / 800)
 
@@ -3210,6 +3686,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `length condition`, test **direct construction** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 014 --- Problem 14
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 791A --- Bear and Big
 Brother](https://codeforces.com/problemset/problem/791/A)
 
@@ -3240,6 +3726,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **a*=3,b*=2**, after which the useful form is **first t with a\>b**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 791A --- Bear and Big Brother (Growth / Codeforces / 800)
 
@@ -3426,6 +3937,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `a*=3,b*=2`, test **first t with a\>b** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 015 --- Problem 15
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 50A --- Domino
 piling](https://codeforces.com/problemset/problem/50/A)
 
@@ -3456,6 +3977,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **2x \<= mn**, after which the useful form is **floor(mn/2)**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 50A --- Domino piling (Counting / Codeforces / 800)
 
@@ -3641,6 +4187,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `2x <= mn`, test **floor(mn/2)** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 016 --- Problem 16
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 231A ---
 Team](https://codeforces.com/problemset/problem/231/A)
 
@@ -3671,6 +4227,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **indicator contribution**, after which the useful form is **count**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 231A --- Team (Counting / Codeforces / 800)
 
@@ -3857,6 +4438,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `indicator contribution`, test **count** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 017 --- Problem 17
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 200B ---
 Drinks](https://codeforces.com/problemset/problem/200/B)
 
@@ -3887,6 +4478,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **sum/n**, after which the useful form is **mean**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 200B --- Drinks (Average / Codeforces / 800)
 
@@ -4072,6 +4688,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `sum/n`, test **mean** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 018 --- Problem 18
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 318A --- Even
 Odds](https://codeforces.com/problemset/problem/318/A)
 
@@ -4103,6 +4729,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **piecewise index mapping**, after which the useful form is **if
 k\<=oddCount**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 318A --- Even Odds (Index Mapping / Codeforces / 900)
 
@@ -4289,6 +4940,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `piecewise index mapping`, test **if k\<=oddCount** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 019 --- Problem 19
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 486A --- Calculating
 Function](https://codeforces.com/problemset/problem/486/A)
 
@@ -4320,6 +4981,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **even n -\> n/2; odd -\> -(n+1)/2**, after which the useful form is
 **closed form**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 486A --- Calculating Function (Formula / Codeforces / 800)
 
@@ -4508,6 +5194,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `even n -> n/2; odd -> -(n+1)/2`, test **closed form** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 020 --- Problem 20
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1399A --- Remove
 Smallest](https://codeforces.com/problemset/problem/1399/A)
 
@@ -4539,6 +5235,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **max adjacent diff\<=1**, after which the useful form is **sort +
 check**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1399A --- Remove Smallest (Sorting / Codeforces / 800)
 
@@ -4741,6 +5462,16 @@ Same mathematical family
 Bounds / Inequalities / Min-Max
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 021 --- Problem 21
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1690A --- Print a
 Pedestal](https://codeforces.com/problemset/problem/1690/A)
 
@@ -4772,6 +5503,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **near n/3 then adjust**, after which the useful form is **construct
 around thirds**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1690A --- Print a Pedestal (Construction / Codeforces / 800)
 
@@ -4961,6 +5717,16 @@ PRINT the answer
     `near n/3 then adjust`, test **construct around thirds**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 022 --- Problem 22
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1676A ---
 Lucky?](https://codeforces.com/problemset/problem/1676/A)
 
@@ -4991,6 +5757,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **S1=S2**, after which the useful form is **direct compare**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1676A --- Lucky? (Equation / Codeforces / 800)
 
@@ -5176,6 +5967,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `S1=S2`, test **direct compare** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 023 --- Problem 23
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1742B ---
 Increasing](https://codeforces.com/problemset/problem/1742/B)
 
@@ -5206,6 +6007,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **freq\<=1**, after which the useful form is **set size=n**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1742B --- Increasing (Distinctness / Codeforces / 800)
 
@@ -5391,6 +6217,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `freq<=1`, test **set size=n** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 024 --- Problem 24
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1791A --- Codeforces
 Checking](https://codeforces.com/problemset/problem/1791/A)
 
@@ -5421,6 +6257,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **find char**, after which the useful form is **membership**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1791A --- Codeforces Checking (Membership / Codeforces / 800)
 
@@ -5606,6 +6467,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `find char`, test **membership** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 025 --- Problem 25
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1829A --- Love
 Story](https://codeforces.com/problemset/problem/1829/A)
 
@@ -5637,6 +6508,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **sum indicators**, after which the useful form is **Hamming
 distance**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1829A --- Love Story (Hamming Distance / Codeforces / 800)
 
@@ -5823,6 +6719,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `sum indicators`, test **Hamming distance** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 026 --- Problem 26
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1873A --- Short
 Sort](https://codeforces.com/problemset/problem/1873/A)
 
@@ -5854,6 +6760,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **mismatch count 0 or 2**, after which the useful form is **compare
 permutations**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1873A --- Short Sort (Permutation / Codeforces / 800)
 
@@ -6041,6 +6972,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `mismatch count 0 or 2`, test **compare permutations** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 027 --- Problem 27
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1729A --- Two
 Elevators](https://codeforces.com/problemset/problem/1729/A)
 
@@ -6071,6 +7012,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **compare times**, after which the useful form is **min comparison**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1729A --- Two Elevators (Distance / Codeforces / 800)
 
@@ -6256,6 +7222,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `compare times`, test **min comparison** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 028 --- Problem 28
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1805A --- We Need the
 Zero](https://codeforces.com/problemset/problem/1805/A)
 
@@ -6287,6 +7263,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **parity of n controls x contribution**, after which the useful form
 is **derive xor equation**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1805A --- We Need the Zero (XOR/Bounds / Codeforces / 900)
 
@@ -6477,6 +7478,16 @@ PRINT the answer
     `parity of n controls x contribution`, test **derive xor equation**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 029 --- Problem 29
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1858A ---
 Buttons](https://codeforces.com/problemset/problem/1858/A)
 
@@ -6508,6 +7519,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **parity of c decides who gets extra**, after which the useful form
 is **compare effective counts**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1858A --- Buttons (Game/Counting / Codeforces / 800)
 
@@ -6698,6 +7734,16 @@ PRINT the answer
     `parity of c decides who gets extra`, test **compare effective
     counts** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 030 --- Problem 30
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1899A --- Game with
 Integers](https://codeforces.com/problemset/problem/1899/A)
 
@@ -6729,6 +7775,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **n%3==0 is losing/winning condition per rules**, after which the
 useful form is **reduce to residue**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1899A --- Game with Integers (Modulo / Codeforces / 800)
 
@@ -6934,6 +8005,16 @@ Same mathematical family
 Parity Modeling
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 031 --- Problem 31
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 4A ---
 Watermelon](https://codeforces.com/problemset/problem/4/A)
 
@@ -6965,6 +8046,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **w even and w\>2**, after which the useful form is **parity +
 positivity**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 4A --- Watermelon (Parity / Codeforces / 800)
 
@@ -7151,6 +8257,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `w even and w>2`, test **parity + positivity** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 032 --- Problem 32
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1296A --- Array with Odd
 Sum](https://codeforces.com/problemset/problem/1296/A)
 
@@ -7182,6 +8298,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **reduce values to parity**, after which the useful form is **count
 odd/even**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1296A --- Array with Odd Sum (Parity / Codeforces / 800)
 
@@ -7368,6 +8509,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `reduce values to parity`, test **count odd/even** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 033 --- Problem 33
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1857A --- Array
 Coloring](https://codeforces.com/problemset/problem/1857/A)
 
@@ -7398,6 +8549,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **sum%2=0**, after which the useful form is **parity invariant**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1857A --- Array Coloring (Parity / Codeforces / 800)
 
@@ -7584,6 +8760,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `sum%2=0`, test **parity invariant** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 034 --- Problem 34
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1834A --- Unit
 Array](https://codeforces.com/problemset/problem/1834/A)
 
@@ -7615,6 +8801,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **fix sum then parity**, after which the useful form is **count
 negatives**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1834A --- Unit Array (Parity/Greedy / Codeforces / 800)
 
@@ -7800,6 +9011,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `fix sum then parity`, test **count negatives** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 035 --- Problem 35
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1367B --- Even
 Array](https://codeforces.com/problemset/problem/1367/B)
 
@@ -7831,6 +9052,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **badEven=badOdd**, after which the useful form is **answer
 mismatches/2**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1367B --- Even Array (Parity / Codeforces / 800)
 
@@ -8017,6 +9263,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `badEven=badOdd`, test **answer mismatches/2** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 036 --- Problem 36
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1475A --- Odd
 Divisor](https://codeforces.com/problemset/problem/1475/A)
 
@@ -8047,6 +9303,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **m\>1**, after which the useful form is **not power of two**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1475A --- Odd Divisor (Number Theory / Codeforces / 900)
 
@@ -8233,6 +9514,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `m>1`, test **not power of two** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 037 --- Problem 37
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1669C --- Odd/Even
 Increments](https://codeforces.com/problemset/problem/1669/C)
 
@@ -8264,6 +9555,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **check parity consistency**, after which the useful form is **parity
 only**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1669C --- Odd/Even Increments (Parity / Codeforces / 800)
 
@@ -8450,6 +9766,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `check parity consistency`, test **parity only** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 038 --- Problem 38
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1624A --- Plus One on the
 Subset](https://codeforces.com/problemset/problem/1624/A)
 
@@ -8480,6 +9806,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **answer=max-min**, after which the useful form is **range width**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1624A --- Plus One on the Subset (Difference / Codeforces / 800)
 
@@ -8665,6 +10016,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `answer=max-min`, test **range width** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 039 --- Problem 39
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1788A --- One and
 Two](https://codeforces.com/problemset/problem/1788/A)
 
@@ -8696,6 +10057,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **total twos even**, after which the useful form is **find half
 twos**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1788A --- One and Two (Product/Parity / Codeforces / 800)
 
@@ -8881,6 +10267,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `total twos even`, test **find half twos** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 040 --- Problem 40
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1845A --- Forbidden
 Integer](https://codeforces.com/problemset/problem/1845/A)
 
@@ -8912,6 +10308,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **cases x!=1, else 2/3**, after which the useful form is **construct
 feasibility**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1845A --- Forbidden Integer (Constructive / Codeforces / 800)
 
@@ -9115,6 +10536,16 @@ Same mathematical family
 Divisibility / GCD / LCM
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 041 --- Problem 41
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1328A --- Divisibility
 Problem](https://codeforces.com/problemset/problem/1328/A)
 
@@ -9146,6 +10577,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **x=(b-a%b)%b**, after which the useful form is **remainder
 complement**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1328A --- Divisibility Problem (Modulo / Codeforces / 800)
 
@@ -9332,6 +10788,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `x=(b-a%b)%b`, test **remainder complement** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 042 --- Problem 42
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1343A ---
 Candies](https://codeforces.com/problemset/problem/1343/A)
 
@@ -9363,6 +10829,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **x=n/(2\^k-1) if divisible**, after which the useful form is **test
 k**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1343A --- Candies (Geometric/Divisibility / Codeforces / 900)
 
@@ -9549,6 +11040,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `x=n/(2^k-1) if divisible`, test **test k** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 043 --- Problem 43
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1370A --- Maximum
 GCD](https://codeforces.com/problemset/problem/1370/A)
 
@@ -9580,6 +11081,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **choose floor(n/2)**, after which the useful form is **tight
 bound**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1370A --- Maximum GCD (GCD / Codeforces / 800)
 
@@ -9765,6 +11291,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `choose floor(n/2)`, test **tight bound** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 044 --- Problem 44
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1829C --- Mr. Perfectly
 Fine](https://codeforces.com/problemset/problem/1829/C)
 
@@ -9796,6 +11332,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **min(cost11,cost01+cost10)**, after which the useful form is
 **coverage states**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1829C --- Mr. Perfectly Fine (Min/Bitmask / Codeforces / 800)
 
@@ -9984,6 +11545,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `min(cost11,cost01+cost10)`, test **coverage states** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 045 --- Problem 45
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1618A --- Polycarp and Sums of
 Subsequences](https://codeforces.com/problemset/problem/1618/A)
 
@@ -10014,6 +11585,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **c=largest-a-b**, after which the useful form is **sorted sums**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1618A --- Polycarp and Sums of Subsequences (Algebra / Codeforces / 800)
 
@@ -10199,6 +11795,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `c=largest-a-b`, test **sorted sums** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 046 --- Problem 46
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 160A ---
 Twins](https://codeforces.com/problemset/problem/160/A)
 
@@ -10230,6 +11836,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to \*\*2\*chosen\>total**, after which the useful form is **sort
 descending\*\*.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 160A --- Twins (Greedy/Sum / Codeforces / 900)
 
@@ -10415,6 +12046,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `2*chosen>total`, test **sort descending** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 047 --- Problem 47
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1475B --- New Year's
 Number](https://codeforces.com/problemset/problem/1475/B)
 
@@ -10446,6 +12087,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **choose b=n%2020 then test**, after which the useful form is
 **linear diophantine shortcut**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1475B --- New Year's Number (Diophantine / Codeforces / 900)
 
@@ -10636,6 +12302,16 @@ PRINT the answer
     `choose b=n%2020 then test`, test **linear diophantine shortcut**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 048 --- Problem 48
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1593A ---
 Elections](https://codeforces.com/problemset/problem/1593/A)
 
@@ -10667,6 +12343,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **inc=max(0,M-x+1), except unique max**, after which the useful form
 is **per candidate bound**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1593A --- Elections (Max/Formula / Codeforces / 800)
 
@@ -10857,6 +12558,16 @@ PRINT the answer
     `inc=max(0,M-x+1), except unique max`, test **per candidate bound**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 049 --- Problem 49
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1829B --- Blank
 Space](https://codeforces.com/problemset/problem/1829/B)
 
@@ -10887,6 +12598,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **max over runs**, after which the useful form is **scan**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1829B --- Blank Space (Run Length / Codeforces / 800)
 
@@ -11072,6 +12808,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `max over runs`, test **scan** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 050 --- Problem 50
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1877A --- Goals of
 Victory](https://codeforces.com/problemset/problem/1877/A)
 
@@ -11102,6 +12848,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **x=-sum**, after which the useful form is **equation**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1877A --- Goals of Victory (Sum Invariant / Codeforces / 800)
 
@@ -11302,6 +13073,16 @@ Same mathematical family
 Modulo / Cyclic Modeling
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 051 --- Problem 51
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 116A ---
 Tram](https://codeforces.com/problemset/problem/116/A)
 
@@ -11333,6 +13114,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **max prefix occupancy**, after which the useful form is **running
 state**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 116A --- Tram (Prefix/Capacity / Codeforces / 800)
 
@@ -11519,6 +13325,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `max prefix occupancy`, test **running state** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 052 --- Problem 52
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 266A --- Stones on the
 Table](https://codeforces.com/problemset/problem/266/A)
 
@@ -11550,6 +13366,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **count s\[i\]==s\[i-1\]**, after which the useful form is **local
 contribution**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 266A --- Stones on the Table (Adjacent / Codeforces / 800)
 
@@ -11736,6 +13577,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `count s[i]==s[i-1]`, test **local contribution** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 053 --- Problem 53
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 228A --- Is your horseshoe on the other
 hoof?](https://codeforces.com/problemset/problem/228/A)
 
@@ -11766,6 +13617,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **set size**, after which the useful form is **duplicates**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 228A --- Is your horseshoe on the other hoof? (Distinctness / Codeforces / 800)
 
@@ -11951,6 +13827,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `set size`, test **duplicates** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 054 --- Problem 54
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 443A --- Anton and
 Letters](https://codeforces.com/problemset/problem/443/A)
 
@@ -11982,6 +13868,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **set cardinality**, after which the useful form is **distinct
 count**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 443A --- Anton and Letters (Set / Codeforces / 800)
 
@@ -12167,6 +14078,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `set cardinality`, test **distinct count** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 055 --- Problem 55
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 59A ---
 Word](https://codeforces.com/problemset/problem/59/A)
 
@@ -12198,6 +14119,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **choose case**, after which the useful form is **frequency
 comparison**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 59A --- Word (Counting / Codeforces / 800)
 
@@ -12384,6 +14330,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `choose case`, test **frequency comparison** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 056 --- Problem 56
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 236A --- Boy or
 Girl](https://codeforces.com/problemset/problem/236/A)
 
@@ -12414,6 +14370,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **d%2**, after which the useful form is **parity of distinct count**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 236A --- Boy or Girl (Set/Parity / Codeforces / 800)
 
@@ -12600,6 +14581,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `d%2`, test **parity of distinct count** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 057 --- Problem 57
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 785A --- Anton and
 Polyhedrons](https://codeforces.com/problemset/problem/785/A)
 
@@ -12630,6 +14621,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **sum contributions**, after which the useful form is **lookup**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 785A --- Anton and Polyhedrons (Mapping / Codeforces / 800)
 
@@ -12815,6 +14831,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `sum contributions`, test **lookup** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 058 --- Problem 58
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 703A --- Mishka and
 Game](https://codeforces.com/problemset/problem/703/A)
 
@@ -12845,6 +14871,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **compare counts**, after which the useful form is **two counters**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 703A --- Mishka and Game (Comparison / Codeforces / 800)
 
@@ -13030,6 +15081,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `compare counts`, test **two counters** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 059 --- Problem 59
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 734B --- Anton and
 Digits](https://codeforces.com/problemset/problem/734/B)
 
@@ -13061,6 +15122,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **x=min(2,5,6), y=min(2left,3)**, after which the useful form is
 **resource allocation**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 734B --- Anton and Digits (Greedy/Counting / Codeforces / 800)
 
@@ -13251,6 +15337,16 @@ PRINT the answer
     `x=min(2,5,6), y=min(2left,3)`, test **resource allocation**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 060 --- Problem 60
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1097A --- Gennady the Card
 Game](https://codeforces.com/problemset/problem/1097/A)
 
@@ -13281,6 +15377,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **OR condition**, after which the useful form is **scan**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1097A --- Gennady the Card Game (Matching / Codeforces / 800)
 
@@ -13481,6 +15602,16 @@ Same mathematical family
 Counting / Frequency / Pairs
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 061 --- Problem 61
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1520D --- Same
 Differences](https://codeforces.com/problemset/problem/1520/D)
 
@@ -13511,6 +15642,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **key=a\[i\]-i**, after which the useful form is **equal-key pairs**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1520D --- Same Differences (Algebra/Frequency / Codeforces / 1200)
 
@@ -13696,6 +15852,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `key=a[i]-i`, test **equal-key pairs** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 062 --- Problem 62
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1538C --- Challenging Cliffs / Number of
 Pairs](https://codeforces.com/problemset/problem/1538/C)
 
@@ -13727,6 +15893,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **sorted pair bound**, after which the useful form is **two
 pointers**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1538C --- Challenging Cliffs / Number of Pairs (Two Pointers / Codeforces / 1300)
 
@@ -13912,6 +16103,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `sorted pair bound`, test **two pointers** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 063 --- Problem 63
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1669B ---
 Triple](https://codeforces.com/problemset/problem/1669/B)
 
@@ -13942,6 +16143,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **frequency threshold**, after which the useful form is **count**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1669B --- Triple (Frequency / Codeforces / 800)
 
@@ -14127,6 +16353,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `frequency threshold`, test **count** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 064 --- Problem 64
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1742C ---
 Stripes](https://codeforces.com/problemset/problem/1742/C)
 
@@ -14157,6 +16393,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **scan rows**, after which the useful form is **existence**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1742C --- Stripes (Grid/Existence / Codeforces / 800)
 
@@ -14342,6 +16603,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `scan rows`, test **existence** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 065 --- Problem 65
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1791B --- Following
 Directions](https://codeforces.com/problemset/problem/1791/B)
 
@@ -14372,6 +16643,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **∃prefix=(1,1)**, after which the useful form is **prefix state**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1791B --- Following Directions (Coordinates / Codeforces / 800)
 
@@ -14557,6 +16853,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `∃prefix=(1,1)`, test **prefix state** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 066 --- Problem 66
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1703B --- ICPC
 Balloons](https://codeforces.com/problemset/problem/1703/B)
 
@@ -14587,6 +16893,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **seen set**, after which the useful form is **contribution**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1703B --- ICPC Balloons (Frequency / Codeforces / 800)
 
@@ -14772,6 +17103,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `seen set`, test **contribution** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 067 --- Problem 67
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1722A --- Spell
 Check](https://codeforces.com/problemset/problem/1722/A)
 
@@ -14803,6 +17144,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **sort or counts**, after which the useful form is **canonical
 form**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1722A --- Spell Check (Frequency/Sorting / Codeforces / 800)
 
@@ -14988,6 +17354,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `sort or counts`, test **canonical form** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 068 --- Problem 68
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1791C --- Prepend and
 Append](https://codeforces.com/problemset/problem/1791/C)
 
@@ -15019,6 +17395,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **remaining length**, after which the useful form is **two
 pointers**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1791C --- Prepend and Append (Two Pointers / Codeforces / 800)
 
@@ -15204,6 +17605,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `remaining length`, test **two pointers** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 069 --- Problem 69
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1829D --- Gold
 Rush](https://codeforces.com/problemset/problem/1829/D)
 
@@ -15235,6 +17646,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **DFS on decreasing states**, after which the useful form is
 **reachability**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1829D --- Gold Rush (Recursion/Reachability / Codeforces / 1000)
 
@@ -15421,6 +17857,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `DFS on decreasing states`, test **reachability** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 070 --- Problem 70
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1878B --- Aleksa and
 Stack](https://codeforces.com/problemset/problem/1878/B)
 
@@ -15452,6 +17898,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **constant gap avoids divisibility**, after which the useful form is
 **construct**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1878B --- Aleksa and Stack (Construction / Codeforces / 800)
 
@@ -15655,6 +18126,16 @@ Same mathematical family
 Operation → Delta → Invariant
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 071 --- Problem 71
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1538B --- Friends and
 Candies](https://codeforces.com/problemset/problem/1538/B)
 
@@ -15685,6 +18166,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **S%n=0**, after which the useful form is **average invariant**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1538B --- Friends and Candies (Invariant / Codeforces / 800)
 
@@ -15871,6 +18377,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `S%n=0`, test **average invariant** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 072 --- Problem 72
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1855A --- Dalton the
 Teacher](https://codeforces.com/problemset/problem/1855/A)
 
@@ -15901,6 +18417,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **ceil(fixed/2)**, after which the useful form is **count fixed**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1855A --- Dalton the Teacher (Mismatch/Operation / Codeforces / 800)
 
@@ -16086,6 +18627,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `ceil(fixed/2)`, test **count fixed** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 073 --- Problem 73
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1838A --- Blackboard
 List](https://codeforces.com/problemset/problem/1838/A)
 
@@ -16117,6 +18668,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **extremal invariant**, after which the useful form is **min if
 negative else max**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1838A --- Blackboard List (Extremal / Codeforces / 800)
 
@@ -16303,6 +18879,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `extremal invariant`, test **min if negative else max** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 074 --- Problem 74
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1862B --- Sequence
 Game](https://codeforces.com/problemset/problem/1862/B)
 
@@ -16334,6 +18920,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **local condition**, after which the useful form is **construct with
 extra value**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1862B --- Sequence Game (Construction / Codeforces / 800)
 
@@ -16520,6 +19131,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `local condition`, test **construct with extra value** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 075 --- Problem 75
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1798A ---
 Showstopper](https://codeforces.com/problemset/problem/1798/A)
 
@@ -16551,6 +19172,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **need max pair endpoints fit final**, after which the useful form is
 **normalize max/min**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1798A --- Showstopper (Invariant/Swap / Codeforces / 800)
 
@@ -16741,6 +19387,16 @@ PRINT the answer
     `need max pair endpoints fit final`, test **normalize max/min**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 076 --- Problem 76
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 660A --- Co-prime
 Array](https://codeforces.com/problemset/problem/660/A)
 
@@ -16771,6 +19427,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **local repair**, after which the useful form is **insert 1**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 660A --- Co-prime Array (Construction/GCD / Codeforces / 900)
 
@@ -16956,6 +19637,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `local repair`, test **insert 1** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 077 --- Problem 77
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1367A --- Short
 Substrings](https://codeforces.com/problemset/problem/1367/A)
 
@@ -16987,6 +19678,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **take first then every second char**, after which the useful form is
 **inverse operation**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1367A --- Short Substrings (String Reconstruction / Codeforces / 800)
 
@@ -17177,6 +19893,16 @@ PRINT the answer
     `take first then every second char`, test **inverse operation**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 078 --- Problem 78
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1374A --- Required
 Remainder](https://codeforces.com/problemset/problem/1374/A)
 
@@ -17208,6 +19934,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **t=floor((n-y)/x)**, after which the useful form is **largest
 feasible**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1374A --- Required Remainder (Modulo/Optimization / Codeforces / 800)
 
@@ -17394,6 +20145,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `t=floor((n-y)/x)`, test **largest feasible** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 079 --- Problem 79
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1551A --- Polycarp and
 Coins](https://codeforces.com/problemset/problem/1551/A)
 
@@ -17424,6 +20185,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **near n/3**, after which the useful form is **balanced equation**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1551A --- Polycarp and Coins (Balancing / Codeforces / 800)
 
@@ -17610,6 +20396,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `near n/3`, test **balanced equation** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 080 --- Problem 80
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1818A ---
 Politics](https://codeforces.com/problemset/problem/1818/A)
 
@@ -17641,6 +20437,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **predicate per string**, after which the useful form is **count
 valid**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1818A --- Politics (String/Counting / Codeforces / 800)
 
@@ -17842,6 +20663,16 @@ Same mathematical family
 Sorting / Coordinate / Distance Modeling
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 081 --- Problem 81
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 160A ---
 Twins](https://codeforces.com/problemset/problem/160/A)
 
@@ -17873,6 +20704,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **prefix until 2sum\>total**, after which the useful form is
 **extremal choice**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 160A --- Twins (Sorting/Greedy / Codeforces / 900)
 
@@ -18059,6 +20915,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `prefix until 2sum>total`, test **extremal choice** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 082 --- Problem 82
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1399A --- Remove
 Smallest](https://codeforces.com/problemset/problem/1399/A)
 
@@ -18089,6 +20955,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **adjacent condition**, after which the useful form is **check**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1399A --- Remove Smallest (Sorting / Codeforces / 800)
 
@@ -18274,6 +21165,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `adjacent condition`, test **check** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 083 --- Problem 83
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1760A --- Medium
 Number](https://codeforces.com/problemset/problem/1760/A)
 
@@ -18304,6 +21205,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **second element**, after which the useful form is **median**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1760A --- Medium Number (Sorting / Codeforces / 800)
 
@@ -18489,6 +21415,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `second element`, test **median** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 084 --- Problem 84
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1538A --- Stone
 Game](https://codeforces.com/problemset/problem/1538/A)
 
@@ -18520,6 +21456,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **min of three strategies**, after which the useful form is
 **distance to ends**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1538A --- Stone Game (Positions / Codeforces / 800)
 
@@ -18707,6 +21668,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `min of three strategies`, test **distance to ends** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 085 --- Problem 85
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1729A --- Two
 Elevators](https://codeforces.com/problemset/problem/1729/A)
 
@@ -18737,6 +21708,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **absolute distance**, after which the useful form is **compare**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1729A --- Two Elevators (Distance / Codeforces / 800)
 
@@ -18922,6 +21918,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `absolute distance`, test **compare** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 086 --- Problem 86
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1593B --- Make it Divisible by
 25](https://codeforces.com/problemset/problem/1593/B)
 
@@ -18953,6 +21959,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **find pair from right**, after which the useful form is **pattern
 search**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1593B --- Make it Divisible by 25 (Digit Pattern / Codeforces / 900)
 
@@ -19139,6 +22170,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `find pair from right`, test **pattern search** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 087 --- Problem 87
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1742F ---
 Smaller](https://codeforces.com/problemset/problem/1742/F)
 
@@ -19170,6 +22211,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **track counts/flags**, after which the useful form is **compressed
 state**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1742F --- Smaller (Lexicographic/Invariant / Codeforces / 1200)
 
@@ -19356,6 +22422,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `track counts/flags`, test **compressed state** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 088 --- Problem 88
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1831A --- Twin
 Permutations](https://codeforces.com/problemset/problem/1831/A)
 
@@ -19387,6 +22463,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **value reflection**, after which the useful form is **direct
 transform**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1831A --- Twin Permutations (Mapping / Codeforces / 800)
 
@@ -19573,6 +22674,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `value reflection`, test **direct transform** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 089 --- Problem 89
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1900A --- Cover in
 Water](https://codeforces.com/problemset/problem/1900/A)
 
@@ -19603,6 +22714,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **local pattern**, after which the useful form is **case split**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1900A --- Cover in Water (Run Length / Codeforces / 800)
 
@@ -19788,6 +22924,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `local pattern`, test **case split** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 090 --- Problem 90
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1873B --- Good
 Kid](https://codeforces.com/problemset/problem/1873/B)
 
@@ -19819,6 +22965,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **exchange argument intuition**, after which the useful form is
 **sort/min index**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1873B --- Good Kid (Product/Greedy / Codeforces / 800)
 
@@ -20022,6 +23193,16 @@ Same mathematical family
 Prefix / Running-State Modeling
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 091 --- Problem 91
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 116A ---
 Tram](https://codeforces.com/problemset/problem/116/A)
 
@@ -20052,6 +23233,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **max(cur)**, after which the useful form is **prefix occupancy**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 116A --- Tram (Prefix / Codeforces / 800)
 
@@ -20238,6 +23444,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `max(cur)`, test **prefix occupancy** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 092 --- Problem 92
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 363B ---
 Fence](https://codeforces.com/problemset/problem/363/B)
 
@@ -20269,6 +23485,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **min over contiguous k**, after which the useful form is
 **prefix/sliding**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 363B --- Fence (Sliding Window / Codeforces / 1100)
 
@@ -20455,6 +23696,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `min over contiguous k`, test **prefix/sliding** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 093 --- Problem 93
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 276C --- Little Girl and Problem on Trees / Little
 Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C)
 
@@ -20486,6 +23737,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **sort values and frequencies same order**, after which the useful
 form is **rearrangement inequality**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 276C --- Little Girl and Problem on Trees / Little Girl and Maximum Sum (Difference/Contribution / Codeforces / 1400)
 
@@ -20676,6 +23952,16 @@ PRINT the answer
     `sort values and frequencies same order`, test **rearrangement
     inequality** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 094 --- Problem 94
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 433B --- Kuriyama Mirai's
 Stones](https://codeforces.com/problemset/problem/433/B)
 
@@ -20707,6 +23993,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **range=p\[r\]-p\[l-1\]**, after which the useful form is **static
 range query**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 433B --- Kuriyama Mirai's Stones (Prefix Sum / Codeforces / 1200)
 
@@ -20893,6 +24204,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `range=p[r]-p[l-1]`, test **static range query** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 095 --- Problem 95
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 313B --- Ilya and
 Queries](https://codeforces.com/problemset/problem/313/B)
 
@@ -20923,6 +24244,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **prefix b**, after which the useful form is **range sum**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 313B --- Ilya and Queries (Prefix / Codeforces / 1100)
 
@@ -21108,6 +24454,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `prefix b`, test **range sum** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 096 --- Problem 96
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 327A --- Flipping
 Game](https://codeforces.com/problemset/problem/327/A)
 
@@ -21139,6 +24495,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **max subarray gain**, after which the useful form is **transform
 then Kadane**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 327A --- Flipping Game (Transform/Kadane / Codeforces / 1200)
 
@@ -21325,6 +24706,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `max subarray gain`, test **transform then Kadane** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 097 --- Problem 97
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 580A --- Kefa and First
 Steps](https://codeforces.com/problemset/problem/580/A)
 
@@ -21355,6 +24746,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **max run**, after which the useful form is **state**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 580A --- Kefa and First Steps (Run Length / Codeforces / 900)
 
@@ -21540,6 +24956,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `max run`, test **state** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 098 --- Problem 98
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 702A --- Maximum
 Increase](https://codeforces.com/problemset/problem/702/A)
 
@@ -21570,6 +24996,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **max run**, after which the useful form is **state**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 702A --- Maximum Increase (Run Length / Codeforces / 800)
 
@@ -21755,6 +25206,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `max run`, test **state** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 099 --- Problem 99
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1829B --- Blank
 Space](https://codeforces.com/problemset/problem/1829/B)
 
@@ -21785,6 +25246,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **max**, after which the useful form is **state**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1829B --- Blank Space (Run Length / Codeforces / 800)
 
@@ -21970,6 +25456,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `max`, test **state** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 100 --- Problem 100
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1669F --- Eating
 Candies](https://codeforces.com/problemset/problem/1669/F)
 
@@ -22001,6 +25497,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **two monotone prefix sums**, after which the useful form is **two
 pointers**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1669F --- Eating Candies (Two Pointers/Prefix / Codeforces / 1100)
 
@@ -22203,6 +25724,16 @@ Same mathematical family
 Constructive / Reachability Modeling
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 101 --- Problem 101
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1690A --- Print a
 Pedestal](https://codeforces.com/problemset/problem/1690/A)
 
@@ -22233,6 +25764,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **near thirds**, after which the useful form is **construct**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1690A --- Print a Pedestal (Constructive / Codeforces / 800)
 
@@ -22418,6 +25974,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `near thirds`, test **construct** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 102 --- Problem 102
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1845A --- Forbidden
 Integer](https://codeforces.com/problemset/problem/1845/A)
 
@@ -22449,6 +26015,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **simple basis values**, after which the useful form is
 **construct**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1845A --- Forbidden Integer (Constructive / Codeforces / 800)
 
@@ -22634,6 +26225,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `simple basis values`, test **construct** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 103 --- Problem 103
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1878B --- Aleksa and
 Stack](https://codeforces.com/problemset/problem/1878/B)
 
@@ -22665,6 +26266,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **satisfy local constraint by design**, after which the useful form
 is **construction**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1878B --- Aleksa and Stack (Constructive / Codeforces / 800)
 
@@ -22854,6 +26480,16 @@ PRINT the answer
     `satisfy local constraint by design`, test **construction**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 104 --- Problem 104
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1741A --- Compare T-Shirt
 Sizes](https://codeforces.com/problemset/problem/1741/A)
 
@@ -22885,6 +26521,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **map to signed scale**, after which the useful form is **custom
 ordering**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1741A --- Compare T-Shirt Sizes (Ordering / Codeforces / 800)
 
@@ -23070,6 +26731,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `map to signed scale`, test **custom ordering** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 105 --- Problem 105
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1805B --- We Need the Zero / The String Has a
 Target](https://codeforces.com/problemset/problem/1805/B)
 
@@ -23100,6 +26771,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **stable reconstruction**, after which the useful form is **greedy**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1805B --- We Need the Zero / The String Has a Target (String/Greedy / Codeforces / 800)
 
@@ -23286,6 +26982,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `stable reconstruction`, test **greedy** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 106 --- Problem 106
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1833B --- Restore the
 Weather](https://codeforces.com/problemset/problem/1833/B)
 
@@ -23317,6 +27023,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **monotone matching**, after which the useful form is **pair sorted
 orders**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1833B --- Restore the Weather (Sorting/Matching / Codeforces / 1000)
 
@@ -23503,6 +27234,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `monotone matching`, test **pair sorted orders** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 107 --- Problem 107
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1793C --- Dora and
 Search](https://codeforces.com/problemset/problem/1793/C)
 
@@ -23533,6 +27274,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **maintain lo,hi**, after which the useful form is **two pointers**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1793C --- Dora and Search (Two Pointers/Extremes / Codeforces / 1200)
 
@@ -23718,6 +27484,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `maintain lo,hi`, test **two pointers** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 108 --- Problem 108
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1881A --- Don't Try to
 Count](https://codeforces.com/problemset/problem/1881/A)
 
@@ -23749,6 +27525,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **repeat x until long enough + margin**, after which the useful form
 is **simulation bound**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1881A --- Don't Try to Count (String/Doubling / Codeforces / 800)
 
@@ -23939,6 +27740,16 @@ PRINT the answer
     `repeat x until long enough + margin`, test **simulation bound**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 109 --- Problem 109
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1858A ---
 Buttons](https://codeforces.com/problemset/problem/1858/A)
 
@@ -23969,6 +27780,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **parity c**, after which the useful form is **effective counts**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1858A --- Buttons (Game/Constructive / Codeforces / 800)
 
@@ -24155,6 +27991,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `parity c`, test **effective counts** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 110 --- Problem 110
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1899A --- Game with
 Integers](https://codeforces.com/problemset/problem/1899/A)
 
@@ -24185,6 +28031,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **n%3**, after which the useful form is **residue game**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1899A --- Game with Integers (Modulo/Game / Codeforces / 800)
 
@@ -24385,6 +28256,16 @@ Same mathematical family
 Bitwise / XOR Modeling
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 111 --- Problem 111
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1805A --- We Need the
 Zero](https://codeforces.com/problemset/problem/1805/A)
 
@@ -24416,6 +28297,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **if n even x cancels; else x=xorAll**, after which the useful form
 is **parity of n**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1805A --- We Need the Zero (XOR / Codeforces / 900)
 
@@ -24604,6 +28510,16 @@ PRINT the answer
     `if n even x cancels; else x=xorAll`, test **parity of n**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 112 --- Problem 112
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1872A --- Two
 Vessels](https://codeforces.com/problemset/problem/1872/A)
 
@@ -24635,6 +28551,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to \*\*m\*2c\>=\|a-b\|**, after which the useful form is **ceil
 division\*\*.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1872A --- Two Vessels (Arithmetic / Codeforces / 800)
 
@@ -24820,6 +28761,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `m*2c>=|a-b|`, test **ceil division** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 113 --- Problem 113
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1703A --- YES or
 YES?](https://codeforces.com/problemset/problem/1703/A)
 
@@ -24850,6 +28801,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **compare**, after which the useful form is **canonicalization**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1703A --- YES or YES? (String / Codeforces / 800)
 
@@ -25036,6 +29012,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `compare`, test **canonicalization** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 114 --- Problem 114
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1624A --- Plus One on the
 Subset](https://codeforces.com/problemset/problem/1624/A)
 
@@ -25066,6 +29052,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **range max-min**, after which the useful form is **potential**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1624A --- Plus One on the Subset (Range / Codeforces / 800)
 
@@ -25251,6 +29262,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `range max-min`, test **potential** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 115 --- Problem 115
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1220A ---
 Cards](https://codeforces.com/problemset/problem/1220/A)
 
@@ -25282,6 +29303,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **count z and n**, after which the useful form is **frequency
 signature**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1220A --- Cards (Frequency / Codeforces / 900)
 
@@ -25468,6 +29514,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `count z and n`, test **frequency signature** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 116 --- Problem 116
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1362A --- Johnny and Ancient
 Computer](https://codeforces.com/problemset/problem/1362/A)
 
@@ -25499,6 +29555,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **exponent difference grouped by3**, after which the useful form is
 **factorization**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1362A --- Johnny and Ancient Computer (Powers/Ratio / Codeforces / 900)
 
@@ -25688,6 +29769,16 @@ PRINT the answer
     `exponent difference grouped by3`, test **factorization**
     immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 117 --- Problem 117
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1095A --- Repeating
 Cipher](https://codeforces.com/problemset/problem/1095/A)
 
@@ -25719,6 +29810,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **triangular positions**, after which the useful form is
 **simulation**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1095A --- Repeating Cipher (Index Pattern / Codeforces / 800)
 
@@ -25905,6 +30021,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `triangular positions`, test **simulation** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 118 --- Problem 118
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1324A --- Yet Another Tetris
 Problem](https://codeforces.com/problemset/problem/1324/A)
 
@@ -25936,6 +30062,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **all same parity**, after which the useful form is **parity
 invariant**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1324A --- Yet Another Tetris Problem (Parity / Codeforces / 800)
 
@@ -26122,6 +30273,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `all same parity`, test **parity invariant** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 119 --- Problem 119
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1462A --- Favorite
 Sequence](https://codeforces.com/problemset/problem/1462/A)
 
@@ -26152,6 +30313,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **index pattern**, after which the useful form is **two pointers**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1462A --- Favorite Sequence (Two Pointers / Codeforces / 800)
 
@@ -26337,6 +30523,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `index pattern`, test **two pointers** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 120 --- Problem 120
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1619A --- Polycarp and Sums of Subsequences / Square
 String?](https://codeforces.com/problemset/problem/1619/A)
 
@@ -26368,6 +30564,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **equation on substrings**, after which the useful form is
 **direct**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1619A --- Polycarp and Sums of Subsequences / Square String? (String / Codeforces / 800)
 
@@ -26569,6 +30790,16 @@ Same mathematical family
 Mixed Blind Decoding
 ```
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 121 --- Problem 121
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1538C --- Challenging Cliffs / Number of
 Pairs](https://codeforces.com/problemset/problem/1538/C)
 
@@ -26600,6 +30831,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **sort + two pointers**, after which the useful form is **count
 bounded pairs**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1538C --- Challenging Cliffs / Number of Pairs (Sorting+Counting / Codeforces / 1300)
 
@@ -26786,6 +31042,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `sort + two pointers`, test **count bounded pairs** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 122 --- Problem 122
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1475B --- New Year's
 Number](https://codeforces.com/problemset/problem/1475/B)
 
@@ -26817,6 +31083,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **b=n%2020 candidate**, after which the useful form is
 **feasibility**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1475B --- New Year's Number (Diophantine+Modulo / Codeforces / 900)
 
@@ -27002,6 +31293,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `b=n%2020 candidate`, test **feasibility** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 123 --- Problem 123
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1374A --- Required
 Remainder](https://codeforces.com/problemset/problem/1374/A)
 
@@ -27032,6 +31333,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **maximize t under bound**, after which the useful form is **floor**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1374A --- Required Remainder (Modulo+Optimization / Codeforces / 800)
 
@@ -27218,6 +31544,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `maximize t under bound`, test **floor** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 124 --- Problem 124
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1551A --- Polycarp and
 Coins](https://codeforces.com/problemset/problem/1551/A)
 
@@ -27248,6 +31584,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **n%3 cases**, after which the useful form is **construct counts**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1551A --- Polycarp and Coins (Equation+Balancing / Codeforces / 800)
 
@@ -27434,6 +31795,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `n%3 cases`, test **construct counts** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 125 --- Problem 125
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1593B --- Make it Divisible by
 25](https://codeforces.com/problemset/problem/1593/B)
 
@@ -27465,6 +31836,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **search from right**, after which the useful form is **four
 targets**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1593B --- Make it Divisible by 25 (Divisibility+String / Codeforces / 900)
 
@@ -27650,6 +32046,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `search from right`, test **four targets** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 126 --- Problem 126
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1669F --- Eating
 Candies](https://codeforces.com/problemset/problem/1669/F)
 
@@ -27681,6 +32087,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **advance smaller side**, after which the useful form is **two
 pointers**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1669F --- Eating Candies (Prefix+Two Pointers / Codeforces / 1100)
 
@@ -27867,6 +32298,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `advance smaller side`, test **two pointers** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 127 --- Problem 127
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1793C --- Dora and
 Search](https://codeforces.com/problemset/problem/1793/C)
 
@@ -27897,6 +32338,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **lo/hi invariant**, after which the useful form is **two pointers**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1793C --- Dora and Search (Extremes+Two Pointers / Codeforces / 1200)
 
@@ -28082,6 +32548,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `lo/hi invariant`, test **two pointers** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 128 --- Problem 128
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 327A --- Flipping
 Game](https://codeforces.com/problemset/problem/327/A)
 
@@ -28112,6 +32588,31 @@ game, or story. Ask: *"What numerical state is given, what condition
 must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **maximum subarray**, after which the useful form is **Kadane**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 327A --- Flipping Game (Transform+Optimization / Codeforces / 1200)
 
@@ -28297,6 +32798,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `maximum subarray`, test **Kadane** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 129 --- Problem 129
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 1520D --- Same
 Differences](https://codeforces.com/problemset/problem/1520/D)
 
@@ -28328,6 +32839,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **equal transformed keys**, after which the useful form is **hash
 frequency**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 1520D --- Same Differences (Algebra+Frequency / Codeforces / 1200)
 
@@ -28514,6 +33050,16 @@ PRINT the answer
 -   **Recognition Trigger:** When a new statement can be rewritten as
     `equal transformed keys`, test **hash frequency** immediately.
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 130 --- Problem 130
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: [CF 276C --- Little Girl and Maximum
 Sum](https://codeforces.com/problemset/problem/276/C)
 
@@ -28545,6 +33091,31 @@ must the answer satisfy, and what quantity am I
 minimizing/maximizing/counting/testing?"* For this problem that reduces
 to **sort both sequences**, after which the useful form is
 **rearrangement**.
+
+**Everyday-Life Scenario Map --- Repeated Trips / Loads**
+
+Imagine you must move `D` kg of groceries upstairs and can carry at most
+`K` kg per trip.
+
+``` text
+Real world:
+Required work = D
+Capacity per trip = K
+Number of trips = m
+
+After m trips:
+maximum work completed = m × K
+
+Need:
+m × K >= D
+
+Therefore:
+m = ceil(D / K)
+```
+
+The nouns changed---elephant, moves, vessels, trips---but the
+mathematical model is **required amount ÷ maximum useful amount per
+operation**.
 
 ### CF 276C --- Little Girl and Maximum Sum (Difference+Sorting / Codeforces / 1400)
 
@@ -28753,6 +33324,16 @@ PRINT the answer
 
 # Reusable Problem Template
 
+------------------------------------------------------------------------
+
+```{=html}
+<!-- ============================================================ -->
+```
+# Problem 131 --- Problem 131
+
+```{=html}
+<!-- ============================================================ -->
+```
 Problem Link: `[link]`
 
 **Problem Summary --- What is the problem actually asking?**
@@ -28822,3 +33403,5 @@ pattern
        ↓
 solution
 ```
+
+------------------------------------------------------------------------
