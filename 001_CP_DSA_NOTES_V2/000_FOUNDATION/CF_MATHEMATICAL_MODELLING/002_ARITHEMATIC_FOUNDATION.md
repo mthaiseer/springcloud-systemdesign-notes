@@ -11,11 +11,11 @@
 
 | Symbol | Name | Formal Definition | Standard Implementation | Example |
 | :--- | :--- | :--- | :--- | :--- |
-| $\lfloor x \rfloor$ | **Floor** | $\max \{ k \in \mathbb{Z} \mid k \le x \}$ | `floor(x)` / `a / b` | $\lfloor 3.9 \rfloor = 3$, $\lfloor -3.1 \rfloor = -4$ |
-| $\lceil x \rceil$ | **Ceiling** | $\min \{ k \in \mathbb{Z} \mid k \ge x \}$ | `ceil(x)` / `(a + b - 1) / b` | $\lceil 3.1 \rceil = 4$, $\lceil -3.9 \rceil = -3$ |
-| $a \bmod b$ | **Modulo** | $r = a - b \cdot \lfloor a / b \rfloor$ | `a % b` | $17 \bmod 5 = 2$ |
-| $[a, b)$ | **Half-Open Range** | $\{ x \in \mathbb{R} \mid a \le x < b \}$ | `for(int i = a; i < b; ++i)` | $[0, 5) \implies \{0, 1, 2, 3, 4\}$ |
-| $\approx$ | **Estimate** | $2^{10} = 1024 \approx 10^3$ | `1 << 10` | $2^{30} \approx 10^9$ (1 Gigabyte) |
+| `⌊x⌋` | **Floor** | Largest integer $k \le x$ | `floor(x)` / `a / b` | `⌊3.9⌋ = 3`, `⌊-3.1⌋ = -4` |
+| `⌈x⌉` | **Ceiling** | Smallest integer $k \ge x$ | `ceil(x)` / `(a + b - 1) / b` | `⌈3.1⌉ = 4`, `⌈-3.9⌉ = -3` |
+| `a mod b` | **Modulo** | $r = a - b \cdot \lfloor a / b \rfloor$ | `a % b` | $17 \bmod 5 = 2$ |
+| `[a, b)` | **Half-Open Range** | All $x$ where $a \le x < b$ | `for(int i = a; i < b; ++i)` | $[0, 5) \implies \{0, 1, 2, 3, 4\}$ |
+| `≈` | **Estimate** | $2^{10} = 1024 \approx 10^3$ | `1 << 10` | $2^{30} \approx 10^9$ (1 Gigabyte) |
 
 ```cpp
 // Common representation in C++ / Java / Python
@@ -40,7 +40,7 @@ Dividend (a = 17)
 
 | Division Behavior | Mathematical Rule | Language Support | Example ($a = -17, b = 5$) |
 | :--- | :--- | :--- | :--- |
-| **Division Algorithm** | $a = b \cdot q + r \quad (0 \le r < |b|)$ | Universal Math Standard | $q = -4, r = 3$ |
+| **Division Algorithm** | $a = b \cdot q + r$ where $0 \le r < \text{abs}(b)$ | Universal Math Standard | $q = -4, r = 3$ |
 | **Truncating Division** | Rounds fractional quotient toward zero | C, C++, Java, C# | `-17 / 5 = -3`, `-17 % 5 = -2` |
 | **Floored Division** | Rounds quotient down toward $-\infty$ | Python | `-17 // 5 = -4`, `-17 % 5 = 3` |
 
@@ -70,7 +70,7 @@ Bucket Size (b) :    3      |    3      |    3      |  3  ---> Requires 4 Bucket
 int total_pages = (items + page_size - 1) / page_size;
 ```
 
-> **Real-World Case:** **Server Auto-Scaling.** Packing $100$ container tasks into virtual hosts with $30$-task capacity provisions $\lceil 100/30 \rceil = \text{\texttt{(100 + 29) / 30}} = 4$ servers.
+> **Real-World Case:** **Server Auto-Scaling.** Packing $100$ container tasks into virtual hosts with $30$-task capacity provisions $\lceil 100/30 \rceil = \texttt{(100 + 29) / 30} = 4$ servers.
 
 ---
 
@@ -85,9 +85,9 @@ int total_pages = (items + page_size - 1) / page_size;
 
 | Function | Algebraic Formula | Property / Identity |
 | :--- | :--- | :--- |
-| **Absolute Value** | $|x| = x \text{ if } x \ge 0 \text{ else } -x$ | $|x| = \sqrt{x^2}$ |
-| **Maximum** | $\max(a, b) = \frac{a + b + |a - b|}{2}$ | $\max(a, b) \ge a \text{ and } \max(a, b) \ge b$ |
-| **Minimum** | $\min(a, b) = \frac{a + b - |a - b|}{2}$ | $\min(a, b) \le a \text{ and } \min(a, b) \le b$ |
+| **Absolute Value** | $\text{abs}(x) = x \text{ if } x \ge 0 \text{ else } -x$ | $\text{abs}(x) = \sqrt{x^2}$ |
+| **Maximum** | $\max(a, b) = (a + b + \text{abs}(a - b)) / 2$ | $\max(a, b) \ge a \text{ and } \max(a, b) \ge b$ |
+| **Minimum** | $\min(a, b) = (a + b - \text{abs}(a - b)) / 2$ | $\min(a, b) \le a \text{ and } \min(a, b) \le b$ |
 
 ```cpp
 // Clamp coordinate 'x' strictly within interval [LOW, HIGH]
@@ -135,7 +135,7 @@ Exa       2^60            1.15 × 10^18  ≈ 10^18            EB / Exabyte
 | Identity / Rule | Exact Equation | Algorithm Design Usage |
 | :--- | :--- | :--- |
 | **Product Property** | $\log_b(A \cdot B) = \log_b(A) + \log_b(B)$ | Decomposing search space trees |
-| **Base Conversion** | $\log_b(A) = \frac{\log_c(A)}{\log_c(b)}$ | Translating natural logs to binary operations |
+| **Base Conversion** | $\log_b(A) = \log_c(A) / \log_c(b)$ | Translating natural logs to binary operations |
 | **Integer Bit Length** | $\lfloor \log_2 N \rfloor + 1$ | Allocating minimal memory register sizes |
 
 ```cpp
@@ -186,7 +186,7 @@ Number (a) = 18, Divisor (b) = 5   ==>  Exact: 3.6
 | :--- | :--- | :--- |
 | **Floor (Truncate)** | $\lfloor a / b \rfloor$ | `a / b` |
 | **Ceil (Round Up)** | $\lceil a / b \rceil$ | `(a + b - 1) / b` |
-| **Nearest Integer** | $\lfloor \frac{a + b/2}{b} \rfloor$ | `(a + b / 2) / b` |
+| **Nearest Integer** | $\lfloor (a + b/2) / b \rfloor$ | `(a + b / 2) / b` |
 
 ```cpp
 // Round division of non-negative integers to nearest whole integer
