@@ -11,8 +11,8 @@
 
 | Symbol | Name | Formal Definition | Standard Implementation | Example |
 | :--- | :--- | :--- | :--- | :--- |
-| $\lfloor x \rfloor$ | **Floor** | $\max \{ k \in \mathbb{Z} \mid k \le x \}$ | `floor(x)` / `a / b` | $\lfloor 3.9 \rfloor = 3, \lfloor -3.1 \rfloor = -4$ |
-| $\lceil x \rceil$ | **Ceiling** | $\min \{ k \in \mathbb{Z} \mid k \ge x \}$ | `ceil(x)` / `(a + b - 1) / b` | $\lceil 3.1 \rceil = 4, \lceil -3.9 \rceil = -3$ |
+| $\lfloor x \rfloor$ | **Floor** | $\max \{ k \in \mathbb{Z} \mid k \le x \}$ | `floor(x)` / `a / b` | $\lfloor 3.9 \rfloor = 3$, $\lfloor -3.1 \rfloor = -4$ |
+| $\lceil x \rceil$ | **Ceiling** | $\min \{ k \in \mathbb{Z} \mid k \ge x \}$ | `ceil(x)` / `(a + b - 1) / b` | $\lceil 3.1 \rceil = 4$, $\lceil -3.9 \rceil = -3$ |
 | $a \bmod b$ | **Modulo** | $r = a - b \cdot \lfloor a / b \rfloor$ | `a % b` | $17 \bmod 5 = 2$ |
 | $[a, b)$ | **Half-Open Range** | $\{ x \in \mathbb{R} \mid a \le x < b \}$ | `for(int i = a; i < b; ++i)` | $[0, 5) \implies \{0, 1, 2, 3, 4\}$ |
 | $\approx$ | **Estimate** | $2^{10} = 1024 \approx 10^3$ | `1 << 10` | $2^{30} \approx 10^9$ (1 Gigabyte) |
@@ -70,7 +70,7 @@ Bucket Size (b) :    3      |    3      |    3      |  3  ---> Requires 4 Bucket
 int total_pages = (items + page_size - 1) / page_size;
 ```
 
-> **Real-World Case:** **Server Auto-Scaling.** Packing $100$ container tasks into virtual hosts with $30$-task capacity provisions $\lceil 100/30 \rceil = \texttt{(100 + 29) / 30} = 4$ servers.
+> **Real-World Case:** **Server Auto-Scaling.** Packing $100$ container tasks into virtual hosts with $30$-task capacity provisions $\lceil 100/30 \rceil = \text{\texttt{(100 + 29) / 30}} = 4$ servers.
 
 ---
 
