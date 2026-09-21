@@ -1,10 +1,10 @@
 # CF Mathematical Modeling Mastery (800 → 1900)
 
-> **V2 — Real-World + Visual Mathematical Modeling Edition**
+> **V2 — Real-World Mathematical Modeling Edition (Fixed)**
 >
-> Every topic keeps the original mathematical material and adds a retention layer:
-> **simple story → real numbers → manual steps → ASCII mathematical model → CF recognition signal**.
-> The goal is not merely to memorize formulas, but to recognize the mathematical form hidden inside a Codeforces statement.
+> Every substantive topic now has its **own concrete everyday example** and **topic-specific ASCII mathematical model**.
+> Repeated generic placeholders have been removed. Read each block as:
+> **real situation → small numbers → visual model → formula → CF recognition**.
 
 
 > **Core skill:** `Statement → Variables → Conditions → Simplify → Recognize form → Algorithm → Proof → C++`
@@ -182,27 +182,6 @@ Story -> Objects -> Variables -> Allowed Operations -> Constraints
 
 ### Worked reading (1 minute)
 
-#### 🌍 Real-World Example — Worked reading (1 minute)
-
-**Think of this:** Imagine a small everyday situation where the quantities in **Worked reading (1 minute)** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
-
-```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
-```
-
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
-
-
 ```text
 "Alice has a candies, Bob has b. Each move: someone gives 1 candy to the other.
  Can they end with equal candies?"
@@ -246,32 +225,28 @@ Answer: (a+b) % 2 == 0
 
 ### 1.1 Quotient and remainder
 
-#### 🌍 Real-World Example — Packing Chocolates into Boxes
+#### 🌍 Real-World Example — Packing chocolates
 
-**Think of this:** You have **17 chocolates**. Each box holds exactly **5 chocolates**. How many full boxes can you fill, and how many chocolates remain?
+You have **17 chocolates** and each box holds **5**.
 
-**Step-by-step with real numbers:**
+- Box 1 = 5
+- Box 2 = 5
+- Box 3 = 5
+- Left = 2
 
-1. 17 chocolates total
-2. 5 chocolates / box
-3. 17 = 5 × 3 + 2
-4. Full boxes = 3
-5. Left over = 2
-
-**📐 Mathematical Model / Visual**
+So `17 = 5 × 3 + 2`.
 
 ```text
-17 items
-   ↓ divide into groups of 5
-[5] [5] [5] [2 left]
- q=3          r=2
+17 chocolates
+[ 5 ] [ 5 ] [ 5 ] [ 2 left ]
+  ↑     ↑     ↑
+  3 complete boxes
 
-17 = 5q + r = 5×3 + 2
+q = 3, r = 2
+17 = 5q + r
 ```
 
-**What the math means:** `a = bq + r` means: split `a` items into groups of size `b`; `q` is the number of complete groups and `r` is what is left.
-
-**🧠 CF Recognition:** Words such as **groups, batches, complete sets, leftover, remainder, every k-th position** often suggest `/` and `%`.
+**CF recognition:** complete groups → `/`; leftovers / remainder → `%`.
 
 
 **What is it?**
@@ -313,31 +288,21 @@ Result: 17 = 3*5 + 2
 
 ### 1.2 Floor, ceiling and ceil-division
 
-#### 🌍 Real-World Example — Taxis for a Group
+#### 🌍 Real-World Example — Taxis for 17 people
 
-**Think of this:** There are **17 people** and each taxi can carry **4 people**. How many taxis are needed?
+A taxi holds **4 people**. There are **17 people**.
 
-**Step-by-step with real numbers:**
-
-1. 4 taxis carry 16 people
-2. 1 person is still waiting
-3. That person needs another taxi
-4. Answer = 5 taxis = ceil(17/4)
-
-**📐 Mathematical Model / Visual**
+Four taxis carry only 16 people, so one more taxi is required.
 
 ```text
-17 people
+people: 17
 [4] [4] [4] [4] [1]
- ↑   ↑   ↑   ↑   ↑
- taxi             taxi
+ T1  T2  T3  T4  T5
 
-ceil(17/4)=5
+ceil(17 / 4) = 5
 ```
 
-**What the math means:** Ceiling means **how many whole containers/operations are required when a partial final group still counts**.
-
-**🧠 CF Recognition:** Look for **minimum groups, buses, pages, packets, operations of size k** → often `ceil(n/k) = (n+k-1)/k`.
+**CF recognition:** minimum buses/boxes/pages/operations of capacity `k` → `ceil(n/k)`.
 
 
 **What is it?**
@@ -387,30 +352,20 @@ Case 2: a = q*b + r with r > 0
 
 ### 1.3 Absolute value, min and max
 
-#### 🌍 Real-World Example — Distance Between Two Houses
+#### 🌍 Real-World Example — Distance between two houses
 
-**Think of this:** Two houses are at positions **3** and **8** on one straight road. How far apart are they?
-
-**Step-by-step with real numbers:**
-
-1. From 3 to 8 is 5 steps
-2. 8 - 3 = 5
-3. If order is reversed, 3 - 8 = -5, but distance cannot be negative
-4. Use |8-3| = 5
-
-**📐 Mathematical Model / Visual**
+House A is at position **3**, house B at **8**.
 
 ```text
 0--1--2--3--4--5--6--7--8
-         A              B
-         <---- 5 ----->
+         A <----5----> B
 
-Distance = |A-B|
+distance = |8 - 3| = 5
 ```
 
-**What the math means:** `|x-y|` removes direction and keeps only the **gap/distance**.
+If you reverse them, `3-8=-5`, but distance is still `5`.
 
-**🧠 CF Recognition:** Words **distance, difference, gap, moves by ±1, make equal** should trigger absolute difference.
+**CF recognition:** distance, gap, difference regardless of order → `|a-b|`.
 
 
 **What is it?**
@@ -452,25 +407,20 @@ min = (3 + 8 - 5) / 2 = 3
 
 ### 1.4 Intervals and inequalities
 
-#### 🌍 Real-World Example — 1.4 Intervals and inequalities
+#### 🌍 Real-World Example — Two people's free time
 
-**Think of this:** Imagine a small everyday situation where the quantities in **1.4 Intervals and inequalities** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+You are free from **14:00–20:00**. Your friend is free from **09:00–18:00**.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+Friend: [09---------------18]
+You:             [14---------------20]
+Overlap:         [14------18]
+
+L = max(9,14) = 14
+R = min(18,20) = 18
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** several lower/upper limits → intersect them using `max(L)` and `min(R)`.
 
 
 **What is it?**
@@ -510,25 +460,19 @@ else      ->  x can be any value from L to R
 
 ### 1.5 Powers, logarithms and size estimates
 
-#### 🌍 Real-World Example — 1.5 Powers, logarithms and size estimates
+#### 🌍 Real-World Example — Doubling followers
 
-**Think of this:** Imagine a small everyday situation where the quantities in **1.5 Powers, logarithms and size estimates** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+A message doubles its viewers every round.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+round:   0   1   2   3   4
+people:  1   2   4   8  16
+         2^0 2^1 2^2 2^3 2^4
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+To know how many doublings are needed to reach a target, think `2^k >= target`, hence logarithms.
+
+**CF recognition:** repeated multiplication/doubling → powers; number of doublings → log.
 
 
 **What is it?**
@@ -556,25 +500,21 @@ log2(1e9) ~ 30      log2(1e18) ~ 60
 
 ### 1.6 Overflow: choosing `int` or `long long`
 
-#### 🌍 Real-World Example — 1.6 Overflow: choosing int or long long
+#### 🌍 Real-World Example — Counting pairs in a stadium
 
-**Think of this:** Imagine a small everyday situation where the quantities in **1.6 Overflow: choosing int or long long** are actual counts, distances, groups, prices, positions, or repeated operations.
+A stadium has `n = 200000` people. Counting every pair gives roughly:
 
-**📐 Mathematical Model / Visual**
+`n(n-1)/2 ≈ 20,000,000,000`.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+int max       ≈ 2,100,000,000
+pair count    ≈20,000,000,000
+               ↑ too large
+
+use long long
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** sums/products/pairs with `1e5`, `1e9`, etc. → estimate before choosing the type.
 
 
 **What is it?**
@@ -604,25 +544,21 @@ long long good = 1LL * a * b;     // RIGHT: 1LL makes the multiplication long lo
 
 ### 1.7 Rounding without decimals
 
-#### 🌍 Real-World Example — 1.7 Rounding without decimals
+#### 🌍 Real-World Example — Splitting a bill
 
-**Think of this:** Imagine a small everyday situation where the quantities in **1.7 Rounding without decimals** are actual counts, distances, groups, prices, positions, or repeated operations.
+A bill is **7** and two people split it equally: `7/2 = 3.5`.
 
-**📐 Mathematical Model / Visual**
+If the rule says round to nearest integer:
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+3 ----- 3.5 ----- 4
+        ↑
+      round → 4
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+For non-negative integers, patterns such as `(a + b/2)/b` can avoid floating point.
+
+**CF recognition:** exact integer rounding → use integer formulas, not `double`, when possible.
 
 
 **What is it?**
@@ -659,25 +595,19 @@ round(a / b) = (2*a + b) / (2*b)      for a >= 0, b > 0
 
 ### Algebra Form 1. Rearranging equations (sum and difference)
 
-#### 🌍 Real-World Example — Algebra Form 1. Rearranging equations (sum and difference)
+#### 🌍 Real-World Example — Two wallets
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Algebra Form 1. Rearranging equations (sum and difference)** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Two wallets contain **€10 total**. Wallet A has **€4 more** than B.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+A + B = 10
+A - B =  4
+------------
+2A    = 14
+A = 7, B = 3
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** translate verbal sum/difference constraints into equations, then add/subtract them.
 
 
 **Idea.** If you know a sum and a difference of two numbers, you can find both numbers.
@@ -712,25 +642,19 @@ y = (10 - 4) / 2 = 3         check: 7 + 3 = 10, 7 - 3 = 4
 
 ### Algebra Form 2. Isolating a variable
 
-#### 🌍 Real-World Example — Algebra Form 2. Isolating a variable
+#### 🌍 Real-World Example — Taxi fare
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Algebra Form 2. Isolating a variable** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+A taxi charges **€5 fixed + €3 per km**. Your bill is **€20**.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+5 + 3x = 20
+    3x = 15
+     x = 5 km
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+If `x` must be an integer, also check divisibility.
+
+**CF recognition:** fixed start + repeated amount = target → isolate operation count.
 
 
 **Idea.** If an unknown appears once, solve for it. This replaces a loop over all values of the unknown.
@@ -751,25 +675,20 @@ x       = (c - b) / a        valid only if (c - b) % a == 0
 
 ### Algebra Form 3. Substitution
 
-#### 🌍 Real-World Example — Algebra Form 3. Substitution
+#### 🌍 Real-World Example — Adult and child tickets
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Algebra Form 3. Substitution** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+You buy `n` tickets. Let adult tickets be `x`; then child tickets are automatically `n-x`.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+adult + child = n
+x + y = n
+y = n - x
+
+cost = 10x + 5y
+     = 10x + 5(n-x)
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** two variables tied by one simple equation → replace one with the other.
 
 
 **Idea.** Use one equation to remove a variable.
@@ -787,35 +706,22 @@ The cost only depends on `x` and decreases as `x` grows, so take `x` as large as
 
 ### Algebra Form 4. Difference of squares
 
-#### 🌍 Real-World Example — Square Garden with a Square Pond
+#### 🌍 Real-World Example — Square garden minus pond
 
-**Think of this:** A square garden has side **4 m**. A square pond inside has side **1 m**. What area remains outside the pond?
-
-**Step-by-step with real numbers:**
-
-1. Garden area = 4² = 16
-2. Pond area = 1² = 1
-3. Remaining area = 16 - 1 = 15
-4. Factor form: (4-1)(4+1)=3×5=15
-
-**📐 Mathematical Model / Visual**
+A square garden is **4×4 m** and a square pond is **1×1 m**.
 
 ```text
-Outer square: 4×4
-+-----------+
-|           |
-|  +--+     |   remove 1×1 pond
-|  +--+     |
-|           |
-+-----------+
+garden area = 4² = 16
+pond area   = 1² =  1
+remaining   = 15
 
-remaining = a²-b²
-          = (a-b)(a+b)
+a² - b²
+= (a-b)(a+b)
+= (4-1)(4+1)
+= 3×5 = 15
 ```
 
-**What the math means:** A difference of two square areas can be turned into a **product of two factors**.
-
-**🧠 CF Recognition:** If CF gives `N = a²-b²`, think **factor pair**: `N=(a-b)(a+b)` and check parity.
+**CF recognition:** `N = a²-b²` → turn it into a factor-pair problem.
 
 
 **Rule.**
@@ -838,35 +744,33 @@ b = (e - d) / 2
 
 ### Algebra Form 5. Expansions
 
-#### 🌍 Real-World Example — Every Unique Pair of Friends
+#### 🌍 Real-World Example — Every unique pair of gift budgets
 
-**Think of this:** Alice, Bob and John have values **2, 3, 4**. Add the product for every unique pair.
+Three friends have values `2, 3, 4`.
 
-**Step-by-step with real numbers:**
-
-1. Alice×Bob = 2×3 = 6
-2. Alice×John = 2×4 = 8
-3. Bob×John = 3×4 = 12
-4. Pair total = 26
-5. (2+3+4)²=81
-6. Self-squares = 4+9+16=29
-7. 81-29=52 counts every pair twice
-8. 52/2=26
-
-**📐 Mathematical Model / Visual**
+Manual unique pairs:
 
 ```text
-(2+3+4)²
-= 2²+3²+4²
-  +2(2×3 + 2×4 + 3×4)
-
-81 = 29 + 2(PAIR_SUM)
-PAIR_SUM = (81-29)/2 = 26
+2×3 =  6
+2×4 =  8
+3×4 = 12
+-----------
+total = 26
 ```
 
-**What the math means:** Squaring the total produces **self-products + both orders of every cross-product**. Remove self-products and divide by 2.
+Now square the total:
 
-**🧠 CF Recognition:** Statement says **for every pair `i<j`, add `A[i]*A[j]`** → use `((ΣA)²-ΣA²)/2` instead of O(n²).
+```text
+(2+3+4)² = 81
+self squares = 2²+3²+4² = 29
+
+81 - 29 = 52
+52 / 2 = 26
+```
+
+Why `/2`? Each cross pair appears twice in the square.
+
+**CF recognition:** `sum over i<j of A[i]A[j]` → `((sum A)² - sum(A²))/2`.
 
 
 ```text
@@ -895,25 +799,21 @@ An `O(n^2)` pair loop becomes `O(n)`.
 
 ### Algebra Form 6. Pairwise sums
 
-#### 🌍 Real-World Example — Algebra Form 6. Pairwise sums
+#### 🌍 Real-World Example — Total distance between houses
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Algebra Form 6. Pairwise sums** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Houses are at positions `1, 4, 6`.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+pairs:
+(1,4) -> 3
+(1,6) -> 5
+(4,6) -> 2
+total  -> 10
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+After sorting, each value's contribution can be counted instead of explicitly visiting every pair.
+
+**CF recognition:** expression over **all pairs** → look for algebraic/contribution counting before O(n²).
 
 
 **Goal.** Compute `sum over all pairs i<j of (A_i - A_j)^2` fast.
@@ -969,25 +869,20 @@ total = 6      direct: 1 + 3 + 2 = 6
 
 ### Algebra Form 7. Linear equation `ax + by = c`
 
-#### 🌍 Real-World Example — Algebra Form 7. Linear equation ax + by = c
+#### 🌍 Real-World Example — Buying packs
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Algebra Form 7. Linear equation ax + by = c** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+A shop sells packs of **4** and **6** items. Can you buy exactly **10**?
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+4x + 6y = 10
+
+choose x=1, y=1
+4 + 6 = 10  ✓
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+General integer solvability depends on `gcd(a,b) | c`.
+
+**CF recognition:** two operation sizes used integer numbers of times to hit an exact target → Diophantine equation.
 
 
 **Rule.** Integer solutions exist exactly when `gcd(a, b)` divides `c`. Details in Part 20.
@@ -998,25 +893,21 @@ use the same relation in the CF problem
 
 ### Algebra Form 8. Systems of equations
 
-#### 🌍 Real-World Example — Algebra Form 8. Systems of equations
+#### 🌍 Real-World Example — Adult and child tickets
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Algebra Form 8. Systems of equations** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+There are **8 tickets** total. Adult = €10, child = €5. Total cost = €60.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+a + c = 8
+10a + 5c = 60
+
+c = 8-a
+10a + 5(8-a) = 60
+5a = 20
+a=4, c=4
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** two unknowns + two independent conditions → system of equations.
 
 
 **Idea.** `k` independent equations fix `k` unknowns. If you have more unknowns than equations, one variable stays free: loop over that one only (within its bounds).
@@ -1025,25 +916,20 @@ use the same relation in the CF problem
 
 ### Algebra Form 9. Inequalities (intersection of constraints)
 
-#### 🌍 Real-World Example — Algebra Form 9. Inequalities (intersection of constraints)
+#### 🌍 Real-World Example — Delivery window
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Algebra Form 9. Inequalities (intersection of constraints)** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Delivery must be between **10 and 15**, and you are home between **12 and 18**.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+delivery: [10------15]
+home:         [12----------18]
+valid:        [12--15]
+
+x >= 12
+x <= 15
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** several constraints on the same variable → intersect ranges.
 
 
 ```text
@@ -1057,25 +943,21 @@ empty if L > R
 
 ### Algebra Form 10. Bounding (lower bound + construction)
 
-#### 🌍 Real-World Example — Algebra Form 10. Bounding (lower bound + construction)
+#### 🌍 Real-World Example — Truck trips
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Algebra Form 10. Bounding (lower bound + construction)** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+A truck carries at most **10 boxes**. There are **47 boxes**.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+minimum trips >= ceil(47/10) = 5
+
+construction:
+10 + 10 + 10 + 10 + 7 = 47
+                         5 trips
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+Lower bound = achievable construction, so 5 is optimal.
+
+**CF recognition:** prove `answer ≥ X`, then construct a solution using exactly `X`.
 
 
 **Idea.** Many "minimum" or "maximum" answers are found in two steps.
@@ -1103,25 +985,18 @@ answer = min(S / 2, S - M)      (and a construction shows it is reachable)
 
 ### 3.1 Divisors and multiples
 
-#### 🌍 Real-World Example — 3.1 Divisors and multiples
+#### 🌍 Real-World Example — Packing bottles exactly
 
-**Think of this:** Imagine a small everyday situation where the quantities in **3.1 Divisors and multiples** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+There are **24 bottles**. Try box size **6**.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+[6] [6] [6] [6]
+24 % 6 = 0
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+No bottle remains, so 6 divides 24.
+
+**CF recognition:** exact equal grouping / no remainder → divisibility.
 
 
 **What is it?**
@@ -1162,25 +1037,20 @@ for (long long d = 1; d * d <= n; d++) {
 
 ### 3.2 Prime numbers and factorization
 
-#### 🌍 Real-World Example — 3.2 Prime numbers and factorization
+#### 🌍 Real-World Example — Breaking 60 into indivisible building blocks
 
-**Think of this:** Imagine a small everyday situation where the quantities in **3.2 Prime numbers and factorization** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Think of repeatedly splitting 60 into smaller factors until only primes remain.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+60
+├─2 × 30
+     ├─2 × 15
+          ├─3 × 5
+
+60 = 2² × 3 × 5
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** divisor counts, gcd/lcm structure, exponent conditions → prime factorization.
 
 
 **What is it?**
@@ -1235,30 +1105,22 @@ for (int i = 2; i <= N; i++) {
 
 ### 3.3 GCD and LCM
 
-#### 🌍 Real-World Example — Cutting Ribbons / Repeating Buses
+#### 🌍 Real-World Example — Ribbon cutting and bus schedules
 
-**Think of this:** Ribbon lengths are **48 cm** and **18 cm**. You want the longest equal pieces with no waste. Separately, buses arrive every **4** and **6** minutes.
+**GCD:** ribbons are 48 cm and 18 cm. Longest equal piece with no waste is 6 cm.
 
-**Step-by-step with real numbers:**
-
-1. Ribbon: largest length dividing both = gcd(48,18)=6 cm
-2. Bus: first time divisible by both 4 and 6 = lcm(4,6)=12 min
-
-**📐 Mathematical Model / Visual**
+**LCM:** bus A comes every 4 min, bus B every 6 min.
 
 ```text
-CUTTING: 48 -> [6][6][6][6][6][6][6][6]
-         18 -> [6][6][6]
-         largest common piece = GCD
-
-REPEATING: bus A 0--4--8--12
-           bus B 0-----6-----12
-                         meet = LCM
+A: 0--4--8--12
+B: 0----6----12
+             ↑
+       first together
 ```
 
-**What the math means:** GCD models the **largest common unit**; LCM models the **first common repetition/time**.
+`gcd(48,18)=6`, `lcm(4,6)=12`.
 
-**🧠 CF Recognition:** **equal largest pieces / divides all** → GCD. **events repeat / first together** → LCM.
+**CF recognition:** largest common unit → GCD; first common repetition → LCM.
 
 
 **What is it?**
@@ -1307,25 +1169,21 @@ gcd(48, 18) -> gcd(18, 12) -> gcd(12, 6) -> gcd(6, 0) = 6
 
 ### 3.4 Extra facts
 
-#### 🌍 Real-World Example — 3.4 Extra facts
+#### 🌍 Real-World Example — Divisor pairs around the square root
 
-**Think of this:** Imagine a small everyday situation where the quantities in **3.4 Extra facts** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+For `N=36`, divisors arrive in pairs:
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+1 × 36
+2 × 18
+3 × 12
+4 ×  9
+6 ×  6  <- sqrt(36)
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+After `sqrt(N)`, the pairs repeat in reverse.
+
+**CF recognition:** enumerate divisors in `O(sqrt N)` by checking only up to the square root.
 
 
 - **Sum of divisors:** `prod (p^(e+1) - 1) / (p - 1)` over the factorization.
@@ -1343,33 +1201,17 @@ use the same relation in the CF problem
 
 ### 4.1 The idea: clock arithmetic
 
-#### 🌍 Real-World Example — Clock Wrapping
+#### 🌍 Real-World Example — Clock wrapping
 
-**Think of this:** It is **9 o'clock**. What time is it 5 hours later on a 12-hour clock?
-
-**Step-by-step with real numbers:**
-
-1. 9+5=14
-2. Clock has only 12 positions
-3. 14 wraps to 2
-4. 14 mod 12 = 2
-
-**📐 Mathematical Model / Visual**
+It is **9 o'clock**. Five hours later:
 
 ```text
-       12
-   11      1
-10           2  <- 9+5
-9             3
- 8           4
-   7   6   5
-
-(9+5) mod 12 = 2
+9 + 5 = 14
+14 wraps on a 12-hour clock
+14 % 12 = 2
 ```
 
-**What the math means:** Modulo means **wrap around after a fixed cycle length**.
-
-**🧠 CF Recognition:** Look for **circular arrays, clocks, weekdays, repeated positions, remainder classes**.
+**CF recognition:** circular positions, weekdays, repeating states → modulo.
 
 
 **Picture.** A 12-hour clock. 9 o'clock + 5 hours = 2 o'clock, because `14 % 12 = 2`.
@@ -1412,25 +1254,19 @@ a ≡ b (mod m)   means   a % m == b % m   means   m divides (a - b)
 
 ### 4.2 Fast exponentiation
 
-#### 🌍 Real-World Example — 4.2 Fast exponentiation
+#### 🌍 Real-World Example — 13 repeated multiplications
 
-**Think of this:** Imagine a small everyday situation where the quantities in **4.2 Fast exponentiation** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Need `a^13`. Instead of multiplying `a` thirteen times:
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+13 = 8 + 4 + 1
+13 = 1101₂
+
+a^13 = a^8 × a^4 × a
+a² -> a⁴ -> a⁸   (repeated squaring)
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** huge exponent → binary exponentiation in `O(log exponent)`.
 
 
 **What is it?** Compute `a^e mod m` in `O(log e)` steps by squaring.
@@ -1452,33 +1288,21 @@ long long power(long long a, long long e, long long mod) {
 
 ### 4.3 Division modulo a prime (inverse)
 
-#### 🌍 Real-World Example — Clock Wrapping
+#### 🌍 Real-World Example — Sharing under modular arithmetic
 
-**Think of this:** It is **9 o'clock**. What time is it 5 hours later on a 12-hour clock?
+Ordinary division is not directly available modulo `p`.
 
-**Step-by-step with real numbers:**
-
-1. 9+5=14
-2. Clock has only 12 positions
-3. 14 wraps to 2
-4. 14 mod 12 = 2
-
-**📐 Mathematical Model / Visual**
+For example modulo 7, the inverse of 3 is 5 because:
 
 ```text
-       12
-   11      1
-10           2  <- 9+5
-9             3
- 8           4
-   7   6   5
+3 × 5 = 15
+15 % 7 = 1
 
-(9+5) mod 12 = 2
+so dividing by 3
+means multiplying by 5
 ```
 
-**What the math means:** Modulo means **wrap around after a fixed cycle length**.
-
-**🧠 CF Recognition:** Look for **circular arrays, clocks, weekdays, repeated positions, remainder classes**.
+**CF recognition:** formula contains `/b` under prime modulus → multiply by modular inverse.
 
 
 ```text
@@ -1489,29 +1313,20 @@ a / b  mod p  =  a * power(b, p - 2, p) % p
 
 ### 4.4 Prefix remainders and pigeonhole
 
-#### 🌍 Real-World Example — Bank Account Statement
+#### 🌍 Real-World Example — Cumulative spending divisible by 5
 
-**Think of this:** Your cumulative deposits after days 1..5 are built from daily amounts `[10,20,5,15,10]`. How much was deposited on days 2..4?
-
-**Step-by-step with real numbers:**
-
-1. Prefix totals = [10,30,35,50,60]
-2. Total through day 4 = 50
-3. Total before day 2 = 10
-4. Days 2..4 = 50-10 = 40
-
-**📐 Mathematical Model / Visual**
+Suppose prefix totals modulo 5 are:
 
 ```text
-daily :  10   20    5   15   10
-prefix:  10   30   35   50   60
-               <------>
-range 2..4 = P[4]-P[1] = 50-10 = 40
+index:       0  1  2  3
+prefix % 5:  0  2  4  2
+                ↑     ↑
+              same remainder
 ```
 
-**What the math means:** A prefix stores **everything from the beginning up to i**. Subtract two prefixes to isolate the middle interval.
+The amount between those equal-remainder prefixes is divisible by 5.
 
-**🧠 CF Recognition:** Many **static range-sum queries** or equations involving subarray sums should trigger prefix sums.
+**CF recognition:** subarray sum divisible by `k` → equal prefix remainders.
 
 
 **Idea.** Prefix sums `P_0 = 0, P_1, ..., P_n`. A subarray `(l, r]` has sum divisible by `m` exactly when `P_r % m == P_l % m`.
@@ -1529,25 +1344,18 @@ range 2..4 = P[4]-P[1] = 50-10 = 40
 
 ### 5.1 The rules
 
-#### 🌍 Real-World Example — 5.1 The rules
+#### 🌍 Real-World Example — Pairing socks
 
-**Think of this:** Imagine a small everyday situation where the quantities in **5.1 The rules** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Parity is simply whether a count can be split into pairs.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+8 socks -> [2][2][2][2] -> even
+7 socks -> [2][2][2] + 1 -> odd
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+`n%2` tells whether one item remains.
+
+**CF recognition:** operations changing values by odd/even amounts often reduce to parity.
 
 
 ```text
@@ -1565,25 +1373,18 @@ sum of numbers is even  <=>  the count of odd numbers is even
 
 ### 5.2 How parity turns into a solution
 
-#### 🌍 Real-World Example — 5.2 How parity turns into a solution
+#### 🌍 Real-World Example — Elevator moving 2 floors
 
-**Think of this:** Imagine a small everyday situation where the quantities in **5.2 How parity turns into a solution** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Start on floor **4** and move exactly **+2** each time.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+4 -> 6 -> 8 -> 10 -> 12
+E    E    E     E     E
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+You never reach an odd floor.
+
+**CF recognition:** if every operation preserves/flips parity predictably, track parity instead of exact values.
 
 
 **Steps to use every time.**
@@ -1630,25 +1431,19 @@ answer: YES only if all elements already have the same parity (and then more che
 
 ### 6.1 Two basic rules
 
-#### 🌍 Real-World Example — 6.1 Two basic rules
+#### 🌍 Real-World Example — Choosing vs arranging people
 
-**Think of this:** Imagine a small everyday situation where the quantities in **6.1 Two basic rules** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+From Alice, Bob, Carol:
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+choose 2 as a team:
+AB = BA        -> order does NOT matter
+
+choose president + vice-president:
+AB != BA       -> order DOES matter
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** ask first: does order matter? This separates combinations from permutations.
 
 
 **Addition rule.** If choices are separate cases, **add**.
@@ -1661,25 +1456,19 @@ either 3 shirts or 2 hats (not both)    ->  3 + 2 = 5 choices           (add)
 
 ### 6.2 Factorial, permutation, combination
 
-#### 🌍 Real-World Example — 6.2 Factorial, permutation, combination
+#### 🌍 Real-World Example — Choosing a 2-person team
 
-**Think of this:** Imagine a small everyday situation where the quantities in **6.2 Factorial, permutation, combination** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Choose 2 people from 5.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+ordered choices = 5 × 4 = 20
+but AB and BA are same team
+
+20 / 2 = 10
+C(5,2)=10
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** choose `r` objects where order does not matter → combination.
 
 
 ```text
@@ -1692,35 +1481,20 @@ C(n, k) = n! / (k! * (n-k)!)                 unordered choices of k from n
 
 ### 6.3 Pairs (the most useful formula in CF)
 
-#### 🌍 Real-World Example — Handshakes at a Meeting
+#### 🌍 Real-World Example — Handshakes
 
-**Think of this:** Four people A, B, C, D each shake hands with every other person exactly once. How many handshakes occur?
-
-**Step-by-step with real numbers:**
-
-1. A shakes with B,C,D → 3
-2. B still needs C,D → 2
-3. C still needs D → 1
-4. Total = 3+2+1 = 6
-5. Formula = 4×3/2 = 6
-
-**📐 Mathematical Model / Visual**
+Four people each shake hands with every other person once.
 
 ```text
-A -- B
-| \  |
-|  \ |
-C -- D
-(+ the two diagonals)
+A: B C D -> 3
+B: C D   -> 2
+C: D     -> 1
 
-ordered counts = 4×3
-but AB and BA are same handshake
-=> 4×3/2 = 6
+3+2+1 = 6
+= 4×3/2
 ```
 
-**What the math means:** `n(n-1)/2` counts **unordered pairs of distinct objects**.
-
-**🧠 CF Recognition:** Words **choose two, every pair, handshake, connect every two, i<j** → think `C(n,2)`.
+**CF recognition:** every unordered pair / `i<j` → `n(n-1)/2`.
 
 
 ```text
@@ -1743,25 +1517,17 @@ AB AC AD BC BD CD      ->  6 pairs = 4*3/2
 
 ### 6.4 Complement counting
 
-#### 🌍 Real-World Example — 6.4 Complement counting
+#### 🌍 Real-World Example — Tickets with at least one red mark
 
-**Think of this:** Imagine a small everyday situation where the quantities in **6.4 Complement counting** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Suppose there are 100 tickets. It is hard to count tickets with **at least one red mark**, but easy to count 30 with **no red mark**.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+wanted = all - none
+       = 100 - 30
+       = 70
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** `at least one` is often easier as `total - zero occurrences`.
 
 
 ```text
@@ -1772,25 +1538,22 @@ Use it when "at least one" is hard but "none" is easy.
 
 ### 6.5 Stars and bars (distribute identical objects)
 
-#### 🌍 Real-World Example — 6.5 Stars and bars (distribute identical objects)
+#### 🌍 Real-World Example — Distributing identical candies
 
-**Think of this:** Imagine a small everyday situation where the quantities in **6.5 Stars and bars (distribute identical objects)** are actual counts, distances, groups, prices, positions, or repeated operations.
+Give **5 identical candies** to **3 children**.
 
-**📐 Mathematical Model / Visual**
+One distribution:
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+*** | * | *
+ 3    1   1
+
+***** plus 2 separators
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+Choosing separator positions represents all non-negative distributions.
+
+**CF recognition:** distribute identical objects among labeled groups → stars and bars.
 
 
 ```text
@@ -1806,29 +1569,18 @@ same but xi >= 1                       ->   C(n - 1, k - 1)
 
 ### 6.6 Inclusion-Exclusion
 
-#### 🌍 Real-World Example — Students Playing Two Sports
+#### 🌍 Real-World Example — Football or cricket
 
-**Think of this:** In a class, **10** students play football, **8** play cricket, and **3** play both. How many play at least one?
-
-**Step-by-step with real numbers:**
-
-1. 10+8=18 counts the 3 dual-sport students twice
-2. Subtract that overlap once
-3. 18-3=15
-
-**📐 Mathematical Model / Visual**
+10 students play football, 8 cricket, 3 both.
 
 ```text
-Football:  [------]
-             [XXX]  <- both = 3
-Cricket:        [------]
+10 + 8 = 18
+but the 3 in BOTH were counted twice
 
-10 + 8 - 3 = 15
+18 - 3 = 15
 ```
 
-**What the math means:** When adding overlapping groups, the intersection gets counted twice, so subtract it once.
-
-**🧠 CF Recognition:** Words **A or B, at least one, union, overlap** → inclusion-exclusion.
+**CF recognition:** count `A or B` with overlap → add groups, subtract intersection.
 
 
 ```text
@@ -1840,31 +1592,18 @@ Cricket:        [------]
 
 ### 6.7 Pigeonhole and contribution
 
-#### 🌍 Real-World Example — Birth Months
+#### 🌍 Real-World Example — Birth months and repeated participation
 
-**Think of this:** There are **13 people** but only **12 birth months**. Show that two people must share a birth month.
-
-**Step-by-step with real numbers:**
-
-1. 12 months are 12 boxes
-2. Place each person into their birth-month box
-3. After 12 people, each box could have one
-4. The 13th person must enter an occupied box
-
-**📐 Mathematical Model / Visual**
+**Pigeonhole:** 13 people, 12 months → two must share a month.
 
 ```text
-people: 13 objects
-months: 12 boxes
-
-[Jan][Feb]...[Dec]
-  1    1       1
-+ one extra person -> collision guaranteed
+13 objects -> 12 boxes
+=> one box gets at least 2
 ```
 
-**What the math means:** More objects than containers guarantees at least one container receives multiple objects.
+**Contribution:** instead of enumerating every structure, ask how many times each item participates.
 
-**🧠 CF Recognition:** Look for **guarantee duplicate / same remainder / same category** with limited buckets.
+**CF recognition:** guaranteed collision → pigeonhole; huge pair/subarray sum → contribution counting.
 
 
 - **Pigeonhole:** `n + 1` objects in `n` boxes -> some box holds 2.
@@ -1891,25 +1630,19 @@ sum of all subarray sums = Σ A_i * i * (n - i + 1)
 
 ### 7.1 Arithmetic progression (AP)
 
-#### 🌍 Real-World Example — 7.1 Arithmetic progression (AP)
+#### 🌍 Real-World Example — Saving €5 more each day
 
-**Think of this:** Imagine a small everyday situation where the quantities in **7.1 Arithmetic progression (AP)** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Savings are `10, 15, 20, 25...`.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+day:    1   2   3   4
+save:  10  15  20  25
+          +5  +5  +5
+
+a_n = 10 + (n-1)×5
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** constant **difference** → AP.
 
 
 **Picture.** `2, 5, 8, 11, 14` (add 3 each time).
@@ -1933,25 +1666,17 @@ S = 50 * 101 = 5050         formula: 100 * 101 / 2 = 5050
 
 ### 7.2 Geometric progression (GP)
 
-#### 🌍 Real-World Example — 7.2 Geometric progression (GP)
+#### 🌍 Real-World Example — Bacteria doubling
 
-**Think of this:** Imagine a small everyday situation where the quantities in **7.2 Geometric progression (GP)** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+A colony doubles each hour:
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+hour: 0  1  2  3  4
+count:1  2  4  8 16
+        ×2 ×2 ×2 ×2
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** constant multiplication ratio / repeated doubling → GP.
 
 
 **Picture.** `1, 2, 4, 8, 16` (multiply by 2).
@@ -1968,25 +1693,23 @@ special:     1 + 2 + 4 + ... + 2^(k-1) = 2^k - 1
 
 ### 7.3 Other sums to remember
 
-#### 🌍 Real-World Example — 7.3 Other sums to remember
+#### 🌍 Real-World Example — Stacking rows of seats
 
-**Think of this:** Imagine a small everyday situation where the quantities in **7.3 Other sums to remember** are actual counts, distances, groups, prices, positions, or repeated operations.
+Rows contain `1,2,3,...,n` seats.
 
-**📐 Mathematical Model / Visual**
+For `n=4`:
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+row1: *
+row2: **
+row3: ***
+row4: ****
+total = 1+2+3+4 = 10
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+Formula: `n(n+1)/2`.
+
+**CF recognition:** triangular counts, prefixes of consecutive integers, cumulative increments.
 
 
 ```text
@@ -2004,31 +1727,17 @@ n/1 + n/2 + ... + n/n  is about  n * ln(n)         (why sieve loops cost O(n log
 
 ### 8.1 Distance formulas
 
-#### 🌍 Real-World Example — Walking City Blocks
+#### 🌍 Real-World Example — Walking city blocks
 
-**Think of this:** You are at `(1,2)` and a shop is at `(4,6)`. Streets allow only horizontal/vertical movement.
-
-**Step-by-step with real numbers:**
-
-1. Horizontal difference = |4-1| = 3
-2. Vertical difference = |6-2| = 4
-3. Total shortest walk = 3+4 = 7
-
-**📐 Mathematical Model / Visual**
+From `(1,2)` to `(4,6)` with only horizontal/vertical movement:
 
 ```text
-(1,6) ------- (4,6) SHOP
-  |              ^
-  | 4 blocks     | 3 horizontal
-  |
-(1,2) START
-
-Manhattan = |dx|+|dy| = 7
+horizontal = |4-1| = 3
+vertical   = |6-2| = 4
+total      = 7
 ```
 
-**What the math means:** When diagonal movement is forbidden, horizontal and vertical costs simply add.
-
-**🧠 CF Recognition:** Grid with **up/down/left/right moves** → Manhattan distance.
+**CF recognition:** 4-direction grid movement → Manhattan distance.
 
 
 ```text
@@ -2042,25 +1751,19 @@ Euclidean^2:     (x1 - x2)^2 + (y1 - y2)^2      (compare squares, skip sqrt)
 
 ### 8.2 Interval overlap
 
-#### 🌍 Real-World Example — 8.2 Interval overlap
+#### 🌍 Real-World Example — Meeting availability
 
-**Think of this:** Imagine a small everyday situation where the quantities in **8.2 Interval overlap** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Person A is free `[10,15]`, B is free `[12,18]`.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+A: [10------15]
+B:     [12----------18]
+       [12--15] <- overlap
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+Overlap exists when `max(L1,L2) <= min(R1,R2)`.
+
+**CF recognition:** common time/range → interval intersection.
 
 
 ```text
@@ -2071,31 +1774,19 @@ non-empty when max(l1, l2) <= min(r1, r2)
 
 ### 8.3 Median minimizes total distance
 
-#### 🌍 Real-World Example — Friends Choosing a Meeting House
+#### 🌍 Real-World Example — Choosing a meeting house
 
-**Think of this:** Friends live at house numbers **1, 2, 10**. They want a meeting house minimizing total walking distance.
-
-**Step-by-step with real numbers:**
-
-1. Meet at 1: 0+1+9=10
-2. Meet at 2: 1+0+8=9
-3. Meet at 10: 9+8+0=17
-4. Median is 2, giving minimum 9
-
-**📐 Mathematical Model / Visual**
+Friends live at houses `1,2,10`.
 
 ```text
-1---2----------------10
-    ^
-  median
-
-cost(x)=|1-x|+|2-x|+|10-x|
-minimum at x=2
+meet at 1  -> 0+1+9 = 10
+meet at 2  -> 1+0+8 =  9  ✓
+meet at 10 -> 9+8+0 = 17
 ```
 
-**What the math means:** For sum of absolute distances on a line, moving toward the **median balances how many points lie on each side**.
+The median `2` minimizes total absolute distance.
 
-**🧠 CF Recognition:** If asked to minimize `Σ|A[i]-x|`, think **median**, not mean.
+**CF recognition:** minimize `Σ|A[i]-x|` → median.
 
 
 **Question.** Choose `x` to minimize `|x - a_1| + ... + |x - a_n|`.
@@ -2110,25 +1801,21 @@ minimum at x=2
 
 ### 8.4 Grid movement
 
-#### 🌍 Real-World Example — 8.4 Grid movement
+#### 🌍 Real-World Example — Robot with extra moves
 
-**Think of this:** Imagine a small everyday situation where the quantities in **8.4 Grid movement** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+A robot starts `(0,0)` and wants `(3,2)`.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+minimum = |3|+|2| = 5 moves
+
+extra useless movement:
+right + left = 2 moves
+up + down    = 2 moves
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+So extra moves often change length by pairs.
+
+**CF recognition:** exact move count on a grid → minimum distance + parity of extra moves.
 
 
 ```text
@@ -2138,25 +1825,22 @@ reach (a, b) from (0, 0) in exactly k steps  <=>  |a| + |b| <= k  and  (k - |a| 
 
 ### 8.5 Rotating coordinates
 
-#### 🌍 Real-World Example — 8.5 Rotating coordinates
+#### 🌍 Real-World Example — Diagonal street coordinates
 
-**Think of this:** Imagine a small everyday situation where the quantities in **8.5 Rotating coordinates** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Instead of east/west `x` and north/south `y`, label a point by its two diagonals:
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+u = x + y
+v = x - y
+
+(x,y)
+  |
+  +--> (u,v)
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+Diamond-shaped Manhattan constraints can become rectangular bounds.
+
+**CF recognition:** Manhattan geometry with diagonal/diamond regions → try `x+y`, `x-y`.
 
 
 ```text
@@ -2651,25 +2335,19 @@ Each form: Recognition → Model → Transformation → Why → Visual → Examp
 
 ### Form 1. Sum Constraint
 
-#### 🌍 Real-World Example — Form 1. Sum Constraint
+#### 🌍 Real-World Example — Two purchases total €50
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 1. Sum Constraint** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+If item A costs `x` and item B costs `y`, then `x+y=50`.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+x --------+
+          +--> total 50
+y --------+
+
+x+y=50
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** fixed total split among variables → sum equation.
 
 
 **Recognition Signals:** "total is S", "sum of all", "equalize"
@@ -2708,25 +2386,16 @@ Algorithm:     complexity O(n)
 
 ### Form 2. Difference Constraint
 
-#### 🌍 Real-World Example — Form 2. Difference Constraint
+#### 🌍 Real-World Example — Age gap
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 2. Difference Constraint** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Ali is 5 years older than Bob.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+Ali = Bob + 5
+Ali - Bob = 5
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** fixed gap → difference equation / absolute difference.
 
 
 **Recognition Signals:** "differ by", "gap", `|Ai-Aj|=d`
@@ -2765,25 +2434,17 @@ Algorithm:     complexity O(n)–O(n log n)
 
 ### Form 3. Product Constraint
 
-#### 🌍 Real-World Example — Form 3. Product Constraint
+#### 🌍 Real-World Example — Rectangle area
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 3. Product Constraint** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+A rectangle has area 48 and integer sides.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+1×48, 2×24, 3×16, 4×12, 6×8
+
+x*y=48
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** product fixed → factor/divisor pairs.
 
 
 **Recognition Signals:** "product", `Ai*Aj=K`
@@ -2822,25 +2483,18 @@ Algorithm:     complexity O(√K) or O(n)
 
 ### Form 4. Ratio Constraint
 
-#### 🌍 Real-World Example — Form 4. Ratio Constraint
+#### 🌍 Real-World Example — Juice recipe
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 4. Ratio Constraint** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Syrup:water must be `2:3`.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+2 cups syrup -> 3 cups water
+4 cups syrup -> 6 cups water
+
+x/y = 2/3  => 3x=2y
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** proportions/scaling → ratio equation.
 
 
 **Recognition Signals:** "twice as many", "ratio a:b"
@@ -2879,25 +2533,16 @@ Algorithm:     complexity O(1)
 
 ### Form 5. Parity Constraint
 
-#### 🌍 Real-World Example — Form 5. Parity Constraint
+#### 🌍 Real-World Example — Pairing chairs
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 5. Parity Constraint** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+An even number of chairs can be placed in pairs with none left.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+8 -> [2][2][2][2]
+7 -> [2][2][2]+1
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** pairability / alternating states → parity.
 
 
 **Recognition Signals:** "even/odd", "alternating", "can't be split"
@@ -2936,25 +2581,16 @@ Algorithm:     complexity O(1)–O(n)
 
 ### Form 6. Divisibility Constraint
 
-#### 🌍 Real-World Example — Form 6. Divisibility Constraint
+#### 🌍 Real-World Example — Equal candy bags
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 6. Divisibility Constraint** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+24 candies into bags of 6 leaves none.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+24 % 6 = 0 -> possible
+25 % 6 = 1 -> one left
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** exact grouping → divisibility.
 
 
 **Recognition Signals:** "divisible by d", "multiple of"
@@ -2993,25 +2629,15 @@ Algorithm:     complexity O(1)
 
 ### Form 7. GCD Constraint
 
-#### 🌍 Real-World Example — Form 7. GCD Constraint
+#### 🌍 Real-World Example — Largest square tile
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 7. GCD Constraint** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Tile a 48×18 rectangle using the largest integer square tile.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+tile side = gcd(48,18)=6
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** largest common unit dividing all quantities → GCD.
 
 
 **Recognition Signals:** "common divisor", "equal parts", subtraction ops
@@ -3050,25 +2676,17 @@ Algorithm:     complexity O(n log V)
 
 ### Form 8. LCM Constraint
 
-#### 🌍 Real-World Example — Form 8. LCM Constraint
+#### 🌍 Real-World Example — Two alarms
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 8. LCM Constraint** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Alarms ring every 4 and 6 minutes.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+A: 0 4 8 12
+B: 0   6 12
+          ↑ first together
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** first simultaneous repetition → LCM.
 
 
 **Recognition Signals:** "divisible by both", "synchronize", "every a and every b"
@@ -3107,33 +2725,16 @@ Algorithm:     complexity O(log V)
 
 ### Form 9. Modulo Constraint
 
-#### 🌍 Real-World Example — Clock Wrapping
+#### 🌍 Real-World Example — Circular seats
 
-**Think of this:** It is **9 o'clock**. What time is it 5 hours later on a 12-hour clock?
-
-**Step-by-step with real numbers:**
-
-1. 9+5=14
-2. Clock has only 12 positions
-3. 14 wraps to 2
-4. 14 mod 12 = 2
-
-**📐 Mathematical Model / Visual**
+10 seats numbered `0..9`; from seat 8 move 5 steps.
 
 ```text
-       12
-   11      1
-10           2  <- 9+5
-9             3
- 8           4
-   7   6   5
-
-(9+5) mod 12 = 2
+8+5=13
+13%10=3
 ```
 
-**What the math means:** Modulo means **wrap around after a fixed cycle length**.
-
-**🧠 CF Recognition:** Look for **circular arrays, clocks, weekdays, repeated positions, remainder classes**.
+**CF recognition:** wrap-around/cycle → modulo.
 
 
 **Recognition Signals:** "remainder", "mod k", "each k-th"
@@ -3172,25 +2773,16 @@ Algorithm:     complexity O(1)
 
 ### Form 10. Equal Frequency
 
-#### 🌍 Real-World Example — Form 10. Equal Frequency
+#### 🌍 Real-World Example — Equal gift bags
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 10. Equal Frequency** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+There are 6 red and 6 blue candies; equal bags require matching per-type counts.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+red=6, blue=6
+frequency map -> {R:6,B:6}
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** identities/order irrelevant, only counts matter → frequency.
 
 
 **Recognition Signals:** "equal numbers of", "same count"
@@ -3229,35 +2821,15 @@ Algorithm:     complexity O(n)
 
 ### Form 11. Pair Counting
 
-#### 🌍 Real-World Example — Handshakes at a Meeting
+#### 🌍 Real-World Example — Handshakes
 
-**Think of this:** Four people A, B, C, D each shake hands with every other person exactly once. How many handshakes occur?
-
-**Step-by-step with real numbers:**
-
-1. A shakes with B,C,D → 3
-2. B still needs C,D → 2
-3. C still needs D → 1
-4. Total = 3+2+1 = 6
-5. Formula = 4×3/2 = 6
-
-**📐 Mathematical Model / Visual**
+5 people make one handshake per unordered pair.
 
 ```text
-A -- B
-| \  |
-|  \ |
-C -- D
-(+ the two diagonals)
-
-ordered counts = 4×3
-but AB and BA are same handshake
-=> 4×3/2 = 6
+pairs=5×4/2=10
 ```
 
-**What the math means:** `n(n-1)/2` counts **unordered pairs of distinct objects**.
-
-**🧠 CF Recognition:** Words **choose two, every pair, handshake, connect every two, i<j** → think `C(n,2)`.
+**CF recognition:** every `i<j` pair → `n(n-1)/2`.
 
 
 **Recognition Signals:** "number of pairs (i<j)"
@@ -3296,25 +2868,17 @@ Algorithm:     complexity O(n)
 
 ### Form 12. Complement Pair
 
-#### 🌍 Real-World Example — Form 12. Complement Pair
+#### 🌍 Real-World Example — Two-item target price
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 12. Complement Pair** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Target €10; if one item costs €4, partner must cost €6.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+a+b=10
+b=10-a
+4 -> need 6
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** two-sum style target → complement `T-a`.
 
 
 **Recognition Signals:** `Ai+Aj=K`
@@ -3353,25 +2917,16 @@ Algorithm:     complexity O(n)
 
 ### Form 13. Difference Pair
 
-#### 🌍 Real-World Example — Form 13. Difference Pair
+#### 🌍 Real-World Example — Required age gap
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 13. Difference Pair** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Find two ages differing by 5.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+age a -> look for a+5 or a-5
+|a-b|=5
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** pair with exact gap → difference lookup/sort.
 
 
 **Recognition Signals:** `Ai-Aj=K`
@@ -3410,25 +2965,17 @@ Algorithm:     complexity O(n log n)
 
 ### Form 14. Equal Remainders
 
-#### 🌍 Real-World Example — Form 14. Equal Remainders
+#### 🌍 Real-World Example — Same weekday
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 14. Equal Remainders** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Days 3 and 10 are the same weekday class modulo 7.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+3%7=3
+10%7=3
+10-3=7 divisible by 7
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** same modulo class → difference divisible by `m`.
 
 
 **Recognition Signals:** "same remainder mod m"
@@ -3467,25 +3014,15 @@ Algorithm:     complexity O(n)
 
 ### Form 15. Consecutive Values
 
-#### 🌍 Real-World Example — Form 15. Consecutive Values
+#### 🌍 Real-World Example — House numbers
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 15. Consecutive Values** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Three consecutive houses after 20 are 20,21,22.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+x, x+1, x+2
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** consecutive values → base variable plus fixed offsets.
 
 
 **Recognition Signals:** "consecutive integers", "forms 1..k"
@@ -3524,25 +3061,16 @@ Algorithm:     complexity O(n)
 
 ### Form 16. Arithmetic Progression
 
-#### 🌍 Real-World Example — Form 16. Arithmetic Progression
+#### 🌍 Real-World Example — Yearly salary bonus
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 16. Arithmetic Progression** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Bonus rises €100 each year.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+500,600,700,800...
++100 each time
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** constant additive step → AP.
 
 
 **Recognition Signals:** "increase by d each step"
@@ -3581,25 +3109,15 @@ Algorithm:     complexity O(1) / O(log)
 
 ### Form 17. Geometric / Doubling
 
-#### 🌍 Real-World Example — Form 17. Geometric / Doubling
+#### 🌍 Real-World Example — Photocopy doubling
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 17. Geometric / Doubling** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Copies double each round.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+1 -> 2 -> 4 -> 8 -> 16
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** multiply by same ratio → GP/powers.
 
 
 **Recognition Signals:** "doubles", "halves"
@@ -3638,25 +3156,16 @@ Algorithm:     complexity O(log)
 
 ### Form 18. Median Optimization
 
-#### 🌍 Real-World Example — Form 18. Median Optimization
+#### 🌍 Real-World Example — Meeting point
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 18. Median Optimization** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Homes are 1,2,10; house 2 minimizes total walking.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+1---2----------------10
+    ^ median
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** minimize sum of absolute deviations → median.
 
 
 **Recognition Signals:** "minimum total distance", "gather at a point"
@@ -3695,29 +3204,15 @@ Algorithm:     complexity O(n log n)
 
 ### Form 19. Prefix Equation
 
-#### 🌍 Real-World Example — Bank Account Statement
+#### 🌍 Real-World Example — Bank statement range
 
-**Think of this:** Your cumulative deposits after days 1..5 are built from daily amounts `[10,20,5,15,10]`. How much was deposited on days 2..4?
-
-**Step-by-step with real numbers:**
-
-1. Prefix totals = [10,30,35,50,60]
-2. Total through day 4 = 50
-3. Total before day 2 = 10
-4. Days 2..4 = 50-10 = 40
-
-**📐 Mathematical Model / Visual**
+Cumulative balance through day 4 minus cumulative balance before day 2 gives days 2..4.
 
 ```text
-daily :  10   20    5   15   10
-prefix:  10   30   35   50   60
-               <------>
-range 2..4 = P[4]-P[1] = 50-10 = 40
+range(l,r)=P[r]-P[l-1]
 ```
 
-**What the math means:** A prefix stores **everything from the beginning up to i**. Subtract two prefixes to isolate the middle interval.
-
-**🧠 CF Recognition:** Many **static range-sum queries** or equations involving subarray sums should trigger prefix sums.
+**CF recognition:** subarray/range sum equation → prefix.
 
 
 **Recognition Signals:** "subarray with sum K"
@@ -3756,25 +3251,15 @@ Algorithm:     complexity O(n)
 
 ### Form 20. Contribution Counting
 
-#### 🌍 Real-World Example — Form 20. Contribution Counting
+#### 🌍 Real-World Example — Ticket sales contribution
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 20. Contribution Counting** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+If seat price `a[i]` participates in `k` counted combinations, add `a[i]*k` once instead of enumerating combinations.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+total = Σ value_i × times_used_i
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** enormous repeated pair/subarray enumeration → count each element's contribution.
 
 
 **Recognition Signals:** "sum over all subarrays/pairs"
@@ -3813,31 +3298,15 @@ Algorithm:     complexity O(n)
 
 ### Form 21. Pigeonhole
 
-#### 🌍 Real-World Example — Birth Months
+#### 🌍 Real-World Example — 13 birthdays, 12 months
 
-**Think of this:** There are **13 people** but only **12 birth months**. Show that two people must share a birth month.
-
-**Step-by-step with real numbers:**
-
-1. 12 months are 12 boxes
-2. Place each person into their birth-month box
-3. After 12 people, each box could have one
-4. The 13th person must enter an occupied box
-
-**📐 Mathematical Model / Visual**
+13 people placed into 12 month boxes guarantee a repeated month.
 
 ```text
-people: 13 objects
-months: 12 boxes
-
-[Jan][Feb]...[Dec]
-  1    1       1
-+ one extra person -> collision guaranteed
+13 objects > 12 boxes -> collision
 ```
 
-**What the math means:** More objects than containers guarantees at least one container receives multiple objects.
-
-**🧠 CF Recognition:** Look for **guarantee duplicate / same remainder / same category** with limited buckets.
+**CF recognition:** guarantee two share a category/remainder → pigeonhole.
 
 
 **Recognition Signals:** "prove/decide existence", huge n vs small modulus
@@ -3876,29 +3345,15 @@ Algorithm:     complexity O(1) then DP
 
 ### Form 22. Inclusion-Exclusion
 
-#### 🌍 Real-World Example — Students Playing Two Sports
+#### 🌍 Real-World Example — Two sports
 
-**Think of this:** In a class, **10** students play football, **8** play cricket, and **3** play both. How many play at least one?
-
-**Step-by-step with real numbers:**
-
-1. 10+8=18 counts the 3 dual-sport students twice
-2. Subtract that overlap once
-3. 18-3=15
-
-**📐 Mathematical Model / Visual**
+10 football + 8 cricket - 3 both = 15 at least one.
 
 ```text
-Football:  [------]
-             [XXX]  <- both = 3
-Cricket:        [------]
-
-10 + 8 - 3 = 15
+|A∪B|=|A|+|B|-|A∩B|
 ```
 
-**What the math means:** When adding overlapping groups, the intersection gets counted twice, so subtract it once.
-
-**🧠 CF Recognition:** Words **A or B, at least one, union, overlap** → inclusion-exclusion.
+**CF recognition:** overlapping groups → inclusion-exclusion.
 
 
 **Recognition Signals:** "none of", "at least one of", "divisible by any of"
@@ -3937,25 +3392,16 @@ Algorithm:     complexity O(2^k)
 
 ### Form 23. Invariant
 
-#### 🌍 Real-World Example — Form 23. Invariant
+#### 🌍 Real-World Example — Moving money between wallets
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 23. Invariant** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Move €1 from A to B.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+(A,B) -> (A-1,B+1)
+A+B stays unchanged
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** operations change state but preserve some quantity → invariant.
 
 
 **Recognition Signals:** "any number of times", "can transform"
@@ -3994,25 +3440,16 @@ Algorithm:     complexity O(1)–O(n)
 
 ### Form 24. Monovariant
 
-#### 🌍 Real-World Example — Form 24. Monovariant
+#### 🌍 Real-World Example — Countdown timer
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 24. Monovariant** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+A timer drops by at least 1 each operation and never increases.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+10 -> 8 -> 5 -> 4 -> 0
+strictly decreases
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** find a measure that always moves one direction to prove termination/impossibility.
 
 
 **Recognition Signals:** "process ends?", "how many steps at most"
@@ -4051,28 +3488,17 @@ Algorithm:     complexity O(potential)
 
 ### Form 25. Reachability
 
-#### 🌍 Real-World Example — Elevator with Fixed Jumps
+#### 🌍 Real-World Example — Elevator jumps
 
-**Think of this:** An elevator starts at floor **5** and can move exactly **+3 floors** per operation. Can it reach floor 20? What about 21?
-
-**Step-by-step with real numbers:**
-
-1. After k moves: floor = 5+3k
-2. For 20: k=(20-5)/3=5 → integer → YES
-3. For 21: k=(21-5)/3=16/3 → not integer → NO
-
-**📐 Mathematical Model / Visual**
+Start floor 5, add 3 each move.
 
 ```text
-5 -> 8 -> 11 -> 14 -> 17 -> 20 -> 23
-                         ^
-                    20 reachable
-21 lies between steps -> unreachable
+5->8->11->14->17->20
+20 reachable: (20-5)%3=0
+21 not reachable
 ```
 
-**What the math means:** Repeated fixed change creates an arithmetic form `start + k*step`.
-
-**🧠 CF Recognition:** **Can we reach exactly X?** → isolate operation count `k` and check that it is a valid integer/non-negative.
+**CF recognition:** repeated fixed operation → `start+k*step=target`.
 
 
 **Recognition Signals:** "can reach", "is it possible"
@@ -4111,25 +3537,16 @@ Algorithm:     complexity O(1)
 
 ### Form 26. Constructive Equation
 
-#### 🌍 Real-World Example — Form 26. Constructive Equation
+#### 🌍 Real-World Example — Coin packs
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 26. Constructive Equation** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Make 17 using packs worth 5 and 2.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+5×3 + 2×1 = 17
+x=3,y=1
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** asked to output any valid object → solve constraints and construct one.
 
 
 **Recognition Signals:** "construct any"
@@ -4168,25 +3585,16 @@ Algorithm:     complexity O(n)
 
 ### Form 27. Bounding
 
-#### 🌍 Real-World Example — Form 27. Bounding
+#### 🌍 Real-World Example — Truck capacity
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 27. Bounding** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+47 boxes, capacity 10 → at least 5 trips; 5 trips can be constructed.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+LB=ceil(47/10)=5
+10+10+10+10+7 -> 5 trips
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** lower/upper bound meets construction → optimum.
 
 
 **Recognition Signals:** "minimum/maximum possible"
@@ -4225,25 +3633,16 @@ Algorithm:     complexity O(1)
 
 ### Form 28. Extremal Principle
 
-#### 🌍 Real-World Example — Form 28. Extremal Principle
+#### 🌍 Real-World Example — Fullest shelf
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 28. Extremal Principle** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+If any shelf violates a capacity rule, the fullest shelf is the first place to inspect.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+loads: 3 7 4 9 5
+             ^ max
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** reason about minimum/maximum element to force a property.
 
 
 **Recognition Signals:** "largest/smallest element"
@@ -4282,25 +3681,16 @@ Algorithm:     complexity O(n)
 
 ### Form 29. Coordinate Transformation
 
-#### 🌍 Real-World Example — Form 29. Coordinate Transformation
+#### 🌍 Real-World Example — Diagonal city coordinates
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 29. Coordinate Transformation** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Replace `(x,y)` with diagonal coordinates.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+u=x+y
+v=x-y
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** awkward Manhattan/diagonal conditions → transform coordinates.
 
 
 **Recognition Signals:** "|x|+|y|", diagonal moves
@@ -4339,25 +3729,16 @@ Algorithm:     complexity O(1)
 
 ### Form 30. Bit Independence
 
-#### 🌍 Real-World Example — Form 30. Bit Independence
+#### 🌍 Real-World Example — Independent switches
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 30. Bit Independence** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Each switch is one bit.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+bit: 3 2 1 0
+     [1 0 1 0]
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** condition decomposes independently per bit → solve bit-by-bit.
 
 
 **Recognition Signals:** AND/OR/XOR
@@ -4396,25 +3777,17 @@ Algorithm:     complexity O(30 n)
 
 ### Form 31. Prime Factor Independence
 
-#### 🌍 Real-World Example — Form 31. Prime Factor Independence
+#### 🌍 Real-World Example — Prime ingredient recipe
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 31. Prime Factor Independence** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+`60=2²×3×5`; each prime exponent can be tracked separately.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+2: exponent 2
+3: exponent 1
+5: exponent 1
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** multiplication/divisibility constraints → reason per prime exponent.
 
 
 **Recognition Signals:** gcd/lcm/divisibility
@@ -4453,25 +3826,16 @@ Algorithm:     complexity O(n log V)
 
 ### Form 32. Frequency Compression
 
-#### 🌍 Real-World Example — Form 32. Frequency Compression
+#### 🌍 Real-World Example — Vote counts
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 32. Frequency Compression** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Ballot order is irrelevant if only candidate totals matter.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+A B A C A B
+-> A:3 B:2 C:1
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** replace array by counts when positions do not matter.
 
 
 **Recognition Signals:** order irrelevant
@@ -4510,25 +3874,17 @@ Algorithm:     complexity O(n)
 
 ### Form 33. Permutation Mathematics
 
-#### 🌍 Real-World Example — Form 33. Permutation Mathematics
+#### 🌍 Real-World Example — Assigned numbered seats
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 33. Permutation Mathematics** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Seats 1..n are used exactly once.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+permutation of 1..4: 3 1 4 2
+same set, different order
+sum always 10
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** permutation gives fixed global properties: values 1..n exactly once.
 
 
 **Recognition Signals:** "permutation of 1..n"
@@ -4567,25 +3923,16 @@ Algorithm:     complexity O(n)
 
 ### Form 34. Mex Mathematics
 
-#### 🌍 Real-World Example — Form 34. Mex Mathematics
+#### 🌍 Real-World Example — First empty parking spot
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 34. Mex Mathematics** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Occupied spots are `{0,1,3,4}`.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+0 ✓  1 ✓  2 EMPTY  3 ✓  4 ✓
+          ^ MEX=2
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** smallest non-negative missing value → MEX.
 
 
 **Recognition Signals:** "mex"
@@ -4624,25 +3971,16 @@ Algorithm:     complexity O(n)
 
 ### Form 35. Interval Mathematics
 
-#### 🌍 Real-World Example — Form 35. Interval Mathematics
+#### 🌍 Real-World Example — Common appointment time
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 35. Interval Mathematics** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Intervals `[2,7]`, `[4,9]`, `[5,6]` overlap at `[5,6]`.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+L=max(2,4,5)=5
+R=min(7,9,6)=6
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** multiple range constraints → max left, min right.
 
 
 **Recognition Signals:** segments, overlaps
@@ -4681,25 +4019,16 @@ Algorithm:     complexity O(n log n)
 
 ### Form 36. Grid Parity
 
-#### 🌍 Real-World Example — Form 36. Grid Parity
+#### 🌍 Real-World Example — Chessboard colors
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 36. Grid Parity** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Moving one grid step changes square color.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+color=(x+y)%2
+one move flips parity
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** exact grid reachability often depends on `(x+y)%2`.
 
 
 **Recognition Signals:** grid moves, tilings
@@ -4738,33 +4067,15 @@ Algorithm:     complexity O(1)
 
 ### Form 37. Cyclic / Modulo Process
 
-#### 🌍 Real-World Example — Clock Wrapping
+#### 🌍 Real-World Example — Weekdays
 
-**Think of this:** It is **9 o'clock**. What time is it 5 hours later on a 12-hour clock?
-
-**Step-by-step with real numbers:**
-
-1. 9+5=14
-2. Clock has only 12 positions
-3. 14 wraps to 2
-4. 14 mod 12 = 2
-
-**📐 Mathematical Model / Visual**
+If today index is 5 and 4 days pass on a 7-day week:
 
 ```text
-       12
-   11      1
-10           2  <- 9+5
-9             3
- 8           4
-   7   6   5
-
-(9+5) mod 12 = 2
+(5+4)%7=2
 ```
 
-**What the math means:** Modulo means **wrap around after a fixed cycle length**.
-
-**🧠 CF Recognition:** Look for **circular arrays, clocks, weekdays, repeated positions, remainder classes**.
+**CF recognition:** repeated finite cycle → modulo.
 
 
 **Recognition Signals:** "wraps around", "every k-th"
@@ -4804,25 +4115,17 @@ Algorithm:     complexity O(1)
 
 ### Form 38. Binary Search Equation
 
-#### 🌍 Real-World Example — Form 38. Binary Search Equation
+#### 🌍 Real-World Example — Minimum truck capacity
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 38. Binary Search Equation** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+If capacity 20 works, every capacity above 20 also works.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+10 11 ... 19 20 21 22...
+F  F      F  T  T  T
+             ^ first true
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** monotonic yes/no answer → binary search on answer.
 
 
 **Recognition Signals:** "maximize the minimum"
@@ -4861,25 +4164,22 @@ Algorithm:     complexity O(n log V)
 
 ### Form 39. Stars and Bars
 
-#### 🌍 Real-World Example — Form 39. Stars and Bars
+#### 🌍 Real-World Example — Distributing identical candies
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 39. Stars and Bars** are actual counts, distances, groups, prices, positions, or repeated operations.
+Give **5 identical candies** to **3 children**.
 
-**📐 Mathematical Model / Visual**
+One distribution:
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+*** | * | *
+ 3    1   1
+
+***** plus 2 separators
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+Choosing separator positions represents all non-negative distributions.
+
+**CF recognition:** distribute identical objects among labeled groups → stars and bars.
 
 
 **Recognition Signals:** "distribute identical objects"
@@ -4918,25 +4218,17 @@ Algorithm:     complexity O(1) with precomputed factorials
 
 ### Form 40. Diophantine Equation
 
-#### 🌍 Real-World Example — Form 40. Diophantine Equation
+#### 🌍 Real-World Example — Exact packs
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Form 40. Diophantine Equation** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Packs of 4 and 6 must total 10.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+4x+6y=10
+x=1,y=1 works
+gcd(4,6)=2 divides 10
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** integer counts satisfying linear equation → Diophantine.
 
 
 **Recognition Signals:** "pay exactly", "packs of"
@@ -5008,25 +4300,17 @@ Each problem uses one fixed layout: Link, Summary, Core Invariant, Step-by-Step 
 
 ### Pattern A: Parity & Formula Bounds (Lower Bound + Construction)
 
-#### 🌍 Real-World Example — Pattern A: Parity & Formula Bounds (Lower Bound + Construction)
+#### 🌍 Real-World Example — Packing boxes optimally
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Pattern A: Parity & Formula Bounds (Lower Bound + Construction)** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+A truck carries 10 boxes per trip and there are 47 boxes.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+lower bound = ceil(47/10)=5
+construction = 10+10+10+10+7
+answer = 5
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** derive an unavoidable minimum/maximum, then build a solution that reaches it.
 
 
 Many 800–1200 problems reduce to one bound argument: prove `answer >= X` (a resource or geometric limit), then show a construction that reaches `X`.
@@ -5313,25 +4597,16 @@ int main() {
 
 ### Pattern B: Invariants (Sum / GCD / Difference)
 
-#### 🌍 Real-World Example — Pattern B: Invariants (Sum / GCD / Difference)
+#### 🌍 Real-World Example — Money-transfer invariant
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Pattern B: Invariants (Sum / GCD / Difference)** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Two wallets contain 20 euros total. Moving money between them changes each balance but not the total.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+(7,13) -> move 3 -> (10,10)
+7+13 = 10+10 = 20
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** inspect what each operation cannot change: sum, parity, gcd, xor, difference class.
 
 
 An invariant is a quantity the operation cannot change. Write `before -> after`, compute the delta, keep what is zero.
@@ -5530,33 +4805,18 @@ int main() {
 
 ### Pattern C: Number Theory, Modulo & Diophantine Formulas
 
-#### 🌍 Real-World Example — Clock Wrapping
+#### 🌍 Real-World Example — Exact packet sizes
 
-**Think of this:** It is **9 o'clock**. What time is it 5 hours later on a 12-hour clock?
-
-**Step-by-step with real numbers:**
-
-1. 9+5=14
-2. Clock has only 12 positions
-3. 14 wraps to 2
-4. 14 mod 12 = 2
-
-**📐 Mathematical Model / Visual**
+You can use packets of 4 and 6 and need exactly 22 items.
 
 ```text
-       12
-   11      1
-10           2  <- 9+5
-9             3
- 8           4
-   7   6   5
-
-(9+5) mod 12 = 2
+4x + 6y = 22
+gcd(4,6)=2
+22%2=0 -> possible in principle
+4×1 + 6×3 = 22
 ```
 
-**What the math means:** Modulo means **wrap around after a fixed cycle length**.
-
-**🧠 CF Recognition:** Look for **circular arrays, clocks, weekdays, repeated positions, remainder classes**.
+**CF recognition:** exact integer reachability with divisibility/modulo → number theory / Diophantine model.
 
 
 Convert conditions on divisibility and remainders into arithmetic progressions, floor/ceil, or gcd tests.
@@ -5863,25 +5123,20 @@ int main() {
 
 ### Pattern D: Pair Conditions -> Algebra + Sorting/Frequency
 
-#### 🌍 Real-World Example — Pattern D: Pair Conditions -> Algebra + Sorting/Frequency
+#### 🌍 Real-World Example — Finding price pairs
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Pattern D: Pair Conditions -> Algebra + Sorting/Frequency** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+Prices are `[2,3,5,7]`; target pair sum is 10.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+2 needs 8
+3 needs 7  ✓
+5 needs 5
+7 needs 3  ✓ same unordered pair
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+Algebra gives the complement; sorting/frequency finds it efficiently.
+
+**CF recognition:** pair condition → rearrange to 'what partner does this value need?'.
 
 
 If a condition couples `i` and `j`, separate the variables so each index has one derived key, then count with a map or sorted array.
@@ -6156,25 +5411,18 @@ int main() {
 
 ### Pattern E: Binary Search on the Answer
 
-#### 🌍 Real-World Example — Pattern E: Binary Search on the Answer
+#### 🌍 Real-World Example — Minimum machine speed
 
-**Think of this:** Imagine a small everyday situation where the quantities in **Pattern E: Binary Search on the Answer** are actual counts, distances, groups, prices, positions, or repeated operations.
-
-**📐 Mathematical Model / Visual**
+A machine must finish work before a deadline. Speed 5 fails, 6 fails, 7 works, and every larger speed works.
 
 ```text
-real quantities
-      ↓
-name the changing/unknown values
-      ↓
-write the exact relation from this topic
-      ↓
-test it using small concrete numbers
-      ↓
-use the same relation in the CF problem
+speed: 4 5 6 7 8 9
+       F F F T T T
+             ^
+          first true
 ```
 
-**🧠 CF Recognition:** When a statement has the same relationship between quantities, translate the story into this mathematical form before choosing an algorithm.
+**CF recognition:** answer space has a monotonic false→true boundary → binary search.
 
 
 When 'can we reach value `x`?' is monotone, binary search `x` and compute a cheap feasibility cost.
