@@ -13,287 +13,163 @@
 -   [Phase-1 Decoding Pipeline](#phase-1-decoding-pipeline)
 -   [130-Problem Progress Tracker](#130-problem-progress-tracker)
 -   [Pattern 1 --- Minimum Operations / Ceil
-    Division](#pattern-1--minimum-operations-ceil-division)
-    -   [CF 617A ---
-        Elephant](#cf-617a--elephant-arithmetic--codeforces--800)
-    -   [CF 1409A --- Yet Another Two Integers
-        Problem](#cf-1409a--yet-another-two-integers-problem-arithmetic--codeforces--800)
-    -   [CF 1353A --- Most Unstable
-        Array](#cf-1353a--most-unstable-array-formula--codeforces--800)
-    -   [CF 1476A --- K-divisible
-        Sum](#cf-1476a--k-divisible-sum-bounds--codeforces--1000)
-    -   [CF 151A --- Soft
-        Drinking](#cf-151a--soft-drinking-capacity--codeforces--800)
-    -   [CF 996A --- Hit the
-        Lottery](#cf-996a--hit-the-lottery-greedy-division--codeforces--800)
-    -   [CF 1669A ---
-        Division?](#cf-1669a--division-inequality--codeforces--800)
-    -   [CF 1742A --- Sum](#cf-1742a--sum-equation--codeforces--800)
-    -   [CF 1850A --- To My
-        Critics](#cf-1850a--to-my-critics-bounds--codeforces--800)
-    -   [CF 1878A --- How Much Does Daytona
-        Cost?](#cf-1878a--how-much-does-daytona-cost-existence--codeforces--800)
+    Division](#pattern-1-minimum-operations-ceil-division)
+    -   [Problem 001 --- Problem 1](#problem-001-problem-1)
+    -   [Problem 002 --- Problem 2](#problem-002-problem-2)
+    -   [Problem 003 --- Problem 3](#problem-003-problem-3)
+    -   [Problem 004 --- Problem 4](#problem-004-problem-4)
+    -   [Problem 005 --- Problem 5](#problem-005-problem-5)
+    -   [Problem 006 --- Problem 6](#problem-006-problem-6)
+    -   [Problem 007 --- Problem 7](#problem-007-problem-7)
+    -   [Problem 008 --- Problem 8](#problem-008-problem-8)
+    -   [Problem 009 --- Problem 9](#problem-009-problem-9)
+    -   [Problem 010 --- Problem 10](#problem-010-problem-10)
 -   [Pattern 2 --- Algebra / Equation
-    Formation](#pattern-2--algebra-equation-formation)
-    -   [CF 734A --- Anton and
-        Danik](#cf-734a--anton-and-danik-counting--codeforces--800)
-    -   [CF 677A --- Vanya and
-        Fence](#cf-677a--vanya-and-fence-formula--codeforces--800)
-    -   [CF 71A --- Way Too Long
-        Words](#cf-71a--way-too-long-words-string-formula--codeforces--800)
-    -   [CF 791A --- Bear and Big
-        Brother](#cf-791a--bear-and-big-brother-growth--codeforces--800)
-    -   [CF 50A --- Domino
-        piling](#cf-50a--domino-piling-counting--codeforces--800)
-    -   [CF 231A --- Team](#cf-231a--team-counting--codeforces--800)
-    -   [CF 200B --- Drinks](#cf-200b--drinks-average--codeforces--800)
-    -   [CF 318A --- Even
-        Odds](#cf-318a--even-odds-index-mapping--codeforces--900)
-    -   [CF 486A --- Calculating
-        Function](#cf-486a--calculating-function-formula--codeforces--800)
-    -   [CF 1399A --- Remove
-        Smallest](#cf-1399a--remove-smallest-sorting--codeforces--800)
+    Formation](#pattern-2-algebra-equation-formation)
+    -   [Problem 011 --- Problem 11](#problem-011-problem-11)
+    -   [Problem 012 --- Problem 12](#problem-012-problem-12)
+    -   [Problem 013 --- Problem 13](#problem-013-problem-13)
+    -   [Problem 014 --- Problem 14](#problem-014-problem-14)
+    -   [Problem 015 --- Problem 15](#problem-015-problem-15)
+    -   [Problem 016 --- Problem 16](#problem-016-problem-16)
+    -   [Problem 017 --- Problem 17](#problem-017-problem-17)
+    -   [Problem 018 --- Problem 18](#problem-018-problem-18)
+    -   [Problem 019 --- Problem 19](#problem-019-problem-19)
+    -   [Problem 020 --- Problem 20](#problem-020-problem-20)
 -   [Pattern 3 --- Bounds / Inequalities /
-    Min-Max](#pattern-3--bounds-inequalities-min-max)
-    -   [CF 1690A --- Print a
-        Pedestal](#cf-1690a--print-a-pedestal-construction--codeforces--800)
-    -   [CF 1676A ---
-        Lucky?](#cf-1676a--lucky-equation--codeforces--800)
-    -   [CF 1742B ---
-        Increasing](#cf-1742b--increasing-distinctness--codeforces--800)
-    -   [CF 1791A --- Codeforces
-        Checking](#cf-1791a--codeforces-checking-membership--codeforces--800)
-    -   [CF 1829A --- Love
-        Story](#cf-1829a--love-story-hamming-distance--codeforces--800)
-    -   [CF 1873A --- Short
-        Sort](#cf-1873a--short-sort-permutation--codeforces--800)
-    -   [CF 1729A --- Two
-        Elevators](#cf-1729a--two-elevators-distance--codeforces--800)
-    -   [CF 1805A --- We Need the
-        Zero](#cf-1805a--we-need-the-zero-xor-bounds--codeforces--900)
-    -   [CF 1858A ---
-        Buttons](#cf-1858a--buttons-game-counting--codeforces--800)
-    -   [CF 1899A --- Game with
-        Integers](#cf-1899a--game-with-integers-modulo--codeforces--800)
--   [Pattern 4 --- Parity Modeling](#pattern-4--parity-modeling)
-    -   [CF 4A ---
-        Watermelon](#cf-4a--watermelon-parity--codeforces--800)
-    -   [CF 1296A --- Array with Odd
-        Sum](#cf-1296a--array-with-odd-sum-parity--codeforces--800)
-    -   [CF 1857A --- Array
-        Coloring](#cf-1857a--array-coloring-parity--codeforces--800)
-    -   [CF 1834A --- Unit
-        Array](#cf-1834a--unit-array-parity-greedy--codeforces--800)
-    -   [CF 1367B --- Even
-        Array](#cf-1367b--even-array-parity--codeforces--800)
-    -   [CF 1475A --- Odd
-        Divisor](#cf-1475a--odd-divisor-number-theory--codeforces--900)
-    -   [CF 1669C --- Odd/Even
-        Increments](#cf-1669c--odd-even-increments-parity--codeforces--800)
-    -   [CF 1624A --- Plus One on the
-        Subset](#cf-1624a--plus-one-on-the-subset-difference--codeforces--800)
-    -   [CF 1788A --- One and
-        Two](#cf-1788a--one-and-two-product-parity--codeforces--800)
-    -   [CF 1845A --- Forbidden
-        Integer](#cf-1845a--forbidden-integer-constructive--codeforces--800)
+    Min-Max](#pattern-3-bounds-inequalities-min-max)
+    -   [Problem 021 --- Problem 21](#problem-021-problem-21)
+    -   [Problem 022 --- Problem 22](#problem-022-problem-22)
+    -   [Problem 023 --- Problem 23](#problem-023-problem-23)
+    -   [Problem 024 --- Problem 24](#problem-024-problem-24)
+    -   [Problem 025 --- Problem 25](#problem-025-problem-25)
+    -   [Problem 026 --- Problem 26](#problem-026-problem-26)
+    -   [Problem 027 --- Problem 27](#problem-027-problem-27)
+    -   [Problem 028 --- Problem 28](#problem-028-problem-28)
+    -   [Problem 029 --- Problem 29](#problem-029-problem-29)
+    -   [Problem 030 --- Problem 30](#problem-030-problem-30)
+-   [Pattern 4 --- Parity Modeling](#pattern-4-parity-modeling)
+    -   [Problem 031 --- Problem 31](#problem-031-problem-31)
+    -   [Problem 032 --- Problem 32](#problem-032-problem-32)
+    -   [Problem 033 --- Problem 33](#problem-033-problem-33)
+    -   [Problem 034 --- Problem 34](#problem-034-problem-34)
+    -   [Problem 035 --- Problem 35](#problem-035-problem-35)
+    -   [Problem 036 --- Problem 36](#problem-036-problem-36)
+    -   [Problem 037 --- Problem 37](#problem-037-problem-37)
+    -   [Problem 038 --- Problem 38](#problem-038-problem-38)
+    -   [Problem 039 --- Problem 39](#problem-039-problem-39)
+    -   [Problem 040 --- Problem 40](#problem-040-problem-40)
 -   [Pattern 5 --- Divisibility / GCD /
-    LCM](#pattern-5--divisibility-gcd-lcm)
-    -   [CF 1328A --- Divisibility
-        Problem](#cf-1328a--divisibility-problem-modulo--codeforces--800)
-    -   [CF 1343A ---
-        Candies](#cf-1343a--candies-geometric-divisibility--codeforces--900)
-    -   [CF 1370A --- Maximum
-        GCD](#cf-1370a--maximum-gcd-gcd--codeforces--800)
-    -   [CF 1829C --- Mr. Perfectly
-        Fine](#cf-1829c--mr-perfectly-fine-min-bitmask--codeforces--800)
-    -   [CF 1618A --- Polycarp and Sums of
-        Subsequences](#cf-1618a--polycarp-and-sums-of-subsequences-algebra--codeforces--800)
-    -   [CF 160A --- Twins](#cf-160a--twins-greedy-sum--codeforces--900)
-    -   [CF 1475B --- New Year's
-        Number](#cf-1475b--new-years-number-diophantine--codeforces--900)
-    -   [CF 1593A ---
-        Elections](#cf-1593a--elections-max-formula--codeforces--800)
-    -   [CF 1829B --- Blank
-        Space](#cf-1829b--blank-space-run-length--codeforces--800)
-    -   [CF 1877A --- Goals of
-        Victory](#cf-1877a--goals-of-victory-sum-invariant--codeforces--800)
+    LCM](#pattern-5-divisibility-gcd-lcm)
+    -   [Problem 041 --- Problem 41](#problem-041-problem-41)
+    -   [Problem 042 --- Problem 42](#problem-042-problem-42)
+    -   [Problem 043 --- Problem 43](#problem-043-problem-43)
+    -   [Problem 044 --- Problem 44](#problem-044-problem-44)
+    -   [Problem 045 --- Problem 45](#problem-045-problem-45)
+    -   [Problem 046 --- Problem 46](#problem-046-problem-46)
+    -   [Problem 047 --- Problem 47](#problem-047-problem-47)
+    -   [Problem 048 --- Problem 48](#problem-048-problem-48)
+    -   [Problem 049 --- Problem 49](#problem-049-problem-49)
+    -   [Problem 050 --- Problem 50](#problem-050-problem-50)
 -   [Pattern 6 --- Modulo / Cyclic
-    Modeling](#pattern-6--modulo-cyclic-modeling)
-    -   [CF 116A ---
-        Tram](#cf-116a--tram-prefix-capacity--codeforces--800)
-    -   [CF 266A --- Stones on the
-        Table](#cf-266a--stones-on-the-table-adjacent--codeforces--800)
-    -   [CF 228A --- Is your horseshoe on the other
-        hoof?](#cf-228a--is-your-horseshoe-on-the-other-hoof-distinctness--codeforces--800)
-    -   [CF 443A --- Anton and
-        Letters](#cf-443a--anton-and-letters-set--codeforces--800)
-    -   [CF 59A --- Word](#cf-59a--word-counting--codeforces--800)
-    -   [CF 236A --- Boy or
-        Girl](#cf-236a--boy-or-girl-set-parity--codeforces--800)
-    -   [CF 785A --- Anton and
-        Polyhedrons](#cf-785a--anton-and-polyhedrons-mapping--codeforces--800)
-    -   [CF 703A --- Mishka and
-        Game](#cf-703a--mishka-and-game-comparison--codeforces--800)
-    -   [CF 734B --- Anton and
-        Digits](#cf-734b--anton-and-digits-greedy-counting--codeforces--800)
-    -   [CF 1097A --- Gennady the Card
-        Game](#cf-1097a--gennady-the-card-game-matching--codeforces--800)
+    Modeling](#pattern-6-modulo-cyclic-modeling)
+    -   [Problem 051 --- Problem 51](#problem-051-problem-51)
+    -   [Problem 052 --- Problem 52](#problem-052-problem-52)
+    -   [Problem 053 --- Problem 53](#problem-053-problem-53)
+    -   [Problem 054 --- Problem 54](#problem-054-problem-54)
+    -   [Problem 055 --- Problem 55](#problem-055-problem-55)
+    -   [Problem 056 --- Problem 56](#problem-056-problem-56)
+    -   [Problem 057 --- Problem 57](#problem-057-problem-57)
+    -   [Problem 058 --- Problem 58](#problem-058-problem-58)
+    -   [Problem 059 --- Problem 59](#problem-059-problem-59)
+    -   [Problem 060 --- Problem 60](#problem-060-problem-60)
 -   [Pattern 7 --- Counting / Frequency /
-    Pairs](#pattern-7--counting-frequency-pairs)
-    -   [CF 1520D --- Same
-        Differences](#cf-1520d--same-differences-algebra-frequency--codeforces--1200)
-    -   [CF 1538C --- Challenging Cliffs / Number of
-        Pairs](#cf-1538c--challenging-cliffs-number-of-pairs-two-pointers--codeforces--1300)
-    -   [CF 1669B ---
-        Triple](#cf-1669b--triple-frequency--codeforces--800)
-    -   [CF 1742C ---
-        Stripes](#cf-1742c--stripes-grid-existence--codeforces--800)
-    -   [CF 1791B --- Following
-        Directions](#cf-1791b--following-directions-coordinates--codeforces--800)
-    -   [CF 1703B --- ICPC
-        Balloons](#cf-1703b--icpc-balloons-frequency--codeforces--800)
-    -   [CF 1722A --- Spell
-        Check](#cf-1722a--spell-check-frequency-sorting--codeforces--800)
-    -   [CF 1791C --- Prepend and
-        Append](#cf-1791c--prepend-and-append-two-pointers--codeforces--800)
-    -   [CF 1829D --- Gold
-        Rush](#cf-1829d--gold-rush-recursion-reachability--codeforces--1000)
-    -   [CF 1878B --- Aleksa and
-        Stack](#cf-1878b--aleksa-and-stack-construction--codeforces--800)
+    Pairs](#pattern-7-counting-frequency-pairs)
+    -   [Problem 061 --- Problem 61](#problem-061-problem-61)
+    -   [Problem 062 --- Problem 62](#problem-062-problem-62)
+    -   [Problem 063 --- Problem 63](#problem-063-problem-63)
+    -   [Problem 064 --- Problem 64](#problem-064-problem-64)
+    -   [Problem 065 --- Problem 65](#problem-065-problem-65)
+    -   [Problem 066 --- Problem 66](#problem-066-problem-66)
+    -   [Problem 067 --- Problem 67](#problem-067-problem-67)
+    -   [Problem 068 --- Problem 68](#problem-068-problem-68)
+    -   [Problem 069 --- Problem 69](#problem-069-problem-69)
+    -   [Problem 070 --- Problem 70](#problem-070-problem-70)
 -   [Pattern 8 --- Operation → Delta →
-    Invariant](#pattern-8--operation-delta-invariant)
-    -   [CF 1538B --- Friends and
-        Candies](#cf-1538b--friends-and-candies-invariant--codeforces--800)
-    -   [CF 1855A --- Dalton the
-        Teacher](#cf-1855a--dalton-the-teacher-mismatch-operation--codeforces--800)
-    -   [CF 1838A --- Blackboard
-        List](#cf-1838a--blackboard-list-extremal--codeforces--800)
-    -   [CF 1862B --- Sequence
-        Game](#cf-1862b--sequence-game-construction--codeforces--800)
-    -   [CF 1798A ---
-        Showstopper](#cf-1798a--showstopper-invariant-swap--codeforces--800)
-    -   [CF 660A --- Co-prime
-        Array](#cf-660a--co-prime-array-construction-gcd--codeforces--900)
-    -   [CF 1367A --- Short
-        Substrings](#cf-1367a--short-substrings-string-reconstruction--codeforces--800)
-    -   [CF 1374A --- Required
-        Remainder](#cf-1374a--required-remainder-modulo-optimization--codeforces--800)
-    -   [CF 1551A --- Polycarp and
-        Coins](#cf-1551a--polycarp-and-coins-balancing--codeforces--800)
-    -   [CF 1818A ---
-        Politics](#cf-1818a--politics-string-counting--codeforces--800)
+    Invariant](#pattern-8-operation-delta-invariant)
+    -   [Problem 071 --- Problem 71](#problem-071-problem-71)
+    -   [Problem 072 --- Problem 72](#problem-072-problem-72)
+    -   [Problem 073 --- Problem 73](#problem-073-problem-73)
+    -   [Problem 074 --- Problem 74](#problem-074-problem-74)
+    -   [Problem 075 --- Problem 75](#problem-075-problem-75)
+    -   [Problem 076 --- Problem 76](#problem-076-problem-76)
+    -   [Problem 077 --- Problem 77](#problem-077-problem-77)
+    -   [Problem 078 --- Problem 78](#problem-078-problem-78)
+    -   [Problem 079 --- Problem 79](#problem-079-problem-79)
+    -   [Problem 080 --- Problem 80](#problem-080-problem-80)
 -   [Pattern 9 --- Sorting / Coordinate / Distance
-    Modeling](#pattern-9--sorting-coordinate-distance-modeling)
-    -   [CF 160A ---
-        Twins](#cf-160a--twins-sorting-greedy--codeforces--900)
-    -   [CF 1399A --- Remove
-        Smallest](#cf-1399a--remove-smallest-sorting--codeforces--800)
-    -   [CF 1760A --- Medium
-        Number](#cf-1760a--medium-number-sorting--codeforces--800)
-    -   [CF 1538A --- Stone
-        Game](#cf-1538a--stone-game-positions--codeforces--800)
-    -   [CF 1729A --- Two
-        Elevators](#cf-1729a--two-elevators-distance--codeforces--800)
-    -   [CF 1593B --- Make it Divisible by
-        25](#cf-1593b--make-it-divisible-by-25-digit-pattern--codeforces--900)
-    -   [CF 1742F ---
-        Smaller](#cf-1742f--smaller-lexicographic-invariant--codeforces--1200)
-    -   [CF 1831A --- Twin
-        Permutations](#cf-1831a--twin-permutations-mapping--codeforces--800)
-    -   [CF 1900A --- Cover in
-        Water](#cf-1900a--cover-in-water-run-length--codeforces--800)
-    -   [CF 1873B --- Good
-        Kid](#cf-1873b--good-kid-product-greedy--codeforces--800)
+    Modeling](#pattern-9-sorting-coordinate-distance-modeling)
+    -   [Problem 081 --- Problem 81](#problem-081-problem-81)
+    -   [Problem 082 --- Problem 82](#problem-082-problem-82)
+    -   [Problem 083 --- Problem 83](#problem-083-problem-83)
+    -   [Problem 084 --- Problem 84](#problem-084-problem-84)
+    -   [Problem 085 --- Problem 85](#problem-085-problem-85)
+    -   [Problem 086 --- Problem 86](#problem-086-problem-86)
+    -   [Problem 087 --- Problem 87](#problem-087-problem-87)
+    -   [Problem 088 --- Problem 88](#problem-088-problem-88)
+    -   [Problem 089 --- Problem 89](#problem-089-problem-89)
+    -   [Problem 090 --- Problem 90](#problem-090-problem-90)
 -   [Pattern 10 --- Prefix / Running-State
-    Modeling](#pattern-10--prefix-running-state-modeling)
-    -   [CF 116A --- Tram](#cf-116a--tram-prefix--codeforces--800)
-    -   [CF 363B ---
-        Fence](#cf-363b--fence-sliding-window--codeforces--1100)
-    -   [CF 276C --- Little Girl and Problem on Trees / Little Girl and
-        Maximum
-        Sum](#cf-276c--little-girl-and-problem-on-trees-little-girl-and-maximum-sum-difference-contribution--codeforces--1400)
-    -   [CF 433B --- Kuriyama Mirai's
-        Stones](#cf-433b--kuriyama-mirais-stones-prefix-sum--codeforces--1200)
-    -   [CF 313B --- Ilya and
-        Queries](#cf-313b--ilya-and-queries-prefix--codeforces--1100)
-    -   [CF 327A --- Flipping
-        Game](#cf-327a--flipping-game-transform-kadane--codeforces--1200)
-    -   [CF 580A --- Kefa and First
-        Steps](#cf-580a--kefa-and-first-steps-run-length--codeforces--900)
-    -   [CF 702A --- Maximum
-        Increase](#cf-702a--maximum-increase-run-length--codeforces--800)
-    -   [CF 1829B --- Blank
-        Space](#cf-1829b--blank-space-run-length--codeforces--800)
-    -   [CF 1669F --- Eating
-        Candies](#cf-1669f--eating-candies-two-pointers-prefix--codeforces--1100)
+    Modeling](#pattern-10-prefix-running-state-modeling)
+    -   [Problem 091 --- Problem 91](#problem-091-problem-91)
+    -   [Problem 092 --- Problem 92](#problem-092-problem-92)
+    -   [Problem 093 --- Problem 93](#problem-093-problem-93)
+    -   [Problem 094 --- Problem 94](#problem-094-problem-94)
+    -   [Problem 095 --- Problem 95](#problem-095-problem-95)
+    -   [Problem 096 --- Problem 96](#problem-096-problem-96)
+    -   [Problem 097 --- Problem 97](#problem-097-problem-97)
+    -   [Problem 098 --- Problem 98](#problem-098-problem-98)
+    -   [Problem 099 --- Problem 99](#problem-099-problem-99)
+    -   [Problem 100 --- Problem 100](#problem-100-problem-100)
 -   [Pattern 11 --- Constructive / Reachability
-    Modeling](#pattern-11--constructive-reachability-modeling)
-    -   [CF 1690A --- Print a
-        Pedestal](#cf-1690a--print-a-pedestal-constructive--codeforces--800)
-    -   [CF 1845A --- Forbidden
-        Integer](#cf-1845a--forbidden-integer-constructive--codeforces--800)
-    -   [CF 1878B --- Aleksa and
-        Stack](#cf-1878b--aleksa-and-stack-constructive--codeforces--800)
-    -   [CF 1741A --- Compare T-Shirt
-        Sizes](#cf-1741a--compare-t-shirt-sizes-ordering--codeforces--800)
-    -   [CF 1805B --- We Need the Zero / The String Has a
-        Target](#cf-1805b--we-need-the-zero-the-string-has-a-target-string-greedy--codeforces--800)
-    -   [CF 1833B --- Restore the
-        Weather](#cf-1833b--restore-the-weather-sorting-matching--codeforces--1000)
-    -   [CF 1793C --- Dora and
-        Search](#cf-1793c--dora-and-search-two-pointers-extremes--codeforces--1200)
-    -   [CF 1881A --- Don't Try to
-        Count](#cf-1881a--dont-try-to-count-string-doubling--codeforces--800)
-    -   [CF 1858A ---
-        Buttons](#cf-1858a--buttons-game-constructive--codeforces--800)
-    -   [CF 1899A --- Game with
-        Integers](#cf-1899a--game-with-integers-modulo-game--codeforces--800)
+    Modeling](#pattern-11-constructive-reachability-modeling)
+    -   [Problem 101 --- Problem 101](#problem-101-problem-101)
+    -   [Problem 102 --- Problem 102](#problem-102-problem-102)
+    -   [Problem 103 --- Problem 103](#problem-103-problem-103)
+    -   [Problem 104 --- Problem 104](#problem-104-problem-104)
+    -   [Problem 105 --- Problem 105](#problem-105-problem-105)
+    -   [Problem 106 --- Problem 106](#problem-106-problem-106)
+    -   [Problem 107 --- Problem 107](#problem-107-problem-107)
+    -   [Problem 108 --- Problem 108](#problem-108-problem-108)
+    -   [Problem 109 --- Problem 109](#problem-109-problem-109)
+    -   [Problem 110 --- Problem 110](#problem-110-problem-110)
 -   [Pattern 12 --- Bitwise / XOR
-    Modeling](#pattern-12--bitwise-xor-modeling)
-    -   [CF 1805A --- We Need the
-        Zero](#cf-1805a--we-need-the-zero-xor--codeforces--900)
-    -   [CF 1872A --- Two
-        Vessels](#cf-1872a--two-vessels-arithmetic--codeforces--800)
-    -   [CF 1703A --- YES or
-        YES?](#cf-1703a--yes-or-yes-string--codeforces--800)
-    -   [CF 1624A --- Plus One on the
-        Subset](#cf-1624a--plus-one-on-the-subset-range--codeforces--800)
-    -   [CF 1220A ---
-        Cards](#cf-1220a--cards-frequency--codeforces--900)
-    -   [CF 1362A --- Johnny and Ancient
-        Computer](#cf-1362a--johnny-and-ancient-computer-powers-ratio--codeforces--900)
-    -   [CF 1095A --- Repeating
-        Cipher](#cf-1095a--repeating-cipher-index-pattern--codeforces--800)
-    -   [CF 1324A --- Yet Another Tetris
-        Problem](#cf-1324a--yet-another-tetris-problem-parity--codeforces--800)
-    -   [CF 1462A --- Favorite
-        Sequence](#cf-1462a--favorite-sequence-two-pointers--codeforces--800)
-    -   [CF 1619A --- Polycarp and Sums of Subsequences / Square
-        String?](#cf-1619a--polycarp-and-sums-of-subsequences-square-string-string--codeforces--800)
+    Modeling](#pattern-12-bitwise-xor-modeling)
+    -   [Problem 111 --- Problem 111](#problem-111-problem-111)
+    -   [Problem 112 --- Problem 112](#problem-112-problem-112)
+    -   [Problem 113 --- Problem 113](#problem-113-problem-113)
+    -   [Problem 114 --- Problem 114](#problem-114-problem-114)
+    -   [Problem 115 --- Problem 115](#problem-115-problem-115)
+    -   [Problem 116 --- Problem 116](#problem-116-problem-116)
+    -   [Problem 117 --- Problem 117](#problem-117-problem-117)
+    -   [Problem 118 --- Problem 118](#problem-118-problem-118)
+    -   [Problem 119 --- Problem 119](#problem-119-problem-119)
+    -   [Problem 120 --- Problem 120](#problem-120-problem-120)
 -   [Pattern 13 --- Mixed Blind
-    Decoding](#pattern-13--mixed-blind-decoding)
-    -   [CF 1538C --- Challenging Cliffs / Number of
-        Pairs](#cf-1538c--challenging-cliffs-number-of-pairs-sortingcounting--codeforces--1300)
-    -   [CF 1475B --- New Year's
-        Number](#cf-1475b--new-years-number-diophantinemodulo--codeforces--900)
-    -   [CF 1374A --- Required
-        Remainder](#cf-1374a--required-remainder-modulooptimization--codeforces--800)
-    -   [CF 1551A --- Polycarp and
-        Coins](#cf-1551a--polycarp-and-coins-equationbalancing--codeforces--800)
-    -   [CF 1593B --- Make it Divisible by
-        25](#cf-1593b--make-it-divisible-by-25-divisibilitystring--codeforces--900)
-    -   [CF 1669F --- Eating
-        Candies](#cf-1669f--eating-candies-prefixtwo-pointers--codeforces--1100)
-    -   [CF 1793C --- Dora and
-        Search](#cf-1793c--dora-and-search-extremestwo-pointers--codeforces--1200)
-    -   [CF 327A --- Flipping
-        Game](#cf-327a--flipping-game-transformoptimization--codeforces--1200)
-    -   [CF 1520D --- Same
-        Differences](#cf-1520d--same-differences-algebrafrequency--codeforces--1200)
-    -   [CF 276C --- Little Girl and Maximum
-        Sum](#cf-276c--little-girl-and-maximum-sum-differencesorting--codeforces--1400)
+    Decoding](#pattern-13-mixed-blind-decoding)
+    -   [Problem 121 --- Problem 121](#problem-121-problem-121)
+    -   [Problem 122 --- Problem 122](#problem-122-problem-122)
+    -   [Problem 123 --- Problem 123](#problem-123-problem-123)
+    -   [Problem 124 --- Problem 124](#problem-124-problem-124)
+    -   [Problem 125 --- Problem 125](#problem-125-problem-125)
+    -   [Problem 126 --- Problem 126](#problem-126-problem-126)
+    -   [Problem 127 --- Problem 127](#problem-127-problem-127)
+    -   [Problem 128 --- Problem 128](#problem-128-problem-128)
+    -   [Problem 129 --- Problem 129](#problem-129-problem-129)
+    -   [Problem 130 --- Problem 130](#problem-130-problem-130)
 -   [Phase-1 Recognition Checklist](#phase-1-recognition-checklist)
 -   [Reusable Problem Template](#reusable-problem-template)
+    -   [Problem 131 --- Problem 131](#problem-131-problem-131)
 
 ## Added Learning Layer --- Everyday-Life Mapping
 
