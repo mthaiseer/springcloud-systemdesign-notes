@@ -4,59 +4,43 @@
 > safely, derive integer equations, and reduce them to GCD
 > normalization, scaling, interval counting, or factor normalization.
 
+<a id="table-of-contents"></a>
+
 ## Table of Contents
 
--   [1. What is a Ratio Constraint?](#1-what-is-a-ratio-constraint)
--   [2. Simple Example](#2-simple-example)
--   [3. Real-World Example --- Recipe
-    Proportion](#3-real-world-example--recipe-proportion)
--   [4. Core Algebra --- Cross
-    Multiplication](#4-core-algebra--cross-multiplication)
--   [5. Normalized Ratio](#5-normalized-ratio)
--   [6. Scaling Form](#6-scaling-form)
--   [7. Fixed Multiplier Ratio](#7-fixed-multiplier-ratio)
--   [8. Power Ratio](#8-power-ratio)
--   [9. Ratio + Bounds](#9-ratio--bounds)
--   [10. Ratio Comparison Without Floating
-    Point](#10-ratio-comparison-without-floating-point)
--   [11. Ratio Invariant](#11-ratio-invariant)
--   [12. Important Domain & Overflow
-    Warnings](#12-important-domain--overflow-warnings)
--   [13. Algorithmic Reduction Matrix](#13-algorithmic-reduction-matrix)
--   [14. Codeforces Mental Triggers](#14-codeforces-mental-triggers)
--   [15. Standard C++ Snippets](#15-standard-c-snippets)
--   [16. Curated Codeforces
-    Benchmarks](#16-curated-codeforces-benchmarks)
--   [17. CF 337B --- Routine
-    Problem](#17-variant-1--cf-337b-routine-problem)
-    -   [What this problem is all
-        about](#what-this-problem-is-all-about)
-    -   [Mathematical model](#c-algebraic-derivation)
--   [18. CF 573A --- Bear and
-    Poker](#18-variant-2--cf-573a-bear-and-poker)
-    -   [What this problem is all
-        about](#what-this-problem-is-all-about-1)
-    -   [Mathematical model](#c-ratio-formulation)
--   [19. CF 2044E --- Insane
-    Problem](#19-variant-3--cf-2044e-insane-problem)
-    -   [What this problem is all
-        about](#what-this-problem-is-all-about-2)
-    -   [Mathematical model](#c-algebraic-derivation-1)
--   [20. Compare the Three Ratio
-    Variants](#20-compare-the-three-ratio-variants)
--   [21. Ratio Constraint --- Recognition
-    Map](#21-ratio-constraint--recognition-map)
--   [22. Instant Recognition Drill](#22-instant-recognition-drill)
--   [23. Mathematical Form to
-    Memorize](#23-mathematical-form-to-memorize)
--   [24. When NOT to Divide](#24-when-not-to-divide)
--   [25. Pattern Recognition](#25-pattern-recognition)
--   [26. Contest Mental Compression](#26-contest-mental-compression)
--   [27. Final One-Line Takeaway](#27-final-one-line-takeaway)
+| Section | Topic                                                 |
+|--------:|-------------------------------------------------------|
+|       1 | [What is a Ratio Constraint?](#ratio-01)              |
+|       2 | [Simple Example](#ratio-02)                           |
+|       3 | [Real-World Example — Recipe Proportion](#ratio-03)   |
+|       4 | [Core Algebra — Cross Multiplication](#ratio-04)      |
+|       5 | [Normalized Ratio](#ratio-05)                         |
+|       6 | [Scaling Form](#ratio-06)                             |
+|       7 | [Fixed Multiplier Ratio](#ratio-07)                   |
+|       8 | [Power Ratio](#ratio-08)                              |
+|       9 | [Ratio + Bounds](#ratio-09)                           |
+|      10 | [Ratio Comparison Without Floating Point](#ratio-10)  |
+|      11 | [Ratio Invariant](#ratio-11)                          |
+|      12 | [Domain & Overflow Warnings](#ratio-12)               |
+|      13 | [Algorithmic Reduction Matrix](#ratio-13)             |
+|      14 | [Codeforces Mental Triggers](#ratio-14)               |
+|      15 | [Standard C++ Snippets — int vs long long](#ratio-15) |
+|      16 | [Curated Codeforces Benchmarks](#ratio-16)            |
+|      17 | [CF 337B — Routine Problem](#ratio-cf337b)            |
+|      18 | [CF 573A — Bear and Poker](#ratio-cf573a)             |
+|      19 | [CF 2044E — Insane Problem](#ratio-cf2044e)           |
+|      20 | [Compare the Three Ratio Variants](#ratio-20)         |
+|      21 | [Ratio Constraint — Recognition Map](#ratio-21)       |
+|      22 | [Instant Recognition Drill](#ratio-22)                |
+|      23 | [Mathematical Form to Memorize](#ratio-23)            |
+|      24 | [When NOT to Divide](#ratio-24)                       |
+|      25 | [Pattern Recognition](#ratio-25)                      |
+|      26 | [Contest Mental Compression](#ratio-26)               |
+|      27 | [Final One-Line Takeaway](#ratio-27)                  |
 
 ------------------------------------------------------------------------
 
-------------------------------------------------------------------------
+<a id="ratio-01"></a>
 
 ## 1. What is a Ratio Constraint?
 
@@ -88,6 +72,8 @@ b*x = a*y
 
 ------------------------------------------------------------------------
 
+<a id="ratio-02"></a>
+
 ## 2. Simple Example
 
 ``` text
@@ -116,6 +102,8 @@ Therefore:
 ```
 
 ------------------------------------------------------------------------
+
+<a id="ratio-03"></a>
 
 ## 3. Real-World Example --- Recipe Proportion
 
@@ -147,6 +135,8 @@ SAME SCALE FACTOR
 ```
 
 ------------------------------------------------------------------------
+
+<a id="ratio-04"></a>
 
 ## 4. Core Algebra --- Cross Multiplication
 
@@ -196,6 +186,8 @@ This avoids floating-point equality.
 
 ------------------------------------------------------------------------
 
+<a id="ratio-05"></a>
+
 ## 5. Normalized Ratio
 
 Equivalent ratios:
@@ -239,6 +231,8 @@ compare reduced pairs
 
 ------------------------------------------------------------------------
 
+<a id="ratio-06"></a>
+
 ## 6. Scaling Form
 
 If:
@@ -273,6 +267,8 @@ t=4 → (12,20)
 
 ------------------------------------------------------------------------
 
+<a id="ratio-07"></a>
+
 ## 7. Fixed Multiplier Ratio
 
 ``` text
@@ -297,6 +293,8 @@ y=4*7=28
 ```
 
 ------------------------------------------------------------------------
+
+<a id="ratio-08"></a>
 
 ## 8. Power Ratio
 
@@ -331,6 +329,8 @@ y=p*x
 ```
 
 ------------------------------------------------------------------------
+
+<a id="ratio-09"></a>
 
 ## 9. Ratio + Bounds
 
@@ -387,6 +387,8 @@ INTEGER INTERVAL
 
 ------------------------------------------------------------------------
 
+<a id="ratio-10"></a>
+
 ## 10. Ratio Comparison Without Floating Point
 
 For positive denominators:
@@ -421,6 +423,8 @@ therefore:
 
 ------------------------------------------------------------------------
 
+<a id="ratio-11"></a>
+
 ## 11. Ratio Invariant
 
 Multiply both parts by the same non-zero factor:
@@ -443,6 +447,8 @@ Likewise, dividing both by a common factor preserves the ratio. This is
 why GCD normalization works.
 
 ------------------------------------------------------------------------
+
+<a id="ratio-12"></a>
 
 ## 12. Important Domain & Overflow Warnings
 
@@ -491,42 +497,41 @@ can overflow. Use `long long` or `__int128` as required.
 
 ------------------------------------------------------------------------
 
+<a id="ratio-13"></a>
+
 ## 13. Algorithmic Reduction Matrix
 
-  -----------------------------------------------------------------------
-  Mathematical     Meaning          Typical                    Complexity
-  Condition                         Technique        
-  ---------------- ---------------- ---------------- --------------------
-  `x/y=a/b`        Equal ratios     Cross                          `O(1)`
-                                    multiplication   
+------------------------------------------------------------------------
 
-  `x:y=a:b`        Same proportion  GCD                        `O(log V)`
-                                    normalization    
-
-  `x=a*t, y=b*t`   Scaled ratio     Solve/count                    `O(1)`
-                                    valid `t`        
-
-  `y=k*x`          Fixed multiplier Substitution                   `O(1)`
-
-  `y/x=k^t`        Power ratio      Enumerate powers         `O(log_k M)`
-
-  `y=p*x` with     Count            Interval               `O(1)` per `p`
-  ranges           proportional     intersection     
-                   pairs                             
-
-  `a/b ? c/d`      Exact ratio      Cross                          `O(1)`
-                   comparison       multiplication   
-
-  Ratio differs    Multiplicative   Strip factors    `O(log V)` per value
-  only by allowed  normalization                     
-  primes                                             
-
-  Aspect ratio     Same shape under Cross products +               `O(1)`
-  preserved        scaling          limiting         
-                                    dimension        
-  -----------------------------------------------------------------------
+Mathematical Meaning Typical Complexity Condition Technique
 
 ------------------------------------------------------------------------
+
+`x/y=a/b` Equal ratios Cross `O(1)` multiplication
+
+`x:y=a:b` Same proportion GCD `O(log V)` normalization
+
+`x=a*t, y=b*t` Scaled ratio Solve/count `O(1)` valid `t`
+
+`y=k*x` Fixed multiplier Substitution `O(1)`
+
+`y/x=k^t` Power ratio Enumerate powers `O(log_k M)`
+
+`y=p*x` with Count Interval `O(1)` per `p` ranges proportional
+intersection  
+pairs
+
+`a/b ? c/d` Exact ratio Cross `O(1)` comparison multiplication
+
+Ratio differs Multiplicative Strip factors `O(log V)` per value only by
+allowed normalization  
+primes
+
+## Aspect ratio Same shape under Cross products + `O(1)` preserved scaling limiting dimension
+
+------------------------------------------------------------------------
+
+<a id="ratio-14"></a>
 
 ## 14. Codeforces Mental Triggers
 
@@ -576,68 +581,145 @@ convert y-bounds into x-bounds
 
 ------------------------------------------------------------------------
 
-## 15. Standard C++ Snippets
+<a id="ratio-15"></a>
 
-### Equal ratio
+## 15. Standard C++ Snippets — `int` vs `long long`
+
+### Which type should you use?
+
+For these ratio patterns, use **`long long` as the default**. The danger
+is not only the input value; derived expressions such as `a*d`, `b*c`,
+`x*k`, and repeated powers can exceed 32-bit `int`.
+
+| Situation                                          | Recommended Type                                        | Reason                                      |
+|----------------------------------------------------|---------------------------------------------------------|---------------------------------------------|
+| Small loop index such as `i`, `j`, `n`             | `int`                                                   | Usually bounded by array size               |
+| Input values used only as small counters           | `int`                                                   | Fine if constraints guarantee 32-bit safety |
+| `a`, `b`, `c`, `d`, `x`, `y`, `k`, range endpoints | `long long`                                             | Safer for arithmetic                        |
+| Cross product `a*d`, `b*c`                         | `long long`; `__int128` if operands may approach `1e18` | Multiplication can overflow                 |
+| Power `p *= k`                                     | `long long` + overflow guard                            | Powers grow quickly                         |
+| Answer counting many pairs                         | `long long`                                             | Count can exceed `2^31-1`                   |
+
+### Rule to memorize
+
+``` text
+INDEX / SIZE:
+int
+
+MATHEMATICAL VALUE:
+long long
+
+MULTIPLY TWO POSSIBLY LARGE long long VALUES:
+__int128
+```
+
+### A. Equal-ratio comparison
 
 ``` cpp
 bool sameRatio(long long a, long long b,
                long long c, long long d) {
-    return (__int128)a*d == (__int128)c*b;
+    return (__int128)a * d == (__int128)c * b;
 }
 ```
 
-### Normalize positive ratio
+Why `__int128`?
+
+``` text
+a,d <= 10^18
+
+a*d may be as large as 10^36
+→ long long cannot hold it
+```
+
+If the problem constraints guarantee that the cross products fit in
+`long long`, `long long` is sufficient.
+
+### B. Normalize a positive ratio
 
 ``` cpp
-pair<long long,long long> normalize(long long x, long long y) {
-    long long g = std::gcd(x,y);
-    return {x/g,y/g};
+pair<long long, long long> normalize(long long x, long long y) {
+    long long g = std::gcd(x, y);
+    return {x / g, y / g};
 }
 ```
 
-### Positive ceiling division
+### C. Positive ceiling division
 
 ``` cpp
-long long ceilDiv(long long a,long long b) {
-    return (a+b-1)/b;
+long long ceilDiv(long long a, long long b) {
+    return a / b + (a % b != 0);
 }
 ```
 
-------------------------------------------------------------------------
+This version avoids the possible overflow in:
 
-# 16. Curated Codeforces Benchmarks
+``` cpp
+(a + b - 1) / b
+```
 
-  ------------------------------------------------------------------------------------------------------------------------
-  Problem     Rating Ratio Variant    Key            Technique          Link
-                                      Mathematical                      
-                                      Observation                       
-  --------- -------- ---------------- -------------- ------------------ --------------------------------------------------
-  CF 337B       1400 Aspect ratio     Compare        Cross              https://codeforces.com/problemset/problem/337/B
-  ---                                 proportions    multiplication +   
-  Routine                             using `a*d`    GCD                
-  Problem                             and `b*c`                         
+when `a` and `b` are very large.
 
-  CF 573A       1300 Allowed          Strip factors  Factor             https://codeforces.com/problemset/problem/573/A
-  --- Bear           multiplicative   `2` and `3`;   normalization      
-  and Poker          ratio            invariant                         
-                                      cores must                        
-                                      match                             
+### D. Safe power growth
 
-  CF 2044E      1300 `y/x=k^n`        For each       Power              https://codeforces.com/problemset/problem/2044/E
-  ---                                 power, convert enumeration +      
-  Insane                              `y=p*x` into   bounds             
-  Problem                             interval                          
-                                      intersection                      
-  ------------------------------------------------------------------------------------------------------------------------
+Instead of blindly doing:
 
-------------------------------------------------------------------------
+``` cpp
+p *= k;
+```
+
+guard the multiplication:
+
+``` cpp
+if (p > LIMIT / k)
+    break;
+
+p *= k;
+```
+
+This is especially important for the `k^n` ratio pattern.
 
 [↑ Back to Table of Contents](#table-of-contents)
 
+------------------------------------------------------------------------
+
+<a id="ratio-16"></a>
+
+## 16. Curated Codeforces Benchmarks
+
+| Problem                                                                       | Rating | What the Problem Is About                                                                | Ratio Model                                     | Key Observation                                                                      | Technique                             | C++ Type                 |
+|-------------------------------------------------------------------------------|-------:|------------------------------------------------------------------------------------------|-------------------------------------------------|--------------------------------------------------------------------------------------|---------------------------------------|--------------------------|
+| [CF 337B — Routine Problem](https://codeforces.com/problemset/problem/337/B)  |   1400 | Fit a movie into a screen while preserving its aspect ratio; output the unused fraction. | `a/b` vs `c/d`                                  | Avoid floating point: compare `a*d` with `b*c`.                                      | Cross multiplication + GCD            | `long long`              |
+| [CF 573A — Bear and Poker](https://codeforces.com/problemset/problem/573/A)   |   1300 | Decide whether all bids can become equal when each may only be multiplied by `2` or `3`. | Ratios may differ only by powers of `2` and `3` | Strip all factors `2` and `3`; invariant cores must match.                           | Factor normalization                  | `long long` safe default |
+| [CF 2044E — Insane Problem](https://codeforces.com/problemset/problem/2044/E) |   1300 | Count pairs `(x,y)` in two ranges such that `y/x = k^n`.                                 | `y = x*k^n`                                     | Enumerate powers, convert the `y` range into an `x` interval, then intersect ranges. | Power enumeration + interval counting | `long long` mandatory    |
+
+### Why these three?
+
+``` text
+CF 337B
+ratio equality/comparison
+        ↓
+cross multiplication
+
+CF 573A
+allowed multiplicative ratio changes
+        ↓
+factor normalization
+
+CF 2044E
+ratio + ranges
+        ↓
+substitution + interval counting
+```
+
+[↑ Back to Table of Contents](#table-of-contents)
+
+------------------------------------------------------------------------
+
+<a id="ratio-cf337b"></a>
+
 # 17. Variant 1 --- CF 337B: Routine Problem
 
-Problem: https://codeforces.com/problemset/problem/337/B
+Problem: <https://codeforces.com/problemset/problem/337/B>
 
 ## What This Problem Is All About
 
@@ -876,9 +958,11 @@ reduce fraction with GCD
 
 [↑ Back to Table of Contents](#table-of-contents)
 
+<a id="ratio-cf573a"></a>
+
 # 18. Variant 2 --- CF 573A: Bear and Poker
 
-Problem: https://codeforces.com/problemset/problem/573/A
+Problem: <https://codeforces.com/problemset/problem/573/A>
 
 ## What This Problem Is All About
 
@@ -1081,9 +1165,11 @@ normalize + compare
 
 [↑ Back to Table of Contents](#table-of-contents)
 
+<a id="ratio-cf2044e"></a>
+
 # 19. Variant 3 --- CF 2044E: Insane Problem
 
-Problem: https://codeforces.com/problemset/problem/2044/E
+Problem: <https://codeforces.com/problemset/problem/2044/E>
 
 ## What This Problem Is All About
 
@@ -1337,26 +1423,28 @@ enumerate powers + count interval
 
 [↑ Back to Table of Contents](#table-of-contents)
 
+<a id="ratio-20"></a>
+
 # 20. Compare the Three Ratio Variants
 
-  ------------------------------------------------------------------------------------
-  Problem   Ratio Form  Extra        Transformation   Observation      Algorithm
-                        Constraint                                     
-  --------- ----------- ------------ ---------------- ---------------- ---------------
-  CF 337B   `a/b` vs    Preserve     `a*d` vs `b*c`   Cross            Arithmetic +
-            `c/d`       aspect ratio                  multiplication   GCD
-                                                      removes division 
+------------------------------------------------------------------------
 
-  CF 573A   Ratio       Only ×2 and  Strip factors    Remaining core   Normalization
-            differs by  ×3 allowed   `2,3`            is invariant     
-            `2^p3^q`                                                   
-
-  CF 2044E  `y/x=k^n`   Both values  `y=p*x`          Ratio becomes    Powers +
-                        bounded                       interval         interval
-                                                      constraint       intersection
-  ------------------------------------------------------------------------------------
+Problem Ratio Form Extra Transformation Observation Algorithm Constraint
 
 ------------------------------------------------------------------------
+
+CF 337B `a/b` vs Preserve `a*d` vs `b*c` Cross Arithmetic + `c/d` aspect
+ratio multiplication GCD removes division
+
+CF 573A Ratio Only ×2 and Strip factors Remaining core Normalization
+differs by ×3 allowed `2,3` is invariant  
+`2^p3^q`
+
+## CF 2044E `y/x=k^n` Both values `y=p*x` Ratio becomes Powers + bounded interval interval constraint intersection
+
+------------------------------------------------------------------------
+
+<a id="ratio-21"></a>
 
 # 21. Ratio Constraint --- Recognition Map
 
@@ -1395,17 +1483,18 @@ compare invariant cores
 
 ------------------------------------------------------------------------
 
+<a id="ratio-22"></a>
+
 # 22. Instant Recognition Drill
 
-  English Phrase                    Mathematical Translation
-  --------------------------------- --------------------------
-  "same ratio"                      `x/y=a/b`
-  "same proportion"                 `b*x=a*y`
-  "one is k times the other"        `y=k*x`
-  "ratio is a power of k"           `y/x=k^t`
-  "scale both dimensions equally"   `(x,y)=(a*t,b*t)`
-  "compare two fractions"           cross multiply
-  "reduce the ratio"                divide both by GCD
+English Phrase Mathematical Translation
+
+------------------------------------------------------------------------
+
+"same ratio" `x/y=a/b` "same proportion" `b*x=a*y` "one is k times the
+other" `y=k*x` "ratio is a power of k" `y/x=k^t` "scale both dimensions
+equally" `(x,y)=(a*t,b*t)` "compare two fractions" cross multiply
+"reduce the ratio" divide both by GCD
 
 ### Mental drills
 
@@ -1441,6 +1530,8 @@ y=x*3^t
 ```
 
 ------------------------------------------------------------------------
+
+<a id="ratio-23"></a>
 
 # 23. Mathematical Form to Memorize
 
@@ -1494,6 +1585,8 @@ INTEGER RELATION
 
 ------------------------------------------------------------------------
 
+<a id="ratio-24"></a>
+
 # 24. When NOT to Divide
 
 Do not blindly manipulate:
@@ -1530,6 +1623,8 @@ CHECK ITS SIGN.
 ```
 
 ------------------------------------------------------------------------
+
+<a id="ratio-25"></a>
 
 # 25. Pattern Recognition
 
@@ -1580,6 +1675,8 @@ binary search / two pointers for monotonic ratio ordering
 
 ------------------------------------------------------------------------
 
+<a id="ratio-26"></a>
+
 # 26. Contest Mental Compression
 
 ``` text
@@ -1615,6 +1712,8 @@ Ultra-compressed:
 ```
 
 ------------------------------------------------------------------------
+
+<a id="ratio-27"></a>
 
 # 27. Final One-Line Takeaway
 
