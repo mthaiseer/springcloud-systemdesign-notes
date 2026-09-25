@@ -1,197 +1,397 @@
-# CF Mathematical Modeling — Forms & Problems
+# CF Mathematical Modeling --- Forms & Problems
 
-## Form 1 — Minimum Operations / Ceil Division
+## Form 1 --- Minimum Operations / Ceil Division
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 617A — Elephant](https://codeforces.com/problemset/problem/617/A) | 800 |
-| 2 | [CF 1409A — Yet Another Two Integers Problem](https://codeforces.com/problemset/problem/1409/A) | 800 |
-| 3 | [CF 1353A — Most Unstable Array](https://codeforces.com/problemset/problem/1353/A) | 800 |
-| 4 | [CF 1476A — K-divisible Sum](https://codeforces.com/problemset/problem/1476/A) | 1000 |
-| 5 | [CF 151A — Soft Drinking](https://codeforces.com/problemset/problem/151/A) | 800 |
-| 6 | [CF 996A — Hit the Lottery](https://codeforces.com/problemset/problem/996/A) | 800 |
-| 7 | [CF 1669A — Division?](https://codeforces.com/problemset/problem/1669/A) | 800 |
-| 8 | [CF 1742A — Sum](https://codeforces.com/problemset/problem/1742/A) | 800 |
-| 9 | [CF 1850A — To My Critics](https://codeforces.com/problemset/problem/1850/A) | 800 |
-| 10 | [CF 1878A — How Much Does Daytona Cost?](https://codeforces.com/problemset/problem/1878/A) | 800 |
+  -----------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                          Rating
+  ------------------------- ------------------------------------------------------------- -------------------------
+                          1 [CF 617A ---                                                                        800
+                            Elephant](https://codeforces.com/problemset/problem/617/A)    
 
-## Form 2 — Algebra / Equation Formation
+                          2 [CF 1409A --- Yet Another Two Integers                                              800
+                            Problem](https://codeforces.com/problemset/problem/1409/A)    
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 734A — Anton and Danik](https://codeforces.com/problemset/problem/734/A) | 800 |
-| 2 | [CF 677A — Vanya and Fence](https://codeforces.com/problemset/problem/677/A) | 800 |
-| 3 | [CF 71A — Way Too Long Words](https://codeforces.com/problemset/problem/71/A) | 800 |
-| 4 | [CF 791A — Bear and Big Brother](https://codeforces.com/problemset/problem/791/A) | 800 |
-| 5 | [CF 50A — Domino piling](https://codeforces.com/problemset/problem/50/A) | 800 |
-| 6 | [CF 231A — Team](https://codeforces.com/problemset/problem/231/A) | 800 |
-| 7 | [CF 200B — Drinks](https://codeforces.com/problemset/problem/200/B) | 800 |
-| 8 | [CF 318A — Even Odds](https://codeforces.com/problemset/problem/318/A) | 900 |
-| 9 | [CF 486A — Calculating Function](https://codeforces.com/problemset/problem/486/A) | 800 |
-| 10 | [CF 1399A — Remove Smallest](https://codeforces.com/problemset/problem/1399/A) | 800 |
+                          3 [CF 1872A --- Two                                                                   800
+                            Vessels](https://codeforces.com/problemset/problem/1872/A)    
 
-## Form 3 — Bounds / Inequalities / Min-Max
+                          4 [CF 1358A --- Park                                                                  800
+                            Lighting](https://codeforces.com/problemset/problem/1358/A)   
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 1690A — Print a Pedestal](https://codeforces.com/problemset/problem/1690/A) | 800 |
-| 2 | [CF 1676A — Lucky?](https://codeforces.com/problemset/problem/1676/A) | 800 |
-| 3 | [CF 1742B — Increasing](https://codeforces.com/problemset/problem/1742/B) | 800 |
-| 4 | [CF 1791A — Codeforces Checking](https://codeforces.com/problemset/problem/1791/A) | 800 |
-| 5 | [CF 1829A — Love Story](https://codeforces.com/problemset/problem/1829/A) | 800 |
-| 6 | [CF 1873A — Short Sort](https://codeforces.com/problemset/problem/1873/A) | 800 |
-| 7 | [CF 1729A — Two Elevators](https://codeforces.com/problemset/problem/1729/A) | 800 |
-| 8 | [CF 1805A — We Need the Zero](https://codeforces.com/problemset/problem/1805/A) | 900 |
-| 9 | [CF 1858A — Buttons](https://codeforces.com/problemset/problem/1858/A) | 800 |
-| 10 | [CF 1899A — Game with Integers](https://codeforces.com/problemset/problem/1899/A) | 800 |
+                          5 [CF 1426A --- Floor                                                                 800
+                            Number](https://codeforces.com/problemset/problem/1426/A)     
 
-## Form 4 — Parity Modeling
+                          6 [CF 1476A --- K-divisible                                                          1000
+                            Sum](https://codeforces.com/problemset/problem/1476/A)        
+  -----------------------------------------------------------------------------------------------------------------
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 4A — Watermelon](https://codeforces.com/problemset/problem/4/A) | 800 |
-| 2 | [CF 1296A — Array with Odd Sum](https://codeforces.com/problemset/problem/1296/A) | 800 |
-| 3 | [CF 1857A — Array Coloring](https://codeforces.com/problemset/problem/1857/A) | 800 |
-| 4 | [CF 1834A — Unit Array](https://codeforces.com/problemset/problem/1834/A) | 800 |
-| 5 | [CF 1367B — Even Array](https://codeforces.com/problemset/problem/1367/B) | 800 |
-| 6 | [CF 1475A — Odd Divisor](https://codeforces.com/problemset/problem/1475/A) | 900 |
-| 7 | [CF 1669C — Odd/Even Increments](https://codeforces.com/problemset/problem/1669/C) | 800 |
-| 8 | [CF 1624A — Plus One on the Subset](https://codeforces.com/problemset/problem/1624/A) | 800 |
-| 9 | [CF 1788A — One and Two](https://codeforces.com/problemset/problem/1788/A) | 800 |
-| 10 | [CF 1845A — Forbidden Integer](https://codeforces.com/problemset/problem/1845/A) | 800 |
+## Form 2 --- Algebra / Equation Formation / Rearrangement
 
-## Form 5 — Divisibility / GCD / LCM
+  ---------------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                              Rating
+  ------------------------- ----------------------------------------------------------------- -------------------------
+                          1 [CF 546A --- Soldier and                                                                800
+                            Bananas](https://codeforces.com/problemset/problem/546/A)         
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 1328A — Divisibility Problem](https://codeforces.com/problemset/problem/1328/A) | 800 |
-| 2 | [CF 1343A — Candies](https://codeforces.com/problemset/problem/1343/A) | 900 |
-| 3 | [CF 1370A — Maximum GCD](https://codeforces.com/problemset/problem/1370/A) | 800 |
-| 4 | [CF 1829C — Mr. Perfectly Fine](https://codeforces.com/problemset/problem/1829/C) | 800 |
-| 5 | [CF 1618A — Polycarp and Sums of Subsequences](https://codeforces.com/problemset/problem/1618/A) | 800 |
-| 6 | [CF 160A — Twins](https://codeforces.com/problemset/problem/160/A) | 900 |
-| 7 | [CF 1475B — New Year's Number](https://codeforces.com/problemset/problem/1475/B) | 900 |
-| 8 | [CF 1593A — Elections](https://codeforces.com/problemset/problem/1593/A) | 800 |
-| 9 | [CF 1829B — Blank Space](https://codeforces.com/problemset/problem/1829/B) | 800 |
-| 10 | [CF 1877A — Goals of Victory](https://codeforces.com/problemset/problem/1877/A) | 800 |
+                          2 [CF 486A --- Calculating                                                                800
+                            Function](https://codeforces.com/problemset/problem/486/A)        
 
-## Form 6 — Modulo / Cyclic Modeling
+                          3 [CF 50A --- Domino                                                                      800
+                            piling](https://codeforces.com/problemset/problem/50/A)           
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 116A — Tram](https://codeforces.com/problemset/problem/116/A) | 800 |
-| 2 | [CF 266A — Stones on the Table](https://codeforces.com/problemset/problem/266/A) | 800 |
-| 3 | [CF 228A — Is your horseshoe on the other hoof?](https://codeforces.com/problemset/problem/228/A) | 800 |
-| 4 | [CF 443A — Anton and Letters](https://codeforces.com/problemset/problem/443/A) | 800 |
-| 5 | [CF 59A — Word](https://codeforces.com/problemset/problem/59/A) | 800 |
-| 6 | [CF 236A — Boy or Girl](https://codeforces.com/problemset/problem/236/A) | 800 |
-| 7 | [CF 785A — Anton and Polyhedrons](https://codeforces.com/problemset/problem/785/A) | 800 |
-| 8 | [CF 703A — Mishka and Game](https://codeforces.com/problemset/problem/703/A) | 800 |
-| 9 | [CF 734B — Anton and Digits](https://codeforces.com/problemset/problem/734/B) | 800 |
-| 10 | [CF 1097A — Gennady the Card Game](https://codeforces.com/problemset/problem/1097/A) | 800 |
+                          4 [CF 200B ---                                                                            800
+                            Drinks](https://codeforces.com/problemset/problem/200/B)          
 
-## Form 7 — Counting / Frequency / Pairs
+                          5 [CF 1742A ---                                                                           800
+                            Sum](https://codeforces.com/problemset/problem/1742/A)            
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 1520D — Same Differences](https://codeforces.com/problemset/problem/1520/D) | 1200 |
-| 2 | [CF 1538C — Challenging Cliffs / Number of Pairs](https://codeforces.com/problemset/problem/1538/C) | 1300 |
-| 3 | [CF 1669B — Triple](https://codeforces.com/problemset/problem/1669/B) | 800 |
-| 4 | [CF 1742C — Stripes](https://codeforces.com/problemset/problem/1742/C) | 800 |
-| 5 | [CF 1791B — Following Directions](https://codeforces.com/problemset/problem/1791/B) | 800 |
-| 6 | [CF 1703B — ICPC Balloons](https://codeforces.com/problemset/problem/1703/B) | 800 |
-| 7 | [CF 1722A — Spell Check](https://codeforces.com/problemset/problem/1722/A) | 800 |
-| 8 | [CF 1791C — Prepend and Append](https://codeforces.com/problemset/problem/1791/C) | 800 |
-| 9 | [CF 1829D — Gold Rush](https://codeforces.com/problemset/problem/1829/D) | 1000 |
-| 10 | [CF 1878B — Aleksa and Stack](https://codeforces.com/problemset/problem/1878/B) | 800 |
+                          6 [CF 1877A --- Goals of                                                                  800
+                            Victory](https://codeforces.com/problemset/problem/1877/A)        
 
-## Form 8 — Operation → Delta → Invariant
+                          7 [CF 1618A --- Polycarp and Sums of                                                      800
+                            Subsequences](https://codeforces.com/problemset/problem/1618/A)   
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 1538B — Friends and Candies](https://codeforces.com/problemset/problem/1538/B) | 800 |
-| 2 | [CF 1855A — Dalton the Teacher](https://codeforces.com/problemset/problem/1855/A) | 800 |
-| 3 | [CF 1838A — Blackboard List](https://codeforces.com/problemset/problem/1838/A) | 800 |
-| 4 | [CF 1862B — Sequence Game](https://codeforces.com/problemset/problem/1862/B) | 800 |
-| 5 | [CF 1798A — Showstopper](https://codeforces.com/problemset/problem/1798/A) | 800 |
-| 6 | [CF 660A — Co-prime Array](https://codeforces.com/problemset/problem/660/A) | 900 |
-| 7 | [CF 1367A — Short Substrings](https://codeforces.com/problemset/problem/1367/A) | 800 |
-| 8 | [CF 1374A — Required Remainder](https://codeforces.com/problemset/problem/1374/A) | 800 |
-| 9 | [CF 1551A — Polycarp and Coins](https://codeforces.com/problemset/problem/1551/A) | 800 |
-| 10 | [CF 1818A — Politics](https://codeforces.com/problemset/problem/1818/A) | 800 |
+                          8 [CF 1551A --- Polycarp and                                                              800
+                            Coins](https://codeforces.com/problemset/problem/1551/A)          
+  ---------------------------------------------------------------------------------------------------------------------
 
-## Form 9 — Sorting / Coordinate / Distance Modeling
+## Form 3 --- Min / Max / Extremal Construction / Casework
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 160A — Twins](https://codeforces.com/problemset/problem/160/A) | 900 |
-| 2 | [CF 1399A — Remove Smallest](https://codeforces.com/problemset/problem/1399/A) | 800 |
-| 3 | [CF 1760A — Medium Number](https://codeforces.com/problemset/problem/1760/A) | 800 |
-| 4 | [CF 1538A — Stone Game](https://codeforces.com/problemset/problem/1538/A) | 800 |
-| 5 | [CF 1729A — Two Elevators](https://codeforces.com/problemset/problem/1729/A) | 800 |
-| 6 | [CF 1593B — Make it Divisible by 25](https://codeforces.com/problemset/problem/1593/B) | 900 |
-| 7 | [CF 1742F — Smaller](https://codeforces.com/problemset/problem/1742/F) | 1200 |
-| 8 | [CF 1831A — Twin Permutations](https://codeforces.com/problemset/problem/1831/A) | 800 |
-| 9 | [CF 1900A — Cover in Water](https://codeforces.com/problemset/problem/1900/A) | 800 |
-| 10 | [CF 1873B — Good Kid](https://codeforces.com/problemset/problem/1873/B) | 800 |
+  ------------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                           Rating
+  ------------------------- -------------------------------------------------------------- -------------------------
+                          1 [CF 1353A --- Most Unstable                                                          800
+                            Array](https://codeforces.com/problemset/problem/1353/A)       
 
-## Form 10 — Prefix / Running-State Modeling
+                          2 [CF 1690A --- Print a                                                                800
+                            Pedestal](https://codeforces.com/problemset/problem/1690/A)    
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 116A — Tram](https://codeforces.com/problemset/problem/116/A) | 800 |
-| 2 | [CF 363B — Fence](https://codeforces.com/problemset/problem/363/B) | 1100 |
-| 3 | [CF 276C — Little Girl and Problem on Trees / Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C) | 1400 |
-| 4 | [CF 433B — Kuriyama Mirai's Stones](https://codeforces.com/problemset/problem/433/B) | 1200 |
-| 5 | [CF 313B — Ilya and Queries](https://codeforces.com/problemset/problem/313/B) | 1100 |
-| 6 | [CF 327A — Flipping Game](https://codeforces.com/problemset/problem/327/A) | 1200 |
-| 7 | [CF 580A — Kefa and First Steps](https://codeforces.com/problemset/problem/580/A) | 900 |
-| 8 | [CF 702A — Maximum Increase](https://codeforces.com/problemset/problem/702/A) | 800 |
-| 9 | [CF 1829B — Blank Space](https://codeforces.com/problemset/problem/1829/B) | 800 |
-| 10 | [CF 1669F — Eating Candies](https://codeforces.com/problemset/problem/1669/F) | 1100 |
+                          3 [CF 1593A ---                                                                        800
+                            Elections](https://codeforces.com/problemset/problem/1593/A)   
 
-## Form 11 — Constructive / Reachability Modeling
+                          4 [CF 1760A --- Medium                                                                 800
+                            Number](https://codeforces.com/problemset/problem/1760/A)      
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 1690A — Print a Pedestal](https://codeforces.com/problemset/problem/1690/A) | 800 |
-| 2 | [CF 1845A — Forbidden Integer](https://codeforces.com/problemset/problem/1845/A) | 800 |
-| 3 | [CF 1878B — Aleksa and Stack](https://codeforces.com/problemset/problem/1878/B) | 800 |
-| 4 | [CF 1741A — Compare T-Shirt Sizes](https://codeforces.com/problemset/problem/1741/A) | 800 |
-| 5 | [CF 1805B — We Need the Zero / The String Has a Target](https://codeforces.com/problemset/problem/1805/B) | 800 |
-| 6 | [CF 1833B — Restore the Weather](https://codeforces.com/problemset/problem/1833/B) | 1000 |
-| 7 | [CF 1793C — Dora and Search](https://codeforces.com/problemset/problem/1793/C) | 1200 |
-| 8 | [CF 1881A — Don't Try to Count](https://codeforces.com/problemset/problem/1881/A) | 800 |
-| 9 | [CF 1858A — Buttons](https://codeforces.com/problemset/problem/1858/A) | 800 |
-| 10 | [CF 1899A — Game with Integers](https://codeforces.com/problemset/problem/1899/A) | 800 |
+                          5 [CF 1729A --- Two                                                                    800
+                            Elevators](https://codeforces.com/problemset/problem/1729/A)   
 
-## Form 12 — Bitwise / XOR Modeling
+                          6 [CF 1873B --- Good                                                                   800
+                            Kid](https://codeforces.com/problemset/problem/1873/B)         
+  ------------------------------------------------------------------------------------------------------------------
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 1805A — We Need the Zero](https://codeforces.com/problemset/problem/1805/A) | 900 |
-| 2 | [CF 1872A — Two Vessels](https://codeforces.com/problemset/problem/1872/A) | 800 |
-| 3 | [CF 1703A — YES or YES?](https://codeforces.com/problemset/problem/1703/A) | 800 |
-| 4 | [CF 1624A — Plus One on the Subset](https://codeforces.com/problemset/problem/1624/A) | 800 |
-| 5 | [CF 1220A — Cards](https://codeforces.com/problemset/problem/1220/A) | 900 |
-| 6 | [CF 1362A — Johnny and Ancient Computer](https://codeforces.com/problemset/problem/1362/A) | 900 |
-| 7 | [CF 1095A — Repeating Cipher](https://codeforces.com/problemset/problem/1095/A) | 800 |
-| 8 | [CF 1324A — Yet Another Tetris Problem](https://codeforces.com/problemset/problem/1324/A) | 800 |
-| 9 | [CF 1462A — Favorite Sequence](https://codeforces.com/problemset/problem/1462/A) | 800 |
-| 10 | [CF 1619A — Polycarp and Sums of Subsequences / Square String?](https://codeforces.com/problemset/problem/1619/A) | 800 |
+## Form 4 --- Parity Modeling
 
-## Form 13 — Mixed Blind Decoding
+  -------------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                            Rating
+  ------------------------- --------------------------------------------------------------- -------------------------
+                          1 [CF 4A ---                                                                            800
+                            Watermelon](https://codeforces.com/problemset/problem/4/A)      
 
-| # | Problem | Rating |
-|---:|---|---:|
-| 1 | [CF 1538C — Challenging Cliffs / Number of Pairs](https://codeforces.com/problemset/problem/1538/C) | 1300 |
-| 2 | [CF 1475B — New Year's Number](https://codeforces.com/problemset/problem/1475/B) | 900 |
-| 3 | [CF 1374A — Required Remainder](https://codeforces.com/problemset/problem/1374/A) | 800 |
-| 4 | [CF 1551A — Polycarp and Coins](https://codeforces.com/problemset/problem/1551/A) | 800 |
-| 5 | [CF 1593B — Make it Divisible by 25](https://codeforces.com/problemset/problem/1593/B) | 900 |
-| 6 | [CF 1669F — Eating Candies](https://codeforces.com/problemset/problem/1669/F) | 1100 |
-| 7 | [CF 1793C — Dora and Search](https://codeforces.com/problemset/problem/1793/C) | 1200 |
-| 8 | [CF 327A — Flipping Game](https://codeforces.com/problemset/problem/327/A) | 1200 |
-| 9 | [CF 1520D — Same Differences](https://codeforces.com/problemset/problem/1520/D) | 1200 |
-| 10 | [CF 276C — Little Girl and Maximum Sum](https://codeforces.com/problemset/problem/276/C) | 1400 |
+                          2 [CF 1296A --- Array with Odd                                                          800
+                            Sum](https://codeforces.com/problemset/problem/1296/A)          
 
+                          3 [CF 1857A --- Array                                                                   800
+                            Coloring](https://codeforces.com/problemset/problem/1857/A)     
+
+                          4 [CF 1834A --- Unit                                                                    800
+                            Array](https://codeforces.com/problemset/problem/1834/A)        
+
+                          5 [CF 1367B --- Even                                                                    800
+                            Array](https://codeforces.com/problemset/problem/1367/B)        
+
+                          6 [CF 1475A --- Odd                                                                     900
+                            Divisor](https://codeforces.com/problemset/problem/1475/A)      
+
+                          7 [CF 1669C --- Odd/Even                                                                800
+                            Increments](https://codeforces.com/problemset/problem/1669/C)   
+
+                          8 [CF 1788A --- One and                                                                 800
+                            Two](https://codeforces.com/problemset/problem/1788/A)          
+
+                          9 [CF 1324A --- Yet Another Tetris                                                      800
+                            Problem](https://codeforces.com/problemset/problem/1324/A)      
+  -------------------------------------------------------------------------------------------------------------------
+
+## Form 5 --- Divisibility / GCD / LCM
+
+  -----------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                          Rating
+  ------------------------- ------------------------------------------------------------- -------------------------
+                          1 [CF 1328A --- Divisibility                                                          800
+                            Problem](https://codeforces.com/problemset/problem/1328/A)    
+
+                          2 [CF 1343A ---                                                                       900
+                            Candies](https://codeforces.com/problemset/problem/1343/A)    
+
+                          3 [CF 1370A --- Maximum                                                               800
+                            GCD](https://codeforces.com/problemset/problem/1370/A)        
+
+                          4 [CF 1475B --- New Year's                                                            900
+                            Number](https://codeforces.com/problemset/problem/1475/B)     
+
+                          5 [CF 1543A --- Exciting                                                              900
+                            Bets](https://codeforces.com/problemset/problem/1543/A)       
+
+                          6 [CF 1881D --- Divide and                                                           1200
+                            Equalize](https://codeforces.com/problemset/problem/1881/D)   
+  -----------------------------------------------------------------------------------------------------------------
+
+## Form 6 --- Modulo / Remainder / Cyclic Modeling
+
+  ------------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                           Rating
+  ------------------------- -------------------------------------------------------------- -------------------------
+                          1 [CF 1374A --- Required                                                               800
+                            Remainder](https://codeforces.com/problemset/problem/1374/A)   
+
+                          2 [CF 1899A --- Game with                                                              800
+                            Integers](https://codeforces.com/problemset/problem/1899/A)    
+
+                          3 [CF 1593B --- Make it Divisible by                                                   900
+                            25](https://codeforces.com/problemset/problem/1593/B)          
+
+                          4 [CF 1475B --- New Year's                                                             900
+                            Number](https://codeforces.com/problemset/problem/1475/B)      
+
+                          5 [CF 1343A ---                                                                        900
+                            Candies](https://codeforces.com/problemset/problem/1343/A)     
+  ------------------------------------------------------------------------------------------------------------------
+
+## Form 7 --- Counting / Frequency / Pair Counting
+
+  --------------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                             Rating
+  ------------------------- ---------------------------------------------------------------- -------------------------
+                          1 [CF 1669B ---                                                                          800
+                            Triple](https://codeforces.com/problemset/problem/1669/B)        
+
+                          2 [CF 1703B --- ICPC                                                                     800
+                            Balloons](https://codeforces.com/problemset/problem/1703/B)      
+
+                          3 [CF 228A --- Is your horseshoe on the other                                            800
+                            hoof?](https://codeforces.com/problemset/problem/228/A)          
+
+                          4 [CF 443A --- Anton and                                                                 800
+                            Letters](https://codeforces.com/problemset/problem/443/A)        
+
+                          5 [CF 1520D --- Same                                                                    1200
+                            Differences](https://codeforces.com/problemset/problem/1520/D)   
+
+                          6 [CF 1538C --- Challenging                                                             1300
+                            Cliffs](https://codeforces.com/problemset/problem/1538/C)        
+  --------------------------------------------------------------------------------------------------------------------
+
+## Form 8 --- Operation → Delta → Invariant
+
+  ----------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                         Rating
+  ------------------------- ------------------------------------------------------------ -------------------------
+                          1 [CF 1538B --- Friends and                                                          800
+                            Candies](https://codeforces.com/problemset/problem/1538/B)   
+
+                          2 [CF 1834A --- Unit                                                                 800
+                            Array](https://codeforces.com/problemset/problem/1834/A)     
+
+                          3 [CF 1367B --- Even                                                                 800
+                            Array](https://codeforces.com/problemset/problem/1367/B)     
+
+                          4 [CF 1324A --- Yet Another Tetris                                                   800
+                            Problem](https://codeforces.com/problemset/problem/1324/A)   
+
+                          5 [CF 660A --- Co-prime                                                              900
+                            Array](https://codeforces.com/problemset/problem/660/A)      
+  ----------------------------------------------------------------------------------------------------------------
+
+## Form 9 --- Sorting / Rearrangement / Order Modeling
+
+  ---------------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                              Rating
+  ------------------------- ----------------------------------------------------------------- -------------------------
+                          1 [CF 160A ---                                                                            900
+                            Twins](https://codeforces.com/problemset/problem/160/A)           
+
+                          2 [CF 1399A --- Remove                                                                    800
+                            Smallest](https://codeforces.com/problemset/problem/1399/A)       
+
+                          3 [CF 1760A --- Medium                                                                    800
+                            Number](https://codeforces.com/problemset/problem/1760/A)         
+
+                          4 [CF 1538A --- Stone                                                                     800
+                            Game](https://codeforces.com/problemset/problem/1538/A)           
+
+                          5 [CF 1833B --- Restore the                                                              1000
+                            Weather](https://codeforces.com/problemset/problem/1833/B)        
+
+                          6 [CF 1793C --- Dora and                                                                 1200
+                            Search](https://codeforces.com/problemset/problem/1793/C)         
+
+                          7 [CF 1831A --- Twin                                                                      800
+                            Permutations](https://codeforces.com/problemset/problem/1831/A)   
+  ---------------------------------------------------------------------------------------------------------------------
+
+## Form 10 --- Prefix / Running-State Modeling
+
+  ----------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                         Rating
+  ------------------------- ------------------------------------------------------------ -------------------------
+                          1 [CF 116A ---                                                                       800
+                            Tram](https://codeforces.com/problemset/problem/116/A)       
+
+                          2 [CF 363B ---                                                                      1100
+                            Fence](https://codeforces.com/problemset/problem/363/B)      
+
+                          3 [CF 313B --- Ilya and                                                             1100
+                            Queries](https://codeforces.com/problemset/problem/313/B)    
+
+                          4 [CF 433B --- Kuriyama Mirai's                                                     1200
+                            Stones](https://codeforces.com/problemset/problem/433/B)     
+
+                          5 [CF 276C --- Little Girl and Maximum                                              1400
+                            Sum](https://codeforces.com/problemset/problem/276/C)        
+
+                          6 [CF 580A --- Kefa and First                                                        900
+                            Steps](https://codeforces.com/problemset/problem/580/A)      
+
+                          7 [CF 702A --- Maximum                                                               800
+                            Increase](https://codeforces.com/problemset/problem/702/A)   
+
+                          8 [CF 1829B --- Blank                                                                800
+                            Space](https://codeforces.com/problemset/problem/1829/B)     
+  ----------------------------------------------------------------------------------------------------------------
+
+## Form 11 --- Constructive / Reachability Modeling
+
+  -----------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                          Rating
+  ------------------------- ------------------------------------------------------------- -------------------------
+                          1 [CF 1845A --- Forbidden                                                             800
+                            Integer](https://codeforces.com/problemset/problem/1845/A)    
+
+                          2 [CF 1690A --- Print a                                                               800
+                            Pedestal](https://codeforces.com/problemset/problem/1690/A)   
+
+                          3 [CF 1878B --- Aleksa and                                                            800
+                            Stack](https://codeforces.com/problemset/problem/1878/B)      
+
+                          4 [CF 1862B --- Sequence                                                              800
+                            Game](https://codeforces.com/problemset/problem/1862/B)       
+
+                          5 [CF 660A --- Co-prime                                                               900
+                            Array](https://codeforces.com/problemset/problem/660/A)       
+
+                          6 [CF 1881A --- Don't Try to                                                          800
+                            Count](https://codeforces.com/problemset/problem/1881/A)      
+
+                          7 [CF 1551A --- Polycarp and                                                          800
+                            Coins](https://codeforces.com/problemset/problem/1551/A)      
+  -----------------------------------------------------------------------------------------------------------------
+
+## Form 12 --- Absolute Difference / Distance Modeling
+
+  ------------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                           Rating
+  ------------------------- -------------------------------------------------------------- -------------------------
+                          1 [CF 1409A --- Yet Another Two Integers                                               800
+                            Problem](https://codeforces.com/problemset/problem/1409/A)     
+
+                          2 [CF 1872A --- Two                                                                    800
+                            Vessels](https://codeforces.com/problemset/problem/1872/A)     
+
+                          3 [CF 1729A --- Two                                                                    800
+                            Elevators](https://codeforces.com/problemset/problem/1729/A)   
+
+                          4 [CF 1353A --- Most Unstable                                                          800
+                            Array](https://codeforces.com/problemset/problem/1353/A)       
+
+                          5 [CF 1538A --- Stone                                                                  800
+                            Game](https://codeforces.com/problemset/problem/1538/A)        
+  ------------------------------------------------------------------------------------------------------------------
+
+## Form 13 --- Sum / Missing Value / Complement
+
+  ---------------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                              Rating
+  ------------------------- ----------------------------------------------------------------- -------------------------
+                          1 [CF 1877A --- Goals of                                                                  800
+                            Victory](https://codeforces.com/problemset/problem/1877/A)        
+
+                          2 [CF 1742A ---                                                                           800
+                            Sum](https://codeforces.com/problemset/problem/1742/A)            
+
+                          3 [CF 1618A --- Polycarp and Sums of                                                      800
+                            Subsequences](https://codeforces.com/problemset/problem/1618/A)   
+
+                          4 [CF 1538B --- Friends and                                                               800
+                            Candies](https://codeforces.com/problemset/problem/1538/B)        
+  ---------------------------------------------------------------------------------------------------------------------
+
+## Form 14 --- Greedy Resource / Bottleneck Modeling
+
+  ----------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                         Rating
+  ------------------------- ------------------------------------------------------------ -------------------------
+                          1 [CF 151A --- Soft                                                                  800
+                            Drinking](https://codeforces.com/problemset/problem/151/A)   
+
+                          2 [CF 160A ---                                                                       900
+                            Twins](https://codeforces.com/problemset/problem/160/A)      
+
+                          3 [CF 996A --- Hit the                                                               800
+                            Lottery](https://codeforces.com/problemset/problem/996/A)    
+
+                          4 [CF 734B --- Anton and                                                             800
+                            Digits](https://codeforces.com/problemset/problem/734/B)     
+  ----------------------------------------------------------------------------------------------------------------
+
+## Form 15 --- Bitwise / XOR Modeling
+
+  ---------------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                              Rating
+  ------------------------- ----------------------------------------------------------------- -------------------------
+                          1 [CF 1805A --- We Need the                                                               900
+                            Zero](https://codeforces.com/problemset/problem/1805/A)           
+
+                          2 [CF 1625A --- Ancient                                                                   900
+                            Civilization](https://codeforces.com/problemset/problem/1625/A)   
+
+                          3 [CF 467B --- Fedor and New                                                             1100
+                            Game](https://codeforces.com/problemset/problem/467/B)            
+
+                          4 [CF 276D --- Little Girl and Maximum                                                   1700
+                            XOR](https://codeforces.com/problemset/problem/276/D)             
+  ---------------------------------------------------------------------------------------------------------------------
+
+## Mixed Blind Decoding
+
+  --------------------------------------------------------------------------------------------------------------------
+                         \# Problem                                                                             Rating
+  ------------------------- ---------------------------------------------------------------- -------------------------
+                          1 [CF 1476A --- K-divisible                                                             1000
+                            Sum](https://codeforces.com/problemset/problem/1476/A)           
+
+                          2 [CF 1520D --- Same                                                                    1200
+                            Differences](https://codeforces.com/problemset/problem/1520/D)   
+
+                          3 [CF 1538C --- Challenging                                                             1300
+                            Cliffs](https://codeforces.com/problemset/problem/1538/C)        
+
+                          4 [CF 1543A --- Exciting                                                                 900
+                            Bets](https://codeforces.com/problemset/problem/1543/A)          
+
+                          5 [CF 1593B --- Make it Divisible by                                                     900
+                            25](https://codeforces.com/problemset/problem/1593/B)            
+
+                          6 [CF 1669F --- Eating                                                                  1100
+                            Candies](https://codeforces.com/problemset/problem/1669/F)       
+
+                          7 [CF 1793C --- Dora and                                                                1200
+                            Search](https://codeforces.com/problemset/problem/1793/C)        
+
+                          8 [CF 1881D --- Divide and                                                              1200
+                            Equalize](https://codeforces.com/problemset/problem/1881/D)      
+
+                          9 [CF 276C --- Little Girl and Maximum                                                  1400
+                            Sum](https://codeforces.com/problemset/problem/276/C)            
+
+                         10 [CF 1805A --- We Need the                                                              900
+                            Zero](https://codeforces.com/problemset/problem/1805/A)          
+  --------------------------------------------------------------------------------------------------------------------
