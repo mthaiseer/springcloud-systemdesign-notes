@@ -1,201 +1,248 @@
-# Form 4 — Prefix Modulo / Divisibility
+# PREFIX SUM PATTERNS
+
+## Pattern 4 — Prefix Modulo / Divisibility
+
+---
 
 ## Table of Contents
 
 - [Pattern Overview](#pattern-overview)
-- [Recognition Signals](#recognition-signals)
-- [Core Mathematics](#core-mathematics)
-- [Generic Template](#generic-template)
-- [1. Subarray Sums Divisible by K](#1-subarray-sums-divisible-by-k-prefix-modulo--leetcode--medium)
-- [2. Continuous Subarray Sum](#2-continuous-subarray-sum-prefix-modulo--leetcode--medium)
-- [3. Make Sum Divisible by P](#3-make-sum-divisible-by-p-prefix-modulo--leetcode--medium)
-- [4. Subarray Divisibility](#4-subarray-divisibility-prefix-modulo--cses--sorting-and-searching)
-- [Quick Comparison](#quick-comparison)
+- [Core Formula and Derivation](#core-formula-and-derivation)
+- [Generic Dry Run](#generic-dry-run)
+- [Problem 1 — Subarray Sums Divisible by K](#problem-1--subarray-sums-divisible-by-k)
+- [Problem 2 — Continuous Subarray Sum](#problem-2--continuous-subarray-sum)
+- [Problem 3 — Make Sum Divisible by P](#problem-3--make-sum-divisible-by-p)
+- [Problem 4 — Subarray Divisibility](#problem-4--subarray-divisibility)
+- [Fast Revision Model](#fast-revision-model)
 
 ---
 
 ## Pattern Overview
 
-**Prefix Modulo / Divisibility** is the prefix-sum pattern used when a problem asks whether a subarray sum is **divisible by `K`**, has a particular remainder, or must be removed so the remaining sum becomes divisible by some number.
+### What kind of problem is this?
 
-For a prefix sum:
-
-```text
-pref[i] = a[0] + a[1] + ... + a[i]
-```
-
-The sum of subarray `[l ... r]` is:
+Use this pattern when a contiguous subarray condition involves **divisibility or remainder**.
 
 ```text
-sum(l, r) = pref[r] - pref[l - 1]
+SUBARRAY
+   +
+SUM % K condition
+   ↓
+PREFIX MODULO
 ```
 
-If this subarray must be divisible by `K`:
+The important idea is not the full prefix sum. It is its remainder:
 
 ```text
-(pref[r] - pref[l - 1]) % K = 0
+rem = prefix % K
 ```
 
-Therefore:
+### Core Idea
+
+For subarray `[l..r]`:
 
 ```text
-pref[r] % K = pref[l - 1] % K
+sum(l,r)
+= pref[r] - pref[l-1]
 ```
 
-This gives the central invariant:
-
-> **Two prefix sums having the same remainder modulo `K` imply that the sum between them is divisible by `K`.**
-
-Instead of storing the complete prefix sum, store only:
-
-```text
-remainder = prefix % K
-```
-
-This reduces the problem to finding **equal or related prefix remainders**.
-
-### Visual Idea
-
-```text
-Prefix positions:      0      1      2      3      4
-Prefix sum:            0      4      9      9     11
-Modulo K = 5:          0      4      4      4      1
-                              ^             ^
-                              |             |
-                         same remainder = 4
-
-Difference of prefix sums:
-9 - 4 = 5
-5 % 5 = 0
-
-Therefore the elements between those prefix positions
-form a subarray divisible by 5.
-```
-
-### Important Variations
-
-```text
-COUNT divisible subarrays
-    -> store frequency of each remainder
-
-EXISTENCE of divisible subarray
-    -> store earliest index of each remainder
-
-MINIMUM subarray to remove
-    -> search for a required previous remainder
-
-Negative remainder possible
-    -> normalize with:
-       ((prefix % K) + K) % K
-```
-
----
-
-## Recognition Signals
-
-Think **Prefix Modulo** when the statement contains signals such as:
-
-```text
-"subarray sum divisible by K"
-"sum is a multiple of K"
-"remainder after division by K"
-"make total sum divisible by P"
-"remove the shortest subarray"
-"count subarrays whose sum % K == 0"
-```
-
-Mental mapping:
-
-```text
-Subarray sum condition
-        ↓
-pref[r] - pref[l-1]
-        ↓
-Take modulo K
-        ↓
-Relation between prefix remainders
-        ↓
-Hash Map / Frequency Array
-```
-
----
-
-## Core Mathematics
-
-### Case 1 — Subarray sum divisible by K
+If the subarray must be divisible by `K`:
 
 ```text
 (pref[r] - pref[l-1]) % K = 0
-
-pref[r] % K = pref[l-1] % K
-```
-
-So we count previous prefixes having the **same remainder**.
-
-### Case 2 — Remove a subarray so remaining sum is divisible by P
-
-Let:
-
-```text
-total % P = target
-```
-
-We need the removed subarray to satisfy:
-
-```text
-subarraySum % P = target
-```
-
-For current prefix remainder `cur` and previous prefix remainder `prev`:
-
-```text
-(cur - prev) % P = target
 ```
 
 Therefore:
 
 ```text
-prev = (cur - target + P) % P
+pref[r] % K
+=
+pref[l-1] % K
 ```
 
-This is the key transformation used by **Make Sum Divisible by P**.
-
-### Initial State
-
-Always think about the empty prefix:
+So:
 
 ```text
-prefix sum before processing anything = 0
-remainder = 0
+SAME PREFIX REMAINDER
+        ↓
+DIFFERENCE IS DIVISIBLE BY K
 ```
 
-For counting:
+### Recognition Signals
 
 ```text
-freq[0] = 1
+subarray sum divisible by K
+sum is a multiple of K
+sum % K == 0
+count divisible subarrays
+existence of divisible subarray
+remove subarray to make total divisible
 ```
 
-For index-based problems:
+### Important Storage Choice
 
 ```text
-firstIndex[0] = -1
+COUNT
+→ frequency of remainder
+
+EXISTENCE + length
+→ earliest index of remainder
+
+MINIMUM length
+→ latest useful index
 ```
 
-This allows subarrays beginning at index `0` to be handled naturally.
+### Negative Remainders
+
+In C++:
+
+```text
+-2 % 5 = -2
+```
+
+Normalize:
+
+```text
+rem = ((prefix % K) + K) % K
+```
+
+### Complexity
+
+```text
+Scan:  O(n)
+Space: O(K) or O(n)
+```
 
 ---
 
-## Generic Template
+## Core Formula and Derivation
 
-### Counting divisible subarrays
+Need:
+
+```text
+sum(l,r) % K = 0
+```
+
+Replace range sum:
+
+```text
+(pref[r] - pref[l-1]) % K = 0
+```
+
+This means:
+
+```text
+pref[r] - pref[l-1]
+= q*K
+```
+
+Move `pref[l-1]`:
+
+```text
+pref[r]
+= pref[l-1] + q*K
+```
+
+Take modulo `K`:
+
+```text
+pref[r] % K
+=
+pref[l-1] % K
+```
+
+Mental model:
+
+```text
+CURRENT PREFIX
+      ↓
+CURRENT REMAINDER
+      ↓
+HAVE I SEEN THIS REMAINDER?
+      ↓
+YES → DIFFERENCE IS DIVISIBLE BY K
+```
+
+### Why `freq[0] = 1`?
+
+The empty prefix has:
+
+```text
+sum = 0
+remainder = 0
+```
+
+Example:
+
+```text
+a = [2,3]
+K = 5
+
+prefix = 5
+rem = 0
+
+Earlier empty prefix:
+rem = 0
+
+same remainder
+→ whole subarray [2,3] is divisible by 5
+```
+
+---
+
+## Generic Dry Run
+
+```text
+a = [4,1,5]
+K = 5
+
+start:
+prefix = 0
+freq[0] = 1
+answer = 0
+
+x = 4
+prefix = 4
+rem = 4
+freq[4] = 0
+answer = 0
+freq[4]++
+
+x = 1
+prefix = 5
+rem = 0
+freq[0] = 1
+answer = 1
+freq[0]++
+
+x = 5
+prefix = 10
+rem = 0
+freq[0] = 2
+answer = 3
+freq[0]++
+```
+
+Why two new subarrays at the last step?
+
+```text
+previous rem 0 from empty prefix
+→ [4,1,5] sum = 10
+
+previous rem 0 after [4,1]
+→ [5] sum = 5
+```
+
+### Generic Pseudocode
 
 ```text
 freq[0] = 1
 prefix = 0
 answer = 0
 
-for each x in array:
+for x in array:
     prefix += x
+
     rem = ((prefix % K) + K) % K
 
     answer += freq[rem]
@@ -204,36 +251,55 @@ for each x in array:
 return answer
 ```
 
-Why `answer += freq[rem]`?
-
-```text
-Every previous prefix with the same remainder
-creates one new subarray ending at the current position
-whose sum is divisible by K.
-```
-
-**Complexity:** `O(N)` time and `O(K)` or `O(N)` space depending on storage.
-
 ---
 
-# Problems
-
----
+# Problem 1 — Subarray Sums Divisible by K
 
 Problem Link: [Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)
 
-**Problem Summary:** Given an integer array `nums` and an integer `k`, count the number of non-empty contiguous subarrays whose sum is divisible by `k`.
+### What is the problem asking?
 
-### 1. Subarray Sums Divisible by K (Prefix Modulo / LeetCode / Medium)
+Given an integer array `nums` and an integer `k`, count the number of non-empty contiguous subarrays whose sum is divisible by `k`.
 
-* **Core Invariant / Key Insight:** A subarray `[l ... r]` is divisible by `k` when its two boundary prefix sums have the same remainder: `pref[r] % k == pref[l - 1] % k`. Maintain the frequency of every remainder seen so far.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Initialize `freq[0] = 1`, `prefix = 0`, and `ans = 0` so subarrays starting from index `0` are counted.
-2. For each number, update `prefix`, compute normalized remainder `rem = ((prefix % k) + k) % k`, and add `freq[rem]` to `ans`.
-3. Increment `freq[rem]`; after processing all elements, return `ans` in `O(N)` time.
+```text
+SUBARRAY SUM DIVISIBLE BY K
+            ↓
+TWO PREFIXES NEED SAME REMAINDER
+            ↓
+COUNT PREVIOUS REMAINDERS
+```
 
-* **ASCII Execution Trace / Visual Dry Run:**
+### Compact Algebra Derivation
+
+```text
+Need:
+
+sum(l,r) % k = 0
+
+But:
+
+sum(l,r)
+= pref[r] - pref[l-1]
+
+Therefore:
+
+(pref[r] - pref[l-1]) % k = 0
+
+So:
+
+pref[r] % k
+=
+pref[l-1] % k
+
+Meaning:
+
+same prefix remainder
+→ divisible subarray between them
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        nums = [4, 5, 0, -2, -3, 1]
@@ -299,9 +365,11 @@ Step 6:         x = 1
 Final Answer:   7
 
 Final State:    Same prefix remainder --> divisible difference
+```
 
-Pseudocode:
+### Pseudocode
 
+```text
 freq[0] = 1
 prefix = 0
 ans = 0
@@ -315,22 +383,89 @@ for x in nums:
 return ans
 ```
 
+### C++
+
+```cpp
+class Solution {
+public:
+    int subarraysDivByK(vector<int>& nums, int k) {
+        vector<int> freq(k, 0);
+        freq[0] = 1;
+
+        long long prefix = 0;
+        int ans = 0;
+
+        for (int x : nums) {
+            prefix += x;
+            int rem = (int)((prefix % k + k) % k);
+
+            ans += freq[rem];
+            freq[rem]++;
+        }
+
+        return ans;
+    }
+};
+```
+
+### Complexity
+
+```text
+Time:  O(n)
+Space: O(K) or O(n)
+```
+
 ---
+
+# Problem 2 — Continuous Subarray Sum
 
 Problem Link: [Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)
 
-**Problem Summary:** Given `nums` and `k`, determine whether there exists a contiguous subarray of length at least `2` whose sum is a multiple of `k`.
+### What is the problem asking?
 
-### 2. Continuous Subarray Sum (Prefix Modulo / LeetCode / Medium)
+Given `nums` and `k`, determine whether there exists a contiguous subarray of length at least `2` whose sum is a multiple of `k`.
 
-* **Core Invariant / Key Insight:** Equal prefix remainders imply the elements between those prefix positions sum to a multiple of `k`. Because the subarray must have length at least `2`, store the **earliest index** of each remainder and require `i - first[rem] >= 2`.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Initialize `first[0] = -1`, representing an empty prefix before the array starts.
-2. Scan the array while maintaining `prefix % k`; if the remainder was seen before and the index distance is at least `2`, return `true`.
-3. If a remainder is new, store only its earliest index because an earlier position gives the largest possible subarray length; return `false` if no valid pair is found.
+```text
+EXISTS DIVISIBLE SUBARRAY
+        +
+LENGTH >= 2
+        ↓
+SAME REMAINDER + EARLIEST INDEX
+```
 
-* **ASCII Execution Trace / Visual Dry Run:**
+### Compact Algebra Derivation
+
+```text
+Need:
+
+(pref[r] - pref[l-1]) % k = 0
+
+Therefore:
+
+pref[r] % k
+=
+pref[l-1] % k
+
+So equal remainders are enough.
+
+But length must be >= 2.
+
+If current index = i
+and earlier same remainder was at j:
+
+length = i - j
+
+Need:
+
+i - j >= 2
+
+To maximize possible distance,
+keep the EARLIEST j.
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        nums = [23, 2, 4, 6, 7]
@@ -373,9 +508,11 @@ Step 3:         i = 2, x = 4
 Final Answer:   true
 
 Final State:    first occurrence of remainder 5 stays at index 0
+```
 
-Pseudocode:
+### Pseudocode
 
+```text
 first[0] = -1
 prefix = 0
 
@@ -392,22 +529,100 @@ for i = 0 to n - 1:
 return false
 ```
 
+### C++
+
+```cpp
+class Solution {
+public:
+    bool checkSubarraySum(vector<int>& nums, int k) {
+        unordered_map<int, int> first;
+        first[0] = -1;
+
+        long long prefix = 0;
+
+        for (int i = 0; i < (int)nums.size(); ++i) {
+            prefix += nums[i];
+            int rem = (int)(prefix % k);
+
+            if (first.count(rem)) {
+                if (i - first[rem] >= 2) {
+                    return true;
+                }
+            } else {
+                first[rem] = i;
+            }
+        }
+
+        return false;
+    }
+};
+```
+
+### Complexity
+
+```text
+Time:  O(n)
+Space: O(K) or O(n)
+```
+
 ---
+
+# Problem 3 — Make Sum Divisible by P
 
 Problem Link: [Make Sum Divisible by P](https://leetcode.com/problems/make-sum-divisible-by-p/)
 
-**Problem Summary:** Given a positive integer array `nums` and integer `p`, remove the shortest contiguous subarray so that the sum of the remaining elements is divisible by `p`. Removing the entire array is not allowed.
+### What is the problem asking?
 
-### 3. Make Sum Divisible by P (Prefix Modulo / LeetCode / Medium)
+Given a positive integer array `nums` and integer `p`, remove the shortest contiguous subarray so that the sum of the remaining elements is divisible by `p`. Removing the entire array is not allowed.
 
-* **Core Invariant / Key Insight:** If `total % p = target`, the removed subarray must also have remainder `target`. For current prefix remainder `cur`, search for a previous remainder `need = (cur - target + p) % p`; storing the **latest index** minimizes removal length.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Compute `target = totalSum % p`; if `target == 0`, the array is already divisible and the answer is `0`.
-2. Scan prefix remainders. For each current remainder `cur`, calculate `need = (cur - target + p) % p` and check whether `need` has appeared before.
-3. Minimize `i - last[need]`, then store the latest index of `cur`; return the minimum length unless it equals `n`, in which case return `-1`.
+```text
+REMOVE SHORTEST SUBARRAY
+SO REMAINING SUM % P = 0
+        ↓
+DERIVE REQUIRED PREVIOUS REMAINDER
+        ↓
+STORE LATEST INDEX
+```
 
-* **ASCII Execution Trace / Visual Dry Run:**
+### Compact Algebra Derivation
+
+```text
+Let:
+
+total % p = target
+
+We remove subarray X.
+
+Need remaining sum divisible by p:
+
+(total - X) % p = 0
+
+Therefore:
+
+X % p = target
+
+For current prefix remainder cur
+and previous remainder prev:
+
+(cur - prev) % p = target
+
+Solve for prev:
+
+prev
+= (cur - target) mod p
+
+Normalized:
+
+need
+= (cur - target + p) % p
+
+For minimum length,
+store the LATEST index of each remainder.
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        nums = [3, 1, 4, 2]
@@ -488,9 +703,11 @@ Final Answer:   1
 Final State:    Remove [4]
                 remaining = [3, 1, 2]
                 sum = 6 --> divisible by 6
+```
 
-Pseudocode:
+### Pseudocode
 
+```text
 target = totalSum(nums) % p
 
 if target == 0:
@@ -516,22 +733,101 @@ if ans == n:
 return ans
 ```
 
+### C++
+
+```cpp
+class Solution {
+public:
+    int minSubarray(vector<int>& nums, int p) {
+        long long total = 0;
+        for (int x : nums) total += x;
+
+        int target = (int)(total % p);
+        if (target == 0) return 0;
+
+        unordered_map<int, int> last;
+        last[0] = -1;
+
+        long long prefix = 0;
+        int n = nums.size();
+        int ans = n;
+
+        for (int i = 0; i < n; ++i) {
+            prefix = (prefix + nums[i]) % p;
+            int cur = (int)prefix;
+
+            int need = (cur - target + p) % p;
+
+            if (last.count(need)) {
+                ans = min(ans, i - last[need]);
+            }
+
+            last[cur] = i;
+        }
+
+        return ans == n ? -1 : ans;
+    }
+};
+```
+
+### Complexity
+
+```text
+Time:  O(n)
+Space: O(K) or O(n)
+```
+
 ---
+
+# Problem 4 — Subarray Divisibility
 
 Problem Link: [Subarray Divisibility](https://cses.fi/problemset/task/1662)
 
-**Problem Summary:** Given an array of `n` integers, count the number of contiguous subarrays whose sum is divisible by `n`.
+### What is the problem asking?
 
-### 4. Subarray Divisibility (Prefix Modulo / CSES / Sorting and Searching)
+Given an array of `n` integers, count the number of contiguous subarrays whose sum is divisible by `n`.
 
-* **Core Invariant / Key Insight:** Here the divisor is exactly `n`. If two prefix sums have the same normalized remainder modulo `n`, their difference is divisible by `n`; therefore count equal prefix remainders using a frequency array.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Initialize `freq[0] = 1`, `prefix = 0`, and use a 64-bit answer because the number of subarrays can be `O(N²)`.
-2. For each element, update the prefix sum and normalize `rem = ((prefix % n) + n) % n`, which is essential because C++ `%` can produce negative remainders.
-3. Add `freq[rem]` to the answer and increment `freq[rem]`; output the final count in `O(N)` time.
+```text
+COUNT SUBARRAYS DIVISIBLE BY n
+        +
+NEGATIVE VALUES POSSIBLE
+        ↓
+NORMALIZED PREFIX REMAINDERS
+        ↓
+COUNT EQUAL REMAINDERS
+```
 
-* **ASCII Execution Trace / Visual Dry Run:**
+### Compact Algebra Derivation
+
+```text
+Here divisor = n.
+
+Need:
+
+sum(l,r) % n = 0
+
+Using prefix sums:
+
+(pref[r] - pref[l-1]) % n = 0
+
+Therefore:
+
+pref[r] % n
+=
+pref[l-1] % n
+
+Because values may be negative,
+normalize:
+
+rem
+= ((prefix % n) + n) % n
+
+Then count equal remainder pairs.
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        n = 5
@@ -604,9 +900,11 @@ Negative-value reminder:
                 Normalize:
                 ((-2 % 5) + 5) % 5
                 = 3
+```
 
-Pseudocode:
+### Pseudocode
 
+```text
 freq[0] = 1
 prefix = 0
 ans = 0
@@ -621,41 +919,133 @@ for x in arr:
 print ans
 ```
 
----
+### C++
 
-## Quick Comparison
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-| Problem | What is required? | Map stores | Remainder relation |
-|---|---|---|---|
-| Subarray Sums Divisible by K | Count subarrays | Frequency | `currentRem == previousRem` |
-| Continuous Subarray Sum | Check existence + length >= 2 | Earliest index | `currentRem == previousRem` |
-| Make Sum Divisible by P | Minimum removal | Latest index | `previousRem = (currentRem - target + p) % p` |
-| Subarray Divisibility | Count subarrays | Frequency | `currentRem == previousRem` |
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-### Final Recognition Rule
+    int n;
+    cin >> n;
 
-```text
-SUBARRAY + DIVISIBILITY / MODULO
-              ↓
-        Think PREFIX SUM
-              ↓
-       Take prefix % K
-              ↓
-    Ask what relation is needed
-              ↓
-   SAME remainder?
-       |
-       +--> count      --> frequency map
-       |
-       +--> existence  --> earliest index
+    vector<long long> freq(n, 0);
+    freq[0] = 1;
 
-   DIFFERENT required remainder?
-       |
-       +--> derive algebraically
-            need = (current - target + K) % K
+    long long prefix = 0;
+    long long ans = 0;
+
+    for (int i = 0; i < n; ++i) {
+        long long x;
+        cin >> x;
+
+        prefix += x;
+        int rem = (int)((prefix % n + n) % n);
+
+        ans += freq[rem];
+        freq[rem]++;
+    }
+
+    cout << ans << '\n';
+}
 ```
 
-The most important equation to remember is:
+### Complexity
+
+```text
+Time:  O(n)
+Space: O(K) or O(n)
+```
+
+---
+
+# Fast Revision Model
+
+## One Formula
+
+```text
+sum(l,r)
+= pref[r] - pref[l-1]
+```
+
+Divisible by `K`:
+
+```text
+(pref[r] - pref[l-1]) % K = 0
+
+              ↓
+
+pref[r] % K
+=
+pref[l-1] % K
+```
+
+## What changes between the problems?
+
+| Problem | What is actually being asked? | Map / array stores |
+|---|---|---|
+| Subarray Sums Divisible by K | Count divisible subarrays | Remainder frequency |
+| Continuous Subarray Sum | Does a divisible subarray of length ≥ 2 exist? | Earliest remainder index |
+| Make Sum Divisible by P | Remove shortest subarray | Latest remainder index |
+| Subarray Divisibility | Count sums divisible by `n` | Normalized remainder frequency |
+
+## Same Remainder vs Required Remainder
+
+### Divisible subarray
+
+```text
+need:
+currentRem == previousRem
+```
+
+### Remove subarray with remainder `target`
+
+```text
+(cur - prev) % P = target
+
+prev
+= (cur - target + P) % P
+```
+
+## 5-Minute Recognition
+
+```text
+1. WHAT?
+   Subarray + divisibility / modulo.
+
+2. WRITE RANGE SUM
+   pref[r] - pref[l-1]
+
+3. APPLY MODULO
+   (pref[r] - pref[l-1]) % K
+
+4. REARRANGE
+   Find relation between prefix remainders.
+
+5. CHOOSE STORAGE
+   count      → frequency
+   existence  → earliest index
+   minimum    → latest index
+```
+
+## Recognition Rule
+
+```text
+SUBARRAY + MODULO CONDITION
+          ↓
+PREFIX SUM
+          ↓
+PREFIX REMAINDER
+          ↓
+RELATION BETWEEN TWO REMAINDERS
+          ↓
+FREQUENCY / INDEX MAP
+```
+
+The main equation to remember:
 
 ```text
 (pref[r] - pref[l-1]) % K = 0
@@ -664,5 +1054,3 @@ The most important equation to remember is:
 
 pref[r] % K = pref[l-1] % K
 ```
-
-That single transformation is the foundation of **Prefix Modulo / Divisibility** problems.

@@ -1,101 +1,206 @@
-# Form 3 — Prefix Sum + Hash Map: Subarray Sum = K
+# PREFIX SUM PATTERNS
+
+## Pattern 3 — Prefix Sum + Hash Map: Subarray Sum = K
+
+---
 
 ## Table of Contents
 
 - [Pattern Overview](#pattern-overview)
-- [Recognition Signals](#recognition-signals)
-- [Core Derivation](#core-derivation)
-- [Generic Pseudocode](#generic-pseudocode)
-- [1. Subarray Sum Equals K](#1-subarray-sum-equals-k-prefix-sum--hash-map--leetcode--medium)
-- [2. Binary Subarrays With Sum](#2-binary-subarrays-with-sum-prefix-sum--hash-map--leetcode--medium)
-- [3. Maximum Size Subarray Sum Equals k](#3-maximum-size-subarray-sum-equals-k-prefix-sum--hash-map--leetcode--medium)
-- [4. Subarray Sums II](#4-subarray-sums-ii-prefix-sum--hash-map--cses--medium)
-- [5. Good Subarrays](#5-good-subarrays-prefix-transformation--frequency-map--codeforces--1600)
-- [Pattern Comparison](#pattern-comparison)
+- [Core Formula and Derivation](#core-formula-and-derivation)
+- [Generic Dry Run](#generic-dry-run)
+- [Problem 1 — Subarray Sum Equals K](#problem-1--subarray-sum-equals-k)
+- [Problem 2 — Binary Subarrays With Sum](#problem-2--binary-subarrays-with-sum)
+- [Problem 3 — Maximum Size Subarray Sum Equals k](#problem-3--maximum-size-subarray-sum-equals-k)
+- [Problem 4 — Subarray Sums II](#problem-4--subarray-sums-ii)
+- [Problem 5 — Good Subarrays](#problem-5--good-subarrays)
+- [Fast Revision Model](#fast-revision-model)
 
 ---
 
 ## Pattern Overview
 
-This form is used when we need to find or count **contiguous subarrays whose sum satisfies an exact target condition**, especially when the array may contain negative numbers and a sliding window is therefore unsafe.
+### What kind of problem is this?
 
-For a prefix sum array:
+Use this pattern when the problem asks about **contiguous subarrays with an exact sum/condition** and the left boundary is unknown.
 
 ```text
-pref[i] = a[1] + a[2] + ... + a[i]
+many possible subarrays
+        +
+exact target condition
+        +
+negative values may exist
+        ↓
+PREFIX SUM + HASH MAP
 ```
 
-The sum of subarray `[l..r]` is:
+Instead of trying every `l` for every `r`, fix the right endpoint and ask:
 
 ```text
-sum(l, r) = pref[r] - pref[l - 1]
+What OLD prefix do I need
+for the subarray ending HERE
+to have the required sum?
 ```
 
-If we want:
+### Core Idea
 
 ```text
-sum(l, r) = K
+sum(l,r)
+= pref[r] - pref[l-1]
+```
+
+If:
+
+```text
+sum(l,r) = K
 ```
 
 then:
 
 ```text
-pref[r] - pref[l - 1] = K
-pref[l - 1] = pref[r] - K
+pref[r] - pref[l-1] = K
+
+pref[l-1] = pref[r] - K
 ```
 
-So while scanning `r`, we ask:
+Therefore at current prefix `P`:
 
-> **How many earlier prefix sums are equal to `currentPrefix - K`?**
-
-A hash map answers this in expected `O(1)` time.
+```text
+need = P - K
+```
 
 ### Recognition Signals
 
 ```text
-"number of subarrays with sum K"
-"find a subarray whose sum is exactly X"
-"longest subarray with sum K"
-negative values are possible
-many possible left boundaries for each right boundary
-condition can be rewritten using two prefix states
+count subarrays with sum K
+longest subarray with sum K
+exact contiguous sum
+negative values possible
+many possible left boundaries
+condition can become relation between two prefixes
 ```
 
-### Core Derivation
+### Complexity
 
 ```text
-Current prefix = P
-Target sum     = K
-
-Need:
-P - oldPrefix = K
-
-Therefore:
-oldPrefix = P - K
+Scan:  O(n) expected
+Map:   O(n)
+Space: O(n)
 ```
 
-For **counting**, store frequencies:
+---
+
+## Core Formula and Derivation
+
+Wanted:
 
 ```text
-freq[prefix] = how many times this prefix has appeared
-answer += freq[currentPrefix - K]
+a[l] + a[l+1] + ... + a[r] = K
 ```
 
-For **maximum length**, store the earliest index:
+Using prefix sums:
 
 ```text
-first[prefix] = earliest index where prefix appeared
-length = i - first[currentPrefix - K]
+pref[r]
+= a[1] + ... + a[l-1] + a[l] + ... + a[r]
+
+pref[l-1]
+= a[1] + ... + a[l-1]
 ```
 
-Initialize the empty prefix before processing the array:
+Subtract:
 
 ```text
+pref[r] - pref[l-1]
+= a[l] + ... + a[r]
+= K
+```
+
+Rearrange:
+
+```text
+pref[l-1]
+= pref[r] - K
+```
+
+Mental model:
+
+```text
+CURRENT PREFIX P
+      |
+      | need P-K
+      v
+HASH MAP OF OLD PREFIXES
+      |
+      v
+VALID LEFT BOUNDARIES
+```
+
+### Why `freq[0] = 1`?
+
+Before reading any element:
+
+```text
+prefix = 0
+```
+
+This represents the empty prefix.
+
+Example:
+
+```text
+a = [2,3]
+K = 5
+
+current prefix after index 2 = 5
+
+need
+= 5 - 5
+= 0
+
 freq[0] = 1
-first[0] = 0
+
+Therefore [2,3] is counted.
 ```
 
-This allows a valid subarray beginning at index `1` to be counted naturally.
+---
+
+## Generic Dry Run
+
+```text
+a = [1,2,1]
+K = 3
+
+start:
+prefix = 0
+freq = {0:1}
+answer = 0
+
+x = 1
+prefix = 1
+need = 1-3 = -2
+found = 0
+answer = 0
+freq[1]++
+
+x = 2
+prefix = 3
+need = 3-3 = 0
+found = 1
+answer = 1
+freq[3]++
+
+x = 1
+prefix = 4
+need = 4-3 = 1
+found = 1
+answer = 2
+freq[4]++
+
+valid subarrays:
+[1,2]
+[2,1]
+```
 
 ### Generic Pseudocode
 
@@ -104,7 +209,7 @@ freq[0] = 1
 prefix = 0
 answer = 0
 
-for each value x:
+for x in array:
     prefix += x
 
     need = prefix - K
@@ -115,24 +220,56 @@ for each value x:
 return answer
 ```
 
-**Complexity:** `O(n)` expected time and `O(n)` extra space.
-
 ---
+
+# Problem 1 — Subarray Sum Equals K
 
 Problem Link: [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)
 
-**Problem Summary:** Given an integer array and integer `k`, count the number of contiguous non-empty subarrays whose sum is exactly `k`.
+### What is the problem asking?
 
-### 1. Subarray Sum Equals K (Prefix Sum / Hash Map / LeetCode / Medium)
+Given an integer array and integer `k`, count the number of contiguous non-empty subarrays whose sum is exactly `k`.
 
-* **Core Invariant / Key Insight:** At current prefix sum `P`, every previous prefix equal to `P - k` creates one subarray ending here with sum `k`. Therefore add `freq[P - k]` before inserting the current prefix.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Initialize `freq[0] = 1`, `prefix = 0`, and `answer = 0`.
-2. For every number, update `prefix`, compute `need = prefix - k`, and add `freq[need]` to the answer.
-3. Increment `freq[prefix]`; after one scan, output `answer` in expected `O(n)` time.
+```text
+EXACT SUBARRAY SUM = K
+        +
+NEGATIVES MAY EXIST
+        ↓
+PREFIX SUM + FREQUENCY MAP
 
-* **ASCII Execution Trace / Visual Dry Run:**
+At current prefix P:
+need an earlier prefix P-K.
+```
+
+### Compact Algebra Derivation
+
+```text
+For subarray [l..r]:
+
+sum(l,r)
+= pref[r] - pref[l-1]
+
+Need:
+pref[r] - pref[l-1] = k
+
+Move pref[l-1]:
+
+pref[l-1]
+= pref[r] - k
+
+Let:
+P = pref[r]
+
+Then:
+need = P - k
+
+So every previous prefix equal to P-k
+creates one valid subarray ending at r.
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        nums = [1, 1, 1], k = 2
@@ -164,7 +301,7 @@ Final Answer:   2
 Final State:    freq = {0:1, 1:1, 2:1, 3:1}
 ```
 
-* **Pseudocode:**
+### Pseudocode
 
 ```text
 freq[0] = 1
@@ -179,22 +316,79 @@ for x in nums:
 return answer
 ```
 
+### C++
+
+```cpp
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        unordered_map<long long, int> freq;
+        freq[0] = 1;
+
+        long long prefix = 0;
+        int ans = 0;
+
+        for (int x : nums) {
+            prefix += x;
+            ans += freq[prefix - k];
+            freq[prefix]++;
+        }
+
+        return ans;
+    }
+};
+```
+
+### Complexity
+
+```text
+Time:  O(n) expected
+Space: O(n)
+```
+
 ---
+
+# Problem 2 — Binary Subarrays With Sum
 
 Problem Link: [Binary Subarrays With Sum](https://leetcode.com/problems/binary-subarrays-with-sum/)
 
-**Problem Summary:** Given a binary array and target `goal`, count contiguous subarrays whose element sum is exactly `goal`.
+### What is the problem asking?
 
-### 2. Binary Subarrays With Sum (Prefix Sum / Hash Map / LeetCode / Medium)
+Given a binary array and target `goal`, count contiguous subarrays whose element sum is exactly `goal`.
 
-* **Core Invariant / Key Insight:** The binary restriction does not change the prefix equation: for current prefix `P`, a valid left prefix must equal `P - goal`. Repeated prefix sums are especially common because zeros do not change the running sum.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Start with `freq[0] = 1`, then scan the binary array while maintaining the running prefix sum.
-2. At each index, add `freq[prefix - goal]` because each matching earlier prefix defines a valid subarray ending at the current index.
-3. Record the current prefix frequency and return the total in expected `O(n)` time.
+```text
+BINARY ARRAY + EXACT SUM = goal
+             ↓
+PREFIX SUM + FREQUENCY MAP
 
-* **ASCII Execution Trace / Visual Dry Run:**
+Zeros can repeat the same prefix,
+so one prefix value may represent
+multiple valid left boundaries.
+```
+
+### Compact Algebra Derivation
+
+```text
+Need:
+
+pref[r] - pref[l-1] = goal
+
+Rearrange:
+
+pref[l-1]
+= pref[r] - goal
+
+At current prefix P:
+
+need = P - goal
+
+If need appeared c times,
+there are c valid subarrays ending here.
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        nums = [1, 0, 1, 0, 1], goal = 2
@@ -227,7 +421,7 @@ Final Answer:   4
 Final State:    repeated prefix sums created multiple valid left boundaries
 ```
 
-* **Pseudocode:**
+### Pseudocode
 
 ```text
 freq[0] = 1
@@ -242,22 +436,85 @@ for bit in nums:
 return answer
 ```
 
+### C++
+
+```cpp
+class Solution {
+public:
+    int numSubarraysWithSum(vector<int>& nums, int goal) {
+        unordered_map<int, int> freq;
+        freq[0] = 1;
+
+        int prefix = 0;
+        int ans = 0;
+
+        for (int x : nums) {
+            prefix += x;
+            ans += freq[prefix - goal];
+            freq[prefix]++;
+        }
+
+        return ans;
+    }
+};
+```
+
+### Complexity
+
+```text
+Time:  O(n) expected
+Space: O(n)
+```
+
 ---
+
+# Problem 3 — Maximum Size Subarray Sum Equals k
 
 Problem Link: [Maximum Size Subarray Sum Equals k](https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/)
 
-**Problem Summary:** Given an integer array and target `k`, find the maximum length of a contiguous subarray whose sum equals `k`.
+### What is the problem asking?
 
-### 3. Maximum Size Subarray Sum Equals k (Prefix Sum / Hash Map / LeetCode / Medium)
+Given an integer array and target `k`, find the maximum length of a contiguous subarray whose sum equals `k`.
 
-* **Core Invariant / Key Insight:** We still need an earlier prefix equal to `P - k`, but now we want the **earliest** such index because it gives the longest subarray. Store the first occurrence of every prefix and never overwrite it.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Store `first[0] = 0` and process the array with 1-indexed positions while maintaining `prefix`.
-2. If `prefix - k` exists at index `j`, update `best = max(best, i - j)`.
-3. Store `first[prefix] = i` only if this prefix has never appeared before; return `best` in expected `O(n)` time.
+```text
+LONGEST SUBARRAY WITH SUM K
+             ↓
+PREFIX SUM + EARLIEST INDEX MAP
 
-* **ASCII Execution Trace / Visual Dry Run:**
+For maximum length:
+keep the FIRST occurrence of each prefix.
+```
+
+### Compact Algebra Derivation
+
+```text
+Need:
+
+pref[r] - pref[l-1] = k
+
+Therefore:
+
+pref[l-1]
+= pref[r] - k
+
+At current position i:
+
+need = prefix - k
+
+If need first appeared at j:
+
+length = i - j
+
+To maximize length,
+j must be as small as possible.
+
+Therefore:
+store the EARLIEST index only.
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        nums = [1, -1, 5, -2, 3], k = 3
@@ -290,7 +547,7 @@ Final Answer:   4
 Final State:    longest valid subarray = [1, -1, 5, -2]
 ```
 
-* **Pseudocode:**
+### Pseudocode
 
 ```text
 first[0] = 0
@@ -310,22 +567,87 @@ for i = 1 to n:
 return best
 ```
 
+### C++
+
+```cpp
+class Solution {
+public:
+    int maxSubArrayLen(vector<int>& nums, int k) {
+        unordered_map<long long, int> first;
+        first[0] = 0;
+
+        long long prefix = 0;
+        int best = 0;
+
+        for (int i = 1; i <= (int)nums.size(); ++i) {
+            prefix += nums[i - 1];
+
+            long long need = prefix - k;
+
+            if (first.count(need)) {
+                best = max(best, i - first[need]);
+            }
+
+            if (!first.count(prefix)) {
+                first[prefix] = i;
+            }
+        }
+
+        return best;
+    }
+};
+```
+
+### Complexity
+
+```text
+Time:  O(n) expected
+Space: O(n)
+```
+
 ---
+
+# Problem 4 — Subarray Sums II
 
 Problem Link: [Subarray Sums II](https://cses.fi/problemset/task/1661)
 
-**Problem Summary:** Given `n`, target `x`, and an integer array that may contain negative values, count all contiguous subarrays whose sum is exactly `x`.
+### What is the problem asking?
 
-### 4. Subarray Sums II (Prefix Sum / Hash Map / CSES / Medium)
+Given `n`, target `x`, and an integer array that may contain negative values, count all contiguous subarrays whose sum is exactly `x`.
 
-* **Core Invariant / Key Insight:** For current prefix `P`, each earlier occurrence of `P - x` gives one subarray with sum `x`. Negative values make ordinary two pointers unreliable, so prefix frequencies are the natural `O(n)` solution.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Initialize `freq[0] = 1`, then scan the array and accumulate `prefix` using 64-bit integers.
-2. For each element, add `freq[prefix - x]` to the answer before recording the current prefix.
-3. Increment `freq[prefix]` and output the final 64-bit count in expected `O(n)` time.
+```text
+COUNT SUBARRAYS WITH SUM x
+        +
+NEGATIVE VALUES POSSIBLE
+        ↓
+PREFIX SUM + FREQUENCY MAP
 
-* **ASCII Execution Trace / Visual Dry Run:**
+Two pointers are unsafe here.
+```
+
+### Compact Algebra Derivation
+
+```text
+Need:
+
+pref[r] - pref[l-1] = x
+
+Therefore:
+
+pref[l-1]
+= pref[r] - x
+
+At current prefix P:
+
+need = P - x
+
+answer += number of previous
+prefix sums equal to need.
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        arr = [2, -1, 3, 5, -2], x = 7
@@ -355,7 +677,7 @@ Final Answer:   2
 Final State:    every valid subarray came from a previous prefix = currentPrefix - 7
 ```
 
-* **Pseudocode:**
+### Pseudocode
 
 ```text
 freq[0] = 1
@@ -370,22 +692,105 @@ for x_i in arr:
 print answer
 ```
 
+### C++
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    long long x;
+    cin >> n >> x;
+
+    unordered_map<long long, long long> freq;
+    freq[0] = 1;
+
+    long long prefix = 0;
+    long long ans = 0;
+
+    for (int i = 0; i < n; ++i) {
+        long long value;
+        cin >> value;
+
+        prefix += value;
+        ans += freq[prefix - x];
+        freq[prefix]++;
+    }
+
+    cout << ans << '\n';
+}
+```
+
+### Complexity
+
+```text
+Time:  O(n) expected
+Space: O(n)
+```
+
 ---
+
+# Problem 5 — Good Subarrays
 
 Problem Link: [Good Subarrays](https://codeforces.com/problemset/problem/1398/C)
 
-**Problem Summary:** Given a digit array, count subarrays whose sum equals their length. Transform the condition so that valid subarrays correspond to equal transformed prefix values.
+### What is the problem asking?
 
-### 5. Good Subarrays (Prefix Transformation / Frequency Map / Codeforces / 1600)
+Given a digit array, count subarrays whose sum equals their length. Transform the condition so that valid subarrays correspond to equal transformed prefix values.
 
-* **Core Invariant / Key Insight:** A subarray `[l..r]` is good when `pref[r] - pref[l-1] = r-l+1`. Rearranging gives `pref[r] - r = pref[l-1] - (l-1)`, so two equal values of `pref[i] - i` define a good subarray. citeturn0search9
+### Observation
 
-* **Step-by-Step Logic:**
-1. Maintain digit prefix sum `pref` and initialize `freq[0] = 1`, representing `pref[0] - 0`.
-2. At position `i`, compute transformed prefix `key = pref - i`; every previous occurrence of the same `key` creates one good subarray ending at `i`.
-3. Add `freq[key]` to the answer, increment `freq[key]`, and process all positions in expected `O(n)` time.
+```text
+SUBARRAY SUM = SUBARRAY LENGTH
+             ↓
+REARRANGE THE CONDITION
+             ↓
+EQUAL TRANSFORMED PREFIX KEYS
 
-* **ASCII Execution Trace / Visual Dry Run:**
+key[i] = pref[i] - i
+```
+
+### Compact Algebra Derivation
+
+```text
+Good subarray condition:
+
+pref[r] - pref[l-1]
+= r - l + 1
+
+Rewrite right side:
+
+r - l + 1
+= r - (l-1)
+
+So:
+
+pref[r] - pref[l-1]
+= r - (l-1)
+
+Move index terms with their prefixes:
+
+pref[r] - r
+=
+pref[l-1] - (l-1)
+
+Define:
+
+key[i] = pref[i] - i
+
+Then:
+
+key[r] = key[l-1]
+
+Therefore equal transformed prefix keys
+identify good subarrays.
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        digits = [1, 2, 0]
@@ -426,7 +831,7 @@ Final Answer:   3
 Final State:    equal transformed prefixes pref[i]-i identify good subarrays
 ```
 
-* **Pseudocode:**
+### Pseudocode
 
 ```text
 freq[0] = 1
@@ -443,35 +848,138 @@ for i = 1 to n:
 print answer
 ```
 
----
+### C++
 
-## Pattern Comparison
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-| Problem | What the map stores | Lookup condition | Result |
-|---|---|---|---|
-| Subarray Sum Equals K | Frequency of prefix sums | `P - k` | Count |
-| Binary Subarrays With Sum | Frequency of prefix sums | `P - goal` | Count |
-| Maximum Size Subarray Sum Equals k | Earliest prefix index | `P - k` | Maximum length |
-| Subarray Sums II | Frequency of prefix sums | `P - x` | Count |
-| Good Subarrays | Frequency of `pref[i] - i` | Same transformed value | Count |
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-## Final Recognition Rule
+    int t;
+    cin >> t;
 
-```text
-If a subarray condition can be rewritten as:
+    while (t--) {
+        int n;
+        string s;
+        cin >> n >> s;
 
-STATE(r) = STATE(l - 1)
+        unordered_map<long long, long long> freq;
+        freq[0] = 1;
 
-or
+        long long pref = 0;
+        long long ans = 0;
 
-PREFIX(l - 1) = PREFIX(r) - TARGET
+        for (int i = 1; i <= n; ++i) {
+            pref += s[i - 1] - '0';
 
-think:
+            long long key = pref - i;
+            ans += freq[key];
+            freq[key]++;
+        }
 
-PREFIX SUM + HASH MAP
+        cout << ans << '\n';
+    }
+}
 ```
 
-The most important contest question is not *"Can I build a prefix sum?"* but:
+### Complexity
+
+```text
+Time:  O(n) expected
+Space: O(n)
+```
+
+---
+
+# Fast Revision Model
+
+## One Formula
+
+```text
+sum(l,r)
+= pref[r] - pref[l-1]
+```
+
+Exact target:
+
+```text
+pref[r] - pref[l-1] = K
+
+        ↓ rearrange
+
+pref[l-1] = pref[r] - K
+```
+
+At current prefix `P`:
+
+```text
+need = P - K
+```
+
+## What changes between the problems?
+
+| Problem | What is actually being asked? | What the map stores |
+|---|---|---|
+| Subarray Sum Equals K | Count subarrays with exact sum `k` | Prefix frequency |
+| Binary Subarrays With Sum | Count binary subarrays with exact `goal` | Prefix frequency |
+| Maximum Size Subarray Sum Equals k | Find longest exact-sum subarray | Earliest prefix index |
+| Subarray Sums II | Count exact-sum subarrays with negatives | Prefix frequency |
+| Good Subarrays | Count subarrays where sum = length | Frequency of `pref[i]-i` |
+
+## Count vs Longest
+
+```text
+COUNT
+  ↓
+How many matching old prefixes?
+  ↓
+freq[prefix]
+
+LONGEST
+  ↓
+How far back is the matching prefix?
+  ↓
+earliestIndex[prefix]
+```
+
+## 5-Minute Recognition
+
+```text
+1. WHAT?
+   Need a contiguous subarray satisfying an exact condition.
+
+2. WRITE RANGE SUM
+   pref[r] - pref[l-1]
+
+3. SET CONDITION
+   pref[r] - pref[l-1] = K
+
+4. REARRANGE FOR OLD PREFIX
+   pref[l-1] = pref[r] - K
+
+5. ASK
+   Have I seen this required prefix before?
+
+6. TOOL
+   Hash map.
+```
+
+## Recognition Rule
+
+```text
+EXACT SUBARRAY CONDITION
+          ↓
+WRITE WITH TWO PREFIX STATES
+          ↓
+REARRANGE FOR OLD PREFIX
+          ↓
+LOOK UP OLD STATE IN HASH MAP
+```
+
+The key contest question is:
 
 ```text
 What previous prefix state must exist
