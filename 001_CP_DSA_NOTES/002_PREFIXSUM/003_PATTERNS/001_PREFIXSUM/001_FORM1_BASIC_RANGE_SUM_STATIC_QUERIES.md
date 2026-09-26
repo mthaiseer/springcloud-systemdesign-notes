@@ -4,390 +4,227 @@
 
 Pattern Link: [Pattern 1 — Basic Range Sum / Static Queries](https://github.com/mthaiseer/springcloud-systemdesign-notes/blob/main/001_CP_DSA_NOTES_V2/002_PREFIXSUM/002_PREFIXSUM_DIFF_ARRAY_PATTERNWISE_PROBLEMS.md#pattern-1)
 
-### Pattern Overview
+---
 
-- **When to Recognize:** The array does **not change**, but you must answer many queries asking for the sum of a contiguous range `[l, r]`. A direct loop over every query can become too slow.
-- **Core Idea:** Precompute cumulative sums once. Let `pref[i]` store the sum of the first `i` elements. Then any range sum is obtained by subtracting the prefix before the range: `sum(l, r) = pref[r] - pref[l - 1]`.
-- **Why It Works:** `pref[r]` contains everything from index `1..r`; subtracting `pref[l - 1]` removes everything before `l`, leaving exactly `l..r`.
-- **Standard Form:** Use a 1-indexed prefix array with `pref[0] = 0` and `pref[i] = pref[i - 1] + a[i]`.
-- **Complexity:** Prefix construction takes `O(n)`. Each range query takes `O(1)`, so `q` queries take `O(n + q)` total instead of `O(nq)`.
-- **Contest Signal:** Words such as **static array**, **many queries**, **sum from l to r**, **average of a fixed-radius window**, or **original vs sorted range sums** strongly suggest this pattern.
+## Table of Contents
 
-### Algebraic Derivation — Why `pref[r] - pref[l - 1]`?
+- [Pattern Overview](#pattern-overview)
+- [Core Formula and Derivation](#core-formula-and-derivation)
+- [Generic Dry Run](#generic-dry-run)
+- [Problem 1 — Range Sum Query - Immutable](#problem-1--range-sum-query---immutable)
+- [Problem 2 — K Radius Subarray Averages](#problem-2--k-radius-subarray-averages)
+- [Problem 3 — Kuriyama Mirai's Stones](#problem-3--kuriyama-mirais-stones)
+- [Problem 4 — Static Range Sum Queries](#problem-4--static-range-sum-queries)
+- [Fast Revision Model](#fast-revision-model)
 
-Suppose we use a **1-indexed** array:
+---
 
-```text
-a = [2, 4, 1, 5, 3]
+## Pattern Overview
 
-Query:
-l = 2
-r = 4
+### What kind of problem is this?
 
-Wanted:
-a[2] + a[3] + a[4]
-= 4 + 1 + 5
-= 10
-```
-
-By definition:
+Use this pattern when:
 
 ```text
-pref[r]
-= a[1] + a[2] + ... + a[r]
+array does not change
+        +
+many contiguous range-sum queries
+        ↓
+PREFIX SUM
 ```
 
-For `r = 4`:
+Instead of recalculating every range, precompute cumulative sums once.
 
-```text
-pref[4]
-= a[1] + a[2] + a[3] + a[4]
-= 2 + 4 + 1 + 5
-= 12
-```
+### Core Idea
 
-Everything before `l` is:
-
-```text
-a[1] + a[2] + ... + a[l - 1]
-= pref[l - 1]
-```
-
-For `l = 2`:
-
-```text
-pref[l - 1]
-= pref[1]
-= 2
-```
-
-Subtract:
-
-```text
-pref[4] - pref[1]
-= (2 + 4 + 1 + 5) - 2
-= 4 + 1 + 5
-= 10
-```
-
-### Algebraic Cancellation
-
-```text
-pref[r]
-= a[1] + ... + a[l - 1] + a[l] + ... + a[r]
-
-pref[l - 1]
-= a[1] + ... + a[l - 1]
-
-pref[r] - pref[l - 1]
-= [a[1] + ... + a[l - 1]] + [a[l] + ... + a[r]]
-  - [a[1] + ... + a[l - 1]]
-
-= a[l] + ... + a[r]
-```
-
-Therefore:
-
-```text
-rangeSum(l, r)
-= pref[r] - pref[l - 1]
-
-Mental model:
-
-SUM UNTIL r - SUM BEFORE l = SUM FROM l TO r
-```
-
-### 0-Indexed Prefix Form
-
-If `pref[i]` means the sum of the **first `i` elements**:
+For a 1-indexed array:
 
 ```text
 pref[0] = 0
-pref[i + 1] = pref[i] + a[i]
+pref[i] = pref[i-1] + a[i]
+
+sum(L,R) = pref[R] - pref[L-1]
 ```
 
-For range `[left, right]`:
-
-```text
-pref[right + 1]
-= a[0] + ... + a[left - 1] + a[left] + ... + a[right]
-
-pref[left]
-= a[0] + ... + a[left - 1]
-```
-
-Subtract:
-
-```text
-pref[right + 1] - pref[left]
-= a[left] + ... + a[right]
-```
-
-So:
-
-```text
-0-indexed: sum(left, right) = pref[right + 1] - pref[left]
-1-indexed: sum(l, r)        = pref[r] - pref[l - 1]
-```
-
----
-
-### Generic Visual
-
-```text
-Array index:    1   2   3   4   5
-arr:            2   4   1   5   3
-
-pref[0] = 0
-pref:           0   2   6   7  12  15
-
-Query [2, 4]:
-
-pref[4] - pref[1]
-   12   -    2
-       = 10
-
-Equivalent range:
-4 + 1 + 5 = 10
-```
-
-### Complete C++ — Generic Static Range Sum
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n, q;
-    cin >> n >> q;
-
-    vector<long long> pref(n + 1, 0);
-
-    for (int i = 1; i <= n; ++i) {
-        long long x;
-        cin >> x;
-        pref[i] = pref[i - 1] + x;
-    }
-
-    while (q--) {
-        int l, r;
-        cin >> l >> r;
-
-        long long rangeSum = pref[r] - pref[l - 1];
-        cout << rangeSum << '
-';
-    }
-
-    return 0;
-}
-```
-
----
-
----
-
-## Problem 1 — Range Sum Query - Immutable
-
-Problem Link: [Range Sum Query - Immutable](https://leetcode.com/problems/range-sum-query-immutable/description/)
-
-### A. Remove Story Nouns
-
-```text
-immutable integer array  -> static array
-sumRange(left, right)    -> sum of values in interval [left, right]
-many calls               -> many range queries
-```
-
-Reduced mathematical problem:
-
-```text
-Given a static array a[0..n-1].
-
-For many queries [L,R], compute:
-
-a[L] + a[L+1] + ... + a[R]
-
-Need each query faster than O(n).
-```
-
-### B. Extract Variables
-
-```text
-n       = number of elements
-a[i]    = value at index i
-L       = left query boundary
-R       = right query boundary
-pref[i] = sum of first i elements
-```
-
-Prefix definition:
+For a 0-indexed array with `pref` of size `n+1`:
 
 ```text
 pref[0] = 0
 pref[i+1] = pref[i] + a[i]
+
+sum(L,R) = pref[R+1] - pref[L]
 ```
 
-Target:
+### Recognition Signals
 
 ```text
-rangeSum(L,R)
+static array
+many queries
+sum from L to R
+fixed window / centered range
+original vs sorted range sums
 ```
 
-### C. Identify the Mathematical Form
+### Complexity
 
 ```text
-STATIC ARRAY
-     +
-MANY RANGE SUM QUERIES
-     ↓
-PREFIX SUM
+Build prefix: O(n)
+Each query:   O(1)
+Total:        O(n + q)
 ```
 
-We need:
+---
 
-```text
-sum(L,R)
-=
-sum(0,R) - sum(0,L-1)
-```
+## Core Formula and Derivation
 
-With the `n+1` prefix convention:
-
-```text
-sum(L,R)
-=
-pref[R+1] - pref[L]
-```
-
-### D. Algebraic Derivation
-
-Start from the quantity we want:
+Wanted:
 
 ```text
 a[L] + a[L+1] + ... + a[R]
 ```
 
-Prefix through `R`:
+But:
 
 ```text
-pref[R+1]
-=
-a[0] + a[1] + ... + a[L-1]
-+
-a[L] + ... + a[R]
-```
+pref[R]
+= a[1] + ... + a[L-1] + a[L] + ... + a[R]
 
-Prefix before `L`:
-
-```text
-pref[L]
-=
-a[0] + a[1] + ... + a[L-1]
+pref[L-1]
+= a[1] + ... + a[L-1]
 ```
 
 Subtract:
 
 ```text
-pref[R+1] - pref[L]
-
-=
-[a[0] + ... + a[L-1] + a[L] + ... + a[R]]
--
-[a[0] + ... + a[L-1]]
-
-=
-a[L] + ... + a[R]
+pref[R] - pref[L-1]
+= a[L] + ... + a[R]
 ```
 
-Therefore:
+Mental model:
+
+```text
+SUM UNTIL R - SUM BEFORE L
+        =
+SUM FROM L TO R
+```
+
+---
+
+## Generic Dry Run
+
+```text
+index:   1   2   3   4   5
+a:       2   4   1   5   3
+
+pref:    0   2   6   7  12  15
+
+Query [2,4]
+
+pref[4] - pref[1]
+= 12 - 2
+= 10
+
+Check:
+4 + 1 + 5 = 10
+```
+
+### Generic Pseudocode
+
+```text
+pref[0] = 0
+
+FOR i = 1..n:
+    pref[i] = pref[i-1] + a[i]
+
+FOR each query (L,R):
+    answer = pref[R] - pref[L-1]
+    output answer
+```
+
+---
+
+# Problem 1 — Range Sum Query - Immutable
+
+Problem Link: [Range Sum Query - Immutable](https://leetcode.com/problems/range-sum-query-immutable/description/)
+
+### What is the problem asking?
+
+You are given an array that **never changes**. `sumRange(L,R)` may be called many times, and each call must return the sum of elements from index `L` to `R`.
+
+```text
+Given:
+a[0..n-1]
+
+Need:
+a[L] + a[L+1] + ... + a[R]
+```
+
+### Observation
+
+```text
+STATIC ARRAY + MANY RANGE SUMS
+              ↓
+         PREFIX SUM
+```
+
+Use:
 
 ```text
 sum(L,R) = pref[R+1] - pref[L]
 ```
 
-### E. Dry Run — Different Cases
+### Compact Algebra Derivation
 
-Use:
+```text
+Wanted:
+a[L] + ... + a[R]
+
+pref[R+1]
+= a[0] + ... + a[L-1] + a[L] + ... + a[R]
+
+pref[L]
+= a[0] + ... + a[L-1]
+
+Subtract:
+pref[R+1] - pref[L]
+= a[L] + ... + a[R]
+```
+
+### Simple Dry Run
 
 ```text
 a    = [-2, 0, 3, -5, 2, -1]
-index   0  1  2   3  4   5
+pref = [ 0,-2,-2,  1,-4,-2,-3]
 
-pref = [0, -2, -2, 1, -4, -2, -3]
-```
+Query:
+L = 2, R = 4
 
-#### Case 1 — Range starts at index 0
-
-```text
-L = 0
-R = 2
-
-sum(0,2)
-= pref[3] - pref[0]
-= 1 - 0
-= 1
-
-check:
--2 + 0 + 3 = 1
-```
-
-#### Case 2 — Middle range
-
-```text
-L = 2
-R = 4
-
-sum(2,4)
+pref[R+1] - pref[L]
 = pref[5] - pref[2]
 = -2 - (-2)
 = 0
 
-check:
+Check:
 3 + (-5) + 2 = 0
 ```
 
-#### Case 3 — Single element
+### Pseudocode
 
 ```text
-L = 3
-R = 3
+BUILD:
+pref[0] = 0
 
-sum(3,3)
-= pref[4] - pref[3]
-= -4 - 1
-= -5
+FOR i = 0..n-1:
+    pref[i+1] = pref[i] + a[i]
+
+QUERY(L,R):
+    RETURN pref[R+1] - pref[L]
 ```
 
-#### Case 4 — Entire array
-
-```text
-L = 0
-R = 5
-
-sum(0,5)
-= pref[6] - pref[0]
-= -3
-```
-
-### F. Complexity
-
-```text
-build prefix = O(n)
-each query   = O(1)
-q queries    = O(q)
-
-total        = O(n + q)
-space        = O(n)
-```
-
-### G. Complete C++
+### C++
 
 ```cpp
 class NumArray {
-private:
     vector<long long> pref;
 
 public:
@@ -408,190 +245,86 @@ public:
 };
 ```
 
+### Complexity
+
+```text
+Build: O(n)
+Query: O(1)
+Space: O(n)
+```
+
 ---
 
-## Problem 2 — K Radius Subarray Averages
+# Problem 2 — K Radius Subarray Averages
 
 Problem Link: [K Radius Subarray Averages](https://leetcode.com/problems/k-radius-subarray-averages/)
 
-### A. Remove Story Nouns
+### What is the problem asking?
+
+For every index `i`, take `k` elements to its left, the element itself, and `k` elements to its right. If that complete window exists, output its integer average; otherwise output `-1`.
 
 ```text
-k-radius average      -> fixed-size centered range
-center i              -> current index
-radius k              -> take k values left and k values right
-invalid center        -> complete range does not fit
-average               -> range sum / number of elements
-```
+center = i
 
-Reduced mathematical problem:
-
-```text
-For every index i:
-
-left  = i-k
-right = i+k
-
-If [left,right] is inside the array:
-
-answer[i]
-=
-sum(left,right) / numberOfElements
-
-Otherwise:
-
-answer[i] = -1
-```
-
-### B. Extract Variables
-
-```text
-n       = array length
-a[i]    = value at index i
-i       = current center
-k       = radius
-L       = i-k
-R       = i+k
-w       = window size
-pref[i] = prefix sum
-```
-
-### C. Identify the Mathematical Form
-
-The interval around `i` is:
-
-```text
-i-k ........ i ........ i+k
- ↑                         ↑
- L                         R
-```
-
-Number of elements:
-
-```text
-w = R-L+1
-```
-
-Substitute:
-
-```text
-w
-= (i+k) - (i-k) + 1
-= i+k-i+k+1
-= 2k+1
-```
-
-So:
-
-```text
-answer[i]
-=
-sum(i-k, i+k) / (2k+1)
-```
-
-### D. Algebraic Derivation
-
-Prefix range formula:
-
-```text
-sum(L,R)
-=
-pref[R+1] - pref[L]
-```
-
-Substitute:
-
-```text
 L = i-k
 R = i+k
+
+window size = 2k+1
 ```
 
-Then:
+### Observation
+
+Each valid answer needs the sum of a fixed contiguous range:
 
 ```text
-sum
-=
-pref[(i+k)+1] - pref[i-k]
-
-=
-pref[i+k+1] - pref[i-k]
+sum(i-k, i+k)
 ```
 
-Therefore:
+So prefix sum gives the window sum in `O(1)`.
+
+Formula:
 
 ```text
 answer[i]
 =
-(pref[i+k+1] - pref[i-k])
-/
-(2k+1)
+(pref[i+k+1] - pref[i-k]) / (2k+1)
 ```
 
-Now derive when the center is valid.
-
-Need:
-
-```text
-L >= 0
-R < n
-```
-
-Substitute:
+Valid only when:
 
 ```text
 i-k >= 0
 i+k < n
 ```
 
-Therefore only those `i` can receive an average.
-
-### E. Dry Run — Different Cases
-
-Use:
+### Compact Algebra Derivation
 
 ```text
-a = [7, 4, 3, 9, 1]
-k = 1
+L = i-k
+R = i+k
 
-pref = [0, 7, 11, 14, 23, 24]
+window size
+= R-L+1
+= (i+k) - (i-k) + 1
+= 2k+1
 
-window = 2k+1
-       = 3
-```
-
-#### Case 1 — Invalid left boundary
-
-```text
-i = 0
-
-L = 0-1 = -1
-R = 0+1 = 1
-
-L < 0
-
-answer[0] = -1
-```
-
-#### Case 2 — Valid center
-
-```text
-i = 1
-
-L = 0
-R = 2
-
-sum
-= pref[3] - pref[0]
-= 14
+range sum
+= pref[R+1] - pref[L]
+= pref[i+k+1] - pref[i-k]
 
 average
-= 14 / 3
-= 4
+= (pref[i+k+1] - pref[i-k]) / (2k+1)
 ```
 
-#### Case 3 — Valid middle center
+### Simple Dry Run
 
 ```text
+a = [7,4,3,9,1]
+k = 1
+
+pref = [0,7,11,14,23,24]
+window = 3
+
 i = 2
 
 L = 1
@@ -607,50 +340,39 @@ average
 = 5
 ```
 
-#### Case 4 — Invalid right boundary
+Boundary:
 
 ```text
-i = 4
+i = 0
 
-L = 3
-R = 5
+L = -1
+window does not fit
 
-R >= n
-
-answer[4] = -1
+answer[0] = -1
 ```
 
-Final:
+### Pseudocode
 
 ```text
-[-1, 4, 5, 4, -1]
+answer = array filled with -1
+window = 2*k + 1
+
+IF window > n:
+    RETURN answer
+
+build prefix sum
+
+FOR i = k while i+k < n:
+    L = i-k
+    R = i+k
+
+    sum = pref[R+1] - pref[L]
+    answer[i] = sum / window
+
+RETURN answer
 ```
 
-#### Case 5 — k = 0
-
-```text
-k = 0
-
-L = i
-R = i
-w = 1
-
-answer[i]
-= sum(i,i) / 1
-= a[i]
-```
-
-### F. Complexity
-
-```text
-prefix build = O(n)
-all centers  = O(n)
-
-total        = O(n)
-space        = O(n)
-```
-
-### G. Complete C++
+### C++
 
 ```cpp
 class Solution {
@@ -676,7 +398,6 @@ public:
             int R = i + k;
 
             long long sum = pref[R + 1] - pref[L];
-
             ans[i] = static_cast<int>(sum / window);
         }
 
@@ -685,215 +406,128 @@ public:
 };
 ```
 
+### Complexity
+
+```text
+Time:  O(n)
+Space: O(n)
+```
+
 ---
 
-## Problem 3 — Kuriyama Mirai's Stones
+# Problem 3 — Kuriyama Mirai's Stones
 
 Problem Link: [Kuriyama Mirai's Stones](https://codeforces.com/problemset/problem/433/B)
 
-### A. Remove Story Nouns
+### What is the problem asking?
+
+You have one array of stone prices. Queries ask for a range sum either:
 
 ```text
-stones / prices         -> array values
-original order          -> array A
-sorted prices           -> sorted copy B
-query type 1            -> range sum on A
-query type 2            -> range sum on B
-many queries            -> prefix sums
+type 1 -> in the ORIGINAL array
+type 2 -> in the SORTED array
 ```
 
-Reduced mathematical problem:
+So the real problem is:
 
 ```text
-Given array A.
-
-Create:
+A = original values
 B = sorted(A)
 
-For each query (type,L,R):
-
-type 1 -> sum A[L..R]
-type 2 -> sum B[L..R]
+type 1: sum A[L..R]
+type 2: sum B[L..R]
 ```
 
-### B. Extract Variables
+### Observation
+
+There are **two static arrays**, so build two prefix sums:
 
 ```text
-n             = number of values
-A[i]          = original array
-B[i]          = sorted array
-type          = query representation
-L,R           = query boundaries
-prefA[i]      = prefix sum of A
-prefB[i]      = prefix sum of B
+A      -> prefA
+sorted -> prefB
 ```
 
-### C. Identify the Mathematical Form
-
-There are two static representations:
+Then:
 
 ```text
-             values
-               |
-       -----------------
-       |               |
-   original          sorted
-       |               |
-    prefA            prefB
-       |               |
- type = 1          type = 2
+type 1 -> prefA[R] - prefA[L-1]
+type 2 -> prefB[R] - prefB[L-1]
 ```
 
-The range formula itself does not change:
+### Compact Algebra Derivation
 
 ```text
-range(L,R)
-=
-pref[R] - pref[L-1]
-```
+Original array:
+sumA(L,R) = prefA[R] - prefA[L-1]
 
-Only the prefix array changes.
-
-### D. Algebraic Derivation
-
-Original representation:
-
-```text
-prefA[R]
-=
-A[1] + ... + A[L-1]
-+
-A[L] + ... + A[R]
-
-prefA[L-1]
-=
-A[1] + ... + A[L-1]
-```
-
-Subtract:
-
-```text
-prefA[R] - prefA[L-1]
-=
-A[L] + ... + A[R]
-```
-
-Sorted representation:
-
-```text
-prefB[R]
-=
-B[1] + ... + B[L-1]
-+
-B[L] + ... + B[R]
-
-prefB[L-1]
-=
-B[1] + ... + B[L-1]
-```
+Sorted array:
+sumB(L,R) = prefB[R] - prefB[L-1]
 
 Therefore:
 
-```text
-prefB[R] - prefB[L-1]
-=
-B[L] + ... + B[R]
+type 1 -> prefA[R] - prefA[L-1]
+type 2 -> prefB[R] - prefB[L-1]
 ```
 
-Final mathematical model:
+The algebra is unchanged; only the array representation changes.
+
+### Simple Dry Run
+
+```text
+A = [6,4,2,7]
+B = [2,4,6,7]
+
+prefA = [0,6,10,12,19]
+prefB = [0,2, 6,12,19]
+
+Query:
+L = 2, R = 3
+```
+
+Original:
 
 ```text
 type = 1
-→ prefA[R] - prefA[L-1]
 
-type = 2
-→ prefB[R] - prefB[L-1]
-```
-
-### E. Dry Run — Different Cases
-
-Use:
-
-```text
-A = [6, 4, 2, 7]
-B = [2, 4, 6, 7]
-
-prefA = [0, 6, 10, 12, 19]
-prefB = [0, 2,  6, 12, 19]
-```
-
-#### Case 1 — Same range, original order
-
-```text
-type = 1
-L = 2
-R = 3
-
-answer
-= prefA[3] - prefA[1]
+prefA[3] - prefA[1]
 = 12 - 6
 = 6
 
-check:
-4 + 2 = 6
+range = [4,2]
 ```
 
-#### Case 2 — Same range, sorted order
+Sorted:
 
 ```text
 type = 2
-L = 2
-R = 3
 
-answer
-= prefB[3] - prefB[1]
+prefB[3] - prefB[1]
 = 12 - 2
 = 10
 
-check:
-4 + 6 = 10
+range = [4,6]
 ```
 
-#### Case 3 — Entire array
+### Pseudocode
 
 ```text
-L = 1
-R = 4
+A = input array
+B = sorted copy of A
 
-type 1:
-prefA[4] - prefA[0]
-= 19
+build prefA
+build prefB
 
-type 2:
-prefB[4] - prefB[0]
-= 19
+FOR each query(type,L,R):
+
+    IF type == 1:
+        answer = prefA[R] - prefA[L-1]
+    ELSE:
+        answer = prefB[R] - prefB[L-1]
+
+    output answer
 ```
 
-Sorting changes positions but not the total sum.
-
-#### Case 4 — Single element
-
-```text
-type = 1
-L = R = 3
-
-prefA[3] - prefA[2]
-= 12 - 10
-= 2
-```
-
-### F. Complexity
-
-```text
-sort B           = O(n log n)
-build prefixes   = O(n)
-each query       = O(1)
-
-total            = O(n log n + q)
-space            = O(n)
-```
-
-### G. Complete C++
+### C++
 
 ```cpp
 #include <bits/stdc++.h>
@@ -937,196 +571,101 @@ int main() {
             cout << prefB[R] - prefB[L - 1] << '\n';
         }
     }
-
-    return 0;
 }
+```
+
+### Complexity
+
+```text
+Sort:    O(n log n)
+Prefix:  O(n)
+Queries: O(q)
+
+Total: O(n log n + q)
 ```
 
 ---
 
-## Problem 4 — Static Range Sum Queries
+# Problem 4 — Static Range Sum Queries
 
 Problem Link: [Static Range Sum Queries](https://cses.fi/problemset/task/1646)
 
-### A. Remove Story Nouns
+### What is the problem asking?
+
+You are given a static array and many queries `[L,R]`. For each query, output the sum of all values between `L` and `R`.
 
 ```text
-values                  -> array A
-queries                 -> intervals [L,R]
-sum from position a..b  -> range sum
-array never changes     -> static array
-```
-
-Reduced mathematical problem:
-
-```text
-Given static A[1..n].
-
-For every query [L,R], compute:
+Need:
 
 A[L] + A[L+1] + ... + A[R]
 ```
 
-### B. Extract Variables
+### Observation
+
+This is the direct prefix-sum form:
 
 ```text
-n       = array size
-q       = number of queries
-A[i]    = value at position i
-L,R     = query boundaries
-pref[i] = sum A[1..i]
-```
-
-### C. Identify the Mathematical Form
-
-```text
-many queries
-     +
-static values
-     +
-contiguous sum
-     ↓
-prefix sum
-```
-
-Define:
-
-```text
-pref[0] = 0
-
-pref[i]
-=
-pref[i-1] + A[i]
-```
-
-### D. Algebraic Derivation
-
-Wanted:
-
-```text
-A[L] + A[L+1] + ... + A[R]
-```
-
-But:
-
-```text
-pref[R]
-=
-A[1] + ... + A[L-1]
+STATIC ARRAY
 +
-A[L] + ... + A[R]
+MANY RANGE SUM QUERIES
+        ↓
+PREFIX SUM
 ```
 
-And:
+Formula:
 
 ```text
-pref[L-1]
-=
-A[1] + ... + A[L-1]
+sum(L,R) = pref[R] - pref[L-1]
 ```
+
+### Compact Algebra Derivation
+
+```text
+Wanted:
+A[L] + ... + A[R]
+
+pref[R]
+= A[1] + ... + A[L-1] + A[L] + ... + A[R]
+
+pref[L-1]
+= A[1] + ... + A[L-1]
 
 Subtract:
-
-```text
 pref[R] - pref[L-1]
-
-=
-[A[1] + ... + A[L-1] + A[L] + ... + A[R]]
--
-[A[1] + ... + A[L-1]]
-
-=
-A[L] + ... + A[R]
+= A[L] + ... + A[R]
 ```
 
-Therefore:
+### Simple Dry Run
 
 ```text
-sum(L,R)
-=
-pref[R] - pref[L-1]
-```
+A = [3,2,4,5,1]
 
-### E. Dry Run — Different Cases
+pref = [0,3,5,9,14,15]
 
-Use:
+Query:
+L = 2, R = 4
 
-```text
-A = [3, 2, 4, 5, 1]
-
-pref = [0, 3, 5, 9, 14, 15]
-```
-
-#### Case 1 — Middle range
-
-```text
-L = 2
-R = 4
-
-answer
-= pref[4] - pref[1]
+pref[4] - pref[1]
 = 14 - 3
 = 11
 
-check:
+Check:
 2 + 4 + 5 = 11
 ```
 
-#### Case 2 — Starts at 1
-
-```text
-L = 1
-R = 3
-
-answer
-= pref[3] - pref[0]
-= 9 - 0
-= 9
-```
-
-This is why:
+### Pseudocode
 
 ```text
 pref[0] = 0
+
+FOR i = 1..n:
+    pref[i] = pref[i-1] + A[i]
+
+FOR each query(L,R):
+    output pref[R] - pref[L-1]
 ```
 
-is useful.
-
-#### Case 3 — Single element
-
-```text
-L = 4
-R = 4
-
-answer
-= pref[4] - pref[3]
-= 14 - 9
-= 5
-```
-
-#### Case 4 — Entire array
-
-```text
-L = 1
-R = 5
-
-answer
-= pref[5] - pref[0]
-= 15
-```
-
-### F. Complexity
-
-```text
-prefix build = O(n)
-each query   = O(1)
-q queries    = O(q)
-
-total        = O(n + q)
-space        = O(n)
-```
-
-### G. Complete C++
+### C++
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1144,7 +683,6 @@ int main() {
     for (int i = 1; i <= n; ++i) {
         long long x;
         cin >> x;
-
         pref[i] = pref[i - 1] + x;
     }
 
@@ -1154,65 +692,74 @@ int main() {
 
         cout << pref[R] - pref[L - 1] << '\n';
     }
-
-    return 0;
 }
+```
+
+### Complexity
+
+```text
+Build:   O(n)
+Queries: O(q)
+Total:   O(n + q)
+Space:   O(n)
 ```
 
 ---
 
-## Fast Revision Model
+# Fast Revision Model
 
-For this entire form, remember:
+## One Formula
 
 ```text
-1. REMOVE STORY
-      ↓
-   static array + many interval sums
+1-indexed:
+sum(L,R) = pref[R] - pref[L-1]
 
-2. DEFINE VARIABLES
-      ↓
-   L, R, pref[]
-
-3. WRITE TARGET
-      ↓
-   A[L] + ... + A[R]
-
-4. FIND BIGGER KNOWN QUANTITY
-      ↓
-   pref[R]
-
-5. REMOVE UNWANTED PART
-      ↓
-   pref[L-1]
-
-6. ALGEBRA
-      ↓
-   pref[R] - pref[L-1]
-
-7. IMPLEMENT
-      ↓
-   O(n) build + O(1) query
+0-indexed with pref[n+1]:
+sum(L,R) = pref[R+1] - pref[L]
 ```
 
-### Recognition Rule
+## What changes between the problems?
+
+| Problem | What is actually being asked? | Extra idea |
+|---|---|---|
+| Range Sum Query - Immutable | Repeatedly sum `[L,R]` in one fixed array | 0-indexed prefix |
+| K Radius Subarray Averages | Sum the centered window `[i-k,i+k]`, then divide by `2k+1` | Boundary check + average |
+| Kuriyama Mirai's Stones | Sum `[L,R]` in original or sorted order | Two prefix arrays |
+| Static Range Sum Queries | Repeatedly sum `[L,R]` in one fixed array | Pure basic form |
+
+## 5-Minute Recognition
+
+```text
+1. WHAT?
+   Need sum of a contiguous interval.
+
+2. CHANGES?
+   Array is static.
+
+3. HOW MANY?
+   Many queries / many windows.
+
+4. MODEL
+   Range = big prefix - unwanted prefix.
+
+5. FORMULA
+   pref[R] - pref[L-1]
+```
+
+## Recognition Rule
 
 ```text
 STATIC + MANY CONTIGUOUS RANGE SUMS
                 ↓
-            PREFIX SUM
+             PREFIX SUM
 ```
 
-### Indexing Rule
+The four problems are intentionally similar because they teach the same base form. The important difference is only the **representation of the range**:
 
 ```text
-1-indexed:
-sum(L,R)
-=
-pref[R] - pref[L-1]
-
-0-indexed with pref size n+1:
-sum(L,R)
-=
-pref[R+1] - pref[L]
+[L,R]
+[i-k,i+k]
+original/sorted [L,R]
 ```
+
+Once that is recognized, the prefix-sum mechanics should be automatic.
