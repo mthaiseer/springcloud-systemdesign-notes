@@ -1,167 +1,184 @@
-# Form 2 — Prefix + Suffix / Split at `i`
+# PREFIX SUM PATTERNS
+
+## Pattern 2 — Prefix + Suffix / Split at `i`
+
+---
 
 ## Table of Contents
 
 - [Pattern Overview](#pattern-overview)
-- [Pattern Recognition Signals](#pattern-recognition-signals)
-- [Core Formulas](#core-formulas)
-- [Decision Framework](#decision-framework)
-- [1. Find Pivot Index](#1-find-pivot-index-prefix--suffix--leetcode--easy)
-- [2. Minimum Average Difference](#2-minimum-average-difference-prefix--suffix--leetcode--medium)
-- [3. Sum of Absolute Differences in a Sorted Array](#3-sum-of-absolute-differences-in-a-sorted-array-prefix-contribution--leetcode--medium)
-- [4. Number of Ways to Split Array](#4-number-of-ways-to-split-array-prefix--suffix--leetcode--medium)
-- [5. Array Division](#5-array-division-prefix-sum--codeforces--1400)
+- [Core Formula and Derivation](#core-formula-and-derivation)
+- [Generic Dry Run](#generic-dry-run)
+- [Problem 1 — Find Pivot Index](#problem-1--find-pivot-index)
+- [Problem 2 — Minimum Average Difference](#problem-2--minimum-average-difference)
+- [Problem 3 — Sum of Absolute Differences in a Sorted Array](#problem-3--sum-of-absolute-differences-in-a-sorted-array)
+- [Problem 4 — Number of Ways to Split Array](#problem-4--number-of-ways-to-split-array)
+- [Problem 5 — Array Division](#problem-5--array-division)
+- [Fast Revision Model](#fast-revision-model)
 
 ---
 
 ## Pattern Overview
 
-**Form 2 — Prefix + Suffix / Split at `i`** appears when an array must be viewed as two parts around an index or split point.
+### What kind of problem is this?
+
+Use this pattern when a problem asks you to evaluate an index or split using information from **both sides**.
 
 ```text
-Array:
-
-[ a0  a1  a2 ... ai ... an-1 ]
-                  ^
-                  i
-
-Typical view:
-
-LEFT                  RIGHT
-[0 ........ i-1] | [i+1 ........ n-1]
-
-or, for a split after i:
-
-LEFT                  RIGHT
-[0 ........ i]   | [i+1 ........ n-1]
+choose i / split
+      +
+need LEFT and RIGHT information
+      ↓
+PREFIX + TOTAL
 ```
 
-Instead of repeatedly summing the left and right portions for every possible `i`, precompute or maintain prefix information so both sides can be obtained in `O(1)`.
-
-The central transformation is:
+Typical forms:
 
 ```text
-total = sum(all elements)
+strictly around i:
 
-leftSum  = prefix information up to the split
-rightSum = total - leftSum
+[0 ... i-1]  i  [i+1 ... n-1]
+
+split after i:
+
+[0 ... i] | [i+1 ... n-1]
 ```
 
-This converts an `O(n²)` approach into `O(n)` in many problems.
-
-### Pattern Recognition Signals
-
-Look for wording such as:
-
-- "left sum" and "right sum"
-- "split the array"
-- "choose an index `i`"
-- "elements before/after `i`"
-- "minimum difference between two parts"
-- "number of valid splits"
-- "sum of distances/differences to elements on the left and right"
-- "can the array be divided into equal-sum parts?"
-
-A useful contest question is:
+Usually you do **not** need a separate suffix array:
 
 ```text
-If I choose index i,
-can I express the answer using:
-
-prefix before/through i
-+
-total - prefix ?
-
-If YES -> Prefix + Suffix / Split-at-i is a strong candidate.
-```
-
-### Core Formulas
-
-For a 0-indexed array and prefix array
-
-`pref[i + 1] = pref[i] + nums[i]`
-
-we have:
-
-`sum(0..i) = pref[i + 1]`
-
-`sum(0..i-1) = pref[i]`
-
-`sum(i+1..n-1) = pref[n] - pref[i + 1]`
-
-For a split **after `i`**:
-
-`leftSum = pref[i + 1]`
-
-`rightSum = pref[n] - pref[i + 1]`
-
-Often a full suffix array is unnecessary. One prefix sum plus `total` is enough.
-
-### Decision Framework
-
-```text
-Problem mentions index/split
-        |
-        v
-Do I need information from BOTH sides?
-        |
-      YES
-        |
-        v
-Is that information additive?
-(sum/count/contribution)
-        |
-      YES
-        |
-        v
-Compute prefix / total
-        |
-        v
-At each i:
-left  = prefix(...)
 right = total - left
-        |
-        v
-Check condition / compute contribution
+```
+
+### Recognition Signals
+
+```text
+left sum / right sum
+split after i
+choose an index i
+compare two sides
+count valid splits
+left/right contribution
+```
+
+### Complexity
+
+```text
+Compute total/prefix: O(n)
+Scan all i:          O(n)
+Total:               O(n)
+```
+
+---
+
+## Core Formula and Derivation
+
+For a split after `i`:
+
+```text
+total
+= leftSum + rightSum
+
+Therefore:
+
+rightSum
+= total - leftSum
+```
+
+If `i` itself is excluded from both side sums:
+
+```text
+total
+= leftSum + a[i] + rightSum
+
+Therefore:
+
+rightSum
+= total - leftSum - a[i]
+```
+
+Mental model:
+
+```text
+KNOW TOTAL
+   +
+MAINTAIN LEFT
+   ↓
+RIGHT = TOTAL - USED PART
+```
+
+---
+
+## Generic Dry Run
+
+```text
+a = [2,4,1,5,3]
+total = 15
+
+split after i = 2
+
+LEFT            RIGHT
+[2,4,1]       | [5,3]
+
+leftSum = 7
+
+rightSum
+= total - leftSum
+= 15 - 7
+= 8
 ```
 
 ### Generic Pseudocode
 
 ```text
-total = sum(array)
+total = sum(a)
 left = 0
 
-for each valid index i:
-    update/derive left
+for each valid i:
+    left += a[i]
     right = total - left
 
-    use(left, right, i)
+    evaluate(left, right, i)
 ```
-
-**Typical Complexity**
-
-- Prefix construction: `O(n)`
-- Scan all split positions: `O(n)`
-- Extra space: `O(n)` with a prefix array, or sometimes `O(1)` using a running sum
 
 ---
 
-## 1. Find Pivot Index (Prefix + Suffix / LeetCode / Easy)
+# Problem 1 — Find Pivot Index
 
 Problem Link: [Find Pivot Index](https://leetcode.com/problems/find-pivot-index/)
 
-**Problem Summary:** Given an integer array, find the leftmost index where the sum of all elements strictly to its left equals the sum of all elements strictly to its right. Return `-1` if no such index exists.
+### What is the problem asking?
 
-### Find Pivot Index (Prefix + Suffix / LeetCode / Easy)
+Given an integer array, find the leftmost index where the sum of all elements strictly to its left equals the sum of all elements strictly to its right. Return `-1` if no such index exists.
 
-* **Core Invariant / Key Insight:** At index `i`, if `leftSum` is already known, then `rightSum = totalSum - leftSum - nums[i]`. A pivot exists when `leftSum == rightSum`.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Compute `totalSum` of the entire array and initialize `leftSum = 0`.
-2. For each index `i`, compute `rightSum = totalSum - leftSum - nums[i]` and compare it with `leftSum`.
-3. If equal, return `i`; otherwise add `nums[i]` to `leftSum` and continue. The scan is `O(n)`.
+```text
+INDEX + SUM STRICTLY LEFT == SUM STRICTLY RIGHT → TOTAL + RUNNING LEFT
+```
 
-* **ASCII Execution Trace / Visual Dry Run:**
+### Compact Algebra Derivation
+
+```text
+At index i:
+
+total
+= leftSum + nums[i] + rightSum
+
+Therefore:
+
+rightSum
+= total - leftSum - nums[i]
+
+Pivot condition:
+
+leftSum = rightSum
+
+leftSum
+= total - leftSum - nums[i]
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        nums = [1, 7, 3, 6, 5, 6]
@@ -195,7 +212,7 @@ i = 3:          value = 6
 Final Answer:   3
 ```
 
-**Pseudocode:**
+### Pseudocode
 
 ```text
 totalSum = sum(nums)
@@ -212,24 +229,73 @@ for i = 0 to n - 1:
 return -1
 ```
 
+### C++
+
+```cpp
+class Solution {
+public:
+    int pivotIndex(vector<int>& nums) {
+        long long total = accumulate(nums.begin(), nums.end(), 0LL);
+        long long left = 0;
+
+        for (int i = 0; i < (int)nums.size(); ++i) {
+            long long right = total - left - nums[i];
+            if (left == right) return i;
+            left += nums[i];
+        }
+        return -1;
+    }
+};
+```
+
+### Complexity
+
+```text
+Time:  O(n)
+Space: O(1) extra in the basic running-sum forms
+       O(n) where output/frequency storage is required
+```
+
 ---
 
-## 2. Minimum Average Difference (Prefix + Suffix / LeetCode / Medium)
+
+# Problem 2 — Minimum Average Difference
 
 Problem Link: [Minimum Average Difference](https://leetcode.com/problems/minimum-average-difference/)
 
-**Problem Summary:** For every index `i`, split the array into `[0..i]` and `[i+1..n-1]`, compute the integer average of both parts, and take their absolute difference. Return the index with the smallest difference.
+### What is the problem asking?
 
-### Minimum Average Difference (Prefix + Suffix / LeetCode / Medium)
+For every index `i`, split the array into `[0..i]` and `[i+1..n-1]`, compute the integer average of both parts, and take their absolute difference. Return the index with the smallest difference.
 
-* **Core Invariant / Key Insight:** Once `prefixSum` and `totalSum` are known, both side averages can be computed in `O(1)`: `leftAvg = leftSum / (i + 1)` and `rightAvg = rightSum / (n - i - 1)`. For the final index, the empty right side has average `0`.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Compute `totalSum`, then scan from left to right while maintaining `leftSum`.
-2. At each `i`, calculate `leftAvg`; derive `rightSum = totalSum - leftSum` and calculate `rightAvg`, using `0` when no right elements remain.
-3. Compute `abs(leftAvg - rightAvg)` and keep the earliest index with the minimum difference. Overall complexity is `O(n)`.
+```text
+TRY EVERY SPLIT + COMPARE LEFT/RIGHT AVERAGES → PREFIX/TOTAL
+```
 
-* **ASCII Execution Trace / Visual Dry Run:**
+### Compact Algebra Derivation
+
+```text
+Split after i:
+
+leftCount  = i + 1
+rightCount = n - i - 1
+
+leftSum  = sum(0..i)
+rightSum = total - leftSum
+
+leftAvg  = leftSum / (i+1)
+
+if rightCount > 0:
+    rightAvg = rightSum / rightCount
+else:
+    rightAvg = 0
+
+difference
+= |leftAvg - rightAvg|
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        nums = [2, 5, 3, 9, 5, 3]
@@ -266,7 +332,7 @@ Final Answer:   3
 Final Minimum:  0
 ```
 
-**Pseudocode:**
+### Pseudocode
 
 ```text
 totalSum = sum(nums)
@@ -295,24 +361,89 @@ for i = 0 to n - 1:
 return answer
 ```
 
+### C++
+
+```cpp
+class Solution {
+public:
+    int minimumAverageDifference(vector<int>& nums) {
+        int n = nums.size();
+        long long total = accumulate(nums.begin(), nums.end(), 0LL);
+        long long left = 0, best = LLONG_MAX;
+        int ans = 0;
+
+        for (int i = 0; i < n; ++i) {
+            left += nums[i];
+            long long right = total - left;
+
+            long long leftAvg = left / (i + 1);
+            long long rightAvg = (i == n - 1) ? 0 : right / (n - i - 1);
+            long long diff = llabs(leftAvg - rightAvg);
+
+            if (diff < best) {
+                best = diff;
+                ans = i;
+            }
+        }
+        return ans;
+    }
+};
+```
+
+### Complexity
+
+```text
+Time:  O(n)
+Space: O(1) extra in the basic running-sum forms
+       O(n) where output/frequency storage is required
+```
+
 ---
 
-## 3. Sum of Absolute Differences in a Sorted Array (Prefix Contribution / LeetCode / Medium)
+
+# Problem 3 — Sum of Absolute Differences in a Sorted Array
 
 Problem Link: [Sum of Absolute Differences in a Sorted Array](https://leetcode.com/problems/sum-of-absolute-differences-in-a-sorted-array/)
 
-**Problem Summary:** Given a sorted array, for every index `i`, compute the sum of `|nums[i] - nums[j]|` over all indices `j`. Return the resulting array.
+### What is the problem asking?
 
-### Sum of Absolute Differences in a Sorted Array (Prefix Contribution / LeetCode / Medium)
+Given a sorted array, for every index `i`, compute the sum of `|nums[i] - nums[j]|` over all indices `j`. Return the resulting array.
 
-* **Core Invariant / Key Insight:** Because the array is sorted, every value on the left is `<= nums[i]` and every value on the right is `>= nums[i]`. Therefore absolute values disappear by side: `leftCost = nums[i] * i - leftSum` and `rightCost = rightSum - nums[i] * (n - i - 1)`.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Compute the total sum and maintain `leftSum`, the sum of elements strictly before `i`.
-2. At each index, derive `rightSum = totalSum - leftSum - nums[i]`, then compute the left and right contributions using counts instead of iterating over every element.
-3. Set `ans[i] = leftCost + rightCost`, then add `nums[i]` to `leftSum`. Total complexity is `O(n)`.
+```text
+SORTED ARRAY + SUM OF |a[i]-a[j]| → LEFT/RIGHT CONTRIBUTION
+```
 
-* **ASCII Execution Trace / Visual Dry Run:**
+### Compact Algebra Derivation
+
+```text
+x = nums[i]
+
+Because nums is sorted:
+
+LEFT values <= x
+RIGHT values >= x
+
+Left contribution:
+
+(x-a[0]) + ... + (x-a[i-1])
+
+= x*i - (a[0]+...+a[i-1])
+
+= x*i - leftSum
+
+Right contribution:
+
+(a[i+1]-x) + ... + (a[n-1]-x)
+
+= rightSum - x*(n-i-1)
+
+answer[i]
+= leftCost + rightCost
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        nums = [2, 3, 5]
@@ -351,7 +482,7 @@ i = 2, x = 5:
 Final Answer:   [4, 3, 5]
 ```
 
-**Pseudocode:**
+### Pseudocode
 
 ```text
 totalSum = sum(nums)
@@ -374,24 +505,77 @@ for i = 0 to n - 1:
 return ans
 ```
 
+### C++
+
+```cpp
+class Solution {
+public:
+    vector<int> getSumAbsoluteDifferences(vector<int>& nums) {
+        int n = nums.size();
+        long long total = accumulate(nums.begin(), nums.end(), 0LL);
+        long long leftSum = 0;
+        vector<int> ans(n);
+
+        for (int i = 0; i < n; ++i) {
+            long long x = nums[i];
+            long long rightSum = total - leftSum - x;
+
+            long long leftCost = x * i - leftSum;
+            long long rightCost = rightSum - x * (n - i - 1);
+
+            ans[i] = (int)(leftCost + rightCost);
+            leftSum += x;
+        }
+        return ans;
+    }
+};
+```
+
+### Complexity
+
+```text
+Time:  O(n)
+Space: O(1) extra in the basic running-sum forms
+       O(n) where output/frequency storage is required
+```
+
 ---
 
-## 4. Number of Ways to Split Array (Prefix + Suffix / LeetCode / Medium)
+
+# Problem 4 — Number of Ways to Split Array
 
 Problem Link: [Number of Ways to Split Array](https://leetcode.com/problems/number-of-ways-to-split-array/)
 
-**Problem Summary:** Count the split positions where both parts are non-empty and the sum of the left part is greater than or equal to the sum of the right part.
+### What is the problem asking?
 
-### Number of Ways to Split Array (Prefix + Suffix / LeetCode / Medium)
+Count the split positions where both parts are non-empty and the sum of the left part is greater than or equal to the sum of the right part.
 
-* **Core Invariant / Key Insight:** For a split after `i`, `leftSum` is the running prefix and `rightSum = totalSum - leftSum`. The split is valid exactly when `leftSum >= rightSum`.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Compute `totalSum` and initialize `leftSum = 0`.
-2. Scan only `i = 0..n-2` so that the right side remains non-empty; add `nums[i]` to `leftSum` and derive `rightSum`.
-3. Increment the answer whenever `leftSum >= rightSum`. The algorithm runs in `O(n)` time and `O(1)` extra space.
+```text
+COUNT SPLITS WHERE LEFT SUM >= RIGHT SUM → RUNNING LEFT + TOTAL
+```
 
-* **ASCII Execution Trace / Visual Dry Run:**
+### Compact Algebra Derivation
+
+```text
+Split after i:
+
+leftSum  = sum(0..i)
+rightSum = total - leftSum
+
+Need:
+
+leftSum >= rightSum
+
+Substitute rightSum:
+
+leftSum >= total - leftSum
+
+2*leftSum >= total
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        nums = [10, 4, -8, 7]
@@ -422,7 +606,7 @@ Split after i=2:
 Final Answer:   2
 ```
 
-**Pseudocode:**
+### Pseudocode
 
 ```text
 totalSum = sum(nums)
@@ -439,24 +623,84 @@ for i = 0 to n - 2:
 return answer
 ```
 
+### C++
+
+```cpp
+class Solution {
+public:
+    int waysToSplitArray(vector<int>& nums) {
+        long long total = accumulate(nums.begin(), nums.end(), 0LL);
+        long long left = 0;
+        int ans = 0;
+
+        for (int i = 0; i < (int)nums.size() - 1; ++i) {
+            left += nums[i];
+            long long right = total - left;
+            if (left >= right) ++ans;
+        }
+        return ans;
+    }
+};
+```
+
+### Complexity
+
+```text
+Time:  O(n)
+Space: O(1) extra in the basic running-sum forms
+       O(n) where output/frequency storage is required
+```
+
 ---
 
-## 5. Array Division (Prefix Sum / Codeforces / 1400)
+
+# Problem 5 — Array Division
 
 Problem Link: [Array Division](https://codeforces.com/problemset/problem/808/D)
 
-**Problem Summary:** Determine whether an array can be divided into two contiguous parts with equal sums after moving at most one element from one part to the other while preserving the relative structure of the remaining elements. Output `YES` if it is possible, otherwise `NO`.
+### What is the problem asking?
 
-### Array Division (Prefix Sum / Codeforces / 1400)
+Determine whether an array can be divided into two contiguous parts with equal sums after moving at most one element from one part to the other while preserving the relative structure of the remaining elements. Output `YES` if it is possible, otherwise `NO`.
 
-* **Core Invariant / Key Insight:** If the total sum is odd, equal halves are impossible. For even total `S`, the target is `S/2`; while scanning a split, if one side exceeds the target by value `x`, success requires an occurrence of exactly `x` on the heavier side that can be moved across the split.
+### Observation
 
-* **Step-by-Step Logic:**
-1. Compute `totalSum`; if it is odd, output `NO`. Otherwise set `target = totalSum / 2`.
-2. Scan split positions while maintaining `leftSum` and frequency information for values on the left and right. If `leftSum == target`, the array already has a valid division.
-3. If `leftSum < target`, check whether the right side contains `target - leftSum`; if `leftSum > target`, check whether the left side contains `leftSum - target`. If any check succeeds output `YES`; otherwise output `NO` after the scan.
+```text
+EQUAL-SUM SPLIT + MOVE AT MOST ONE VALUE → TARGET S/2 + FREQUENCY LOOKUP
+```
 
-* **ASCII Execution Trace / Visual Dry Run:**
+### Compact Algebra Derivation
+
+```text
+Let total sum = S.
+
+Equal final parts require:
+
+leftFinal = rightFinal = S/2
+
+So S must be even.
+
+target = S/2
+
+Case 1:
+leftSum < target
+
+Need a value x from RIGHT:
+
+leftSum + x = target
+
+x = target - leftSum
+
+Case 2:
+leftSum > target
+
+Need a value x from LEFT:
+
+leftSum - x = target
+
+x = leftSum - target
+```
+
+### Simple Dry Run
 
 ```text
 Initial:        arr = [1, 2, 3, 2]
@@ -490,7 +734,7 @@ Move value 3 from right to left conceptually:
 Final Answer:   YES
 ```
 
-**Pseudocode:**
+### Pseudocode
 
 ```text
 totalSum = sum(arr)
@@ -532,51 +776,131 @@ for i = 0 to n - 1:
 print NO
 ```
 
----
+### C++
 
-## Pattern Revision Summary
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
-```text
-FORM 2: PREFIX + SUFFIX / SPLIT AT i
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-Core idea:
+    int n;
+    cin >> n;
 
-                 split
-                   |
-                   v
-[ left portion ] | [ right portion ]
+    vector<long long> a(n);
+    long long total = 0;
+    unordered_map<long long, int> rightFreq, leftFreq;
 
-Know total / prefix information.
+    for (auto &x : a) {
+        cin >> x;
+        total += x;
+        rightFreq[x]++;
+    }
 
-Then:
+    if (total % 2 != 0) {
+        cout << "NO\n";
+        return 0;
+    }
 
-right = total - left
+    long long target = total / 2;
+    long long leftSum = 0;
+
+    for (long long x : a) {
+        if (--rightFreq[x] == 0) rightFreq.erase(x);
+
+        leftSum += x;
+        leftFreq[x]++;
+
+        if (leftSum == target) {
+            cout << "YES\n";
+            return 0;
+        }
+
+        if (leftSum < target) {
+            long long need = target - leftSum;
+            if (rightFreq.count(need)) {
+                cout << "YES\n";
+                return 0;
+            }
+        } else {
+            long long extra = leftSum - target;
+            if (leftFreq.count(extra)) {
+                cout << "YES\n";
+                return 0;
+            }
+        }
+    }
+
+    cout << "NO\n";
+}
 ```
 
-| Problem | Recognition Signal | Main Transformation |
-|---|---|---|
-| Find Pivot Index | left sum = right sum | `right = total - left - a[i]` |
-| Minimum Average Difference | compare averages of two sides | derive both sums from prefix/total |
-| Sum of Absolute Differences | contribution from values left/right | sorted order removes `abs()` by side |
-| Number of Ways to Split Array | count valid left/right splits | `left >= total - left` |
-| Array Division | equal halves after moving one value | target `total/2` + frequency lookup |
-
-### Final Recognition Rule
+### Complexity
 
 ```text
-Whenever the problem says:
+Time:  O(n)
+Space: O(1) extra in the basic running-sum forms
+       O(n) where output/frequency storage is required
+```
 
-"For every index/split..."
+---
 
-and asks something involving:
 
-LEFT side + RIGHT side
+# Fast Revision Model
 
-ask immediately:
+## One Core Transformation
 
-Can I maintain LEFT with a prefix/running sum
-and obtain RIGHT from TOTAL - LEFT?
+```text
+split after i:
 
-If yes:
-    think PREFIX + SUFFIX / SPLIT AT i.
+leftSum  = sum(0..i)
+rightSum = total - leftSum
+```
+
+For a pivot where `a[i]` belongs to neither side:
+
+```text
+rightSum = total - leftSum - a[i]
+```
+
+## What changes between the problems?
+
+| Problem | What is actually being asked? | Extra idea |
+|---|---|---|
+| Find Pivot Index | Find `i` where strict left sum = strict right sum | Exclude `a[i]` |
+| Minimum Average Difference | Compare averages after every split | Divide by side counts |
+| Sum of Absolute Differences | Sum distance from `a[i]` to all values | Sorted contribution algebra |
+| Number of Ways to Split Array | Count splits with `left >= right` | Scan only to `n-2` |
+| Array Division | Make both sides equal by moving at most one value | `total/2` + frequency lookup |
+
+## 5-Minute Recognition
+
+```text
+1. WHAT?
+   Problem asks about every index / every split.
+
+2. BOTH SIDES?
+   Need information from LEFT and RIGHT.
+
+3. ADDITIVE?
+   Sum / count / contribution can be maintained.
+
+4. MODEL
+   Maintain LEFT.
+   Derive RIGHT from TOTAL.
+
+5. FORMULA
+   right = total - left
+```
+
+## Recognition Rule
+
+```text
+EVERY INDEX / SPLIT
+       +
+NEED LEFT + RIGHT
+       ↓
+PREFIX / RUNNING SUM + TOTAL
 ```
