@@ -9,6 +9,42 @@
 
 ---
 
+
+## Base Formula Used in Every Problem
+
+For a normal subarray containing index `i`:
+
+```text
+left choices  = i + 1
+right choices = n - i
+```
+
+Therefore:
+
+```text
+total subarrays containing i
+= (i + 1) × (n - i)
+```
+
+If every such subarray allows `a[i]` to contribute:
+
+```text
+contribution(i)
+= a[i] × (i + 1) × (n - i)
+```
+
+For the problems below, use this as the **starting formula** and restrict the left/right boundaries when another equal/smaller element blocks the contribution.
+
+```text
+NORMAL:
+(i+1) × (n-i)
+
+RESTRICTED:
+validLeftChoices × validRightChoices
+```
+
+---
+
 # 1. Count Distinct Char in Substrings
 
 **Problem:** [Maang — Count Distinct Char in Substrings](https://maang.in/problems/Count-Distinct-Char-in-Substrings-62)
@@ -45,6 +81,39 @@ Contribution technique asks:
 ```text
 For this occurrence s[i],
 how many substrings get +1 distinct-character contribution from it?
+```
+
+## Start From `(i+1) × (n-i)`
+
+Normally, index `i` belongs to:
+
+```text
+(i+1) × (n-i)
+```
+
+substrings.
+
+But for **distinct-character contribution**, if the substring also starts before the previous same character, this occurrence must not contribute another `+1`.
+
+So restrict the normal left choices:
+
+```text
+normal left choices = i+1
+valid left choices  = i-prev
+```
+
+The right side is unrestricted:
+
+```text
+right choices = n-i
+```
+
+Hence:
+
+```text
+(i+1)(n-i)
+        ↓ restrict left
+(i-prev)(n-i)
 ```
 
 ## Contribution Idea
@@ -224,6 +293,34 @@ s = "ABA"
 "ABA" → 1   // only B occurs exactly once
 
 answer = 8
+```
+
+## Start From `(i+1) × (n-i)`
+
+Normally:
+
+```text
+left  = i+1
+right = n-i
+```
+
+and:
+
+```text
+subarrays containing i
+= (i+1)(n-i)
+```
+
+For `s[i]` to be **unique**, we cannot include either the previous or the next occurrence of the same character.
+
+Therefore both sides become restricted:
+
+```text
+normal:
+(i+1)(n-i)
+
+restricted:
+(i-prev)(next-i)
 ```
 
 ## Contribution Idea
@@ -457,6 +554,47 @@ Ask:
 In how many subarrays is a[i] the minimum?
 ```
 
+## Start From `(i+1) × (n-i)`
+
+If there were no minimum restriction, `a[i]` belongs to:
+
+```text
+(i+1)(n-i)
+```
+
+subarrays.
+
+For `a[i]` to contribute as the **minimum**, we cannot extend through a blocking smaller element.
+
+So replace the normal boundaries:
+
+```text
+normal left  = i+1
+normal right = n-i
+```
+
+with:
+
+```text
+valid left  = i-P
+valid right = N-i
+```
+
+where:
+
+```text
+P = previous strictly smaller index
+N = next smaller-or-equal index
+```
+
+Thus:
+
+```text
+a[i](i+1)(n-i)
+        ↓ restrict boundaries
+a[i](i-P)(N-i)
+```
+
 ## Contribution Idea
 
 For `a[i]` to remain the chosen minimum, expand:
@@ -637,11 +775,22 @@ long long solve(vector<long long>& a) {
 
 # 4. Final Formula Summary
 
-| Problem | Fix | Contribution |
-|---|---|---|
-| Distinct chars over all substrings | occurrence `s[i]` | `(i-prev)(n-i)` |
-| Unique chars over all substrings | occurrence `s[i]` | `(i-prev)(next-i)` |
-| Sum of subarray minimums | element `a[i]` | `a[i](i-P)(N-i)` |
+Start every subarray contribution problem with:
+
+```text
+LEFT × RIGHT
+
+= (i+1) × (n-i)
+```
+
+Then ask whether the problem imposes a restriction.
+
+| Problem | Base | Restriction | Final Contribution |
+|---|---|---|---|
+| Normal subarray sum | `(i+1)(n-i)` | none | `a[i](i+1)(n-i)` |
+| Distinct chars | `(i+1)(n-i)` | previous same char blocks left | `(i-prev)(n-i)` |
+| Unique chars | `(i+1)(n-i)` | previous + next same char | `(i-prev)(next-i)` |
+| Subarray minimum | `(i+1)(n-i)` | smaller elements block both sides | `a[i](i-P)(N-i)` |
 
 The common contribution model is:
 
