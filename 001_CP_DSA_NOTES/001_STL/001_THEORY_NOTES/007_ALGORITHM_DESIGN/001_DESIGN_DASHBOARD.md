@@ -414,42 +414,133 @@ struct Dashboard {
 
 # 10. Dry Run
 
-Operations:
+Start:
 
-``` text
-Insert(5)
-Insert(3)
-Insert(5)
-Insert(8)
-Remove(5)
+```text
+curSum = 0
+mp     = {}
 ```
 
-  Operation       `curSum` `mp`                Max   Distinct
-  ------------- ---------- ----------------- ----- ----------
-  start                  0 `{}`                ---          0
-  `Insert(5)`            5 `{5:1}`               5          1
-  `Insert(3)`            8 `{3:1,5:1}`           5          2
-  `Insert(5)`           13 `{3:1,5:2}`           5          2
-  `Insert(8)`           21 `{3:1,5:2,8:1}`       8          3
-  `Remove(5)`           16 `{3:1,5:1,8:1}`       8          3
+### Step 1 — `Insert(5)`
 
-Now remove `5` again:
+```text
+curSum = 0 + 5 = 5
+mp[5]  = 0 + 1 = 1
 
-``` text
-frequency[5]: 1 → 0
+State → {5:1}
+Max = 5 | Distinct = 1
 ```
 
-Erase it:
+### Step 2 — `Insert(3)`
 
-``` text
-curSum = 11
-mp = {3:1, 8:1}
+```text
+curSum = 5 + 3 = 8
+mp[3]  = 0 + 1 = 1
 
-max      = 8
-distinct = 2
+State → {3:1, 5:1}
+Max = 5 | Distinct = 2
 ```
 
-------------------------------------------------------------------------
+### Step 3 — `Insert(5)`
+
+```text
+curSum = 8 + 5 = 13
+mp[5]  = 1 + 1 = 2
+
+State → {3:1, 5:2}
+Max = 5 | Distinct = 2
+```
+
+Notice:
+
+```text
+5 already existed
+→ frequency changes 1 → 2
+→ distinct does NOT change
+```
+
+### Step 4 — `Insert(8)`
+
+```text
+curSum = 13 + 8 = 21
+mp[8]  = 0 + 1 = 1
+
+State → {3:1, 5:2, 8:1}
+Max = 8 | Distinct = 3
+```
+
+### Step 5 — `Remove(5)`
+
+```text
+curSum = 21 - 5 = 16
+mp[5]  = 2 - 1 = 1
+
+State → {3:1, 5:1, 8:1}
+Max = 8 | Distinct = 3
+```
+
+`5` is **not erased** because one occurrence remains.
+
+### Step 6 — `Remove(5)` Again
+
+```text
+curSum = 16 - 5 = 11
+mp[5]  = 1 - 1 = 0
+```
+
+Frequency reached zero:
+
+```text
+erase(5)
+```
+
+Final state:
+
+```text
+mp       = {3:1, 8:1}
+curSum   = 11
+Max      = 8
+Distinct = 2
+```
+
+### Complete State Transition
+
+| Step | Operation | Sum Update | Frequency Update | State `mp` | Max | Distinct |
+|---:|---|---|---|---|---:|---:|
+| 0 | Start | `0` | — | `{}` | — | 0 |
+| 1 | `Insert(5)` | `0+5=5` | `5: 0→1` | `{5:1}` | 5 | 1 |
+| 2 | `Insert(3)` | `5+3=8` | `3: 0→1` | `{3:1, 5:1}` | 5 | 2 |
+| 3 | `Insert(5)` | `8+5=13` | `5: 1→2` | `{3:1, 5:2}` | 5 | 2 |
+| 4 | `Insert(8)` | `13+8=21` | `8: 0→1` | `{3:1, 5:2, 8:1}` | 8 | 3 |
+| 5 | `Remove(5)` | `21-5=16` | `5: 2→1` | `{3:1, 5:1, 8:1}` | 8 | 3 |
+| 6 | `Remove(5)` | `16-5=11` | `5: 1→0 → erase` | `{3:1, 8:1}` | 8 | 2 |
+
+### What to Observe
+
+```text
+Insert new value
+→ sum changes
+→ new map key
+→ distinct +1
+
+Insert duplicate
+→ sum changes
+→ frequency +1
+→ distinct unchanged
+
+Remove but frequency > 0
+→ sum changes
+→ frequency -1
+→ key remains
+
+Remove last occurrence
+→ frequency becomes 0
+→ erase key
+→ distinct -1
+→ maximum may also change
+```
+
+---
 
 # 11. Complexity
 
