@@ -308,13 +308,13 @@ Computers store integers in binary.
 
 ### Core operators
 
-  **Operation**   **C++**   **Typical use**
-  --------------- --------- -------------------------
-  AND             `&`       Test / clear bits
-  OR              `\|`      Set bits
-  XOR             `^`       Toggle / cancellation
-  Left shift      `<<`      Multiply by powers of 2
-  Right shift     `>>`      Divide by powers of 2
+| Operation | C++ | Typical use |
+| :--- | :---: | :--- |
+| AND | `&` | Test / clear bits |
+| OR | `\|` | Set bits |
+| XOR | `^` | Toggle / cancellation |
+| Left shift | `<<` | Multiply by powers of 2 |
+| Right shift | `>>` | Divide by powers of 2 |
 
 ### Example --- test bit `k`
 
@@ -617,21 +617,21 @@ The statement rarely says:
 
 Instead, recognize the hidden mathematical structure.
 
-  **Problem clue**           **Think about**
-  -------------------------- ----------------------------
-  divisible / remainder      Modulo
-  common divisor             GCD
-  repeating cycles meet      LCM
-  prime factors              Sieve / factorization
-  choose `k` objects         Combinations
-  arrangements               Permutations
-  all subsets                Bitmask / powers of 2
-  huge exponent              Binary exponentiation
-  repeated recurrence        DP / matrix exponentiation
-  random outcome             Probability / expectation
-  points / distance / area   Geometry
-  winning moves              Game theory
-  overlapping groups         Inclusion-exclusion
+| Problem clue | Think about |
+| :--- | :--- |
+| Divisible / remainder | Modulo |
+| Common divisor | GCD |
+| Repeating cycles meet | LCM |
+| Prime factors | Sieve / factorization |
+| Choose `k` objects | Combinations |
+| Arrangements | Permutations |
+| All subsets | Bitmask / powers of 2 |
+| Huge exponent | Binary exponentiation |
+| Repeated recurrence | DP / matrix exponentiation |
+| Random outcome | Probability / expectation |
+| Points / distance / area | Geometry |
+| Winning moves | Game theory |
+| Overlapping groups | Inclusion-exclusion |
 
 The key contest habit is:
 
