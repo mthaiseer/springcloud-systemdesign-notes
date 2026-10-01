@@ -308,13 +308,13 @@ Computers store integers in binary.
 
 ### Core operators
 
-  Operation     C++    Typical use
-  ------------- ------ -------------------------
-  AND           `&`    test/clear bits
-  OR            `\|`   set bits
-  XOR           `^`    toggle/cancellation
-  Left shift    `<<`   multiply by powers of 2
-  Right shift   `>>`   divide by powers of 2
+  **Operation**   **C++**   **Typical use**
+  --------------- --------- -------------------------
+  AND             `&`       Test / clear bits
+  OR              `\|`      Set bits
+  XOR             `^`       Toggle / cancellation
+  Left shift      `<<`      Multiply by powers of 2
+  Right shift     `>>`      Divide by powers of 2
 
 ### Example --- test bit `k`
 
@@ -617,21 +617,21 @@ The statement rarely says:
 
 Instead, recognize the hidden mathematical structure.
 
-  Problem clue               Think about
+  **Problem clue**           **Think about**
   -------------------------- ----------------------------
-  divisible / remainder      modulo
+  divisible / remainder      Modulo
   common divisor             GCD
   repeating cycles meet      LCM
-  prime factors              sieve / factorization
-  choose `k` objects         combinations
-  arrangements               permutations
-  all subsets                bitmask / powers of 2
-  huge exponent              binary exponentiation
+  prime factors              Sieve / factorization
+  choose `k` objects         Combinations
+  arrangements               Permutations
+  all subsets                Bitmask / powers of 2
+  huge exponent              Binary exponentiation
   repeated recurrence        DP / matrix exponentiation
-  random outcome             probability / expectation
-  points / distance / area   geometry
-  winning moves              game theory
-  overlapping groups         inclusion-exclusion
+  random outcome             Probability / expectation
+  points / distance / area   Geometry
+  winning moves              Game theory
+  overlapping groups         Inclusion-exclusion
 
 The key contest habit is:
 
