@@ -1,39 +1,64 @@
 # Stars and Bars — Counting Integer Solutions
 
-> **Goal:** Count solutions of equations like  
+> **Goal:** Count integer solutions of  
 > `x1 + x2 + ... + xr = n`  
-> when the variables must be **non-negative** or **positive integers**.
+> when variables have lower-bound constraints such as `xi ≥ 0`, `xi ≥ 1`, or `xi ≥ L`.
 
 ---
 
-# 1. What Problem Does Stars and Bars Solve?
+# 1. When Do We Use Stars and Bars?
 
-Suppose:
+Typical forms:
+
+```text
+x1 + x2 + ... + xr = n
+```
+
+or:
+
+```text
+distribute n identical items among r groups
+```
+
+Think:
+
+```text
+n identical items
+        ↓
+represent them as STARS
+
+r variables / groups
+        ↓
+separate them using r-1 BARS
+```
+
+So:
+
+```text
+STARS = items being distributed
+BARS  = separators between variables
+```
+
+---
+
+# 2. Core Visual Model
+
+Example:
 
 ```text
 x1 + x2 + x3 = 4
+xi ≥ 0
 ```
 
-with:
+We have:
 
 ```text
-x1, x2, x3 ≥ 0
-```
+4 stars:
 
-We are asking:
-
-```text
-How many different ways can we distribute
-4 identical items among 3 variables?
-```
-
-Think of the `4` items as stars:
-
-```text
 ★ ★ ★ ★
 ```
 
-We need to divide them into `3` groups:
+and `3` variables:
 
 ```text
 x1 | x2 | x3
@@ -42,36 +67,16 @@ x1 | x2 | x3
 To create `3` groups, we need:
 
 ```text
-2 bars
+3 - 1 = 2 bars
 ```
 
-because:
-
-```text
-3 groups → 2 separators
-```
-
-This is the core idea of **Stars and Bars**.
-
----
-
-# 2. Understanding One Arrangement
-
-Consider:
+One arrangement:
 
 ```text
 ★ ★ | ★ | ★
 ```
 
-Read it from left to right:
-
-```text
-★ ★   |   ★   |   ★
- ↑↑        ↑       ↑
- x1        x2      x3
-```
-
-Therefore:
+means:
 
 ```text
 x1 = 2
@@ -79,37 +84,35 @@ x2 = 1
 x3 = 1
 ```
 
-Check:
+because:
 
 ```text
-2 + 1 + 1 = 4
+★ ★   |   ★   |   ★
+ ↑↑        ↑       ↑
+ x1        x2      x3
 ```
 
-So:
+Thus:
 
 ```text
 ★ ★ | ★ | ★
-```
-
-represents exactly one solution:
-
-```text
+↔
 (2,1,1)
 ```
 
+Every valid stars-and-bars arrangement corresponds to exactly one solution.
+
 ---
 
-# 3. Why Can a Variable Be Zero?
+## Why Can a Variable Be Zero?
 
-Suppose:
+Example:
 
 ```text
 | ★ ★ ★ | ★
 ```
 
-There are no stars before the first bar.
-
-Therefore:
+means:
 
 ```text
 x1 = 0
@@ -117,9 +120,7 @@ x2 = 3
 x3 = 1
 ```
 
-So adjacent bars or bars at the ends naturally represent zero values.
-
-Another example:
+And:
 
 ```text
 ★ ★ || ★ ★
@@ -133,6 +134,16 @@ x2 = 0
 x3 = 2
 ```
 
+So:
+
+```text
+bar at an end
+or
+two adjacent bars
+        ↓
+some variable = 0
+```
+
 This is why ordinary Stars and Bars naturally handles:
 
 ```text
@@ -141,106 +152,108 @@ xi ≥ 0
 
 ---
 
-# 4. Deriving the Non-Negative Formula
+# 3. Case 1 — Non-Negative Solutions
 
-Consider:
+Given:
 
 ```text
 x1 + x2 + ... + xr = n
-```
-
-with:
-
-```text
 xi ≥ 0
 ```
 
-We need:
+## Step 1 — Convert to Stars and Bars
+
+Total value:
+
+```text
+n
+```
+
+so we need:
 
 ```text
 n stars
 ```
 
-because the total being distributed is `n`.
+Number of variables:
 
-We need:
+```text
+r
+```
+
+so we need:
 
 ```text
 r - 1 bars
 ```
 
-because `r` variables require `r` groups.
-
-So the full sequence contains:
+Therefore the sequence contains:
 
 ```text
-n stars + (r-1) bars
+n + (r-1)
+=
+n+r-1
 ```
 
-Total positions:
+symbols.
+
+---
+
+## Step 2 — Count the Arrangements
+
+We only need to choose where the bars go.
 
 ```text
-n + r - 1
-```
-
-Now choose which positions contain the bars:
-
-```text
-choose r-1 bar positions
-from n+r-1 positions
+total positions = n+r-1
+bars            = r-1
 ```
 
 Therefore:
 
 ```text
-             n+r-1
-answer = C(       )
-              r-1
+answer
+=
+C(n+r-1, r-1)
 ```
 
-or:
+Equivalent form:
 
 ```text
-answer = C(n+r-1, r-1)
+C(n+r-1, n)
 ```
+
+because choosing the bar positions automatically determines the star positions.
 
 ---
 
-# 5. Example — x1 + x2 + x3 = 4
+## Example — x1 + x2 + x3 = 4
 
-Given:
+Here:
 
 ```text
 n = 4
 r = 3
 ```
 
-Stars:
+So:
 
 ```text
-★ ★ ★ ★
+stars = 4
+bars  = 2
 ```
 
-Bars needed:
+Total positions:
 
 ```text
-r - 1
-= 3 - 1
-= 2
+4 + 2 = 6
 ```
 
-Total symbols:
-
-```text
-4 stars + 2 bars
-= 6
-```
-
-Choose positions for the `2` bars:
+Choose the `2` bar positions:
 
 ```text
 C(6,2)
-= 15
+=
+15
 ```
 
 Therefore:
@@ -256,101 +269,61 @@ has:
 15 solutions
 ```
 
-### Formula Check
+### Why Combination?
 
-```text
-C(n+r-1, r-1)
-
-= C(4+3-1, 3-1)
-
-= C(6,2)
-
-= 15
-```
-
----
-
-# 6. Why Is This a Combination?
-
-Suppose the six positions are:
+Imagine:
 
 ```text
 _ _ _ _ _ _
 ```
 
-We only need to decide:
+Choose any `2` positions for bars.
 
-```text
-Which 2 positions contain bars?
-```
-
-Example:
+For example:
 
 ```text
 ★ ★ | ★ | ★
 ```
 
-Once the bar positions are selected, every other position is automatically a star.
+Once the bars are fixed, every remaining position is a star.
 
-So:
-
-```text
-choose 2 positions from 6
-```
-
-which is:
+So the problem is simply:
 
 ```text
-C(6,2)
+choose r-1 positions
+from n+r-1 positions
 ```
-
-There is no separate ordering of the identical stars or identical bars.
 
 ---
 
-# 7. Positive Solutions — xi > 0
+# 4. Case 2 — Positive Solutions
 
-Now consider:
-
-```text
-x1 + x2 + x3 = 6
-```
-
-with:
+Now:
 
 ```text
-x1, x2, x3 > 0
+x1 + x2 + ... + xr = n
+xi > 0
 ```
 
-This means every variable must receive **at least 1**.
-
-We cannot allow:
+or equivalently:
 
 ```text
-x1 = 0
+xi ≥ 1
 ```
 
-or:
+Every variable must receive at least `1`.
+
+The key idea is:
 
 ```text
-x2 = 0
+GIVE EVERY VARIABLE 1 FIRST
 ```
-
-etc.
-
-So first give one item to every variable.
 
 ---
 
-# 8. Give Everyone One First
+## Example — x1 + x2 + x3 = 6
 
-Start with:
-
-```text
-x1 + x2 + x3 = 6
-```
-
-Minimum required:
+We require:
 
 ```text
 x1 ≥ 1
@@ -361,9 +334,9 @@ x3 ≥ 1
 Give one to each:
 
 ```text
-x1 → 1
-x2 → 1
-x3 → 1
+x1 ← 1
+x2 ← 1
+x3 ← 1
 ```
 
 Used:
@@ -378,7 +351,11 @@ Remaining:
 6 - 3 = 3
 ```
 
-Now distribute these remaining `3` items freely.
+Now the remaining `3` can be distributed freely.
+
+---
+
+## Algebraic Transformation
 
 Define:
 
@@ -391,114 +368,61 @@ x3 = y3 + 1
 where:
 
 ```text
-y1, y2, y3 ≥ 0
-```
-
----
-
-# 9. Algebraic Transformation
-
-Start:
-
-```text
-x1 + x2 + x3 = 6
+yi ≥ 0
 ```
 
 Substitute:
 
 ```text
-x1 = y1 + 1
-x2 = y2 + 1
-x3 = y3 + 1
-```
-
-Then:
-
-```text
 (y1+1) + (y2+1) + (y3+1) = 6
 ```
 
-Group terms:
+Collect constants:
 
 ```text
 y1 + y2 + y3 + 3 = 6
 ```
 
-Move `3`:
+Therefore:
 
 ```text
 y1 + y2 + y3 = 3
 ```
 
-Now we have a normal non-negative Stars and Bars problem.
+Now it is an ordinary non-negative Stars and Bars problem:
+
+```text
+C(3+3-1, 3-1)
+=
+C(5,2)
+=
+10
+```
+
+Therefore there are:
+
+```text
+10 positive solutions
+```
 
 ---
 
-# 10. Count the Positive Solutions
+## General Derivation
 
 For:
 
 ```text
-y1 + y2 + y3 = 3
-```
-
-we have:
-
-```text
-n = 3
-r = 3
-```
-
-Therefore:
-
-```text
-C(3+3-1, 3-1)
-
-= C(5,2)
-
-= 10
-```
-
-So:
-
-```text
-x1 + x2 + x3 = 6
-xi > 0
-```
-
-has:
-
-```text
-10 solutions
-```
-
----
-
-# 11. Deriving the General Positive Formula
-
-Start:
-
-```text
 x1 + x2 + ... + xr = n
+xi ≥ 1
 ```
 
-with:
-
-```text
-xi > 0
-```
-
-Every variable needs at least `1`.
-
-So define:
+write:
 
 ```text
 xi = yi + 1
 ```
 
-for every variable.
-
-There are `r` variables, so we reserve:
+Since there are `r` variables, we reserve:
 
 ```text
 r × 1 = r
@@ -506,13 +430,13 @@ r × 1 = r
 
 items.
 
-Remaining total:
+Remaining:
 
 ```text
-n - r
+n-r
 ```
 
-Therefore:
+So:
 
 ```text
 y1 + y2 + ... + yr = n-r
@@ -524,7 +448,7 @@ with:
 yi ≥ 0
 ```
 
-Apply the non-negative formula:
+Apply Stars and Bars:
 
 ```text
 C((n-r)+r-1, r-1)
@@ -541,104 +465,14 @@ n-1
 Therefore:
 
 ```text
-Positive solutions
+answer
 =
 C(n-1, r-1)
 ```
 
 ---
 
-# 12. Non-Negative vs Positive
-
-## Non-Negative
-
-```text
-x1 + x2 + ... + xr = n
-
-xi ≥ 0
-```
-
-Direct Stars and Bars:
-
-```text
-stars = n
-bars  = r-1
-```
-
-Answer:
-
-```text
-C(n+r-1, r-1)
-```
-
----
-
-## Positive
-
-```text
-x1 + x2 + ... + xr = n
-
-xi > 0
-```
-
-First reserve `1` for every variable:
-
-```text
-remaining = n-r
-```
-
-Then Stars and Bars:
-
-```text
-C(n-1, r-1)
-```
-
----
-
-# 13. Visual Comparison
-
-```text
-NON-NEGATIVE
-
-x1 + x2 + x3 = 4
-xi ≥ 0
-
-★ ★ | ★ | ★
-
-zero is allowed
-bars may touch / appear at ends
-
-answer:
-C(n+r-1, r-1)
-```
-
-versus:
-
-```text
-POSITIVE
-
-x1 + x2 + x3 = 6
-xi ≥ 1
-
-first give:
-
-x1 ← 1
-x2 ← 1
-x3 ← 1
-
-remaining = 6-3 = 3
-
-then distribute remaining freely
-
-answer:
-C(n-1, r-1)
-```
-
----
-
-# 14. General Lower Bound — xi ≥ L
-
-The same idea extends naturally.
+# 5. Case 3 — General Lower Bound xi ≥ L
 
 Suppose:
 
@@ -646,13 +480,17 @@ Suppose:
 x1 + x2 + ... + xr = n
 ```
 
-and every variable must satisfy:
+with:
 
 ```text
 xi ≥ L
 ```
 
-Give each variable `L` first.
+The same idea applies:
+
+```text
+give every variable L first
+```
 
 Define:
 
@@ -678,13 +516,13 @@ Therefore:
 y1 + ... + yr = n-rL
 ```
 
-Now:
+where:
 
 ```text
 yi ≥ 0
 ```
 
-Apply Stars and Bars:
+Now apply ordinary Stars and Bars:
 
 ```text
 answer
@@ -692,7 +530,9 @@ answer
 C((n-rL)+r-1, r-1)
 ```
 
-provided:
+### Feasibility Check
+
+Before using the formula, check:
 
 ```text
 n ≥ rL
@@ -710,91 +550,13 @@ then:
 answer = 0
 ```
 
-because there are not enough items to satisfy the minimum.
-
----
-
-# 15. Recognition Patterns
-
-| Problem form | Transformation | Answer |
-|---|---|---|
-| `x1+...+xr=n`, `xi≥0` | Direct Stars & Bars | `C(n+r-1,r-1)` |
-| `x1+...+xr=n`, `xi≥1` | Give each `1` | `C(n-1,r-1)` |
-| `x1+...+xr=n`, `xi≥L` | `xi=yi+L` | `C(n-rL+r-1,r-1)` |
-
-Typical problem language:
-
-```text
-distribute N identical balls among R boxes
-```
-
-```text
-number of non-negative integer solutions
-```
-
-```text
-number of positive integer solutions
-```
-
-```text
-split N identical items among R people
-```
-
-These should make you think:
-
-```text
-STARS AND BARS
-```
-
----
-
-# 16. Common Mistakes
-
-## Mistake 1 — Using it when objects are distinct
-
-Stars and Bars models:
-
-```text
-identical items
-```
-
-If the objects themselves are distinct, this simple formula does not directly apply.
-
----
-
-## Mistake 2 — Mixing Positive and Non-Negative
-
-```text
-xi ≥ 0
-```
-
-means:
-
-```text
-C(n+r-1, r-1)
-```
-
-But:
-
-```text
-xi ≥ 1
-```
-
-requires giving everyone `1` first:
-
-```text
-C(n-1, r-1)
-```
-
----
-
-## Mistake 3 — Forgetting Feasibility
+because there are not enough items to satisfy the minimum requirements.
 
 Example:
 
 ```text
 x1+x2+x3 = 2
-xi > 0
+xi ≥ 1
 ```
 
 Minimum required:
@@ -803,7 +565,7 @@ Minimum required:
 1+1+1 = 3
 ```
 
-But:
+but:
 
 ```text
 2 < 3
@@ -817,74 +579,182 @@ Therefore:
 
 ---
 
-# 17. Final Memory Card
+# 6. Formula & Recognition Table
+
+| Problem | Transformation | Answer |
+|---|---|---|
+| `x1+...+xr=n`, `xi≥0` | Direct Stars & Bars | `C(n+r-1,r-1)` |
+| `x1+...+xr=n`, `xi≥1` | Give each variable `1` | `C(n-1,r-1)` |
+| `x1+...+xr=n`, `xi≥L` | Set `xi=yi+L` | `C(n-rL+r-1,r-1)` |
+
+For the last case:
 
 ```text
-STARS AND BARS
-
-x1 + x2 + ... + xr = n
+require n ≥ rL
 ```
 
-### Non-Negative
+otherwise the answer is `0`.
+
+---
+
+# 7. How to Recognize It in a Problem
+
+Look for phrases such as:
+
+```text
+number of non-negative integer solutions
+```
+
+```text
+number of positive integer solutions
+```
+
+```text
+distribute N identical balls among R boxes
+```
+
+```text
+distribute N identical items among R people/groups
+```
+
+Then model:
+
+```text
+amount distributed = stars
+number of groups    = variables
+separators          = groups - 1
+```
+
+---
+
+# 8. Common Mistakes
+
+## Mistake 1 — Objects Are Not Identical
+
+Basic Stars and Bars models:
+
+```text
+identical items
+```
+
+If the objects are distinct, this simple formula does not directly apply.
+
+---
+
+## Mistake 2 — Mixing xi ≥ 0 and xi ≥ 1
+
+Non-negative:
 
 ```text
 xi ≥ 0
-
-n stars
-r-1 bars
-
-total symbols:
-n+r-1
-
-choose bar positions:
-C(n+r-1, r-1)
+→ direct Stars and Bars
+→ C(n+r-1,r-1)
 ```
 
-### Positive
+Positive:
 
 ```text
 xi ≥ 1
-
-give 1 to every variable
-        ↓
-use r items
-        ↓
-remaining = n-r
-        ↓
-ordinary Stars & Bars
-        ↓
-C(n-1, r-1)
+→ give everyone 1 first
+→ C(n-1,r-1)
 ```
 
-### General Minimum L
+---
+
+## Mistake 3 — Forgetting the Minimum Requirement
+
+For:
 
 ```text
 xi ≥ L
-
-give L to each variable
-        ↓
-remaining = n-rL
-        ↓
-Stars & Bars
 ```
 
-## Contest Thinking Flow
+first reserve:
+
+```text
+rL
+```
+
+items.
+
+If:
+
+```text
+n < rL
+```
+
+there are no solutions.
+
+---
+
+# 9. Final Contest Memory Card
+
+```text
+x1 + x2 + ... + xr = n
+```
+
+Ask:
+
+```text
+What is the minimum value of each xi?
+```
+
+### If xi ≥ 0
+
+```text
+n stars
+r-1 bars
+
+total positions = n+r-1
+
+answer:
+C(n+r-1, r-1)
+```
+
+### If xi ≥ 1
+
+```text
+give 1 to each
+      ↓
+use r items
+      ↓
+remaining = n-r
+      ↓
+ordinary Stars & Bars
+      ↓
+answer = C(n-1,r-1)
+```
+
+### If xi ≥ L
+
+```text
+give L to each
+      ↓
+use rL items
+      ↓
+remaining = n-rL
+      ↓
+ordinary Stars & Bars
+```
+
+## Modelling Flow
 
 ```text
 x1 + x2 + ... + xr = n
           ↓
-integer solutions?
+integer solutions / identical distribution?
           ↓
-check lower bound
-     /           \
-   xi≥0          xi≥L
-    ↓              ↓
- direct       give L first
-    ↓              ↓
-Stars & Bars   remaining n-rL
-     \            /
-      \          /
-       choose bars
+YES
+          ↓
+find lower bound L
+          ↓
+give L to every variable
+          ↓
+remaining = n-rL
+          ↓
+convert to yi ≥ 0
+          ↓
+Stars & Bars
 ```
 
-> **Core idea:** Stars are the items being distributed. Bars divide those stars among the variables. If every variable has a minimum requirement, **give the minimum first**, then apply ordinary Stars and Bars to what remains.
+> **Core intuition:** `n` identical items become **stars**. The `r` variables are `r` groups, so we need `r-1` **bars** to separate them. If every variable has a minimum value, satisfy that minimum first and distribute only what remains.
