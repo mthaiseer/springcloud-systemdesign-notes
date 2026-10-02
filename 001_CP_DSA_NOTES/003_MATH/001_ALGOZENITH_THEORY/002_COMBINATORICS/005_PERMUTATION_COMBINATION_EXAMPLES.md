@@ -1,82 +1,110 @@
 # Permutations & Combinations — Visual Math Modelling Examples
 
-> **Goal:** Do not start with a formula. Convert the story into **choices**, identify what uniquely defines one answer, then count.
+> **Goal:** Learn how to **discover the counting model** instead of memorizing formulas.
 
-## 1. Core Math-Modelling Habit
+---
+
+# 1. The Modelling Method
+
+For every problem, use:
 
 ```text
-STORY / OBJECT
-      ↓
-What uniquely defines one answer?
-      ↓
-Convert it into choices
-      ↓
-Does order matter?
-      ↓
-Choose / multiply / sum
-      ↓
-Formula
+1. What are we counting?
+        ↓
+2. Draw a tiny example
+        ↓
+3. What choices create ONE answer?
+        ↓
+4. Why nCr / × / + / Σ?
+        ↓
+5. Derive the formula
+        ↓
+6. Dry run
+        ↓
+7. Recognition pattern
 ```
 
-Key question:
+The important question is not:
 
 ```text
-"What minimum information uniquely determines
- one object I am counting?"
+Which formula should I use?
 ```
 
-Examples:
+Instead ask:
 
 ```text
-intersection of 2 lines → choose the 2 lines
-subarray                → choose 2 boundaries
-rectangle               → choose 2 horizontal + 2 vertical lines
-square                  → choose size + position
+What choices create ONE object?
 ```
 
 ---
 
 # 2. Maximum Intersections — 8 Lines & 4 Circles
 
-Assume general position so all allowable intersection points are distinct.
+## What are we counting?
+
+```text
+distinct intersection points
+```
+
+There are three types:
+
+```text
+line ↔ line
+circle ↔ circle
+line ↔ circle
+```
+
+For the maximum, assume all allowable intersection points are distinct.
+
+---
 
 ## A. Line ↔ Line
 
-One intersection is determined by:
+### Tiny picture
 
 ```text
-choosing 2 lines
+Line 1  ───────╲
+                ╲
+                 X
+                ╱
+Line 2  ───────╱
 ```
 
-Order does not matter, so:
+Two lines create at most:
 
 ```text
-8C2 = (8 × 7) / 2 = 28
+1 intersection
 ```
+
+So to create one line-line intersection we choose:
 
 ```text
-Line A  ─────────╲
-                  ╲
-                   X  ← one intersection
-                  ╱
-Line B  ─────────╱
-
-choose 2 lines
-      ↓
-     8C2
-      ↓
-      28
+2 lines
 ```
+
+From `8` lines:
+
+```text
+C(8,2)
+= 8×7 / 2
+= 28
+```
+
+Why combination?
+
+```text
+Line 1 + Line 2
+=
+Line 2 + Line 1
+```
+
+Order does not matter.
+
+---
 
 ## B. Circle ↔ Circle
 
-Choose a pair of circles:
-
-```text
-4C2 = 6
-```
-
-Each pair can intersect at most twice:
+Two circles can intersect at most twice:
 
 ```text
        ___     ___
@@ -85,65 +113,80 @@ Each pair can intersect at most twice:
     |       / \     |
      \ ___ / X \___/
 
-       up to 2 points
+         2 points
 ```
 
-Therefore:
+First choose the circle pair:
 
 ```text
-4C2 × 2
-= 6 × 2
-= 12
+C(4,2) = 6
 ```
+
+Each pair contributes at most `2` points:
+
+```text
+6 × 2 = 12
+```
+
+So:
+
+```text
+circle-circle intersections
+=
+C(4,2) × 2
+=
+12
+```
+
+---
 
 ## C. Line ↔ Circle
 
 Choose:
 
 ```text
-1 line AND 1 circle
+1 line from 8
+AND
+1 circle from 4
 ```
 
-Ways:
+Number of pairs:
 
 ```text
 8 × 4
 ```
 
-Each pair can intersect at most twice:
+Each pair can intersect twice:
 
 ```text
         _______
      .-'       '-.
 ----X-------------X----
      '-._______.-'
-
-       2 points
 ```
 
 Therefore:
 
 ```text
-8 × 4 × 2 = 64
+8 × 4 × 2
+= 64
 ```
 
-## D. Combine
+---
+
+## D. Final Count
 
 ```text
-                 INTERSECTIONS
-                       │
-          ┌────────────┼────────────┐
-          ↓            ↓            ↓
-      line-line   circle-circle  line-circle
-          │            │            │
-         8C2          4C2×2        8×4×2
-          │            │            │
-         28           12           64
-          └────────────┼────────────┘
-                       ↓
-                  28+12+64
-                       ↓
-                      104
+line-line      = 28
+circle-circle  = 12
+line-circle    = 64
+```
+
+These are separate cases:
+
+```text
+28 + 12 + 64
+= 104
 ```
 
 ### Recognition
@@ -151,45 +194,108 @@ Therefore:
 ```text
 Every PAIR creates something
         ↓
-       nC2
+       C(N,2)
 
 Every pair creates K outcomes
         ↓
-      nC2 × K
+      C(N,2) × K
 ```
 
 ---
 
 # 3. Total Subarrays of an Array
 
-A subarray is a **contiguous** segment.
-
-Instead of choosing elements, choose its boundaries.
-
-For `N = 4`:
+## What are we counting?
 
 ```text
-    a1      a2      a3      a4
-
-|-------|-------|-------|-------|
-0       1       2       3       4
-↑                               ↑
-        N+1 boundaries
+all contiguous segments
 ```
 
-One subarray is uniquely determined by:
+For:
 
 ```text
-LEFT boundary + RIGHT boundary
+[a1, a2, a3, a4]
 ```
 
-There are `N+1` boundaries, so choose `2`:
+we have `N = 4`.
+
+---
+
+## Step 1 — Look at Boundaries
+
+Draw boundaries around the elements:
 
 ```text
-Total = C(N+1,2)
+      a1      a2      a3      a4
+
+   |-------|-------|-------|-------|
+   0       1       2       3       4
 ```
 
-Algebra:
+There are:
+
+```text
+4 elements
+5 boundaries
+
+N elements
+N+1 boundaries
+```
+
+---
+
+## Step 2 — How Does One Subarray Form?
+
+Take:
+
+```text
+[a2, a3]
+```
+
+Picture:
+
+```text
+      a1     [a2      a3]     a4
+
+   |-------|-------|-------|-------|
+   0       1       2       3       4
+           ↑               ↑
+        left             right
+```
+
+The subarray is completely determined by:
+
+```text
+LEFT boundary
+AND
+RIGHT boundary
+```
+
+So one subarray corresponds to:
+
+```text
+choosing 2 boundaries
+```
+
+---
+
+## Step 3 — Count
+
+Number of boundaries:
+
+```text
+N + 1
+```
+
+Choose any `2`:
+
+```text
+Total
+=
+C(N+1,2)
+```
+
+Expand:
 
 ```text
 C(N+1,2)
@@ -200,44 +306,53 @@ C(N+1,2)
 Therefore:
 
 ```text
-Total subarrays = N(N+1)/2
-```
-
-## Example — N = 4
-
-```text
-C(5,2) = 10
-```
-
-Another view:
-
-```text
-length 1 → 4
-length 2 → 3
-length 3 → 2
-length 4 → 1
-
-4 + 3 + 2 + 1 = 10
-```
-
-So:
-
-```text
-1 + 2 + ... + N
+Total subarrays
 =
 N(N+1)/2
-=
-C(N+1,2)
 ```
+
+---
+
+## Dry Run — N = 4
+
+By length:
+
+```text
+length 1 → 4 subarrays
+length 2 → 3 subarrays
+length 3 → 2 subarrays
+length 4 → 1 subarray
+```
+
+Total:
+
+```text
+4 + 3 + 2 + 1
+= 10
+```
+
+Formula:
+
+```text
+C(5,2)
+=
+5×4/2
+=
+10
+```
+
+Same answer.
 
 ### Recognition
 
 ```text
 CONTIGUOUS segment
        ↓
-choose two boundaries
+start + end
        ↓
-N+1 boundaries
+think boundaries
+       ↓
+choose 2 from N+1
        ↓
 C(N+1,2)
 ```
@@ -246,91 +361,171 @@ C(N+1,2)
 
 # 4. Rectangles in an N × N Grid
 
-An `N × N` board of cells has:
+## What are we counting?
 
 ```text
+all rectangles
+```
+
+Take a `3 × 3` grid:
+
+```text
++---+---+---+
+|   |   |   |
++---+---+---+
+|   |   |   |
++---+---+---+
+|   |   |   |
++---+---+---+
+```
+
+Although there are `3 × 3` cells, there are:
+
+```text
+4 horizontal boundary lines
+4 vertical boundary lines
+```
+
+In general:
+
+```text
+N × N cells
+      ↓
 N+1 horizontal lines
 N+1 vertical lines
 ```
 
-Example `3 × 3`:
+---
+
+## Step 1 — What Creates One Rectangle?
+
+Example:
 
 ```text
 +---+---+---+
 |   |   |   |
-+---+---+---+
++===+===+---+  ← top
+|   |   |   |
++===+===+---+  ← bottom
 |   |   |   |
 +---+---+---+
-|   |   |   |
-+---+---+---+
-
-4 horizontal
-4 vertical
+↑       ↑
+left   right
 ```
 
-One rectangle needs:
+A rectangle needs:
 
 ```text
-2 horizontal boundaries
+top + bottom
+=
+2 horizontal lines
+```
+
+and:
+
+```text
+left + right
+=
+2 vertical lines
+```
+
+---
+
+## Step 2 — Count Choices
+
+Horizontal:
+
+```text
+choose 2 from N+1
+
+→ C(N+1,2)
+```
+
+Vertical:
+
+```text
+choose 2 from N+1
+
+→ C(N+1,2)
+```
+
+We need both:
+
+```text
+horizontal choice
 AND
-2 vertical boundaries
+vertical choice
 ```
 
-Therefore:
+Therefore multiply:
 
 ```text
 Rectangles
 =
 C(N+1,2) × C(N+1,2)
+```
+
+So:
+
+```text
+Rectangles
 =
 [C(N+1,2)]²
 ```
 
-Since:
+---
+
+## Dry Run — N = 3
 
 ```text
-C(N+1,2) = N(N+1)/2
+horizontal choices
+= C(4,2)
+= 6
+
+vertical choices
+= C(4,2)
+= 6
 ```
 
-we get:
+Therefore:
 
 ```text
-Rectangles = [N(N+1)/2]²
+6 × 6
+= 36
 ```
 
-## Example — N = 3
+### General R × C Grid
+
+For:
 
 ```text
-horizontal pairs = 4C2 = 6
-vertical pairs   = 4C2 = 6
-
-Total = 6 × 6 = 36
+R rows × C columns
 ```
 
-### Model
+there are:
 
 ```text
-choose 2 horizontal lines
-          ↓
-       C(N+1,2)
-          │
-         AND
-          │
-choose 2 vertical lines
-          ↓
-       C(N+1,2)
-          │
-          ↓
- [C(N+1,2)]²
+R+1 horizontal lines
+C+1 vertical lines
 ```
 
-General rectangular grid:
+Therefore:
 
 ```text
-R × C cells
-
 rectangles
 =
+C(R+1,2) × C(C+1,2)
+```
+
+### Recognition
+
+```text
+RECTANGLE
+    ↓
+needs 4 boundaries
+    ↓
+2 horizontal AND 2 vertical
+    ↓
 C(R+1,2) × C(C+1,2)
 ```
 
@@ -338,93 +533,155 @@ C(R+1,2) × C(C+1,2)
 
 # 5. Squares in an N × N Grid
 
-A square has the extra constraint:
+## What changes from rectangles?
+
+A rectangle can have:
+
+```text
+height ≠ width
+```
+
+But a square requires:
 
 ```text
 height = width
 ```
 
-So counting arbitrary rectangles is not enough.
+So choosing arbitrary horizontal and vertical boundary pairs would also count non-squares.
 
-## A. Fix the Size
-
-Possible square sizes:
+Instead:
 
 ```text
-1×1, 2×2, 3×3, ..., N×N
+fix the square size
 ```
 
-Fix a `k × k` square.
+---
 
-Its top-left corner has:
+## Step 1 — Fix Size k
+
+Suppose:
 
 ```text
-N-k+1 horizontal positions
-N-k+1 vertical positions
+N = 4
+k = 2
+```
+
+We want a:
+
+```text
+2 × 2 square
+```
+
+First look only horizontally:
+
+```text
+4 cells:
+
+[1][2][3][4]
+```
+
+A width-2 square can start at:
+
+```text
+start 1 → [1][2]       ✓
+start 2 →    [2][3]    ✓
+start 3 →       [3][4] ✓
+start 4 → impossible   ✗
+```
+
+So:
+
+```text
+3 horizontal starts
+```
+
+Why `3`?
+
+```text
+N - k + 1
+
+= 4 - 2 + 1
+= 3
+```
+
+This is the key derivation.
+
+---
+
+## Step 2 — Move to 2D
+
+A `2 × 2` square has:
+
+```text
+3 horizontal starting positions
+AND
+3 vertical starting positions
 ```
 
 Therefore:
 
 ```text
-number of k×k squares
+3 × 3
+= 9
+```
+
+Generalizing:
+
+```text
+horizontal starts = N-k+1
+vertical starts   = N-k+1
+```
+
+So:
+
+```text
+k×k squares
+=
+(N-k+1) × (N-k+1)
+
 =
 (N-k+1)²
 ```
 
-Example `N=4`, `k=2`:
+---
+
+## Step 3 — Count Every Possible Size
+
+Possible sizes:
 
 ```text
-●---●---●---+
-|   |   |   |
-●---●---●---+
-|   |   |   |
-●---●---●---+
-|   |   |   |
-+---+---+---+
-
-3 positions horizontally
-3 positions vertically
-
-3 × 3 = 9
+k = 1, 2, 3, ..., N
 ```
 
-And:
+For each size:
 
 ```text
-(4-2+1)² = 3² = 9
+k=1 → N²
+
+k=2 → (N-1)²
+
+k=3 → (N-2)²
+
+...
+
+k=N → 1²
 ```
 
-## B. Sum All Sizes
+Therefore:
 
 ```text
 Total
 =
-Σ (N-k+1)²
-```
-
-for `k = 1...N`.
-
-Expand:
-
-```text
 N² + (N-1)² + ... + 1²
 ```
 
-Reorder:
+Same as:
 
 ```text
 1² + 2² + ... + N²
 ```
 
-Use:
-
-```text
-1² + 2² + ... + N²
-=
-N(N+1)(2N+1) / 6
-```
-
-Therefore:
+Using the sum-of-squares formula:
 
 ```text
 Total squares
@@ -432,119 +689,140 @@ Total squares
 N(N+1)(2N+1) / 6
 ```
 
-## Example — N = 3
+---
+
+## Dry Run — N = 3
 
 ```text
-1×1 → 3² = 9
-2×2 → 2² = 4
-3×3 → 1² = 1
+3 × 3 board
+```
 
-Total = 9 + 4 + 1 = 14
+Count by size:
+
+```text
+1×1:
+3 horizontal starts
+3 vertical starts
+
+3×3 = 9
+```
+
+```text
+2×2:
+2 horizontal starts
+2 vertical starts
+
+2×2 = 4
+```
+
+```text
+3×3:
+1 horizontal start
+1 vertical start
+
+1×1 = 1
+```
+
+Total:
+
+```text
+9 + 4 + 1
+= 14
 ```
 
 ### Recognition
 
 ```text
-different possible sizes
+Object has different sizes
         ↓
-fix size k
+fix one size k
         ↓
-count positions for k
+derive valid starting positions
         ↓
-(N-k+1)²
+count for this k
         ↓
-sum over all k
+sum over every k
 ```
 
-This gives a major CP modelling pattern:
+This is a major CP pattern:
 
 ```text
-FIX A PARAMETER
-      ↓
-COUNT FOR IT
-      ↓
-SUM OVER ALL VALID VALUES
+FIX
+ ↓
+COUNT
+ ↓
+SUM
 ```
 
 ---
 
 # 6. Pattern Comparison
 
-| Problem | What uniquely defines one object? | Model |
-|---|---|---|
-| Line-line intersection | 2 lines | `C(L,2)` |
-| Circle-circle intersections | 2 circles + up to 2 points | `C(C,2) × 2` |
-| Line-circle intersections | 1 line + 1 circle | `L × C × 2` |
-| Subarray | 2 boundaries | `C(N+1,2)` |
-| Rectangle | 2 horizontal + 2 vertical lines | `C(R+1,2) × C(C+1,2)` |
-| Square | size `k` + position | `Σ(N-k+1)²` |
-
-The deeper habit:
-
-```text
-DON'T ASK:
-"Which formula is this?"
-
-ASK:
-"What choices uniquely create one object?"
-```
+| Problem | First Observation | Choices | Formula |
+|---|---|---|---|
+| Line-line intersection | 2 lines create one point | choose 2 lines | `C(L,2)` |
+| Circle-circle | 2 circles can create 2 points | choose pair × 2 | `C(C,2)×2` |
+| Line-circle | need one of each | line × circle × 2 | `L×C×2` |
+| Subarray | segment has 2 boundaries | choose 2 of `N+1` | `C(N+1,2)` |
+| Rectangle | needs 4 boundary lines | 2 horizontal × 2 vertical | `C(R+1,2)C(C+1,2)` |
+| Square | equal height/width | fix `k`, count starts | `Σ(N-k+1)²` |
 
 ---
 
-# 7. Final Recognition Card
+# 7. Final Math-Modelling Card
+
+Do not begin with:
 
 ```text
-PAIR OF OBJECTS
-      ↓
-     nC2
+Which formula is this?
+```
+
+Use:
+
+```text
+WHAT AM I COUNTING?
+        ↓
+DRAW SMALL EXAMPLE
+        ↓
+WHAT CREATES ONE ANSWER?
+        ↓
+WHAT ARE MY CHOICES?
+        ↓
+ORDER MATTERS?
+        ↓
+COUNT EACH CHOICE
+        ↓
+AND → multiply
+OR  → add
+varying k → sum
+```
+
+### Four Patterns from This Note
+
+```text
+PAIR
+→ choose 2
+→ C(N,2)
 ```
 
 ```text
-CONTIGUOUS SUBARRAY
-      ↓
-choose 2 of N+1 boundaries
-      ↓
-C(N+1,2)
-      ↓
-N(N+1)/2
+CONTIGUOUS SEGMENT
+→ choose boundaries
+→ C(N+1,2)
 ```
 
 ```text
 RECTANGLE
-      ↓
-2 horizontal boundaries
-AND
-2 vertical boundaries
-      ↓
-C(R+1,2) × C(C+1,2)
+→ choose horizontal boundaries
+AND vertical boundaries
+→ multiply
 ```
 
 ```text
-SQUARE
-      ↓
-height = width
-      ↓
-fix size k
-      ↓
-count positions
-      ↓
-(N-k+1)²
-      ↓
-sum over k
+VARIABLE SIZE
+→ fix k
+→ count for k
+→ sum over k
 ```
 
-## Contest Math-Modelling Checklist
-
-```text
-1. Remove story nouns.
-2. Ask what uniquely determines one answer.
-3. Convert it into choices.
-4. Decide whether order matters.
-5. AND → multiply.
-6. Separate alternatives → add.
-7. If a size/value varies:
-      fix it → count it → sum it.
-8. Simplify algebra only after the model is correct.
-```
-
-> **Core habit:** **Object → defining choices → count choices → combine.** The formula comes after the model.
+> **Contest habit:** **Draw → identify choices → derive → formula.** Do not try to recall the formula before understanding what is being counted.
