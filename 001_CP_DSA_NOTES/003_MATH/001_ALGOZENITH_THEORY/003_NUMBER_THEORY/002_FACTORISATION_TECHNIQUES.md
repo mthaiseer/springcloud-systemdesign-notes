@@ -539,6 +539,57 @@ A simple pairing upper bound is:
 
 but this is not the exact maximum divisor count; actual counts are generally much smaller.
 
+## C++ — Count Divisors Directly
+
+The implementation follows the same model:
+
+```text
+N = p1^a1 × p2^a2 × ...
+        ↓
+count each prime exponent
+        ↓
+answer *= (exponent + 1)
+```
+
+```cpp
+long long countDivisors(long long n) {
+    long long ans = 1;
+
+    for (long long p = 2; p <= n / p; ++p) {
+        if (n % p == 0) {
+            int exponent = 0;
+
+            while (n % p == 0) {
+                n /= p;
+                ++exponent;
+            }
+
+            ans *= (exponent + 1);
+        }
+    }
+
+    // Remaining prime factor has exponent 1.
+    if (n > 1)
+        ans *= 2;
+
+    return ans;
+}
+```
+
+### Dry Run — `N = 360`
+
+```text
+360 = 2³ × 3² × 5¹
+
+2³ → ans = 1 × (3+1) = 4
+3² → ans = 4 × (2+1) = 12
+5¹ → ans = 12 × (1+1) = 24
+
+answer = 24
+```
+
+**Time:** `O(sqrt(N))` worst case.
+
 ---
 
 # 9. Contest Recognition
