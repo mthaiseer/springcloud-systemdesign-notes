@@ -436,75 +436,63 @@ Each **distinct prime factor** is used once.
 12 = 2² × 3
 ```
 
-Distinct primes:
-
-```text
-2, 3
-```
+Distinct prime factors: `2, 3`
 
 Therefore:
 
 $$
 \phi(12)
-=
-12\left(1-\frac{1}{2}\right)
-\left(1-\frac{1}{3}\right)
+= 12 \times \left(1-\frac{1}{2}\right)
+\times \left(1-\frac{1}{3}\right)
 $$
 
-### Step 1 — Simplify each prime contribution
+### Step 1 — Simplify each bracket
 
 For prime `2`:
 
 $$
 \begin{aligned}
 1-\frac{1}{2}
-&=\frac{2}{2}-\frac{1}{2}\\
-&=\frac{1}{2}
+&= \frac{2}{2}-\frac{1}{2} \\
+&= \frac{1}{2}
 \end{aligned}
 $$
-
-Meaning: multiples of `2` occupy $\frac{1}{2}$ of the numbers, so we keep the other $\frac{1}{2}$.
 
 For prime `3`:
 
 $$
 \begin{aligned}
 1-\frac{1}{3}
-&=\frac{3}{3}-\frac{1}{3}\\
-&=\frac{2}{3}
+&= \frac{3}{3}-\frac{1}{3} \\
+&= \frac{2}{3}
 \end{aligned}
 $$
 
-Meaning: multiples of `3` occupy $\frac{1}{3}$, so we keep the other $\frac{2}{3}$.
-
-Substitute both simplified values:
+### Step 2 — Substitute
 
 $$
 \phi(12)
-=
-12\times\frac{1}{2}\times\frac{2}{3}
+= 12 \times \frac{1}{2} \times \frac{2}{3}
 $$
 
-### Step 2 — Calculate left to right
-
-First:
+Calculate left to right:
 
 $$
-12\times\frac{1}{2}
-=
-\frac{12}{2}
-=
-6
+\begin{aligned}
+12 \times \frac{1}{2}
+&= \frac{12}{2} \\
+&= 6
+\end{aligned}
 $$
 
 Then:
 
 $$
 \begin{aligned}
-6\times\frac{2}{3}
-&=\frac{6}{3}\times2\\
-&=2\times2\\
-&=4
+6 \times \frac{2}{3}
+&= \frac{6}{3} \times 2 \\
+&= 2 \times 2 \\
+&= 4
 \end{aligned}
 $$
 
@@ -514,52 +502,21 @@ $$
 \boxed{\phi(12)=4}
 $$
 
-### Step 3 — See what the math is doing
-
-Start with all numbers `1...12`:
-
-```text
-1  2  3  4  5  6  7  8  9  10  11  12
-```
-
-`12 = 2² × 3`, so the distinct prime factors are `2` and `3`.
-
-First remove numbers sharing factor `2`:
-
-```text
-12 × (1 - 1/2)
-= 12 × 1/2
-= 6 numbers remain
-
-remain: 1, 3, 5, 7, 9, 11
-```
-
-Then remove the fraction sharing factor `3`:
-
-```text
-6 × (1 - 1/3)
-= 6 × 2/3
-= 4 numbers remain
-
-remain: 1, 5, 7, 11
-```
-
-ASCII model:
+### Step 3 — Visual meaning
 
 ```text
 12 numbers
     |
-    | prime factor 2: keep (1 - 1/2) = 1/2
+    | prime factor 2: keep 1/2
     v
  6 numbers
     |
-    | prime factor 3: keep (1 - 1/3) = 2/3
+    | prime factor 3: keep 2/3
     v
  4 numbers
 ```
 
-Therefore the numbers coprime with `12` are:
-
+The numbers coprime with `12` are:
 
 ```text
 1, 5, 7, 11
