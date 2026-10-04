@@ -97,56 +97,204 @@ N = p², where p is prime
 
 # 3. Divisor Sum — S1(n)
 
-`S1(n)` = sum of all positive divisors.
+`S1(n)` = **sum of all positive divisors of `n`**.
 
-For one prime power:
+> **Don't memorize the formula first.**  
+> Model every divisor as a **choice of one exponent from each prime factor**.
+
+## Step 1 — Start with one prime power
+
+Suppose:
 
 ```text
 N = p^a
 ```
 
-its divisors are:
+A divisor can contain `p` with exponent:
 
 ```text
+0, 1, 2, ..., a
+```
+
+So the possible divisors are:
+
+```text
+p^0, p^1, p^2, ..., p^a
+=
 1, p, p², ..., p^a
+```
+
+Therefore:
+
+```text
+S1(p^a) = 1 + p + p² + ... + p^a
+```
+
+This is a geometric series:
+
+```text
+1 + p + p² + ... + p^a
+= (p^(a+1) - 1) / (p - 1)
 ```
 
 So:
 
 ```text
-S1(p^a)
-= 1 + p + p² + ... + p^a
+S1(p^a) = (p^(a+1) - 1) / (p - 1)
+```
+
+## Step 2 — What changes when there are multiple primes?
+
+Take:
+
+```text
+12 = 2² × 3¹
+```
+
+A divisor of `12` chooses:
+
+```text
+power of 2:  2⁰, 2¹, 2²  ->  1, 2, 4
+power of 3:  3⁰, 3¹      ->  1, 3
+```
+
+Every choice from the first row combines with every choice from the second.
+
+```text
+                     Power of 3
+                  3⁰ = 1     3¹ = 3
+                +----------+----------+
+2⁰ = 1          |    1     |    3     |
+2¹ = 2          |    2     |    6     |
+2² = 4          |    4     |   12     |
+                +----------+----------+
+
+Each cell = one divisor of 12
+```
+
+Therefore all divisors are:
+
+```text
+1, 3, 2, 6, 4, 12
+```
+
+## Step 3 — Why do we multiply the prime sums?
+
+The sum of all cells is:
+
+```text
+1 + 3 + 2 + 6 + 4 + 12
+```
+
+But distributive multiplication gives exactly the same terms:
+
+```text
+(1 + 2 + 4)(1 + 3)
+
+= 1(1+3) + 2(1+3) + 4(1+3)
+
+= 1 + 3 + 2 + 6 + 4 + 12
+
+= 28
+```
+
+So:
+
+```text
+S1(12)
+= (1 + 2 + 4)(1 + 3)
+= 7 × 4
+= 28
+```
+
+Check directly:
+
+```text
+divisors = 1, 2, 3, 4, 6, 12
+
+1 + 2 + 3 + 4 + 6 + 12 = 28
+```
+
+### Key observation
+
+```text
+Prime factorization
+        |
+        v
+choose one power of each prime
+        |
+        v
+each combination creates one divisor
+        |
+        v
+sum all combinations
+        |
+        v
+multiply the power-sums
+```
+
+## Step 4 — Generalize
+
+If:
+
+```text
+N = p1^a1 × p2^a2 × ... × pk^ak
+```
+
+then each prime contributes:
+
+```text
+p1: 1 + p1 + p1² + ... + p1^a1
+p2: 1 + p2 + p2² + ... + p2^a2
+...
+pk: 1 + pk + pk² + ... + pk^ak
+```
+
+Every divisor is obtained by choosing **one term from every bracket**.
+
+Therefore:
+
+```text
+S1(N)
+= (1+p1+...+p1^a1)
+  × (1+p2+...+p2^a2)
+  × ...
+  × (1+pk+...+pk^ak)
+```
+
+Now compress each geometric series:
+
+```text
+1 + p + p² + ... + p^a
 = (p^(a+1)-1)/(p-1)
 ```
 
-For:
+Hence:
 
 ```text
-N = p1^a1 × ... × pk^ak
+S1(N) = Π [(p_i^(a_i+1)-1)/(p_i-1)]
 ```
 
-multiply the contribution from each prime:
+## Quick combined example — 72
 
 ```text
-S1(N) = Π (p^(a+1)-1)/(p-1)
+72 = 2³ × 3²
 ```
 
-## Example — 12
+Prime-power contributions:
 
 ```text
-12 = 2² × 3
-
-For 2²: 1+2+4 = 7
-For 3 : 1+3   = 4
-
-S1(12) = 7 × 4 = 28
+2³ -> 1+2+4+8 = 15
+3² -> 1+3+9   = 13
 ```
 
-Check:
+Therefore:
 
 ```text
-1+2+3+4+6+12 = 28
+S1(72) = 15 × 13 = 195
 ```
+
+> **Memory model:** `S0` counts exponent choices; `S1` sums the values produced by those exponent choices.
 
 ---
 
