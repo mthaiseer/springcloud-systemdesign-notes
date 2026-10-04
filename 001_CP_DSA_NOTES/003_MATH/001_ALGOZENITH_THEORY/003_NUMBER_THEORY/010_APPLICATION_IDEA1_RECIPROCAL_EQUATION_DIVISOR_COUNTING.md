@@ -1,586 +1,612 @@
 # Application Idea 1 — Reciprocal Equation → Factorization → Divisor Counting
 
-> **Problem:** For fixed positive integer `n`, count integer pairs `(a,b)` satisfying
+> **Problem:** For a fixed positive integer \(n\), count integer pairs \((a,b)\) satisfying
 >
-> ```text
-> 1/a + 1/b = 1/n
-> ```
->
-> **Core model:** Do not try values of `a` and `b`. Transform the equation until the variables appear as a **product**, then count divisors.
+> $$
+> \frac{1}{a}+\frac{1}{b}=\frac{1}{n}
+> $$
+
+> **Don't memorize the final identity.** Model the algebra until the equation becomes a product, then recognize divisor counting.
 
 ---
 
 ## Table of Contents
 
-1. [What Is the Problem Asking?](#1-what-is-the-problem-asking)
+1. [Problem Model](#1-problem-model)
 2. [Preliminary — Adding Fractions](#2-preliminary--adding-fractions)
 3. [Transform the Equation](#3-transform-the-equation)
-4. [Why Add n²?](#4-why-add-n)
+4. [Why Add n²?](#4-why-add-n²)
 5. [Convert to a Divisor Problem](#5-convert-to-a-divisor-problem)
-6. [Full Example — n = 2](#6-full-example--n--2)
+6. [Full Dry Run — n = 2](#6-full-dry-run--n--2)
 7. [Positive vs Integer Solutions](#7-positive-vs-integer-solutions)
-8. [Count Without Building n²](#8-count-without-building-n)
+8. [Count Directly from Prime Factorization](#8-count-directly-from-prime-factorization)
 9. [C++ Implementation](#9-c-implementation)
 10. [Complexity](#10-complexity)
 11. [Final Recognition Model](#11-final-recognition-model)
 
 ---
 
-# 1. What Is the Problem Asking?
+# 1. Problem Model
 
-We need pairs `(a,b)` such that:
+We are given:
 
-```text
-1/a + 1/b = 1/n
-```
+$$
+\frac{1}{a}+\frac{1}{b}=\frac{1}{n}
+$$
 
-At first this looks like a fraction problem with two unknowns.
+Instead of trying possible values of \(a\) and \(b\), our target is:
 
-The useful target is:
-
-```text
-something involving a
-×
-something involving b
+$$
+(\text{expression containing }a)
+(\text{expression containing }b)
 =
-constant
-```
+\text{constant}
+$$
 
-Why?
+because an equation of the form
 
-Because an equation such as:
+$$
+xy=K
+$$
 
-```text
-x × y = K
-```
-
-naturally becomes a **divisor counting** problem.
+can be solved by considering the divisors of \(K\).
 
 ---
 
 # 2. Preliminary — Adding Fractions
 
-For:
+Start with:
 
-```text
-1/a + 1/b
-```
+$$
+\frac{1}{a}+\frac{1}{b}
+$$
 
-the common denominator is `ab`.
+The common denominator is \(ab\).
 
 Convert each fraction:
 
-```text
-1/a = b/(ab)
+$$
+\frac{1}{a}
+=
+\frac{b}{ab}
+$$
 
-1/b = a/(ab)
-```
+and
+
+$$
+\frac{1}{b}
+=
+\frac{a}{ab}
+$$
 
 Therefore:
 
-```text
-1/a + 1/b
-
-= b/(ab) + a/(ab)
-
-= (a+b)/(ab)
-```
+$$
+\begin{aligned}
+\frac{1}{a}+\frac{1}{b}
+&=
+\frac{b}{ab}+\frac{a}{ab}\\
+&=
+\frac{a+b}{ab}
+\end{aligned}
+$$
 
 So the original equation becomes:
 
-```text
-(a+b)/(ab) = 1/n
-```
+$$
+\frac{a+b}{ab}=\frac{1}{n}
+$$
 
 Cross multiply:
 
-```text
-n(a+b) = ab
-```
+$$
+n(a+b)=ab
+$$
 
 Expand:
 
-```text
-na + nb = ab
-```
+$$
+na+nb=ab
+$$
 
-Move everything:
+Move everything to one side:
 
-```text
-ab - na - nb = 0
-```
+$$
+ab-na-nb=0
+$$
 
-Now we need to factor this expression.
+Now the goal is to factor this expression.
 
 ---
 
 # 3. Transform the Equation
 
-Start:
+We currently have:
 
-```text
-ab - na - nb = 0
-```
+$$
+ab-na-nb=0
+$$
 
-We want something resembling:
+Look at the expansion:
 
-```text
-(a - n)(b - n)
-```
-
-Expand that expression separately:
-
-```text
+$$
+\begin{aligned}
 (a-n)(b-n)
+&=a(b-n)-n(b-n)\\
+&=ab-an-nb+n^2
+\end{aligned}
+$$
 
-= ab - an - bn + n²
-```
+Compare:
 
-Our current expression already contains:
+$$
+ab-an-nb
+$$
 
-```text
-ab - an - bn
-```
+with:
 
-It is missing only:
+$$
+ab-an-nb+n^2
+$$
 
-```text
-+n²
-```
+The missing term is exactly:
 
-So add `n²` to both sides:
+$$
+n^2
+$$
 
-```text
-ab - na - nb       = 0
+So add \(n^2\) to **both sides**:
 
-ab - na - nb + n²  = n²
-```
+$$
+ab-na-nb+n^2=n^2
+$$
 
-Now factor:
+Now factor the left side:
 
-```text
-ab - na - nb + n²
-```
-
-Group:
-
-```text
-a(b-n) - n(b-n)
-```
-
-Take `(b-n)` common:
-
-```text
-(a-n)(b-n)
-```
+$$
+\begin{aligned}
+ab-na-nb+n^2
+&=a(b-n)-n(b-n)\\
+&=(a-n)(b-n)
+\end{aligned}
+$$
 
 Therefore:
 
-```text
-(a-n)(b-n) = n²
-```
+$$
+\boxed{(a-n)(b-n)=n^2}
+$$
 
-This is the key transformation.
+This is the key identity.
 
 ---
 
-# 4. Why Add `n²`?
+# 4. Why Add \(n^2\)?
 
 This is not a random trick.
 
-We recognize the pattern:
+Suppose you see:
 
-```text
-xy - cx - cy
-```
+$$
+xy-cx-cy
+$$
 
-and want:
+We want to recognize:
 
-```text
+$$
 (x-c)(y-c)
-```
+$$
 
-Expand:
+Expand it:
 
-```text
+$$
+\begin{aligned}
 (x-c)(y-c)
-= xy - cx - cy + c²
-```
+&=xy-cx-cy+c^2
+\end{aligned}
+$$
 
-So:
-
-```text
-xy - cx - cy = 0
-```
-
-can be completed by adding `c²`:
-
-```text
-xy - cx - cy + c² = c²
-```
-
-giving:
-
-```text
-(x-c)(y-c) = c²
-```
-
-For this problem:
-
-```text
-x → a
-y → b
-c → n
-```
+So the original expression is missing \(c^2\).
 
 Hence:
 
-```text
-ab - na - nb = 0
+$$
+xy-cx-cy=0
+$$
 
-↓
+Add \(c^2\) to both sides:
 
-(a-n)(b-n) = n²
-```
+$$
+xy-cx-cy+c^2=c^2
+$$
 
-### Recognition pattern
+Factor:
+
+$$
+\boxed{(x-c)(y-c)=c^2}
+$$
+
+For our problem:
+
+$$
+x=a,\qquad y=b,\qquad c=n
+$$
+
+so:
+
+$$
+\boxed{(a-n)(b-n)=n^2}
+$$
+
+### Recognition
 
 ```text
 ab - na - nb
       |
       v
-looks almost like
-(a-n)(b-n)
+almost (a-n)(b-n)
       |
       v
 missing +n²
       |
       v
 add n² to both sides
+      |
+      v
+(a-n)(b-n) = n²
 ```
 
 ---
 
 # 5. Convert to a Divisor Problem
 
-Let:
+Define:
 
-```text
-x = a - n
-y = b - n
-```
+$$
+x=a-n
+$$
+
+and
+
+$$
+y=b-n
+$$
 
 Then:
 
-```text
-xy = n²
-```
+$$
+xy=n^2
+$$
 
-Now every factor pair of `n²` gives a solution.
+Now the algebra problem has become a factor-pair problem.
 
-If `d` divides `n²`, choose:
+For every positive divisor \(d\mid n^2\), choose:
 
-```text
-x = d
+$$
+x=d
+$$
 
-y = n²/d
-```
+Then:
 
-Convert back:
+$$
+y=\frac{n^2}{d}
+$$
 
-```text
-a = n + d
+Since:
 
-b = n + n²/d
-```
+$$
+a=x+n,\qquad b=y+n
+$$
 
-So each divisor `d` gives one **ordered** pair `(a,b)`.
+we obtain:
 
-Therefore, for positive `a,b`:
+$$
+\boxed{
+a=n+d,\qquad
+b=n+\frac{n^2}{d}
+}
+$$
 
-```text
-number of ordered pairs
-=
-number of positive divisors of n²
-=
-tau(n²)
-```
+Therefore every positive divisor of \(n^2\) produces one ordered positive pair \((a,b)\).
+
+Hence:
+
+$$
+\boxed{\text{positive ordered pairs}=\tau(n^2)}
+$$
+
+where \(\tau(m)\) means the number of positive divisors of \(m\).
 
 ---
 
-# 6. Full Example — `n = 2`
+# 6. Full Dry Run — \(n=2\)
 
 Solve:
 
-```text
-1/a + 1/b = 1/2
-```
+$$
+\frac1a+\frac1b=\frac12
+$$
 
 Transform:
 
-```text
-(a-2)(b-2) = 2²
-```
-
-So:
-
-```text
-(a-2)(b-2) = 4
-```
-
-Positive divisors of `4`:
-
-```text
-1, 2, 4
-```
-
-Use each divisor as `a-2`.
-
-### d = 1
-
-```text
-a - 2 = 1
-b - 2 = 4/1 = 4
-
-a = 3
-b = 6
-```
-
-Pair:
-
-```text
-(3,6)
-```
-
-Check:
-
-```text
-1/3 + 1/6
-= 2/6 + 1/6
-= 3/6
-= 1/2
-```
-
-### d = 2
-
-```text
-a - 2 = 2
-b - 2 = 4/2 = 2
-
-a = 4
-b = 4
-```
-
-Pair:
-
-```text
-(4,4)
-```
-
-### d = 4
-
-```text
-a - 2 = 4
-b - 2 = 4/4 = 1
-
-a = 6
-b = 3
-```
-
-Pair:
-
-```text
-(6,3)
-```
+$$
+(a-2)(b-2)=2^2
+$$
 
 Therefore:
 
-```text
-positive ordered pairs:
+$$
+(a-2)(b-2)=4
+$$
 
+Positive divisors of \(4\):
+
+$$
+1,\;2,\;4
+$$
+
+## Divisor \(d=1\)
+
+$$
+a-2=1
+$$
+
+so:
+
+$$
+a=3
+$$
+
+and:
+
+$$
+b-2=\frac41=4
+$$
+
+so:
+
+$$
+b=6
+$$
+
+Pair:
+
+$$
 (3,6)
+$$
+
+Check:
+
+$$
+\begin{aligned}
+\frac13+\frac16
+&=\frac26+\frac16\\
+&=\frac36\\
+&=\frac12
+\end{aligned}
+$$
+
+## Divisor \(d=2\)
+
+$$
+a-2=2
+$$
+
+$$
+a=4
+$$
+
+and:
+
+$$
+b-2=\frac42=2
+$$
+
+$$
+b=4
+$$
+
+Pair:
+
+$$
 (4,4)
+$$
+
+## Divisor \(d=4\)
+
+$$
+a-2=4
+$$
+
+$$
+a=6
+$$
+
+and:
+
+$$
+b-2=\frac44=1
+$$
+
+$$
+b=3
+$$
+
+Pair:
+
+$$
 (6,3)
+$$
 
-answer = 3
-```
+Thus:
 
-And:
+$$
+(3,6),\;(4,4),\;(6,3)
+$$
 
-```text
-tau(2²)
-= tau(4)
-= 3
-```
+and:
+
+$$
+\boxed{\text{answer}=3}
+$$
+
+This agrees with:
+
+$$
+\tau(2^2)=\tau(4)=3
+$$
 
 ---
 
 # 7. Positive vs Integer Solutions
 
-This distinction matters.
+## Positive integers \(a,b\)
 
-## Case 1 — Positive integer `a,b`
-
-From:
-
-```text
-(a-n)(b-n) = n² > 0
-```
-
-positive solutions use the **positive divisors** of `n²`.
+Positive divisors of \(n^2\) give all positive solutions.
 
 Therefore:
 
-```text
-answer = tau(n²)
-```
+$$
+\boxed{\text{answer}=\tau(n^2)}
+$$
 
----
+## All nonzero integers \(a,b\)
 
-## Case 2 — All integer `a,b`
+Since:
 
-For every positive divisor pair:
+$$
+xy=n^2>0
+$$
 
-```text
-(x,y)
-```
+we can have:
 
-there is also:
+$$
+x>0,\;y>0
+$$
 
-```text
-(-x,-y)
-```
+or:
 
-because:
+$$
+x<0,\;y<0
+$$
 
-```text
-(-x)(-y) = xy = n²
-```
+Thus positive and negative divisors initially give:
 
-So mathematically there are:
+$$
+2\tau(n^2)
+$$
 
-```text
-2 × tau(n²)
-```
+factor pairs.
 
-factor pairs for `(x,y)`.
+But:
 
-However, the original equation contains:
-
-```text
-1/a and 1/b
-```
-
-so `a = 0` or `b = 0` is invalid.
-
-The negative divisor choice:
-
-```text
-x = -n
-y = -n
-```
+$$
+x=-n,\qquad y=-n
+$$
 
 gives:
 
-```text
-a = x+n = 0
-b = y+n = 0
-```
+$$
+a=x+n=0
+$$
 
-which is not allowed.
+and:
 
-Therefore, if the problem truly allows **all nonzero integer** `a,b`:
+$$
+b=y+n=0
+$$
 
-```text
-answer = 2 × tau(n²) - 1
-```
+The original fractions \(1/a\) and \(1/b\) are undefined at zero.
 
-> Always check whether the problem asks for **positive integer pairs** or **all nonzero integer pairs**.
+Therefore this one pair must be removed:
+
+$$
+\boxed{\text{nonzero integer ordered pairs}=2\tau(n^2)-1}
+$$
 
 ---
 
-# 8. Count Without Building `n²`
+# 8. Count Directly from Prime Factorization
 
 Suppose:
 
-```text
-n = p1^e1 × p2^e2 × ... × pk^ek
-```
+$$
+n=p_1^{e_1}p_2^{e_2}\cdots p_k^{e_k}
+$$
 
 Then:
 
-```text
-n²
-= p1^(2e1) × p2^(2e2) × ... × pk^(2ek)
-```
+$$
+n^2
+=
+p_1^{2e_1}p_2^{2e_2}\cdots p_k^{2e_k}
+$$
 
-Recall the divisor-count formula:
+Recall:
 
-```text
-If X = p1^a1 × p2^a2 × ...,
-
-tau(X) = (a1+1)(a2+1)...
-```
+$$
+\tau\left(
+p_1^{a_1}p_2^{a_2}\cdots p_k^{a_k}
+\right)
+=
+(a_1+1)(a_2+1)\cdots(a_k+1)
+$$
 
 Therefore:
 
-```text
-tau(n²)
+$$
+\boxed{
+\tau(n^2)
 =
-(2e1+1)(2e2+1)...(2ek+1)
-```
+(2e_1+1)(2e_2+1)\cdots(2e_k+1)
+}
+$$
 
-## Example — `n = 12`
+## Example — \(n=12\)
 
 Factorize:
 
-```text
-12 = 2² × 3¹
-```
-
-Square the exponents:
-
-```text
-12² = 2⁴ × 3²
-```
+$$
+12=2^2\times3^1
+$$
 
 Therefore:
 
-```text
-tau(12²)
+$$
+12^2=2^4\times3^2
+$$
 
-= (4+1)(2+1)
+Number of divisors:
 
-= 5 × 3
+$$
+\begin{aligned}
+\tau(12^2)
+&=(4+1)(2+1)\\
+&=5\times3\\
+&=15
+\end{aligned}
+$$
 
-= 15
-```
+Hence:
 
-So:
+$$
+\boxed{15}
+$$
 
-```text
-1/a + 1/b = 1/12
-```
+positive ordered pairs satisfy:
 
-has:
+$$
+\frac1a+\frac1b=\frac1{12}
+$$
 
-```text
-15 positive ordered pairs
-```
-
-No need to calculate or factor `144` separately.
+Notice that we do not actually need to construct and factorize \(n^2\).  
+Factorize \(n\), double each exponent, and apply the divisor-count formula.
 
 ---
 
 # 9. C++ Implementation
 
 ## Positive Ordered Pairs
-
-Factorize `n` directly and use:
-
-```text
-tau(n²) = product(2e + 1)
-```
 
 ```cpp
 long long countPositivePairs(long long n) {
@@ -596,37 +622,40 @@ long long countPositivePairs(long long n) {
             ++exponent;
         }
 
+        // In n², exponent becomes 2 * exponent.
+        // Number of choices = 2 * exponent + 1.
         ans *= (2LL * exponent + 1);
     }
 
-    // One prime factor remains with exponent 1.
+    // Remaining prime has exponent 1 in n,
+    // therefore exponent 2 in n²:
+    // choices = 2 + 1 = 3.
     if (n > 1) {
-        ans *= 3;  // 2*1 + 1
+        ans *= 3;
     }
 
     return ans;
 }
 ```
 
-### Dry run — `n = 12`
+### Dry Run — `n = 12`
 
 ```text
 12 = 2² × 3¹
 
-for p = 2:
-exponent = 2
-ans *= 2×2+1
-ans = 5
+prime 2:
+e = 2
+contribution = 2e+1
+             = 5
 
-remaining prime = 3
-exponent = 1
+prime 3:
+e = 1
+contribution = 2e+1
+             = 3
 
-ans *= 2×1+1
-ans = 5×3
-ans = 15
+answer = 5 × 3
+       = 15
 ```
-
----
 
 ## All Nonzero Integer Ordered Pairs
 
@@ -638,114 +667,120 @@ long long countIntegerPairs(long long n) {
 }
 ```
 
-The `-1` removes the invalid pair:
-
-```text
-(a,b) = (0,0)
-```
-
-generated by:
-
-```text
-(a-n, b-n) = (-n,-n)
-```
-
 ---
 
 # 10. Complexity
 
-Using trial division to factorize `n`:
+Trial-division factorization of \(n\):
 
-```text
-O(sqrt(n))
-```
+$$
+O(\sqrt n)
+$$
 
-After factorization, divisor counting is proportional only to the number of distinct prime factors.
+The divisor count is then obtained directly from the prime exponents.
 
 We do **not** need to:
 
 ```text
-enumerate a
-enumerate b
-build n²
+try every a
+try every b
+construct n²
 enumerate every divisor
 ```
-
-if only the count is required.
 
 ---
 
 # 11. Final Recognition Model
 
-When you see:
-
 ```text
-1/a + 1/b = 1/n
-```
-
-think:
-
-```text
-      1/a + 1/b = 1/n
-               |
-               v
-         (a+b)/ab = 1/n
-               |
-               v
-          n(a+b) = ab
-               |
-               v
-        ab - na - nb = 0
-               |
-               v
-       add n² to both sides
-               |
-               v
-      (a-n)(b-n) = n²
-               |
-               v
+       1/a + 1/b = 1/n
+                |
+                v
+          (a+b)/ab = 1/n
+                |
+                v
+           n(a+b) = ab
+                |
+                v
+         ab-na-nb = 0
+                |
+                v
+        add n² to both sides
+                |
+                v
+       (a-n)(b-n) = n²
+                |
+                v
           product = constant
-               |
-               v
+                |
+                v
           divisor counting
 ```
 
-## One-line mental model
+## Mental Model
 
 ```text
 Fractions
-→ cross multiply
-→ complete the product
-→ factor pair
-→ count divisors
+    ↓
+common denominator
+    ↓
+cross multiply
+    ↓
+complete the product
+    ↓
+factor-pair equation
+    ↓
+count divisors
 ```
 
-## Formula Sheet
+## Final Formulas
 
 For positive ordered pairs:
 
-```text
-answer = tau(n²)
-```
+$$
+\boxed{\text{answer}=\tau(n^2)}
+$$
 
 If:
 
-```text
-n = p1^e1 × p2^e2 × ... × pk^ek
-```
+$$
+n=p_1^{e_1}p_2^{e_2}\cdots p_k^{e_k}
+$$
 
 then:
 
-```text
-answer
+$$
+\boxed{
+\text{answer}
 =
-(2e1+1)(2e2+1)...(2ek+1)
-```
+\prod_{i=1}^{k}(2e_i+1)
+}
+$$
 
-For all **nonzero integer ordered pairs**:
+For all nonzero integer ordered pairs:
 
-```text
-answer = 2 × tau(n²) - 1
-```
+$$
+\boxed{
+\text{answer}=2\tau(n^2)-1
+}
+$$
 
-> **Don't memorize `(a-n)(b-n)=n²` as a magic trick.** Recognize the algebraic pattern: `ab - na - nb` is almost the expansion of `(a-n)(b-n)`; it is missing exactly `n²`.
+> **Don't memorize**
+>
+> $$
+> (a-n)(b-n)=n^2
+> $$
+>
+> as a magic formula. Recognize that
+>
+> $$
+> ab-na-nb
+> $$
+>
+> is almost the expansion of
+>
+> $$
+> (a-n)(b-n)
+> $$
+>
+> and is missing exactly \(n^2\).
