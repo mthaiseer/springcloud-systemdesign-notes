@@ -444,56 +444,75 @@ Distinct primes:
 
 Therefore:
 
-```text
-phi(12)
-= 12 × (1 - 1/2) × (1 - 1/3)
-```
+$$
+\phi(12)
+=
+12\left(1-\frac{1}{2}\right)
+\left(1-\frac{1}{3}\right)
+$$
 
 ### Step 1 — Simplify each prime contribution
 
 For prime `2`:
 
-```text
-1 - 1/2
-= 2/2 - 1/2
-= 1/2
-```
+$$
+\begin{aligned}
+1-\frac{1}{2}
+&=\frac{2}{2}-\frac{1}{2}\\
+&=\frac{1}{2}
+\end{aligned}
+$$
 
-Meaning: multiples of `2` occupy `1/2` of the numbers, so we keep the other `1/2`.
+Meaning: multiples of `2` occupy $\frac{1}{2}$ of the numbers, so we keep the other $\frac{1}{2}$.
 
 For prime `3`:
 
-```text
-1 - 1/3
-= 3/3 - 1/3
-= 2/3
-```
+$$
+\begin{aligned}
+1-\frac{1}{3}
+&=\frac{3}{3}-\frac{1}{3}\\
+&=\frac{2}{3}
+\end{aligned}
+$$
 
-Meaning: multiples of `3` occupy `1/3`, so we keep the other `2/3`.
+Meaning: multiples of `3` occupy $\frac{1}{3}$, so we keep the other $\frac{2}{3}$.
 
-Now:
+Substitute both simplified values:
 
-```text
-phi(12)
-= 12 × 1/2 × 2/3
-```
+$$
+\phi(12)
+=
+12\times\frac{1}{2}\times\frac{2}{3}
+$$
 
 ### Step 2 — Calculate left to right
 
-```text
-12 × 1/2 = 6
+First:
 
-6 × 2/3
-= (6 / 3) × 2
-= 2 × 2
-= 4
-```
+$$
+12\times\frac{1}{2}
+=
+\frac{12}{2}
+=
+6
+$$
 
-So:
+Then:
 
-```text
-phi(12) = 4
-```
+$$
+\begin{aligned}
+6\times\frac{2}{3}
+&=\frac{6}{3}\times2\\
+&=2\times2\\
+&=4
+\end{aligned}
+$$
+
+Therefore:
+
+$$
+\boxed{\phi(12)=4}
+$$
 
 ### Step 3 — See what the math is doing
 
@@ -776,13 +795,21 @@ S1(N) = Π (p^(a+1)-1)/(p-1)
 
 ### Totient
 
-```text
-For each distinct prime p dividing N:
+For each distinct prime $p$ dividing $N$, multiply by:
 
-multiply by (1-1/p)
+$$
+1-\frac{1}{p}
+$$
 
-phi(N) = N × Π(1-1/p)
-```
+Therefore:
+
+$$
+\boxed{
+\phi(N)
+=
+N\prod_{p\mid N}\left(1-\frac{1}{p}\right)
+}
+$$
 
 ### Sieve connection
 
