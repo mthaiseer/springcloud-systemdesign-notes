@@ -2,10 +2,7 @@
 
 > **Problem:** For a fixed positive integer \(n\), count integer pairs \((a,b)\) satisfying
 >
-> $$
-> \frac{1}{a}+\frac{1}{b}=\frac{1}{n}
-> $$
-
+$$ > \frac{1}{a}+\frac{1}{b}=\frac{1}{n} > $$
 > **Don't memorize the final identity.** Model the algebra until the equation becomes a product, then recognize divisor counting.
 
 ---
@@ -30,24 +27,15 @@
 
 We are given:
 
-$$
-\frac{1}{a}+\frac{1}{b}=\frac{1}{n}
-$$
+$$ \frac{1}{a}+\frac{1}{b}=\frac{1}{n} $$
 
 Instead of trying possible values of \(a\) and \(b\), our target is:
 
-$$
-(\text{expression containing }a)
-(\text{expression containing }b)
-=
-\text{constant}
-$$
+$$ (\text{expression containing }a) (\text{expression containing }b) = \text{constant} $$
 
 because an equation of the form
 
-$$
-xy=K
-$$
+$$ xy=K $$
 
 can be solved by considering the divisors of \(K\).
 
@@ -57,63 +45,37 @@ can be solved by considering the divisors of \(K\).
 
 Start with:
 
-$$
-\frac{1}{a}+\frac{1}{b}
-$$
+$$ \frac{1}{a}+\frac{1}{b} $$
 
 The common denominator is \(ab\).
 
 Convert each fraction:
 
-$$
-\frac{1}{a}
-=
-\frac{b}{ab}
-$$
+$$ \frac{1}{a} = \frac{b}{ab} $$
 
 and
 
-$$
-\frac{1}{b}
-=
-\frac{a}{ab}
-$$
+$$ \frac{1}{b} = \frac{a}{ab} $$
 
 Therefore:
 
-$$
-\begin{aligned}
-\frac{1}{a}+\frac{1}{b}
-&=
-\frac{b}{ab}+\frac{a}{ab}\\
-&=
-\frac{a+b}{ab}
-\end{aligned}
-$$
+$$ \begin{aligned} \frac{1}{a}+\frac{1}{b} &= \frac{b}{ab}+\frac{a}{ab}\\ &= \frac{a+b}{ab} \end{aligned} $$
 
 So the original equation becomes:
 
-$$
-\frac{a+b}{ab}=\frac{1}{n}
-$$
+$$ \frac{a+b}{ab}=\frac{1}{n} $$
 
 Cross multiply:
 
-$$
-n(a+b)=ab
-$$
+$$ n(a+b)=ab $$
 
 Expand:
 
-$$
-na+nb=ab
-$$
+$$ na+nb=ab $$
 
 Move everything to one side:
 
-$$
-ab-na-nb=0
-$$
+$$ ab-na-nb=0 $$
 
 Now the goal is to factor this expression.
 
@@ -123,59 +85,35 @@ Now the goal is to factor this expression.
 
 We currently have:
 
-$$
-ab-na-nb=0
-$$
+$$ ab-na-nb=0 $$
 
 Look at the expansion:
 
-$$
-\begin{aligned}
-(a-n)(b-n)
-&=a(b-n)-n(b-n)\\
-&=ab-an-nb+n^2
-\end{aligned}
-$$
+$$ \begin{aligned} (a-n)(b-n) &=a(b-n)-n(b-n)\\ &=ab-an-nb+n^2 \end{aligned} $$
 
 Compare:
 
-$$
-ab-an-nb
-$$
+$$ ab-an-nb $$
 
 with:
 
-$$
-ab-an-nb+n^2
-$$
+$$ ab-an-nb+n^2 $$
 
 The missing term is exactly:
 
-$$
-n^2
-$$
+$$ n^2 $$
 
 So add \(n^2\) to **both sides**:
 
-$$
-ab-na-nb+n^2=n^2
-$$
+$$ ab-na-nb+n^2=n^2 $$
 
 Now factor the left side:
 
-$$
-\begin{aligned}
-ab-na-nb+n^2
-&=a(b-n)-n(b-n)\\
-&=(a-n)(b-n)
-\end{aligned}
-$$
+$$ \begin{aligned} ab-na-nb+n^2 &=a(b-n)-n(b-n)\\ &=(a-n)(b-n) \end{aligned} $$
 
 Therefore:
 
-$$
-\boxed{(a-n)(b-n)=n^2}
-$$
+$$ \boxed{(a-n)(b-n)=n^2} $$
 
 This is the key identity.
 
@@ -187,56 +125,37 @@ This is not a random trick.
 
 Suppose you see:
 
-$$
-xy-cx-cy
-$$
+$$ xy-cx-cy $$
 
 We want to recognize:
 
-$$
-(x-c)(y-c)
-$$
+$$ (x-c)(y-c) $$
 
 Expand it:
 
-$$
-\begin{aligned}
-(x-c)(y-c)
-&=xy-cx-cy+c^2
-\end{aligned}
-$$
+$$ \begin{aligned} (x-c)(y-c) &=xy-cx-cy+c^2 \end{aligned} $$
 
 So the original expression is missing \(c^2\).
 
 Hence:
 
-$$
-xy-cx-cy=0
-$$
+$$ xy-cx-cy=0 $$
 
 Add \(c^2\) to both sides:
 
-$$
-xy-cx-cy+c^2=c^2
-$$
+$$ xy-cx-cy+c^2=c^2 $$
 
 Factor:
 
-$$
-\boxed{(x-c)(y-c)=c^2}
-$$
+$$ \boxed{(x-c)(y-c)=c^2} $$
 
 For our problem:
 
-$$
-x=a,\qquad y=b,\qquad c=n
-$$
+$$ x=a,\qquad y=b,\qquad c=n $$
 
 so:
 
-$$
-\boxed{(a-n)(b-n)=n^2}
-$$
+$$ \boxed{(a-n)(b-n)=n^2} $$
 
 ### Recognition
 
@@ -262,58 +181,39 @@ add n² to both sides
 
 Define:
 
-$$
-x=a-n
-$$
+$$ x=a-n $$
 
 and
 
-$$
-y=b-n
-$$
+$$ y=b-n $$
 
 Then:
 
-$$
-xy=n^2
-$$
+$$ xy=n^2 $$
 
 Now the algebra problem has become a factor-pair problem.
 
 For every positive divisor \(d\mid n^2\), choose:
 
-$$
-x=d
-$$
+$$ x=d $$
 
 Then:
 
-$$
-y=\frac{n^2}{d}
-$$
+$$ y=\frac{n^2}{d} $$
 
 Since:
 
-$$
-a=x+n,\qquad b=y+n
-$$
+$$ a=x+n,\qquad b=y+n $$
 
 we obtain:
 
-$$
-\boxed{
-a=n+d,\qquad
-b=n+\frac{n^2}{d}
-}
-$$
+$$ \boxed{ a=n+d,\qquad b=n+\frac{n^2}{d} } $$
 
 Therefore every positive divisor of \(n^2\) produces one ordered positive pair \((a,b)\).
 
 Hence:
 
-$$
-\boxed{\text{positive ordered pairs}=\tau(n^2)}
-$$
+$$ \boxed{\text{positive ordered pairs}=\tau(n^2)} $$
 
 where \(\tau(m)\) means the number of positive divisors of \(m\).
 
@@ -323,138 +223,87 @@ where \(\tau(m)\) means the number of positive divisors of \(m\).
 
 Solve:
 
-$$
-\frac1a+\frac1b=\frac12
-$$
+$$ \frac1a+\frac1b=\frac12 $$
 
 Transform:
 
-$$
-(a-2)(b-2)=2^2
-$$
+$$ (a-2)(b-2)=2^2 $$
 
 Therefore:
 
-$$
-(a-2)(b-2)=4
-$$
+$$ (a-2)(b-2)=4 $$
 
 Positive divisors of \(4\):
 
-$$
-1,\;2,\;4
-$$
+$$ 1,\;2,\;4 $$
 
 ## Divisor \(d=1\)
 
-$$
-a-2=1
-$$
+$$ a-2=1 $$
 
 so:
 
-$$
-a=3
-$$
+$$ a=3 $$
 
 and:
 
-$$
-b-2=\frac41=4
-$$
+$$ b-2=\frac41=4 $$
 
 so:
 
-$$
-b=6
-$$
+$$ b=6 $$
 
 Pair:
 
-$$
-(3,6)
-$$
+$$ (3,6) $$
 
 Check:
 
-$$
-\begin{aligned}
-\frac13+\frac16
-&=\frac26+\frac16\\
-&=\frac36\\
-&=\frac12
-\end{aligned}
-$$
+$$ \begin{aligned} \frac13+\frac16 &=\frac26+\frac16\\ &=\frac36\\ &=\frac12 \end{aligned} $$
 
 ## Divisor \(d=2\)
 
-$$
-a-2=2
-$$
+$$ a-2=2 $$
 
-$$
-a=4
-$$
+$$ a=4 $$
 
 and:
 
-$$
-b-2=\frac42=2
-$$
+$$ b-2=\frac42=2 $$
 
-$$
-b=4
-$$
+$$ b=4 $$
 
 Pair:
 
-$$
-(4,4)
-$$
+$$ (4,4) $$
 
 ## Divisor \(d=4\)
 
-$$
-a-2=4
-$$
+$$ a-2=4 $$
 
-$$
-a=6
-$$
+$$ a=6 $$
 
 and:
 
-$$
-b-2=\frac44=1
-$$
+$$ b-2=\frac44=1 $$
 
-$$
-b=3
-$$
+$$ b=3 $$
 
 Pair:
 
-$$
-(6,3)
-$$
+$$ (6,3) $$
 
 Thus:
 
-$$
-(3,6),\;(4,4),\;(6,3)
-$$
+$$ (3,6),\;(4,4),\;(6,3) $$
 
 and:
 
-$$
-\boxed{\text{answer}=3}
-$$
+$$ \boxed{\text{answer}=3} $$
 
 This agrees with:
 
-$$
-\tau(2^2)=\tau(4)=3
-$$
+$$ \tau(2^2)=\tau(4)=3 $$
 
 ---
 
@@ -466,63 +315,45 @@ Positive divisors of \(n^2\) give all positive solutions.
 
 Therefore:
 
-$$
-\boxed{\text{answer}=\tau(n^2)}
-$$
+$$ \boxed{\text{answer}=\tau(n^2)} $$
 
 ## All nonzero integers \(a,b\)
 
 Since:
 
-$$
-xy=n^2>0
-$$
+$$ xy=n^2>0 $$
 
 we can have:
 
-$$
-x>0,\;y>0
-$$
+$$ x>0,\;y>0 $$
 
 or:
 
-$$
-x<0,\;y<0
-$$
+$$ x<0,\;y<0 $$
 
 Thus positive and negative divisors initially give:
 
-$$
-2\tau(n^2)
-$$
+$$ 2\tau(n^2) $$
 
 factor pairs.
 
 But:
 
-$$
-x=-n,\qquad y=-n
-$$
+$$ x=-n,\qquad y=-n $$
 
 gives:
 
-$$
-a=x+n=0
-$$
+$$ a=x+n=0 $$
 
 and:
 
-$$
-b=y+n=0
-$$
+$$ b=y+n=0 $$
 
 The original fractions \(1/a\) and \(1/b\) are undefined at zero.
 
 Therefore this one pair must be removed:
 
-$$
-\boxed{\text{nonzero integer ordered pairs}=2\tau(n^2)-1}
-$$
+$$ \boxed{\text{nonzero integer ordered pairs}=2\tau(n^2)-1} $$
 
 ---
 
@@ -530,74 +361,41 @@ $$
 
 Suppose:
 
-$$
-n=p_1^{e_1}p_2^{e_2}\cdots p_k^{e_k}
-$$
+$$ n=p_1^{e_1}p_2^{e_2}\cdots p_k^{e_k} $$
 
 Then:
 
-$$
-n^2
-=
-p_1^{2e_1}p_2^{2e_2}\cdots p_k^{2e_k}
-$$
+$$ n^2 = p_1^{2e_1} \times p_2^{2e_2} \times \cdots \times p_k^{2e_k} $$
 
 Recall:
 
-$$
-\tau\left(
-p_1^{a_1}p_2^{a_2}\cdots p_k^{a_k}
-\right)
-=
-(a_1+1)(a_2+1)\cdots(a_k+1)
-$$
+$$ \tau\left(p_1^{a_1} \times p_2^{a_2} \times \cdots \times p_k^{a_k}\right) = (a_1+1)(a_2+1)\cdots(a_k+1) $$
 
 Therefore:
 
-$$
-\boxed{
-\tau(n^2)
-=
-(2e_1+1)(2e_2+1)\cdots(2e_k+1)
-}
-$$
+$$ \boxed{\tau(n^2) = (2e_1+1)(2e_2+1)\cdots(2e_k+1)} $$
 
 ## Example — \(n=12\)
 
 Factorize:
 
-$$
-12=2^2\times3^1
-$$
+$$ 12=2^2\times3^1 $$
 
 Therefore:
 
-$$
-12^2=2^4\times3^2
-$$
+$$ 12^2=2^4\times3^2 $$
 
 Number of divisors:
 
-$$
-\begin{aligned}
-\tau(12^2)
-&=(4+1)(2+1)\\
-&=5\times3\\
-&=15
-\end{aligned}
-$$
+$$ \begin{aligned} \tau(12^2) &=(4+1)(2+1)\\ &=5\times3\\ &=15 \end{aligned} $$
 
 Hence:
 
-$$
-\boxed{15}
-$$
+$$ \boxed{15} $$
 
 positive ordered pairs satisfy:
 
-$$
-\frac1a+\frac1b=\frac1{12}
-$$
+$$ \frac1a+\frac1b=\frac1{12} $$
 
 Notice that we do not actually need to construct and factorize \(n^2\).  
 Factorize \(n\), double each exponent, and apply the divisor-count formula.
@@ -673,9 +471,7 @@ long long countIntegerPairs(long long n) {
 
 Trial-division factorization of \(n\):
 
-$$
-O(\sqrt n)
-$$
+$$ O(\sqrt n) $$
 
 The divisor count is then obtained directly from the prime exponents.
 
@@ -737,50 +533,30 @@ count divisors
 
 For positive ordered pairs:
 
-$$
-\boxed{\text{answer}=\tau(n^2)}
-$$
+$$ \boxed{\text{answer}=\tau(n^2)} $$
 
 If:
 
-$$
-n=p_1^{e_1}p_2^{e_2}\cdots p_k^{e_k}
-$$
+$$ n=p_1^{e_1}p_2^{e_2}\cdots p_k^{e_k} $$
 
 then:
 
-$$
-\boxed{
-\text{answer}
-=
-\prod_{i=1}^{k}(2e_i+1)
-}
-$$
+$$ \boxed{ \text{answer} = \prod_{i=1}^{k}(2e_i+1) } $$
 
 For all nonzero integer ordered pairs:
 
-$$
-\boxed{
-\text{answer}=2\tau(n^2)-1
-}
-$$
+$$ \boxed{ \text{answer}=2\tau(n^2)-1 } $$
 
 > **Don't memorize**
 >
-> $$
-> (a-n)(b-n)=n^2
-> $$
+$$ > (a-n)(b-n)=n^2 > $$
 >
 > as a magic formula. Recognize that
 >
-> $$
-> ab-na-nb
-> $$
+$$ > ab-na-nb > $$
 >
 > is almost the expansion of
 >
-> $$
-> (a-n)(b-n)
-> $$
+$$ > (a-n)(b-n) > $$
 >
 > and is missing exactly \(n^2\).
