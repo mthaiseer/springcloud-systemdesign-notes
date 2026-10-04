@@ -446,12 +446,101 @@ Therefore:
 
 ```text
 phi(12)
-= 12 × (1-1/2) × (1-1/3)
+= 12 × (1 - 1/2) × (1 - 1/3)
+```
+
+### Step 1 — Simplify each prime contribution
+
+For prime `2`:
+
+```text
+1 - 1/2
+= 2/2 - 1/2
+= 1/2
+```
+
+Meaning: multiples of `2` occupy `1/2` of the numbers, so we keep the other `1/2`.
+
+For prime `3`:
+
+```text
+1 - 1/3
+= 3/3 - 1/3
+= 2/3
+```
+
+Meaning: multiples of `3` occupy `1/3`, so we keep the other `2/3`.
+
+Now:
+
+```text
+phi(12)
 = 12 × 1/2 × 2/3
+```
+
+### Step 2 — Calculate left to right
+
+```text
+12 × 1/2 = 6
+
+6 × 2/3
+= (6 / 3) × 2
+= 2 × 2
 = 4
 ```
 
-Coprime numbers:
+So:
+
+```text
+phi(12) = 4
+```
+
+### Step 3 — See what the math is doing
+
+Start with all numbers `1...12`:
+
+```text
+1  2  3  4  5  6  7  8  9  10  11  12
+```
+
+`12 = 2² × 3`, so the distinct prime factors are `2` and `3`.
+
+First remove numbers sharing factor `2`:
+
+```text
+12 × (1 - 1/2)
+= 12 × 1/2
+= 6 numbers remain
+
+remain: 1, 3, 5, 7, 9, 11
+```
+
+Then remove the fraction sharing factor `3`:
+
+```text
+6 × (1 - 1/3)
+= 6 × 2/3
+= 4 numbers remain
+
+remain: 1, 5, 7, 11
+```
+
+ASCII model:
+
+```text
+12 numbers
+    |
+    | prime factor 2: keep (1 - 1/2) = 1/2
+    v
+ 6 numbers
+    |
+    | prime factor 3: keep (1 - 1/3) = 2/3
+    v
+ 4 numbers
+```
+
+Therefore the numbers coprime with `12` are:
+
 
 ```text
 1, 5, 7, 11
