@@ -708,9 +708,7 @@ $$
 
 Therefore:
 
-$$
-\boxed{\phi(12)=4}
-$$
+$$\phi(12)=4$$
 
 Visual model:
 
@@ -748,16 +746,7 @@ $$
 
 Hence:
 
-$$
-\boxed{
-\phi(n)
-=
-n\left(1-\frac{1}{p_1}\right)
- \left(1-\frac{1}{p_2}\right)
- \cdots
- \left(1-\frac{1}{p_k}\right)
-}
-$$
+$$\phi(n)=n\left(1-\frac{1}{p_1}\right)\left(1-\frac{1}{p_2}\right)\cdots\left(1-\frac{1}{p_k}\right)$$
 
 The exponents `a1, a2, ...` do **not** appear directly in the product; each **distinct prime factor** is used once.
 
@@ -1020,13 +1009,7 @@ $$
 
 Therefore:
 
-$$
-\boxed{
-\phi(N)
-=
-N\prod_{p\mid N}\left(1-\frac{1}{p}\right)
-}
-$$
+$$\phi(N)=N\prod_{p\mid N}\left(1-\frac{1}{p}\right)$$
 
 ### Sieve connection
 
