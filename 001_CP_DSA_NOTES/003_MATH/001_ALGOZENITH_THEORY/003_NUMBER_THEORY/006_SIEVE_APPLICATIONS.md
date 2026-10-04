@@ -3,6 +3,7 @@
 > **Goal:** Use sieve thinking to precompute number-theoretic properties for every number in `[1, N]`.
 
 ## Table of Contents
+0. [Fraction Basics — Preliminary](#0-fraction-basics--preliminary)
 1. [Core Idea](#1-core-idea)
 2. [Divisor Count — S0(n)](#2-divisor-count--s0n)
 3. [Divisor Sum — S1(n)](#3-divisor-sum--s1n)
@@ -11,6 +12,169 @@
 6. [Useful Totient Properties](#6-useful-totient-properties)
 7. [When to Think Sieve](#7-when-to-think-sieve)
 8. [Final Memory Model](#8-final-memory-model)
+
+---
+
+# 0. Fraction Basics — Preliminary
+
+> **Why this section?** Totient formulas use fractions such as `1 - 1/p`. Learn the fraction model once, then reuse it.
+
+## 0.1 What does a fraction mean?
+
+```text
+a/b
+
+a = numerator   -> how many parts we take
+b = denominator -> how many equal parts in total
+```
+
+Example:
+
+```text
+3/4 = 3 parts out of 4 equal parts
+```
+
+## 0.2 Whole number to fraction
+
+Any whole number can be written with denominator `1`:
+
+$$
+1 = \frac{1}{1}
+$$
+
+To change the denominator, multiply the numerator and denominator by the **same number**. The value does not change.
+
+Example — make denominator `2`:
+
+$$
+\begin{aligned}
+1
+&= \frac{1}{1} \\
+&= \frac{1 \times 2}{1 \times 2} \\
+&= \frac{2}{2}
+\end{aligned}
+$$
+
+Similarly:
+
+$$
+1=\frac{2}{2}=\frac{3}{3}=\frac{4}{4}=\cdots
+$$
+
+## 0.3 Why do addition/subtraction need the same denominator?
+
+The denominator tells us the **size of each piece**. We can directly add/subtract only equal-sized pieces.
+
+Example:
+
+$$
+1-\frac{1}{2}
+$$
+
+First make the denominators equal:
+
+$$
+\begin{aligned}
+1-\frac{1}{2}
+&= \frac{1}{1}-\frac{1}{2} \\
+&= \frac{2}{2}-\frac{1}{2} \\
+&= \frac{2-1}{2} \\
+&= \frac{1}{2}
+\end{aligned}
+$$
+
+For different denominators, use a common denominator (usually the LCM).
+
+Example:
+
+$$
+\begin{aligned}
+\frac{1}{2}-\frac{1}{3}
+&= \frac{3}{6}-\frac{2}{6} \\
+&= \frac{3-2}{6} \\
+&= \frac{1}{6}
+\end{aligned}
+$$
+
+## 0.4 Multiplying fractions
+
+Multiply numerator by numerator and denominator by denominator:
+
+$$
+\begin{aligned}
+\frac{2}{3}\times\frac{3}{5}
+&= \frac{2\times3}{3\times5} \\
+&= \frac{6}{15} \\
+&= \frac{2}{5}
+\end{aligned}
+$$
+
+Fraction of a number:
+
+$$
+\begin{aligned}
+12\times\frac{2}{3}
+&= \frac{12\times2}{3} \\
+&= \frac{24}{3} \\
+&= 8
+\end{aligned}
+$$
+
+Meaning: `2/3 of 12 = 8`.
+
+## 0.5 The important pattern: `1 - 1/p`
+
+This appears in Euler's Totient.
+
+Start with:
+
+$$
+1-\frac{1}{p}
+$$
+
+Write `1` using denominator `p`:
+
+$$
+1=\frac{p}{p}
+$$
+
+Therefore:
+
+$$
+\begin{aligned}
+1-\frac{1}{p}
+&= \frac{p}{p}-\frac{1}{p} \\
+&= \frac{p-1}{p}
+\end{aligned}
+$$
+
+So:
+
+$$
+\boxed{1-\frac{1}{p}=\frac{p-1}{p}}
+$$
+
+Example `p = 3`:
+
+$$
+\begin{aligned}
+1-\frac{1}{3}
+&= \frac{3}{3}-\frac{1}{3} \\
+&= \frac{3-1}{3} \\
+&= \frac{2}{3}
+\end{aligned}
+$$
+
+Visual meaning:
+
+```text
+whole group       = 1
+remove            = 1/p
+remaining         = 1 - 1/p
+                  = (p-1)/p
+```
+
+This is exactly the fraction idea used later in `phi(n)`.
 
 ---
 
@@ -388,110 +552,156 @@ Memory : O(1)
 
 # 4. Euler Totient — phi(n)
 
-`phi(n)` counts numbers in `1...n` that are coprime with `n`.
+`phi(n)` counts integers in `1...n` that are **coprime with `n`**:
 
 ```text
 gcd(a,n) = 1
 ```
 
-## Example — 10
+> **Don't memorize the formula first.**  
+> Model it as: **start with all numbers, then remove numbers sharing a prime factor with `n`.**
+
+## Step 1 — Why prime factors matter
+
+Take:
 
 ```text
-1 2 3 4 5 6 7 8 9 10
-```
-
-Coprime with `10`:
-
-```text
-1, 3, 7, 9
-```
-
-Therefore:
-
-```text
-phi(10) = 4
-```
-
-If:
-
-```text
-n = p1^a1 × p2^a2 × ... × pk^ak
-```
-
-then:
-
-```text
-phi(n)
-= n × (1-1/p1)
-    × (1-1/p2)
-    × ...
-    × (1-1/pk)
-```
-
-Each **distinct prime factor** is used once.
-
-## Example — 12
-
-```text
+n = 12
 12 = 2² × 3
 ```
 
-Distinct prime factors: `2, 3`
+The distinct prime factors are `2` and `3`.
+
+A number cannot be coprime with `12` if it is divisible by `2` or `3`.
+
+```text
+1  2  3  4  5  6  7  8  9  10  11  12
+   X  X  X     X     X  X   X       X
+
+keep -> 1, 5, 7, 11
+```
+
+So:
+
+```text
+phi(12) = 4
+```
+
+## Step 2 — Where does `(1 - 1/p)` come from?
+
+For a prime factor `p`, every `p`-th number is divisible by `p`.
 
 Therefore:
 
+```text
+fraction divisible by p     = 1/p
+fraction NOT divisible by p = 1 - 1/p
+```
+
+### Fraction formation — prime `2`
+
+Out of every `2` numbers, `1` is divisible by `2`:
+
+```text
+1 2 | 3 4 | 5 6 | ...
+  X     X     X
+```
+
+So we remove `1/2` and keep:
+
 $$
-\phi(12)
-= 12 \times \left(1-\frac{1}{2}\right)
-\times \left(1-\frac{1}{3}\right)
+1-\frac{1}{2}
 $$
 
-### Step 1 — Simplify each bracket
+To subtract, first give `1` the same denominator:
 
-For prime `2`:
+$$
+\begin{aligned}
+1
+&= \frac{1}{1} \\
+&= \frac{1\times2}{1\times2} \\
+&= \frac{2}{2}
+\end{aligned}
+$$
+
+Now subtract:
 
 $$
 \begin{aligned}
 1-\frac{1}{2}
 &= \frac{2}{2}-\frac{1}{2} \\
+&= \frac{2-1}{2} \\
 &= \frac{1}{2}
 \end{aligned}
 $$
 
-For prime `3`:
+Meaning: **keep `1/2` of the numbers** after accounting for prime `2`.
+
+### Fraction formation — prime `3`
+
+Out of every `3` numbers, `1` is divisible by `3`:
+
+```text
+1 2 3 | 4 5 6 | 7 8 9 | ...
+    X       X       X
+```
+
+So we remove `1/3` and keep:
+
+$$
+1-\frac{1}{3}
+$$
+
+Give `1` denominator `3`:
+
+$$
+\begin{aligned}
+1
+&= \frac{1}{1} \\
+&= \frac{1\times3}{1\times3} \\
+&= \frac{3}{3}
+\end{aligned}
+$$
+
+Now subtract:
 
 $$
 \begin{aligned}
 1-\frac{1}{3}
 &= \frac{3}{3}-\frac{1}{3} \\
+&= \frac{3-1}{3} \\
 &= \frac{2}{3}
 \end{aligned}
 $$
 
-### Step 2 — Substitute
+Meaning: **keep `2/3` of the numbers** after accounting for prime `3`.
 
-$$
-\phi(12)
-= 12 \times \frac{1}{2} \times \frac{2}{3}
-$$
+## Step 3 — Build `phi(12)` instead of memorizing it
 
-Calculate left to right:
+Start with all `12` numbers:
+
+```text
+12
+```
+
+Prime factor `2` says keep `1/2`:
 
 $$
 \begin{aligned}
-12 \times \frac{1}{2}
+12\times\frac{1}{2}
+&= \frac{12\times1}{2} \\
 &= \frac{12}{2} \\
 &= 6
 \end{aligned}
 $$
 
-Then:
+Then prime factor `3` says keep `2/3`:
 
 $$
 \begin{aligned}
-6 \times \frac{2}{3}
-&= \frac{6}{3} \times 2 \\
-&= 2 \times 2 \\
+6\times\frac{2}{3}
+&= \frac{6\times2}{3} \\
+&= \frac{12}{3} \\
 &= 4
 \end{aligned}
 $$
@@ -502,24 +712,74 @@ $$
 \boxed{\phi(12)=4}
 $$
 
-### Step 3 — Visual meaning
+Visual model:
 
 ```text
 12 numbers
     |
-    | prime factor 2: keep 1/2
+    | p = 2 -> remove 1/2 -> keep 1/2
     v
  6 numbers
     |
-    | prime factor 3: keep 2/3
+    | p = 3 -> remove 1/3 -> keep 2/3
     v
  4 numbers
 ```
 
-The numbers coprime with `12` are:
+The survivors are:
 
 ```text
 1, 5, 7, 11
+```
+
+## Step 4 — General formula forms naturally
+
+If:
+
+```text
+n = p1^a1 × p2^a2 × ... × pk^ak
+```
+
+then for every **distinct** prime factor `p`, keep the fraction:
+
+$$
+1-\frac{1}{p}
+$$
+
+Hence:
+
+$$
+\boxed{
+\phi(n)
+=
+n\left(1-\frac{1}{p_1}\right)
+ \left(1-\frac{1}{p_2}\right)
+ \cdots
+ \left(1-\frac{1}{p_k}\right)
+}
+$$
+
+The exponents `a1, a2, ...` do **not** appear directly in the product; each **distinct prime factor** is used once.
+
+### Memory model
+
+```text
+factorize n
+    |
+    v
+get distinct prime factors p
+    |
+    v
+1/p       = fraction divisible by p
+    |
+    v
+1 - 1/p   = fraction to keep
+    |
+    v
+multiply the keep-fractions by n
+    |
+    v
+phi(n)
 ```
 
 ---
