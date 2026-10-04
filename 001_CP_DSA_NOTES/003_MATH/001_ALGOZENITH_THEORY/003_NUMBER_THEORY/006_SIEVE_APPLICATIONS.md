@@ -294,6 +294,94 @@ Therefore:
 S1(72) = 15 × 13 = 195
 ```
 
+
+## C++ — Divisor Count and Divisor Sum from Prime Factorization
+
+For one number `n`, factorize it and build both values at the same time:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+pair<long long, long long> divisorCountAndSum(long long n) {
+    long long divisorCount = 1; // S0(n)
+    long long divisorSum = 1;   // S1(n)
+
+    for (long long p = 2; p * p <= n; ++p) {
+        if (n % p != 0) continue;
+
+        int exponent = 0;
+        long long power = 1;
+        long long powerSum = 1; // 1 + p + p^2 + ...
+
+        while (n % p == 0) {
+            n /= p;
+            ++exponent;
+
+            power *= p;
+            powerSum += power;
+        }
+
+        // p^exponent contributes:
+        // S0 -> exponent + 1 choices
+        // S1 -> 1 + p + ... + p^exponent
+        divisorCount *= (exponent + 1);
+        divisorSum *= powerSum;
+    }
+
+    // One prime factor may remain.
+    // Remaining n = p^1.
+    if (n > 1) {
+        divisorCount *= 2;      // exponents: 0 or 1
+        divisorSum *= (1 + n);  // 1 + p
+    }
+
+    return {divisorCount, divisorSum};
+}
+
+int main() {
+    long long n;
+    cin >> n;
+
+    auto [s0, s1] = divisorCountAndSum(n);
+
+    cout << "S0 = " << s0 << '\n';
+    cout << "S1 = " << s1 << '\n';
+}
+```
+
+### Dry run — `n = 12`
+
+```text
+12 = 2² × 3¹
+
+Start:
+S0 = 1
+S1 = 1
+
+p = 2:
+exponent = 2
+powerSum = 1 + 2 + 4 = 7
+
+S0 = 1 × (2+1) = 3
+S1 = 1 × 7     = 7
+
+remaining n = 3:
+S0 = 3 × 2     = 6
+S1 = 7 × (1+3) = 28
+
+Answer:
+S0(12) = 6
+S1(12) = 28
+```
+
+Complexity:
+
+```text
+Time   : O(sqrt(N))
+Memory : O(1)
+```
+
 > **Memory model:** `S0` counts exponent choices; `S1` sums the values produced by those exponent choices.
 
 ---
