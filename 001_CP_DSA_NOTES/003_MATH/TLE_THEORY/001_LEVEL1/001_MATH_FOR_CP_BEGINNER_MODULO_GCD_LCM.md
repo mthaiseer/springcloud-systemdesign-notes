@@ -8,6 +8,13 @@
 
 ## Table of Contents
 
+0. [Math Preliminaries](#0-math-preliminaries)
+   - [Variables and Subscripts](#01-variables-and-subscripts)
+   - [Distributive Law](#02-distributive-law)
+   - [Factoring a Common Factor](#03-factoring-a-common-factor)
+   - [Division Algorithm](#04-division-algorithm)
+   - [Multiples of M Modulo M](#05-multiples-of-m-modulo-m)
+   - [Congruence](#06-congruence)
 1. [Modulo — Preliminary Model](#1-modulo--preliminary-model)
 2. [Why Modulo Creates Cycles](#2-why-modulo-creates-cycles)
 3. [Modular Addition](#3-modular-addition)
@@ -23,6 +30,282 @@
 13. [Common GCD/LCM Properties](#13-common-gcdlcm-properties)
 14. [OEIS Recognition Tool](#14-oeis-recognition-tool)
 15. [Final Recognition Sheet](#15-final-recognition-sheet)
+
+---
+
+
+# 0. Math Preliminaries
+
+Before modular arithmetic, these small algebra ideas make every derivation easier.
+
+## 0.1 Variables and Subscripts
+
+A symbol such as \(q_1\) means **q subscript 1**. It is simply a variable name.
+
+For example:
+
+\[
+A=q_1M+r_1
+\]
+
+means:
+
+- \(A\) = original number
+- \(M\) = modulus/divisor
+- \(q_1\) = quotient
+- \(r_1\) = remainder
+
+Similarly:
+
+\[
+B=q_2M+r_2
+\]
+
+The subscripts `1` and `2` only distinguish the quotient/remainder belonging to \(A\) from those belonging to \(B\).
+
+---
+
+## 0.2 Distributive Law
+
+Basic rule:
+
+\[
+a(b+c)=ab+ac
+\]
+
+For two brackets:
+
+\[
+(a+b)(c+d)
+\]
+
+Expand the first term:
+
+\[
+= a(c+d)+b(c+d)
+\]
+
+Distribute again:
+
+\[
+= ac+ad+bc+bd
+\]
+
+### Example
+
+\[
+(2+3)(4+5)
+\]
+
+\[
+=2(4+5)+3(4+5)
+\]
+
+\[
+=2\cdot4+2\cdot5+3\cdot4+3\cdot5
+\]
+
+\[
+=8+10+12+15
+\]
+
+\[
+=45
+\]
+
+This exact algebra is used later when expanding:
+
+\[
+(q_1M+r_1)(q_2M+r_2)
+\]
+
+---
+
+## 0.3 Factoring a Common Factor
+
+Factoring is the reverse of distribution.
+
+Start with:
+
+\[
+Ma+Mb+Mc
+\]
+
+Every term contains \(M\).
+
+Take \(M\) outside:
+
+\[
+Ma+Mb+Mc=M(a+b+c)
+\]
+
+### Example
+
+\[
+3x+3y+3z
+\]
+
+\[
+=3(x+y+z)
+\]
+
+This matters in modulo because any expression of the form:
+
+\[
+M\times(\text{integer})
+\]
+
+is completely divisible by \(M\).
+
+---
+
+## 0.4 Division Algorithm
+
+When positive integer \(A\) is divided by positive integer \(M\):
+
+\[
+A=qM+r
+\]
+
+where:
+
+\[
+0\le r<M
+\]
+
+Here:
+
+- \(q\) = quotient
+- \(r\) = remainder
+
+Therefore:
+
+\[
+A\bmod M=r
+\]
+
+### Example — \(17\div5\)
+
+\[
+17=3\cdot5+2
+\]
+
+So:
+
+\[
+q=3
+\]
+
+and:
+
+\[
+r=2
+\]
+
+Hence:
+
+\[
+17\bmod5=2
+\]
+
+Mental model:
+
+```text
+A = complete groups of M + remainder
+  = q × M                + r
+```
+
+---
+
+## 0.5 Multiples of \(M\) Modulo \(M\)
+
+Any multiple of \(M\) has remainder `0` when divided by \(M\).
+
+\[
+M\bmod M=0
+\]
+
+\[
+2M\bmod M=0
+\]
+
+\[
+3M\bmod M=0
+\]
+
+More generally:
+
+\[
+(kM)\bmod M=0
+\]
+
+for integer \(k\).
+
+Example:
+
+\[
+20=4\cdot5
+\]
+
+Therefore:
+
+\[
+20\bmod5=0
+\]
+
+This is the key reason complete multiples of \(M\) can disappear in modular derivations.
+
+---
+
+## 0.6 Congruence
+
+Notation:
+
+\[
+A\equiv B\pmod M
+\]
+
+means:
+
+> \(A\) and \(B\) have the same remainder when divided by \(M\).
+
+Example:
+
+\[
+17\bmod5=2
+\]
+
+and:
+
+\[
+7\bmod5=2
+\]
+
+Therefore:
+
+\[
+17\equiv7\pmod5
+\]
+
+Another way to see it:
+
+\[
+17-7=10
+\]
+
+and \(10\) is divisible by \(5\).
+
+So:
+
+\[
+A\equiv B\pmod M
+\]
+
+also means:
+
+\[
+M\mid(A-B)
+\]
 
 ---
 
@@ -489,33 +772,91 @@ x = ((x % mod) + mod) % mod;
 
 Formula:
 
-$$
+\[
 \boxed{(A\times B)\bmod M
 =
-((A\bmod M)\times(B\bmod M))\bmod M}
-$$
+\big((A\bmod M)(B\bmod M)\big)\bmod M}
+\]
 
-## Derivation
+The formula becomes easy once we use the **division algorithm + distributive law + common-factor extraction**.
 
-Write:
+## Step 1 — Write each number as quotient × modulus + remainder
 
-$$
+From the division algorithm:
+
+\[
 A=q_1M+r_1
-$$
+\]
 
-$$
+and:
+
+\[
 B=q_2M+r_2
-$$
+\]
 
-Multiply:
+where:
 
-$$
+\[
+r_1=A\bmod M
+\]
+
+and:
+
+\[
+r_2=B\bmod M
+\]
+
+So:
+
+```text
+A = complete multiples of M + remainder r1
+B = complete multiples of M + remainder r2
+```
+
+---
+
+## Step 2 — Multiply \(A\) and \(B\)
+
+Substitute their representations:
+
+\[
 AB=(q_1M+r_1)(q_2M+r_2)
-$$
+\]
 
-Expand:
+Do not jump directly to the expanded expression.
 
-$$
+Use:
+
+\[
+(a+b)(c+d)=ac+ad+bc+bd
+\]
+
+Map the terms:
+
+```text
+a = q1M
+b = r1
+c = q2M
+d = r2
+```
+
+Therefore:
+
+\[
+AB
+=
+(q_1M)(q_2M)
++
+(q_1M)(r_2)
++
+(r_1)(q_2M)
++
+(r_1)(r_2)
+\]
+
+Simplify each multiplication:
+
+\[
 AB
 =
 q_1q_2M^2
@@ -525,91 +866,228 @@ q_1Mr_2
 q_2Mr_1
 +
 r_1r_2
-$$
+\]
 
-Factor `M` from the first three terms:
+---
 
-$$
+## Step 3 — Find the common factor \(M\)
+
+Look at the first three terms:
+
+\[
+q_1q_2M^2
++
+q_1Mr_2
++
+q_2Mr_1
+\]
+
+Each contains at least one \(M\).
+
+Rewrite:
+
+\[
+q_1q_2M^2=M(q_1q_2M)
+\]
+
+\[
+q_1Mr_2=M(q_1r_2)
+\]
+
+\[
+q_2Mr_1=M(q_2r_1)
+\]
+
+Therefore:
+
+\[
+AB
+=
+M(q_1q_2M)
++
+M(q_1r_2)
++
+M(q_2r_1)
++
+r_1r_2
+\]
+
+Factor out \(M\):
+
+\[
 AB
 =
 M(q_1q_2M+q_1r_2+q_2r_1)
 +
 r_1r_2
-$$
+\]
 
-Everything inside the `M(...)` part is divisible by `M`.
+This now has exactly the familiar form:
 
-So only:
-
-$$
-r_1r_2
-$$
-
-affects the remainder.
-
-Therefore:
-
-$$
-AB\bmod M=(r_1r_2)\bmod M
-$$
-
-and:
-
-$$
-\boxed{
-(A\times B)\bmod M
-=
-((A\bmod M)(B\bmod M))\bmod M
-}
-$$
+\[
+\text{number}=M\times(\text{integer})+\text{remainder part}
+\]
 
 ---
 
-## Example
+## Step 4 — Apply modulo \(M\)
 
-Calculate:
+The first part is a complete multiple of \(M\):
 
-$$
-17\times13\bmod5
-$$
+\[
+M(q_1q_2M+q_1r_2+q_2r_1)
+\]
 
-Reduce individually:
+Therefore its remainder modulo \(M\) is:
 
-$$
-17\bmod5=2
-$$
+\[
+0
+\]
 
-$$
-13\bmod5=3
-$$
+So only:
 
-Multiply:
+\[
+r_1r_2
+\]
 
-$$
-2\times3=6
-$$
+can affect the final remainder.
 
-Normalize:
+Hence:
 
-$$
-6\bmod5=1
-$$
+\[
+AB\bmod M=(r_1r_2)\bmod M
+\]
+
+Recall:
+
+\[
+r_1=A\bmod M
+\]
+
+and:
+
+\[
+r_2=B\bmod M
+\]
+
+Substitute:
+
+\[
+\boxed{
+(A\times B)\bmod M
+=
+\big((A\bmod M)(B\bmod M)\big)\bmod M
+}
+\]
+
+---
+
+## Numerical Dry Run — \(17\times13\bmod5\)
+
+### Step 1 — Divide each number by \(5\)
+
+For \(17\):
+
+\[
+17=3\cdot5+2
+\]
 
 Therefore:
 
-$$
-17\times13\bmod5=1
-$$
+\[
+q_1=3,\qquad r_1=2
+\]
 
-Check directly:
+For \(13\):
 
-$$
-17\times13=221
-$$
+\[
+13=2\cdot5+3
+\]
 
-$$
+Therefore:
+
+\[
+q_2=2,\qquad r_2=3
+\]
+
+So:
+
+\[
+17=(3\cdot5)+2
+\]
+
+\[
+13=(2\cdot5)+3
+\]
+
+### Step 2 — Multiply
+
+\[
+17\cdot13
+=
+(3\cdot5+2)(2\cdot5+3)
+\]
+
+Expand:
+
+\[
+=(3\cdot5)(2\cdot5)
+ +(3\cdot5)(3)
+ +(2)(2\cdot5)
+ +(2)(3)
+\]
+
+\[
+=150+45+20+6
+\]
+
+\[
+=221
+\]
+
+### Step 3 — Separate multiples of \(5\)
+
+\[
+221=215+6
+\]
+
+\[
+=5\cdot43+6
+\]
+
+But `6` is still larger than the valid remainder range \(0\) to \(4\):
+
+\[
+6=5+1
+\]
+
+Therefore:
+
+\[
+221=5\cdot44+1
+\]
+
+Hence:
+
+\[
 221\bmod5=1
-$$
+\]
+
+Using only the remainders gives the same result:
+
+\[
+r_1r_2=2\cdot3=6
+\]
+
+\[
+6\bmod5=1
+\]
+
+Therefore:
+
+\[
+\boxed{17\cdot13\bmod5=1}
+\]
 
 ---
 
@@ -621,12 +1099,37 @@ long long mulMod(long long a, long long b, long long mod) {
 }
 ```
 
-If the product itself can overflow `long long`, use a wider intermediate type where available:
+If `(a % mod) * (b % mod)` may overflow `long long`, use a wider intermediate:
 
 ```cpp
 long long mulMod(long long a, long long b, long long mod) {
     return (__int128)(a % mod) * (b % mod) % mod;
 }
+```
+
+## Recognition Model
+
+```text
+A = q1*M + r1
+B = q2*M + r2
+        |
+        v
+multiply the two expressions
+        |
+        v
+expand using distributive law
+        |
+        v
+all terms except r1*r2 contain M
+        |
+        v
+multiples of M -> remainder 0
+        |
+        v
+only r1*r2 matters
+        |
+        v
+(A*B) mod M = (r1*r2) mod M
 ```
 
 ---
