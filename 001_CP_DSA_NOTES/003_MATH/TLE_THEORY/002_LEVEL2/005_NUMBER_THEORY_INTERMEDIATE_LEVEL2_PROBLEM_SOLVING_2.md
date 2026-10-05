@@ -1,66 +1,51 @@
 # Number Theory — Intermediate Level 2
 ## Problem Solving 3 — Prime Subtraction & Divisor Analysis
 
-> **Goal:** derive the solution from the mathematics. Do not memorize the final condition or formula first.
+> **Goal:** derive the solution from the mathematics, then remember the model — not the final formula.
 >
-> **Study flow:** prerequisites → what the problem asks → remove the story → derive → dry run → C++ → recognition.
+> **Flow:** prerequisites → model → derivation → one or two dry runs → C++ → recognition.
 >
-> **Math rendering:** display equations use fenced `math` blocks only. This avoids unsupported display delimiters and macros.
+> **Math rendering:** fenced `math` blocks only, to avoid Markdown/LaTeX rendering issues.
 
 ---
 
 # Clickable Table of Contents
 
 - [0. Prerequisites](#0-prerequisites)
-  - [0.1 Prime Numbers and Prime Divisors](#01-prime-numbers-and-prime-divisors)
+  - [0.1 Prime Divisor Fact](#01-prime-divisor-fact)
   - [0.2 Prime Factorisation](#02-prime-factorisation)
-  - [0.3 Counting Independent Choices](#03-counting-independent-choices)
+  - [0.3 Independent Choices](#03-independent-choices)
   - [0.4 Geometric Progression](#04-geometric-progression)
   - [0.5 Modular Arithmetic](#05-modular-arithmetic)
   - [0.6 Binary Exponentiation](#06-binary-exponentiation)
   - [0.7 Modular Inverse](#07-modular-inverse)
   - [0.8 Fermat Exponent Reduction](#08-fermat-exponent-reduction)
 - [1. Prime Subtraction — CF 1238A](#1-prime-subtraction--cf-1238a)
-  - [1.1 What the Problem Asks](#11-what-the-problem-asks)
-  - [1.2 Remove the Story](#12-remove-the-story)
-  - [1.3 Key Observation](#13-key-observation)
-  - [1.4 Dry Runs](#14-dry-runs)
-  - [1.5 C++](#15-c)
-  - [1.6 Don't-Memorize Model](#16-dont-memorize-model)
+  - [1.1 Problem Model](#11-problem-model)
+  - [1.2 Derivation](#12-derivation)
+  - [1.3 Dry Runs](#13-dry-runs)
+  - [1.4 C++](#14-c)
+  - [1.5 Don't-Memorize Model](#15-dont-memorize-model)
 - [2. Divisor Analysis — CSES 2182](#2-divisor-analysis--cses-2182)
-  - [2.1 What the Problem Asks](#21-what-the-problem-asks)
-  - [2.2 Divisor Representation](#22-divisor-representation)
-  - [2.3 Number of Divisors](#23-number-of-divisors)
-  - [2.4 Sum of Divisors](#24-sum-of-divisors)
-  - [2.5 Product of Divisors — Basic Pairing Intuition](#25-product-of-divisors--basic-pairing-intuition)
-  - [2.6 Product of Divisors — Incremental Derivation](#26-product-of-divisors--incremental-derivation)
-  - [2.7 Why Exponents Use MOD-1](#27-why-exponents-use-mod-1)
-  - [2.8 Full Dry Run — N = 12](#28-full-dry-run--n--12)
-  - [2.9 C++](#29-c)
-  - [2.10 Don't-Memorize Model](#210-dont-memorize-model)
-- [3. Final Recognition Sheet](#3-final-recognition-sheet)
+  - [2.1 Divisor Exponent Model](#21-divisor-exponent-model)
+  - [2.2 Number of Divisors](#22-number-of-divisors)
+  - [2.3 Sum of Divisors](#23-sum-of-divisors)
+  - [2.4 Product of Divisors](#24-product-of-divisors)
+  - [2.5 Why Exponents Use MOD-1](#25-why-exponents-use-mod-1)
+  - [2.6 Full Dry Run — N = 12](#26-full-dry-run--n--12)
+  - [2.7 C++](#27-c)
+  - [2.8 Don't-Memorize Model](#28-dont-memorize-model)
+- [3. Final Revision Card](#3-final-revision-card)
 
 ---
 
 # 0. Prerequisites
 
-The two problems use very different ideas:
-
-```text
-Prime Subtraction
-→ difference
-→ repeated subtraction of ONE prime
-→ prime divisor existence
-
-Divisor Analysis
-→ prime factorisation
-→ exponent choices
-→ counting / GP / modular inverse / exponent reduction
-```
+Keep only the mathematics needed for these two problems.
 
 ---
 
-## 0.1 Prime Numbers and Prime Divisors
+## 0.1 Prime Divisor Fact
 
 A prime number has exactly two positive divisors:
 
@@ -80,50 +65,17 @@ Important:
 1 is NOT prime.
 ```
 
----
+### Key theorem
 
-### Every Integer Greater Than 1 Has a Prime Divisor
-
-Take any integer:
-
-```text
-d > 1
-```
-
-If `d` itself is prime, we are done.
-
-If `d` is composite, it has a divisor:
-
-```text
-1 < a < d
-```
-
-If `a` is prime, we found a prime divisor.
-
-If `a` is composite, factor it again.
-
-Eventually we reach a prime.
-
-So:
-
-```text
-d > 1
-→ d has at least one prime divisor
-```
+Every integer greater than `1` has at least one prime divisor.
 
 Example:
 
 ```text
-d = 18
-
 18 = 2 × 9
 ```
 
-Prime divisor:
-
-```text
-2
-```
+So `2` is a prime divisor.
 
 Also:
 
@@ -131,19 +83,15 @@ Also:
 18 = 3 × 6
 ```
 
-Prime divisor:
+So `3` is another prime divisor.
 
-```text
-3
-```
-
-This tiny theorem is the whole reason **Prime Subtraction** becomes O(1).
+This theorem is exactly what makes **Prime Subtraction** collapse to an O(1) check.
 
 ---
 
 ## 0.2 Prime Factorisation
 
-Every integer greater than `1` has a unique prime-factor representation:
+Every integer greater than `1` can be written as:
 
 ```math
 N=p_1^{k_1}p_2^{k_2}\cdots p_m^{k_m}
@@ -152,8 +100,8 @@ N=p_1^{k_1}p_2^{k_2}\cdots p_m^{k_m}
 where:
 
 ```text
-p1, p2, ... = distinct prime factors
-k1, k2, ... = their exponents
+p_i = distinct prime factor
+k_i = exponent of that prime
 ```
 
 Example:
@@ -162,104 +110,75 @@ Example:
 12 = 2² × 3¹
 ```
 
-So:
-
-```text
-p1 = 2, k1 = 2
-p2 = 3, k2 = 1
-```
-
 Another example:
 
 ```text
-360
-= 2³ × 3² × 5¹
+360 = 2³ × 3² × 5
 ```
 
-The CSES Divisor Analysis problem gives `N` directly in this form.
+CSES Divisor Analysis gives `N` directly in this prime-factor form.
 
 ---
 
-## 0.3 Counting Independent Choices
+## 0.3 Independent Choices
 
-Suppose one decision has:
+If one independent decision has:
 
 ```text
 A choices
 ```
 
-and another independent decision has:
+and another has:
 
 ```text
 B choices
 ```
 
-Then total combinations:
+then total combinations:
 
 ```text
 A × B
 ```
 
-Example:
+Example for:
 
 ```text
-shirt choices = 3
-pant choices  = 2
-
-outfits = 3 × 2 = 6
+12 = 2² × 3
 ```
 
-For divisors, each prime exponent is an independent choice.
-
-If:
+A divisor chooses exponent of `2`:
 
 ```text
-N = 2² × 3¹
+0,1,2
+→ 3 choices
 ```
 
-a divisor may choose exponent of `2` from:
+and exponent of `3`:
 
 ```text
-0, 1, 2
+0,1
+→ 2 choices
 ```
 
-That is:
+Total:
 
 ```text
-3 choices
+3 × 2 = 6 divisors
 ```
 
-For `3`:
-
-```text
-0, 1
-```
-
-That is:
-
-```text
-2 choices
-```
-
-Total divisors:
-
-```text
-3 × 2 = 6
-```
+This is the counting principle behind the divisor-count formula.
 
 ---
 
 ## 0.4 Geometric Progression
 
-For one prime `p`:
+For one prime power `p^k`, divisor contributions are:
 
 ```text
-1 + p + p² + ... + p^k
+1, p, p², ..., p^k
 ```
 
-is a geometric progression.
-
-Let:
+Their sum is:
 
 ```math
 S=1+p+p^2+\cdots+p^k
@@ -268,10 +187,10 @@ S=1+p+p^2+\cdots+p^k
 Multiply by `p`:
 
 ```math
-pS=p+p^2+p^3+\cdots+p^{k+1}
+pS=p+p^2+\cdots+p^{k+1}
 ```
 
-Subtract the first equation from the second:
+Subtract:
 
 ```math
 pS-S=p^{k+1}-1
@@ -289,11 +208,14 @@ Therefore:
 S=\frac{p^{k+1}-1}{p-1}
 ```
 
-This becomes the contribution of one prime to the **sum of divisors**.
+### Example
 
----
+For:
 
-### Example — `p = 2`, `k = 2`
+```text
+p = 2
+k = 2
+```
 
 Direct:
 
@@ -304,24 +226,20 @@ Direct:
 Formula:
 
 ```math
-\frac{2^3-1}{2-1}
-=
-\frac{8-1}{1}
-=
-7
+\frac{2^3-1}{2-1}=7
 ```
 
 ---
 
 ## 0.5 Modular Arithmetic
 
-The CSES problem asks for answers modulo:
+CSES asks for answers modulo:
 
 ```text
 MOD = 1,000,000,007
 ```
 
-For addition:
+Addition:
 
 ```math
 (A+B)\bmod M
@@ -329,7 +247,7 @@ For addition:
 ((A\bmod M)+(B\bmod M))\bmod M
 ```
 
-For multiplication:
+Multiplication:
 
 ```math
 (AB)\bmod M
@@ -337,31 +255,25 @@ For multiplication:
 ((A\bmod M)(B\bmod M))\bmod M
 ```
 
-For subtraction:
-
-```text
-(a - b) may become negative
-```
-
-Normalize:
+Subtraction:
 
 ```cpp
 (a - b + MOD) % MOD
 ```
 
+The `+MOD` prevents a negative remainder.
+
 ---
 
 ## 0.6 Binary Exponentiation
 
-We frequently need:
+We repeatedly need:
 
 ```text
 p^k mod MOD
 ```
 
-where `k` can be very large.
-
-Naive multiplication:
+Naive:
 
 ```text
 O(k)
@@ -373,14 +285,14 @@ Binary exponentiation:
 O(log k)
 ```
 
-Core idea:
+Core identities:
 
 ```text
-if exponent is even:
-    a^b = (a^(b/2))²
+even exponent:
+a^b = (a^(b/2))²
 
-if exponent is odd:
-    a^b = (a^(b/2))² × a
+odd exponent:
+a^b = (a^(b/2))² × a
 ```
 
 ### C++
@@ -415,10 +327,10 @@ divide by b
 → multiply by inverse of b
 ```
 
-The modular inverse of `b` modulo `M` is a value `x` satisfying:
+The inverse satisfies:
 
 ```math
-bx\equiv1\pmod M
+b\cdot b^{-1}\equiv1\pmod M
 ```
 
 For prime `M`, Fermat gives:
@@ -427,43 +339,37 @@ For prime `M`, Fermat gives:
 b^{M-1}\equiv1\pmod M
 ```
 
-Therefore:
+Hence:
 
 ```math
 b^{-1}\equiv b^{M-2}\pmod M
 ```
 
-So:
+C++:
 
 ```cpp
-inverse = binpow(b, MOD - 2, MOD);
+long long inv = binpow(b, MOD - 2, MOD);
 ```
 
-This is needed for the geometric-series denominator:
+This is used for:
 
 ```text
-p - 1
+(p^(k+1)-1)/(p-1)
 ```
 
-in the sum-of-divisors formula.
+in the divisor-sum formula.
 
 ---
 
 ## 0.8 Fermat Exponent Reduction
 
-For prime modulus `M`, when the base is not divisible by `M`:
+For prime modulus `M` and base not divisible by `M`:
 
 ```math
 a^{M-1}\equiv1\pmod M
 ```
 
-Therefore powers repeat in blocks of:
-
-```text
-M - 1
-```
-
-So:
+Therefore:
 
 ```math
 a^E
@@ -472,60 +378,40 @@ a^{E\bmod(M-1)}
 \pmod M
 ```
 
-### Important
-
-For an exponent under modulus `M`:
+So:
 
 ```text
-reduce exponent modulo M-1
+value modulo M
+→ exponent may be reduced modulo M-1
 ```
 
-not:
+### Example
 
 ```text
-modulo M
+2^10 mod 7
 ```
 
----
-
-### Example — `2^10 mod 7`
-
-Here:
+Since:
 
 ```text
-M = 7
-M - 1 = 6
-```
-
-Reduce exponent:
-
-```text
+7 - 1 = 6
 10 mod 6 = 4
 ```
 
-So:
-
-```math
-2^{10}\equiv2^4\pmod7
-```
-
-Calculate:
+we can use:
 
 ```text
-2^4 = 16
-16 mod 7 = 2
+2^4 mod 7
+= 16 mod 7
+= 2
 ```
 
-Direct:
+Important for CSES:
 
 ```text
-2^10 = 1024
-1024 mod 7 = 2
+MOD = 1e9+7
+exponent cycle = MOD-1 = 1e9+6
 ```
-
-Same answer.
-
-This is critical for the **product of divisors**, where exponents become enormous.
 
 ---
 
@@ -535,17 +421,17 @@ This is critical for the **product of divisors**, where exponents become enormou
 
 ---
 
-## 1.1 What the Problem Asks
+## 1.1 Problem Model
 
-We are given:
+Given:
 
 ```text
 x > y
 ```
 
-We choose **one prime number** `p`.
+Choose **one prime** `p`.
 
-Then we may subtract the same `p` from `x` any number of times.
+Subtract the same `p` from `x` any number of times.
 
 Question:
 
@@ -566,21 +452,17 @@ Choose:
 p = 5
 ```
 
-Subtract twice:
+Then:
 
 ```text
 42 - 5 - 5 = 32
 ```
 
-So:
-
-```text
-YES
-```
+YES.
 
 ---
 
-## 1.2 Remove the Story
+## 1.2 Derivation
 
 Suppose we subtract prime `p` exactly `k` times.
 
@@ -599,46 +481,28 @@ x-y=kp
 Define:
 
 ```text
-d = x - y
+d = x-y
 ```
 
-Then the problem becomes:
+Then:
 
 ```math
 d=kp
 ```
 
-So we need:
+So:
 
 ```text
-a prime p that divides d
+d must be divisible by some prime p
 ```
 
-That is the entire mathematical model.
-
----
-
-## 1.3 Key Observation
-
-Because:
-
-```text
-x > y
-```
-
-we know:
-
-```text
-d = x-y >= 1
-```
-
-Now only two cases exist.
+Now only two cases matter.
 
 ---
 
 ### Case 1 — `d = 1`
 
-We need:
+We would need:
 
 ```math
 1=kp
@@ -651,13 +515,13 @@ p >= 2
 k >= 1
 ```
 
-So:
+so:
 
 ```text
 k × p >= 2
 ```
 
-It can never equal `1`.
+Impossible.
 
 Therefore:
 
@@ -672,7 +536,7 @@ d = 1
 
 Every integer greater than `1` has a prime divisor.
 
-Suppose `p` is any prime divisor of `d`.
+Let that divisor be `p`.
 
 Then:
 
@@ -682,14 +546,10 @@ d=kp
 
 for some positive integer `k`.
 
-Therefore subtract `p` exactly `k` times:
+Therefore:
 
 ```math
-x-kp
-=
-x-d
-=
-y
+x-kp=y
 ```
 
 So:
@@ -704,141 +564,58 @@ d > 1
 ### Final Condition
 
 ```text
-x - y == 1
+x-y == 1
 → NO
 
 otherwise
 → YES
 ```
 
-No primality test is needed.
+No factorisation is required.
 
-No factorisation is needed.
+No primality test is required.
 
 ---
 
-## 1.4 Dry Runs
+## 1.3 Dry Runs
 
-### Example 1 — `100, 98`
+### Dry Run 1 — YES
 
 ```text
-x = 100
-y = 98
+x = 42
+y = 32
 ```
 
 Difference:
 
 ```text
-d = 100 - 98
-  = 2
+d = 10
 ```
 
-Since:
-
-```text
-2 > 1
-```
-
-answer:
-
-```text
-YES
-```
-
-Choose prime:
-
-```text
-p = 2
-```
-
-Subtract once:
-
-```text
-100 - 2 = 98
-```
-
----
-
-### Example 2 — `42, 32`
-
-Difference:
-
-```text
-42 - 32 = 10
-```
-
-Factor:
-
-```text
-10 = 2 × 5
-```
-
-Choose:
+One prime divisor:
 
 ```text
 p = 5
-k = 2
 ```
 
 Then:
 
 ```text
-42 - 5 - 5
+k = 2
+```
+
+Check:
+
+```text
+42 - 2×5
 = 32
 ```
 
-Answer:
-
-```text
-YES
-```
-
-Important:
-
-```text
-We choose ONE prime and reuse it.
-```
+YES.
 
 ---
 
-### Example 3 — Very Large Difference
-
-```text
-x = 1,000,000,000,000,000,000
-y = 1
-```
-
-Difference:
-
-```text
-999,999,999,999,999,999
-```
-
-This is greater than `1`.
-
-So immediately:
-
-```text
-YES
-```
-
-No need to factor this huge number.
-
-For example it is divisible by `3`, so one valid choice is:
-
-```text
-p = 3
-```
-
-repeated:
-
-```text
-333,333,333,333,333,333 times
-```
-
----
-
-### Example 4 — Impossible
+### Dry Run 2 — NO
 
 ```text
 x = 41
@@ -851,9 +628,9 @@ Difference:
 d = 1
 ```
 
-No prime divides `1`.
+`1` has no prime divisor.
 
-Answer:
+Therefore:
 
 ```text
 NO
@@ -861,50 +638,7 @@ NO
 
 ---
 
-### Example 5 — Another YES
-
-```text
-x = 20
-y = 14
-```
-
-Difference:
-
-```text
-d = 6
-```
-
-Possible prime divisor:
-
-```text
-p = 2
-```
-
-Number of subtractions:
-
-```text
-k = 3
-```
-
-Check:
-
-```text
-20 - 2 - 2 - 2
-= 14
-```
-
-YES.
-
-We could also choose:
-
-```text
-p = 3
-k = 2
-```
-
----
-
-## 1.5 C++
+## 1.4 C++
 
 ```cpp
 #include <bits/stdc++.h>
@@ -921,10 +655,7 @@ int main() {
         long long x, y;
         cin >> x >> y;
 
-        if (x - y == 1)
-            cout << "NO\n";
-        else
-            cout << "YES\n";
+        cout << (x - y == 1 ? "NO\n" : "YES\n");
     }
 }
 ```
@@ -938,43 +669,35 @@ Space : O(1)
 
 ---
 
-## 1.6 Don't-Memorize Model
-
-Do not memorize:
+## 1.5 Don't-Memorize Model
 
 ```text
-if x-y == 1 → NO
-```
-
-Derive it:
-
-```text
-subtract same prime p, k times
-            |
-            v
-x - kp = y
-            |
-            v
-x - y = kp
-            |
-            v
-difference must have a prime divisor
-            |
-       +----+----+
-       |         |
-   d = 1       d > 1
-       |         |
- no prime      always has
- divisor       prime divisor
-       |         |
-      NO        YES
+subtract SAME prime p repeatedly
+              |
+              v
+total subtraction = k×p
+              |
+              v
+x-y = k×p
+              |
+              v
+difference needs a prime divisor
+              |
+        +-----+-----+
+        |           |
+       1           >1
+        |           |
+ no prime       always has
+ divisor        prime divisor
+        |           |
+       NO          YES
 ```
 
 Memory anchor:
 
 ```text
 Repeated subtraction
-→ look at total difference.
+→ model the total difference.
 ```
 
 ---
@@ -983,15 +706,13 @@ Repeated subtraction
 
 **Problem Link:** https://cses.fi/problemset/task/2182
 
-We are given `N` by its prime factorisation.
+Given:
 
-We must output modulo:
-
-```text
-MOD = 1,000,000,007
+```math
+N=p_1^{k_1}p_2^{k_2}\cdots p_m^{k_m}
 ```
 
-three values:
+compute modulo `1e9+7`:
 
 ```text
 1. number of divisors
@@ -1001,54 +722,9 @@ three values:
 
 ---
 
-## 2.1 What the Problem Asks
+## 2.1 Divisor Exponent Model
 
-Input describes:
-
-```math
-N=p_1^{k_1}p_2^{k_2}\cdots p_m^{k_m}
-```
-
-Example:
-
-```text
-2 2
-3 1
-```
-
-means:
-
-```math
-N=2^2\cdot3^1=12
-```
-
-Divisors of `12`:
-
-```text
-1, 2, 3, 4, 6, 12
-```
-
-Therefore:
-
-```text
-count   = 6
-sum     = 28
-product = 1728
-```
-
-The problem is to compute these without constructing `N` or listing all divisors.
-
----
-
-## 2.2 Divisor Representation
-
-Suppose:
-
-```math
-N=p_1^{k_1}p_2^{k_2}\cdots p_m^{k_m}
-```
-
-Any divisor `d` must look like:
+Every divisor has the form:
 
 ```math
 d=p_1^{e_1}p_2^{e_2}\cdots p_m^{e_m}
@@ -1057,28 +733,23 @@ d=p_1^{e_1}p_2^{e_2}\cdots p_m^{e_m}
 where:
 
 ```text
-0 <= e1 <= k1
-0 <= e2 <= k2
-...
-0 <= em <= km
+0 <= e_i <= k_i
 ```
 
 ### Example — `N = 12`
 
 ```text
-12 = 2² × 3¹
+12 = 2² × 3
 ```
 
-For prime `2` choose exponent:
+Exponent choices:
 
 ```text
-0, 1, 2
-```
+for 2:
+0,1,2
 
-For prime `3` choose:
-
-```text
-0, 1
+for 3:
+0,1
 ```
 
 Combinations:
@@ -1087,42 +758,27 @@ Combinations:
 2^0 × 3^0 = 1
 2^1 × 3^0 = 2
 2^2 × 3^0 = 4
-
 2^0 × 3^1 = 3
 2^1 × 3^1 = 6
 2^2 × 3^1 = 12
 ```
 
-These are exactly all divisors.
-
-This **exponent-choice model** powers all three formulas.
+This one model gives all three formulas.
 
 ---
 
-## 2.3 Number of Divisors
+## 2.2 Number of Divisors
 
-For:
-
-```math
-N=p_1^{k_1}p_2^{k_2}\cdots p_m^{k_m}
-```
-
-For prime `p1`, exponent can be:
+For each prime `p_i^k_i`, exponent choices are:
 
 ```text
-0,1,...,k1
+0,1,...,k_i
 ```
 
-Number of choices:
+Count:
 
 ```text
-k1 + 1
-```
-
-For `p2`:
-
-```text
-k2 + 1 choices
+k_i + 1
 ```
 
 Choices are independent.
@@ -1132,23 +788,17 @@ Therefore:
 ```math
 D(N)
 =
-(k_1+1)(k_2+1)\cdots(k_m+1)
+\prod_i(k_i+1)
 ```
-
----
 
 ### Example — `12 = 2² × 3`
 
-For `2`:
-
 ```text
+2 exponent:
 0,1,2
 → 3 choices
-```
 
-For `3`:
-
-```text
+3 exponent:
 0,1
 → 2 choices
 ```
@@ -1156,20 +806,11 @@ For `3`:
 So:
 
 ```text
-number of divisors
-= 3 × 2
-= 6
+D = 3 × 2
+  = 6
 ```
 
-Correct:
-
-```text
-1,2,3,4,6,12
-```
-
----
-
-### C++ Update
+C++ update:
 
 ```cpp
 numDiv = numDiv * (k + 1) % MOD;
@@ -1177,93 +818,15 @@ numDiv = numDiv * (k + 1) % MOD;
 
 ---
 
-## 2.4 Sum of Divisors
+## 2.3 Sum of Divisors
 
-Again:
-
-```math
-N=p_1^{k_1}p_2^{k_2}\cdots p_m^{k_m}
-```
-
-For one prime `p^k`, a divisor may contain:
+For one prime power:
 
 ```text
-p^0, p^1, p^2, ..., p^k
+p^0, p^1, ..., p^k
 ```
 
-Its sum of possible contributions is:
-
-```math
-1+p+p^2+\cdots+p^k
-```
-
-For multiple independent primes, multiply these sums:
-
-```math
-S(N)
-=
-(1+p_1+\cdots+p_1^{k_1})
-(1+p_2+\cdots+p_2^{k_2})
-\cdots
-```
-
-Why multiplication?
-
-Because expanding the product creates every possible divisor exactly once.
-
----
-
-### Example — `N = 6 = 2 × 3`
-
-For prime `2`:
-
-```text
-1 + 2
-```
-
-For prime `3`:
-
-```text
-1 + 3
-```
-
-Multiply:
-
-```math
-(1+2)(1+3)
-```
-
-Expand:
-
-```math
-1\cdot1
-+
-2\cdot1
-+
-1\cdot3
-+
-2\cdot3
-```
-
-Values:
-
-```text
-1 + 2 + 3 + 6
-```
-
-These are exactly all divisors of `6`.
-
-Sum:
-
-```text
-12
-```
-
----
-
-### Geometric-Series Formula
-
-For one prime:
+sum:
 
 ```math
 1+p+p^2+\cdots+p^k
@@ -1271,7 +834,7 @@ For one prime:
 \frac{p^{k+1}-1}{p-1}
 ```
 
-Therefore:
+Across independent prime factors, multiply the contributions:
 
 ```math
 S(N)
@@ -1282,65 +845,53 @@ S(N)
 
 ---
 
-### Example — `12 = 2² × 3`
+### Why multiplication creates all divisors
 
-Prime `2` contribution:
+Take:
 
 ```text
-1 + 2 + 4
-= 7
+N = 6 = 2 × 3
 ```
 
-Prime `3` contribution:
+Prime contributions:
 
 ```text
-1 + 3
-= 4
+(1+2)
+(1+3)
 ```
 
-Multiply:
+Expand:
 
 ```text
-7 × 4
-= 28
+1×1 = 1
+2×1 = 2
+1×3 = 3
+2×3 = 6
 ```
 
-Check:
+Exactly the divisors:
 
 ```text
-1+2+3+4+6+12
-= 28
+1,2,3,6
+```
+
+So:
+
+```text
+sum = 12
 ```
 
 ---
 
-### Modulo Division
+### Modulo implementation
 
-We cannot use normal division after taking modulo.
-
-For:
-
-```math
-\frac{p^{k+1}-1}{p-1}
-```
-
-compute:
+Division by:
 
 ```text
-numerator
-× modular inverse of (p-1)
+p - 1
 ```
 
-Since `MOD` is prime:
-
-```math
-(p-1)^{-1}
-\equiv
-(p-1)^{MOD-2}
-\pmod{MOD}
-```
-
-C++ contribution:
+becomes multiplication by its modular inverse.
 
 ```cpp
 long long numerator =
@@ -1358,9 +909,15 @@ sumDiv =
 
 ---
 
-## 2.5 Product of Divisors — Basic Pairing Intuition
+## 2.4 Product of Divisors
 
-Divisors naturally pair:
+This is the part worth understanding carefully.
+
+---
+
+### 2.4.1 Pairing Intuition
+
+Divisors pair as:
 
 ```text
 d
@@ -1368,13 +925,19 @@ and
 N/d
 ```
 
-Their product is:
+Their product:
 
 ```math
 d\cdot\frac Nd=N
 ```
 
-Example for `12`:
+For:
+
+```text
+N = 12
+```
+
+pairs:
 
 ```text
 1 × 12 = 12
@@ -1382,78 +945,59 @@ Example for `12`:
 3 × 4  = 12
 ```
 
-There are:
+Thus:
 
 ```text
-6 divisors
-→ 3 pairs
+product = 12³ = 1728
 ```
 
-So product:
-
-```text
-12 × 12 × 12
-= 12³
-= 1728
-```
-
-This gives intuition for:
-
-```text
-product of divisors ≈ N^(D/2)
-```
-
-But when the divisor count is odd, `N` is a perfect square and the middle divisor `sqrt(N)` needs special treatment.
-
-For implementation, the lecture develops a cleaner **incremental prime-factor recurrence**, which avoids awkward square-root cases.
+This gives intuition, but implementation is easier with the incremental prime-factor model below.
 
 ---
 
-## 2.6 Product of Divisors — Incremental Derivation
+### 2.4.2 Incremental Model
 
-Suppose we have already processed some prime factors.
+Suppose we have already processed some primes.
 
 Let:
 
 ```text
-C = number of divisors generated so far
-P = product of those divisors
+C = number of old divisors
+P = product of old divisors
 ```
 
-Now add a new prime factor:
+Now add:
 
 ```math
 p^k
 ```
 
-For every old divisor `d`, new divisors are:
+For each old divisor `d`, new divisors are:
 
 ```text
-d × p^0
-d × p^1
+d×p^0
+d×p^1
 ...
-d × p^k
+d×p^k
 ```
 
 ---
 
-### Part 1 — What happens to old product P?
+### Part A — Old divisor product
 
-For exponent `0`, all old divisors appear once.
-
-For exponent `1`, all old divisors appear again, multiplied by `p`.
-
-...
-
-For exponent `k`, all old divisors appear again.
-
-So the old divisor product `P` appears:
+The whole old divisor set appears once for every exponent:
 
 ```text
-k + 1 times
+0,1,...,k
 ```
 
-Contribution:
+That is:
+
+```text
+k+1 times
+```
+
+So old product contributes:
 
 ```math
 P^{k+1}
@@ -1461,65 +1005,44 @@ P^{k+1}
 
 ---
 
-### Part 2 — How many p factors appear?
+### Part B — Contribution of p
 
-For exponent `0`:
-
-```text
-each of C old divisors gets p^0
-```
-
-Total `p` exponent:
+For every old divisor:
 
 ```text
-0 × C
-```
-
-For exponent `1`:
-
-```text
-1 × C
-```
-
-For exponent `2`:
-
-```text
-2 × C
-```
-
+exponent 0 contributes p^0
+exponent 1 contributes p^1
 ...
-
-For exponent `k`:
-
-```text
-k × C
+exponent k contributes p^k
 ```
 
-Total:
+There are `C` old divisors.
+
+Total exponent of `p`:
 
 ```math
 C(0+1+2+\cdots+k)
 ```
 
-We know:
+Use:
 
 ```math
-0+1+2+\cdots+k
+0+1+\cdots+k
 =
 \frac{k(k+1)}2
 ```
 
-Therefore total exponent of `p`:
+Therefore:
 
 ```math
+\text{p-exponent}
+=
 C\cdot\frac{k(k+1)}2
 ```
 
 ---
 
 ### Product Recurrence
-
-So after adding `p^k`:
 
 ```math
 P_{\text{new}}
@@ -1529,7 +1052,7 @@ P_{\text{old}}^{k+1}
 p^{C_{\text{old}}k(k+1)/2}
 ```
 
-And divisor count updates as:
+New divisor count:
 
 ```math
 C_{\text{new}}
@@ -1537,155 +1060,25 @@ C_{\text{new}}
 C_{\text{old}}(k+1)
 ```
 
-This is the main product-of-divisors formula used in the implementation.
+That is the formula implemented in code.
 
 ---
 
-### Small Example — Add `2²`
+## 2.5 Why Exponents Use MOD-1
 
-Initially no primes processed:
-
-```text
-old divisors = {1}
-
-C = 1
-P = 1
-```
-
-Add:
-
-```text
-2²
-```
-
-New divisors:
-
-```text
-1,2,4
-```
-
-Formula:
-
-```math
-P_{\text{new}}
-=
-1^3
-\cdot
-2^{1(0+1+2)}
-```
-
-```math
-P_{\text{new}}
-=
-2^3
-=
-8
-```
-
-Indeed:
-
-```text
-1 × 2 × 4
-= 8
-```
-
-New count:
-
-```text
-1 × 3 = 3
-```
-
----
-
-### Add `3¹`
-
-Old divisors:
-
-```text
-1,2,4
-```
-
-Old:
-
-```text
-C = 3
-P = 8
-```
-
-Add:
-
-```text
-3¹
-```
-
-New divisor groups:
-
-```text
-old × 3^0:
-1,2,4
-
-old × 3^1:
-3,6,12
-```
-
-Formula:
-
-```math
-P_{\text{new}}
-=
-8^2
-\cdot
-3^{3(0+1)}
-```
-
-```math
-P_{\text{new}}
-=
-64\cdot27
-=
-1728
-```
-
-Correct product:
-
-```text
-1×2×3×4×6×12
-= 1728
-```
-
----
-
-## 2.7 Why Exponents Use MOD-1
-
-In the product recurrence, exponent:
-
-```math
-C\cdot\frac{k(k+1)}2
-```
-
-can become enormous.
-
-We need:
+We calculate powers like:
 
 ```text
 p^E mod MOD
 ```
 
-Since:
+with:
 
 ```text
-MOD is prime
+MOD = 1e9+7
 ```
 
-and the CSES prime factors satisfy:
-
-```text
-p < MOD
-```
-
-so `p` is not divisible by `MOD`.
-
-Fermat gives:
+Because `MOD` is prime and `p` is not divisible by `MOD`:
 
 ```math
 p^{MOD-1}\equiv1\pmod{MOD}
@@ -1700,91 +1093,63 @@ p^{E\bmod(MOD-1)}
 \pmod{MOD}
 ```
 
-So maintain the previous divisor count twice conceptually:
+So exponent values should be tracked modulo:
 
 ```text
-numDiv mod MOD
-→ for the answer
-
-countExp mod (MOD-1)
-→ when used inside an exponent
+MOD-1
 ```
+
+not modulo `MOD`.
 
 ---
 
-### Very Important
+### Important detail — triangular number
 
-Do **not** do:
-
-```text
-exponent % MOD
-```
-
-for Fermat exponent reduction.
-
-Use:
+We need:
 
 ```text
-exponent % (MOD-1)
+k(k+1)/2
 ```
 
----
-
-### Computing `k(k+1)/2`
-
-`MOD-1` is not prime, so do not try to divide by `2` using a modular inverse modulo `MOD-1`.
+`MOD-1` is not prime, so do not divide by `2` through a modular inverse modulo `MOD-1`.
 
 Compute the integer division first:
 
 ```cpp
-long long tri =
+long long triangular =
     (__int128)k * (k + 1) / 2 % (MOD - 1);
 ```
 
-Then:
+Then multiply with the old divisor count modulo `MOD-1`.
 
-```cpp
-long long exponent =
-    (__int128)countExp * tri % (MOD - 1);
+---
+
+## 2.6 Full Dry Run — N = 12
+
+```text
+12 = 2² × 3
+```
+
+Divisors:
+
+```text
+1,2,3,4,6,12
 ```
 
 ---
 
-## 2.8 Full Dry Run — N = 12
-
-Input prime factorisation:
-
-```text
-2² × 3¹
-```
-
-We want:
-
-```text
-number of divisors
-sum of divisors
-product of divisors
-```
-
----
-
-### A. Number of Divisors
+### A. Number of divisors
 
 For `2²`:
 
 ```text
-exponent choices:
-0,1,2
-
-count = 3
+3 exponent choices
 ```
 
 For `3¹`:
 
 ```text
-0,1
-
-count = 2
+2 exponent choices
 ```
 
 Therefore:
@@ -1796,23 +1161,21 @@ D = 3 × 2
 
 ---
 
-### B. Sum of Divisors
+### B. Sum of divisors
 
 For `2²`:
 
 ```text
-1 + 2 + 4
-= 7
+1 + 2 + 4 = 7
 ```
 
 For `3¹`:
 
 ```text
-1 + 3
-= 4
+1 + 3 = 4
 ```
 
-Multiply:
+So:
 
 ```text
 S = 7 × 4
@@ -1821,45 +1184,46 @@ S = 7 × 4
 
 ---
 
-### C. Product of Divisors
+### C. Product of divisors
 
 Start:
 
 ```text
-P = 1
 C = 1
+P = 1
 ```
 
----
-
-#### Process `2²`
+#### Add `2²`
 
 ```text
 p = 2
 k = 2
 ```
 
-Triangular exponent:
+Old product:
 
 ```text
-0+1+2 = 3
+P^(k+1)
+= 1³
+= 1
 ```
 
-New product:
-
-```math
-P
-=
-1^3
-\cdot
-2^{1\cdot3}
-```
+Prime exponent:
 
 ```text
-P = 8
+C × (0+1+2)
+= 1 × 3
+= 3
 ```
 
-New divisor count:
+So:
+
+```text
+P = 1 × 2³
+  = 8
+```
+
+New count:
 
 ```text
 C = 1 × 3
@@ -1874,74 +1238,53 @@ Current divisors:
 
 ---
 
-#### Process `3¹`
-
-```text
-p = 3
-k = 1
-```
-
-Triangular sum:
-
-```text
-0+1 = 1
-```
+#### Add `3¹`
 
 Old:
 
 ```text
-P = 8
 C = 3
+P = 8
 ```
 
-New product:
-
-```math
-P
-=
-8^2
-\cdot
-3^{3\cdot1}
-```
-
-Calculate:
+Old product contribution:
 
 ```text
 8² = 64
+```
+
+Prime exponent:
+
+```text
+C × (0+1)
+= 3 × 1
+= 3
+```
+
+Prime contribution:
+
+```text
 3³ = 27
 ```
 
-So:
+Therefore:
 
 ```text
 P = 64 × 27
   = 1728
 ```
 
-New count:
-
-```text
-C = 3 × 2
-  = 6
-```
-
 Final:
 
 ```text
-number  = 6
+count   = 6
 sum     = 28
 product = 1728
 ```
 
-Matches the divisor list:
-
-```text
-1,2,3,4,6,12
-```
-
 ---
 
-## 2.9 C++
+## 2.7 C++
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1951,7 +1294,7 @@ using int64 = long long;
 using i128 = __int128_t;
 
 const int64 MOD = 1'000'000'007LL;
-const int64 PHI = MOD - 1;  // Fermat exponent cycle
+const int64 EXP_MOD = MOD - 1;
 
 int64 binpow(int64 a, int64 b, int64 mod) {
     int64 ans = 1;
@@ -1979,26 +1322,19 @@ int main() {
     int64 sumDiv = 1;
     int64 prodDiv = 1;
 
-    // Number of divisors of already processed primes,
-    // stored modulo MOD-1 because it is used in exponents.
+    // Number of divisors of already processed factors,
+    // modulo MOD-1 because it is used as an exponent.
     int64 countExp = 1;
 
     for (int i = 0; i < n; ++i) {
         int64 p, k;
         cin >> p >> k;
 
-        // -------------------------------------------------
         // 1. Number of divisors
-        // -------------------------------------------------
         numDiv =
             (i128)numDiv * ((k + 1) % MOD) % MOD;
 
-        // -------------------------------------------------
         // 2. Sum of divisors
-        //
-        // 1 + p + ... + p^k
-        // = (p^(k+1)-1)/(p-1)
-        // -------------------------------------------------
         int64 numerator =
             (binpow(p, k + 1, MOD) - 1 + MOD) % MOD;
 
@@ -2011,22 +1347,12 @@ int main() {
         sumDiv =
             (i128)sumDiv * geometric % MOD;
 
-        // -------------------------------------------------
         // 3. Product of divisors
-        //
-        // newProd =
-        // oldProd^(k+1)
-        // *
-        // p^(oldCount * k(k+1)/2)
-        // -------------------------------------------------
-
-        // Compute k(k+1)/2 as an integer first,
-        // then reduce modulo MOD-1.
         int64 triangular =
-            (i128)k * (k + 1) / 2 % PHI;
+            (i128)k * (k + 1) / 2 % EXP_MOD;
 
         int64 exponent =
-            (i128)countExp * triangular % PHI;
+            (i128)countExp * triangular % EXP_MOD;
 
         int64 oldPart =
             binpow(prodDiv, k + 1, MOD);
@@ -2037,9 +1363,9 @@ int main() {
         prodDiv =
             (i128)oldPart * primePart % MOD;
 
-        // Update divisor count for future exponents.
+        // Update old divisor count for future exponents.
         countExp =
-            (i128)countExp * ((k + 1) % PHI) % PHI;
+            (i128)countExp * ((k + 1) % EXP_MOD) % EXP_MOD;
     }
 
     cout << numDiv << ' '
@@ -2050,202 +1376,144 @@ int main() {
 
 ---
 
-### Complexity
+## 2.8 Don't-Memorize Model
 
-Let:
-
-```text
-n = number of distinct prime factors
-```
-
-Each factor uses a constant number of binary exponentiations.
-
-Each binary exponentiation costs:
+### Number of divisors
 
 ```text
-O(log k)
-or
-O(log MOD)
-```
-
-So the overall complexity is approximately:
-
-```text
-O(n log MOD + n log k)
-```
-
-which is easily efficient for the problem constraints.
-
-Memory:
-
-```text
-O(1)
-```
-
-besides input variables.
-
----
-
-## 2.10 Don't-Memorize Model
-
-The formulas become much easier if you start from **how a divisor is formed**.
-
----
-
-### Number of Divisors
-
-```text
-N = p1^k1 p2^k2 ...
-        |
-        v
-for each prime choose exponent
-        |
-        v
-0 ... ki
-        |
-        v
-ki + 1 choices
-        |
-        v
-multiply independent choices
-```
-
-Result:
-
-```text
-Π(ki+1)
+For each p^k:
+choose exponent 0..k
+      |
+      v
+k+1 choices
+      |
+      v
+multiply choices
 ```
 
 ---
 
-### Sum of Divisors
+### Sum of divisors
 
 ```text
-for prime p^k
-possible contributions:
-1, p, p², ..., p^k
-        |
-        v
-sum them
-        |
-        v
+For each p^k:
+1 + p + ... + p^k
+      |
+      v
 geometric progression
-        |
-        v
-(p^(k+1)-1)/(p-1)
-        |
-        v
+      |
+      v
 multiply across primes
 ```
 
 ---
 
-### Product of Divisors
+### Product of divisors
 
 ```text
-already processed:
-C divisors
-product = P
-        |
-        v
-add new prime p^k
-        |
-        v
-old divisor set appears
-k+1 times
-        |
-        v
-P^(k+1)
-        |
-        +
-        |
-p exponent across all groups
-        |
-        v
-C × (0+1+...+k)
-        |
-        v
-C × k(k+1)/2
+Old state:
+C divisors, product P
+       |
+       v
+Add p^k
+       |
+       +----------------------+
+       |                      |
+old set repeats          p powers added
+k+1 times               to all C divisors
+       |                      |
+       v                      v
+P^(k+1)             C × (0+1+...+k)
+                              |
+                              v
+                    C × k(k+1)/2
 ```
 
-Result:
+Therefore:
 
 ```text
-newP
+new product
 =
 P^(k+1)
 ×
 p^(C*k(k+1)/2)
 ```
 
-For the huge exponent:
-
-```text
-Fermat
-→ reduce exponent modulo MOD-1
-```
-
 Memory anchor:
 
 ```text
-COUNT = choices
-SUM   = geometric series
-PRODUCT = repeated old product + exponent contribution
+COUNT   → exponent choices
+SUM     → geometric series
+PRODUCT → old product repeats + new prime contribution
 ```
 
 ---
 
-# 3. Final Recognition Sheet
-
-| Problem signal | Think |
-|---|---|
-| subtract the same value repeatedly | total difference |
-| repeated value must be prime | difference must have a prime divisor |
-| positive integer `> 1` | has a prime divisor |
-| number given by prime factorisation | work directly with prime exponents |
-| count divisors | independent exponent choices |
-| sum divisors | geometric progression per prime |
-| divide under prime modulus | modular inverse |
-| huge power modulo prime | binary exponentiation + Fermat |
-| product of all divisors | divisor pairing / contribution recurrence |
-| exponent used modulo `1e9+7` | reduce exponent modulo `1e9+6` when Fermat applies |
-
----
-
-# Master Mental Model
+# 3. Final Revision Card
 
 ```text
 PRIME SUBTRACTION
 -----------------
-x -> y by subtracting p repeatedly
-          |
-          v
-x - y = k*p
-          |
-          v
-difference needs prime divisor
-          |
-     +----+----+
-     |         |
-    1         >1
-     |         |
-    NO        YES
+x - kp = y
+
+=> x-y = kp
+
+difference = 1
+→ NO
+
+difference > 1
+→ has prime divisor
+→ YES
 
 
 DIVISOR ANALYSIS
 ----------------
 N = Π p_i^k_i
-       |
-       v
-A divisor chooses exponent
-0..k_i for each prime
-       |
-       +--------------------------+
-       |             |            |
-     COUNT          SUM        PRODUCT
-       |             |            |
- choices        geometric     contribution
- multiply         series       recurrence
+
+DIVISOR
+d = Π p_i^e_i
+where 0 <= e_i <= k_i
+
+
+COUNT
+Π(k_i+1)
+
+
+SUM
+Π(1+p_i+...+p_i^k_i)
+
+GP:
+(p^(k+1)-1)/(p-1)
+
+
+PRODUCT
+old:
+C divisors
+product P
+
+add p^k:
+
+newP
+=
+P^(k+1)
+×
+p^(C*k(k+1)/2)
+
+newC
+=
+C(k+1)
+
+
+MODULAR TOOLS
+-------------
+p^k mod MOD
+→ binpow
+
+division mod prime
+→ modular inverse
+
+huge exponent mod MOD
+→ reduce exponent mod (MOD-1)
 ```
 
-> **Core habit:** when a problem gives prime factorisation, think in terms of **choosing prime exponents**, not in terms of generating the original number.
+> **Core habit:** when the input is a prime factorisation, think in terms of **prime-exponent choices and contributions**, not by reconstructing `N`.
