@@ -18,30 +18,44 @@
 ### Modulo
 `A mod M` is the remainder after dividing `A` by `M`.
 
-$$17=3\cdot5+2 \quad\Rightarrow\quad 17\bmod5=2$$
+$$
+17=3\cdot5+2 \quad\Rightarrow\quad 17\bmod5=2
+$$
 
 Congruence:
 
-$$A\equiv B\pmod M$$
+$$
+A\equiv B\pmod M
+$$
 
 means `A` and `B` have the same remainder modulo `M`.
 
 ### Divisibility
-$$a\mid b \iff b\bmod a=0$$
+$$
+a\mid b \iff b\bmod a=0
+$$
 
 ### Exponents
-$$a^{x+y}=a^xa^y$$
+$$
+a^{x+y}=a^xa^y
+$$
 
-$$a^{2k}=(a^k)^2$$
+$$
+a^{2k}=(a^k)^2
+$$
 
-$$a^{2k+1}=(a^k)^2a$$
+$$
+a^{2k+1}=(a^k)^2a
+$$
 
 The last two identities lead directly to binary exponentiation.
 
 ### Prime and Coprime
 A prime has exactly two positive divisors. Two integers are coprime when:
 
-$$\gcd(a,b)=1$$
+$$
+\gcd(a,b)=1
+$$
 
 This condition matters when working with modular inverses.
 
@@ -142,7 +156,9 @@ Binary exponentiation computes the inverse efficiently.
 
 Brute force for `a^b` takes:
 
-$$O(b)$$
+$$
+O(b)
+$$
 
 But:
 
@@ -157,7 +173,9 @@ $$
 
 Each step halves `b`, giving:
 
-$$O(\log b)$$
+$$
+O(\log b)
+$$
 
 ### Dry Run — `3^6`
 
@@ -254,7 +272,9 @@ long long g = std::gcd(a, b);
 
 Complexity:
 
-$$O(\log(\max(a,b)))$$
+$$
+O(\log(\max(a,b)))
+$$
 
 ### Why Euclid works
 If `d` divides both `a` and `b`, it also divides `a-kb`. Therefore subtracting multiples does not change the set of common divisors.
@@ -268,13 +288,13 @@ If `d` divides both `a` and `b`, it also divides `a-kb`. Therefore subtracting m
 For two positive integers:
 
 $$
-\operatorname{lcm}(a,b)\cdot\gcd(a,b)=ab
+\mathrm{lcm}(a,b)\cdot\gcd(a,b)=ab
 $$
 
 Therefore:
 
 $$
-\boxed{\operatorname{lcm}(a,b)=\frac{ab}{\gcd(a,b)}}
+\boxed{\mathrm{lcm}(a,b)=\frac{ab}{\gcd(a,b)}}
 $$
 
 Safer C++:
@@ -288,15 +308,15 @@ long long lcm(long long a, long long b) {
 For several numbers, combine pairwise:
 
 $$
-\operatorname{lcm}(a,b,c)
+\mathrm{lcm}(a,b,c)
 =
-\operatorname{lcm}(a,\operatorname{lcm}(b,c))
+\mathrm{lcm}(a,\mathrm{lcm}(b,c))
 $$
 
 Do **not** assume:
 
 $$
-\operatorname{lcm}(a,b,c)=\frac{abc}{\gcd(a,b,c)}
+\mathrm{lcm}(a,b,c)=\frac{abc}{\gcd(a,b,c)}
 $$
 
 ---
