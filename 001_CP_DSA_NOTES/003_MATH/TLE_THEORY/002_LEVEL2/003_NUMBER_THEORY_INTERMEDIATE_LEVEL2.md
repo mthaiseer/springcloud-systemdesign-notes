@@ -18,44 +18,44 @@
 ### Modulo
 `A mod M` is the remainder after dividing `A` by `M`.
 
-$$
+```math
 17=3\cdot5+2 \quad\Rightarrow\quad 17\bmod5=2
-$$
+```
 
 Congruence:
 
-$$
+```math
 A\equiv B\pmod M
-$$
+```
 
 means `A` and `B` have the same remainder modulo `M`.
 
 ### Divisibility
-$$
+```math
 a\mid b \iff b\bmod a=0
-$$
+```
 
 ### Exponents
-$$
+```math
 a^{x+y}=a^xa^y
-$$
+```
 
-$$
+```math
 a^{2k}=(a^k)^2
-$$
+```
 
-$$
+```math
 a^{2k+1}=(a^k)^2a
-$$
+```
 
 The last two identities lead directly to binary exponentiation.
 
 ### Prime and Coprime
 A prime has exactly two positive divisors. Two integers are coprime when:
 
-$$
+```math
 \gcd(a,b)=1
-$$
+```
 
 This condition matters when working with modular inverses.
 
@@ -64,45 +64,45 @@ This condition matters when working with modular inverses.
 # 2. Modular Operations
 
 ### Addition
-$$
+```math
 (A+B)\bmod M
 =
 \big((A\bmod M)+(B\bmod M)\big)\bmod M
-$$
+```
 
 Example:
 
-$$
+```math
 (7+6)\bmod5=(2+1)\bmod5=3
-$$
+```
 
 ### Subtraction
-$$
+```math
 (A-B)\bmod M
 =
 \big((A\bmod M)-(B\bmod M)+M\big)\bmod M
-$$
+```
 
 Example:
 
-$$
+```math
 (11-8)\bmod5=(1-3+5)\bmod5=3
-$$
+```
 
 `+M` prevents a negative remainder.
 
 ### Multiplication
-$$
+```math
 (AB)\bmod M
 =
 \big((A\bmod M)(B\bmod M)\big)\bmod M
-$$
+```
 
 Example:
 
-$$
+```math
 (7\cdot8)\bmod5=(2\cdot3)\bmod5=1
-$$
+```
 
 ```cpp
 long long ans = ((a % MOD) * (b % MOD)) % MOD;
@@ -116,27 +116,27 @@ Ordinary division cannot simply be performed on remainders.
 
 Instead:
 
-$$
+```math
 \frac AB \equiv A\cdot B^{-1}\pmod M
-$$
+```
 
 The modular inverse satisfies:
 
-$$
+```math
 BB^{-1}\equiv1\pmod M
-$$
+```
 
 For prime `M`, when `B` is not divisible by `M`, Fermat gives:
 
-$$
+```math
 B^{M-1}\equiv1\pmod M
-$$
+```
 
 Hence:
 
-$$
+```math
 \boxed{B^{-1}\equiv B^{M-2}\pmod M}
-$$
+```
 
 So:
 
@@ -156,26 +156,26 @@ Binary exponentiation computes the inverse efficiently.
 
 Brute force for `a^b` takes:
 
-$$
+```math
 O(b)
-$$
+```
 
 But:
 
-$$
+```math
 a^b=
 \begin{cases}
 1,&b=0\\
 (a^{b/2})^2,&b\text{ even}\\
 (a^{\lfloor b/2\rfloor})^2a,&b\text{ odd}
 \end{cases}
-$$
+```
 
 Each step halves `b`, giving:
 
-$$
+```math
 O(\log b)
-$$
+```
 
 ### Dry Run — `3^6`
 
@@ -228,21 +228,21 @@ O(log b)
 
 Example:
 
-$$
+```math
 \gcd(8,12)=4
-$$
+```
 
 Key property:
 
-$$
+```math
 \gcd(a,b)=\gcd(a+kb,b)
-$$
+```
 
 Choosing the appropriate multiple gives Euclid's algorithm:
 
-$$
+```math
 \boxed{\gcd(a,b)=\gcd(b,a\bmod b)}
-$$
+```
 
 ### Dry Run
 
@@ -258,13 +258,13 @@ gcd = 6
 
 Also:
 
-$$
+```math
 \gcd(a,0)=a
-$$
+```
 
-$$
+```math
 \gcd(a,b,c)=\gcd(a,\gcd(b,c))
-$$
+```
 
 ```cpp
 long long g = std::gcd(a, b);
@@ -272,9 +272,9 @@ long long g = std::gcd(a, b);
 
 Complexity:
 
-$$
+```math
 O(\log(\max(a,b)))
-$$
+```
 
 ### Why Euclid works
 If `d` divides both `a` and `b`, it also divides `a-kb`. Therefore subtracting multiples does not change the set of common divisors.
@@ -287,15 +287,15 @@ If `d` divides both `a` and `b`, it also divides `a-kb`. Therefore subtracting m
 
 For two positive integers:
 
-$$
-\mathrm{lcm}(a,b)\cdot\gcd(a,b)=ab
-$$
+```math
+\text{lcm}(a,b)\cdot\gcd(a,b)=ab
+```
 
 Therefore:
 
-$$
-\boxed{\mathrm{lcm}(a,b)=\frac{ab}{\gcd(a,b)}}
-$$
+```math
+\boxed{\text{lcm}(a,b)=\frac{ab}{\gcd(a,b)}}
+```
 
 Safer C++:
 
@@ -307,17 +307,17 @@ long long lcm(long long a, long long b) {
 
 For several numbers, combine pairwise:
 
-$$
-\mathrm{lcm}(a,b,c)
+```math
+\text{lcm}(a,b,c)
 =
-\mathrm{lcm}(a,\mathrm{lcm}(b,c))
-$$
+\text{lcm}(a,\text{lcm}(b,c))
+```
 
 Do **not** assume:
 
-$$
-\mathrm{lcm}(a,b,c)=\frac{abc}{\gcd(a,b,c)}
-$$
+```math
+\text{lcm}(a,b,c)=\frac{abc}{\gcd(a,b,c)}
+```
 
 ---
 
@@ -348,27 +348,27 @@ Given `N` integers, show that there is a non-empty subarray whose sum is divisib
 
 Define prefix sums:
 
-$$
+```math
 P_i=a_1+a_2+\cdots+a_i
-$$
+```
 
 A subarray sum is:
 
-$$
+```math
 P_j-P_i
-$$
+```
 
 We want:
 
-$$
+```math
 (P_j-P_i)\bmod N=0
-$$
+```
 
 which happens when:
 
-$$
+```math
 P_j\bmod N=P_i\bmod N
-$$
+```
 
 Now examine the `N` prefix remainders.
 
@@ -392,15 +392,15 @@ Two cases:
 
 If:
 
-$$
+```math
 P_i\bmod N=P_j\bmod N
-$$
+```
 
 then:
 
-$$
+```math
 (P_j-P_i)\bmod N=0
-$$
+```
 
 So the subarray between those prefixes has sum divisible by `N`.
 
@@ -416,9 +416,9 @@ prefix mod 3    = [2,  1,  2]
 
 Remainder `2` repeats:
 
-$$
+```math
 P_3-P_1=11-5=6
-$$
+```
 
 Thus:
 
