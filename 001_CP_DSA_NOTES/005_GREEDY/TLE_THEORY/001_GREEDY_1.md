@@ -1,55 +1,63 @@
 # Greedy Algorithms — Level 3
-## Greedy 1 — Claims, Proofs, Sorting Greedy, Coin Change, Balanced Product & Minimum Dot Product
+## Greedy 1 — Compact Proof + Dry-Run Notes
 
-> **Goal:** learn to *make a greedy claim and prove it*, not just memorize “sort and pick.”
+> **Goal:** understand *why* each greedy choice is safe.
 >
-> **Study flow for every section/problem:**  
-> **prerequisites → mathematical notation → concept simplified → what it asks → observation/claim → derivation/proof → step-by-step example → C++ → complexity → recognition model**
+> **Flow for each problem:** **what it asks → simplified idea → greedy claim → proof + dry run side by side → C++ → complexity → recognition**.
 >
-> **Lecture basis:** *Greedy Algorithms 1 — Priyansh Agarwal*.  
-> Supporting explanations and extra examples are added only to make the lecture ideas easier to self-study.
+> **Core habit:** do not memorize “sort and pick.” Learn how to **exchange, bound, swap, replace, or balance** competing choices.
 >
-> **Math rendering:** display equations use fenced `math` blocks only.
+> Display equations use fenced `math` blocks to avoid rendering issues.
 
 ---
 
 # Clickable Table of Contents
 
-- [0. Prerequisites & Mathematical Notation](#0-prerequisites--mathematical-notation)
-  - [0.1 Optimization Language](#01-optimization-language)
-  - [0.2 Sorted Array Notation](#02-sorted-array-notation)
-  - [0.3 Greedy Answer vs Optimal Answer](#03-greedy-answer-vs-optimal-answer)
-  - [0.4 Exchange Argument](#04-exchange-argument)
-  - [0.5 Floor and Ceiling](#05-floor-and-ceiling)
-  - [0.6 Dot Product and Sigma](#06-dot-product-and-sigma)
-  - [0.7 Division, Quotient and Remainder](#07-division-quotient-and-remainder)
-- [1. What Is a Greedy Strategy?](#1-what-is-a-greedy-strategy)
-- [2. How to Prove a Greedy Claim](#2-how-to-prove-a-greedy-claim)
-- [3. Example 1 — Maximum Sum of K Elements](#3-example-1--maximum-sum-of-k-elements)
-- [4. Example 2 — Maximum Difference Between Two Elements](#4-example-2--maximum-difference-between-two-elements)
-- [5. Example 3 — Minimum Difference Between Two Elements](#5-example-3--minimum-difference-between-two-elements)
-- [6. Example 4 — Maximize Sum of i × a[i]](#6-example-4--maximize-sum-of-i--ai)
-- [7. Coin Change — Greedy With Divisible Denominations](#7-coin-change--greedy-with-divisible-denominations)
-- [8. Why Coin Greedy Can Fail](#8-why-coin-greedy-can-fail)
-- [9. Maximum Product With Fixed Sum](#9-maximum-product-with-fixed-sum)
-- [10. Minimum Dot Product](#10-minimum-dot-product)
-- [11. Core Proof Patterns Learned](#11-core-proof-patterns-learned)
-- [12. Greedy Recognition Checklist](#12-greedy-recognition-checklist)
-- [13. Compact Revision Card](#13-compact-revision-card)
+- [0. Prerequisites](#0-prerequisites)
+  - [0.1 Optimization](#01-optimization)
+  - [0.2 Sorted-Order Notation](#02-sorted-order-notation)
+  - [0.3 G and O — Comparing Greedy With Another Choice](#03-g-and-o--comparing-greedy-with-another-choice)
+  - [0.4 Exchange Argument — General Template](#04-exchange-argument--general-template)
+  - [0.5 How to Apply Exchange Argument to Any Greedy Problem](#05-how-to-apply-exchange-argument-to-any-greedy-problem)
+  - [0.6 Other Proof Patterns](#06-other-proof-patterns)
+  - [0.7 Floor, Ceiling, Dot Product, Quotient](#07-floor-ceiling-dot-product-quotient)
+- [1. Greedy = Claim + Proof](#1-greedy--claim--proof)
+- [2. Maximum Sum of K Elements](#2-maximum-sum-of-k-elements)
+- [3. Maximum Difference Between Two Elements](#3-maximum-difference-between-two-elements)
+- [4. Minimum Difference Between Two Elements](#4-minimum-difference-between-two-elements)
+- [5. Maximize Sum of i × a[i]](#5-maximize-sum-of-i--ai)
+- [6. Coin Change — When Largest First Is Safe](#6-coin-change--when-largest-first-is-safe)
+- [7. Why Coin Greedy Can Fail](#7-why-coin-greedy-can-fail)
+- [8. Maximum Product With Fixed Sum](#8-maximum-product-with-fixed-sum)
+- [9. Minimum Dot Product](#9-minimum-dot-product)
+- [10. Proof Pattern Summary](#10-proof-pattern-summary)
+- [11. Recognition Checklist](#11-recognition-checklist)
+- [12. Compact Revision Card](#12-compact-revision-card)
 
 ---
 
-# 0. Prerequisites & Mathematical Notation
+# 0. Prerequisites
 
-Before the lecture problems, make these symbols and proof ideas automatic.
+## 0.1 Optimization
 
----
+Greedy problems normally have:
 
-## 0.1 Optimization Language
+```text
+1. Constraint  → what must remain valid?
+2. Objective   → what must be minimized/maximized?
+```
 
-Greedy problems usually ask us to optimize something.
+Example:
 
-### Maximum
+```text
+Constraint:
+choose exactly K elements
+
+Objective:
+maximize their sum
+```
+
+Notation:
 
 ```math
 \max(\text{value})
@@ -61,15 +69,7 @@ means:
 make the value as large as possible
 ```
 
-Example:
-
-```text
-maximize sum of selected K elements
-```
-
----
-
-### Minimum
+and:
 
 ```math
 \min(\text{value})
@@ -81,62 +81,14 @@ means:
 make the value as small as possible
 ```
 
-Example:
-
-```text
-minimum difference between any two elements
-```
-
 ---
 
-### Constraint
+## 0.2 Sorted-Order Notation
 
-A constraint tells us which solutions are legal.
-
-Example:
-
-```text
-choose exactly K elements
-```
-
-The objective may be:
-
-```text
-maximize their sum
-```
-
-but we cannot choose:
-
-```text
-K+1 elements
-```
-
-because that violates the constraint.
-
----
-
-### Concept Simplified
-
-Always separate:
-
-```text
-WHAT MUST BE VALID?
-        ↓
-constraint
-
-WHAT DO I WANT BEST?
-        ↓
-objective
-```
-
----
-
-## 0.2 Sorted Array Notation
-
-If an array is sorted ascending:
+If:
 
 ```math
-a_1\le a_2\le a_3\le\cdots\le a_n
+a_1\le a_2\le\cdots\le a_n
 ```
 
 then:
@@ -146,253 +98,393 @@ a1 = smallest
 an = largest
 ```
 
-For indices:
+If:
 
-```math
-i<j
+```text
+i < j
 ```
 
-we know:
+then in this sorted array:
 
 ```math
 a_i\le a_j
 ```
 
-This tiny fact powers several proofs in the lecture.
+This simple fact drives several proofs below.
 
 ---
 
-### Example
+## 0.3 G and O — Comparing Greedy With Another Choice
 
-Array:
-
-```text
-[11, 6, 7, 2, 0, 2, 9, 10]
-```
-
-Sorted:
+We use:
 
 ```text
-[0, 2, 2, 6, 7, 9, 10, 11]
+G = greedy contribution / greedy answer
+O = another feasible contribution / answer
 ```
 
-Therefore:
-
-```text
-smallest = 0
-largest  = 11
-```
-
-and adjacent differences are:
-
-```text
-2, 0, 4, 1, 2, 1, 1
-```
-
----
-
-## 0.3 Greedy Answer vs Optimal Answer
-
-The lecture annotations repeatedly compare:
-
-```text
-GA = Greedy Answer
-OA = some other / optimal answer
-```
-
-We will use:
+For maximization, prove:
 
 ```math
-GA
+G\ge O
 ```
 
-for the value produced by our greedy claim.
-
-And:
+A convenient equivalent test:
 
 ```math
-OA
+G-O\ge0
 ```
 
-for the value of another feasible solution, especially an optimal one.
-
-For a **maximization** problem, we want to prove:
+For minimization, prove:
 
 ```math
-GA\ge OA
+G\le O
 ```
 
-For a **minimization** problem, we want:
+or equivalently:
 
 ```math
-GA\le OA
+G-O\le0
 ```
 
----
+### Tiny Example
 
-### Example
-
-Suppose greedy sum is:
+Greedy uses:
 
 ```text
-GA = 25
+10
 ```
 
-and after exchanging one choice in another solution we get:
+instead of:
 
 ```text
-OA = 22
+7
 ```
+
+in a maximization problem.
 
 Then:
 
 ```text
-GA >= OA
+G-O
+= 10-7
+= 3 >= 0
 ```
 
-so greedy is no worse for a maximization problem.
+So the exchange cannot make the answer worse.
 
 ---
 
-## 0.4 Exchange Argument
-
-This is the central proof idea used throughout the lecture.
+## 0.4 Exchange Argument — General Template
 
 ### Concept Simplified
 
-Assume another solution makes a different choice.
-
-Replace one of its choices with the greedy choice.
-
-Then prove:
+An exchange argument says:
 
 ```text
-the new solution stays valid
-AND
-the objective does not get worse
+Take any optimal solution.
+If it disagrees with the greedy choice,
+swap one part of it with the greedy choice.
+Show the solution remains valid
+and the answer does not become worse.
 ```
 
----
-
-### Generic Maximization Proof
-
-Suppose greedy chooses:
+Generic structure:
 
 ```text
-q
+Greedy wants q
+Other/optimal solution uses p
+           |
+           v
+      exchange p → q
+           |
+           v
+still feasible?
+           |
+           v
+objective non-worse?
+           |
+           v
+YES → an optimal solution can contain q
 ```
 
-while another solution chooses:
+### Mathematical Skeleton
 
-```text
-p
-```
-
-and:
+For maximization:
 
 ```math
-q\ge p
+\Delta=G-O
 ```
 
-If we replace `p` by `q`, the change is:
+Prove:
 
 ```math
-q-p\ge0
+\Delta\ge0
 ```
 
-So the total value cannot decrease.
+For minimization:
 
----
+```math
+\Delta=G-O
+```
 
-### Generic Minimization Proof
-
-If replacing another choice by greedy changes cost by:
+Prove:
 
 ```math
 \Delta\le0
 ```
 
-then greedy does not increase the cost.
+---
+
+## 0.5 How to Apply Exchange Argument to Any Greedy Problem
+
+This is the reusable proof checklist.
+
+### Step 1 — State the Greedy Choice
+
+Example:
+
+```text
+Choose the largest remaining value.
+```
+
+or:
+
+```text
+Put the larger value on the larger weight.
+```
 
 ---
 
-### Recognition
+### Step 2 — Assume an Optimal Solution Disagrees
 
-When you see:
+Suppose the optimal solution uses:
 
 ```text
-sort
-then choose the largest/smallest
+p
 ```
 
-ask:
+where greedy uses:
 
 ```text
-Can I swap a “wrong” chosen element
-with the greedy element
-without making the answer worse?
+q
+```
+
+or suppose two values appear in the wrong relative order.
+
+---
+
+### Step 3 — Exchange Only the Disagreement
+
+Do **not** rebuild the entire solution.
+
+Swap just:
+
+```text
+p ↔ q
+```
+
+or:
+
+```text
+two misplaced items
 ```
 
 ---
 
-## 0.5 Floor and Ceiling
+### Step 4 — Check Feasibility
 
-Used later in the Maximum Product problem.
+Ask:
 
-### Floor
+```text
+Does the swapped solution still obey every constraint?
+```
+
+If not, the exchange proof fails.
+
+---
+
+### Step 5 — Compare Objective Before vs After
+
+Typical forms:
+
+```math
+q-p
+```
+
+or:
+
+```math
+(a_i-a_j)(w_i-w_j)
+```
+
+or:
+
+```math
+\text{new cost}-\text{old cost}
+```
+
+---
+
+### Step 6 — Use the Sign
+
+For maximization:
+
+```text
+change >= 0
+→ greedy is no worse
+```
+
+For minimization:
+
+```text
+change <= 0
+→ greedy is no worse
+```
+
+---
+
+### Step 7 — Repeat
+
+If one exchange fixes one disagreement:
+
+```text
+repeat exchanges
+until the whole optimal solution
+has greedy structure
+```
+
+Then greedy is optimal.
+
+---
+
+### Generic Mini Dry Run
+
+Suppose greedy says:
+
+```text
+larger value should receive larger weight
+```
+
+Values:
+
+```text
+6 < 10
+```
+
+Weights:
+
+```text
+1 < 3
+```
+
+Greedy:
+
+```text
+6×1 + 10×3 = 36
+```
+
+Wrong order:
+
+```text
+10×1 + 6×3 = 28
+```
+
+Exchange benefit:
+
+```text
+36-28 = 8 >= 0
+```
+
+So the inversion should be removed.
+
+> **Use this exact template whenever you suspect a sorting-based greedy proof.**
+
+---
+
+## 0.6 Other Proof Patterns
+
+Not every greedy proof is an exchange proof.
+
+### Bound / Extreme Proof
+
+Show global extremes dominate every candidate.
+
+Example:
+
+```text
+maximum difference
+→ global max - global min
+```
+
+---
+
+### Adjacent-Swap Proof
+
+Find a wrong pair:
+
+```text
+... x ... y ...
+```
+
+Swap it.
+
+Show the objective improves or stays equal.
+
+Repeat until no wrong pairs remain.
+
+---
+
+### Replacement Proof
+
+Replace:
+
+```text
+many small objects
+```
+
+with:
+
+```text
+one larger object
+```
+
+without changing feasibility but improving the objective.
+
+Used in coin change.
+
+---
+
+### Balancing Proof
+
+Compare the balanced solution with one `k` steps away from balance.
+
+Used for:
+
+```text
+A+B=N
+maximize AB
+```
+
+---
+
+## 0.7 Floor, Ceiling, Dot Product, Quotient
+
+### Floor / Ceiling
 
 ```math
 \left\lfloor x\right\rfloor
 ```
 
-means:
-
-```text
-greatest integer <= x
-```
-
-Examples:
-
-```text
-floor(2.5) = 2
-floor(3.0) = 3
-```
-
----
-
-### Ceiling
+= greatest integer `<= x`.
 
 ```math
 \left\lceil x\right\rceil
 ```
 
-means:
+= smallest integer `>= x`.
 
-```text
-smallest integer >= x
-```
-
-Examples:
-
-```text
-ceil(2.5) = 3
-ceil(3.0) = 3
-```
-
----
-
-### For N / 2
-
-If `N` is even:
-
-```text
-N = 8
-
-floor(N/2) = 4
-ceil(N/2)  = 4
-```
-
-If `N` is odd:
+Example:
 
 ```text
 N = 5
@@ -401,20 +493,9 @@ floor(N/2) = 2
 ceil(N/2)  = 3
 ```
 
-So these two numbers are the two integers closest to splitting `N` equally.
-
 ---
 
-## 0.6 Dot Product and Sigma
-
-Given vectors:
-
-```text
-A = [a1,a2,...,an]
-B = [b1,b2,...,bn]
-```
-
-their dot product is:
+### Dot Product
 
 ```math
 A\cdot B
@@ -422,50 +503,18 @@ A\cdot B
 \sum_{i=1}^{n}a_ib_i
 ```
 
-The sigma:
-
-```math
-\sum_{i=1}^{n}
-```
-
-means:
-
-```text
-add the expression for i = 1,2,...,n
-```
-
-So:
-
-```math
-\sum_{i=1}^{3}a_ib_i
-=
-a_1b_1+a_2b_2+a_3b_3
-```
-
----
-
-### Example
+Example:
 
 ```text
 A = [2,3]
 B = [5,7]
-```
 
-Dot product:
-
-```text
-2×5 + 3×7
-= 10 + 21
-= 31
+2×5 + 3×7 = 31
 ```
 
 ---
 
-## 0.7 Division, Quotient and Remainder
-
-Used heavily in greedy coin change.
-
-For positive integers:
+### Quotient / Remainder
 
 ```math
 X=qD+r
@@ -476,352 +525,95 @@ where:
 ```text
 q = X / D
 r = X % D
-0 <= r < D
 ```
 
 Example:
 
 ```text
-X = 256
-D = 100
+256 / 100 = 2
+256 % 100 = 56
 ```
-
-Then:
-
-```text
-q = 2
-r = 56
-```
-
-Meaning:
-
-```text
-use 100 two times
-remaining = 56
-```
-
-This is exactly what greedy coin change does.
-
----
-
-# 1. What Is a Greedy Strategy?
-
-The lecture describes greedy as a strategy that assumes the best answer can be found by exploring only **some carefully chosen possibilities**, rather than trying every possible solution.
-
-It consists of two parts:
-
-```text
-1. Make a greedy claim.
-2. Prove the claim.
-```
-
----
-
-## 1.1 Concept Simplified
-
-Brute force:
-
-```text
-Try everything
-        ↓
-pick best answer
-```
-
-Greedy:
-
-```text
-Observe structure
-        ↓
-make a claim:
-"the optimal solution can be chosen this way"
-        ↓
-ignore many impossible/unnecessary choices
-        ↓
-prove claim
-```
-
----
-
-## 1.2 Why the Proof Matters
-
-A rule such as:
-
-```text
-"always choose the biggest"
-```
-
-is not automatically greedy-correct.
-
-It is only a **guess** until we prove:
-
-```text
-choosing the biggest now
-cannot make the final answer worse
-```
-
-The lecture later shows a coin system where “take largest coin first” fails.
 
 So:
 
 ```text
-greedy = claim + proof
-```
-
-not:
-
-```text
-greedy = sort + hope
+use two 100-coins
+continue with 56
 ```
 
 ---
 
-## 1.3 Example
+# 1. Greedy = Claim + Proof
 
-Problem:
+Greedy means:
 
 ```text
-Choose K elements with maximum sum.
+observe structure
+      ↓
+make a local-choice claim
+      ↓
+try to break it
+      ↓
+prove it is safe
+      ↓
+commit and continue
 ```
 
-Claim:
+The two essential pieces are:
 
 ```text
-Choose the K largest elements.
+CLAIM
++
+PROOF
 ```
 
-Why is that believable?
-
-If our selected set contains a smaller value `p` while an unselected larger value `q` exists:
+Not:
 
 ```text
-q > p
+sort + hope
 ```
 
-swap:
+A good contest workflow:
 
 ```text
-p → q
-```
-
-The sum increases.
-
-So an optimal answer can always be transformed toward the K largest values.
-
----
-
-## 1.4 Recognition Model
-
-```text
-Optimization problem
-       |
-       v
-Trying all choices is expensive
-       |
-       v
-Can I identify a choice
-that an optimal answer can safely contain?
-       |
-       v
-Make claim
-       |
-       v
-Try to prove or disprove it
+1. Guess the greedy rule.
+2. Test small/adversarial examples.
+3. Search for a counterexample.
+4. If it survives, prove it.
+5. Only then code.
 ```
 
 ---
 
-# 2. How to Prove a Greedy Claim
+# 2. Maximum Sum of K Elements
 
-The lecture highlights three practical ways to build confidence in a greedy strategy.
+## 2.1 What It Asks
 
----
-
-## 2.1 Formal Mathematical Proof
-
-This is strongest.
-
-Examples from this lecture use:
-
-```text
-GA - OA >= 0
-```
-
-for maximization, or:
-
-```text
-GA - OA <= 0
-```
-
-for minimization.
-
----
-
-### Example
-
-Greedy picks `q` instead of `p`.
-
-Suppose:
-
-```math
-q\ge p
-```
-
-Then:
-
-```math
-GA-OA=q-p\ge0
-```
-
-Therefore greedy is not worse.
-
----
-
-## 2.2 Intuitive Proof / Common Sense
-
-Sometimes the structure is obvious enough to first build intuition.
-
-Example:
-
-```text
-maximum difference in a sorted array
-```
-
-The largest gap should use:
-
-```text
-smallest value
-and
-largest value
-```
-
-That intuition guides the formal proof.
-
----
-
-## 2.3 Try Hard to Disprove the Claim
-
-The lecture also recommends trying many cases and searching for a counterexample.
-
-This is especially useful before investing time in a proof.
-
----
-
-### Example — Coin Change
-
-Claim:
-
-```text
-always take the largest possible coin
-```
-
-Works for:
-
-```text
-[1,5,10,50,100]
-```
-
-But test:
-
-```text
-[1,8,10]
-X = 16
-```
-
-Greedy:
-
-```text
-10 + 1 + 1 + 1 + 1 + 1 + 1
-```
-
-7 coins.
-
-Better:
-
-```text
-8 + 8
-```
-
-2 coins.
-
-Counterexample found.
-
-Claim is false for arbitrary denominations.
-
----
-
-## 2.4 Practical Contest Workflow
-
-```text
-Make claim
-   |
-   +----------------------+
-   |                      |
-small tests           proof attempt
-   |                      |
-counterexample?       exchange/algebra?
-   |
- YES → reject claim
- NO  → confidence rises,
-       but still prove when possible
-```
-
----
-
-# 3. Example 1 — Maximum Sum of K Elements
-
-## 3.1 What It Asks
-
-Given an array of `N` numbers:
-
-```text
-choose exactly K elements
-```
-
-such that their sum is maximum.
-
----
-
-## 3.2 Mathematical Model
-
-Choose a subset `S` satisfying:
-
-```math
-|S|=K
-```
-
-and maximize:
+Choose exactly `K` elements and maximize:
 
 ```math
 \sum_{i\in S}a_i
 ```
 
-Notation:
+with:
 
 ```math
-|S|
-```
-
-means:
-
-```text
-number of elements in set S
+|S|=K
 ```
 
 ---
 
-## 3.3 Concept Simplified
+## 2.2 Concept Simplified
 
-Every selected position contributes only its value.
-
-There is no interaction between elements.
-
-So if we selected a smaller value while leaving a larger value outside:
+If a chosen value is smaller than an unchosen value:
 
 ```text
-we can improve the answer by swapping them.
+replace the smaller by the larger
 ```
 
-This screams:
+The sum cannot decrease.
+
+So:
 
 ```text
 take the K largest values
@@ -829,255 +621,7 @@ take the K largest values
 
 ---
 
-## 3.4 Greedy Claim
-
-Sort ascending:
-
-```math
-a_1\le a_2\le\cdots\le a_n
-```
-
-Greedy selects:
-
-```text
-a[n-K+1], ..., a[n]
-```
-
-the last `K` elements.
-
----
-
-## 3.5 Exchange Proof
-
-Suppose another solution `OA` selects some element:
-
-```math
-a_p
-```
-
-but does not select a larger greedy element:
-
-```math
-a_q
-```
-
-where:
-
-```math
-p<q
-```
-
-Because array is sorted:
-
-```math
-a_p\le a_q
-```
-
-Swap:
-
-```text
-remove a_p
-add    a_q
-```
-
-Difference:
-
-```math
-GA-OA
-=
-a_q-a_p
-```
-
-Since:
-
-```math
-a_q-a_p\ge0
-```
-
-the replacement never decreases the sum.
-
-Repeat this exchange until the selected set is exactly the `K` largest elements.
-
-Therefore the greedy choice is optimal.
-
----
-
-## 3.6 Step-by-Step Example
-
-Array:
-
-```text
-[11,6,7,2,0,2,9,10]
-```
-
-Let:
-
-```text
-K = 2
-```
-
-Sort:
-
-```text
-[0,2,2,6,7,9,10,11]
-```
-
-Greedy picks:
-
-```text
-11 and 10
-```
-
-Sum:
-
-```text
-21
-```
-
-Suppose another answer picks:
-
-```text
-11 and 7
-```
-
-Sum:
-
-```text
-18
-```
-
-Swap:
-
-```text
-7 → 10
-```
-
-Improvement:
-
-```text
-10 - 7 = 3
-```
-
-New sum:
-
-```text
-21
-```
-
----
-
-## 3.7 C++
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-long long maxKSum(vector<long long> a, int k) {
-    sort(a.begin(), a.end());
-
-    long long ans = 0;
-
-    for (int i = (int)a.size() - k;
-         i < (int)a.size();
-         ++i) {
-        ans += a[i];
-    }
-
-    return ans;
-}
-```
-
-Alternative:
-
-```cpp
-sort(a.rbegin(), a.rend());
-
-long long ans = 0;
-
-for (int i = 0; i < k; ++i)
-    ans += a[i];
-```
-
----
-
-## 3.8 Complexity
-
-Sorting:
-
-```text
-O(N log N)
-```
-
-Summing `K` values:
-
-```text
-O(K)
-```
-
-Total:
-
-```text
-O(N log N)
-```
-
----
-
-## 3.9 Recognition Model
-
-```text
-Choose exactly K items
-+
-objective is sum of independent values
-+
-no extra interaction/constraint
-        |
-        v
-take K largest for maximum
-take K smallest for minimum
-```
-
----
-
-# 4. Example 2 — Maximum Difference Between Two Elements
-
-## 4.1 What It Asks
-
-Given an array, choose two elements to maximize their difference.
-
-Conceptually:
-
-```math
-\max(a_j-a_i)
-```
-
-where we are free to choose the larger value as the first term.
-
----
-
-## 4.2 Concept Simplified
-
-To make:
-
-```text
-large - small
-```
-
-as large as possible:
-
-```text
-make first number as large as possible
-make second number as small as possible
-```
-
-So choose:
-
-```text
-maximum element - minimum element
-```
-
----
-
-## 4.3 Greedy Claim
+## 2.3 Greedy Claim
 
 After sorting:
 
@@ -1085,45 +629,145 @@ After sorting:
 a_1\le a_2\le\cdots\le a_n
 ```
 
-answer:
+take the final `K` elements.
+
+---
+
+## 2.4 Exchange Proof + Dry Run Side by Side
+
+Suppose another solution contains smaller value `p`, while larger value `q` is unselected.
 
 ```math
-a_n-a_1
+q\ge p
+```
+
+Exchange:
+
+```text
+p → q
+```
+
+| Proof step | Symbolic | Dry run |
+|---|---|---|
+| Selected smaller | `p` | `7` |
+| Unselected larger | `q` | `10` |
+| Exchange | `p → q` | `7 → 10` |
+| Change in sum | `q-p` | `10-7=3` |
+| Sign | `q-p >= 0` | `3 >= 0` |
+| Conclusion | sum does not decrease | sum improves by `3` |
+
+Therefore we can repeatedly exchange smaller selected values for larger unselected ones until the selected set is exactly the `K` largest.
+
+### Quick Full Example
+
+```text
+a = [11,6,7,2,0,2,9,10]
+K = 2
+```
+
+Sorted:
+
+```text
+[0,2,2,6,7,9,10,11]
+```
+
+Answer:
+
+```text
+11 + 10 = 21
 ```
 
 ---
 
-## 4.4 Proof by Bounds
+## 2.5 C++
 
-Take any two sorted-array values:
+```cpp
+long long maxKSum(vector<long long> a, int k) {
+    sort(a.rbegin(), a.rend());
+
+    long long ans = 0;
+
+    for (int i = 0; i < k; ++i)
+        ans += a[i];
+
+    return ans;
+}
+```
+
+Complexity:
+
+```text
+O(N log N)
+```
+
+Recognition:
+
+```text
+choose exactly K independent values
++
+maximize sum
+→ K largest
+```
+
+---
+
+# 3. Maximum Difference Between Two Elements
+
+## 3.1 What It Asks
+
+Maximize:
+
+```math
+a_{\text{high}}-a_{\text{low}}
+```
+
+with no original-index ordering restriction.
+
+---
+
+## 3.2 Concept Simplified
+
+Make:
+
+```text
+high as large as possible
+low  as small as possible
+```
+
+So:
+
+```text
+answer = max - min
+```
+
+---
+
+## 3.3 Bound Proof + Dry Run Side by Side
+
+For any pair:
 
 ```math
 a_p\le a_q
 ```
 
-Because:
+global minimum gives:
 
 ```math
 a_1\le a_p
 ```
 
-we have:
-
-```math
-a_q-a_1\ge a_q-a_p
-```
-
-And because:
+global maximum gives:
 
 ```math
 a_q\le a_n
 ```
 
-we have:
-
-```math
-a_n-a_1\ge a_q-a_1
-```
+| Step | Symbolic | Dry run |
+|---|---|---|
+| Candidate pair | `a_q-a_p` | `15-8=7` |
+| Lower low-end to global min | `a_q-a_1 >= a_q-a_p` | `15-4=11 >= 7` |
+| Raise high-end to global max | `a_n-a_1 >= a_q-a_1` | `16-4=12 >= 11` |
+| Final | `a_n-a_1` dominates every pair | `12` |
 
 Therefore:
 
@@ -1131,221 +775,97 @@ Therefore:
 a_n-a_1\ge a_q-a_p
 ```
 
-for every possible pair.
-
-So maximum difference is:
-
-```math
-a_n-a_1
-```
+for every candidate pair.
 
 ---
 
-## 4.5 Step-by-Step Example
-
-Array:
-
-```text
-[8,4,15,16]
-```
-
-Sorted:
-
-```text
-[4,8,15,16]
-```
-
-Possible notable differences:
-
-```text
-8 - 4  = 4
-15 - 4 = 11
-16 - 8 = 8
-16 - 4 = 12
-```
-
-Maximum:
-
-```text
-12
-```
-
-using:
-
-```text
-16 - 4
-```
-
----
-
-## 4.6 C++
-
-No sorting is actually necessary if we only need min and max.
+## 3.4 C++
 
 ```cpp
 long long maximumDifference(
     const vector<long long>& a
 ) {
-    auto [mnIt, mxIt] =
+    auto [mn, mx] =
         minmax_element(a.begin(), a.end());
 
-    return *mxIt - *mnIt;
+    return *mx - *mn;
 }
 ```
 
----
-
-## 4.7 Complexity
-
-One scan:
+Complexity:
 
 ```text
 O(N)
 ```
 
-Extra space:
+Recognition:
 
 ```text
-O(1)
+unrestricted maximum difference
+→ global max - global min
 ```
 
 ---
 
-## 4.8 Recognition Model
+# 4. Minimum Difference Between Two Elements
+
+## 4.1 What It Asks
+
+Minimize:
+
+```math
+|a_i-a_j|
+```
+
+for two distinct elements.
+
+---
+
+## 4.2 Concept Simplified
+
+Sort first.
+
+Then numerically closest values become neighbors.
+
+So check only adjacent gaps.
+
+---
+
+## 4.3 Proof + Dry Run Side by Side
+
+Take a non-adjacent pair:
 
 ```text
-maximize unrestricted difference
-        |
-        v
-largest - smallest
+a_j ... a_(i-1), a_i
 ```
 
-> If the problem requires `i < j` in the **original array**, this simple rule may no longer be enough; then order matters.
-
----
-
-# 5. Example 3 — Minimum Difference Between Two Elements
-
-## 5.1 What It Asks
-
-Choose two different array elements with minimum absolute difference.
-
-```math
-\min_{i\ne j}|a_i-a_j|
-```
-
----
-
-## 5.2 Concept Simplified
-
-In unsorted order, close values may be far apart in the array.
-
-After sorting, values that are numerically closest become neighbors.
-
-So we only need to check:
-
-```text
-adjacent pairs
-```
-
----
-
-## 5.3 Greedy Claim
-
-Sort:
-
-```math
-a_1\le a_2\le\cdots\le a_n
-```
-
-Then:
-
-```math
-\text{answer}
-=
-\min_{2\le i\le n}(a_i-a_{i-1})
-```
-
----
-
-## 5.4 Why Only Adjacent Pairs?
-
-Take any non-adjacent pair:
-
-```math
-a_j,\ a_i
-```
-
-with:
-
-```text
-j < i-1
-```
-
-Because sorted order gives:
+Sorted order:
 
 ```math
 a_j\le a_{i-1}\le a_i
 ```
 
-then:
+Thus:
 
 ```math
-a_i-a_j
-\ge
-a_i-a_{i-1}
+a_i-a_j\ge a_i-a_{i-1}
 ```
 
-So the non-adjacent pair cannot be better than the adjacent pair ending at `a_i`.
+| Step | Symbolic | Dry run |
+|---|---|---|
+| Sorted values | `a_j <= a_(i-1) <= a_i` | `3 <= 9 <= 10` |
+| Non-adjacent gap | `a_i-a_j` | `10-3=7` |
+| Adjacent gap | `a_i-a_(i-1)` | `10-9=1` |
+| Comparison | non-adjacent `>=` adjacent | `7 >= 1` |
 
-Thus some optimal pair must be adjacent after sorting.
+Therefore a non-adjacent pair cannot be uniquely better than all adjacent pairs.
 
----
+So some optimum appears among adjacent pairs.
 
-## 5.5 Step-by-Step Example
-
-Array:
-
-```text
-[8,9,15,16]
-```
-
-Already sorted.
-
-Adjacent differences:
+### Example
 
 ```text
-9 - 8  = 1
-15 - 9 = 6
-16 - 15 = 1
-```
-
-Minimum:
-
-```text
-1
-```
-
-Checking non-adjacent pair:
-
-```text
-15 - 8 = 7
-```
-
-is obviously worse than:
-
-```text
-9 - 8 = 1
-```
-
----
-
-## 5.6 Supporting Example
-
-Array:
-
-```text
-[20, 3, 17, 9, 10]
+[20,3,17,9,10]
 ```
 
 Sort:
@@ -1354,7 +874,7 @@ Sort:
 [3,9,10,17,20]
 ```
 
-Adjacent gaps:
+Gaps:
 
 ```text
 6,1,7,3
@@ -1366,181 +886,116 @@ Answer:
 1
 ```
 
-from:
-
-```text
-9 and 10
-```
-
 ---
 
-## 5.7 C++
+## 4.4 C++
 
 ```cpp
-long long minimumDifference(
-    vector<long long> a
-) {
+long long minimumDifference(vector<long long> a) {
     sort(a.begin(), a.end());
 
     long long ans = LLONG_MAX;
 
-    for (int i = 1; i < (int)a.size(); ++i) {
+    for (int i = 1; i < (int)a.size(); ++i)
         ans = min(ans, a[i] - a[i - 1]);
-    }
 
     return ans;
 }
 ```
 
----
-
-## 5.8 Complexity
-
-Sorting:
+Complexity:
 
 ```text
 O(N log N)
 ```
 
-Scan:
-
-```text
-O(N)
-```
-
-Total:
-
-```text
-O(N log N)
-```
-
----
-
-## 5.9 Recognition Model
+Recognition:
 
 ```text
 minimum absolute difference
-between any two values
-        |
-        v
-sort
-        |
-        v
-only adjacent values can be optimal
+→ sort + adjacent pairs
 ```
 
 ---
 
-# 6. Example 4 — Maximize Sum of i × a[i]
+# 5. Maximize Sum of i × a[i]
 
-## 6.1 What It Asks
+## 5.1 What It Asks
 
-Rearrange the array to maximize:
+Rearrange values to maximize:
 
 ```math
 \sum_{i=1}^{n}i\cdot a_i
 ```
 
-The positions have increasing weights:
+Weights:
 
 ```text
-1,2,3,...,n
+1,2,...,n
 ```
 
-We can permute the values.
+increase.
 
 ---
 
-## 6.2 Mathematical Interpretation
+## 5.2 Concept Simplified
 
-We are pairing:
-
-```text
-array values
-```
-
-with:
+For maximum weighted sum:
 
 ```text
-position weights
+small value → small weight
+large value → large weight
 ```
 
-Weights are already sorted ascending:
-
-```math
-1<2<3<\cdots<n
-```
-
-Question:
-
-```text
-Which values should receive the largest weights?
-```
-
-Intuition:
-
-```text
-large values should receive large weights.
-```
+Therefore sort values ascending.
 
 ---
 
-## 6.3 Greedy Claim
+## 5.3 Exchange Proof + Dry Run Side by Side
 
-Sort values ascending:
-
-```math
-a_1\le a_2\le\cdots\le a_n
-```
-
-Then pair:
-
-```text
-smallest value × smallest index
-...
-largest value × largest index
-```
-
----
-
-## 6.4 Exchange Proof
-
-Suppose positions:
+Take:
 
 ```text
 i < j
 ```
 
-but another arrangement places:
-
-```text
-larger value a_j at smaller index i
-smaller value a_i at larger index j
-```
-
-where:
+and sorted values:
 
 ```math
 a_i\le a_j
 ```
 
-Greedy contribution:
+Greedy pairing:
 
-```math
-G
-=
-a_i i+a_j j
+```text
+a_i with i
+a_j with j
 ```
 
-Swapped contribution:
+Swapped pairing:
 
-```math
-O
-=
-a_j i+a_i j
+```text
+a_j with i
+a_i with j
 ```
 
-Difference:
+Use:
+
+```text
+i = 1, j = 3
+a_i = 6, a_j = 10
+```
+
+| Step | Symbolic | Dry run |
+|---|---|---|
+| Greedy | `G=a_i*i+a_j*j` | `6×1+10×3=36` |
+| Swapped | `O=a_j*i+a_i*j` | `10×1+6×3=28` |
+| Difference | `G-O` | `36-28=8` |
+| Factor | `(a_i-a_j)(i-j)` | `(6-10)(1-3)` |
+| Signs | `(-)×(-)` | `(-4)×(-2)` |
+| Result | `G-O >= 0` | `8 >= 0` |
+
+### Algebra Expansion
 
 ```math
 G-O
@@ -1548,7 +1003,7 @@ G-O
 a_i i+a_j j-a_j i-a_i j
 ```
 
-Group terms:
+Group:
 
 ```math
 G-O
@@ -1556,7 +1011,21 @@ G-O
 a_i(i-j)+a_j(j-i)
 ```
 
-Equivalent:
+Since:
+
+```math
+j-i=-(i-j)
+```
+
+then:
+
+```math
+G-O
+=
+a_i(i-j)-a_j(i-j)
+```
+
+Factor:
 
 ```math
 G-O
@@ -1576,417 +1045,142 @@ and:
 i-j<0
 ```
 
-Product of two non-positive values:
+Therefore:
 
 ```math
-(a_i-a_j)(i-j)\ge0
+G-O\ge0
 ```
 
-Therefore:
+So:
 
 ```math
 G\ge O
 ```
 
-So swapping an inversion toward sorted order never decreases the objective.
+Every inversion can be exchanged away without decreasing the answer.
 
-Repeatedly remove inversions.
-
-Final optimal arrangement is ascending.
+Thus ascending order is optimal.
 
 ---
 
-## 6.5 Step-by-Step Example
-
-Array:
-
-```text
-[10,6,7]
-```
-
-Ascending:
-
-```text
-[6,7,10]
-```
-
-Greedy weighted sum:
-
-```text
-1×6 + 2×7 + 3×10
-= 6 + 14 + 30
-= 50
-```
-
-Try:
-
-```text
-[10,7,6]
-```
-
-Sum:
-
-```text
-1×10 + 2×7 + 3×6
-= 10 + 14 + 18
-= 42
-```
-
-Greedy is larger.
-
----
-
-## 6.6 Supporting Example With Negative Values
-
-Values:
-
-```text
-[-5,2,10]
-```
-
-Ascending:
-
-```text
-[-5,2,10]
-```
-
-Sum:
-
-```text
-1×(-5) + 2×2 + 3×10
-= -5 + 4 + 30
-= 29
-```
-
-If largest value gets smallest weight:
-
-```text
-[10,2,-5]
-```
-
-Sum:
-
-```text
-10 + 4 - 15
-= -1
-```
-
-The exchange proof still works with negative numbers.
-
----
-
-## 6.7 C++
+## 5.4 C++
 
 ```cpp
-long long maximumWeightedSum(
-    vector<long long> a
-) {
+long long maximumWeightedSum(vector<long long> a) {
     sort(a.begin(), a.end());
 
     long long ans = 0;
 
-    for (int i = 0; i < (int)a.size(); ++i) {
+    for (int i = 0; i < (int)a.size(); ++i)
         ans += 1LL * (i + 1) * a[i];
-    }
 
     return ans;
 }
 ```
 
----
-
-## 6.8 Complexity
-
-Sorting:
+Complexity:
 
 ```text
 O(N log N)
 ```
 
-Scan:
+Recognition:
 
 ```text
-O(N)
+maximize value × increasing weight
+→ same order
 ```
 
 ---
 
-## 6.9 Recognition Model
+# 6. Coin Change — When Largest First Is Safe
+
+## 6.1 What It Asks
+
+Coins:
 
 ```text
-rearrange values
-to maximize sum(value × weight)
-        |
-        v
-weights increase
-        |
-        v
-pair large with large
-small with small
+1,5,10,50,100
 ```
 
-This is the same rearrangement principle that later appears again in the dot-product problem.
+Unlimited copies.
+
+Minimize number of coins used to form `X`.
 
 ---
 
-# 7. Coin Change — Greedy With Divisible Denominations
+## 6.2 Concept Simplified
 
-## 7.1 What It Asks
-
-Lecture denominations:
+Larger coins exactly replace several smaller coins:
 
 ```text
-[1,5,10,50,100]
+5×1   → 1×5
+2×5   → 1×10
+5×10  → 1×50
+2×50  → 1×100
 ```
 
-Unlimited supply.
-
-Given:
-
-```text
-X
-```
-
-find the minimum number of coins whose sum is `X`.
-
-Examples from the lecture:
-
-```text
-X = 125
-= 100 + 10 + 10 + 5
-```
-
-and:
-
-```text
-X = 256
-= 100 + 100 + 50 + 5 + 1
-```
+Every replacement reduces coin count.
 
 ---
 
-## 7.2 Concept Simplified
-
-If one large coin can replace several smaller coins:
-
-```text
-using the large coin is never worse
-```
-
-Example:
-
-```text
-5 ones
-```
-
-can be replaced by:
-
-```text
-one 5
-```
-
-Coin count changes:
-
-```text
-5 coins → 1 coin
-```
-
-Better.
-
-Similarly:
-
-```text
-2 × 5 → 1 × 10
-5 × 10 → 1 × 50
-2 × 50 → 1 × 100
-```
-
-This is the exchange structure behind the lecture's denomination system.
-
----
-
-## 7.3 Greedy Claim
-
-Process denominations from largest to smallest.
-
-For each denomination `d`:
-
-```text
-use as many d-coins as possible
-```
-
-Count:
-
-```text
-X / d
-```
-
-Remaining amount:
-
-```text
-X % d
-```
-
-Then continue with the next smaller denomination.
-
----
-
-## 7.4 Why It Works for This Structure
-
-Sorted denominations:
-
-```math
-d_1<d_2<\cdots<d_m
-```
-
-The lecture's sufficient structure is that the next denomination can be made exactly from copies of the previous denomination:
-
-```math
-d_{i+1}\bmod d_i=0
-```
-
-For the lecture coins:
-
-```text
-5 % 1   = 0
-10 % 5  = 0
-50 % 10 = 0
-100 % 50 = 0
-```
-
----
-
-### Exchange Argument
+## 6.3 Replacement Proof + Dry Run Side by Side
 
 Suppose:
 
 ```math
-d_{i+1}=r\cdot d_i
+d_{i+1}=r\,d_i
 ```
 
-for integer:
+with integer:
 
 ```text
 r >= 2
 ```
 
-If a solution uses at least `r` coins of `d_i`:
+Then:
 
 ```text
 r copies of d_i
 ```
 
-have total value:
-
-```math
-r\cdot d_i=d_{i+1}
-```
-
-Replace them with:
+can be replaced by:
 
 ```text
-1 coin of d_{i+1}
+1 copy of d_(i+1)
 ```
 
-Coin count improves:
+| Proof | Dry run |
+|---|---|
+| `d_(i+1)=r*d_i` | `10=2×5` |
+| `r` lower coins | `5+5` |
+| same value | `10` |
+| replacement | `2 coins → 1 coin` |
+| objective | number of coins decreases | 
 
-```text
-r coins → 1 coin
-```
+Therefore an optimum never needs enough lower coins to form an available larger denomination.
 
-Therefore an optimal solution never needs `r` or more copies of `d_i` when a `d_{i+1}` coin can be used instead.
-
-This is exactly what the largest-first greedy representation enforces.
+So process coins largest → smallest.
 
 ---
 
-## 7.5 Step-by-Step Dry Run — X = 256
-
-Denominations descending:
+## 6.4 Dry Run — X = 256
 
 ```text
-100,50,10,5,1
+256 / 100 = 2, remainder 56
+56  / 50  = 1, remainder 6
+6   / 10  = 0
+6   / 5   = 1, remainder 1
+1   / 1   = 1
 ```
 
-### 100
-
-```text
-256 / 100 = 2
-```
-
-Use:
-
-```text
-2 × 100
-```
-
-Remaining:
-
-```text
-56
-```
-
----
-
-### 50
-
-```text
-56 / 50 = 1
-```
-
-Use:
-
-```text
-1 × 50
-```
-
-Remaining:
-
-```text
-6
-```
-
----
-
-### 10
-
-```text
-6 / 10 = 0
-```
-
-Use none.
-
----
-
-### 5
-
-```text
-6 / 5 = 1
-```
-
-Remaining:
-
-```text
-1
-```
-
----
-
-### 1
-
-Use:
-
-```text
-1
-```
-
-Final:
+Coins:
 
 ```text
 100 + 100 + 50 + 5 + 1
 ```
 
-Number of coins:
+Count:
 
 ```text
 5
@@ -1994,131 +1188,44 @@ Number of coins:
 
 ---
 
-## 7.6 Step-by-Step Dry Run — X = 152
-
-```text
-152 / 100 = 1
-remaining = 52
-
-52 / 50 = 1
-remaining = 2
-
-2 / 10 = 0
-2 / 5  = 0
-2 / 1  = 2
-```
-
-Coins:
-
-```text
-100 + 50 + 1 + 1
-```
-
-Count:
-
-```text
-4
-```
-
----
-
-## 7.7 C++
-
-For the lecture denomination set:
+## 6.5 C++
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-long long minCoinsLecture(long long x) {
+long long minCoins(long long x) {
     vector<long long> coin = {
         100, 50, 10, 5, 1
     };
 
-    long long count = 0;
+    long long ans = 0;
 
     for (long long d : coin) {
-        count += x / d;
+        ans += x / d;
         x %= d;
     }
 
-    return count;
+    return ans;
 }
 ```
 
----
-
-## 7.8 Generic Divisibility-Chain Version
-
-```cpp
-long long greedyCoins(
-    long long x,
-    vector<long long> coins
-) {
-    sort(coins.rbegin(), coins.rend());
-
-    long long count = 0;
-
-    for (long long d : coins) {
-        count += x / d;
-        x %= d;
-    }
-
-    return count;
-}
-```
-
-> The code always runs, but optimality requires a proven property of the denomination system. The lecture gives the divisible-chain structure as the reason it is safe for its example.
-
----
-
-## 7.9 Complexity
-
-If number of denominations is `M`:
+Complexity:
 
 ```text
-O(M)
+O(number of denominations)
 ```
 
-after denominations are already ordered.
-
-If sorting is required:
+Recognition:
 
 ```text
-O(M log M)
-```
-
----
-
-## 7.10 Recognition Model
-
-```text
-minimize number of coins
-+
-unlimited coins
-+
 higher denomination exactly replaces
-several lower-denomination coins
-        |
-        v
-largest denomination first
-        |
-        v
-quotient = number used
-remainder = next subproblem
+multiple lower denominations
+→ largest first
 ```
 
 ---
 
-# 8. Why Coin Greedy Can Fail
+# 7. Why Coin Greedy Can Fail
 
-This is one of the most important lessons in the lecture.
-
----
-
-## 8.1 Counterexample From the Lecture
-
-Denominations:
+Coins:
 
 ```text
 [1,8,10]
@@ -2130,209 +1237,87 @@ Target:
 16
 ```
 
-Largest-first greedy:
-
-```text
-10
-```
-
-remaining:
-
-```text
-6
-```
-
-Only `1`s can finish:
+Greedy:
 
 ```text
 10 + 1 + 1 + 1 + 1 + 1 + 1
+= 7 coins
 ```
 
-Count:
-
-```text
-7
-```
-
-But optimal:
+Optimal:
 
 ```text
 8 + 8
+= 2 coins
 ```
 
-Count:
-
-```text
-2
-```
-
-So greedy fails badly.
-
----
-
-## 8.2 Why the Exchange Proof Breaks
-
-For the lecture's good system:
-
-```text
-10 = 2 × 5
-```
-
-so enough `5`s can be exchanged for one `10`.
-
-But in:
-
-```text
-[1,8,10]
-```
-
-`10` is not an integer multiple of `8`.
+Why did the proof fail?
 
 ```text
 10 % 8 != 0
 ```
 
-Using a `10` can leave a remainder that is expensive to construct.
+A `10` does not cleanly replace a fixed number of `8`s.
 
-For:
-
-```text
-16
-```
-
-greedy creates remainder:
+Choosing `10` creates bad remainder:
 
 ```text
-6
+16-10 = 6
 ```
 
-which requires six `1`s.
+which needs six `1`s.
 
----
-
-## 8.3 Another Lecture-Annotation Style Example
-
-With denominations:
-
-```text
-[1,8,20]
-```
-
-target:
-
-```text
-27
-```
-
-Largest-first:
-
-```text
-20 + 7×1
-```
-
-Count:
-
-```text
-8
-```
-
-But:
-
-```text
-3×8 + 3×1
-= 27
-```
-
-Count:
-
-```text
-6
-```
-
-Again, larger coin is not automatically better.
-
----
-
-## 8.4 Lesson
-
-Never memorize:
-
-```text
-coin change → largest coin first
-```
-
-Correct mental model:
+Recognition:
 
 ```text
 coin change
         |
         v
-make greedy claim
+largest-first idea
         |
         v
-prove denomination structure supports exchanges
-        |
+can I prove replacement?
    +----+----+
    |         |
- proof     counterexample
+ YES        NO
    |         |
- greedy      use DP /
- safe        another method
+greedy     test counterexample /
+safe       use DP or another method
 ```
 
 ---
 
-# 9. Maximum Product With Fixed Sum
+# 8. Maximum Product With Fixed Sum
 
-## 9.1 What It Asks
+## 8.1 What It Asks
 
-Given integer:
-
-```text
-N
-```
-
-find integers `A` and `B` such that:
+Find integers `A,B` such that:
 
 ```math
 A+B=N
 ```
 
-and:
+and maximize:
 
 ```math
-A\cdot B
-```
-
-is maximum.
-
-Lecture examples include:
-
-```text
-N = 5
-```
-
-and:
-
-```text
-N = 8
+AB
 ```
 
 ---
 
-## 9.2 Concept Simplified
+## 8.2 Concept Simplified
 
-If one number is very small and the other very large:
+With fixed sum:
 
 ```text
-product is not as good
+closer numbers → larger product
 ```
 
-For a fixed sum, move the two numbers closer together.
-
-Example for `N = 12`:
+Example:
 
 ```text
+N = 12
+
 1×11 = 11
 2×10 = 20
 3×9  = 27
@@ -2341,58 +1326,29 @@ Example for `N = 12`:
 6×6  = 36
 ```
 
-Then values decrease symmetrically.
-
-So best split is as equal as possible.
+So use the most balanced split.
 
 ---
 
-## 9.3 Greedy Claim
+## 8.3 Balancing Proof + Dry Run Side by Side
+
+Define:
 
 ```math
-A=
-\left\lfloor\frac N2\right\rfloor
+L=\left\lfloor\frac N2\right\rfloor
 ```
-
-and:
 
 ```math
-B=
-\left\lceil\frac N2\right\rceil
+R=\left\lceil\frac N2\right\rceil
 ```
 
-Maximum product:
+Greedy:
 
 ```math
-\left\lfloor\frac N2\right\rfloor
-\left\lceil\frac N2\right\rceil
+G=LR
 ```
 
----
-
-## 9.4 Proof Using Deviation k
-
-Let:
-
-```math
-L=
-\left\lfloor\frac N2\right\rfloor
-```
-
-and:
-
-```math
-R=
-\left\lceil\frac N2\right\rceil
-```
-
-Greedy product:
-
-```math
-GA=LR
-```
-
-Any more unbalanced split can be written as:
+Move `k` away from balance:
 
 ```math
 A=L-k
@@ -2402,38 +1358,24 @@ A=L-k
 B=R+k
 ```
 
-for:
-
-```text
-k >= 0
-```
-
 Other product:
 
 ```math
-OA=(L-k)(R+k)
+O=(L-k)(R+k)
 ```
 
 Expand:
 
 ```math
-OA
+O
 =
 LR+Lk-Rk-k^2
 ```
 
-So:
+Therefore:
 
 ```math
-GA-OA
-=
-LR-(LR+Lk-Rk-k^2)
-```
-
-Simplify:
-
-```math
-GA-OA
+G-O
 =
 k^2+k(R-L)
 ```
@@ -2442,92 +1384,33 @@ Now:
 
 ```text
 k >= 0
+R-L is 0 or 1
 ```
 
-and:
-
-```text
-R-L is either 0 or 1
-```
-
-Therefore:
+So:
 
 ```math
-GA-OA\ge0
+G-O\ge0
 ```
 
-Hence:
+Balanced product is optimal.
 
-```text
-balanced split is optimal
-```
+### Side-by-Side Dry Run — N = 8
+
+| Step | Symbolic | Dry run |
+|---|---|---|
+| Balanced halves | `L,R` | `4,4` |
+| Greedy product | `G=LR` | `4×4=16` |
+| Move away by `k=1` | `(L-k,R+k)` | `(3,5)` |
+| Other product | `O` | `3×5=15` |
+| Difference formula | `k²+k(R-L)` | `1²+1(4-4)=1` |
+| Check | `G-O >= 0` | `16-15=1` |
 
 ---
 
-## 9.5 Step-by-Step Example — N = 5
-
-```text
-floor(5/2) = 2
-ceil(5/2)  = 3
-```
-
-Product:
-
-```text
-2×3 = 6
-```
-
-Other choices:
-
-```text
-1×4 = 4
-4×1 = 4
-```
-
-Maximum:
-
-```text
-6
-```
-
----
-
-## 9.6 Step-by-Step Example — N = 8
-
-```text
-A = 4
-B = 4
-```
-
-Product:
-
-```text
-16
-```
-
-Nearby:
-
-```text
-3×5 = 15
-2×6 = 12
-1×7 = 7
-```
-
-Balanced pair wins.
-
----
-
-## 9.7 C++
+## 8.4 C++
 
 ```cpp
-pair<long long,long long>
-bestProductPair(long long n) {
-    long long a = n / 2;
-    long long b = n - a;
-
-    return {a, b};
-}
-
 long long maximumProduct(long long n) {
     long long a = n / 2;
     long long b = n - a;
@@ -2536,45 +1419,30 @@ long long maximumProduct(long long n) {
 }
 ```
 
----
-
-## 9.8 Complexity
+Complexity:
 
 ```text
 O(1)
 ```
 
----
-
-## 9.9 Recognition Model
+Recognition:
 
 ```text
-two numbers
+two variables
 +
 fixed sum
 +
 maximize product
-        |
-        v
-make the numbers as equal as possible
+→ balance them
 ```
 
 ---
 
-# 10. Minimum Dot Product
+# 9. Minimum Dot Product
 
-## 10.1 What It Asks
+## 9.1 What It Asks
 
-Given two vectors:
-
-```text
-A = [a1,a2,...,an]
-B = [b1,b2,...,bn]
-```
-
-we may rearrange the elements.
-
-Minimize:
+Rearrange arrays `A` and `B` to minimize:
 
 ```math
 \sum_{i=1}^{n}a_ib_i
@@ -2582,152 +1450,63 @@ Minimize:
 
 ---
 
-## 10.2 Lecture Example
+## 9.2 Concept Simplified
 
-Original:
-
-```text
-A = [-1,3,-2]
-B = [-10,1,5]
-```
-
-One pairing:
+For minimum sum of products:
 
 ```text
-(-1)(-10) + 3(1) + (-2)(5)
-```
-
-```text
-= 10 + 3 - 10
-= 3
-```
-
-A much better pairing is:
-
-```text
-A ascending:
-[-2,-1,3]
-
-B descending:
-[5,1,-10]
-```
-
-Dot product:
-
-```text
-(-2)(5) + (-1)(1) + 3(-10)
-```
-
-```text
-= -10 - 1 - 30
-= -41
-```
-
----
-
-## 10.3 Concept Simplified
-
-To make the sum small:
-
-```text
-pair a large positive value
-with a small / very negative value
-
-pair a small / negative value
-with a large positive value
+small value ↔ large value
+large value ↔ small value
 ```
 
 So:
 
 ```text
-sort one ascending
-sort the other descending
+A ascending
+B descending
 ```
-
-This is “opposite ordering.”
 
 ---
 
-## 10.4 Greedy Claim
+## 9.3 Exchange Proof + Dry Run Side by Side
 
-Sort:
-
-```math
-a_1\le a_2\le\cdots\le a_n
-```
-
-and:
-
-```math
-b_1\ge b_2\ge\cdots\ge b_n
-```
-
-Then pair:
-
-```text
-a1 with b1
-a2 with b2
-...
-an with bn
-```
-
-This minimizes the dot product.
-
----
-
-## 10.5 Two-Element Intuition
-
-Let:
+For the local proof, write two values from each array in ascending order:
 
 ```math
 a_1\le a_2
 ```
 
-and:
-
 ```math
 b_1\le b_2
 ```
 
-Same-order pairing:
-
-```math
-X=a_1b_1+a_2b_2
-```
-
-Opposite-order pairing:
-
-```math
-Y=a_1b_2+a_2b_1
-```
-
-Difference:
-
-```math
-X-Y
-=
-a_1b_1+a_2b_2-a_1b_2-a_2b_1
-```
-
-Factor:
-
-```math
-X-Y
-=
-(a_1-a_2)(b_1-b_2)
-```
-
-Both factors are:
+Compare:
 
 ```text
-<= 0
+same order:
+a1 with b1
+a2 with b2
+
+opposite order:
+a1 with b2
+a2 with b1
 ```
 
-so:
+Use:
 
-```math
-X-Y\ge0
+```text
+a1 = 2, a2 = 7
+b1 = 3, b2 = 10
 ```
+
+| Step | Symbolic | Dry run |
+|---|---|---|
+| Same order | `X=a1*b1+a2*b2` | `2×3+7×10=76` |
+| Opposite order | `Y=a1*b2+a2*b1` | `2×10+7×3=41` |
+| Difference | `X-Y` | `76-41=35` |
+| Factor | `(a1-a2)(b1-b2)` | `(2-7)(3-10)` |
+| Signs | `(-)×(-)` | `(-5)×(-7)` |
+| Result | `X-Y >= 0` | `35 >= 0` |
 
 Therefore:
 
@@ -2735,185 +1514,92 @@ Therefore:
 X\ge Y
 ```
 
-So opposite pairing is no larger.
-
-### Sign-check note
-
-The lecture's slide 31 writes an intermediate identity with the opposite sign, but the later adjacent-swap proof and the final greedy claim are consistent with the identity above:
-
-```math
-X-Y=(a_1-a_2)(b_1-b_2)\ge0
-```
-
-The correct conclusion remains:
-
-```text
-opposite sorting minimizes the dot product.
-```
+So opposite pairing is no larger and is therefore better for minimization.
 
 ---
 
-## 10.6 Adjacent-Swap Proof
+### Algebra Expansion Side by Side
 
-Assume `A` is ascending:
+| Symbolic step | Numerical step |
+|---|---|
+| `X-Y = a1*b1+a2*b2-a1*b2-a2*b1` | `76-41` |
+| `= a1(b1-b2)+a2(b2-b1)` | `= 2(3-10)+7(10-3)` |
+| `b2-b1 = -(b1-b2)` | `10-3 = -(3-10)` |
+| `= (a1-a2)(b1-b2)` | `= (2-7)(3-10)` |
+| `= (-)(-) >= 0` | `=(-5)(-7)=35` |
 
-```math
-a_i\le a_j
-```
+That is the whole proof in one view.
 
-for:
+---
+
+## 9.4 Why This Proves the Whole Array
+
+Suppose `A` is sorted ascending but some two `B` values are also ascending:
 
 ```text
-i<j
+a_i <= a_j
+b_i <= b_j
 ```
 
-In the greedy arrangement, `B` is descending:
+The two-element proof says:
 
-```math
-b_i\ge b_j
+```text
+swap b_i and b_j
 ```
 
-Greedy contribution from positions `i,j`:
+to create the opposite pairing.
 
-```math
-G=a_ib_i+a_jb_j
-```
-
-Suppose another arrangement swaps the two `B` values:
-
-```math
-O=a_ib_j+a_jb_i
-```
-
-Difference:
-
-```math
-G-O
-=
-a_ib_i+a_jb_j-a_ib_j-a_jb_i
-```
-
-Factor:
-
-```math
-G-O
-=
-(a_i-a_j)(b_i-b_j)
-```
-
-Now:
-
-```math
-a_i-a_j\le0
-```
-
-and:
-
-```math
-b_i-b_j\ge0
-```
-
-Therefore:
-
-```math
-G-O\le0
-```
+The dot product does not increase.
 
 So:
 
-```math
-G\le O
+```text
+find same-direction pair
+→ swap it
+→ answer non-increasing
+→ repeat
 ```
 
-The greedy ordering is never worse for minimization.
+Eventually:
 
-Any inversion away from opposite ordering can be swapped back without increasing the dot product.
+```text
+A ascending
+B descending
+```
 
 Therefore opposite sorting is optimal.
 
+This is the **exchange argument** for the full problem.
+
 ---
 
-## 10.7 Step-by-Step Dry Run
+## 9.5 Full Example
 
 ```text
 A = [-1,3,-2]
 B = [-10,1,5]
 ```
 
-Sort `A` ascending:
+Sort:
 
 ```text
-[-2,-1,3]
-```
-
-Sort `B` descending:
-
-```text
-[5,1,-10]
-```
-
-Products:
-
-```text
--2 × 5   = -10
--1 × 1   = -1
- 3 × -10 = -30
-```
-
-Total:
-
-```text
--10 - 1 - 30
-= -41
-```
-
----
-
-## 10.8 Supporting Example
-
-```text
-A = [1,2,7]
-B = [3,4,10]
-```
-
-Ascending `A`:
-
-```text
-[1,2,7]
-```
-
-Descending `B`:
-
-```text
-[10,4,3]
+A ascending  = [-2,-1,3]
+B descending = [5,1,-10]
 ```
 
 Dot product:
 
 ```text
-1×10 + 2×4 + 7×3
-= 10 + 8 + 21
-= 39
+-2×5 + -1×1 + 3×(-10)
+= -10 - 1 - 30
+= -41
 ```
-
-Same-order product:
-
-```text
-1×3 + 2×4 + 7×10
-= 3 + 8 + 70
-= 81
-```
-
-Opposite pairing is much smaller.
 
 ---
 
-## 10.9 C++
+## 9.6 C++
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
 long long minimumDotProduct(
     vector<long long> a,
     vector<long long> b
@@ -2923,352 +1609,225 @@ long long minimumDotProduct(
 
     long long ans = 0;
 
-    for (int i = 0; i < (int)a.size(); ++i) {
+    for (int i = 0; i < (int)a.size(); ++i)
         ans += a[i] * b[i];
-    }
 
     return ans;
 }
 ```
 
----
-
-## 10.10 Complexity
-
-Two sorts:
+Complexity:
 
 ```text
 O(N log N)
 ```
 
-Dot-product scan:
+Recognition:
 
 ```text
-O(N)
-```
-
-Total:
-
-```text
-O(N log N)
-```
-
----
-
-## 10.11 Recognition Model
-
-```text
-rearrange two arrays
-+
 minimize sum of pairwise products
-        |
-        v
-pair extremes oppositely
-        |
-        v
-one ascending
-other descending
+→ opposite order
 ```
 
 For maximum dot product:
 
 ```text
-same ordering
-```
-
-is the corresponding direction.
-
----
-
-# 11. Core Proof Patterns Learned
-
-This first greedy lecture already gives several reusable proof patterns.
-
----
-
-## 11.1 Replace a Smaller Selected Value by a Larger One
-
-Used in:
-
-```text
-maximum sum of K elements
-```
-
-Model:
-
-```math
-q\ge p
-```
-
-then:
-
-```math
-q-p\ge0
-```
-
-So for maximization:
-
-```text
-replacement cannot hurt
+same order
 ```
 
 ---
 
-## 11.2 Extremes Bound Every Other Choice
+# 10. Proof Pattern Summary
 
-Used in:
-
-```text
-maximum difference
-```
-
-Model:
-
-```text
-global max >= every candidate high
-global min <= every candidate low
-```
-
-Therefore:
-
-```text
-max - min
-```
-
-dominates every other difference.
+| Problem | Greedy claim | Proof technique |
+|---|---|---|
+| Maximum K-sum | K largest | exchange smaller ↔ larger |
+| Maximum difference | max - min | global-bound/extreme proof |
+| Minimum difference | adjacent after sort | containment/bound proof |
+| Max `Σ i*a[i]` | same ordering | exchange / adjacent swap |
+| Coin change | largest coin first | replacement proof |
+| Fixed-sum product | balance values | deviation/balancing proof |
+| Minimum dot product | opposite ordering | exchange / adjacent swap |
 
 ---
 
-## 11.3 Sorting Makes the Optimal Candidate Local
-
-Used in:
+## Exchange Pattern
 
 ```text
-minimum difference
-```
-
-After sorting:
-
-```text
-a non-adjacent difference contains
-at least one adjacent gap inside it
-```
-
-So only neighbors matter.
-
----
-
-## 11.4 Remove Inversions by Swapping
-
-Used in:
-
-```text
-maximize i×a[i]
-minimum dot product
-```
-
-Proof pattern:
-
-```text
-find a pair in the wrong relative order
+optimal solution disagrees
         |
         v
-swap them
+isolate one disagreement
         |
         v
-compute change in objective
+exchange it
         |
         v
-prove swap is non-worse
+check feasibility
         |
         v
-repeat until sorted structure
-```
-
-This is a very important greedy/rearrangement proof technique.
-
----
-
-## 11.5 Replace Many Small Objects With One Large Object
-
-Used in:
-
-```text
-coin change with divisible denominations
-```
-
-Model:
-
-```math
-d_{i+1}=r\,d_i
-```
-
-Then:
-
-```text
-r smaller coins
-→ 1 larger coin
-```
-
-reduces count.
-
----
-
-## 11.6 Balance Two Variables Under a Fixed Sum
-
-Used in:
-
-```text
-maximum product A×B
-with A+B=N
-```
-
-Model:
-
-```text
-moving away from equal split
-reduces product
+compute G-O
+        |
+        v
+sign proves non-worse
+        |
+        v
+repeat
 ```
 
 ---
 
-# 12. Greedy Recognition Checklist
-
-Before coding a greedy idea, ask:
+## Bound Pattern
 
 ```text
-1. What exactly is being maximized/minimized?
+arbitrary candidate
+        |
+        v
+replace with global extreme
+        |
+        v
+objective can only improve
+```
 
-2. What are the legal choices?
+---
 
-3. Can sorting expose an order?
+## Replacement Pattern
 
-4. What greedy claim feels natural?
+```text
+several smaller choices
+        |
+        v
+one larger equivalent choice
+        |
+        v
+same feasibility
+better objective
+```
 
-5. Can I compare greedy with another solution?
+---
 
-6. Can I swap one choice?
-   If yes, what is GA - OA?
+## Balancing Pattern
 
-7. Is GA - OA always:
-   >= 0 for maximization?
-   <= 0 for minimization?
+```text
+fixed total
+        |
+        v
+start at balanced solution
+        |
+        v
+move k away
+        |
+        v
+expand G-O
+        |
+        v
+show G-O >= 0
+```
 
-8. Can I remove inversions one by one?
+---
 
-9. Can I replace many small choices
-   with one bigger choice?
+# 11. Recognition Checklist
 
+Before coding a greedy solution:
+
+```text
+1. What is the objective?
+2. What constraints define feasibility?
+3. Does sorting reveal structure?
+4. What is my exact greedy claim?
+5. Can I construct an optimal solution that disagrees?
+6. Can I exchange only the disagreement?
+7. Does feasibility survive the exchange?
+8. What is G-O?
+9. Does its sign prove the greedy choice is non-worse?
 10. Can I find a counterexample?
 ```
 
----
+If you cannot prove the local choice is safe:
 
-## Fast Pattern Map
-
-| Signal | First Greedy Idea to Test |
-|---|---|
-| choose K values, maximize sum | K largest |
-| choose K values, minimize sum | K smallest |
-| max difference, no order restriction | max - min |
-| min difference between any pair | sort + adjacent |
-| maximize value × increasing weights | sort same direction |
-| minimize dot product | opposite sorting |
-| fixed sum, maximize product of two values | balance them |
-| denomination chain where higher coin replaces lower coins | largest coin first |
-| greedy coin rule has no structural proof | search for counterexample / DP |
+```text
+do not trust the greedy rule yet
+```
 
 ---
 
-# 13. Compact Revision Card
+# 12. Compact Revision Card
 
 ```text
 GREEDY
 ======
 claim + proof
 
-Do NOT think:
-"greedy = take largest"
 
-Think:
-"what choice can an optimal answer
-safely be transformed to contain?"
-
-
-PROOF TOOL 1 — EXCHANGE
-=======================
-Greedy chooses q
-Other answer chooses p
-
-swap p → q
-
-maximize:
-prove q-p >= 0
-
-minimize:
-prove change <= 0
+EXCHANGE ARGUMENT
+=================
+1. State greedy choice.
+2. Assume OPT disagrees.
+3. Swap one disagreement.
+4. Keep feasibility.
+5. Compare G-O.
+6. Prove non-worse.
+7. Repeat.
 
 
 MAX K-SUM
 =========
-sort
-take K largest
+K largest
 
-proof:
-replace smaller selected p
-with larger unselected q
+exchange:
+q-p >= 0
 
 
 MAX DIFFERENCE
 ==============
-max - min
+global max - global min
 
 
 MIN DIFFERENCE
 ==============
-sort
-check adjacent gaps only
+sort + adjacent gaps
 
 
 MAX Σ i*a[i]
 ==============
-weights 1..n increase
+same order
 
-sort a ascending
-
-large value × large weight
-
-proof:
-(a_i-a_j)(i-j) >= 0
+G-O
+=
+(a_i-a_j)(i-j)
+>= 0
 
 
 COIN CHANGE
 ===========
-For lecture coins:
-1,5,10,50,100
+largest first only when
+replacement structure is provable
 
-higher coin exactly replaces
-multiple lower coins
-
-take largest possible first
-
-BUT:
-arbitrary coin systems can fail
-
-[1,8,10], X=16:
-greedy = 10 + six 1s = 7 coins
-optimal = 8 + 8 = 2 coins
+r small coins
+→ 1 larger equivalent coin
 
 
-FIXED SUM, MAX PRODUCT
-======================
+COUNTEREXAMPLE
+==============
+[1,8,10], X=16
+
+greedy = 7 coins
+optimal = 2 coins
+
+
+FIXED SUM MAX PRODUCT
+=====================
 A+B=N
 
-best:
+balance:
+
 A=floor(N/2)
 B=ceil(N/2)
 
-make numbers as equal as possible
+G-O
+=
+k²+k(R-L)
+>= 0
 
 
 MINIMUM DOT PRODUCT
@@ -3276,11 +1835,13 @@ MINIMUM DOT PRODUCT
 A ascending
 B descending
 
-small × large
-large × small
+same - opposite
+=
+(a1-a2)(b1-b2)
+>= 0
 
-adjacent-swap proof:
-(a_i-a_j)(b_i-b_j) <= 0
+therefore:
+opposite <= same
 ```
 
 ---
@@ -3288,29 +1849,26 @@ adjacent-swap proof:
 # Final Mental Model
 
 ```text
-Problem
-  |
-  v
-Optimization?
-  |
-  v
-Make a claim
-  |
-  v
-Try small cases / counterexamples
-  |
-  v
-Can I prove by exchange?
-  |
-  +------------------------------+
-  |                              |
-YES                            NO / counterexample
-  |                              |
-sort / choose safely          greedy not justified
-  |                              |
-  v                              v
-commit choice               try another model
+Optimization
+     |
+     v
+Greedy claim
+     |
+     v
+Try to break it
+     |
+  +--+--+
+  |     |
+breaks survives
+  |     |
+reject prove
+        |
+        +--------------------------+
+        |        |        |        |
+     exchange   bound replacement balance
+        |
+        v
+     safe choice
 ```
 
-> **Core lesson from Greedy 1:**  
-> A greedy idea becomes an algorithm only after you can explain **why every competing choice can be exchanged, bounded, balanced, or reordered without producing a better answer**.
+> **Core lesson:** the important skill is not noticing that a solution sorts. It is being able to explain **why any disagreement with the greedy order can be exchanged away without improving the answer**.
