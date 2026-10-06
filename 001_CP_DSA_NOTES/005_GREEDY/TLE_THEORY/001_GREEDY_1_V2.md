@@ -6,6 +6,8 @@
 > **For every problem:**  
 > **what it asks → simplified idea → greedy claim → define `G` and `O` → algebra line by line → why each step is valid → numerical dry run → conclusion → C++ → complexity → recognition**
 >
+> **Equation convention:** after each important symbolic equation, the same line is immediately shown with the actual numbers from that problem's dry run. This lets you see exactly how the symbols map to numbers.
+>
 > **Important:** you do **not** need advanced algebra. Most proofs below use only:
 >
 > ```text
@@ -566,12 +568,27 @@ the new sum is:
 G=O-p+q
 ```
 
+Actual example:
+
+```text
+G = 18 - 7 + 10
+  = 21
+```
+
 ### Step 1 — Subtract the old answer
 
 ```math
 G-O
 =
 (O-p+q)-O
+```
+
+Actual example:
+
+```text
+21 - 18
+=
+(18 - 7 + 10) - 18
 ```
 
 **Why?**
@@ -598,6 +615,14 @@ G-O
 O-p+q-O
 ```
 
+Actual example:
+
+```text
+21 - 18
+=
+18 - 7 + 10 - 18
+```
+
 **Why?**
 
 Subtracting `O` means:
@@ -616,6 +641,16 @@ is added to the expression.
 G-O
 =
 q-p
+```
+
+Actual example:
+
+```text
+21 - 18
+=
+10 - 7
+
+3 = 3
 ```
 
 because:
@@ -638,6 +673,14 @@ Therefore:
 
 ```math
 q-p\ge0
+```
+
+Actual example:
+
+```text
+10 - 7
+= 3
+>= 0
 ```
 
 So:
@@ -793,6 +836,13 @@ Greedy:
 G=M-m
 ```
 
+Actual example:
+
+```text
+G = 16 - 4
+  = 12
+```
+
 Take any competing pair:
 
 ```text
@@ -804,6 +854,13 @@ Other answer:
 
 ```math
 O=x-y
+```
+
+Actual example:
+
+```text
+O = 15 - 8
+  = 7
 ```
 
 ---
@@ -830,6 +887,14 @@ G-O
 (M-m)-(x-y)
 ```
 
+Actual example:
+
+```text
+12 - 7
+=
+(16 - 4) - (15 - 8)
+```
+
 ---
 
 ### Step 1 — Remove the second bracket
@@ -838,6 +903,14 @@ G-O
 G-O
 =
 M-m-x+y
+```
+
+Actual example:
+
+```text
+5
+=
+16 - 4 - 15 + 8
 ```
 
 **Why?**
@@ -857,6 +930,17 @@ The minus changes both signs.
 G-O
 =
 (M-x)+(y-m)
+```
+
+Actual example:
+
+```text
+5
+=
+(16 - 15) + (8 - 4)
+
+= 1 + 4
+= 5
 ```
 
 **How?**
@@ -895,6 +979,14 @@ we have:
 M-x\ge0
 ```
 
+Actual example:
+
+```text
+16 - 15
+= 1
+>= 0
+```
+
 Since:
 
 ```math
@@ -905,6 +997,14 @@ we have:
 
 ```math
 y-m\ge0
+```
+
+Actual example:
+
+```text
+8 - 4
+= 4
+>= 0
 ```
 
 So:
@@ -1091,10 +1191,24 @@ So:
 O=a_i-a_j
 ```
 
+Actual example:
+
+```text
+O = 10 - 3
+  = 7
+```
+
 and:
 
 ```math
 G=a_i-a_{i-1}
+```
+
+Actual example:
+
+```text
+G = 10 - 9
+  = 1
 ```
 
 For a minimization proof, we want:
@@ -1117,6 +1231,14 @@ O-G
 (a_i-a_j)-(a_i-a_{i-1})
 ```
 
+Actual example:
+
+```text
+7 - 1
+=
+(10 - 3) - (10 - 9)
+```
+
 ---
 
 ### Step 1 — Remove the second bracket
@@ -1125,6 +1247,14 @@ O-G
 O-G
 =
 a_i-a_j-a_i+a_{i-1}
+```
+
+Actual example:
+
+```text
+6
+=
+10 - 3 - 10 + 9
 ```
 
 **Why?**
@@ -1143,6 +1273,14 @@ a_i-a_j-a_i+a_{i-1}
 O-G
 =
 a_{i-1}-a_j
+```
+
+Actual example:
+
+```text
+6
+=
+9 - 3
 ```
 
 because:
@@ -1334,10 +1472,26 @@ Greedy pairing:
 G=ax+by
 ```
 
+Actual example:
+
+```text
+G
+= 6×1 + 10×3
+= 36
+```
+
 Swapped pairing:
 
 ```math
 O=ay+bx
+```
+
+Actual example:
+
+```text
+O
+= 6×3 + 10×1
+= 28
 ```
 
 We want to prove:
@@ -1358,6 +1512,14 @@ G-O
 (ax+by)-(ay+bx)
 ```
 
+Actual example:
+
+```text
+36 - 28
+=
+(6×1 + 10×3) - (6×3 + 10×1)
+```
+
 ---
 
 ### Step 1 — Remove the minus bracket
@@ -1366,6 +1528,14 @@ G-O
 G-O
 =
 ax+by-ay-bx
+```
+
+Actual example:
+
+```text
+8
+=
+6×1 + 10×3 - 6×3 - 10×1
 ```
 
 **Why?**
@@ -1392,6 +1562,14 @@ G-O
 ax-ay+by-bx
 ```
 
+Actual example:
+
+```text
+8
+=
+6×1 - 6×3 + 10×3 - 10×1
+```
+
 **Why?**
 
 We only rearranged addition/subtraction so the `a` terms and `b` terms are together.
@@ -1404,6 +1582,19 @@ We only rearranged addition/subtraction so the `a` terms and `b` terms are toget
 G-O
 =
 a(x-y)+b(y-x)
+```
+
+Actual example:
+
+```text
+8
+=
+6(1-3) + 10(3-1)
+
+= 6(-2) + 10(2)
+
+= -12 + 20
+= 8
 ```
 
 Because:
@@ -1439,6 +1630,19 @@ G-O
 a(x-y)-b(x-y)
 ```
 
+Actual example:
+
+```text
+8
+=
+6(1-3) - 10(1-3)
+
+= 6(-2) - 10(-2)
+
+= -12 + 20
+= 8
+```
+
 ---
 
 ### Step 5 — Factor the common `(x-y)`
@@ -1447,6 +1651,18 @@ a(x-y)-b(x-y)
 G-O
 =
 (a-b)(x-y)
+```
+
+Actual example:
+
+```text
+8
+=
+(6-10)(1-3)
+
+= (-4)(-2)
+
+= 8
 ```
 
 because:
@@ -1657,6 +1873,17 @@ Suppose:
 d_{i+1}=r\,d_i
 ```
 
+Actual example:
+
+```text
+10 = 2×5
+
+so:
+d_(i+1) = 10
+d_i     = 5
+r       = 2
+```
+
 Then:
 
 ```text
@@ -1693,6 +1920,17 @@ But:
 d_{i+1}=r\,d_i
 ```
 
+Actual example:
+
+```text
+10 = 2×5
+
+so:
+d_(i+1) = 10
+d_i     = 5
+r       = 2
+```
+
 Therefore:
 
 ```text
@@ -1712,10 +1950,26 @@ Other solution:
 O=r
 ```
 
+Actual example:
+
+```text
+O = 2
+
+(two coins of 5)
+```
+
 Greedy:
 
 ```math
 G=1
+```
+
+Actual example:
+
+```text
+G = 1
+
+(one coin of 10)
 ```
 
 For minimization, calculate:
@@ -1724,6 +1978,14 @@ For minimization, calculate:
 G-O
 =
 1-r
+```
+
+Actual example:
+
+```text
+G-O
+= 1-2
+= -1
 ```
 
 Since:
@@ -2045,6 +2307,17 @@ Greedy:
 G=LR
 ```
 
+Actual example for `N=8`:
+
+```text
+L = 4
+R = 4
+
+G
+= 4×4
+= 16
+```
+
 Any more unbalanced pair can be written:
 
 ```math
@@ -2071,6 +2344,19 @@ Other product:
 O=(L-k)(R+k)
 ```
 
+Actual example:
+
+```text
+L = 4
+R = 4
+k = 1
+
+O
+= (4-1)(4+1)
+= 3×5
+= 15
+```
+
 ---
 
 ### Step 1 — Expand the brackets
@@ -2088,6 +2374,18 @@ So:
 O
 =
 LR+Lk-Rk-k^2
+```
+
+Actual example:
+
+```text
+15
+=
+4×4 + 4×1 - 4×1 - 1²
+
+= 16 + 4 - 4 - 1
+
+= 15
 ```
 
 Why?
@@ -2109,6 +2407,14 @@ G-O
 LR-(LR+Lk-Rk-k^2)
 ```
 
+Actual example:
+
+```text
+16 - 15
+=
+16 - (16 + 4 - 4 - 1)
+```
+
 ---
 
 ### Step 3 — Remove the minus bracket
@@ -2117,6 +2423,14 @@ LR-(LR+Lk-Rk-k^2)
 G-O
 =
 LR-LR-Lk+Rk+k^2
+```
+
+Actual example:
+
+```text
+1
+=
+16 - 16 - 4 + 4 + 1
 ```
 
 The minus changes every sign inside the bracket.
@@ -2129,6 +2443,17 @@ The minus changes every sign inside the bracket.
 G-O
 =
 -Lk+Rk+k^2
+```
+
+Actual example:
+
+```text
+1
+=
+-4×1 + 4×1 + 1²
+
+= -4 + 4 + 1
+= 1
 ```
 
 because:
@@ -2145,6 +2470,18 @@ because:
 G-O
 =
 k(R-L)+k^2
+```
+
+Actual example:
+
+```text
+1
+=
+1(4-4) + 1²
+
+= 0 + 1
+
+= 1
 ```
 
 because:
@@ -2385,10 +2722,28 @@ Same-order pairing:
 X=ax+by
 ```
 
+Actual example:
+
+```text
+X
+= 2×3 + 7×10
+= 6 + 70
+= 76
+```
+
 Opposite-order pairing:
 
 ```math
 Y=ay+bx
+```
+
+Actual example:
+
+```text
+Y
+= 2×10 + 7×3
+= 20 + 21
+= 41
 ```
 
 We want to prove:
@@ -2415,6 +2770,14 @@ X-Y
 (ax+by)-(ay+bx)
 ```
 
+Actual example:
+
+```text
+76 - 41
+=
+(2×3 + 7×10) - (2×10 + 7×3)
+```
+
 ---
 
 ### Step 1 — Remove the minus bracket
@@ -2423,6 +2786,14 @@ X-Y
 X-Y
 =
 ax+by-ay-bx
+```
+
+Actual example:
+
+```text
+35
+=
+2×3 + 7×10 - 2×10 - 7×3
 ```
 
 Why?
@@ -2443,6 +2814,14 @@ X-Y
 ax-ay+by-bx
 ```
 
+Actual example:
+
+```text
+35
+=
+2×3 - 2×10 + 7×10 - 7×3
+```
+
 Group:
 
 ```text
@@ -2458,6 +2837,20 @@ b terms together
 X-Y
 =
 a(x-y)+b(y-x)
+```
+
+Actual example:
+
+```text
+35
+=
+2(3-10) + 7(10-3)
+
+= 2(-7) + 7(7)
+
+= -14 + 49
+
+= 35
 ```
 
 because:
@@ -2492,6 +2885,20 @@ X-Y
 a(x-y)-b(x-y)
 ```
 
+Actual example:
+
+```text
+35
+=
+2(3-10) - 7(3-10)
+
+= 2(-7) - 7(-7)
+
+= -14 + 49
+
+= 35
+```
+
 ---
 
 ### Step 5 — Factor the common bracket
@@ -2500,6 +2907,18 @@ a(x-y)-b(x-y)
 X-Y
 =
 (a-b)(x-y)
+```
+
+Actual example:
+
+```text
+35
+=
+(2-7)(3-10)
+
+= (-5)(-7)
+
+= 35
 ```
 
 because:
