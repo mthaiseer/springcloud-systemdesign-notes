@@ -6,7 +6,9 @@
 > **For every problem:**  
 > **what it asks → concept simplified → greedy claim → define `G` and `O` → proof line by line → why each step is valid → actual example after each important equation → visual dry run → C++17 → complexity → recognition**
 >
-> **Important:** not every greedy proof is mainly algebra. Some are proved by **exchange + inequalities**, **dominance**, or **future-space preservation**. We use algebra only where it clarifies the proof.
+> **Proof rule:** start with a **real numerical example first**. Once the idea is obvious, write the general symbols. This is the same style used in Greedy 1.
+>
+> **Important:** not every greedy proof needs long algebra. Use the simplest valid proof: **exchange, one inequality, dominance, or future-space preservation**.
 >
 > Display equations use fenced `math` blocks to avoid Markdown/LaTeX rendering issues.
 
@@ -288,16 +290,87 @@ that finishes earliest
 
 ---
 
-## 1.3 Greedy Claim
+## 1.3 Greedy Claim + Proof — Example First
 
 Let:
 
 ```text
-G = earliest-finishing compatible activity
+G = greedy first activity
 O = first activity in some optimal schedule
 ```
 
-Then:
+Greedy chooses the activity that **finishes earliest**.
+
+### Step 1 — Understand it with real intervals
+
+Suppose:
+
+```text
+G = [2,3]
+O = [1,5]
+```
+
+So:
+
+```text
+G finishes at 3
+O finishes at 5
+```
+
+Greedy finishes earlier:
+
+```text
+3 <= 5
+```
+
+Now suppose OPT's next activity is:
+
+```text
+F = [5,7]
+```
+
+Because `F` comes after `O`:
+
+```text
+F starts at 5
+O ends at 5
+
+5 >= 5
+```
+
+Now replace `O` by `G`.
+
+Does `F` still fit?
+
+```text
+F starts at 5
+G ends at 3
+
+5 >= 3
+```
+
+Yes.
+
+So:
+
+```text
+OPT:
+[1,5] → [5,7]
+
+can become:
+
+[2,3] → [5,7]
+```
+
+Same number of activities.
+
+That is the exchange argument.
+
+---
+
+### Step 2 — Write the same idea with symbols
+
+Greedy finishes no later than OPT's first activity:
 
 ```math
 e_G\le e_O
@@ -306,19 +379,10 @@ e_G\le e_O
 Actual example:
 
 ```text
-G = [2,3] → e_G = 3
-O = [1,5] → e_O = 5
-
 3 <= 5
 ```
 
----
-
-## 1.4 Exchange Proof — Every Step Explained
-
-Suppose OPT begins with `O`.
-
-Its next selected activity `F` must satisfy:
+Any activity `F` that comes after `O` must satisfy:
 
 ```math
 s_F\ge e_O
@@ -327,39 +391,18 @@ s_F\ge e_O
 Actual example:
 
 ```text
-F = [5,7]
-
-s_F = 5
-e_O = 5
-
 5 >= 5
 ```
 
-We also know:
-
-```math
-e_O\ge e_G
-```
-
-Actual example:
+Since:
 
 ```text
-5 >= 3
+s_F >= e_O
+and
+e_O >= e_G
 ```
 
-Combine the inequalities:
-
-```math
-s_F\ge e_O\ge e_G
-```
-
-Actual example:
-
-```text
-5 >= 5 >= 3
-```
-
-Therefore:
+we get:
 
 ```math
 s_F\ge e_G
@@ -371,27 +414,34 @@ Actual example:
 5 >= 3
 ```
 
-So every activity that could follow `O` can also follow `G`.
+Meaning:
 
-Exchange:
+```text
+anything that fits after O
+also fits after G
+```
+
+Therefore replacing:
 
 ```text
 O → G
 ```
 
-preserves feasibility.
+does not remove any future activity.
 
 ---
 
-## 1.5 Count Comparison
+## 1.4 Count Comparison — Why OPT Stays Optimal
 
-Suppose OPT has:
+Suppose OPT contains:
 
 ```text
-1 first activity + y later activities
+1 first activity
++
+y future activities
 ```
 
-Then:
+So:
 
 ```math
 O_{\text{count}}=1+y
@@ -403,14 +453,12 @@ Actual example:
 O schedule:
 [1,5], [5,7]
 
-y = 1
-
 O_count
-= 1+1
+= 1 + 1
 = 2
 ```
 
-After replacing `O` by `G`:
+After replacing `O` with `G`, all the same future activities still fit:
 
 ```math
 G_{\text{count}}=1+y
@@ -423,11 +471,11 @@ G schedule:
 [2,3], [5,7]
 
 G_count
-= 1+1
+= 1 + 1
 = 2
 ```
 
-Difference:
+Compare:
 
 ```math
 G_{\text{count}}-O_{\text{count}}
@@ -440,13 +488,20 @@ G_{\text{count}}-O_{\text{count}}
 Actual example:
 
 ```text
-2-2
+2 - 2
 = 0
 ```
 
-So an optimal schedule exists that starts with `G`.
+So the exchange keeps the optimal count.
 
-Repeat on the remaining timeline.
+Therefore:
+
+```text
+there exists an optimal solution
+whose first choice is the greedy choice
+```
+
+Then repeat the same reasoning on the remaining timeline.
 
 ---
 
@@ -584,16 +639,84 @@ highest value per unit weight first
 
 ---
 
-## 2.3 Greedy Claim
+## 2.3 Greedy Claim + Proof — Example First
+
+Greedy chooses the item with the largest:
+
+```math
+\rho=\frac{value}{weight}
+```
+
+where `rho` means **value per one unit of weight**.
+
+### Step 1 — Understand it with real numbers
 
 Suppose:
 
 ```text
-H = higher-density item
-L = lower-density item
+High-density item H:
+value  = 12
+weight = 1
+density = 12
+
+Low-density item L:
+value  = 6
+weight = 3
+density = 2
 ```
 
-Then:
+Compare the **same 1 unit of weight**.
+
+From `L`:
+
+```text
+1 unit gives:
+1 × 2
+= 2 value
+```
+
+From `H`:
+
+```text
+1 unit gives:
+1 × 12
+= 12 value
+```
+
+Same weight:
+
+```text
+1 unit
+```
+
+but greedy gets:
+
+```text
+12 instead of 2
+```
+
+Improvement:
+
+```text
+12 - 2
+= 10
+```
+
+So if higher-density material is still available, using lower-density material first cannot be better.
+
+---
+
+### Step 2 — General exchange
+
+Let:
+
+```text
+H = higher-density item
+L = lower-density item
+delta = amount of weight we exchange
+```
+
+We know:
 
 ```math
 \rho_H\ge\rho_L
@@ -602,67 +725,18 @@ Then:
 Actual example:
 
 ```text
-H:
-v_H = 12
-w_H = 1
-rho_H = 12
-
-L:
-v_L = 6
-w_L = 3
-rho_L = 2
-
 12 >= 2
 ```
 
----
-
-## 2.4 Exchange Setup
-
-Suppose another solution uses:
+Suppose old solution has value:
 
 ```text
-delta weight of L
+O
 ```
 
-while the same amount of `H` is still available.
+Remove `delta` weight of `L`.
 
-Exchange:
-
-```text
-remove delta weight of L
-add    delta weight of H
-```
-
-Weight change:
-
-```math
--\delta+\delta=0
-```
-
-Actual example:
-
-```text
-delta = 1
-
--1 + 1
-= 0
-```
-
-So capacity feasibility is unchanged.
-
----
-
-## 2.5 Mathematical Proof — Every Step Explained
-
-Let:
-
-```text
-O = old total value
-G = value after exchange
-```
-
-Lower-density value removed:
+Value removed:
 
 ```math
 \delta\rho_L
@@ -671,11 +745,15 @@ Lower-density value removed:
 Actual example:
 
 ```text
-1×2
+delta = 1
+
+1 × 2
 = 2
 ```
 
-Higher-density value added:
+Add the same `delta` weight of `H`.
+
+Value added:
 
 ```math
 \delta\rho_H
@@ -684,11 +762,30 @@ Higher-density value added:
 Actual example:
 
 ```text
-1×12
+1 × 12
 = 12
 ```
 
-Therefore:
+Capacity does not change:
+
+```math
+-\delta+\delta=0
+```
+
+Actual example:
+
+```text
+-1 + 1
+= 0
+```
+
+So feasibility is preserved.
+
+---
+
+## 2.4 Mathematical Derivation — Every Line With Numbers
+
+New value:
 
 ```math
 G
@@ -699,14 +796,14 @@ O-\delta\rho_L+\delta\rho_H
 Actual example:
 
 ```text
-Let O = 20
+O = 20
 
 G
 = 20 - 1×2 + 1×12
 = 30
 ```
 
-Subtract `O`:
+Compare new and old:
 
 ```math
 G-O
@@ -717,9 +814,9 @@ G-O
 Actual example:
 
 ```text
-30-20
+30 - 20
 =
-(20-2+12)-20
+(20 - 2 + 12) - 20
 ```
 
 Cancel `+O` and `-O`:
@@ -736,8 +833,8 @@ Actual example:
 10
 =
 -1×2 + 1×12
-
-= -2 + 12
+=
+-2 + 12
 ```
 
 Factor `delta`:
@@ -754,34 +851,20 @@ Actual example:
 10
 =
 1(12-2)
-
-= 10
+=
+10
 ```
 
-We know:
-
-```math
-\delta\ge0
-```
-
-Actual example:
+Now:
 
 ```text
-1 >= 0
+delta >= 0
 ```
 
 and:
 
-```math
-\rho_H-\rho_L\ge0
-```
-
-Actual example:
-
 ```text
-12-2
-= 10
->= 0
+rho_H - rho_L >= 0
 ```
 
 Therefore:
@@ -793,14 +876,45 @@ G-O\ge0
 Actual example:
 
 ```text
-30-20
+30 - 20
 = 10
 >= 0
 ```
 
-So replacing equal weight of a lower-density item with higher-density material cannot decrease value.
+So exchanging equal weight from a lower-density item to a higher-density item never decreases value.
 
-Repeat until all higher-density material is used first.
+Repeat until all higher-density material is taken first.
+
+---
+
+## 2.5 Why Fractions Matter
+
+The proof depends on this operation:
+
+```text
+remove exactly delta weight from L
+add exactly delta weight from H
+```
+
+That is possible because fractions are allowed.
+
+In 0/1 Knapsack:
+
+```text
+whole item or nothing
+```
+
+so this exchange may be impossible.
+
+Therefore:
+
+```text
+Fractional Knapsack
+→ density greedy works
+
+0/1 Knapsack
+→ density greedy is not generally correct
+```
 
 ---
 
@@ -951,26 +1065,52 @@ discard it
 
 ---
 
-## 3.3 Greedy Claim
+## 3.3 Greedy Claim + Proof — Example First
 
-Let:
+Greedy rule:
 
 ```text
-P = current prefix sum
-F = any future continuation sum
+If running sum becomes negative,
+discard that whole running prefix.
 ```
+
+### Step 1 — Understand it with numbers
 
 Suppose:
 
-```math
-P<0
+```text
+prefix sum P = -4
+future sum F = 9
 ```
+
+If we KEEP the negative prefix:
+
+```text
+P + F
+= -4 + 9
+= 5
+```
+
+If we DROP the prefix:
+
+```text
+F
+= 9
+```
+
+Compare:
+
+```text
+9 > 5
+```
+
+So keeping `-4` only hurts the future answer.
 
 ---
 
-## 3.4 Mathematical Proof — Every Step Explained
+### Step 2 — General mathematical proof
 
-If we keep the prefix:
+Keep prefix:
 
 ```math
 O=P+F
@@ -979,15 +1119,12 @@ O=P+F
 Actual example:
 
 ```text
-P = -4
-F = 9
-
 O
-= -4+9
+= -4 + 9
 = 5
 ```
 
-If we drop the prefix:
+Drop prefix:
 
 ```math
 G=F
@@ -1011,9 +1148,9 @@ F-(P+F)
 Actual example:
 
 ```text
-9-5
+9 - 5
 =
-9-(-4+9)
+9 - (-4+9)
 ```
 
 Remove bracket:
@@ -1029,15 +1166,13 @@ Actual example:
 ```text
 4
 =
-9-(-4)-9
+9 - (-4) - 9
 ```
 
 Cancel `+F` and `-F`:
 
 ```math
-G-O
-=
--P
+G-O=-P
 ```
 
 Actual example:
@@ -1048,7 +1183,7 @@ Actual example:
 -(-4)
 ```
 
-Since:
+If:
 
 ```math
 P<0
@@ -1060,27 +1195,47 @@ then:
 -P>0
 ```
 
-Actual example:
-
-```text
--(-4)
-= 4
-> 0
-```
-
 Therefore:
 
 ```math
 G-O>0
 ```
 
-So starting fresh is strictly better than carrying a negative prefix.
+So dropping a negative prefix is strictly better.
 
 ---
 
-## 3.5 Why Keep a Non-Negative Prefix?
+## 3.4 Why Keep a Non-Negative Prefix?
 
-If:
+Now suppose:
+
+```text
+P = 3
+F = 9
+```
+
+Keep it:
+
+```text
+P + F
+= 3 + 9
+= 12
+```
+
+Drop it:
+
+```text
+F
+= 9
+```
+
+So:
+
+```text
+12 >= 9
+```
+
+In general, if:
 
 ```math
 P\ge0
@@ -1092,22 +1247,19 @@ then:
 P+F\ge F
 ```
 
-Actual example:
-
-```text
-P = 3
-F = 9
-
-3+9
-= 12
->= 9
-```
-
-So:
+Therefore:
 
 ```text
 P < 0  → discard
 P >= 0 → keep
+```
+
+Important:
+
+```text
+negative ELEMENT
+is not the same as
+negative RUNNING SUM
 ```
 
 ---
@@ -1230,34 +1382,47 @@ WHERE?
 
 ---
 
-## 4.3 Proof A — Highest Profit First
+## 4.3 Proof A — Highest Profit First, Example First
 
-Suppose:
+Suppose two feasible jobs can use the same slot:
 
 ```text
-G = higher-profit feasible job
-O = lower-profit scheduled job
+Greedy job G:
+profit = 30
+
+OPT job O:
+profit = 20
 ```
+
+Suppose OPT's total profit is:
+
+```text
+40
+```
+
+Replace the `20`-profit job with the `30`-profit job:
+
+```text
+new total
+= 40 - 20 + 30
+= 50
+```
+
+Difference:
+
+```text
+50 - 40
+= 10
+```
+
+So the higher-profit job is better.
+
+### General form
 
 We know:
 
 ```math
 p_G\ge p_O
-```
-
-Actual example:
-
-```text
-p_G = 30
-p_O = 20
-
-30 >= 20
-```
-
-Let:
-
-```text
-O_total = current schedule profit
 ```
 
 After exchange:
@@ -1271,30 +1436,12 @@ O_{\text{total}}-p_O+p_G
 Actual example:
 
 ```text
-O_total = 40
-
-G_total
-= 40-20+30
-= 50
-```
-
-Subtract old total:
-
-```math
-G_{\text{total}}-O_{\text{total}}
+50
 =
-(O_{\text{total}}-p_O+p_G)-O_{\text{total}}
+40 - 20 + 30
 ```
 
-Actual example:
-
-```text
-50-40
-=
-(40-20+30)-40
-```
-
-Cancel totals:
+Subtract the old total:
 
 ```math
 G_{\text{total}}-O_{\text{total}}
@@ -1305,9 +1452,11 @@ p_G-p_O
 Actual example:
 
 ```text
-10
+50 - 40
 =
-30-20
+30 - 20
+=
+10
 ```
 
 Since:
@@ -1316,95 +1465,112 @@ Since:
 p_G-p_O\ge0
 ```
 
-Actual example:
-
-```text
-30-20
-= 10
->= 0
-```
-
 we get:
 
 ```math
 G_{\text{total}}\ge O_{\text{total}}
 ```
 
-So if the higher-profit job can legally use that slot, replacing the lower-profit job cannot hurt.
+So if the higher-profit job can legally replace the lower-profit job, profit cannot decrease.
 
 ---
 
-## 4.4 Proof B — Latest Legal Slot
+## 4.4 Proof B — Why Use the Latest Legal Slot? Example First
 
-Suppose job `J` can use either:
+Suppose:
 
 ```text
-early slot s
-late  slot t
+Job J:
+deadline = 4
+profit = 30
 ```
 
-with:
+Free slots:
+
+```text
+1 and 4
+```
+
+Both are legal.
+
+Place J at slot `1`:
+
+```text
+profit = 30
+```
+
+Place J at slot `4`:
+
+```text
+profit = 30
+```
+
+Profit difference:
+
+```text
+30 - 30
+= 0
+```
+
+So moving J later does **not** hurt profit.
+
+But now compare flexibility.
+
+Early placement:
+
+```text
+slot 1 used
+slot 4 free
+```
+
+Late placement:
+
+```text
+slot 1 free
+slot 4 used
+```
+
+Suppose another job has:
+
+```text
+deadline = 1
+```
+
+That job can use only slot `1`.
+
+Therefore:
+
+```text
+placing flexible job J later
+preserves the early slot
+for a tighter-deadline job
+```
+
+### General form
+
+If:
 
 ```math
 s<t\le d_J
 ```
 
-Actual example:
+then both `s` and `t` are legal for J.
 
-```text
-s = 1
-t = 4
-d_J = 4
-
-1 < 4 <= 4
-```
-
-Profit is unchanged:
+The same job earns the same profit:
 
 ```math
-G_{\text{profit}}-O_{\text{profit}}
+G-O
 =
 p_J-p_J
 =
 0
 ```
 
-Actual example:
+So objective does not get worse.
 
-```text
-30-30
-= 0
-```
+But using `t` leaves `s` free.
 
-So moving the same job later does not reduce profit.
-
-But it frees the earlier slot.
-
-Visual:
-
-```text
-slots:   1    2    3    4
-
-early:
-         [J]  [ ]  [ ]  [ ]
-
-late:
-         [ ]  [ ]  [ ]  [J]
-          ^
-          preserved
-```
-
-Why useful?
-
-A future job may have:
-
-```text
-deadline = 1
-```
-
-and can use only slot `1`.
-
-Thus latest placement preserves more flexibility.
+Therefore the latest legal slot is never worse and may preserve more future choices.
 
 ---
 
@@ -1609,16 +1775,113 @@ So they give:
 
 ---
 
-## 5.3 If the Largest Pair Fails, All Pairs Fail
+## 5.3 Proof — Example First
 
-Let:
+Sorted array:
 
 ```text
-a,b = two largest sides below c
+[1,2,3,5,7,15]
+```
+
+Fix the largest side:
+
+```text
+c = 15
+```
+
+The **best possible companions** are the two largest sides below it:
+
+```text
+a = 5
+b = 7
+```
+
+Their sum:
+
+```text
+5 + 7
+= 12
+```
+
+But:
+
+```text
+12 <= 15
+```
+
+So even the largest possible pair fails.
+
+Any other pair is smaller.
+
+Example:
+
+```text
+u = 3
+v = 7
+
+u+v
+= 3+7
+= 10
+```
+
+And:
+
+```text
+10 <= 12 <= 15
+```
+
+So it also fails.
+
+Therefore:
+
+```text
+if the two largest companions fail,
+every smaller pair fails
+```
+
+Discard `15`.
+
+Now try:
+
+```text
+c = 7
+```
+
+Largest companions:
+
+```text
+3 and 5
+```
+
+Check:
+
+```text
+3+5
+= 8
+> 7
+```
+
+Valid triangle.
+
+Perimeter:
+
+```text
+3+5+7
+= 15
+```
+
+---
+
+## 5.4 General Proof — If Best Pair Fails, All Fail
+
+For fixed largest side `c`:
+
+```text
+a,b = two largest available sides below c
 u,v = any other pair below c
 ```
 
-Then:
+Because `a,b` are the largest:
 
 ```math
 u\le a
@@ -1633,22 +1896,11 @@ v\le b
 Actual example:
 
 ```text
-sorted:
-[1,2,3,5,7,15]
-
-c = 15
-a = 5
-b = 7
-
-choose another pair:
-u = 3
-v = 7
-
 3 <= 5
 7 <= 7
 ```
 
-Add the inequalities:
+Add them:
 
 ```math
 u+v\le a+b
@@ -1664,7 +1916,7 @@ Actual example:
 10 <= 12
 ```
 
-Suppose greedy companions fail:
+Suppose even the best pair fails:
 
 ```math
 a+b\le c
@@ -1673,13 +1925,10 @@ a+b\le c
 Actual example:
 
 ```text
-5+7
-<= 15
-
 12 <= 15
 ```
 
-Combine:
+Then:
 
 ```math
 u+v\le a+b\le c
@@ -1697,19 +1946,11 @@ Therefore:
 u+v\le c
 ```
 
-Actual example:
-
-```text
-10 <= 15
-```
-
-So no other pair can form a triangle with `c`.
-
-Discard `c`.
+So `u,v,c` cannot form a valid triangle.
 
 ---
 
-## 5.4 If the Largest Pair Works, It Is Best for This c
+## 5.5 If Best Pair Works, It Has Best Perimeter for This c
 
 Suppose:
 
@@ -1719,18 +1960,16 @@ a+b>c
 
 Then `a,b,c` is valid.
 
-For any other pair:
+For every other pair:
 
 ```math
 u+v\le a+b
 ```
 
-Add `c` to both sides:
+Add the same `c` to both sides:
 
 ```math
-u+v+c
-\le
-a+b+c
+u+v+c\le a+b+c
 ```
 
 Actual example:
@@ -1740,52 +1979,22 @@ c = 7
 a = 3
 b = 5
 
-another pair:
+other pair:
 u = 2
 v = 5
 
-u+v+c
-= 2+5+7
+2+5+7
 = 14
 
-a+b+c
-= 3+5+7
+3+5+7
 = 15
 
 14 <= 15
 ```
 
-So `a,b,c` gives maximum perimeter for that fixed largest side.
+So `a,b,c` has maximum perimeter for this fixed `c`.
 
----
-
-## 5.5 Why the First Valid Triple From the Right Is Globally Best
-
-Scan largest side first.
-
-If a larger side fails with its two largest companions:
-
-```text
-no triangle using that side exists
-```
-
-When the first valid triple appears:
-
-```text
-x[i-2], x[i-1], x[i]
-```
-
-it uses:
-
-```text
-largest surviving c
-+
-largest two companions
-```
-
-Any triangle entirely to the left uses no larger sides.
-
-Therefore it cannot have larger perimeter.
+Because we scan `c` from largest to smallest, the **first valid triple from the right** is globally optimal.
 
 ---
 
@@ -1868,8 +2077,8 @@ max triangle perimeter
 
 | Problem | Greedy Choice | Proof Type | Core Comparison |
 |---|---|---|---|
-| Activity Selection | earliest finish | exchange + transitivity | `s_F >= e_O >= e_G` |
-| Fractional Knapsack | highest density | algebraic exchange | `G-O = delta(rho_H-rho_L) >= 0` |
+| Activity Selection | earliest finish | exchange / future-space | anything after `O` also fits after earlier-finishing `G` |
+| Fractional Knapsack | highest density | equal-weight exchange | `G-O = delta(rho_H-rho_L) >= 0` |
 | Kadane | discard negative prefix | dominance algebra | `G-O = -P > 0` |
 | Job Sequencing — job | highest profit | algebraic exchange | `G-O = p_G-p_O >= 0` |
 | Job Sequencing — slot | latest legal slot | future-space dominance | profit change `=0` |
