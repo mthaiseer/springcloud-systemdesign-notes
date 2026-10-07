@@ -1,155 +1,538 @@
 # Greedy Algorithms — Level 3
-## Greedy 2 — Activity Selection, Fractional Knapsack, Kadane, Job Sequencing & Maximum Perimeter Triangle
+## Greedy 2 — Step-by-Step Mathematical Proof Edition
 
-> **Goal:** understand the *greedy choice*, the *reason it is safe*, and the exact implementation pattern.
+> **Goal:** make Greedy 2 proofs as explicit as Greedy 1: every important symbolic step is followed immediately by the same step using actual numbers.
 >
-> **Problem flow:**  
-> **prerequisites → mathematical notation → concept simplified → what it asks → greedy observation → proof + dry run → visual model → C++17 → complexity → recognition**
+> **For every problem:**  
+> **what it asks → concept simplified → greedy claim → define `G` and `O` → proof line by line → why each step is valid → actual example after each important equation → visual dry run → C++17 → complexity → recognition**
 >
-> **Proof style:** whenever useful, the symbolic proof and numerical dry run are shown together.
+> **Proof rule:** start with a **real numerical example first**. Once the idea is obvious, write the general symbols. This is the same style used in Greedy 1.
 >
-> **Source scope:** these notes follow the uploaded **Greedy Algorithms 2** lecture and expand its handwritten diagrams into self-study explanations.
+> **Important:** not every greedy proof needs long algebra. Use the simplest valid proof: **exchange, one inequality, dominance, or future-space preservation**.
 >
-> **Math rendering:** display equations use fenced `math` blocks to avoid Markdown rendering problems.
+> Display equations use fenced `math` blocks to avoid Markdown/LaTeX rendering issues.
 
 ---
 
 # Clickable Table of Contents
 
 - [0. Prerequisites](#0-prerequisites)
-  - [0.1 Greedy Claim + Proof](#01-greedy-claim--proof)
-  - [0.2 Exchange Argument](#02-exchange-argument)
-  - [0.3 Interval Notation](#03-interval-notation)
-  - [0.4 Sorting by a Decision Key](#04-sorting-by-a-decision-key)
-  - [0.5 Ratio / Density](#05-ratio--density)
-  - [0.6 Running Sum](#06-running-sum)
-  - [0.7 Deadline, Slot and Profit](#07-deadline-slot-and-profit)
-  - [0.8 Set / upper_bound / Predecessor](#08-set--upper_bound--predecessor)
-  - [0.9 Triangle Inequality](#09-triangle-inequality)
 - [1. Activity Selection](#1-activity-selection)
 - [2. Fractional Knapsack](#2-fractional-knapsack)
 - [3. Kadane's Algorithm](#3-kadanes-algorithm)
 - [4. Job Sequencing](#4-job-sequencing)
 - [5. Maximum Perimeter Triangle](#5-maximum-perimeter-triangle)
-- [6. Advantages and Limitations of Greedy](#6-advantages-and-limitations-of-greedy)
-- [7. Proof Pattern Summary](#7-proof-pattern-summary)
-- [8. Greedy 2 Recognition Checklist](#8-greedy-2-recognition-checklist)
-- [9. Compact Revision Card](#9-compact-revision-card)
+- [6. Proof Pattern Summary](#6-proof-pattern-summary)
+- [7. Recognition Checklist](#7-recognition-checklist)
+- [8. Compact Revision Card](#8-compact-revision-card)
 
 ---
 
 # 0. Prerequisites
 
-# 0.1 Greedy Claim + Proof
+> **Goal of this section:** understand every symbol and greedy-proof tool before starting the problems.
+>
+> Keep the mental model:
+>
+> ```text
+> real example first
+>      ↓
+> understand the choice
+>      ↓
+> write symbols
+>      ↓
+> prove greedy is safe
+> ```
 
-A greedy solution has two parts:
+---
+
+## 0.1 What Is a Greedy Choice?
+
+A greedy algorithm makes the **best-looking safe choice now** and never goes back.
+
+Example:
 
 ```text
-1. CLAIM
-   "This is the best choice to make now."
+Activity Selection:
 
-2. PROOF
-   "Making this choice cannot destroy an optimal answer."
+Among all currently possible activities,
+pick the one that finishes earliest.
 ```
 
-Do not think:
+But:
 
 ```text
-Greedy = sorting
+"looks best"
 ```
 
-Think:
+is not enough.
+
+We must prove:
 
 ```text
-Greedy = safe local commitment
+this choice cannot make the final answer worse
 ```
 
-Visual model:
+So:
+
+```text
+Greedy
+=
+Choice
++
+Proof
+```
+
+Visual:
 
 ```text
 Current state
-     |
-     v
-Best-looking choice
-     |
-     v
-Can I prove it is safe?
-   /   \
- YES    NO
-  |      |
-commit   do not trust it yet
+    |
+    v
+Choose candidate G
+    |
+    v
+Can G be proved safe?
+   / \
+ YES  NO
+  |    |
+take  do not trust yet
+ G
 ```
 
 ---
 
-## 0.2 Exchange Argument
+## 0.2 Constraint vs Objective
 
-This is the main proof tool for Activity Selection, Fractional Knapsack, and Job Sequencing.
-
-### General Template
+Every greedy problem has:
 
 ```text
-Greedy wants choice G
-Optimal solution uses choice O
-            |
-            v
-Replace O by G
-            |
-            v
-Still feasible?
-            |
-           YES
-            |
-            v
-Objective non-worse?
-            |
-           YES
-            |
-            v
-An optimal solution can contain G
+Constraint
+→ what must stay valid
+
+Objective
+→ what we want to maximize/minimize
 ```
 
-### Mathematical Comparison
+Example — Job Sequencing:
+
+```text
+Constraint:
+a job must finish by its deadline
+
+Objective:
+maximize total profit
+```
+
+Example — Activity Selection:
+
+```text
+Constraint:
+selected activities cannot overlap
+
+Objective:
+maximize number of selected activities
+```
+
+This distinction is important because a greedy exchange must preserve the **constraint** while improving or preserving the **objective**.
+
+---
+
+## 0.3 Greedy Answer G vs Other / OPT Answer O
+
+Use:
+
+```text
+G = greedy answer / greedy local contribution
+O = another valid answer / OPT contribution
+```
 
 For maximization:
+
+```math
+G\ge O
+```
+
+A convenient way to prove it:
 
 ```math
 G-O\ge0
 ```
 
+Actual example:
+
+```text
+G = 30
+O = 20
+
+G-O
+= 30-20
+= 10
+>= 0
+```
+
+Therefore:
+
+```text
+G >= O
+```
+
 For minimization:
+
+```math
+G\le O
+```
+
+Often prove:
 
 ```math
 G-O\le0
 ```
 
-### Tiny Example
-
-Other solution uses value:
+Actual example:
 
 ```text
-7
+G = 2
+O = 7
+
+G-O
+= 2-7
+= -5
+<= 0
 ```
 
-Greedy can use:
+Therefore:
 
 ```text
-10
+G <= O
 ```
-
-Then:
-
-```math
-10-7=3\ge0
-```
-
-If the swap preserves all constraints, the greedy choice is safe.
 
 ---
 
-## 0.3 Interval Notation
+## 0.4 Exchange Argument
 
-An activity is:
+This is the most reusable greedy proof idea.
+
+### Concept Simplified
+
+Suppose an optimal solution chooses:
+
+```text
+O
+```
+
+but greedy wants:
+
+```text
+G
+```
+
+Try replacing:
+
+```text
+O → G
+```
+
+Then check:
+
+```text
+1. Is the solution still valid?
+2. Is the answer same or better?
+```
+
+If both are true:
+
+```text
+an optimal solution can also use G
+```
+
+Visual:
+
+```text
+OPT uses O
+    |
+    v
+Greedy wants G
+    |
+    v
+replace O → G
+    |
+    v
+still valid?
+    |
+   YES
+    |
+    v
+answer non-worse?
+    |
+   YES
+    |
+    v
+G is safe
+```
+
+### Tiny Example
+
+Suppose:
+
+```text
+OPT uses profit 20
+Greedy can use profit 30
+```
+
+Exchange:
+
+```text
+20 → 30
+```
+
+Difference:
+
+```text
+30-20
+= 10
+>= 0
+```
+
+So for maximization:
+
+```text
+greedy is not worse
+```
+
+---
+
+## 0.5 How to Prove Any Greedy Choice
+
+Use this checklist:
+
+```text
+STEP 1
+State the greedy choice clearly.
+
+STEP 2
+Assume OPT makes a different choice.
+
+STEP 3
+Change only that one local choice.
+
+STEP 4
+Check feasibility.
+
+STEP 5
+Compare objective:
+G vs O
+
+STEP 6
+Use:
+- subtraction
+- inequality
+- exchange
+- dominance
+- future-space argument
+
+STEP 7
+Conclude greedy is non-worse.
+
+STEP 8
+Repeat the argument if needed.
+```
+
+Important:
+
+```text
+Do not force algebra everywhere.
+```
+
+Sometimes the cleanest proof is:
+
+```text
+anything possible after O
+is also possible after G
+```
+
+That is enough.
+
+---
+
+## 0.6 Algebra Rules Used in These Notes
+
+You only need a few.
+
+### Remove a Minus Bracket
+
+```text
+A - (B + C)
+= A - B - C
+```
+
+Example:
+
+```text
+20 - (7 + 3)
+= 20 - 7 - 3
+= 10
+```
+
+---
+
+### Cancel Equal Terms
+
+```text
+A + X - A
+= X
+```
+
+Example:
+
+```text
+40 - 20 + 30 - 40
+= 30 - 20
+= 10
+```
+
+---
+
+### Factor a Common Term
+
+```text
+ax - ay
+= a(x-y)
+```
+
+Example:
+
+```text
+5×12 - 5×2
+
+= 5(12-2)
+
+= 5×10
+
+= 50
+```
+
+---
+
+### Sign Reasoning
+
+```text
+positive × positive = positive
+
+negative × negative = positive
+
+positive × negative = negative
+```
+
+Example:
+
+```text
+(-4)(-2)
+= 8
+>= 0
+```
+
+---
+
+## 0.7 Inequality Rules
+
+### Rule 1 — Transitivity
+
+If:
+
+```text
+A >= B
+B >= C
+```
+
+then:
+
+```text
+A >= C
+```
+
+Example:
+
+```text
+5 >= 5
+5 >= 3
+
+therefore:
+5 >= 3
+```
+
+This is used in Activity Selection.
+
+---
+
+### Rule 2 — Add the Same Value
+
+If:
+
+```text
+A <= B
+```
+
+then:
+
+```text
+A + C <= B + C
+```
+
+Example:
+
+```text
+7 <= 8
+```
+
+Add `7`:
+
+```text
+14 <= 15
+```
+
+This is used in Maximum Perimeter Triangle.
+
+---
+
+### Rule 3 — Multiply by a Non-Negative Value
+
+If:
+
+```text
+A >= B
+```
+
+and:
+
+```text
+x >= 0
+```
+
+then:
+
+```text
+xA >= xB
+```
+
+Example:
+
+```text
+12 >= 2
+x = 1
+
+1×12 >= 1×2
+
+12 >= 2
+```
+
+This is the core idea behind Fractional Knapsack.
+
+---
+
+## 0.8 Interval / Activity Notation
+
+An activity is written:
 
 ```math
 [s_i,e_i]
@@ -159,159 +542,342 @@ where:
 
 ```text
 s_i = start time
-e_i = finish/end time
+e_i = end / finish time
+```
+
+Example:
+
+```text
+Activity A = [2,5]
+
+start  = 2
+finish = 5
 ```
 
 Visual:
 
 ```text
-time ------------------------------------------------->
+time ------------------------------------>
 
-Activity i:
-          [----------]
-          s_i        e_i
+        [-------------]
+        2             5
+      start         finish
 ```
 
-Two activities are compatible if the next one starts after the previous one ends.
+### Non-Overlapping Condition
 
-For the standard interval-scheduling model:
+Suppose:
+
+```text
+A = [2,3]
+B = [4,6]
+```
+
+For B to come after A:
 
 ```math
-s_{\text{next}}\ge e_{\text{last}}
+s_B\ge e_A
+```
+
+Actual:
+
+```text
+4 >= 3
+```
+
+So they are compatible.
+
+Visual:
+
+```text
+A:      [---]
+B:            [-----]
+
+         3 <= 4
+```
+
+Overlapping example:
+
+```text
+A = [2,5]
+B = [4,6]
+
+4 < 5
 ```
 
 Visual:
 
 ```text
-Activity A:   [------]
-Activity B:           [------]
-               eA <= sB
-```
-
-Overlapping:
-
-```text
-Activity A:   [----------]
-Activity B:       [----------]
-                    overlap
+A:      [-------]
+B:          [-------]
+             overlap
 ```
 
 ---
 
-## 0.4 Sorting by a Decision Key
+## 0.9 Finish Time vs Start Time vs Duration
 
-Greedy often uses sorting, but the key question is:
+For Activity Selection, do not confuse:
 
 ```text
-WHAT should I sort by?
+start time
+finish time
+duration
 ```
 
-Examples in this lecture:
+Example:
 
-| Problem | Sort key |
-|---|---|
-| Activity Selection | earliest finish time |
-| Fractional Knapsack | highest `value / weight` |
-| Job Sequencing | highest profit |
-| Maximum Perimeter Triangle | side length |
+```text
+A = [1,10]
 
-C++ comparator example:
-
-```cpp
-sort(v.begin(), v.end(),
-     [](const auto& a, const auto& b) {
-         return a.second < b.second;
-     });
+start    = 1
+finish   = 10
+duration = 9
 ```
+
+Another:
+
+```text
+B = [2,3]
+
+start    = 2
+finish   = 3
+duration = 1
+```
+
+Even though A starts earlier:
+
+```text
+1 < 2
+```
+
+B finishes much earlier:
+
+```text
+3 < 10
+```
+
+Greedy uses:
+
+```text
+earliest FINISH time
+```
+
+because that releases the timeline earlier.
 
 ---
 
-## 0.5 Ratio / Density
+## 0.10 Ratio / Density
 
 Fractional Knapsack uses:
 
 ```math
-density_i=\frac{value_i}{weight_i}
+\rho_i=\frac{v_i}{w_i}
+```
+
+where:
+
+```text
+rho_i = density
+v_i   = value
+w_i   = weight
+```
+
+Meaning:
+
+```text
+how much value do I get
+for 1 unit of weight?
+```
+
+Example:
+
+```text
+Item A:
+value  = 12
+weight = 1
+
+density
+= 12/1
+= 12
+```
+
+Item B:
+
+```text
+value  = 6
+weight = 3
+
+density
+= 6/3
+= 2
 ```
 
 Interpretation:
 
 ```text
-How much value do I get
-for one unit of weight?
+1 unit weight of A gives 12 value
+1 unit weight of B gives 2 value
+```
+
+Therefore:
+
+```text
+A is better per unit of capacity
+```
+
+---
+
+## 0.11 Fraction of an Item
+
+Fractional Knapsack allows part of an item.
+
+Example:
+
+```text
+item weight = 30
+remaining capacity = 20
+```
+
+Fraction taken:
+
+```math
+\frac{20}{30}
+=
+\frac23
+```
+
+If full item value is:
+
+```text
+120
+```
+
+value obtained:
+
+```math
+120\cdot\frac23
+=
+80
+```
+
+So:
+
+```text
+take 20 weight
+get 80 value
+```
+
+This ability to take fractions is exactly why the density exchange proof works.
+
+---
+
+## 0.12 Running Sum / Prefix Contribution
+
+Kadane uses:
+
+```text
+cur = running sum
+best = best subarray sum seen so far
 ```
 
 Example:
 
 ```text
-item A:
-value = 12
-weight = 1
-
-density = 12/1 = 12
+array:
+[5,-2,6]
 ```
+
+Running sums:
 
 ```text
-item B:
-value = 10
-weight = 5
-
-density = 10/5 = 2
+5
+5 + (-2) = 3
+3 + 6    = 9
 ```
 
-If fractions are allowed, one unit of weight taken from A is far more valuable.
+Important:
+
+```text
+negative ELEMENT
+does not mean
+negative RUNNING SUM
+```
+
+Here:
+
+```text
+-2 is negative
+but cur = 3 > 0
+```
+
+So we keep the prefix.
+
+Reset only when:
+
+```text
+cur < 0
+```
+
+because a negative total prefix hurts every future continuation.
 
 ---
 
-## 0.6 Running Sum
+## 0.13 Job Sequencing — Duration / Deadline / Profit
 
-Kadane maintains a current sum:
-
-```math
-cur
-```
-
-After reading `a[i]`:
-
-```math
-cur=cur+a_i
-```
-
-If `cur` becomes negative:
+Each job has:
 
 ```text
-carrying this prefix into the future is harmful
-```
-
-so reset:
-
-```math
-cur=0
-```
-
-But update the global answer **before** resetting so that all-negative arrays are handled.
-
----
-
-## 0.7 Deadline, Slot and Profit
-
-In Job Sequencing each job has:
-
-```text
-deadline d_i
-profit   p_i
 duration = 1
+deadline = d
+profit   = p
 ```
 
-A job with deadline `d` can occupy a slot no later than `d`.
+### Duration = 1
+
+Means:
+
+```text
+the job occupies exactly one time slot
+```
 
 Example:
+
+```text
+slot 1
+slot 2
+slot 3
+```
+
+A job occupies only one of them.
+
+---
+
+### Deadline = d
+
+Means:
+
+```text
+the job must be completed
+NO LATER THAN slot d
+```
+
+If:
 
 ```text
 deadline = 3
+```
 
-legal slots:
-1,2,3
+legal slots are:
+
+```text
+1, 2, 3
+```
+
+Illegal:
+
+```text
+4, 5, ...
 ```
 
 Visual:
@@ -322,17 +888,142 @@ slot:      1     2     3     4
 
 deadline 3:
            <----------->
-            legal area
+              legal
+
+slot 4:
+                       X
+```
+
+So remember:
+
+```text
+deadline d
+=
+schedule this 1-unit job
+in any slot <= d
 ```
 
 ---
 
-## 0.8 Set / upper_bound / Predecessor
+### Profit = p
 
-For Job Sequencing, the lecture diagrams use the idea:
+Means:
 
 ```text
-find the latest free slot <= deadline
+if the job is successfully scheduled,
+we earn p
+```
+
+Example:
+
+```text
+Job A:
+deadline = 3
+profit   = 50
+```
+
+If scheduled in slot:
+
+```text
+1, 2, or 3
+```
+
+we earn:
+
+```text
+50
+```
+
+If not scheduled:
+
+```text
+profit contribution = 0
+```
+
+---
+
+## 0.14 Why Job Sequencing Uses the Latest Legal Slot
+
+Suppose:
+
+```text
+Job A:
+deadline = 3
+profit   = 50
+```
+
+Free slots:
+
+```text
+1, 2, 3
+```
+
+A can use all three.
+
+Now another job:
+
+```text
+Job B:
+deadline = 1
+profit   = 40
+```
+
+B can use only:
+
+```text
+slot 1
+```
+
+Bad placement:
+
+```text
+slot:   1    2    3
+
+        A
+```
+
+Now B cannot run.
+
+Better:
+
+```text
+slot:   1    2    3
+
+        B         A
+```
+
+Total profit:
+
+```text
+40 + 50
+= 90
+```
+
+So:
+
+```text
+flexible job
+→ put as late as possible
+
+tight-deadline job
+→ preserve early slot
+```
+
+Memory:
+
+```text
+profit decides WHICH job
+deadline decides WHERE
+```
+
+---
+
+## 0.15 Free Slot + `upper_bound`
+
+In Job Sequencing, we often need:
+
+```text
+largest free slot <= deadline
 ```
 
 Suppose free slots are:
@@ -347,28 +1038,36 @@ and:
 deadline = 6
 ```
 
-We need:
-
-```text
-largest free slot <= 6
-```
-
-Answer:
+Wanted:
 
 ```text
 5
 ```
 
-In an ordered `set`:
-
-```cpp
-auto it = freeSlots.upper_bound(deadline);
-```
-
-`upper_bound(d)` gives:
+because:
 
 ```text
-first value > d
+5 <= 6
+```
+
+and it is the largest free legal slot.
+
+In C++:
+
+```cpp
+auto it = freeSlots.upper_bound(6);
+```
+
+`upper_bound(6)` gives:
+
+```text
+first value > 6
+```
+
+which is:
+
+```text
+7
 ```
 
 Move one step back:
@@ -377,25 +1076,26 @@ Move one step back:
 --it;
 ```
 
-to obtain the largest value:
+Now:
 
 ```text
-<= d
+5
 ```
 
 Visual:
 
 ```text
-free:      1   3   5   7   8
-deadline:              6
-                       |
-upper_bound(6) ------> 7
-previous ------------> 5
+free slots:
+
+1   3   5   7   8
+        ^   ^
+        |   |
+      answer upper_bound(6)
 ```
 
 ---
 
-## 0.9 Triangle Inequality
+## 0.16 Triangle Inequality
 
 For three positive lengths:
 
@@ -403,251 +1103,356 @@ For three positive lengths:
 a\le b\le c
 ```
 
-a non-degenerate triangle requires:
+a non-degenerate triangle must satisfy:
 
 ```math
 a+b>c
 ```
 
-Why is this the only condition we need after sorting?
-
-Because:
+Example:
 
 ```text
-b + c > a
-a + c > b
+3,5,7
+
+3+5
+= 8
+> 7
 ```
 
-are automatically true for positive sides when `c` is largest.
+Valid.
 
-So only check:
+Invalid:
+
+```text
+3,5,8
+
+3+5
+= 8
+```
+
+But we need:
+
+```text
+8 > 8
+```
+
+which is false.
+
+So:
+
+```text
+3,5,8
+```
+
+is degenerate, not a valid non-degenerate triangle.
+
+---
+
+## 0.17 Why Only `a+b>c` Is Checked After Sorting
+
+For:
+
+```math
+a\le b\le c
+```
+
+the largest side is:
+
+```text
+c
+```
+
+The hardest inequality to satisfy is:
 
 ```math
 a+b>c
 ```
 
-> **Lecture clarification:** the slide wording uses `A + B >= C`. For the standard non-degenerate triangle problem, the strict condition is `A + B > C`.
+The others are automatically true because sides are positive:
+
+```text
+a+c > b
+b+c > a
+```
+
+Example:
+
+```text
+a=3
+b=5
+c=7
+```
+
+Check:
+
+```text
+3+5 > 7   ✓
+3+7 > 5   ✓
+5+7 > 3   ✓
+```
+
+So after sorting, just test:
+
+```text
+a+b>c
+```
+
+---
+
+## 0.18 Final Prerequisite Recognition Map
+
+| If you see... | Think... |
+|---|---|
+| non-overlapping intervals | start / finish / compatibility |
+| maximize interval count | earliest finish |
+| value + weight + fractions | density = value / weight |
+| maximum contiguous sum | running sum / negative prefix |
+| unit jobs + deadline + profit | latest legal slot |
+| `set.upper_bound(d)` | first slot `> d`, then step back |
+| three positive side lengths | triangle inequality |
+| greedy vs OPT | exchange argument |
+| numerical objective comparison | `G-O` |
+| future options / flexibility | structural greedy proof |
 
 ---
 
 # 1. Activity Selection
 
-**Problem link from lecture:**  
-https://cses.fi/problemset/task/1629
-
-The lecture asks us to choose the maximum number of non-overlapping activities. Its example uses:
-
-```text
-[1,5], [2,3], [4,6]
-```
-
-with answer:
-
-```text
-[2,3], [4,6]
-```
-
----
-
 ## 1.1 What It Asks
 
-Given:
-
-```text
-N activities
-```
-
-each with:
-
-```text
-start time
-finish time
-```
-
-select the maximum number such that only one activity is performed at a time.
+Select the maximum number of non-overlapping activities.
 
 Objective:
 
 ```math
-\max(\text{number of selected activities})
-```
-
-Constraint:
-
-```text
-selected intervals cannot overlap
+\max(\text{selected count})
 ```
 
 ---
 
-## 1.2 Wrong Claims to Test
+## 1.2 Concept Simplified
 
-The handwritten lecture pages explore several natural ideas before reaching the correct one.
-
-### Wrong Idea 1 — Shortest Duration First
+To leave maximum space for future activities:
 
 ```text
-sort by:
-finish - start
-```
-
-Why suspicious?
-
-A short activity placed badly can still block several future activities.
-
-Duration alone does not tell us how much timeline remains afterward.
-
----
-
-### Wrong Idea 2 — Fewest Intersections First
-
-This tries to choose an interval overlapping the fewest others.
-
-Problem:
-
-```text
-calculating overlap counts is expensive
-and local overlap count does not directly prove
-maximum future capacity
-```
-
-The lecture notes this can lead to higher complexity.
-
----
-
-### Wrong Idea 3 — Earliest Start First
-
-Starting early does not mean finishing early.
-
-A very long activity can start first and block many short activities.
-
-Visual counterexample:
-
-```text
-time ------------------------------------------------->
-
-Long:
-[--------------------------------------]
-
-Shorts:
-    [---] [---] [---] [---]
-```
-
-Earliest-start chooses the long interval.
-
-Bad.
-
----
-
-## 1.3 Correct Greedy Observation
-
-Choose:
-
-```text
-the compatible activity
-with the EARLIEST FINISH TIME
-```
-
-Why?
-
-Because it leaves the largest possible remaining timeline for future activities.
-
-Visual:
-
-```text
-Choice A:
-[---------]
-          end late
-
-Choice G:
-[----]
-     end early
-
-Remaining future after G:
-     ---------------------------->
-
-Remaining future after A:
-          ----------------------->
-```
-
-The earlier finish never leaves *less* future room.
-
----
-
-## 1.4 Greedy Algorithm
-
-```text
-1. Sort activities by finish time ascending.
-2. Pick the earliest-finishing activity.
-3. Scan in that order.
-4. Pick activity i if:
-      start[i] >= lastFinish
-5. Update lastFinish.
+choose the compatible activity
+that finishes earliest
 ```
 
 ---
 
-## 1.5 Exchange Proof + Dry Run Side by Side
+## 1.3 Greedy Claim + Proof — Example First
 
 Let:
 
 ```text
 G = greedy first activity
-O = first activity of some optimal solution
+O = first activity in some optimal schedule
 ```
 
-Greedy chooses earliest finish, so:
+Greedy chooses the activity that **finishes earliest**.
+
+### Step 1 — Understand it with real intervals
+
+Suppose:
+
+```text
+G = [2,3]
+O = [1,5]
+```
+
+So:
+
+```text
+G finishes at 3
+O finishes at 5
+```
+
+Greedy finishes earlier:
+
+```text
+3 <= 5
+```
+
+Now suppose OPT's next activity is:
+
+```text
+F = [5,7]
+```
+
+Because `F` comes after `O`:
+
+```text
+F starts at 5
+O ends at 5
+
+5 >= 5
+```
+
+Now replace `O` by `G`.
+
+Does `F` still fit?
+
+```text
+F starts at 5
+G ends at 3
+
+5 >= 3
+```
+
+Yes.
+
+So:
+
+```text
+OPT:
+[1,5] → [5,7]
+
+can become:
+
+[2,3] → [5,7]
+```
+
+Same number of activities.
+
+That is the exchange argument.
+
+---
+
+### Step 2 — Write the same idea with symbols
+
+Greedy finishes no later than OPT's first activity:
 
 ```math
 e_G\le e_O
 ```
 
-Suppose optimal solution after `O` can choose:
+Actual example:
 
 ```text
-y future activities
+3 <= 5
 ```
 
-Since `G` ends no later than `O`, every activity that starts after `e_O` also starts after `e_G`.
+Any activity `F` that comes after `O` must satisfy:
 
-So replacing:
+```math
+s_F\ge e_O
+```
+
+Actual example:
+
+```text
+5 >= 5
+```
+
+Since:
+
+```text
+s_F >= e_O
+and
+e_O >= e_G
+```
+
+we get:
+
+```math
+s_F\ge e_G
+```
+
+Actual example:
+
+```text
+5 >= 3
+```
+
+Meaning:
+
+```text
+anything that fits after O
+also fits after G
+```
+
+Therefore replacing:
 
 ```text
 O → G
 ```
 
-does not destroy any future activity.
+does not remove any future activity.
 
-### Side-by-Side Example
+---
 
-Consider:
+## 1.4 Count Comparison — Why OPT Stays Optimal
 
-```text
-G = [2,3]
-O = [1,5]
-
-future activity:
-F = [5,7]
-```
-
-| Proof idea | Symbolic | Dry run |
-|---|---|---|
-| Greedy ends earlier | `e_G <= e_O` | `3 <= 5` |
-| Future job starts after O | `s_F >= e_O` | `5 >= 5` |
-| Therefore also after G | `s_F >= e_G` | `5 >= 3` |
-| Exchange | `O → G` | `[1,5] → [2,3]` |
-| Future feasibility | preserved | `[5,7]` still fits |
-
-Therefore an optimal solution can start with the earliest-finishing activity.
-
-After choosing it, the remaining problem is identical:
+Suppose OPT contains:
 
 ```text
-choose maximum non-overlapping activities
-after lastFinish
+1 first activity
++
+y future activities
 ```
 
-So repeat the same rule.
+So:
+
+```math
+O_{\text{count}}=1+y
+```
+
+Actual example:
+
+```text
+O schedule:
+[1,5], [5,7]
+
+O_count
+= 1 + 1
+= 2
+```
+
+After replacing `O` with `G`, all the same future activities still fit:
+
+```math
+G_{\text{count}}=1+y
+```
+
+Actual example:
+
+```text
+G schedule:
+[2,3], [5,7]
+
+G_count
+= 1 + 1
+= 2
+```
+
+Compare:
+
+```math
+G_{\text{count}}-O_{\text{count}}
+=
+(1+y)-(1+y)
+=
+0
+```
+
+Actual example:
+
+```text
+2 - 2
+= 0
+```
+
+So the exchange keeps the optimal count.
+
+Therefore:
+
+```text
+there exists an optimal solution
+whose first choice is the greedy choice
+```
+
+Then repeat the same reasoning on the remaining timeline.
 
 ---
 
@@ -669,82 +1474,57 @@ Sort by end:
 [4,6]
 ```
 
-Timeline:
-
-```text
-[2,3]      [4,6]
-   ✓          ✓
-
-[1,5]
-  overlaps
-```
-
 Process:
 
 ```text
-Pick [2,3]
-lastFinish = 3
+pick [2,3]
+lastEnd = 3
 
 [1,5]:
-start = 1 < 3
+1 < 3
 skip
 
 [4,6]:
-start = 4 >= 3
+4 >= 3
 pick
 ```
 
 Answer:
 
 ```text
-2 activities
+2
 ```
 
----
-
-## 1.7 Visual Recognition Diagram
+Visual:
 
 ```text
-Maximum number of
-non-overlapping intervals
-          |
-          v
-Which first interval
-leaves most future room?
-          |
-          v
-Earliest finishing interval
-          |
-          v
-sort by end time
-          |
-          v
-scan + take compatible
+time -------------------------------->
+
+[1-----------5]
+   [2--3]        [4---6]
+     ✓             ✓
 ```
 
 ---
 
-## 1.8 C++17
+## 1.7 C++17
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-int maxActivities(vector<pair<int,int>> activities) {
-    sort(activities.begin(), activities.end(),
-         [](const auto& a, const auto& b) {
-             if (a.second != b.second)
-                 return a.second < b.second;
-             return a.first < b.first;
+int maxActivities(vector<pair<long long,long long>> a) {
+    sort(a.begin(), a.end(),
+         [](const auto& x, const auto& y) {
+             if (x.second != y.second)
+                 return x.second < y.second;
+             return x.first < y.first;
          });
 
+    long long lastEnd = LLONG_MIN;
     int count = 0;
-    int lastFinish = INT_MIN;
 
-    for (auto [start, finish] : activities) {
-        if (start >= lastFinish) {
+    for (auto [start, finish] : a) {
+        if (start >= lastEnd) {
             ++count;
-            lastFinish = finish;
+            lastEnd = finish;
         }
     }
 
@@ -752,337 +1532,356 @@ int maxActivities(vector<pair<int,int>> activities) {
 }
 ```
 
-For CSES Movie Festival-style input, the same logic applies.
-
----
-
-## 1.9 Complexity
-
-Sorting:
+Complexity:
 
 ```text
 O(N log N)
 ```
 
-Scanning:
+Recognition:
 
 ```text
-O(N)
-```
-
-Total:
-
-```text
-O(N log N)
-```
-
----
-
-## 1.10 Recognition Model
-
-```text
-maximize COUNT
-of non-overlapping intervals
-        |
-        v
-earliest finish first
-```
-
-Do **not** confuse with:
-
-```text
-earliest start
-shortest duration
-fewest overlaps
+maximum count of non-overlapping intervals
+→ earliest finish
 ```
 
 ---
 
 # 2. Fractional Knapsack
 
-The lecture defines items with:
-
-```text
-value[i]
-weight[i]
-```
-
-and capacity:
-
-```text
-W
-```
-
-Fractions of items are allowed.
-
----
-
 ## 2.1 What It Asks
 
-Maximize total value:
-
-```math
-\max\sum_i value_i\cdot fraction_i
-```
-
-subject to:
-
-```math
-\sum_i weight_i\cdot fraction_i\le W
-```
-
-where:
-
-```math
-0\le fraction_i\le1
-```
-
----
-
-## 2.2 Concept Simplified
-
-The resource is:
+Each item:
 
 ```text
-weight capacity
-```
-
-So ask:
-
-```text
-Which item gives the most VALUE per one unit of WEIGHT?
-```
-
-That is:
-
-```math
-\frac{value_i}{weight_i}
-```
-
-Call it:
-
-```text
-density
-```
-
-Take highest density first.
-
----
-
-## 2.3 Why Maximum Value Alone Is Wrong
-
-Suppose capacity:
-
-```text
-W = 1
-```
-
-Items:
-
-```text
-A: value=10, weight=5
-B: value=6,  weight=1
-```
-
-Maximum raw value:
-
-```text
-A = 10
-```
-
-But only `1/5` of A fits:
-
-```text
-value gained = 10 × 1/5 = 2
-```
-
-B fits fully:
-
-```text
-value gained = 6
-```
-
-So raw value is not the correct key.
-
-Density:
-
-```text
-A: 10/5 = 2
-B: 6/1  = 6
-```
-
-Now the correct choice is obvious.
-
----
-
-## 2.4 Greedy Claim
-
-Sort items descending by:
-
-```math
-\frac{value_i}{weight_i}
-```
-
-Then:
-
-```text
-take as much as possible from each item
-before moving to lower density
-```
-
----
-
-## 2.5 Exchange Proof + Dry Run Side by Side
-
-Suppose:
-
-```text
-item H has higher density
-item L has lower density
-```
-
-So:
-
-```math
-\frac{v_H}{w_H}\ge\frac{v_L}{w_L}
-```
-
-Assume another solution uses some weight amount:
-
-```text
-delta
-```
-
-from `L` while some `H` is still available.
-
-Exchange that same weight `delta`:
-
-```text
-remove delta weight of L
-add    delta weight of H
-```
-
-Feasibility is unchanged because total weight stays the same.
-
-Value changes by:
-
-```math
-\Delta
-=
-\delta
-\left(
-\frac{v_H}{w_H}
--
-\frac{v_L}{w_L}
-\right)
-```
-
-Since higher density is at least lower density:
-
-```math
-\Delta\ge0
-```
-
-So the exchange cannot decrease value.
-
-### Dry Run
-
-```text
-H:
-value = 12
-weight = 1
-density = 12
-
-L:
-value = 6
-weight = 3
-density = 2
-```
-
-Compare one unit of weight:
-
-| | Higher density H | Lower density L |
-|---|---:|---:|
-| Value per 1 weight | `12` | `2` |
-| Exchange 1 weight | gain `12` | give up `2` |
-| Improvement | | `+10` |
-
-Therefore using lower-density weight while higher-density weight remains cannot be optimal.
-
----
-
-## 2.6 Lecture-Style Example
-
-Values:
-
-```text
-[10,2,1,3,4,12,6]
-```
-
-Weights:
-
-```text
-[1,2,1,2,1,1,3]
-```
-
-Densities:
-
-```text
-10/1 = 10
-2/2  = 1
-1/1  = 1
-3/2  = 1.5
-4/1  = 4
-12/1 = 12
-6/3  = 2
-```
-
-Sorted density order:
-
-```text
-12, 10, 4, 2, 1.5, 1, 1
-```
-
-If:
-
-```text
-W = 1
-```
-
-take the item:
-
-```text
-value=12, weight=1
-```
-
-Total value:
-
-```text
-12
-```
-
----
-
-## 2.7 Fractional Dry Run
-
-Items:
-
-```text
-A: value=60,  weight=10, density=6
-B: value=100, weight=20, density=5
-C: value=120, weight=30, density=4
+value  = v_i
+weight = w_i
 ```
 
 Capacity:
 
 ```text
-W = 50
+W
+```
+
+Fractions are allowed.
+
+---
+
+## 2.2 Concept Simplified
+
+The scarce resource is:
+
+```text
+weight
+```
+
+So compare:
+
+```math
+\rho_i=\frac{v_i}{w_i}
+```
+
+Greedy:
+
+```text
+highest value per unit weight first
+```
+
+---
+
+## 2.3 Greedy Claim + Proof — Example First
+
+Greedy chooses the item with the largest:
+
+```math
+\rho=\frac{value}{weight}
+```
+
+where `rho` means **value per one unit of weight**.
+
+### Step 1 — Understand it with real numbers
+
+Suppose:
+
+```text
+High-density item H:
+value  = 12
+weight = 1
+density = 12
+
+Low-density item L:
+value  = 6
+weight = 3
+density = 2
+```
+
+Compare the **same 1 unit of weight**.
+
+From `L`:
+
+```text
+1 unit gives:
+1 × 2
+= 2 value
+```
+
+From `H`:
+
+```text
+1 unit gives:
+1 × 12
+= 12 value
+```
+
+Same weight:
+
+```text
+1 unit
+```
+
+but greedy gets:
+
+```text
+12 instead of 2
+```
+
+Improvement:
+
+```text
+12 - 2
+= 10
+```
+
+So if higher-density material is still available, using lower-density material first cannot be better.
+
+---
+
+### Step 2 — General exchange
+
+Let:
+
+```text
+H = higher-density item
+L = lower-density item
+delta = amount of weight we exchange
+```
+
+We know:
+
+```math
+\rho_H\ge\rho_L
+```
+
+Actual example:
+
+```text
+12 >= 2
+```
+
+Suppose old solution has value:
+
+```text
+O
+```
+
+Remove `delta` weight of `L`.
+
+Value removed:
+
+```math
+\delta\rho_L
+```
+
+Actual example:
+
+```text
+delta = 1
+
+1 × 2
+= 2
+```
+
+Add the same `delta` weight of `H`.
+
+Value added:
+
+```math
+\delta\rho_H
+```
+
+Actual example:
+
+```text
+1 × 12
+= 12
+```
+
+Capacity does not change:
+
+```math
+-\delta+\delta=0
+```
+
+Actual example:
+
+```text
+-1 + 1
+= 0
+```
+
+So feasibility is preserved.
+
+---
+
+## 2.4 Mathematical Derivation — Every Line With Numbers
+
+New value:
+
+```math
+G
+=
+O-\delta\rho_L+\delta\rho_H
+```
+
+Actual example:
+
+```text
+O = 20
+
+G
+= 20 - 1×2 + 1×12
+= 30
+```
+
+Compare new and old:
+
+```math
+G-O
+=
+(O-\delta\rho_L+\delta\rho_H)-O
+```
+
+Actual example:
+
+```text
+30 - 20
+=
+(20 - 2 + 12) - 20
+```
+
+Cancel `+O` and `-O`:
+
+```math
+G-O
+=
+-\delta\rho_L+\delta\rho_H
+```
+
+Actual example:
+
+```text
+10
+=
+-1×2 + 1×12
+=
+-2 + 12
+```
+
+Factor `delta`:
+
+```math
+G-O
+=
+\delta(\rho_H-\rho_L)
+```
+
+Actual example:
+
+```text
+10
+=
+1(12-2)
+=
+10
+```
+
+Now:
+
+```text
+delta >= 0
+```
+
+and:
+
+```text
+rho_H - rho_L >= 0
+```
+
+Therefore:
+
+```math
+G-O\ge0
+```
+
+Actual example:
+
+```text
+30 - 20
+= 10
+>= 0
+```
+
+So exchanging equal weight from a lower-density item to a higher-density item never decreases value.
+
+Repeat until all higher-density material is taken first.
+
+---
+
+## 2.5 Why Fractions Matter
+
+The proof depends on this operation:
+
+```text
+remove exactly delta weight from L
+add exactly delta weight from H
+```
+
+That is possible because fractions are allowed.
+
+In 0/1 Knapsack:
+
+```text
+whole item or nothing
+```
+
+so this exchange may be impossible.
+
+Therefore:
+
+```text
+Fractional Knapsack
+→ density greedy works
+
+0/1 Knapsack
+→ density greedy is not generally correct
+```
+
+---
+
+## 2.6 Full Dry Run
+
+```text
+A: value=60,  weight=10, density=6
+B: value=100, weight=20, density=5
+C: value=120, weight=30, density=4
+
+capacity = 50
 ```
 
 Take A:
 
 ```text
-weight used = 10
 value = 60
 remaining = 40
 ```
@@ -1090,81 +1889,64 @@ remaining = 40
 Take B:
 
 ```text
-weight used = 20
-value += 100
+value = 160
 remaining = 20
 ```
 
-Only `20/30` of C fits.
-
-Fraction:
+Take `20/30` of C:
 
 ```math
-\frac{20}{30}=\frac23
+\frac{20}{30}
+=
+\frac23
 ```
 
-Value gained:
+Value:
 
 ```math
-120\cdot\frac23=80
+120\cdot\frac23
+=
+80
 ```
 
-Final value:
+Final:
 
 ```text
-60 + 100 + 80 = 240
-```
-
-Visual:
-
-```text
-Capacity 50:
-
-[A:10][B:20][  20 of C  ]
-|-----|----------|--------|
-  60      100        80
+60+100+80
+= 240
 ```
 
 ---
 
-## 2.8 Important Contrast — 0/1 Knapsack
+## 2.7 Why This Fails for 0/1 Knapsack
 
-Fractional Knapsack:
-
-```text
-fraction allowed
-→ greedy by density works
-```
-
-0/1 Knapsack:
+The proof requires:
 
 ```text
-must take whole item or skip it
-→ density greedy is NOT generally correct
+exchange exactly delta weight
 ```
 
-Why?
+In 0/1 Knapsack:
 
-The exchange proof depends on being able to replace an arbitrary amount of weight.
+```text
+whole item or nothing
+```
 
-Without fractions, that exchange may be impossible.
+So this equal-weight exchange may be impossible.
 
 ---
 
-## 2.9 C++17
+## 2.8 C++17
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
 struct Item {
-    double value;
-    double weight;
+    long double value;
+    long double weight;
 };
 
-double fractionalKnapsack(
+long double fractionalKnapsack(
     vector<Item> items,
-    double capacity
+    long double capacity
 ) {
     sort(items.begin(), items.end(),
          [](const Item& a, const Item& b) {
@@ -1172,15 +1954,18 @@ double fractionalKnapsack(
                     b.value / b.weight;
          });
 
-    double ans = 0.0;
+    long double ans = 0;
 
     for (const Item& item : items) {
-        if (capacity == 0)
+        if (capacity <= 0)
             break;
 
-        double take = min(capacity, item.weight);
+        long double take =
+            min(capacity, item.weight);
 
-        ans += take * (item.value / item.weight);
+        ans += take *
+               (item.value / item.weight);
+
         capacity -= take;
     }
 
@@ -1188,70 +1973,22 @@ double fractionalKnapsack(
 }
 ```
 
----
-
-## 2.10 Complexity
-
-Sorting:
+Complexity:
 
 ```text
 O(N log N)
 ```
 
-Scan:
+Recognition:
 
 ```text
-O(N)
-```
-
-Total:
-
-```text
-O(N log N)
-```
-
----
-
-## 2.11 Recognition Model
-
-```text
-maximize value
-under capacity
-+
-fractions allowed
-        |
-        v
-value per unit resource
-        |
-        v
-sort by value/weight descending
+capacity + fractions allowed
+→ maximize value per unit resource
 ```
 
 ---
 
 # 3. Kadane's Algorithm
-
-The lecture asks for the maximum possible sum of a contiguous subarray.
-
-Example:
-
-```text
-[1,2,-9,2,3,-1,4]
-```
-
-Best:
-
-```text
-[2,3,-1,4]
-```
-
-Sum:
-
-```text
-8
-```
-
----
 
 ## 3.1 What It Asks
 
@@ -1262,215 +1999,211 @@ Find:
 \sum_{i=L}^{R}a_i
 ```
 
-Important:
-
-```text
-subarray = contiguous
-```
-
-Not:
-
-```text
-subsequence
-```
+for a contiguous subarray.
 
 ---
 
 ## 3.2 Concept Simplified
 
-Suppose the running prefix you are carrying has sum:
+A negative running prefix hurts every future continuation.
+
+So:
 
 ```text
-negative
+if running sum < 0
+discard it
 ```
 
-Example:
+---
+
+## 3.3 Greedy Claim + Proof — Example First
+
+Greedy rule:
 
 ```text
-prefix sum = -5
+If running sum becomes negative,
+discard that whole running prefix.
 ```
 
-Future value:
+### Step 1 — Understand it with numbers
+
+Suppose:
 
 ```text
-x = 10
+prefix sum P = -4
+future sum F = 9
 ```
 
-If we keep the negative prefix:
+If we KEEP the negative prefix:
 
 ```text
--5 + 10 = 5
+P + F
+= -4 + 9
+= 5
 ```
 
-If we start fresh at `10`:
+If we DROP the prefix:
 
 ```text
-10
+F
+= 9
 ```
 
-Starting fresh is better.
+Compare:
+
+```text
+9 > 5
+```
+
+So keeping `-4` only hurts the future answer.
+
+---
+
+### Step 2 — General mathematical proof
+
+Keep prefix:
+
+```math
+O=P+F
+```
+
+Actual example:
+
+```text
+O
+= -4 + 9
+= 5
+```
+
+Drop prefix:
+
+```math
+G=F
+```
+
+Actual example:
+
+```text
+G
+= 9
+```
+
+Compare:
+
+```math
+G-O
+=
+F-(P+F)
+```
+
+Actual example:
+
+```text
+9 - 5
+=
+9 - (-4+9)
+```
+
+Remove bracket:
+
+```math
+G-O
+=
+F-P-F
+```
+
+Actual example:
+
+```text
+4
+=
+9 - (-4) - 9
+```
+
+Cancel `+F` and `-F`:
+
+```math
+G-O=-P
+```
+
+Actual example:
+
+```text
+4
+=
+-(-4)
+```
+
+If:
+
+```math
+P<0
+```
+
+then:
+
+```math
+-P>0
+```
 
 Therefore:
 
-```text
-a negative running sum can never help a future subarray
+```math
+G-O>0
 ```
 
-So discard it.
+So dropping a negative prefix is strictly better.
 
 ---
 
-## 3.3 Greedy Observation
+## 3.4 Why Keep a Non-Negative Prefix?
 
-At each position:
-
-```text
-1. add a[i] to current sum
-2. update global maximum
-3. if current sum < 0:
-      reset current sum to 0
-```
-
-Visual:
+Now suppose:
 
 ```text
-current prefix sum
-       |
-       v
-   negative?
-   /      \
- YES       NO
-  |         |
-discard   carry it forward
-```
-
----
-
-## 3.4 Why Discarding a Negative Prefix Is Safe
-
-Suppose a prefix has sum:
-
-```math
-P<0
-```
-
-and some future continuation has sum:
-
-```math
-F
-```
-
-Keeping the prefix gives:
-
-```math
-P+F
-```
-
-Starting after the negative prefix gives:
-
-```math
-F
-```
-
-Because:
-
-```math
-P<0
-```
-
-we know:
-
-```math
-P+F<F
-```
-
-So any future subarray is strictly better without that negative prefix.
-
-### Side-by-Side Dry Run
-
-Let:
-
-```text
-P = -4
+P = 3
 F = 9
 ```
 
-| Choice | Formula | Value |
-|---|---|---:|
-| Keep negative prefix | `P+F` | `-4+9=5` |
-| Drop prefix | `F` | `9` |
+Keep it:
+
+```text
+P + F
+= 3 + 9
+= 12
+```
+
+Drop it:
+
+```text
+F
+= 9
+```
+
+So:
+
+```text
+12 >= 9
+```
+
+In general, if:
+
+```math
+P\ge0
+```
+
+then:
+
+```math
+P+F\ge F
+```
 
 Therefore:
 
 ```text
-drop negative prefix
+P < 0  → discard
+P >= 0 → keep
 ```
-
-is always safe.
-
-This is the key greedy argument.
-
----
-
-## 3.5 Full Dry Run
-
-Array:
-
-```text
-[1,2,-9,2,3,-1,4]
-```
-
-Use:
-
-```text
-cur  = current candidate sum
-best = best sum seen
-```
-
-| `a[i]` | `cur += a[i]` | `best` | Reset? |
-|---:|---:|---:|---|
-| 1 | 1 | 1 | no |
-| 2 | 3 | 3 | no |
-| -9 | -6 | 3 | yes → `cur=0` |
-| 2 | 2 | 3 | no |
-| 3 | 5 | 5 | no |
-| -1 | 4 | 5 | no |
-| 4 | 8 | 8 | no |
-
-Answer:
-
-```text
-8
-```
-
-Subarray:
-
-```text
-[2,3,-1,4]
-```
-
----
-
-## 3.6 Visual Timeline
-
-```text
-[ 1   2  -9 ][ 2   3  -1   4 ]
-  \___/
-   +3
-
-after adding -9:
-cur = -6
-        X
-discard whole harmful prefix
-
-restart:
-            [ 2   3  -1   4 ]
-              2 → 5 → 4 → 8
-```
-
----
-
-## 3.7 Why a Negative Element Can Still Be Included
 
 Important:
 
@@ -1480,13 +2213,41 @@ is not the same as
 negative RUNNING SUM
 ```
 
-Example:
+---
+
+## 3.6 Full Dry Run
+
+Array:
+
+```text
+[1,2,-9,2,3,-1,4]
+```
+
+| `x` | `cur` after add | `best` | Action |
+|---:|---:|---:|---|
+| 1 | 1 | 1 | keep |
+| 2 | 3 | 3 | keep |
+| -9 | -6 | 3 | reset |
+| 2 | 2 | 3 | keep |
+| 3 | 5 | 5 | keep |
+| -1 | 4 | 5 | keep |
+| 4 | 8 | 8 | keep |
+
+Answer:
+
+```text
+8
+```
+
+---
+
+## 3.7 Negative Element vs Negative Prefix
 
 ```text
 [5,-2,6]
 ```
 
-Running sum:
+Running sums:
 
 ```text
 5
@@ -1494,73 +2255,27 @@ Running sum:
 9
 ```
 
-Although `-2` is negative, the running sum stays positive.
+`-2` is negative, but the running sum stays positive.
 
-Keeping `-2` is fine because it connects two profitable parts.
+So do **not** discard every negative element.
 
-So never memorize:
-
-```text
-"remove negative numbers"
-```
-
-Correct rule:
+Discard only:
 
 ```text
-discard a PREFIX only when its TOTAL contribution becomes negative
+negative total prefix
 ```
 
 ---
 
-## 3.8 All-Negative Array Warning
-
-Array:
-
-```text
-[-5,-2,-8]
-```
-
-Correct answer:
-
-```text
--2
-```
-
-Therefore:
-
-```text
-update best BEFORE resetting cur to 0
-```
-
-Use:
-
-```text
-best = -infinity
-```
-
-not:
-
-```text
-best = 0
-```
-
-unless the empty subarray is explicitly allowed.
-
----
-
-## 3.9 C++17
+## 3.8 C++17
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
 long long kadane(const vector<long long>& a) {
-    long long best = LLONG_MIN;
     long long cur = 0;
+    long long best = LLONG_MIN;
 
     for (long long x : a) {
         cur += x;
-
         best = max(best, cur);
 
         if (cur < 0)
@@ -1571,108 +2286,31 @@ long long kadane(const vector<long long>& a) {
 }
 ```
 
-Equivalent DP form:
-
-```cpp
-long long kadaneDP(const vector<long long>& a) {
-    long long cur = a[0];
-    long long best = a[0];
-
-    for (int i = 1; i < (int)a.size(); ++i) {
-        cur = max(a[i], cur + a[i]);
-        best = max(best, cur);
-    }
-
-    return best;
-}
-```
-
----
-
-## 3.10 Complexity
-
-Time:
+Complexity:
 
 ```text
 O(N)
 ```
 
-Extra space:
+Recognition:
 
 ```text
-O(1)
-```
-
----
-
-## 3.11 Recognition Model
-
-```text
-maximum sum
-+
-contiguous subarray
-        |
-        v
-running sum
-        |
-        v
-negative prefix?
-        |
-       YES
-        |
-        v
-discard it
+maximum contiguous subarray sum
+→ negative running history is dominated
 ```
 
 ---
 
 # 4. Job Sequencing
 
-The lecture problem gives each job:
-
-```text
-deadline
-profit
-duration = 1
-```
-
-and asks us to maximize total profit while doing only one job at a time.
-
-Example:
-
-```text
-deadline = [1,2,2]
-profit   = [10,20,30]
-```
-
-Best profit:
-
-```text
-50
-```
-
-by taking the jobs with profit:
-
-```text
-30 and 20
-```
-
----
-
 ## 4.1 What It Asks
 
-Each job `i`:
+Each job has:
 
 ```text
+duration = 1
 deadline = d_i
 profit   = p_i
-duration = 1
-```
-
-If selected, it must occupy one slot:
-
-```text
-slot <= deadline
 ```
 
 Goal:
@@ -1683,188 +2321,211 @@ Goal:
 
 ---
 
-## 4.2 Greedy Observation 1 — Consider High Profit First
-
-If a job has the largest available profit, we want to include it whenever a legal slot exists.
-
-So:
+## 4.2 Two Greedy Decisions
 
 ```text
-sort jobs by profit descending
+WHICH job?
+→ highest profit first
+
+WHERE?
+→ latest free slot <= deadline
 ```
 
 ---
 
-## 4.3 Greedy Observation 2 — Put It as Late as Possible
+## 4.3 Proof A — Highest Profit First, Example First
 
-If job deadline is:
-
-```text
-d
-```
-
-and we schedule it early unnecessarily, we may block another job with a tighter deadline.
-
-So place the selected job in:
+Suppose two feasible jobs can use the same slot:
 
 ```text
-latest available slot <= d
+Greedy job G:
+profit = 30
+
+OPT job O:
+profit = 20
 ```
 
-Visual:
+Suppose OPT's total profit is:
 
 ```text
-slots:     1    2    3    4    5
-           [ ]  [ ]  [ ]  [ ]  [ ]
-
-job deadline = 4
-
-Bad:
-           [J]  [ ]  [ ]  [ ]
-            ^
-            consumes early flexible slot
-
-Better:
-           [ ]  [ ]  [ ]  [J]
-                          ^
-                     latest legal slot
+40
 ```
 
-This preserves earlier slots for jobs that may need them.
-
----
-
-## 4.4 Why Highest Profit First Is Safe — Exchange Idea
-
-Let:
+Replace the `20`-profit job with the `30`-profit job:
 
 ```text
-G = currently highest-profit job
+new total
+= 40 - 20 + 30
+= 50
 ```
 
-Suppose an optimal schedule does not contain `G`, but there is some scheduled lower-profit job `O` occupying a slot that `G` can legally use.
+Difference:
 
-Because:
+```text
+50 - 40
+= 10
+```
+
+So the higher-profit job is better.
+
+### General form
+
+We know:
 
 ```math
-profit_G\ge profit_O
+p_G\ge p_O
 ```
 
-replace:
-
-```text
-O → G
-```
-
-The number of jobs stays the same.
-
-If the chosen slot is legal for `G`, feasibility remains valid.
-
-Profit changes by:
+After exchange:
 
 ```math
-profit_G-profit_O\ge0
+G_{\text{total}}
+=
+O_{\text{total}}-p_O+p_G
 ```
 
-So the schedule is not worse.
-
-### Dry Run
+Actual example:
 
 ```text
-G:
-profit=30
-deadline=2
-
-O:
-profit=20
-scheduled at slot 2
+50
+=
+40 - 20 + 30
 ```
 
-Swap:
+Subtract the old total:
+
+```math
+G_{\text{total}}-O_{\text{total}}
+=
+p_G-p_O
+```
+
+Actual example:
 
 ```text
-slot 2:
-20 → 30
+50 - 40
+=
+30 - 20
+=
+10
 ```
 
-Profit improvement:
+Since:
 
-```text
-30-20=10
+```math
+p_G-p_O\ge0
 ```
 
-Feasibility:
+we get:
 
-```text
-slot 2 <= deadline 2
+```math
+G_{\text{total}}\ge O_{\text{total}}
 ```
 
-Still valid.
+So if the higher-profit job can legally replace the lower-profit job, profit cannot decrease.
 
 ---
 
-## 4.5 Why Latest Available Slot Is Safe
+## 4.4 Proof B — Why Use the Latest Legal Slot? Example First
 
-Suppose selected job `J` can be placed in either:
+Suppose:
 
 ```text
-early slot s
+Job J:
+deadline = 4
+profit = 30
 ```
 
-or:
+Free slots:
 
 ```text
-later free slot t
+1 and 4
 ```
 
-with:
+Both are legal.
+
+Place J at slot `1`:
 
 ```text
-s < t <= deadline(J)
+profit = 30
 ```
 
-Putting `J` at `t` leaves `s` free.
-
-That cannot reduce future flexibility because:
+Place J at slot `4`:
 
 ```text
-a future tight-deadline job may need s,
-while J already has the flexibility to use t
+profit = 30
 ```
 
-Visual:
+Profit difference:
 
 ```text
-Before:
+30 - 30
+= 0
+```
 
-slot:      1    2    3    4
-           [ ]  [ ]  [ ]  [ ]
+So moving J later does **not** hurt profit.
 
-J deadline = 4
+But now compare flexibility.
 
 Early placement:
-           [J]  [ ]  [ ]  [ ]
-            X
-tight job with deadline 1 may lose its only slot
-
-Late placement:
-           [ ]  [ ]  [ ]  [J]
-            ^
-tight slot remains available
-```
-
-So:
 
 ```text
-profit chooses WHICH job
-latest slot chooses WHERE to place it
+slot 1 used
+slot 4 free
 ```
+
+Late placement:
+
+```text
+slot 1 free
+slot 4 used
+```
+
+Suppose another job has:
+
+```text
+deadline = 1
+```
+
+That job can use only slot `1`.
+
+Therefore:
+
+```text
+placing flexible job J later
+preserves the early slot
+for a tighter-deadline job
+```
+
+### General form
+
+If:
+
+```math
+s<t\le d_J
+```
+
+then both `s` and `t` are legal for J.
+
+The same job earns the same profit:
+
+```math
+G-O
+=
+p_J-p_J
+=
+0
+```
+
+So objective does not get worse.
+
+But using `t` leaves `s` free.
+
+Therefore the latest legal slot is never worse and may preserve more future choices.
 
 ---
 
-## 4.6 Full Dry Run
-
-Jobs:
+## 4.5 Full Dry Run
 
 ```text
 J1: deadline=1, profit=10
@@ -1875,122 +2536,81 @@ J3: deadline=2, profit=30
 Sort by profit:
 
 ```text
-J3: 30, d=2
-J2: 20, d=2
-J1: 10, d=1
+J3, J2, J1
 ```
 
-Free slots:
+Slots:
 
 ```text
 {1,2}
 ```
 
-### J3
-
-Latest slot `<=2`:
+Schedule J3:
 
 ```text
-2
+latest <= 2
+→ slot 2
 ```
 
-Schedule:
+Schedule J2:
 
 ```text
-slot 2 → J3
+latest <= 2
+→ slot 1
 ```
 
-Free:
+J1:
 
 ```text
-{1}
+no slot
 ```
 
-### J2
-
-Latest slot `<=2`:
+Profit:
 
 ```text
-1
-```
-
-Schedule:
-
-```text
-slot 1 → J2
-```
-
-Free:
-
-```text
-{}
-```
-
-### J1
-
-No free slot.
-
-Skip.
-
-Total:
-
-```text
-30+20 = 50
-```
-
-Visual:
-
-```text
-time slot:   1      2
-             |      |
-             J2     J3
-profit:      20     30
-
-total = 50
+30+20
+= 50
 ```
 
 ---
 
-## 4.7 Set / upper_bound Implementation
+## 4.6 `set` / `upper_bound`
 
-Initialize available slots:
-
-```text
-1,2,...,maxDeadline
-```
-
-For each job in descending profit:
-
-```cpp
-auto it = freeSlots.upper_bound(deadline);
-```
-
-If:
+Free slots:
 
 ```text
-it == begin()
+{1,3,5,7,8}
 ```
 
-there is no free slot `<= deadline`.
+Deadline:
 
-Otherwise:
+```text
+6
+```
 
 ```cpp
---it;
+auto it = freeSlots.upper_bound(6);
 ```
 
-gives the latest free slot.
+points to:
 
-Schedule the job there and erase the slot.
+```text
+7
+```
+
+Previous iterator gives:
+
+```text
+5
+```
+
+which is the largest free slot `<=6`.
 
 ---
 
-## 4.8 C++17
+## 4.7 C++17
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
 struct Job {
     int deadline;
     long long profit;
@@ -2002,20 +2622,25 @@ long long maxJobProfit(vector<Job> jobs) {
              return a.profit > b.profit;
          });
 
+    int n = (int)jobs.size();
     int maxDeadline = 0;
 
     for (const Job& job : jobs)
         maxDeadline = max(maxDeadline, job.deadline);
 
+    int maxSlot = min(maxDeadline, n);
+
     set<int> freeSlots;
 
-    for (int t = 1; t <= maxDeadline; ++t)
+    for (int t = 1; t <= maxSlot; ++t)
         freeSlots.insert(t);
 
     long long ans = 0;
 
     for (const Job& job : jobs) {
-        auto it = freeSlots.upper_bound(job.deadline);
+        int d = min(job.deadline, maxSlot);
+
+        auto it = freeSlots.upper_bound(d);
 
         if (it == freeSlots.begin())
             continue;
@@ -2030,91 +2655,27 @@ long long maxJobProfit(vector<Job> jobs) {
 }
 ```
 
----
-
-## 4.9 Complexity
-
-Sorting jobs:
+Complexity:
 
 ```text
 O(N log N)
 ```
 
-For each job:
+Recognition:
 
 ```text
-upper_bound + erase
-= O(log N)
-```
-
-Total:
-
-```text
-O(N log N)
-```
-
-Space:
-
-```text
-O(N)
-```
-
----
-
-## 4.10 Recognition Model
-
-```text
-unit-time jobs
-+
-deadline
-+
-profit
-+
-maximize total profit
-        |
-        v
-highest profit first
-        |
-        v
-place as late as possible
-before deadline
+unit jobs + deadlines + profit
+→ highest profit first
+→ latest legal slot
 ```
 
 ---
 
 # 5. Maximum Perimeter Triangle
 
-The lecture asks us to choose three positive integers that form a triangle with maximum perimeter.
-
-Example:
-
-```text
-[2,3,15,5,1,7]
-```
-
-Best:
-
-```text
-[3,5,7]
-```
-
-Perimeter:
-
-```text
-15
-```
-
----
-
 ## 5.1 What It Asks
 
-Choose:
-
-```text
-a,b,c
-```
-
-such that they form a valid triangle and maximize:
+Choose three positive sides forming a non-degenerate triangle and maximize:
 
 ```math
 a+b+c
@@ -2126,7 +2687,7 @@ After sorting:
 a\le b\le c
 ```
 
-validity reduces to:
+validity:
 
 ```math
 a+b>c
@@ -2136,19 +2697,13 @@ a+b>c
 
 ## 5.2 Concept Simplified
 
-To maximize perimeter, we naturally want large sides.
-
-So sort the array.
-
-Fix the largest candidate side:
+Fix largest side:
 
 ```text
 c
 ```
 
-Which two other sides should we try first?
-
-Answer:
+The best companions are:
 
 ```text
 the two largest available sides below c
@@ -2162,105 +2717,88 @@ They maximize:
 a+b
 ```
 
-and therefore give the best chance to satisfy:
+So they give:
 
 ```text
-a+b>c
+1. best chance to satisfy a+b>c
+2. largest perimeter for this fixed c
 ```
-
-while also maximizing perimeter.
 
 ---
 
-## 5.3 Key Proof
+## 5.3 Proof — Example First
 
-Suppose ascending array:
-
-```math
-x_1\le x_2\le\cdots\le x_n
-```
-
-Fix:
-
-```text
-c = x_i
-```
-
-The largest possible pair below `c` is:
-
-```text
-x_(i-2), x_(i-1)
-```
-
-If even these fail:
-
-```math
-x_{i-2}+x_{i-1}\le x_i
-```
-
-then any smaller pair:
-
-```text
-x_p <= x_(i-2)
-x_q <= x_(i-1)
-```
-
-satisfies:
-
-```math
-x_p+x_q
-\le
-x_{i-2}+x_{i-1}
-\le
-x_i
-```
-
-So **no triangle using `x_i` as largest side can exist**.
-
-That is the crucial greedy reduction.
-
----
-
-## 5.4 Proof + Dry Run Side by Side
-
-Sorted:
+Sorted array:
 
 ```text
 [1,2,3,5,7,15]
 ```
 
-First fix largest:
+Fix the largest side:
 
 ```text
 c = 15
 ```
 
-Best possible two smaller sides:
+The **best possible companions** are the two largest sides below it:
 
 ```text
-5 and 7
+a = 5
+b = 7
 ```
 
-Check:
+Their sum:
 
 ```text
-5+7 = 12
+5 + 7
+= 12
+```
+
+But:
+
+```text
 12 <= 15
 ```
 
-Fails.
+So even the largest possible pair fails.
 
-Because `5` and `7` are the **largest** available pair below `15`, every other pair has sum `<=12`.
+Any other pair is smaller.
 
-So no triangle with side `15`.
+Example:
 
-Move to:
+```text
+u = 3
+v = 7
+
+u+v
+= 3+7
+= 10
+```
+
+And:
+
+```text
+10 <= 12 <= 15
+```
+
+So it also fails.
+
+Therefore:
+
+```text
+if the two largest companions fail,
+every smaller pair fails
+```
+
+Discard `15`.
+
+Now try:
 
 ```text
 c = 7
 ```
 
-Best lower pair:
+Largest companions:
 
 ```text
 3 and 5
@@ -2269,84 +2807,190 @@ Best lower pair:
 Check:
 
 ```text
-3+5 = 8 > 7
+3+5
+= 8
+> 7
 ```
 
-Valid.
+Valid triangle.
 
 Perimeter:
 
 ```text
-3+5+7 = 15
+3+5+7
+= 15
 ```
-
-Since we are scanning from the largest side downward, this first valid consecutive triple has maximum perimeter.
 
 ---
 
-## 5.5 Visual Diagram
+## 5.4 General Proof — If Best Pair Fails, All Fail
+
+For fixed largest side `c`:
 
 ```text
-sorted:
-1   2   3   5   7   15
-                ^    ^
-              best   c
-              pair
+a,b = two largest available sides below c
+u,v = any other pair below c
+```
 
-for c = 15:
-5 + 7 <= 15
-        X
+Because `a,b` are the largest:
 
-No smaller pair can beat 5+7,
-so discard 15 as largest side.
+```math
+u\le a
+```
+
+and:
+
+```math
+v\le b
+```
+
+Actual example:
+
+```text
+3 <= 5
+7 <= 7
+```
+
+Add them:
+
+```math
+u+v\le a+b
+```
+
+Actual example:
+
+```text
+3+7
+<=
+5+7
+
+10 <= 12
+```
+
+Suppose even the best pair fails:
+
+```math
+a+b\le c
+```
+
+Actual example:
+
+```text
+12 <= 15
+```
+
+Then:
+
+```math
+u+v\le a+b\le c
+```
+
+Actual example:
+
+```text
+10 <= 12 <= 15
+```
+
+Therefore:
+
+```math
+u+v\le c
+```
+
+So `u,v,c` cannot form a valid triangle.
+
+---
+
+## 5.5 If Best Pair Works, It Has Best Perimeter for This c
+
+Suppose:
+
+```math
+a+b>c
+```
+
+Then `a,b,c` is valid.
+
+For every other pair:
+
+```math
+u+v\le a+b
+```
+
+Add the same `c` to both sides:
+
+```math
+u+v+c\le a+b+c
+```
+
+Actual example:
+
+```text
+c = 7
+a = 3
+b = 5
+
+other pair:
+u = 2
+v = 5
+
+2+5+7
+= 14
+
+3+5+7
+= 15
+
+14 <= 15
+```
+
+So `a,b,c` has maximum perimeter for this fixed `c`.
+
+Because we scan `c` from largest to smallest, the **first valid triple from the right** is globally optimal.
+
+---
+
+## 5.6 Full Dry Run
+
+```text
+[2,3,15,5,1,7]
+```
+
+Sort:
+
+```text
+[1,2,3,5,7,15]
+```
+
+Try:
+
+```text
+5+7 > 15 ?
+12 > 15 ?
+NO
+```
+
+Discard `15`.
 
 Next:
 
-1   2   3   5   7
-        ^   ^   ^
-        a   b   c
-
-3 + 5 > 7
-    ✓
-
-first valid triple from the right
-→ maximum perimeter
+```text
+3+5 > 7 ?
+8 > 7 ?
+YES
 ```
 
----
-
-## 5.6 Why Consecutive Elements Are Enough
-
-For a fixed largest side `x_i`:
+Perimeter:
 
 ```text
-the two immediately previous elements
-are the largest possible companions
+3+5+7
+= 15
 ```
-
-So:
-
-```text
-if they fail → all other pairs fail
-if they succeed → they maximize perimeter for x_i
-```
-
-Therefore check only:
-
-```text
-(x[i-2], x[i-1], x[i])
-```
-
-while scanning from right to left.
 
 ---
 
 ## 5.7 C++17
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
 long long maxTrianglePerimeter(
     vector<long long> a
 ) {
@@ -2354,504 +2998,172 @@ long long maxTrianglePerimeter(
 
     for (int i = (int)a.size() - 1; i >= 2; --i) {
         if (a[i - 2] + a[i - 1] > a[i]) {
-            return a[i - 2] + a[i - 1] + a[i];
+            return a[i - 2]
+                 + a[i - 1]
+                 + a[i];
         }
     }
 
-    return -1; // no valid non-degenerate triangle
+    return -1;
 }
 ```
 
----
-
-## 5.8 Complexity
-
-Sorting:
+Complexity:
 
 ```text
 O(N log N)
 ```
 
-Scan:
+Recognition:
 
 ```text
-O(N)
-```
-
-Total:
-
-```text
-O(N log N)
+max triangle perimeter
+→ sort
+→ test consecutive triples from largest side downward
 ```
 
 ---
 
-## 5.9 Recognition Model
+# 6. Proof Pattern Summary
 
-```text
-choose 3 sides
-+
-maximize perimeter
-+
-triangle inequality
-        |
-        v
-sort
-        |
-        v
-scan largest triples
-        |
-        v
-first consecutive valid triple
-```
+| Problem | Greedy Choice | Proof Type | Core Comparison |
+|---|---|---|---|
+| Activity Selection | earliest finish | exchange / future-space | anything after `O` also fits after earlier-finishing `G` |
+| Fractional Knapsack | highest density | equal-weight exchange | `G-O = delta(rho_H-rho_L) >= 0` |
+| Kadane | discard negative prefix | dominance algebra | `G-O = -P > 0` |
+| Job Sequencing — job | highest profit | algebraic exchange | `G-O = p_G-p_O >= 0` |
+| Job Sequencing — slot | latest legal slot | future-space dominance | profit change `=0` |
+| Max Perimeter Triangle | largest valid triple | inequality dominance | `u+v <= a+b` |
 
 ---
 
-# 6. Advantages and Limitations of Greedy
-
-The lecture ends by emphasizing both sides.
-
----
-
-## 6.1 Advantages
-
-### 1. Avoids Trying Every Possibility
-
-Instead of:
+# 7. Recognition Checklist
 
 ```text
-all subsets
-all permutations
-all schedules
-```
-
-greedy narrows the search dramatically.
-
-Example:
-
-```text
-Activity Selection:
-sort + one scan
-```
-
-instead of exploring all subsets of intervals.
-
----
-
-### 2. Usually Easy to Implement
-
-Many greedy algorithms become:
-
-```text
-sort
-+
-single scan
-```
-
-Examples here:
-
-```text
-Activity Selection
-Fractional Knapsack
-Maximum Perimeter Triangle
-```
-
----
-
-### 3. Often Fast
-
-Typical complexity:
-
-```text
-O(N log N)
-```
-
-because sorting dominates.
-
-Kadane is even:
-
-```text
-O(N)
-```
-
----
-
-## 6.2 Limitations
-
-### 1. Lacks Global Awareness
-
-A local choice can look best now but be globally bad.
-
-Classic example from Greedy 1:
-
-```text
-coins [1,8,10]
-target 16
-```
-
-largest-first fails.
-
----
-
-### 2. Correctness Can Be Hard to See
-
-The implementation may be only ten lines.
-
-The proof may be the difficult part.
-
-Example:
-
-```text
-Why earliest finish?
-Why latest slot?
-Why density?
-```
-
-These require reasoning about future flexibility.
-
----
-
-### 3. Counterexample Search Is Important
-
-Before trusting a claim, test:
-
-```text
-small cases
-extreme values
-ties
-one huge interval/item/job
-many tiny intervals/items/jobs
-```
-
----
-
-### 4. Greedy Does Not Explore All Possibilities
-
-This is both:
-
-```text
-its strength
-and
-its risk
-```
-
-If the greedy property is false, the algorithm can miss the optimum completely.
-
----
-
-# 7. Proof Pattern Summary
-
-| Problem | Greedy choice | Proof idea |
-|---|---|---|
-| Activity Selection | earliest finish | exchange: leaves at least as much future room |
-| Fractional Knapsack | highest density | exchange equal weight from low density to high density |
-| Kadane | discard negative prefix | negative prefix only reduces any future continuation |
-| Job Sequencing | highest profit + latest slot | exchange profit; latest placement preserves early slots |
-| Maximum Perimeter Triangle | largest valid consecutive triple | for fixed largest side, previous two maximize companion sum |
-
----
-
-## 7.1 Future-Space Proof
-
-Used in:
-
-```text
-Activity Selection
-Job Sequencing placement
-```
-
-Question:
-
-```text
-Which choice preserves the most options for later?
-```
-
-Activity:
-
-```text
-finish earlier
-→ leave more future timeline
-```
-
-Job:
-
-```text
-place later
-→ preserve earlier slots
-```
-
-Interesting contrast:
-
-```text
-Intervals:
-EARLIEST finish
-
-Jobs:
-LATEST legal slot
-```
-
-Both are really the same principle:
-
-```text
-preserve scarce future flexibility
-```
-
----
-
-## 7.2 Density Exchange Proof
-
-Used in:
-
-```text
-Fractional Knapsack
-```
-
-```text
-same resource amount
-+
-higher value per unit
-→ never worse
-```
-
----
-
-## 7.3 Harmful Prefix Proof
-
-Used in:
-
-```text
-Kadane
-```
-
-```math
-P<0
-```
-
-then for any future sum `F`:
-
-```math
-P+F<F
-```
-
-So discard `P`.
-
----
-
-## 7.4 Dominating Candidate Proof
-
-Used in:
-
-```text
-Maximum Perimeter Triangle
-```
-
-For fixed largest side:
-
-```text
-choose the two largest smaller sides
-```
-
-If even they fail:
-
-```text
-all smaller pairs fail
-```
-
----
-
-# 8. Greedy 2 Recognition Checklist
-
-When reading a contest problem, ask:
-
-```text
-1. Is the objective count, value, profit, or sum?
-
+1. What is the objective?
 2. What resource is scarce?
-   - timeline?
-   - capacity?
-   - slots?
-   - running sum?
-
-3. What choice preserves the most future flexibility?
-
-4. Is there a natural "value per unit resource" ratio?
-
-5. Is some current prefix permanently harmful?
-
-6. Can I sort candidates by:
-   - finish time?
-   - density?
-   - profit?
-   - size?
-
-7. Can I exchange an optimal solution's choice
-   with the greedy choice?
-
-8. Does the swap preserve feasibility?
-
-9. Can I write a one-line inequality proving
-   the objective is non-worse?
-
-10. Can I construct a counterexample?
+3. What exactly is my greedy choice?
+4. What competing choice does OPT make?
+5. Can I exchange it?
+6. Is feasibility preserved?
+7. Can I write G-O or a useful inequality?
+8. Can I plug in actual numbers immediately?
+9. Does greedy preserve more future options?
+10. Can I find a counterexample?
 ```
 
 ---
 
-# 9. Compact Revision Card
+# 8. Compact Revision Card
 
 ```text
-GREEDY 2
-========
-
-
 ACTIVITY SELECTION
 ------------------
-Goal:
-max count of non-overlapping intervals
+e_G <= e_O
 
-Greedy:
-earliest FINISH first
+future:
+s_F >= e_O
 
-Why:
-ends earlier
-→ leaves at least as much future room
+therefore:
+s_F >= e_G
 
-Implementation:
-sort by end
-scan compatible intervals
+same future activities still fit
 
 
 FRACTIONAL KNAPSACK
 -------------------
-Goal:
-max value under weight W
+rho = value/weight
 
-Fractions allowed
+G
+= O - delta*rho_L
+    + delta*rho_H
 
-density:
-value / weight
-
-Greedy:
-highest density first
-
-Proof:
-replace equal weight
-of lower density
-with higher density
+G-O
+= delta(rho_H-rho_L)
+>= 0
 
 
 KADANE
 ------
-Goal:
-maximum contiguous subarray sum
-
-Greedy observation:
-negative running prefix is harmful
-
-If:
 P < 0
 
-then:
-P + F < F
+keep:
+O=P+F
 
-So:
-discard P
+drop:
+G=F
 
-Implementation:
-cur += x
-best = max(best, cur)
-if cur < 0:
-    cur = 0
+G-O
+= F-(P+F)
+= -P
+> 0
 
 
 JOB SEQUENCING
 --------------
-unit-time jobs
-deadline + profit
+high profit:
 
-Greedy:
-1. highest profit first
-2. place job in latest free slot <= deadline
+G-O
+= p_G-p_O
+>= 0
 
-Why late?
-preserves early slots
-for tighter-deadline jobs
+latest slot:
 
-Data structure:
-set of free slots
-upper_bound(deadline)
-then previous iterator
+same job profit
+→ difference = 0
+
+but earlier slot stays free
 
 
-MAX PERIMETER TRIANGLE
-----------------------
-sort ascending
+TRIANGLE
+--------
+u <= a
+v <= b
 
-for largest side c:
-best companions are
-two largest sides below c
+therefore:
+u+v <= a+b
 
 if:
-a + b <= c
+a+b <= c
 
-then every smaller pair also fails
+then:
+u+v <= c
 
-scan from right
-first valid consecutive triple
-→ maximum perimeter
-
-
-MASTER IDEA
------------
-Activity:
-finish EARLY
-to preserve future time
-
-Job scheduling:
-place LATE
-to preserve early slots
-
-Fractional:
-take highest VALUE PER UNIT
-
-Kadane:
-discard NEGATIVE HISTORY
-
-Triangle:
-try LARGEST FEASIBLE triple
+so all smaller pairs fail
 ```
 
 ---
 
-# Final Visual Mental Map
+# Final Mental Model
 
 ```text
-                    GREEDY 2
-                       |
-     +-----------------+------------------+
-     |                 |                  |
-  Timeline          Capacity           Sequence
-     |                 |                  |
-     v                 v                  v
-Activity          Fractional          Kadane
-Selection         Knapsack
-     |                 |                  |
-earliest          max value/unit      negative prefix
-finish            resource            is harmful
-     |
-     +-----------------------------+
-                                   |
-                                Deadlines
-                                   |
-                                   v
-                              Job Sequencing
-                                   |
-                           high profit first
-                           place as late as possible
-
-Triangle:
-sort → largest candidate sides → first feasible triple
+Greedy choice
+    |
+    v
+Competing choice
+    |
+    +---------------------+
+    |                     |
+objective numeric?    structure/future?
+    |                     |
+    v                     v
+write G-O            use inequality /
+expand/factor        exchange / dominance
+    |                     |
+    +----------+----------+
+               |
+               v
+     feasibility preserved?
+               |
+              YES
+               |
+               v
+      objective non-worse?
+               |
+              YES
+               |
+               v
+          greedy is safe
 ```
 
-> **Core lesson:** Greedy choices often look different, but the proof usually asks the same question:  
-> **“Why does this choice preserve or improve every opportunity an optimal solution could still use?”**
+> **Core lesson:** use the same discipline as Greedy 1, but do not force algebra everywhere. In Greedy 2, the strongest proof may be an algebraic `G-O` comparison, an inequality chain, or an exchange showing that the greedy choice preserves more future flexibility.
