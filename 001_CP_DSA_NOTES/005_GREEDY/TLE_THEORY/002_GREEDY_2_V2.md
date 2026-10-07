@@ -30,33 +30,121 @@
 
 # 0. Prerequisites
 
-## 0.1 Greedy Proof Goal
+> **Goal of this section:** understand every symbol and greedy-proof tool before starting the problems.
+>
+> Keep the mental model:
+>
+> ```text
+> real example first
+>      ↓
+> understand the choice
+>      ↓
+> write symbols
+>      ↓
+> prove greedy is safe
+> ```
 
-A greedy algorithm is:
+---
+
+## 0.1 What Is a Greedy Choice?
+
+A greedy algorithm makes the **best-looking safe choice now** and never goes back.
+
+Example:
 
 ```text
-CLAIM
-+
-PROOF
+Activity Selection:
+
+Among all currently possible activities,
+pick the one that finishes earliest.
 ```
 
-The proof asks:
+But:
 
 ```text
-Why can an optimal solution
-be changed to use the greedy choice
-without becoming worse?
+"looks best"
+```
+
+is not enough.
+
+We must prove:
+
+```text
+this choice cannot make the final answer worse
+```
+
+So:
+
+```text
+Greedy
+=
+Choice
++
+Proof
+```
+
+Visual:
+
+```text
+Current state
+    |
+    v
+Choose candidate G
+    |
+    v
+Can G be proved safe?
+   / \
+ YES  NO
+  |    |
+take  do not trust yet
+ G
 ```
 
 ---
 
-## 0.2 G and O
+## 0.2 Constraint vs Objective
+
+Every greedy problem has:
+
+```text
+Constraint
+→ what must stay valid
+
+Objective
+→ what we want to maximize/minimize
+```
+
+Example — Job Sequencing:
+
+```text
+Constraint:
+a job must finish by its deadline
+
+Objective:
+maximize total profit
+```
+
+Example — Activity Selection:
+
+```text
+Constraint:
+selected activities cannot overlap
+
+Objective:
+maximize number of selected activities
+```
+
+This distinction is important because a greedy exchange must preserve the **constraint** while improving or preserving the **objective**.
+
+---
+
+## 0.3 Greedy Answer G vs Other / OPT Answer O
 
 Use:
 
 ```text
 G = greedy answer / greedy local contribution
-O = competing / OPT contribution
+O = another valid answer / OPT contribution
 ```
 
 For maximization:
@@ -65,10 +153,28 @@ For maximization:
 G\ge O
 ```
 
-Often prove:
+A convenient way to prove it:
 
 ```math
 G-O\ge0
+```
+
+Actual example:
+
+```text
+G = 30
+O = 20
+
+G-O
+= 30-20
+= 10
+>= 0
+```
+
+Therefore:
+
+```text
+G >= O
 ```
 
 For minimization:
@@ -83,72 +189,254 @@ Often prove:
 G-O\le0
 ```
 
----
-
-## 0.3 Exchange Argument
+Actual example:
 
 ```text
-Greedy wants G
+G = 2
+O = 7
+
+G-O
+= 2-7
+= -5
+<= 0
+```
+
+Therefore:
+
+```text
+G <= O
+```
+
+---
+
+## 0.4 Exchange Argument
+
+This is the most reusable greedy proof idea.
+
+### Concept Simplified
+
+Suppose an optimal solution chooses:
+
+```text
+O
+```
+
+but greedy wants:
+
+```text
+G
+```
+
+Try replacing:
+
+```text
+O → G
+```
+
+Then check:
+
+```text
+1. Is the solution still valid?
+2. Is the answer same or better?
+```
+
+If both are true:
+
+```text
+an optimal solution can also use G
+```
+
+Visual:
+
+```text
 OPT uses O
-     |
-     v
+    |
+    v
+Greedy wants G
+    |
+    v
 replace O → G
-     |
-     v
-still feasible?
-     |
-    YES
-     |
-     v
-objective non-worse?
-     |
-    YES
-     |
-     v
-greedy choice is safe
+    |
+    v
+still valid?
+    |
+   YES
+    |
+    v
+answer non-worse?
+    |
+   YES
+    |
+    v
+G is safe
 ```
 
-Always check:
+### Tiny Example
+
+Suppose:
 
 ```text
-1. feasibility
-2. objective
-3. repeatability
+OPT uses profit 20
+Greedy can use profit 30
+```
+
+Exchange:
+
+```text
+20 → 30
+```
+
+Difference:
+
+```text
+30-20
+= 10
+>= 0
+```
+
+So for maximization:
+
+```text
+greedy is not worse
 ```
 
 ---
 
-## 0.4 Algebra Rules Used Here
+## 0.5 How to Prove Any Greedy Choice
 
-### Remove a minus bracket
+Use this checklist:
+
+```text
+STEP 1
+State the greedy choice clearly.
+
+STEP 2
+Assume OPT makes a different choice.
+
+STEP 3
+Change only that one local choice.
+
+STEP 4
+Check feasibility.
+
+STEP 5
+Compare objective:
+G vs O
+
+STEP 6
+Use:
+- subtraction
+- inequality
+- exchange
+- dominance
+- future-space argument
+
+STEP 7
+Conclude greedy is non-worse.
+
+STEP 8
+Repeat the argument if needed.
+```
+
+Important:
+
+```text
+Do not force algebra everywhere.
+```
+
+Sometimes the cleanest proof is:
+
+```text
+anything possible after O
+is also possible after G
+```
+
+That is enough.
+
+---
+
+## 0.6 Algebra Rules Used in These Notes
+
+You only need a few.
+
+### Remove a Minus Bracket
 
 ```text
 A - (B + C)
 = A - B - C
 ```
 
-### Cancel equal terms
+Example:
+
+```text
+20 - (7 + 3)
+= 20 - 7 - 3
+= 10
+```
+
+---
+
+### Cancel Equal Terms
 
 ```text
 A + X - A
 = X
 ```
 
-### Factor
+Example:
+
+```text
+40 - 20 + 30 - 40
+= 30 - 20
+= 10
+```
+
+---
+
+### Factor a Common Term
 
 ```text
 ax - ay
 = a(x-y)
 ```
 
-### Sign reasoning
+Example:
+
+```text
+5×12 - 5×2
+
+= 5(12-2)
+
+= 5×10
+
+= 50
+```
+
+---
+
+### Sign Reasoning
 
 ```text
 positive × positive = positive
+
 negative × negative = positive
+
+positive × negative = negative
 ```
 
-### Inequality transitivity
+Example:
+
+```text
+(-4)(-2)
+= 8
+>= 0
+```
+
+---
+
+## 0.7 Inequality Rules
+
+### Rule 1 — Transitivity
 
 If:
 
@@ -163,50 +451,223 @@ then:
 A >= C
 ```
 
----
-
-## 0.5 Universal Greedy Proof Template
+Example:
 
 ```text
-1. State the greedy choice.
-2. Choose one competing / OPT choice.
-3. Check what must remain feasible.
-4. Define G and O when useful.
-5. Write G-O or the key inequality.
-6. Expand / cancel / factor.
-7. Plug in actual numbers immediately.
-8. Use ordering / signs / transitivity.
-9. Conclude greedy is non-worse.
-10. Explain why repeating the local argument proves the full solution.
+5 >= 5
+5 >= 3
+
+therefore:
+5 >= 3
 ```
+
+This is used in Activity Selection.
 
 ---
 
-## 0.6 Interval Notation
+### Rule 2 — Add the Same Value
 
-Activity:
+If:
 
-```math
-[s_i,e_i]
+```text
+A <= B
 ```
 
-Compatibility:
+then:
 
-```math
-s_{\text{next}}\ge e_{\text{last}}
+```text
+A + C <= B + C
 ```
 
 Example:
 
 ```text
-[2,3] then [4,6]
+7 <= 8
+```
 
+Add `7`:
+
+```text
+14 <= 15
+```
+
+This is used in Maximum Perimeter Triangle.
+
+---
+
+### Rule 3 — Multiply by a Non-Negative Value
+
+If:
+
+```text
+A >= B
+```
+
+and:
+
+```text
+x >= 0
+```
+
+then:
+
+```text
+xA >= xB
+```
+
+Example:
+
+```text
+12 >= 2
+x = 1
+
+1×12 >= 1×2
+
+12 >= 2
+```
+
+This is the core idea behind Fractional Knapsack.
+
+---
+
+## 0.8 Interval / Activity Notation
+
+An activity is written:
+
+```math
+[s_i,e_i]
+```
+
+where:
+
+```text
+s_i = start time
+e_i = end / finish time
+```
+
+Example:
+
+```text
+Activity A = [2,5]
+
+start  = 2
+finish = 5
+```
+
+Visual:
+
+```text
+time ------------------------------------>
+
+        [-------------]
+        2             5
+      start         finish
+```
+
+### Non-Overlapping Condition
+
+Suppose:
+
+```text
+A = [2,3]
+B = [4,6]
+```
+
+For B to come after A:
+
+```math
+s_B\ge e_A
+```
+
+Actual:
+
+```text
 4 >= 3
+```
+
+So they are compatible.
+
+Visual:
+
+```text
+A:      [---]
+B:            [-----]
+
+         3 <= 4
+```
+
+Overlapping example:
+
+```text
+A = [2,5]
+B = [4,6]
+
+4 < 5
+```
+
+Visual:
+
+```text
+A:      [-------]
+B:          [-------]
+             overlap
 ```
 
 ---
 
-## 0.7 Ratio / Density
+## 0.9 Finish Time vs Start Time vs Duration
+
+For Activity Selection, do not confuse:
+
+```text
+start time
+finish time
+duration
+```
+
+Example:
+
+```text
+A = [1,10]
+
+start    = 1
+finish   = 10
+duration = 9
+```
+
+Another:
+
+```text
+B = [2,3]
+
+start    = 2
+finish   = 3
+duration = 1
+```
+
+Even though A starts earlier:
+
+```text
+1 < 2
+```
+
+B finishes much earlier:
+
+```text
+3 < 10
+```
+
+Greedy uses:
+
+```text
+earliest FINISH time
+```
+
+because that releases the timeline earlier.
+
+---
+
+## 0.10 Ratio / Density
 
 Fractional Knapsack uses:
 
@@ -214,54 +675,544 @@ Fractional Knapsack uses:
 \rho_i=\frac{v_i}{w_i}
 ```
 
+where:
+
+```text
+rho_i = density
+v_i   = value
+w_i   = weight
+```
+
 Meaning:
 
 ```text
-value per one unit of weight
+how much value do I get
+for 1 unit of weight?
 ```
 
 Example:
 
 ```text
-value = 12
+Item A:
+value  = 12
 weight = 1
 
-rho = 12
+density
+= 12/1
+= 12
+```
+
+Item B:
+
+```text
+value  = 6
+weight = 3
+
+density
+= 6/3
+= 2
+```
+
+Interpretation:
+
+```text
+1 unit weight of A gives 12 value
+1 unit weight of B gives 2 value
+```
+
+Therefore:
+
+```text
+A is better per unit of capacity
 ```
 
 ---
 
-## 0.8 Deadline / Slot / Profit
+## 0.11 Fraction of an Item
 
-For Job Sequencing:
+Fractional Knapsack allows part of an item.
+
+Example:
+
+```text
+item weight = 30
+remaining capacity = 20
+```
+
+Fraction taken:
+
+```math
+\frac{20}{30}
+=
+\frac23
+```
+
+If full item value is:
+
+```text
+120
+```
+
+value obtained:
+
+```math
+120\cdot\frac23
+=
+80
+```
+
+So:
+
+```text
+take 20 weight
+get 80 value
+```
+
+This ability to take fractions is exactly why the density exchange proof works.
+
+---
+
+## 0.12 Running Sum / Prefix Contribution
+
+Kadane uses:
+
+```text
+cur = running sum
+best = best subarray sum seen so far
+```
+
+Example:
+
+```text
+array:
+[5,-2,6]
+```
+
+Running sums:
+
+```text
+5
+5 + (-2) = 3
+3 + 6    = 9
+```
+
+Important:
+
+```text
+negative ELEMENT
+does not mean
+negative RUNNING SUM
+```
+
+Here:
+
+```text
+-2 is negative
+but cur = 3 > 0
+```
+
+So we keep the prefix.
+
+Reset only when:
+
+```text
+cur < 0
+```
+
+because a negative total prefix hurts every future continuation.
+
+---
+
+## 0.13 Job Sequencing — Duration / Deadline / Profit
+
+Each job has:
 
 ```text
 duration = 1
-deadline = d_i
-profit   = p_i
+deadline = d
+profit   = p
 ```
 
-Job with deadline `3` can use:
+### Duration = 1
+
+Means:
 
 ```text
-slot 1, 2, or 3
+the job occupies exactly one time slot
+```
+
+Example:
+
+```text
+slot 1
+slot 2
+slot 3
+```
+
+A job occupies only one of them.
+
+---
+
+### Deadline = d
+
+Means:
+
+```text
+the job must be completed
+NO LATER THAN slot d
+```
+
+If:
+
+```text
+deadline = 3
+```
+
+legal slots are:
+
+```text
+1, 2, 3
+```
+
+Illegal:
+
+```text
+4, 5, ...
+```
+
+Visual:
+
+```text
+slot:      1     2     3     4
+           [ ]   [ ]   [ ]   [ ]
+
+deadline 3:
+           <----------->
+              legal
+
+slot 4:
+                       X
+```
+
+So remember:
+
+```text
+deadline d
+=
+schedule this 1-unit job
+in any slot <= d
 ```
 
 ---
 
-## 0.9 Triangle Inequality
+### Profit = p
 
-For sorted positive sides:
+Means:
+
+```text
+if the job is successfully scheduled,
+we earn p
+```
+
+Example:
+
+```text
+Job A:
+deadline = 3
+profit   = 50
+```
+
+If scheduled in slot:
+
+```text
+1, 2, or 3
+```
+
+we earn:
+
+```text
+50
+```
+
+If not scheduled:
+
+```text
+profit contribution = 0
+```
+
+---
+
+## 0.14 Why Job Sequencing Uses the Latest Legal Slot
+
+Suppose:
+
+```text
+Job A:
+deadline = 3
+profit   = 50
+```
+
+Free slots:
+
+```text
+1, 2, 3
+```
+
+A can use all three.
+
+Now another job:
+
+```text
+Job B:
+deadline = 1
+profit   = 40
+```
+
+B can use only:
+
+```text
+slot 1
+```
+
+Bad placement:
+
+```text
+slot:   1    2    3
+
+        A
+```
+
+Now B cannot run.
+
+Better:
+
+```text
+slot:   1    2    3
+
+        B         A
+```
+
+Total profit:
+
+```text
+40 + 50
+= 90
+```
+
+So:
+
+```text
+flexible job
+→ put as late as possible
+
+tight-deadline job
+→ preserve early slot
+```
+
+Memory:
+
+```text
+profit decides WHICH job
+deadline decides WHERE
+```
+
+---
+
+## 0.15 Free Slot + `upper_bound`
+
+In Job Sequencing, we often need:
+
+```text
+largest free slot <= deadline
+```
+
+Suppose free slots are:
+
+```text
+{1,3,5,7,8}
+```
+
+and:
+
+```text
+deadline = 6
+```
+
+Wanted:
+
+```text
+5
+```
+
+because:
+
+```text
+5 <= 6
+```
+
+and it is the largest free legal slot.
+
+In C++:
+
+```cpp
+auto it = freeSlots.upper_bound(6);
+```
+
+`upper_bound(6)` gives:
+
+```text
+first value > 6
+```
+
+which is:
+
+```text
+7
+```
+
+Move one step back:
+
+```cpp
+--it;
+```
+
+Now:
+
+```text
+5
+```
+
+Visual:
+
+```text
+free slots:
+
+1   3   5   7   8
+        ^   ^
+        |   |
+      answer upper_bound(6)
+```
+
+---
+
+## 0.16 Triangle Inequality
+
+For three positive lengths:
 
 ```math
 a\le b\le c
 ```
 
-a non-degenerate triangle requires:
+a non-degenerate triangle must satisfy:
 
 ```math
 a+b>c
 ```
+
+Example:
+
+```text
+3,5,7
+
+3+5
+= 8
+> 7
+```
+
+Valid.
+
+Invalid:
+
+```text
+3,5,8
+
+3+5
+= 8
+```
+
+But we need:
+
+```text
+8 > 8
+```
+
+which is false.
+
+So:
+
+```text
+3,5,8
+```
+
+is degenerate, not a valid non-degenerate triangle.
+
+---
+
+## 0.17 Why Only `a+b>c` Is Checked After Sorting
+
+For:
+
+```math
+a\le b\le c
+```
+
+the largest side is:
+
+```text
+c
+```
+
+The hardest inequality to satisfy is:
+
+```math
+a+b>c
+```
+
+The others are automatically true because sides are positive:
+
+```text
+a+c > b
+b+c > a
+```
+
+Example:
+
+```text
+a=3
+b=5
+c=7
+```
+
+Check:
+
+```text
+3+5 > 7   ✓
+3+7 > 5   ✓
+5+7 > 3   ✓
+```
+
+So after sorting, just test:
+
+```text
+a+b>c
+```
+
+---
+
+## 0.18 Final Prerequisite Recognition Map
+
+| If you see... | Think... |
+|---|---|
+| non-overlapping intervals | start / finish / compatibility |
+| maximize interval count | earliest finish |
+| value + weight + fractions | density = value / weight |
+| maximum contiguous sum | running sum / negative prefix |
+| unit jobs + deadline + profit | latest legal slot |
+| `set.upper_bound(d)` | first slot `> d`, then step back |
+| three positive side lengths | triangle inequality |
+| greedy vs OPT | exchange argument |
+| numerical objective comparison | `G-O` |
+| future options / flexibility | structural greedy proof |
 
 ---
 
