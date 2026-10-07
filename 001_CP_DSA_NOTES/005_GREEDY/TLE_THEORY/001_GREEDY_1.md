@@ -1,147 +1,125 @@
 # Greedy Algorithms — Level 3
-## Greedy 1 — Compact Proof + Dry-Run Notes
+## Greedy 1 — Step-by-Step Mathematical Proof Edition
 
-> **Goal:** understand *why* each greedy choice is safe.
+> **Goal:** understand every greedy proof from first principles.
 >
-> **Flow for each problem:** **what it asks → simplified idea → greedy claim → proof + dry run side by side → C++ → complexity → recognition**.
+> **For every problem:**  
+> **what it asks → simplified idea → greedy claim → define `G` and `O` → algebra line by line → why each step is valid → numerical dry run → conclusion → C++ → complexity → recognition**
 >
-> **Core habit:** do not memorize “sort and pick.” Learn how to **exchange, bound, swap, replace, or balance** competing choices.
+> **Equation convention:** after each important symbolic equation, the same line is immediately shown with the actual numbers from that problem's dry run. This lets you see exactly how the symbols map to numbers.
 >
-> Display equations use fenced `math` blocks to avoid rendering issues.
+> **Important:** you do **not** need advanced algebra. Most proofs below use only:
+>
+> ```text
+> remove brackets
+> rearrange terms
+> take common factor
+> compare signs
+> use known inequalities
+> ```
+>
+> Display equations use fenced `math` blocks only to avoid Markdown/LaTeX rendering issues.
 
 ---
 
 # Clickable Table of Contents
 
 - [0. Prerequisites](#0-prerequisites)
-  - [0.1 Optimization](#01-optimization)
-  - [0.2 Sorted-Order Notation](#02-sorted-order-notation)
-  - [0.3 G and O — Comparing Greedy With Another Choice](#03-g-and-o--comparing-greedy-with-another-choice)
-  - [0.4 Exchange Argument — General Template](#04-exchange-argument--general-template)
-  - [0.5 How to Apply Exchange Argument to Any Greedy Problem](#05-how-to-apply-exchange-argument-to-any-greedy-problem)
-  - [0.6 Other Proof Patterns](#06-other-proof-patterns)
-  - [0.7 Floor, Ceiling, Dot Product, Quotient](#07-floor-ceiling-dot-product-quotient)
-- [1. Greedy = Claim + Proof](#1-greedy--claim--proof)
-- [2. Maximum Sum of K Elements](#2-maximum-sum-of-k-elements)
-- [3. Maximum Difference Between Two Elements](#3-maximum-difference-between-two-elements)
-- [4. Minimum Difference Between Two Elements](#4-minimum-difference-between-two-elements)
-- [5. Maximize Sum of i × a[i]](#5-maximize-sum-of-i--ai)
-- [6. Coin Change — When Largest First Is Safe](#6-coin-change--when-largest-first-is-safe)
-- [7. Why Coin Greedy Can Fail](#7-why-coin-greedy-can-fail)
-- [8. Maximum Product With Fixed Sum](#8-maximum-product-with-fixed-sum)
-- [9. Minimum Dot Product](#9-minimum-dot-product)
-- [10. Proof Pattern Summary](#10-proof-pattern-summary)
-- [11. Recognition Checklist](#11-recognition-checklist)
-- [12. Compact Revision Card](#12-compact-revision-card)
+  - [0.1 Greedy Proof Goal](#01-greedy-proof-goal)
+  - [0.2 G and O](#02-g-and-o)
+  - [0.3 Exchange Argument](#03-exchange-argument)
+  - [0.4 Algebra Rules Used in These Notes](#04-algebra-rules-used-in-these-notes)
+  - [0.5 Universal Greedy Mathematical-Proof Template](#05-universal-greedy-mathematical-proof-template)
+  - [0.6 Required Notation](#06-required-notation)
+- [1. Maximum Sum of K Elements](#1-maximum-sum-of-k-elements)
+- [2. Maximum Difference Between Two Elements](#2-maximum-difference-between-two-elements)
+- [3. Minimum Difference Between Two Elements](#3-minimum-difference-between-two-elements)
+- [4. Maximize Sum of i × a[i]](#4-maximize-sum-of-i--ai)
+- [5. Coin Change — When Greedy Is Safe](#5-coin-change--when-greedy-is-safe)
+- [6. Coin Change — Counterexample](#6-coin-change--counterexample)
+- [7. Maximum Product With Fixed Sum](#7-maximum-product-with-fixed-sum)
+- [8. Minimum Dot Product](#8-minimum-dot-product)
+- [9. Proof Pattern Summary](#9-proof-pattern-summary)
+- [10. Recognition Checklist](#10-recognition-checklist)
+- [11. Compact Revision Card](#11-compact-revision-card)
 
 ---
 
 # 0. Prerequisites
 
-## 0.1 Optimization
+## 0.1 Greedy Proof Goal
 
-Greedy problems normally have:
-
-```text
-1. Constraint  → what must remain valid?
-2. Objective   → what must be minimized/maximized?
-```
-
-Example:
+A greedy solution is:
 
 ```text
-Constraint:
-choose exactly K elements
-
-Objective:
-maximize their sum
+CLAIM
++
+PROOF
 ```
 
-Notation:
-
-```math
-\max(\text{value})
-```
-
-means:
+Example claim:
 
 ```text
-make the value as large as possible
+Choose the K largest values.
 ```
 
-and:
-
-```math
-\min(\text{value})
-```
-
-means:
+The proof must answer:
 
 ```text
-make the value as small as possible
+Why can an optimal solution
+be changed to use this greedy choice
+without becoming worse?
+```
+
+Visual:
+
+```text
+Greedy choice G
+      |
+      v
+Competing / OPT choice O
+      |
+      v
+Compare them mathematically
+      |
+      v
+Greedy non-worse?
+   /       \
+ YES        NO
+  |          |
+safe       claim fails
 ```
 
 ---
 
-## 0.2 Sorted-Order Notation
-
-If:
-
-```math
-a_1\le a_2\le\cdots\le a_n
-```
-
-then:
-
-```text
-a1 = smallest
-an = largest
-```
-
-If:
-
-```text
-i < j
-```
-
-then in this sorted array:
-
-```math
-a_i\le a_j
-```
-
-This simple fact drives several proofs below.
-
----
-
-## 0.3 G and O — Comparing Greedy With Another Choice
+## 0.2 G and O
 
 We use:
 
 ```text
-G = greedy contribution / greedy answer
-O = another feasible contribution / answer
+G = greedy answer / greedy local contribution
+O = other answer / competing contribution
 ```
 
-For maximization, prove:
+For a **maximization** problem:
 
 ```math
 G\ge O
 ```
 
-A convenient equivalent test:
+A convenient proof is:
 
 ```math
 G-O\ge0
 ```
 
-For minimization, prove:
+For a **minimization** problem:
 
 ```math
 G\le O
 ```
 
-or equivalently:
+A convenient proof is:
 
 ```math
 G-O\le0
@@ -149,328 +127,292 @@ G-O\le0
 
 ### Tiny Example
 
-Greedy uses:
-
 ```text
-10
+G = 10
+O = 7
 ```
-
-instead of:
-
-```text
-7
-```
-
-in a maximization problem.
 
 Then:
 
-```text
+```math
 G-O
-= 10-7
-= 3 >= 0
+=
+10-7
+=
+3
 ```
 
-So the exchange cannot make the answer worse.
+Since:
+
+```math
+3\ge0
+```
+
+we know:
+
+```math
+G\ge O
+```
 
 ---
 
-## 0.4 Exchange Argument — General Template
+## 0.3 Exchange Argument
 
 ### Concept Simplified
 
-An exchange argument says:
-
-```text
-Take any optimal solution.
-If it disagrees with the greedy choice,
-swap one part of it with the greedy choice.
-Show the solution remains valid
-and the answer does not become worse.
-```
-
-Generic structure:
-
 ```text
 Greedy wants q
-Other/optimal solution uses p
-           |
-           v
-      exchange p → q
-           |
-           v
-still feasible?
-           |
-           v
-objective non-worse?
-           |
-           v
-YES → an optimal solution can contain q
+OPT uses p
+      |
+      v
+replace p by q
+      |
+      v
+still legal?
+      |
+     YES
+      |
+      v
+answer non-worse?
+      |
+     YES
+      |
+      v
+OPT can be changed
+to include q
 ```
 
-### Mathematical Skeleton
+To use an exchange argument:
 
-For maximization:
-
-```math
-\Delta=G-O
-```
-
-Prove:
-
-```math
-\Delta\ge0
-```
-
-For minimization:
-
-```math
-\Delta=G-O
-```
-
-Prove:
-
-```math
-\Delta\le0
+```text
+1. Find one place where OPT differs from greedy.
+2. Change only that place.
+3. Prove constraints still hold.
+4. Prove objective does not get worse.
+5. Repeat if needed.
 ```
 
 ---
 
-## 0.5 How to Apply Exchange Argument to Any Greedy Problem
+## 0.4 Algebra Rules Used in These Notes
 
-This is the reusable proof checklist.
+These are enough for almost every proof in this file.
 
-### Step 1 — State the Greedy Choice
+### Rule 1 — Remove Brackets
+
+```text
+A - (B + C)
+= A - B - C
+```
 
 Example:
 
 ```text
-Choose the largest remaining value.
-```
-
-or:
-
-```text
-Put the larger value on the larger weight.
+20 - (7 + 3)
+= 20 - 7 - 3
+= 10
 ```
 
 ---
 
-### Step 2 — Assume an Optimal Solution Disagrees
+### Rule 2 — Rearrange Terms
 
-Suppose the optimal solution uses:
-
-```text
-p
-```
-
-where greedy uses:
+Addition can be reordered:
 
 ```text
-q
+ax + by - ay - bx
 ```
 
-or suppose two values appear in the wrong relative order.
+can become:
+
+```text
+ax - ay + by - bx
+```
+
+We are only moving terms, not changing them.
 
 ---
 
-### Step 3 — Exchange Only the Disagreement
-
-Do **not** rebuild the entire solution.
-
-Swap just:
+### Rule 3 — Factor a Common Term
 
 ```text
-p ↔ q
+ax - ay
 ```
 
-or:
+Both terms contain `a`.
+
+So:
 
 ```text
-two misplaced items
+ax - ay
+= a(x-y)
 ```
 
----
-
-### Step 4 — Check Feasibility
-
-Ask:
+Reverse check:
 
 ```text
-Does the swapped solution still obey every constraint?
-```
-
-If not, the exchange proof fails.
-
----
-
-### Step 5 — Compare Objective Before vs After
-
-Typical forms:
-
-```math
-q-p
-```
-
-or:
-
-```math
-(a_i-a_j)(w_i-w_j)
-```
-
-or:
-
-```math
-\text{new cost}-\text{old cost}
+a(x-y)
+= ax-ay
 ```
 
 ---
 
-### Step 6 — Use the Sign
-
-For maximization:
+### Rule 4 — Reverse a Difference
 
 ```text
-change >= 0
-→ greedy is no worse
+y-x
+=
+-(x-y)
 ```
-
-For minimization:
-
-```text
-change <= 0
-→ greedy is no worse
-```
-
----
-
-### Step 7 — Repeat
-
-If one exchange fixes one disagreement:
-
-```text
-repeat exchanges
-until the whole optimal solution
-has greedy structure
-```
-
-Then greedy is optimal.
-
----
-
-### Generic Mini Dry Run
-
-Suppose greedy says:
-
-```text
-larger value should receive larger weight
-```
-
-Values:
-
-```text
-6 < 10
-```
-
-Weights:
-
-```text
-1 < 3
-```
-
-Greedy:
-
-```text
-6×1 + 10×3 = 36
-```
-
-Wrong order:
-
-```text
-10×1 + 6×3 = 28
-```
-
-Exchange benefit:
-
-```text
-36-28 = 8 >= 0
-```
-
-So the inversion should be removed.
-
-> **Use this exact template whenever you suspect a sorting-based greedy proof.**
-
----
-
-## 0.6 Other Proof Patterns
-
-Not every greedy proof is an exchange proof.
-
-### Bound / Extreme Proof
-
-Show global extremes dominate every candidate.
 
 Example:
 
 ```text
-maximum difference
-→ global max - global min
+3-1 = 2
+1-3 = -2
+
+therefore:
+3-1 = -(1-3)
 ```
 
 ---
 
-### Adjacent-Swap Proof
-
-Find a wrong pair:
+### Rule 5 — Cancel Equal Terms
 
 ```text
-... x ... y ...
+A+B-A
+= B
 ```
 
-Swap it.
-
-Show the objective improves or stays equal.
-
-Repeat until no wrong pairs remain.
-
----
-
-### Replacement Proof
-
-Replace:
+Example:
 
 ```text
-many small objects
+18 - 7 + 10 - 18
+= 10 - 7
 ```
 
-with:
+because:
 
 ```text
-one larger object
-```
-
-without changing feasibility but improving the objective.
-
-Used in coin change.
-
----
-
-### Balancing Proof
-
-Compare the balanced solution with one `k` steps away from balance.
-
-Used for:
-
-```text
-A+B=N
-maximize AB
++18 and -18 cancel
 ```
 
 ---
 
-## 0.7 Floor, Ceiling, Dot Product, Quotient
+### Rule 6 — Sign Reasoning
 
-### Floor / Ceiling
+```text
+positive × positive = positive
+negative × negative = positive
+positive × negative = negative
+```
+
+Also:
+
+```math
+k^2\ge0
+```
+
+for every `k`.
+
+---
+
+### Rule 7 — Use Known Ordering
+
+If:
+
+```math
+a\le b
+```
+
+then:
+
+```math
+a-b\le0
+```
+
+and:
+
+```math
+b-a\ge0
+```
+
+Example:
+
+```text
+6 <= 10
+
+6-10 = -4 <= 0
+10-6 = 4 >= 0
+```
+
+---
+
+## 0.5 Universal Greedy Mathematical-Proof Template
+
+For every greedy problem:
+
+```text
+STEP 1
+State exactly what greedy chooses.
+
+STEP 2
+Construct one competing choice.
+
+STEP 3
+Define:
+G = greedy objective value
+O = competing objective value
+
+STEP 4
+Write:
+G - O
+
+STEP 5
+Remove brackets.
+
+STEP 6
+Rearrange / factor / cancel.
+
+STEP 7
+Use known inequalities.
+
+STEP 8
+Find the sign.
+
+For maximization:
+G-O >= 0
+
+For minimization:
+G-O <= 0
+
+STEP 9
+Check feasibility did not break.
+
+STEP 10
+Repeat the exchange if needed.
+```
+
+---
+
+## 0.6 Required Notation
+
+### Sorted Array
+
+```math
+a_1\le a_2\le\cdots\le a_n
+```
+
+means:
+
+```text
+a1 = smallest
+an = largest
+```
+
+---
+
+### Floor and Ceiling
 
 ```math
 \left\lfloor x\right\rfloor
@@ -509,7 +451,8 @@ Example:
 A = [2,3]
 B = [5,7]
 
-2×5 + 3×7 = 31
+2×5 + 3×7
+= 31
 ```
 
 ---
@@ -534,60 +477,11 @@ Example:
 256 % 100 = 56
 ```
 
-So:
-
-```text
-use two 100-coins
-continue with 56
-```
-
 ---
 
-# 1. Greedy = Claim + Proof
+# 1. Maximum Sum of K Elements
 
-Greedy means:
-
-```text
-observe structure
-      ↓
-make a local-choice claim
-      ↓
-try to break it
-      ↓
-prove it is safe
-      ↓
-commit and continue
-```
-
-The two essential pieces are:
-
-```text
-CLAIM
-+
-PROOF
-```
-
-Not:
-
-```text
-sort + hope
-```
-
-A good contest workflow:
-
-```text
-1. Guess the greedy rule.
-2. Test small/adversarial examples.
-3. Search for a counterexample.
-4. If it survives, prove it.
-5. Only then code.
-```
-
----
-
-# 2. Maximum Sum of K Elements
-
-## 2.1 What It Asks
+## 1.1 What It Asks
 
 Choose exactly `K` elements and maximize:
 
@@ -603,25 +497,25 @@ with:
 
 ---
 
-## 2.2 Concept Simplified
+## 1.2 Concept Simplified
 
-If a chosen value is smaller than an unchosen value:
+If the chosen set contains a smaller value `p` while a larger value `q` is outside:
 
 ```text
-replace the smaller by the larger
+replace p by q
 ```
 
-The sum cannot decrease.
+The sum cannot become smaller.
 
 So:
 
 ```text
-take the K largest values
+take the K largest elements
 ```
 
 ---
 
-## 2.3 Greedy Claim
+## 1.3 Greedy Claim
 
 After sorting:
 
@@ -629,57 +523,242 @@ After sorting:
 a_1\le a_2\le\cdots\le a_n
 ```
 
-take the final `K` elements.
+select the final `K` elements.
 
 ---
 
-## 2.4 Exchange Proof + Dry Run Side by Side
+## 1.4 Mathematical Proof — Every Step Explained
 
-Suppose another solution contains smaller value `p`, while larger value `q` is unselected.
+Suppose:
+
+```text
+O = sum of another valid K-element selection
+```
+
+That selection contains:
+
+```text
+p
+```
+
+while a larger value:
+
+```text
+q
+```
+
+is unselected.
+
+We know:
 
 ```math
 q\ge p
 ```
 
-Exchange:
+After exchanging:
 
 ```text
-p → q
+remove p
+add q
 ```
 
-| Proof step | Symbolic | Dry run |
-|---|---|---|
-| Selected smaller | `p` | `7` |
-| Unselected larger | `q` | `10` |
-| Exchange | `p → q` | `7 → 10` |
-| Change in sum | `q-p` | `10-7=3` |
-| Sign | `q-p >= 0` | `3 >= 0` |
-| Conclusion | sum does not decrease | sum improves by `3` |
+the new sum is:
 
-Therefore we can repeatedly exchange smaller selected values for larger unselected ones until the selected set is exactly the `K` largest.
-
-### Quick Full Example
-
-```text
-a = [11,6,7,2,0,2,9,10]
-K = 2
+```math
+G=O-p+q
 ```
 
-Sorted:
+Actual example:
 
 ```text
-[0,2,2,6,7,9,10,11]
+G = 18 - 7 + 10
+  = 21
 ```
 
-Answer:
+### Step 1 — Subtract the old answer
+
+```math
+G-O
+=
+(O-p+q)-O
+```
+
+Actual example:
 
 ```text
-11 + 10 = 21
+21 - 18
+=
+(18 - 7 + 10) - 18
+```
+
+**Why?**
+
+We want to know:
+
+```text
+how much better/worse is G than O?
+```
+
+So calculate:
+
+```text
+new - old
 ```
 
 ---
 
-## 2.5 C++
+### Step 2 — Remove the bracket
+
+```math
+G-O
+=
+O-p+q-O
+```
+
+Actual example:
+
+```text
+21 - 18
+=
+18 - 7 + 10 - 18
+```
+
+**Why?**
+
+Subtracting `O` means:
+
+```text
+-O
+```
+
+is added to the expression.
+
+---
+
+### Step 3 — Cancel equal terms
+
+```math
+G-O
+=
+q-p
+```
+
+Actual example:
+
+```text
+21 - 18
+=
+10 - 7
+
+3 = 3
+```
+
+because:
+
+```text
++O and -O cancel
+```
+
+---
+
+### Step 4 — Use the known inequality
+
+We know:
+
+```math
+q\ge p
+```
+
+Therefore:
+
+```math
+q-p\ge0
+```
+
+Actual example:
+
+```text
+10 - 7
+= 3
+>= 0
+```
+
+So:
+
+```math
+G-O\ge0
+```
+
+Hence:
+
+```math
+G\ge O
+```
+
+The exchange cannot hurt a maximization answer.
+
+---
+
+## 1.5 Numerical Dry Run
+
+Suppose:
+
+```text
+O = 18
+p = 7
+q = 10
+```
+
+Exchange:
+
+```text
+7 → 10
+```
+
+New answer:
+
+```text
+G
+= 18 - 7 + 10
+= 21
+```
+
+Difference:
+
+```text
+G-O
+= 21-18
+= 3
+```
+
+Formula:
+
+```text
+q-p
+= 10-7
+= 3
+```
+
+Same result.
+
+---
+
+## 1.6 Conclusion
+
+```text
+If a smaller chosen value exists
+while a larger unchosen value exists,
+exchange them.
+
+Repeat.
+
+Eventually the chosen set
+is exactly the K largest elements.
+```
+
+---
+
+## 1.7 C++
 
 ```cpp
 long long maxKSum(vector<long long> a, int k) {
@@ -711,9 +790,9 @@ maximize sum
 
 ---
 
-# 3. Maximum Difference Between Two Elements
+# 2. Maximum Difference Between Two Elements
 
-## 3.1 What It Asks
+## 2.1 What It Asks
 
 Maximize:
 
@@ -725,61 +804,291 @@ with no original-index ordering restriction.
 
 ---
 
-## 3.2 Concept Simplified
+## 2.2 Concept Simplified
 
-Make:
+For:
 
 ```text
-high as large as possible
-low  as small as possible
+high - low
+```
+
+make:
+
+```text
+high = global maximum
+low  = global minimum
+```
+
+---
+
+## 2.3 Greedy Claim
+
+Let:
+
+```text
+M = global maximum
+m = global minimum
+```
+
+Greedy:
+
+```math
+G=M-m
+```
+
+Actual example:
+
+```text
+G = 16 - 4
+  = 12
+```
+
+Take any competing pair:
+
+```text
+x = candidate high
+y = candidate low
+```
+
+Other answer:
+
+```math
+O=x-y
+```
+
+Actual example:
+
+```text
+O = 15 - 8
+  = 7
+```
+
+---
+
+## 2.4 Mathematical Proof — Every Step Explained
+
+Because `M` is global maximum:
+
+```math
+M\ge x
+```
+
+Because `m` is global minimum:
+
+```math
+m\le y
+```
+
+Now compare:
+
+```math
+G-O
+=
+(M-m)-(x-y)
+```
+
+Actual example:
+
+```text
+12 - 7
+=
+(16 - 4) - (15 - 8)
+```
+
+---
+
+### Step 1 — Remove the second bracket
+
+```math
+G-O
+=
+M-m-x+y
+```
+
+Actual example:
+
+```text
+5
+=
+16 - 4 - 15 + 8
+```
+
+**Why?**
+
+```text
+-(x-y)
+= -x+y
+```
+
+The minus changes both signs.
+
+---
+
+### Step 2 — Rearrange into useful differences
+
+```math
+G-O
+=
+(M-x)+(y-m)
+```
+
+Actual example:
+
+```text
+5
+=
+(16 - 15) + (8 - 4)
+
+= 1 + 4
+= 5
+```
+
+**How?**
+
+Start:
+
+```text
+M - m - x + y
+```
+
+Move terms:
+
+```text
+M - x + y - m
+```
+
+Group:
+
+```text
+(M-x) + (y-m)
+```
+
+---
+
+### Step 3 — Determine signs
+
+Since:
+
+```math
+M\ge x
+```
+
+we have:
+
+```math
+M-x\ge0
+```
+
+Actual example:
+
+```text
+16 - 15
+= 1
+>= 0
+```
+
+Since:
+
+```math
+y\ge m
+```
+
+we have:
+
+```math
+y-m\ge0
+```
+
+Actual example:
+
+```text
+8 - 4
+= 4
+>= 0
 ```
 
 So:
 
-```text
-answer = max - min
-```
-
----
-
-## 3.3 Bound Proof + Dry Run Side by Side
-
-For any pair:
-
 ```math
-a_p\le a_q
+(M-x)+(y-m)\ge0
 ```
-
-global minimum gives:
-
-```math
-a_1\le a_p
-```
-
-global maximum gives:
-
-```math
-a_q\le a_n
-```
-
-| Step | Symbolic | Dry run |
-|---|---|---|
-| Candidate pair | `a_q-a_p` | `15-8=7` |
-| Lower low-end to global min | `a_q-a_1 >= a_q-a_p` | `15-4=11 >= 7` |
-| Raise high-end to global max | `a_n-a_1 >= a_q-a_1` | `16-4=12 >= 11` |
-| Final | `a_n-a_1` dominates every pair | `12` |
 
 Therefore:
 
 ```math
-a_n-a_1\ge a_q-a_p
+G-O\ge0
 ```
 
-for every candidate pair.
+Hence:
+
+```math
+G\ge O
+```
 
 ---
 
-## 3.4 C++
+## 2.5 Numerical Dry Run
+
+Suppose:
+
+```text
+M = 16
+m = 4
+
+x = 15
+y = 8
+```
+
+Greedy:
+
+```text
+G
+= 16-4
+= 12
+```
+
+Other:
+
+```text
+O
+= 15-8
+= 7
+```
+
+Difference:
+
+```text
+G-O
+= 12-7
+= 5
+```
+
+Derived formula:
+
+```text
+(M-x)+(y-m)
+
+= (16-15)+(8-4)
+
+= 1+4
+
+= 5
+```
+
+Same result.
+
+---
+
+## 2.6 Conclusion
+
+```text
+global maximum - global minimum
+is at least as large as every other pair difference
+```
+
+---
+
+## 2.7 C++
 
 ```cpp
 long long maximumDifference(
@@ -802,14 +1111,14 @@ Recognition:
 
 ```text
 unrestricted maximum difference
-→ global max - global min
+→ max - min
 ```
 
 ---
 
-# 4. Minimum Difference Between Two Elements
+# 3. Minimum Difference Between Two Elements
 
-## 4.1 What It Asks
+## 3.1 What It Asks
 
 Minimize:
 
@@ -821,74 +1130,262 @@ for two distinct elements.
 
 ---
 
-## 4.2 Concept Simplified
+## 3.2 Concept Simplified
 
-Sort first.
+After sorting:
 
-Then numerically closest values become neighbors.
+```text
+closest values must appear next to each other
+```
 
-So check only adjacent gaps.
+So only adjacent differences need to be checked.
 
 ---
 
-## 4.3 Proof + Dry Run Side by Side
+## 3.3 Greedy Claim
 
-Take a non-adjacent pair:
+Sort:
 
-```text
-a_j ... a_(i-1), a_i
+```math
+a_1\le a_2\le\cdots\le a_n
 ```
 
-Sorted order:
+The answer is:
+
+```text
+minimum adjacent gap
+```
+
+---
+
+## 3.4 Mathematical Proof — Every Step Explained
+
+Choose any non-adjacent pair:
+
+```text
+a_j and a_i
+```
+
+where:
+
+```text
+j < i-1
+```
+
+Because the array is sorted:
 
 ```math
 a_j\le a_{i-1}\le a_i
 ```
 
-Thus:
+Define:
+
+```text
+O = non-adjacent gap
+G = adjacent gap ending at a_i
+```
+
+So:
 
 ```math
-a_i-a_j\ge a_i-a_{i-1}
+O=a_i-a_j
 ```
 
-| Step | Symbolic | Dry run |
-|---|---|---|
-| Sorted values | `a_j <= a_(i-1) <= a_i` | `3 <= 9 <= 10` |
-| Non-adjacent gap | `a_i-a_j` | `10-3=7` |
-| Adjacent gap | `a_i-a_(i-1)` | `10-9=1` |
-| Comparison | non-adjacent `>=` adjacent | `7 >= 1` |
-
-Therefore a non-adjacent pair cannot be uniquely better than all adjacent pairs.
-
-So some optimum appears among adjacent pairs.
-
-### Example
+Actual example:
 
 ```text
-[20,3,17,9,10]
+O = 10 - 3
+  = 7
 ```
 
-Sort:
+and:
 
-```text
-[3,9,10,17,20]
+```math
+G=a_i-a_{i-1}
 ```
 
-Gaps:
+Actual example:
 
 ```text
-6,1,7,3
+G = 10 - 9
+  = 1
 ```
 
-Answer:
+For a minimization proof, we want:
 
 ```text
-1
+G <= O
+```
+
+Equivalent:
+
+```text
+O-G >= 0
+```
+
+Compute:
+
+```math
+O-G
+=
+(a_i-a_j)-(a_i-a_{i-1})
+```
+
+Actual example:
+
+```text
+7 - 1
+=
+(10 - 3) - (10 - 9)
 ```
 
 ---
 
-## 4.4 C++
+### Step 1 — Remove the second bracket
+
+```math
+O-G
+=
+a_i-a_j-a_i+a_{i-1}
+```
+
+Actual example:
+
+```text
+6
+=
+10 - 3 - 10 + 9
+```
+
+**Why?**
+
+```text
+-(a_i-a_(i-1))
+=
+-a_i+a_(i-1)
+```
+
+---
+
+### Step 2 — Cancel equal terms
+
+```math
+O-G
+=
+a_{i-1}-a_j
+```
+
+Actual example:
+
+```text
+6
+=
+9 - 3
+```
+
+because:
+
+```text
++a_i and -a_i cancel
+```
+
+---
+
+### Step 3 — Use sorted order
+
+We know:
+
+```math
+a_{i-1}\ge a_j
+```
+
+Therefore:
+
+```math
+a_{i-1}-a_j\ge0
+```
+
+So:
+
+```math
+O-G\ge0
+```
+
+Hence:
+
+```math
+O\ge G
+```
+
+Therefore the non-adjacent pair cannot beat this adjacent pair.
+
+---
+
+## 3.5 Numerical Dry Run
+
+Sorted:
+
+```text
+[3,9,10]
+```
+
+Choose non-adjacent:
+
+```text
+3 and 10
+```
+
+```text
+O
+= 10-3
+= 7
+```
+
+Adjacent pair:
+
+```text
+9 and 10
+```
+
+```text
+G
+= 10-9
+= 1
+```
+
+Difference:
+
+```text
+O-G
+= 7-1
+= 6
+```
+
+Formula:
+
+```text
+a_(i-1)-a_j
+= 9-3
+= 6
+```
+
+Same result.
+
+---
+
+## 3.6 Conclusion
+
+```text
+Every non-adjacent gap
+is at least as large as
+an adjacent gap inside it.
+
+So an optimal minimum pair is adjacent.
+```
+
+---
+
+## 3.7 C++
 
 ```cpp
 long long minimumDifference(vector<long long> a) {
@@ -913,14 +1410,14 @@ Recognition:
 
 ```text
 minimum absolute difference
-→ sort + adjacent pairs
+→ sort + adjacent gaps
 ```
 
 ---
 
-# 5. Maximize Sum of i × a[i]
+# 4. Maximize Sum of i × a[i]
 
-## 5.1 What It Asks
+## 4.1 What It Asks
 
 Rearrange values to maximize:
 
@@ -938,94 +1435,373 @@ increase.
 
 ---
 
-## 5.2 Concept Simplified
+## 4.2 Concept Simplified
 
-For maximum weighted sum:
+Use simpler names first:
 
 ```text
-small value → small weight
-large value → large weight
+small value = a
+large value = b
+
+small weight = x
+large weight = y
 ```
 
-Therefore sort values ascending.
+with:
+
+```text
+a <= b
+x <= y
+```
+
+Greedy says:
+
+```text
+small value × small weight
++
+large value × large weight
+```
 
 ---
 
-## 5.3 Exchange Proof + Dry Run Side by Side
+## 4.3 Greedy Claim
 
-Take:
+Greedy pairing:
+
+```math
+G=ax+by
+```
+
+Actual example:
+
+```text
+G
+= 6×1 + 10×3
+= 36
+```
+
+Swapped pairing:
+
+```math
+O=ay+bx
+```
+
+Actual example:
+
+```text
+O
+= 6×3 + 10×1
+= 28
+```
+
+We want to prove:
+
+```math
+G\ge O
+```
+
+---
+
+## 4.4 Mathematical Proof — Every Step Explained
+
+Start:
+
+```math
+G-O
+=
+(ax+by)-(ay+bx)
+```
+
+Actual example:
+
+```text
+36 - 28
+=
+(6×1 + 10×3) - (6×3 + 10×1)
+```
+
+---
+
+### Step 1 — Remove the minus bracket
+
+```math
+G-O
+=
+ax+by-ay-bx
+```
+
+Actual example:
+
+```text
+8
+=
+6×1 + 10×3 - 6×3 - 10×1
+```
+
+**Why?**
+
+The minus in front of:
+
+```text
+(ay+bx)
+```
+
+changes both signs:
+
+```text
+-ay-bx
+```
+
+---
+
+### Step 2 — Put similar terms together
+
+```math
+G-O
+=
+ax-ay+by-bx
+```
+
+Actual example:
+
+```text
+8
+=
+6×1 - 6×3 + 10×3 - 10×1
+```
+
+**Why?**
+
+We only rearranged addition/subtraction so the `a` terms and `b` terms are together.
+
+---
+
+### Step 3 — Factor `a` and `b`
+
+```math
+G-O
+=
+a(x-y)+b(y-x)
+```
+
+Actual example:
+
+```text
+8
+=
+6(1-3) + 10(3-1)
+
+= 6(-2) + 10(2)
+
+= -12 + 20
+= 8
+```
+
+Because:
+
+```text
+ax-ay = a(x-y)
+by-bx = b(y-x)
+```
+
+---
+
+### Step 4 — Make both brackets use the same difference
+
+We know:
+
+```math
+y-x=-(x-y)
+```
+
+So:
+
+```math
+b(y-x)
+=
+-b(x-y)
+```
+
+Therefore:
+
+```math
+G-O
+=
+a(x-y)-b(x-y)
+```
+
+Actual example:
+
+```text
+8
+=
+6(1-3) - 10(1-3)
+
+= 6(-2) - 10(-2)
+
+= -12 + 20
+= 8
+```
+
+---
+
+### Step 5 — Factor the common `(x-y)`
+
+```math
+G-O
+=
+(a-b)(x-y)
+```
+
+Actual example:
+
+```text
+8
+=
+(6-10)(1-3)
+
+= (-4)(-2)
+
+= 8
+```
+
+because:
+
+```text
+a(x-y)-b(x-y)
+=
+(a-b)(x-y)
+```
+
+---
+
+### Step 6 — Determine signs
+
+Since:
+
+```text
+a <= b
+```
+
+we have:
+
+```math
+a-b\le0
+```
+
+Since:
+
+```text
+x <= y
+```
+
+we have:
+
+```math
+x-y\le0
+```
+
+Therefore:
+
+```text
+negative × negative
+=
+non-negative
+```
+
+So:
+
+```math
+G-O\ge0
+```
+
+Hence:
+
+```math
+G\ge O
+```
+
+Greedy is no worse.
+
+---
+
+## 4.5 Numerical Dry Run
+
+Use:
+
+```text
+a = 6
+b = 10
+x = 1
+y = 3
+```
+
+Greedy:
+
+```text
+G
+= 6×1 + 10×3
+= 6 + 30
+= 36
+```
+
+Swapped:
+
+```text
+O
+= 6×3 + 10×1
+= 18 + 10
+= 28
+```
+
+Difference:
+
+```text
+G-O
+= 36-28
+= 8
+```
+
+Factor formula:
+
+```text
+(a-b)(x-y)
+
+= (6-10)(1-3)
+
+= (-4)(-2)
+
+= 8
+```
+
+Same result.
+
+---
+
+## 4.6 Map Back to the Original Problem
+
+Original weights are:
 
 ```text
 i < j
 ```
 
-and sorted values:
+Values are:
 
 ```math
 a_i\le a_j
 ```
 
-Greedy pairing:
+So identify:
 
 ```text
-a_i with i
-a_j with j
+a = a_i
+b = a_j
+x = i
+y = j
 ```
 
-Swapped pairing:
-
-```text
-a_j with i
-a_i with j
-```
-
-Use:
-
-```text
-i = 1, j = 3
-a_i = 6, a_j = 10
-```
-
-| Step | Symbolic | Dry run |
-|---|---|---|
-| Greedy | `G=a_i*i+a_j*j` | `6×1+10×3=36` |
-| Swapped | `O=a_j*i+a_i*j` | `10×1+6×3=28` |
-| Difference | `G-O` | `36-28=8` |
-| Factor | `(a_i-a_j)(i-j)` | `(6-10)(1-3)` |
-| Signs | `(-)×(-)` | `(-4)×(-2)` |
-| Result | `G-O >= 0` | `8 >= 0` |
-
-### Algebra Expansion
-
-```math
-G-O
-=
-a_i i+a_j j-a_j i-a_i j
-```
-
-Group:
-
-```math
-G-O
-=
-a_i(i-j)+a_j(j-i)
-```
-
-Since:
-
-```math
-j-i=-(i-j)
-```
-
-then:
-
-```math
-G-O
-=
-a_i(i-j)-a_j(i-j)
-```
-
-Factor:
+Therefore:
 
 ```math
 G-O
@@ -1033,37 +1809,17 @@ G-O
 (a_i-a_j)(i-j)
 ```
 
-Now:
-
-```math
-a_i-a_j\le0
-```
-
-and:
-
-```math
-i-j<0
-```
-
-Therefore:
+Both factors are non-positive, so:
 
 ```math
 G-O\ge0
 ```
 
-So:
-
-```math
-G\ge O
-```
-
-Every inversion can be exchanged away without decreasing the answer.
-
-Thus ascending order is optimal.
+Thus ascending values matched with ascending indices maximize the weighted sum.
 
 ---
 
-## 5.4 C++
+## 4.7 C++
 
 ```cpp
 long long maximumWeightedSum(vector<long long> a) {
@@ -1088,14 +1844,14 @@ Recognition:
 
 ```text
 maximize value × increasing weight
-→ same order
+→ same ordering
 ```
 
 ---
 
-# 6. Coin Change — When Largest First Is Safe
+# 5. Coin Change — When Greedy Is Safe
 
-## 6.1 What It Asks
+## 5.1 What It Asks
 
 Coins:
 
@@ -1105,26 +1861,11 @@ Coins:
 
 Unlimited copies.
 
-Minimize number of coins used to form `X`.
+Minimize number of coins needed to make `X`.
 
 ---
 
-## 6.2 Concept Simplified
-
-Larger coins exactly replace several smaller coins:
-
-```text
-5×1   → 1×5
-2×5   → 1×10
-5×10  → 1×50
-2×50  → 1×100
-```
-
-Every replacement reduces coin count.
-
----
-
-## 6.3 Replacement Proof + Dry Run Side by Side
+## 5.2 Concept Simplified
 
 Suppose:
 
@@ -1132,39 +1873,204 @@ Suppose:
 d_{i+1}=r\,d_i
 ```
 
-with integer:
+Actual example:
 
 ```text
-r >= 2
+10 = 2×5
+
+so:
+d_(i+1) = 10
+d_i     = 5
+r       = 2
 ```
 
 Then:
 
 ```text
-r copies of d_i
+r small coins
 ```
 
-can be replaced by:
+have exactly the same value as:
 
 ```text
-1 copy of d_(i+1)
+1 larger coin
 ```
 
-| Proof | Dry run |
-|---|---|
-| `d_(i+1)=r*d_i` | `10=2×5` |
-| `r` lower coins | `5+5` |
-| same value | `10` |
-| replacement | `2 coins → 1 coin` |
-| objective | number of coins decreases | 
-
-Therefore an optimum never needs enough lower coins to form an available larger denomination.
-
-So process coins largest → smallest.
+but use more coins.
 
 ---
 
-## 6.4 Dry Run — X = 256
+## 5.3 Greedy Claim
+
+Use as many large-denomination coins as possible.
+
+---
+
+## 5.4 Mathematical Proof — Every Step Explained
+
+Value of `r` smaller coins:
+
+```math
+r\,d_i
+```
+
+But:
+
+```math
+d_{i+1}=r\,d_i
+```
+
+Actual example:
+
+```text
+10 = 2×5
+
+so:
+d_(i+1) = 10
+d_i     = 5
+r       = 2
+```
+
+Therefore:
+
+```text
+r smaller coins
+and
+1 larger coin
+have equal MONEY VALUE
+```
+
+So feasibility is preserved.
+
+Now compare **coin count**.
+
+Other solution:
+
+```math
+O=r
+```
+
+Actual example:
+
+```text
+O = 2
+
+(two coins of 5)
+```
+
+Greedy:
+
+```math
+G=1
+```
+
+Actual example:
+
+```text
+G = 1
+
+(one coin of 10)
+```
+
+For minimization, calculate:
+
+```math
+G-O
+=
+1-r
+```
+
+Actual example:
+
+```text
+G-O
+= 1-2
+= -1
+```
+
+Since:
+
+```text
+r >= 2
+```
+
+subtracting `r` from `1` gives:
+
+```math
+1-r\le -1
+```
+
+Therefore:
+
+```math
+G-O\le0
+```
+
+Hence:
+
+```math
+G\le O
+```
+
+So using one larger coin is no worse and usually strictly better.
+
+---
+
+## 5.5 Numerical Dry Run
+
+For:
+
+```text
+5 and 10
+```
+
+we have:
+
+```text
+10 = 2×5
+```
+
+So:
+
+```text
+r = 2
+```
+
+Other:
+
+```text
+O = 2 coins
+```
+
+Greedy:
+
+```text
+G = 1 coin
+```
+
+Difference:
+
+```text
+G-O
+= 1-2
+= -1
+```
+
+Since:
+
+```text
+-1 <= 0
+```
+
+greedy is better for minimization.
+
+---
+
+## 5.6 Full Amount Dry Run
+
+```text
+X = 256
+```
 
 ```text
 256 / 100 = 2, remainder 56
@@ -1174,21 +2080,17 @@ So process coins largest → smallest.
 1   / 1   = 1
 ```
 
-Coins:
+Answer:
 
 ```text
 100 + 100 + 50 + 5 + 1
-```
 
-Count:
-
-```text
-5
+5 coins
 ```
 
 ---
 
-## 6.5 C++
+## 5.7 C++
 
 ```cpp
 long long minCoins(long long x) {
@@ -1216,14 +2118,18 @@ O(number of denominations)
 Recognition:
 
 ```text
-higher denomination exactly replaces
-multiple lower denominations
+larger denomination exactly replaces
+multiple lower coins
 → largest first
 ```
 
 ---
 
-# 7. Why Coin Greedy Can Fail
+# 6. Coin Change — Counterexample
+
+## 6.1 What It Shows
+
+Largest coin first is **not** always correct.
 
 Coins:
 
@@ -1237,59 +2143,122 @@ Target:
 16
 ```
 
+---
+
+## 6.2 Compare Greedy and Optimal Mathematically
+
 Greedy:
 
 ```text
-10 + 1 + 1 + 1 + 1 + 1 + 1
-= 7 coins
+10 + six 1s
+```
+
+Coin count:
+
+```math
+G=7
 ```
 
 Optimal:
 
 ```text
 8 + 8
-= 2 coins
 ```
 
-Why did the proof fail?
+Coin count:
+
+```math
+O=2
+```
+
+For minimization, greedy would need:
+
+```math
+G-O\le0
+```
+
+But:
+
+```math
+G-O
+=
+7-2
+=
+5
+```
+
+So:
+
+```math
+G-O>0
+```
+
+Therefore:
+
+```math
+G>O
+```
+
+Greedy is worse.
+
+---
+
+## 6.3 Why the Previous Proof Cannot Be Used
+
+With `5` and `10`:
+
+```text
+10 = 2×5
+```
+
+Clean replacement exists.
+
+But:
 
 ```text
 10 % 8 != 0
 ```
 
-A `10` does not cleanly replace a fixed number of `8`s.
+There is no integer `r` such that:
 
-Choosing `10` creates bad remainder:
+```text
+10 = r×8
+```
+
+So the replacement proof breaks.
+
+Choosing `10` also creates bad remainder:
 
 ```text
 16-10 = 6
 ```
 
-which needs six `1`s.
+which requires six `1`s.
 
-Recognition:
+---
+
+## 6.4 Recognition
 
 ```text
 coin change
-        |
-        v
-largest-first idea
-        |
-        v
-can I prove replacement?
-   +----+----+
-   |         |
+      |
+      v
+largest-first claim
+      |
+      v
+can I prove clean replacement?
+   /       \
  YES        NO
-   |         |
-greedy     test counterexample /
-safe       use DP or another method
+  |          |
+safe       test counterexample /
+           use DP or another method
 ```
 
 ---
 
-# 8. Maximum Product With Fixed Sum
+# 7. Maximum Product With Fixed Sum
 
-## 8.1 What It Asks
+## 7.1 What It Asks
 
 Find integers `A,B` such that:
 
@@ -1305,38 +2274,28 @@ AB
 
 ---
 
-## 8.2 Concept Simplified
+## 7.2 Concept Simplified
 
-With fixed sum:
-
-```text
-closer numbers → larger product
-```
-
-Example:
+Fixed sum:
 
 ```text
-N = 12
-
-1×11 = 11
-2×10 = 20
-3×9  = 27
-4×8  = 32
-5×7  = 35
-6×6  = 36
+closer numbers
+→ larger product
 ```
 
-So use the most balanced split.
+So split `N` as evenly as possible.
 
 ---
 
-## 8.3 Balancing Proof + Dry Run Side by Side
+## 7.3 Greedy Claim
 
 Define:
 
 ```math
 L=\left\lfloor\frac N2\right\rfloor
 ```
+
+and:
 
 ```math
 R=\left\lceil\frac N2\right\rceil
@@ -1348,7 +2307,18 @@ Greedy:
 G=LR
 ```
 
-Move `k` away from balance:
+Actual example for `N=8`:
+
+```text
+L = 4
+R = 4
+
+G
+= 4×4
+= 16
+```
+
+Any more unbalanced pair can be written:
 
 ```math
 A=L-k
@@ -1358,13 +2328,47 @@ A=L-k
 B=R+k
 ```
 
+for some:
+
+```text
+k >= 0
+```
+
+---
+
+## 7.4 Mathematical Proof — Every Step Explained
+
 Other product:
 
 ```math
 O=(L-k)(R+k)
 ```
 
-Expand:
+Actual example:
+
+```text
+L = 4
+R = 4
+k = 1
+
+O
+= (4-1)(4+1)
+= 3×5
+= 15
+```
+
+---
+
+### Step 1 — Expand the brackets
+
+Use:
+
+```text
+(A-B)(C+D)
+= AC + AD - BC - BD
+```
+
+So:
 
 ```math
 O
@@ -1372,19 +2376,148 @@ O
 LR+Lk-Rk-k^2
 ```
 
-Therefore:
+Actual example:
+
+```text
+15
+=
+4×4 + 4×1 - 4×1 - 1²
+
+= 16 + 4 - 4 - 1
+
+= 15
+```
+
+Why?
+
+```text
+L×R   = LR
+L×k   = Lk
+(-k)×R = -Rk
+(-k)×k = -k²
+```
+
+---
+
+### Step 2 — Compare greedy and other
 
 ```math
 G-O
 =
-k^2+k(R-L)
+LR-(LR+Lk-Rk-k^2)
 ```
 
-Now:
+Actual example:
+
+```text
+16 - 15
+=
+16 - (16 + 4 - 4 - 1)
+```
+
+---
+
+### Step 3 — Remove the minus bracket
+
+```math
+G-O
+=
+LR-LR-Lk+Rk+k^2
+```
+
+Actual example:
+
+```text
+1
+=
+16 - 16 - 4 + 4 + 1
+```
+
+The minus changes every sign inside the bracket.
+
+---
+
+### Step 4 — Cancel equal terms
+
+```math
+G-O
+=
+-Lk+Rk+k^2
+```
+
+Actual example:
+
+```text
+1
+=
+-4×1 + 4×1 + 1²
+
+= -4 + 4 + 1
+= 1
+```
+
+because:
+
+```text
++LR and -LR cancel
+```
+
+---
+
+### Step 5 — Factor `k`
+
+```math
+G-O
+=
+k(R-L)+k^2
+```
+
+Actual example:
+
+```text
+1
+=
+1(4-4) + 1²
+
+= 0 + 1
+
+= 1
+```
+
+because:
+
+```text
+-Lk+Rk
+= k(-L+R)
+= k(R-L)
+```
+
+---
+
+### Step 6 — Determine signs
+
+We know:
 
 ```text
 k >= 0
-R-L is 0 or 1
+```
+
+Also:
+
+```text
+R-L is either 0 or 1
+```
+
+Therefore:
+
+```math
+k(R-L)\ge0
+```
+
+and:
+
+```math
+k^2\ge0
 ```
 
 So:
@@ -1393,22 +2526,125 @@ So:
 G-O\ge0
 ```
 
-Balanced product is optimal.
+Hence:
 
-### Side-by-Side Dry Run — N = 8
+```math
+G\ge O
+```
 
-| Step | Symbolic | Dry run |
-|---|---|---|
-| Balanced halves | `L,R` | `4,4` |
-| Greedy product | `G=LR` | `4×4=16` |
-| Move away by `k=1` | `(L-k,R+k)` | `(3,5)` |
-| Other product | `O` | `3×5=15` |
-| Difference formula | `k²+k(R-L)` | `1²+1(4-4)=1` |
-| Check | `G-O >= 0` | `16-15=1` |
+Balanced split is optimal.
 
 ---
 
-## 8.4 C++
+## 7.5 Numerical Dry Run — Even N
+
+```text
+N = 8
+L = 4
+R = 4
+```
+
+Greedy:
+
+```text
+G
+= 4×4
+= 16
+```
+
+Move:
+
+```text
+k = 1
+```
+
+Other pair:
+
+```text
+3 and 5
+```
+
+```text
+O
+= 3×5
+= 15
+```
+
+Formula:
+
+```text
+G-O
+= k(R-L)+k²
+
+= 1(4-4)+1²
+
+= 0+1
+
+= 1
+```
+
+Check:
+
+```text
+16-15 = 1
+```
+
+---
+
+## 7.6 Numerical Dry Run — Odd N
+
+```text
+N = 5
+L = 2
+R = 3
+```
+
+Greedy:
+
+```text
+G
+= 2×3
+= 6
+```
+
+Take:
+
+```text
+k = 1
+```
+
+Other:
+
+```text
+1 and 4
+```
+
+```text
+O
+= 1×4
+= 4
+```
+
+Formula:
+
+```text
+G-O
+= 1(3-2)+1²
+
+= 1+1
+
+= 2
+```
+
+Check:
+
+```text
+6-4 = 2
+```
+
+---
+
+## 7.7 C++
 
 ```cpp
 long long maximumProduct(long long n) {
@@ -1438,9 +2674,9 @@ maximize product
 
 ---
 
-# 9. Minimum Dot Product
+# 8. Minimum Dot Product
 
-## 9.1 What It Asks
+## 8.1 What It Asks
 
 Rearrange arrays `A` and `B` to minimize:
 
@@ -1450,115 +2686,379 @@ Rearrange arrays `A` and `B` to minimize:
 
 ---
 
-## 9.2 Concept Simplified
+## 8.2 Concept Simplified
 
-For minimum sum of products:
+Use simple names:
 
 ```text
-small value ↔ large value
-large value ↔ small value
+small A value = a
+large A value = b
+
+small B value = x
+large B value = y
 ```
 
-So:
+with:
 
 ```text
-A ascending
-B descending
+a <= b
+x <= y
+```
+
+For minimum dot product:
+
+```text
+small ↔ large
+large ↔ small
 ```
 
 ---
 
-## 9.3 Exchange Proof + Dry Run Side by Side
+## 8.3 Greedy Claim
 
-For the local proof, write two values from each array in ascending order:
-
-```math
-a_1\le a_2
-```
+Same-order pairing:
 
 ```math
-b_1\le b_2
+X=ax+by
 ```
 
-Compare:
+Actual example:
 
 ```text
-same order:
-a1 with b1
-a2 with b2
-
-opposite order:
-a1 with b2
-a2 with b1
+X
+= 2×3 + 7×10
+= 6 + 70
+= 76
 ```
 
-Use:
+Opposite-order pairing:
+
+```math
+Y=ay+bx
+```
+
+Actual example:
 
 ```text
-a1 = 2, a2 = 7
-b1 = 3, b2 = 10
+Y
+= 2×10 + 7×3
+= 20 + 21
+= 41
 ```
 
-| Step | Symbolic | Dry run |
-|---|---|---|
-| Same order | `X=a1*b1+a2*b2` | `2×3+7×10=76` |
-| Opposite order | `Y=a1*b2+a2*b1` | `2×10+7×3=41` |
-| Difference | `X-Y` | `76-41=35` |
-| Factor | `(a1-a2)(b1-b2)` | `(2-7)(3-10)` |
-| Signs | `(-)×(-)` | `(-5)×(-7)` |
-| Result | `X-Y >= 0` | `35 >= 0` |
+We want to prove:
+
+```math
+Y\le X
+```
+
+Equivalent:
+
+```math
+X-Y\ge0
+```
+
+---
+
+## 8.4 Mathematical Proof — Every Step Explained
+
+Start:
+
+```math
+X-Y
+=
+(ax+by)-(ay+bx)
+```
+
+Actual example:
+
+```text
+76 - 41
+=
+(2×3 + 7×10) - (2×10 + 7×3)
+```
+
+---
+
+### Step 1 — Remove the minus bracket
+
+```math
+X-Y
+=
+ax+by-ay-bx
+```
+
+Actual example:
+
+```text
+35
+=
+2×3 + 7×10 - 2×10 - 7×3
+```
+
+Why?
+
+```text
+-(ay+bx)
+=
+-ay-bx
+```
+
+---
+
+### Step 2 — Group similar terms
+
+```math
+X-Y
+=
+ax-ay+by-bx
+```
+
+Actual example:
+
+```text
+35
+=
+2×3 - 2×10 + 7×10 - 7×3
+```
+
+Group:
+
+```text
+a terms together
+b terms together
+```
+
+---
+
+### Step 3 — Factor `a` and `b`
+
+```math
+X-Y
+=
+a(x-y)+b(y-x)
+```
+
+Actual example:
+
+```text
+35
+=
+2(3-10) + 7(10-3)
+
+= 2(-7) + 7(7)
+
+= -14 + 49
+
+= 35
+```
+
+because:
+
+```text
+ax-ay = a(x-y)
+
+by-bx = b(y-x)
+```
+
+---
+
+### Step 4 — Rewrite `y-x`
+
+```math
+y-x=-(x-y)
+```
 
 Therefore:
+
+```math
+b(y-x)
+=
+-b(x-y)
+```
+
+So:
+
+```math
+X-Y
+=
+a(x-y)-b(x-y)
+```
+
+Actual example:
+
+```text
+35
+=
+2(3-10) - 7(3-10)
+
+= 2(-7) - 7(-7)
+
+= -14 + 49
+
+= 35
+```
+
+---
+
+### Step 5 — Factor the common bracket
+
+```math
+X-Y
+=
+(a-b)(x-y)
+```
+
+Actual example:
+
+```text
+35
+=
+(2-7)(3-10)
+
+= (-5)(-7)
+
+= 35
+```
+
+because:
+
+```text
+a(x-y)-b(x-y)
+=
+(a-b)(x-y)
+```
+
+---
+
+### Step 6 — Determine signs
+
+Since:
+
+```text
+a <= b
+```
+
+```math
+a-b\le0
+```
+
+Since:
+
+```text
+x <= y
+```
+
+```math
+x-y\le0
+```
+
+Therefore:
+
+```text
+negative × negative
+=
+non-negative
+```
+
+So:
+
+```math
+X-Y\ge0
+```
+
+Hence:
 
 ```math
 X\ge Y
 ```
 
-So opposite pairing is no larger and is therefore better for minimization.
+Therefore:
+
+```text
+opposite pairing Y
+is no larger than
+same-order pairing X
+```
+
+So opposite order is better for minimization.
 
 ---
 
-### Algebra Expansion Side by Side
+## 8.5 Numerical Dry Run
 
-| Symbolic step | Numerical step |
-|---|---|
-| `X-Y = a1*b1+a2*b2-a1*b2-a2*b1` | `76-41` |
-| `= a1(b1-b2)+a2(b2-b1)` | `= 2(3-10)+7(10-3)` |
-| `b2-b1 = -(b1-b2)` | `10-3 = -(3-10)` |
-| `= (a1-a2)(b1-b2)` | `= (2-7)(3-10)` |
-| `= (-)(-) >= 0` | `=(-5)(-7)=35` |
+Use:
 
-That is the whole proof in one view.
+```text
+a = 2
+b = 7
+x = 3
+y = 10
+```
+
+Same order:
+
+```text
+X
+= 2×3 + 7×10
+= 6 + 70
+= 76
+```
+
+Opposite order:
+
+```text
+Y
+= 2×10 + 7×3
+= 20 + 21
+= 41
+```
+
+Difference:
+
+```text
+X-Y
+= 76-41
+= 35
+```
+
+Factor formula:
+
+```text
+(a-b)(x-y)
+
+= (2-7)(3-10)
+
+= (-5)(-7)
+
+= 35
+```
+
+Same result.
 
 ---
 
-## 9.4 Why This Proves the Whole Array
+## 8.6 Why the Two-Element Proof Proves the Whole Array
 
-Suppose `A` is sorted ascending but some two `B` values are also ascending:
-
-```text
-a_i <= a_j
-b_i <= b_j
-```
-
-The two-element proof says:
+Suppose:
 
 ```text
-swap b_i and b_j
+A is ascending
 ```
 
-to create the opposite pairing.
+but two corresponding values in `B` are also ascending.
 
-The dot product does not increase.
+Then that pair is in the wrong direction for minimization.
 
-So:
+Swap those two `B` values.
+
+The proof above says:
 
 ```text
-find same-direction pair
-→ swap it
-→ answer non-increasing
-→ repeat
+dot product cannot increase
 ```
+
+Repeat every such swap.
 
 Eventually:
 
@@ -1567,13 +3067,11 @@ A ascending
 B descending
 ```
 
-Therefore opposite sorting is optimal.
-
-This is the **exchange argument** for the full problem.
+So opposite sorting is optimal.
 
 ---
 
-## 9.5 Full Example
+## 8.7 Full Example
 
 ```text
 A = [-1,3,-2]
@@ -1591,13 +3089,15 @@ Dot product:
 
 ```text
 -2×5 + -1×1 + 3×(-10)
+
 = -10 - 1 - 30
+
 = -41
 ```
 
 ---
 
-## 9.6 C++
+## 8.8 C++
 
 ```cpp
 long long minimumDotProduct(
@@ -1637,211 +3137,203 @@ same order
 
 ---
 
-# 10. Proof Pattern Summary
+# 9. Proof Pattern Summary
 
-| Problem | Greedy claim | Proof technique |
-|---|---|---|
-| Maximum K-sum | K largest | exchange smaller ↔ larger |
-| Maximum difference | max - min | global-bound/extreme proof |
-| Minimum difference | adjacent after sort | containment/bound proof |
-| Max `Σ i*a[i]` | same ordering | exchange / adjacent swap |
-| Coin change | largest coin first | replacement proof |
-| Fixed-sum product | balance values | deviation/balancing proof |
-| Minimum dot product | opposite ordering | exchange / adjacent swap |
+| Problem | Greedy Claim | Proof Comparison | Main Algebra |
+|---|---|---|---|
+| Maximum K-sum | choose K largest | new sum vs old sum | `G-O=q-p` |
+| Maximum difference | max - min | global extremes vs candidate | `G-O=(M-x)+(y-m)` |
+| Minimum difference | adjacent after sort | adjacent vs non-adjacent | `O-G=a_(i-1)-a_j` |
+| Max weighted sum | same ordering | same vs swapped pair | `G-O=(a-b)(x-y)` |
+| Coin change | use larger equivalent coin | 1 large vs `r` small | `G-O=1-r` |
+| Coin failure | largest first fails | greedy vs optimum | `G-O=7-2=5` |
+| Fixed-sum product | balance values | balanced vs `k` away | `G-O=k(R-L)+k²` |
+| Minimum dot product | opposite ordering | same vs opposite pair | `X-Y=(a-b)(x-y)` |
 
 ---
 
-## Exchange Pattern
+## 9.1 What the Algebra Is Really Doing
+
+Do not memorize long equations.
+
+Each proof asks only:
 
 ```text
-optimal solution disagrees
-        |
-        v
-isolate one disagreement
-        |
-        v
-exchange it
-        |
-        v
-check feasibility
-        |
-        v
-compute G-O
-        |
-        v
-sign proves non-worse
-        |
-        v
-repeat
+What changes
+if I replace the competing local choice
+with the greedy local choice?
+```
+
+Then compute:
+
+```text
+new - old
+```
+
+or:
+
+```text
+old - new
+```
+
+whichever gives an easy sign.
+
+---
+
+# 10. Recognition Checklist
+
+For a new greedy problem:
+
+```text
+1. What exactly am I optimizing?
+
+2. What must remain feasible?
+
+3. What is my greedy claim?
+
+4. What is the smallest possible disagreement
+   between greedy and another solution?
+
+5. Define G and O for only that local disagreement.
+
+6. Write G-O.
+
+7. Remove brackets carefully.
+
+8. Group similar terms.
+
+9. Factor common terms.
+
+10. Use known inequalities.
+
+11. Is the final sign correct?
+    max → G-O >= 0
+    min → G-O <= 0
+
+12. Does the exchange preserve feasibility?
+
+13. Can this local exchange be repeated?
+
+14. Can I find a counterexample?
 ```
 
 ---
 
-## Bound Pattern
+# 11. Compact Revision Card
 
 ```text
-arbitrary candidate
-        |
-        v
-replace with global extreme
-        |
-        v
-objective can only improve
-```
-
----
-
-## Replacement Pattern
-
-```text
-several smaller choices
-        |
-        v
-one larger equivalent choice
-        |
-        v
-same feasibility
-better objective
-```
-
----
-
-## Balancing Pattern
-
-```text
-fixed total
-        |
-        v
-start at balanced solution
-        |
-        v
-move k away
-        |
-        v
-expand G-O
-        |
-        v
-show G-O >= 0
-```
-
----
-
-# 11. Recognition Checklist
-
-Before coding a greedy solution:
-
-```text
-1. What is the objective?
-2. What constraints define feasibility?
-3. Does sorting reveal structure?
-4. What is my exact greedy claim?
-5. Can I construct an optimal solution that disagrees?
-6. Can I exchange only the disagreement?
-7. Does feasibility survive the exchange?
-8. What is G-O?
-9. Does its sign prove the greedy choice is non-worse?
-10. Can I find a counterexample?
-```
-
-If you cannot prove the local choice is safe:
-
-```text
-do not trust the greedy rule yet
-```
-
----
-
-# 12. Compact Revision Card
-
-```text
-GREEDY
-======
-claim + proof
-
-
-EXCHANGE ARGUMENT
+GREEDY MATH PROOF
 =================
-1. State greedy choice.
-2. Assume OPT disagrees.
-3. Swap one disagreement.
-4. Keep feasibility.
-5. Compare G-O.
-6. Prove non-worse.
-7. Repeat.
+G = greedy local value
+O = competing local value
+
+max:
+prove G-O >= 0
+
+min:
+prove G-O <= 0
+
+
+ALGEBRA
+=======
+1. remove brackets
+2. rearrange
+3. cancel
+4. factor
+5. inspect signs
 
 
 MAX K-SUM
 =========
-K largest
+G = O-p+q
 
-exchange:
-q-p >= 0
+G-O
+= q-p
+>= 0
 
 
 MAX DIFFERENCE
 ==============
-global max - global min
+G = M-m
+O = x-y
+
+G-O
+= (M-x)+(y-m)
+>= 0
 
 
 MIN DIFFERENCE
 ==============
-sort + adjacent gaps
+O = a_i-a_j
+G = a_i-a_(i-1)
+
+O-G
+= a_(i-1)-a_j
+>= 0
+
+therefore:
+G <= O
 
 
-MAX Σ i*a[i]
-==============
-same order
+MAX WEIGHTED SUM
+================
+G = ax+by
+O = ay+bx
 
 G-O
-=
-(a_i-a_j)(i-j)
+= (a-b)(x-y)
 >= 0
 
 
 COIN CHANGE
 ===========
-largest first only when
-replacement structure is provable
+d_next = r*d
 
-r small coins
-→ 1 larger equivalent coin
+G = 1
+O = r
+
+G-O
+= 1-r
+<= 0
 
 
-COUNTEREXAMPLE
-==============
-[1,8,10], X=16
+COIN FAILURE
+============
+coins [1,8,10]
+X=16
 
-greedy = 7 coins
-optimal = 2 coins
+G=7
+O=2
+
+G-O=5>0
+
+greedy fails
 
 
 FIXED SUM MAX PRODUCT
 =====================
-A+B=N
-
-balance:
-
-A=floor(N/2)
-B=ceil(N/2)
+G = LR
+O = (L-k)(R+k)
 
 G-O
-=
-k²+k(R-L)
+= k(R-L)+k²
 >= 0
 
 
-MINIMUM DOT PRODUCT
-===================
-A ascending
-B descending
+MIN DOT PRODUCT
+===============
+same:
+X=ax+by
 
-same - opposite
-=
-(a1-a2)(b1-b2)
+opposite:
+Y=ay+bx
+
+X-Y
+= (a-b)(x-y)
 >= 0
 
 therefore:
-opposite <= same
+Y <= X
 ```
 
 ---
@@ -1849,26 +3341,35 @@ opposite <= same
 # Final Mental Model
 
 ```text
-Optimization
-     |
-     v
-Greedy claim
-     |
-     v
-Try to break it
-     |
-  +--+--+
-  |     |
-breaks survives
-  |     |
-reject prove
-        |
-        +--------------------------+
-        |        |        |        |
-     exchange   bound replacement balance
-        |
-        v
-     safe choice
+                GREEDY CLAIM
+                     |
+                     v
+             competing choice
+                     |
+                     v
+               define G / O
+                     |
+                     v
+                write G-O
+                     |
+                     v
+       remove brackets / group / factor
+                     |
+                     v
+                inspect sign
+                     |
+            +--------+--------+
+            |                 |
+       correct sign        wrong sign
+            |                 |
+            v                 v
+   check feasibility       claim fails
+            |
+            v
+      exchange is safe
+            |
+            v
+       repeat if needed
 ```
 
-> **Core lesson:** the important skill is not noticing that a solution sorts. It is being able to explain **why any disagreement with the greedy order can be exchanged away without improving the answer**.
+> **Core lesson:** most algebraic greedy proofs are not about doing complicated mathematics. They are about **measuring exactly what changes when one local choice is replaced by another**.
