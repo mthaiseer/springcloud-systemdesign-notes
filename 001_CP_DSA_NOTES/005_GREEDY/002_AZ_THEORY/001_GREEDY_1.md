@@ -1,1178 +1,561 @@
 # AlgoZenith Greedy — Class 1
-## Exchange Proofs, Ratio Scheduling, Median, Weighted Median, and Bottleneck × Top-K
+## V9 · Clear variable names, simpler scheduling, TLE-style proofs
 
-> **Goal:** convert the class-board derivations into a self-study note that explains **where every greedy rule comes from**.
+> **Goal:** first understand **what the question wants**. Next use **small numbers** to discover a choice. Finally prove why it works for *all* valid inputs.
 >
-> **Study flow used for every pattern:**
+> **Proof layout:** **Question in plain English → Define the data → Small table/timeline → Observation → One proof step at a time → Numbers → General rule.**
 >
-> ```text
-> prerequisites
-> → what the problem/model asks
-> → variables
-> → tiny numerical example
-> → greedy observation
-> → exchange / algebraic proof
-> → every equation mapped to numbers
-> → ASCII visualization
-> → algorithm
-> → C++17
-> → complexity
-> → edge cases
-> → recognition model
-> → don't-memorize model
-> ```
->
-> The class covers four important greedy forms:
->
-> ```text
-> 1. Rearrangement / Maximum Dot Product
->    → sort both sequences in the same order
->    → swapping / exchange proof
->
-> 2. Score–Decay–Time Scheduling
->    → order by decreasing D/T
->    → two-job exchange proof
->
-> 3. Median / Weighted Median
->    → minimize sum of absolute distances
->
-> 4. Team Performance
->    → additive sum × bottleneck minimum
->    → sort bottleneck descending + keep top-K additive values
-> ```
+> The examples are teaching models of the five class patterns, not quotes from contest statements. C++17 uses `long long`, assuming **every intermediate operation** fits signed 64-bit (see §0.14).
+
+## Clickable Table of Contents
+
+- [0. Prerequisites — With Small Examples](#0-prerequisites--with-small-examples)
+  - [0.1 Understand the question and objective](#01-understand-the-question-and-objective)
+  - [0.2 What is a contribution?](#02-what-is-a-contribution)
+  - [0.3 Compare only what changes](#03-compare-only-what-changes)
+  - [0.4 Exchange proof](#04-exchange-proof)
+  - [0.5 Inversion and sorting](#05-inversion-and-sorting)
+  - [0.6 Remove brackets, cancel, and factor](#06-remove-brackets-cancel-and-factor)
+  - [0.7 Inequalities](#07-inequalities)
+  - [0.8 Ratio comparison without division](#08-ratio-comparison-without-division)
+  - [0.9 Waiting time and completion time](#09-waiting-time-and-completion-time)
+  - [0.10 Absolute distance and median](#010-absolute-distance-and-median)
+  - [0.11 Weight and prefix weight](#011-weight-and-prefix-weight)
+  - [0.12 Keeping Top-K with a min-heap](#012-keeping-top-k-with-a-min-heap)
+  - [0.13 Bottleneck multiplied by a sum](#013-bottleneck-multiplied-by-a-sum)
+  - [0.14 Safe use of `long long`](#014-safe-use-of-long-long)
+- [1. Maximum Dot Product — Which Values Should Be Paired?](#1-maximum-dot-product--which-values-should-be-paired)
+- [2. Job Scheduling — Which Job Should Run First?](#2-job-scheduling--which-job-should-run-first)
+- [3. Median — Where Should People Meet?](#3-median--where-should-people-meet)
+- [4. Weighted Median — Where Should Groups Meet?](#4-weighted-median--where-should-groups-meet)
+- [5. Team Performance — Which K Workers Should We Choose?](#5-team-performance--which-k-workers-should-we-choose)
+- [6. Recognition and Revision](#6-recognition-and-revision)
 
 ---
 
-# Clickable Table of Contents
+# 0. Prerequisites — With Small Examples
 
-- [0. How to Use This Note](#0-how-to-use-this-note)
-- [1. Shared Prerequisites](#1-shared-prerequisites)
-  - [1.1 What Greedy Actually Needs](#11-what-greedy-actually-needs)
-  - [1.2 Exchange / Swapping Proof](#12-exchange--swapping-proof)
-  - [1.3 Local Pair Comparison](#13-local-pair-comparison)
-  - [1.4 Sorting and Inversions](#14-sorting-and-inversions)
-  - [1.5 Cross Multiplication Instead of Floating Point](#15-cross-multiplication-instead-of-floating-point)
-  - [1.6 Completion Time](#16-completion-time)
-  - [1.7 Absolute Distance](#17-absolute-distance)
-  - [1.8 Median](#18-median)
-  - [1.9 Weighted Median](#19-weighted-median)
-  - [1.10 Min-Heap for Top-K](#110-min-heap-for-top-k)
-  - [1.11 Bottleneck × Additive-Sum Objectives](#111-bottleneck--additive-sum-objectives)
-  - [1.12 Overflow and `__int128`](#112-overflow-and-__int128)
-  - [1.13 Universal Greedy Proof Checklist](#113-universal-greedy-proof-checklist)
-- [2. Pattern 1 — Maximum Dot Product / Rearrangement Inequality](#2-pattern-1--maximum-dot-product--rearrangement-inequality)
-- [3. Pattern 2 — Score–Decay–Time Job Ordering](#3-pattern-2--scoredecaytime-job-ordering)
-- [4. Pattern 3 — Median Minimizes Absolute Distance](#4-pattern-3--median-minimizes-absolute-distance)
-- [5. Pattern 4 — Weighted Median](#5-pattern-4--weighted-median)
-- [6. Pattern 5 — Team Performance: Sum × Minimum](#6-pattern-5--team-performance-sum--minimum)
-- [7. Pattern Comparison](#7-pattern-comparison)
-- [8. Final Recognition Checklist](#8-final-recognition-checklist)
-- [9. Compact Revision Card](#9-compact-revision-card)
+## 0.1 Understand the question and objective
 
----
+**Always answer these three questions before choosing an algorithm:**
 
-# 0. How to Use This Note
+1. What am I **allowed to change**?
+2. What must remain **valid**?
+3. What number am I trying to **maximize or minimize**?
 
-For each pattern:
+**Mini example:** Two workers have strengths `2, 5`. Two machines have multipliers `7, 3`. You may rearrange the machine assignments to maximize combined output.
+
+| Story | Variables | Numbers |
+|---|---|---|
+| Worker strengths | `A` | `[2,5]` |
+| Machine multipliers | `B` | `[7,3]` |
+| Allowed choice | Rearrange `B` | `[7,3]` or `[3,7]` |
+| Objective | Maximize `sum(A[i]*B[i])` | Compare total outputs |
+
+**Lesson:** translate the story into a decision and an objective. **Do not start by guessing “sort.”**
+
+## 0.2 What is a contribution?
+
+One element or one pair adds a **part** to the total answer.
+
+For paired arrays:
 
 ```text
-1. Understand the objective.
-2. Identify what may be reordered / selected.
-3. Try a 2-item example.
-4. Compare:
-      greedy local arrangement
-      vs
-      swapped arrangement.
-5. Cancel everything that is unchanged.
-6. Factor the remaining expression.
-7. Use sign reasoning.
-8. Only then memorize the sorting rule / data structure.
+A = [2, 5]
+B = [7, 3]
+
+position 1 contributes 2×7 = 14
+position 2 contributes 5×3 = 15
+
+total = 14 + 15 = 29
 ```
 
-The recurring theme is:
+**Lesson:** if a choice changes only two contributions, investigate those two contributions first.
 
-```text
-Global optimization
-        |
-        v
-compare only two local choices
-        |
-        v
-prove one local order is never worse
-        |
-        v
-remove inversions / repeat exchange
-        |
-        v
-global optimum
-```
+## 0.3 Compare only what changes
 
----
+**Question:** Why can a proof about the *whole* answer use only two positions?
 
-# 1. Shared Prerequisites
+Suppose fixed `A=[1,2,5,8]` and you exchange `7` and `4` in `B`.
 
-## 1.1 What Greedy Actually Needs
+| Position | A | B before | Product before | B after | Product after |
+|---|---:|---:|---:|---:|---:|
+| 1 | 1 | 3 | 3 | 3 | 3 |
+| **2** | 2 | **7** | **14** | **4** | **8** |
+| **3** | 5 | **4** | **20** | **7** | **35** |
+| 4 | 8 | 6 | 48 | 6 | 48 |
 
-A greedy idea is not:
+Unchanged parts are `3` and `48`. They contribute equally in both arrangements.
+
+Compare only the changed pair:
 
 ```text
-"this feels best now"
+before = 14 + 20 = 34
+after  =  8 + 35 = 43
+gain   = 43 - 34 = 9
 ```
 
-A useful greedy solution needs:
+The full total changes from `85` to `94`, also a gain of `9`.
 
-```text
-CHOICE
-+
-PROOF
-```
+**Lesson:** unaffected contributions cancel. This is called **local pair comparison**.
 
-Typical proof forms in this class:
+**Warning:** in scheduling, swapping non-neighboring jobs can also change the jobs *between* them. Use **adjacent swaps** for the two-job scheduling proof.
 
-```text
-Exchange / swapping proof
-Ratio comparison
-Convex / median argument
-Bottleneck-threshold argument
-```
+## 0.4 Exchange proof
 
----
+An **exchange proof** explains why a local greedy choice is safe.
 
-## 1.2 Exchange / Swapping Proof
+**Question:** If someone gives us an optimal solution with a different choice, can we replace just that choice with the greedy choice **without making the result worse**?
 
-Suppose an optimal solution does not have the order we want.
-
-Find a local bad pair:
+Tiny example:
 
 ```text
-... X ... Y ...
+crossed pairing: 2×7 + 5×3 = 29
+aligned pairing: 2×3 + 5×7 = 41
 ```
 
-Swap only those two:
+Replacement gives `41 ≥ 29`. This numerical example suggests the rule, but **does not prove it for all numbers**.
 
-```text
-... Y ... X ...
-```
+To complete an exchange proof:
 
-Then prove:
+1. State the two choices.
+2. Show the replacement is still **allowed**.
+3. Prove the new answer is **no worse** using variables.
+4. Repeat the safe replacement until the solution follows the greedy rule.
 
-```text
-new objective >= old objective
-```
+**Memory:** *Can I exchange one bad choice for a greedy choice safely?*
 
-for maximization,
+## 0.5 Inversion and sorting
 
-or:
-
-```text
-new objective <= old objective
-```
-
-for minimization.
-
-If the swap never hurts, we can repeatedly remove bad pairs until the structure becomes greedy.
-
-ASCII:
+An **inversion** means a larger value appears before a smaller value when ascending order is desired.
 
 ```text
-OPT has inversion
+before: [1, 7, 4, 9]
+              ↑  ↑
+              7 > 4
 
-... [bad pair] ...
-        |
-        v
-      swap
-        |
-        v
-objective non-worse
-        |
-        v
-one inversion removed
-        |
-        v
-repeat
-        |
-        v
-greedy order exists among optimal solutions
+after:  [1, 4, 7, 9]
 ```
 
----
+If the other array is sorted `A=[1,2,5,8]`:
 
-## 1.3 Local Pair Comparison
+| Pairing at the changed positions | Contribution |
+|---|---:|
+| Before | `2×7 + 5×4 = 34` |
+| After | `2×4 + 5×7 = 43` |
 
-The major simplification:
+Gain = `9`.
 
-```text
-When two solutions differ only at positions i and j,
-all other terms are identical.
-```
+**Why does removing inversions finish?** Every unsorted array has at least one **adjacent** inversion. Swapping adjacent inversions repeatedly eventually produces sorted order.
 
-So instead of comparing the whole objective:
+**Lesson:** if every inversion-removing swap cannot hurt the answer, sorting gives an optimal arrangement.
+
+## 0.6 Remove brackets, cancel, and factor
+
+We need three basic algebra skills.
+
+### A. Remove a minus bracket
 
 ```text
-term1 + term2 + ... + termN
+20 - (7 + 3)
+= 20 - 7 - 3
+= 10
 ```
 
-compare only:
+A minus in front of a bracket changes the sign of **every** term inside.
 
-```text
-contribution at i
-+
-contribution at j
-```
-
-Example:
+### B. Cancel equal terms
 
 ```text
-OLD:
-... + ai*bi + aj*bj + ...
-
-NEW:
-... + ai*bj + aj*bi + ...
-```
-
-Everything outside `i,j` cancels.
-
-This is why exchange proofs stay small.
-
----
-
-## 1.4 Sorting and Inversions
-
-For an ascending sequence:
-
-```text
-x1 <= x2 <= x3 <= ...
-```
-
-an inversion is a pair:
-
-```text
-i < j
-but
-x[i] > x[j]
-```
-
-Example:
-
-```text
-[1, 7, 4, 9]
-
-7 > 4
-```
-
-so `(7,4)` is an inversion.
-
-Many greedy proofs show:
-
-```text
-if an inversion exists,
-swap it without hurting the answer
-```
-
-Therefore:
-
-```text
-an optimal solution can be sorted
-```
-
----
-
-## 1.5 Cross Multiplication Instead of Floating Point
-
-Suppose we want descending order by:
-
-```text
-D / T
-```
-
-Do not compare using:
-
-```cpp
-(double)D / T
-```
-
-when integers may be large.
-
-Instead compare:
-
-```math
-\frac{D_1}{T_1}
-\ge
-\frac{D_2}{T_2}
-```
-
-For positive `T1,T2`, cross multiply:
-
-```math
-D_1T_2
-\ge
-D_2T_1
-```
-
-### Example
-
-```text
-D1 = 20, T1 = 5
-D2 = 50, T2 = 3
-```
-
-Ratios:
-
-```text
-20/5 = 4
-50/3 ≈ 16.67
-```
-
-Cross multiplication:
-
-```text
-20×3 = 60
-50×5 = 250
-
-60 < 250
-```
-
-So job 2 has the larger `D/T`.
-
-No floating-point precision issue.
-
----
-
-## 1.6 Completion Time
-
-If jobs are processed sequentially:
-
-```text
-P1 takes T1
-P2 takes T2
-```
-
-Order:
-
-```text
-P1 → P2
-```
-
-Completion times:
-
-```text
-C1 = T1
-C2 = T1 + T2
-```
-
-Order:
-
-```text
-P2 → P1
-```
-
-Completion times:
-
-```text
-C2 = T2
-C1 = T2 + T1
-```
-
-This matters when score decays with **finish time**, not just the job's own duration.
-
-ASCII:
-
-```text
-P1 then P2:
-
-0 -------- T1 -------- T1+T2
-|    P1    |     P2      |
-     C1          C2
-
-
-P2 then P1:
-
-0 -------- T2 -------- T2+T1
-|    P2    |     P1      |
-     C2          C1
-```
-
----
-
-## 1.7 Absolute Distance
-
-Distance on a number line:
-
-```math
-|x-a|
-```
-
-Example:
-
-```text
-x = 5
-a = 2
-
-|5-2|
-= 3
-```
-
-The objective:
-
-```math
-\sum_i |x-x_i|
-```
-
-means:
-
-```text
-choose one location x
-that minimizes total distance
-to all points
-```
-
----
-
-## 1.8 Median
-
-For sorted values:
-
-```text
-x1 <= x2 <= ... <= xn
-```
-
-a median minimizes:
-
-```math
-\sum_i |x-x_i|
-```
-
-Odd count:
-
-```text
-[1,3,7]
-
-median = 3
-```
-
-Even count:
-
-```text
-[1,3,7,10]
-```
-
-Any:
-
-```text
-x in [3,7]
-```
-
-minimizes the continuous objective.
-
-For an integer answer, any integer in that interval is optimal.
-
----
-
-## 1.9 Weighted Median
-
-If point `x_i` has weight:
-
-```text
-k_i
-```
-
-the objective is:
-
-```math
-\sum_i k_i|x-x_i|
-```
-
-Think conceptually:
-
-```text
-x_i is repeated k_i times
-```
-
-Example:
-
-```text
-x = [1,3,7]
-k = [1,1,3]
-```
-
-Expanded conceptual list:
-
-```text
-[1,3,7,7,7]
-```
-
-Median:
-
-```text
-7
-```
-
-So weighted median is:
-
-```text
-the point where cumulative weight
-reaches at least half of total weight
-```
-
-Do not actually expand when weights are large.
-
----
-
-## 1.10 Min-Heap for Top-K
-
-To maintain the largest `K` values seen so far:
-
-```text
-use a min-heap of size at most K
-```
-
-Why min-heap?
-
-Because when we have `K+1` candidates:
-
-```text
-remove the smallest one
-```
-
-C++:
-
-```cpp
-priority_queue<
-    long long,
-    vector<long long>,
-    greater<long long>
-> pq;
-```
-
-Pattern:
-
-```cpp
-pq.push(x);
-sum += x;
-
-if ((int)pq.size() > K) {
-    sum -= pq.top();
-    pq.pop();
-}
-```
-
-Afterward:
-
-```text
-heap contains the K largest values
-seen in the processed prefix
-```
-
----
-
-## 1.11 Bottleneck × Additive-Sum Objectives
-
-A common structure:
-
-```math
-score
-=
-(\text{sum of one attribute})
-\times
-(\text{minimum of another attribute})
-```
-
-Example:
-
-```text
-team score
-=
-(sum of efficiencies)
-×
-(minimum speed)
-```
-
-The difficulty:
-
-```text
-one part is additive
-one part is a bottleneck
-```
-
-Greedy approach:
-
-```text
-fix / enumerate the bottleneck threshold
-```
-
-Then optimize the additive part among all items allowed by that threshold.
-
-This is the core of the team problem.
-
----
-
-## 1.12 Overflow and `__int128`
-
-The class board shows values potentially around:
-
-```text
-10^9
-```
-
-Products:
-
-```text
-10^9 × 10^9
-= 10^18
-```
-
-A single product is near `long long` range.
-
-But a sum of up to `10^5` such products can be:
-
-```text
-10^23
-```
-
-which does **not** fit in signed 64-bit.
-
-Likewise:
-
-```text
-topKSum × bottleneck
-```
-
-may exceed `long long`.
-
-When constraints allow this, use:
-
-```cpp
-__int128
-```
-
-Helper for printing:
-
-```cpp
-void printInt128(__int128 x) {
-    if (x == 0) {
-        cout << 0;
-        return;
-    }
-
-    if (x < 0) {
-        cout << '-';
-        x = -x;
-    }
-
-    string s;
-
-    while (x > 0) {
-        s.push_back('0' + x % 10);
-        x /= 10;
-    }
-
-    reverse(s.begin(), s.end());
-    cout << s;
-}
-```
-
----
-
-## 1.13 Universal Greedy Proof Checklist
-
-Before coding, ask:
-
-```text
-1. What is being optimized?
-
-2. What part can be sorted / reordered?
-
-3. If two elements are in the "wrong" order,
-   can I swap them?
-
-4. When I compare before vs after,
-   which terms cancel?
-
-5. Can the remaining difference be factored?
-
-6. What signs do the factors have?
-
-7. Is the rule really a ratio?
-   If yes, can I compare by cross multiplication?
-
-8. Is the objective sum of absolute distances?
-   If yes, think median.
-
-9. Are distances weighted?
-   If yes, think weighted median.
-
-10. Is the score:
-      additive sum × minimum bottleneck?
-    If yes:
-      sort by bottleneck
-      + maintain top-K additive values.
-```
-
----
-
-# 2. Pattern 1 — Maximum Dot Product / Rearrangement Inequality
-
-## 2.1 What the Model Asks
-
-Given two arrays:
-
-```text
-A = [a1,a2,...,an]
-B = [b1,b2,...,bn]
-```
-
-We may permute the pairing.
-
-Goal:
-
-```math
-A\cdot B
-=
-\sum_{i=1}^{n} a_i b_i
-```
-
-maximize it.
-
-The greedy claim:
-
-```text
-sort A and B in the SAME order
-```
-
-For example:
-
-```text
-ascending A
-+
-ascending B
-```
-
-maximizes the dot product.
-
-Opposite order minimizes it.
-
----
-
-## 2.2 Tiny Example First
-
-```text
-A = [1,2,3]
-B = [1,2,3]
-```
-
-Same-order pairing:
-
-```text
-1×1 + 2×2 + 3×3
-
-= 1 + 4 + 9
-
-= 14
-```
-
-A crossed pairing:
-
-```text
-A = [1,2,3]
-B = [1,3,2]
-```
-
-gives:
-
-```text
-1×1 + 2×3 + 3×2
-
-= 1 + 6 + 6
-
-= 13
-```
-
-So same order is better here.
-
-We need a proof for every input.
-
----
-
-## 2.3 Two-Pair Proof — Numbers First
-
-Take:
-
-```text
-small A = 2
-large A = 5
-
-small B = 3
-large B = 7
-```
-
-Same-order contribution:
-
-```text
-2×3 + 5×7
-
-= 6 + 35
-
-= 41
-```
-
-Crossed contribution:
-
-```text
-2×7 + 5×3
-
-= 14 + 15
-
-= 29
-```
-
-Difference:
-
-```text
-41-29
+(10 + 41) - (10 + 29)
+= 10 + 41 - 10 - 29
+= 41 - 29
 = 12
 ```
 
-Now derive why this must be non-negative.
+The common `+10` and `−10` cancel.
 
----
+### C. Factor a repeated difference
 
-## 2.4 General Two-Pair Derivation
-
-Assume:
-
-```math
-a_i\le a_j
-```
-
-and:
-
-```math
-b_i\le b_j
-```
-
-Same-order contribution:
-
-```math
-G
-=
-a_ib_i+a_jb_j
-```
-
-Crossed contribution:
-
-```math
-O
-=
-a_ib_j+a_jb_i
-```
-
-Want:
-
-```math
-G\ge O
-```
-
-Subtract:
-
-```math
-G-O
-=
-a_ib_i+a_jb_j-a_ib_j-a_jb_i
-```
-
-Group terms:
-
-```math
-G-O
-=
-a_jb_j-a_jb_i-a_ib_j+a_ib_i
-```
-
-Factor `a_j` from first pair:
-
-```math
-=
-a_j(b_j-b_i)-a_i(b_j-b_i)
-```
-
-Factor common `(b_j-b_i)`:
-
-```math
-G-O
-=
-(a_j-a_i)(b_j-b_i)
-```
-
-Now:
-
-```math
-a_j-a_i\ge0
-```
-
-and:
-
-```math
-b_j-b_i\ge0
-```
-
-Therefore:
-
-```math
-G-O\ge0
-```
-
-Hence:
-
-```math
-G\ge O
-```
-
----
-
-## 2.5 Same Algebra With the Actual Numbers
-
-Use:
+Start with:
 
 ```text
-ai = 2
-aj = 5
-bi = 3
-bj = 7
+5×7 - 5×3
 ```
 
-Start:
+Both terms contain `5`:
 
 ```text
-G-O
-
-= 2×3 + 5×7
-  - 2×7 - 5×3
+= 5×(7-3)
+= 5×4
+= 20
 ```
 
-Evaluate:
+A more important example for greedy proofs:
 
 ```text
-= 6 + 35 - 14 - 15
-
-= 12
+5×(7-3) - 2×(7-3)
 ```
 
-Factored formula:
+Both terms contain `(7-3)`:
 
 ```text
-(aj-ai)(bj-bi)
-
-= (5-2)(7-3)
-
+= (5-2)×(7-3)
 = 3×4
-
 = 12
 ```
 
-Exactly the same difference.
+**Lesson:** expand → find repeated terms → factor. The proof in Pattern 1 uses exactly this.
+
+## 0.7 Inequalities
+
+An inequality compares two values, e.g., `5 ≤ 8`.
+
+### Add or subtract the same quantity
+
+```text
+5 <= 8
+add 2 to both sides
+7 <= 10
+```
+
+Direction does **not** change.
+
+### Multiply by a negative number
+
+```text
+-8 <= -3
+multiply by -1
+8 >= 3
+```
+
+Direction **reverses**.
+
+### Divide by a positive number
+
+```text
+12 >= 6
+divide by 3
+4 >= 2
+```
+
+Direction stays the same.
+
+**Scheduling example:** A takes 5 minutes and loses 2 points each minute. B takes 3 minutes and loses 10 points each minute. To test whether A should go first, ask whether the extra loss caused by A delaying B is smaller than the extra loss caused by B delaying A:
+
+```text
+Extra loss if A goes first = lossPerMinuteJobB × durationJobA
+                           = 10 × 5 = 50
+
+Extra loss if B goes first = lossPerMinuteJobA × durationJobB
+                           = 2 × 3 = 6
+```
+
+Since `50 > 6`, **B should go first**. The ratio comparison in the next section is simply another way to express this same test.
+
+## 0.8 Ratio comparison without division
+
+**Question:** How do we compare urgency against job duration without decimal divisions?
+
+| Job | Loss per minute | Duration | Loss-per-minute / duration |
+|---|---:|---:|---:|
+| A | 2 | 5 | `2/5 = 0.4` |
+| B | 10 | 3 | `10/3 ≈ 3.33` |
+
+Suppose we want to check whether job A's ratio is at least B's ratio.
+
+```text
+lossPerMinuteJobA / durationJobA
+  >= lossPerMinuteJobB / durationJobB
+```
+
+Use the real values first:
+
+```text
+2/5 >= 10/3 ?
+```
+
+Because both durations are positive, multiply both sides by `5 × 3`:
+
+```text
+2 × 3 >= 10 × 5 ?
+6 >= 50 ?   NO
+```
+
+So **job B has the larger ratio** and should go first in this score-decay model. In C++, use cross-products (when they fit `long long`), rather than floating-point comparison.
+
+## 0.9 Waiting time and completion time
+
+**Question:** If one computer runs A for `5` minutes and B for `3` minutes, when does each finish?
+
+| Order A then B | Waiting | Processing | Completion |
+|---|---:|---:|---:|
+| A | 0 | 5 | 5 |
+| B | 5 | 3 | 8 |
+
+| Order B then A | Waiting | Processing | Completion |
+|---|---:|---:|---:|
+| B | 0 | 3 | 3 |
+| A | 3 | 5 | 8 |
+
+```text
+A then B:  0 -- A (5) -- 5 -- B (3) -- 8
+B then A:  0 -- B (3) -- 3 -- A (5) -- 8
+```
+
+**Processing time:** duration of the job itself.
+
+**Waiting time:** time spent waiting for previous jobs.
+
+**Completion time:** `waiting + processing` = running sum of durations.
+
+**Lesson:** both orders finish all work at 8, but **which job finishes earlier** changes.
+
+## 0.10 Absolute distance and median
+
+Absolute distance means distance on a straight number line:
+
+```text
+|3-7| = 4
+|7-3| = 4
+```
+
+**Question:** Friends live at positions `[1,3,7]`. Where should they meet to minimize combined walking distance?
+
+| Meeting point X | Total distance |
+|---|---:|
+| 1 | `0+2+6=8` |
+| **3** | **`2+0+4=6`** |
+| 7 | `6+4+0=10` |
+
+The middle value `3` is the **median**.
+
+When walking the meeting point slightly to the right without crossing anyone:
+
+- each person left of X walks farther;
+- each person right of X walks less.
+
+This is the proof idea for Pattern 3.
+
+## 0.11 Weight and prefix weight
+
+**Question:** What if there are **three people at position 7**, not just one?
+
+| Position | Number of people | Cumulative people |
+|---|---:|---:|
+| 1 | 1 | 1 |
+| 3 | 1 | 2 |
+| 7 | 3 | 5 |
+
+Conceptually: `[1,3,7,7,7]`.
+
+The middle (third) person is at `7`, so the **weighted median** is `7`.
+
+**Prefix weight** simply means the number of people counted so far (`1,2,5`). It avoids making a huge array of repeated people.
+
+## 0.12 Keeping Top-K with a min-heap
+
+**Question:** After seeing many efficiencies, how can we keep the **largest K** values?
+
+Let `K=2`; values arrive `4,10,20`.
+
+| Value arrives | Values kept | Reason |
+|---|---|---|
+| 4 | `[4]` | fewer than 2 |
+| 10 | `[4,10]` | exactly 2 |
+| 20 | `[10,20]` | discard the smallest `4` |
+
+**Why a min-heap?** The smallest currently kept value is available at `top()`, so we can discard it quickly.
+
+```cpp
+priority_queue<long long, vector<long long>, greater<long long>> pq;
+```
+
+We maintain a separate running sum of the values in the heap.
+
+## 0.13 Bottleneck multiplied by a sum
+
+Some objectives have two very different parts:
+
+```text
+team score = (sum of efficiencies) × (minimum team speed)
+```
+
+| Workers: (speed,efficiency) | Sum efficiency | Minimum speed | Score |
+|---|---:|---:|---:|
+| `(6,4)` and `(4,10)` | 14 | 4 | 56 |
+| `(4,10)` and `(2,20)` | 30 | 2 | **60** |
+
+More efficiency can compensate for a lower minimum speed.
+
+**Trick:** Fix a possible **minimum speed S**, then choose the largest K efficiencies among workers with speed at least S.
+
+## 0.14 Safe use of `long long`
+
+`long long` can hold values up to approximately `9.22×10^18`.
+
+```text
+10^9 × 10^9 = 10^18         fits
+100000 × 10^18 = 10^23     does not fit
+```
+
+Every calculation must fit, including **intermediate multiplication**, coordinate subtraction, completion-time sums, and running totals. The code in this note uses `long long` only, as requested; do not apply it unchanged if constraints require larger intermediates.
 
 ---
 
-## 2.6 Why This Proves the Whole Sorting Rule
+# 1. Maximum Dot Product — Which Values Should Be Paired?
 
-Suppose `A` is sorted ascending.
+## 1.1 What is the question asking?
 
-If `B` is not sorted ascending, it contains an inversion:
+There are two equal-length arrays. You may **rearrange the pairing**. Multiply each matched pair and add their products.
 
-```text
-i < j
-but
-b_i > b_j
-```
+**Goal:** Return the **maximum possible sum**.
 
-Because:
-
-```text
-a_i <= a_j
-```
-
-swap `b_i` and `b_j`.
-
-The two-pair proof says this swap cannot decrease the dot product.
-
-ASCII:
-
-```text
-before — crossed:
-
-small A -------- large B
-large A -------- small B
-
-     \          /
-      \        /
-       crossing
-
-
-after — aligned:
-
-small A -------- small B
-large A -------- large B
-```
-
-Every safe swap removes at least one inversion.
-
-Repeat until:
-
-```text
-B is sorted in the same order as A
-```
-
-Therefore an optimal arrangement exists with both arrays sorted the same way.
-
----
-
-## 2.7 Exchange Proof in "OPT" Language
-
-Suppose OPT contains:
-
-```text
-(ai, bj)
-(aj, bi)
-```
-
-with:
-
-```text
-ai <= aj
-bi <= bj
-```
-
-OPT local contribution:
-
-```math
-a_ib_j+a_jb_i
-```
-
-Swap the `B` partners.
-
-New contribution:
-
-```math
-a_ib_i+a_jb_j
-```
-
-Difference:
-
-```math
-(a_j-a_i)(b_j-b_i)\ge0
-```
-
-Therefore:
-
-```text
-swap does not hurt OPT
-```
-
-So an optimal solution can be transformed into sorted pairing.
-
----
-
-## 2.8 Negative Numbers Still Work
+**Real-world model:** match workers' strengths to machine multipliers to maximize production.
 
 Example:
 
 ```text
-A = [-5,-1,4]
-B = [-3,2,7]
+A = [2, 5]
+B = [7, 3]
 ```
 
-Same-order pairing:
+## 1.2 Try two possible arrangements
+
+| Pairing | First output | Second output | Total |
+|---|---:|---:|---:|
+| Crossed | `2×7=14` | `5×3=15` | 29 |
+| Aligned | `2×3=6` | `5×7=35` | **41** |
+
+**Observation:** Pair small with small and large with large. This improves this example by `41−29=12`.
+
+But an example alone is **not** a proof. Next prove the same choice works for arbitrary numbers.
+
+## 1.3 Proof — one operation at a time
+
+Let `a≤b` be the two values from A and `c≤d` from B.
+
+**Step 1 — Name the two possibilities.**
+
+Crossed contribution:
 
 ```text
-(-5)(-3) + (-1)(2) + 4(7)
-
-= 15 - 2 + 28
-
-= 41
+O = a×d + b×c
 ```
 
-The pair proof did not assume the values themselves are positive.
-
-It only used:
+Actual numbers:
 
 ```text
-aj-ai >= 0
-bj-bi >= 0
+O = 2×7 + 5×3 = 29
 ```
 
-So sorting same order still maximizes the dot product even with negative values.
-
----
-
-## 2.9 ASCII Visualization
+Aligned contribution:
 
 ```text
-A sorted:
-a1 <= a2 <= a3 <= ... <= an
-
-B sorted:
-b1 <= b2 <= b3 <= ... <= bn
-
-pair:
-
-a1 ---- b1
-a2 ---- b2
-a3 ---- b3
-...
-an ---- bn
-
-No crossing inversions.
+G = a×c + b×d
 ```
 
----
+Actual numbers:
 
-## 2.10 Algorithm
+```text
+G = 2×3 + 5×7 = 41
+```
+
+**Step 2 — Measure gain: new minus old.**
+
+```text
+G - O = (ac + bd) - (ad + bc)
+```
+
+Actual numbers:
+
+```text
+41 - 29 = (6 + 35) - (14 + 15) = 12
+```
+
+**Step 3 — Remove the brackets.** The second bracket has a minus, so both its terms turn negative.
+
+```text
+G - O = ac + bd - ad - bc
+```
+
+Actual numbers:
+
+```text
+= 6 + 35 - 14 - 15 = 12
+```
+
+**Step 4 — Put terms with b together, then terms with a.**
+
+```text
+G - O = bd - bc - ad + ac
+```
+
+Actual numbers:
+
+```text
+= 35 - 15 - 14 + 6 = 12
+```
+
+**Step 5 — Factor each pair.**
+
+```text
+G - O = b(d-c) - a(d-c)
+```
+
+Actual numbers:
+
+```text
+= 5(7-3) - 2(7-3) = 20-8 = 12
+```
+
+**Step 6 — Factor the repeated `(d-c)`.**
+
+```text
+G - O = (b-a)(d-c)
+```
+
+Actual numbers:
+
+```text
+= (5-2)(7-3) = 3×4 = 12
+```
+
+**Step 7 — Why is the gain never negative?**
+
+We assumed `b≥a`, so `b−a≥0`. We also assumed `d≥c`, so `d−c≥0`.
+
+**A nonnegative number times a nonnegative number is nonnegative.** Therefore `G−O≥0`: aligned is never worse than crossed (ties can keep the sum equal).
+
+## 1.4 Why does a proof for TWO values solve N values?
+
+1. Sort A ascending.
+2. If B is not ascending, some neighboring values of B are inverted.
+3. Swap those neighboring B values. The two-pair proof shows the dot product does not decrease.
+4. Continue until B is sorted ascending.
+
+Therefore an optimal pairing exists with **both arrays sorted in the same order**.
+
+**For minimum dot product**, use opposite orders.
+
+## 1.5 Algorithm and dry run
 
 ```text
 1. Sort A ascending.
 2. Sort B ascending.
-3. Compute:
-      sum += A[i] * B[i].
+3. Add products of matching positions.
 ```
 
-For minimum dot product:
+| Position | A | B | Product | Running total |
+|---|---:|---:|---:|---:|
+| 0 | 2 | 3 | 6 | 6 |
+| 1 | 5 | 7 | 35 | **41** |
 
-```text
-sort one ascending
-sort the other descending
-```
-
----
-
-## 2.11 C++17
+## 1.6 C++17 (`long long`)
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-
-void printInt128(__int128 x) {
-    if (x == 0) {
-        cout << 0;
-        return;
-    }
-
-    if (x < 0) {
-        cout << '-';
-        x = -x;
-    }
-
-    string s;
-
-    while (x > 0) {
-        s.push_back(
-            char('0' + x % 10)
-        );
-        x /= 10;
-    }
-
-    reverse(s.begin(), s.end());
-    cout << s;
-}
 
 int main() {
     ios::sync_with_stdio(false);
@@ -1180,1550 +563,554 @@ int main() {
 
     int n;
     cin >> n;
-
     vector<long long> a(n), b(n);
-
-    for (auto& x : a)
-        cin >> x;
-
-    for (auto& x : b)
-        cin >> x;
+    for (long long &x : a) cin >> x;
+    for (long long &x : b) cin >> x;
 
     sort(a.begin(), a.end());
     sort(b.begin(), b.end());
 
-    __int128 ans = 0;
-
+    long long ans = 0;
     for (int i = 0; i < n; ++i) {
-        ans += (__int128)a[i] * b[i];
+        ans += a[i] * b[i];
     }
-
-    printInt128(ans);
-    cout << '\n';
+    cout << ans << '\n';
 }
 ```
 
----
+**Time:** `O(N log N)`. **Space:** sorting stack plus input arrays. **Assumption:** all products and running sums fit `long long`.
 
-## 2.12 Complexity
-
-```text
-sorting:
-O(N log N)
-
-dot product:
-O(N)
-
-total:
-O(N log N)
-```
+**Recognition:** rearrange pairings + maximize sum of products → same-order sorting + exchange proof.
 
 ---
 
-## 2.13 Recognition Model
+# 2. Job Scheduling — Which Job Should Run First?
 
-When you see:
+## 2.1 What is the question asking?
 
-```text
-two sequences
-+
-you may rearrange pairing
-+
-objective is Σ ai*bi
-```
+**Real-world example:** A computer can run **only one task at a time**. Every task starts with some points. Until a task finishes, it **loses points every minute**.
 
-think:
+**Your decision:** Choose the order of the tasks.
 
-```text
-rearrangement inequality
-+
-exchange proof
-```
+**Your goal:** Finish every task while keeping the **largest combined final score**.
 
-For maximum:
+| Meaning | Clear variable name | Job A | Job B |
+|---|---|---:|---:|
+| Starting points | `baseScoreJobA` / `baseScoreJobB` | 100 | 100 |
+| Minutes needed to run | `durationJobA` / `durationJobB` | 5 | 3 |
+| Points lost per minute until finished | `lossPerMinuteJobA` / `lossPerMinuteJobB` | 2 | 10 |
+
+**Important:** A task loses points for its **entire completion time**, including time waiting for earlier tasks. All jobs must run; the score formula is linear and may become negative.
+
+For either task:
 
 ```text
-same order
+finalScore = baseScore - lossPerMinute × completionTime
 ```
 
-For minimum:
+For example, if job A completes at minute 5:
 
 ```text
-opposite order
+finalScoreJobA = 100 - 2 × 5 = 90
 ```
 
----
+## 2.2 Try both possible orders — only TWO jobs first
 
-## 2.14 Don't-Memorize Model
-
-Do not memorize only:
+**Choice 1 — A runs before B**
 
 ```text
-sort both ascending
+Time:    0 -------- 5 -------- 8
+Task:       A (5)       B (3)
+Ends:        A           B
 ```
 
-Remember the local fact:
+| Job | Finishes at minute | Points left |
+|---|---:|---:|
+| A | 5 | `100 − 2×5 = 90` |
+| B | 8 | `100 − 10×8 = 20` |
+| **Total** | | **110** |
+
+**Choice 2 — B runs before A**
 
 ```text
-small×small + large×large
->=
-small×large + large×small
+Time:    0 ------ 3 ------------ 8
+Task:       B (3)         A (5)
+Ends:        B             A
 ```
 
-because:
+| Job | Finishes at minute | Points left |
+|---|---:|---:|
+| B | 3 | `100 − 10×3 = 70` |
+| A | 8 | `100 − 2×8 = 84` |
+| **Total** | | **154** |
+
+**Observation:** B first gives **44 more points** (`154 − 110 = 44`). Now we need to prove a rule that also works for other durations and loss rates.
+
+## 2.3 Why can we compare only LOST points?
+
+Every job gets the same **starting points**, whichever order we choose.
 
 ```text
-difference
-=
-(largeA-smallA)
-×
-(largeB-smallB)
->= 0
+baseScoreJobA = 100
+baseScoreJobB = 100
+
+totalBaseScore = baseScoreJobA + baseScoreJobB
+               = 100 + 100
+               = 200
 ```
 
-That one equation generates the entire sorting rule.
+The order changes **when each job finishes**, so it changes the **points lost**, not the starting points.
 
----
+| Order | Loss from A | Loss from B | Total lost | Final score |
+|---|---:|---:|---:|---:|
+| A then B | `2×5=10` | `10×8=80` | **90** | `200−90=110` |
+| B then A | `2×8=16` | `10×3=30` | **46** | `200−46=154` |
 
-# 3. Pattern 2 — Score–Decay–Time Job Ordering
-
-## 3.1 Model From the Class
-
-Each problem/job `i` has:
+**Conclusion:** The starting total is fixed at 200. Therefore:
 
 ```text
-S_i = base score
-D_i = score decay per unit time
-T_i = time needed
+Maximize final points = Minimize lost points
 ```
 
-If job `i` finishes at time:
+## 2.4 Why do we swap only TWO neighboring jobs?
+
+First, notice that **A and B together always take 8 minutes**, whichever goes first:
 
 ```text
-C_i
+A then B takes 5 + 3 = 8 minutes
+B then A takes 3 + 5 = 8 minutes
 ```
 
-its score is:
+Now imagine other tasks on the same computer. Job **Q runs before** A and B, and job **R runs after** A and B. We are **not swapping Q or R**.
 
-```math
-S_i-D_iC_i
-```
+| Task | Q | A | B | R |
+|---|---:|---:|---:|---:|
+| Processing duration (minutes) | 2 | 5 | 3 | 4 |
 
-Total score:
-
-```math
-\sum_i (S_i-D_iC_i)
-```
-
-Goal:
+**Before the swap:**
 
 ```text
-choose an order maximizing total score
+0 --[Q:2]-- 2 --[A:5]-- 7 --[B:3]-- 10 --[R:4]-- 14
 ```
 
----
-
-## 3.2 First Simplification
-
-Total:
-
-```math
-\sum_i S_i
--
-\sum_i D_iC_i
-```
-
-The first part:
+**After swapping only A and B:**
 
 ```text
-Σ S_i
+0 --[Q:2]-- 2 --[B:3]-- 5 --[A:5]-- 10 --[R:4]-- 14
 ```
 
-does not depend on the order.
+| Job | Finishes before swap | Finishes after swap | Changes? |
+|---|---:|---:|---|
+| Q | 2 | 2 | No |
+| **A** | **7** | **10** | **Yes** |
+| **B** | **10** | **5** | **Yes** |
+| R | 14 | 14 | No |
 
-Therefore maximizing score is equivalent to minimizing:
+**Why?** Q is finished before the pair starts. Both orders of A and B end at minute `2+8=10`, so R starts at minute 10 and finishes at minute 14 either way. **Only A's and B's completion times change.**
 
-```math
-\sum_i D_iC_i
-```
+This is why we compare **neighboring** jobs. Swapping jobs far apart could change the finishing times of jobs between them.
 
-So this is really a:
+## 2.5 Discover the greedy rule without long algebra
+
+This is the most important intuition.
+
+Every task must spend its **own processing time** running. That part of its loss happens either way. What changes is the **extra waiting caused by the other task**.
+
+**Choice A first:** B waits for A's 5 minutes.
 
 ```text
-weighted completion-time scheduling problem
+extraLossWhenAFirst = lossPerMinuteJobB × durationJobA
+                    = 10 × 5
+                    = 50
 ```
 
-where:
+**Choice B first:** A waits for B's 3 minutes.
 
 ```text
-D_i = importance / decay weight
-T_i = processing time
+extraLossWhenBFirst = lossPerMinuteJobA × durationJobB
+                    = 2 × 3
+                    = 6
 ```
 
----
+| Put first | Extra waiting loss imposed on the other job |
+|---|---:|
+| A | 50 points |
+| **B** | **6 points** |
 
-## 3.3 Why Only Two Jobs Are Enough for the Proof
+**Choose B first**, because making A wait costs only 6 extra points, while making B wait costs 50. Difference = `50−6=44`, exactly the score improvement we saw earlier.
 
-Take two adjacent jobs:
+## 2.6 Mathematical proof — one idea at a time
+
+We will show that **this extra-waiting comparison works even if other jobs run before A and B**.
+
+### Step 1 — What is common to both orders?
+
+Let `timeBeforePair` mean the number of minutes the computer has already worked before reaching A and B. In our four-job example, Q takes 2 minutes, so:
 
 ```text
-P1 and P2
+timeBeforePair = 2
 ```
 
-All jobs before them contribute the same in both orders.
+Both A and B wait for Q, no matter which goes first. They also each use their own processing time. Those parts of the loss are **identical** in both orders.
 
-All jobs after them start after total time:
+Call the total of those identical losses `sharedLoss`:
 
 ```text
-T1+T2
+sharedLoss = loss from both jobs waiting for earlier tasks
+           + loss from A's own processing time
+           + loss from B's own processing time
 ```
 
-in both orders.
-
-Therefore only the contributions of:
+**Write that with descriptive variables:**
 
 ```text
-P1 and P2
+sharedLoss = (lossPerMinuteJobA + lossPerMinuteJobB) × timeBeforePair
+           + lossPerMinuteJobA × durationJobA
+           + lossPerMinuteJobB × durationJobB
 ```
 
-matter for deciding their relative order.
-
-This is the exchange-proof trick.
-
----
-
-## 3.4 Order `P1 → P2`
-
-Completion times:
+**Substitute the numbers:**
 
 ```text
-C1 = T1
-C2 = T1+T2
+sharedLoss = (2 + 10) × 2 + 2 × 5 + 10 × 3
+           = 24 + 10 + 30
+           = 64
 ```
 
-Score:
+### Step 2 — Calculate loss if A runs before B
 
-```math
-G
-=
-(S_1-T_1D_1)
-+
-(S_2-(T_1+T_2)D_2)
-```
-
----
-
-## 3.5 Order `P2 → P1`
-
-Completion times:
+The **only additional penalty** is making B wait during A's five minutes.
 
 ```text
-C2 = T2
-C1 = T2+T1
+totalLossIfAFirst = sharedLoss + extraLossWhenAFirst
 ```
 
-Score:
-
-```math
-O
-=
-(S_2-T_2D_2)
-+
-(S_1-(T_2+T_1)D_1)
-```
-
-We want to know when:
-
-```math
-G\ge O
-```
-
-meaning:
+**Numerical example:**
 
 ```text
-P1 before P2 is at least as good
+totalLossIfAFirst = 64 + 10 × 5
+                  = 64 + 50
+                  = 114
 ```
 
----
+### Step 3 — Calculate loss if B runs before A
 
-## 3.6 Algebra Derivation — Every Step
-
-Start:
-
-```math
-(S_1-T_1D_1)
-+
-(S_2-(T_1+T_2)D_2)
-\ge
-(S_2-T_2D_2)
-+
-(S_1-(T_1+T_2)D_1)
-```
-
-Expand both sides.
-
-Left:
-
-```math
-S_1+S_2
--
-T_1D_1
--
-T_1D_2
--
-T_2D_2
-```
-
-Right:
-
-```math
-S_1+S_2
--
-T_2D_2
--
-T_1D_1
--
-T_2D_1
-```
-
-Cancel common terms:
+Here the additional penalty is making A wait during B's three minutes.
 
 ```text
-S1
-S2
--T1D1
--T2D2
+totalLossIfBFirst = sharedLoss + extraLossWhenBFirst
 ```
 
-Remain:
-
-```math
--T_1D_2
-\ge
--T_2D_1
-```
-
-Multiply by `-1`, reversing inequality:
-
-```math
-T_1D_2
-\le
-T_2D_1
-```
-
-Divide by positive `T1T2`:
-
-```math
-\frac{D_1}{T_1}
-\ge
-\frac{D_2}{T_2}
-```
-
-Therefore:
+**Numerical example:**
 
 ```text
-P1 should come before P2
-when D1/T1 >= D2/T2
+totalLossIfBFirst = 64 + 2 × 3
+                  = 64 + 6
+                  = 70
 ```
 
-So sort:
+### Step 4 — Compare the choices and cancel the shared part
 
 ```text
-D_i / T_i
+lossDifference = totalLossIfAFirst - totalLossIfBFirst
+               = 114 - 70
+               = 44
 ```
 
-in descending order.
-
----
-
-## 3.7 Inline Numerical Example From the Board Style
-
-Take:
+**General form:**
 
 ```text
-P1:
-S1 = 100
-D1 = 20
-T1 = 5
-
-P2:
-S2 = 100
-D2 = 50
-T2 = 3
+lossDifference = (sharedLoss + extraLossWhenAFirst)
+               - (sharedLoss + extraLossWhenBFirst)
 ```
 
-Ratios:
+Since `sharedLoss` appears once with `+` and once with `−`, it cancels:
 
 ```text
-D1/T1
-= 20/5
-= 4
-
-D2/T2
-= 50/3
-≈ 16.67
+lossDifference = extraLossWhenAFirst - extraLossWhenBFirst
 ```
 
-So greedy says:
+**Replace these names by the meaning of each extra loss:**
 
 ```text
-P2 first
+lossDifference = (lossPerMinuteJobB × durationJobA)
+               - (lossPerMinuteJobA × durationJobB)
 ```
 
-Let's verify directly.
+**Numerical check:** `10×5 − 2×3 = 50 − 6 = 44`.
 
----
+**Why this matters:** `timeBeforePair` disappeared. The comparison works anywhere in the schedule, not just at the beginning.
 
-## 3.8 Compute `P1 → P2`
+### Step 5 — Determine when A should run first
 
-P1 finishes at:
+We want to **minimize** loss. So A should run first if the extra loss it causes is no greater than the extra loss B would cause.
 
 ```text
-5
+extraLossWhenAFirst <= extraLossWhenBFirst
 ```
 
-P1 score:
+Substitute each descriptive formula:
 
 ```text
-100 - 20×5
-
-= 100 - 100
-
-= 0
+lossPerMinuteJobB × durationJobA
+   <= lossPerMinuteJobA × durationJobB
 ```
 
-P2 finishes at:
+**Numerical check:** `50 <= 6` is **false**, so B runs first in this example.
+
+### Step 6 — Turn this into the general sorting rule
+
+Start with the comparison from Step 5:
 
 ```text
-5+3
-= 8
+lossPerMinuteJobB × durationJobA
+  <= lossPerMinuteJobA × durationJobB
 ```
 
-P2 score:
+Both durations are **positive**. Divide both sides by `durationJobA × durationJobB`:
 
 ```text
-100 - 50×8
-
-= 100 - 400
-
-= -300
+lossPerMinuteJobB / durationJobB
+  <= lossPerMinuteJobA / durationJobA
 ```
 
-Total:
+Read the larger ratio first:
 
 ```text
--300
+lossPerMinuteJobA / durationJobA
+  >= lossPerMinuteJobB / durationJobB
 ```
 
----
+**Numbers:** `2/5 = 0.4` for A, and `10/3 ≈ 3.33` for B. So B must come before A.
 
-## 3.9 Compute `P2 → P1`
+**Greedy rule: sort jobs by DECREASING `(loss per minute)/(processing duration)`.**
 
-P2 finishes at:
+### Step 7 — Why is this rule optimal for all jobs?
 
-```text
-3
-```
+Take any schedule with two neighboring jobs in the **wrong ratio order**. From Steps 4–6, swapping this pair cannot increase total loss. From §2.4, jobs outside the pair are unaffected. Repeatedly fix neighboring wrong-order pairs until every job is in decreasing ratio order. Thus the greedy order is optimal, not just a guess.
 
-Score:
+## 2.7 Solution steps and dry run
 
-```text
-100 - 50×3
+1. Sort every job by decreasing `lossPerMinute / duration`.
+2. In C++, compare `jobA.lossPerMinute * jobB.duration` with `jobB.lossPerMinute * jobA.duration`, rather than dividing (assuming safe `long long` products).
+3. Walk through jobs in the chosen order. Increase completion time by the job's duration and add its final score.
 
-= 100 - 150
+| Job executed | Completion time | Job's final score | Total so far |
+|---|---:|---:|---:|
+| B | 3 | `100 − 10×3 = 70` | 70 |
+| A | 8 | `100 − 2×8 = 84` | **154** |
 
-= -50
-```
-
-P1 finishes at:
-
-```text
-3+5
-= 8
-```
-
-Score:
-
-```text
-100 - 20×8
-
-= 100 - 160
-
-= -60
-```
-
-Total:
-
-```text
--110
-```
-
-Compare:
-
-```text
--110 > -300
-```
-
-So `P2 → P1` is better.
-
-Exactly as the ratio rule predicted.
-
----
-
-## 3.10 Exchange Proof for the Whole Schedule
-
-Suppose a schedule contains adjacent jobs:
-
-```text
-P1, P2
-```
-
-but:
-
-```math
-\frac{D_1}{T_1}
-<
-\frac{D_2}{T_2}
-```
-
-Then the pair is in the wrong order.
-
-Swap them:
-
-```text
-P2, P1
-```
-
-The two-job derivation shows:
-
-```text
-total score does not decrease
-```
-
-Repeatedly swap all ratio inversions.
-
-Eventually the schedule is sorted by:
-
-```text
-D/T descending
-```
-
-Therefore an optimal schedule exists in that order.
-
----
-
-## 3.11 Avoid Division in the Comparator
-
-Want:
-
-```math
-\frac{D_a}{T_a}
->
-\frac{D_b}{T_b}
-```
-
-For positive times:
-
-```math
-D_aT_b
->
-D_bT_a
-```
-
-C++:
-
-```cpp
-bool cmp(const Job& a, const Job& b) {
-    return (__int128)a.d * b.t
-         > (__int128)b.d * a.t;
-}
-```
-
-If equal ratio:
-
-```text
-either order gives the same pair contribution
-```
-
-So any deterministic tie-break is okay.
-
----
-
-## 3.12 ASCII Visualization
-
-```text
-High decay / short time
-should move LEFT.
-
-Low decay / long time
-can wait longer.
-
-ratio:
-D/T
-
-larger ratio --------------------> earlier
-```
-
-Pair view:
-
-```text
-P1 before P2 is better iff:
-
-D1/T1 >= D2/T2
-```
-
----
-
-## 3.13 Algorithm
-
-```text
-1. Read jobs:
-      S, D, T.
-
-2. Sort descending by D/T
-   using cross multiplication.
-
-3. timeTaken = 0
-   answer = 0
-
-4. For every job in order:
-      timeTaken += T
-      answer += S - D*timeTaken
-```
-
----
-
-## 3.14 C++17
+## 2.8 C++17 with full variable names (`long long`)
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 struct Job {
-    long long s;
-    long long d;
-    long long t;
+    long long baseScore;
+    long long lossPerMinute;
+    long long duration;
 };
 
-bool cmp(const Job& a, const Job& b) {
-    __int128 left =
-        (__int128)a.d * b.t;
+bool shouldRunFirst(const Job& jobA, const Job& jobB) {
+    // Compare loss rates / durations without floating-point division.
+    long long firstCrossProduct  = jobA.lossPerMinute * jobB.duration;
+    long long secondCrossProduct = jobB.lossPerMinute * jobA.duration;
 
-    __int128 right =
-        (__int128)b.d * a.t;
-
-    if (left != right)
-        return left > right;
-
-    return a.t < b.t; // arbitrary stable tie-break
-}
-
-void printInt128(__int128 x) {
-    if (x == 0) {
-        cout << 0;
-        return;
+    if (firstCrossProduct != secondCrossProduct) {
+        return firstCrossProduct > secondCrossProduct;
     }
-
-    if (x < 0) {
-        cout << '-';
-        x = -x;
-    }
-
-    string s;
-
-    while (x > 0) {
-        s.push_back(
-            char('0' + x % 10)
-        );
-        x /= 10;
-    }
-
-    reverse(s.begin(), s.end());
-    cout << s;
+    return jobA.duration < jobB.duration; // either order is optimal for equal ratios
 }
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int n;
-    cin >> n;
+    int numberOfJobs;
+    cin >> numberOfJobs;
 
-    vector<Job> jobs(n);
-
-    for (auto& job : jobs) {
-        cin >> job.s
-            >> job.d
-            >> job.t;
+    vector<Job> jobs(numberOfJobs);
+    for (Job& job : jobs) {
+        cin >> job.baseScore >> job.lossPerMinute >> job.duration;
     }
 
-    sort(
-        jobs.begin(),
-        jobs.end(),
-        cmp
-    );
+    sort(jobs.begin(), jobs.end(), shouldRunFirst);
 
-    long long timeTaken = 0;
-    __int128 answer = 0;
+    long long completionTime = 0;
+    long long totalFinalScore = 0;
 
     for (const Job& job : jobs) {
-        timeTaken += job.t;
-
-        answer +=
-            (__int128)job.s
-            -
-            (__int128)job.d
-            * timeTaken;
+        completionTime += job.duration;
+        long long jobFinalScore = job.baseScore - job.lossPerMinute * completionTime;
+        totalFinalScore += jobFinalScore;
     }
 
-    printInt128(answer);
-    cout << '\n';
+    cout << totalFinalScore << '\n';
 }
 ```
 
----
+**Complexity:** `O(N log N)` time. **Assumptions:** duration is positive, every job is completed, score loss is linear even below zero, and all intermediate products/sums fit in `long long`.
 
-## 3.15 Complexity
-
-```text
-sorting:
-O(N log N)
-
-score computation:
-O(N)
-
-total:
-O(N log N)
-```
+**Recognition:** sequential jobs + penalty until completion → compare the **extra waiting loss** of neighboring jobs → sort by decreasing loss-rate/duration.
 
 ---
 
-## 3.16 Recognition Model
+# 3. Median — Where Should People Meet?
 
-When you see:
+## 3.1 What is the question asking?
 
-```text
-jobs
-+
-processing time T_i
-+
-penalty/decay D_i per waiting/completion time
-+
-choose order
-```
+Friends live along **one straight road**. Choose any meeting point `X` that makes their **total walking distance as small as possible**.
 
-think:
+Each person counts once.
 
-```text
-two-job exchange
-```
+**Input example:** positions `[1,3,7]`.
 
-Compare:
+**Goal:** minimize `|X-1| + |X-3| + |X-7|`.
 
-```text
-1 before 2
-vs
-2 before 1
-```
+## 3.2 Try actual meeting points
 
-This usually reveals a ratio.
+| Meet at X | From 1 | From 3 | From 7 | Total |
+|---|---:|---:|---:|---:|
+| 1 | 0 | 2 | 6 | 8 |
+| 2 | 1 | 1 | 5 | 7 |
+| **3** | **2** | **0** | **4** | **6** |
+| 4 | 3 | 1 | 3 | 7 |
+| 7 | 6 | 4 | 0 | 10 |
 
-Here:
+**Observation:** Meeting at `3`, the **middle position**, gives the smallest total distance.
 
-```text
-descending D/T
-```
+Why is the middle always best? We can prove it by **moving the meeting point**.
 
----
+## 3.3 Proof — move the meeting point a little
 
-## 3.17 Don't-Memorize Model
+### Step 1 — Compare X=2 with X=3
 
-Do not memorize:
+We move the meeting point **one step to the right**.
 
-```text
-sort by D/T
-```
+| Person at | Distance before (X=2) | After (X=3) | Change |
+|---|---:|---:|---:|
+| 1 | 1 | 2 | +1 |
+| 3 | 1 | 0 | −1 |
+| 7 | 5 | 4 | −1 |
+| **Total** | **7** | **6** | **−1** |
 
-Remember the two-job question:
+**What happened?** One person walks 1 unit farther, but two people walk 1 unit less.
 
-```text
-Which is worse to delay?
+Therefore total distance decreases by `1`.
 
-A job with:
-high decay
-and
-small duration
-```
+### Step 2 — Define the two groups
 
-The exchange derivation turns that intuition into:
+For a meeting point X **between data positions**:
 
 ```text
-D/T descending
+L = number of people to the left of X
+R = number of people to the right of X
+h = small distance we move X to the right
 ```
 
----
+We choose a move that does not pass any person's position in its interior.
 
-# 4. Pattern 3 — Median Minimizes Absolute Distance
+### Step 3 — Calculate the increase from the left people
 
-## 4.1 What the Model Asks
-
-Given points:
-
-```text
-x1, x2, ..., xn
-```
-
-on a line.
-
-Choose one location:
-
-```text
-x
-```
-
-to minimize:
-
-```math
-F(x)
-=
-\sum_{i=1}^{n}|x-x_i|
-```
-
-Answer:
-
-```text
-a median
-```
-
----
-
-## 4.2 Tiny Example
-
-Points:
-
-```text
-1,3,7
-```
-
-Objective:
-
-```math
-F(x)
-=
-|x-1|
-+
-|x-3|
-+
-|x-7|
-```
-
-Try:
-
-```text
-x = 1:
-0+2+6
-= 8
-
-x = 3:
-2+0+4
-= 6
-
-x = 7:
-6+4+0
-= 10
-```
-
-Minimum:
-
-```text
-x = 3
-```
-
-which is the median.
-
----
-
-## 4.3 Why Moving Toward the Median Helps
-
-Suppose `x` is not sitting on any point.
-
-Let:
-
-```text
-L = number of points left of x
-R = number of points right of x
-```
-
-Move `x` one unit to the right.
-
-For each left point:
-
-```text
-distance increases by 1
-```
+Every left-side person walks `h` more units.
 
 Total increase:
 
 ```text
-+L
+L × h
 ```
 
-For each right point:
+For X between 2 and 3, `L=1` and `h=1`:
 
 ```text
-distance decreases by 1
+1 × 1 = +1
 ```
+
+### Step 4 — Calculate the decrease from the right people
+
+Every right-side person walks `h` fewer units.
 
 Total decrease:
 
 ```text
--R
+R × h
 ```
 
-Net change:
-
-```math
-\Delta
-=
-L-R
-```
-
----
-
-## 4.4 Inline Example
-
-Points:
+For our example, `R=2` and `h=1`:
 
 ```text
-1,3,7
+2 × 1 = 2 less distance
 ```
 
-Take:
+### Step 5 — Combine the two changes
+
+New total minus old total:
 
 ```text
-x = 2
+change = L×h - R×h
 ```
 
-Left points:
+Factor the repeated `h`:
 
 ```text
-[1]
-L = 1
+change = h×(L-R)
 ```
 
-Right points:
+Actual numbers:
 
 ```text
-[3,7]
-R = 2
+change = 1×(1-2)
+       = -1
 ```
 
-Move:
+This agrees with the table: `6−7=−1`.
 
-```text
-2 → 3
-```
+### Step 6 — Why does the median follow?
 
-Net change predicted:
+- **Before the median**, more people are on the right: `R>L`. Moving right **reduces** the total.
+- **After the median**, more people are on the left: `L>R`. Moving right **increases** the total.
+- The point where this changes is a **median**.
 
-```text
-L-R
+**Endpoint detail:** if X sits exactly at a person's position, count that person on the side it is left behind by the movement. For longer moves, divide the move into pieces between consecutive positions. The simple `h(L-R)` expression applies on each such piece.
 
-= 1-2
-
-= -1
-```
-
-Actual:
-
-```text
-F(2)
-= |2-1|+|2-3|+|2-7|
-= 1+1+5
-= 7
-
-F(3)
-= 2+0+4
-= 6
-```
-
-Change:
-
-```text
-6-7
-= -1
-```
-
-Exactly.
-
----
-
-## 4.5 Why the Minimum Is at the Median
-
-Before the median:
-
-```text
-more points are on the right
-```
-
-so:
-
-```text
-L < R
-```
-
-and:
-
-```text
-L-R < 0
-```
-
-Moving right decreases cost.
-
-After the median:
-
-```text
-more points are on the left
-```
-
-so:
-
-```text
-L > R
-```
-
-and moving right increases cost.
-
-Therefore the turning point is where neither side dominates:
-
-```text
-the median
-```
-
----
-
-## 4.6 ASCII Graph
-
-For points roughly at:
-
-```text
-1,3,7
-```
-
-the cost is a convex piecewise-linear function:
-
-```text
-cost
- ^
- |\
- | \
- |  \
- |   \____
- |        \__
- |           \
- +--------------------> x
-      1   3      7
-          ^
-        minimum
-        median
-```
-
-More accurately, the slope changes at each data point.
-
-The function cannot have a lower minimum away from the median region.
-
----
-
-## 4.7 Pairing Intuition
-
-Sorted points:
-
-```text
-x1 <= x2 <= ... <= xn
-```
-
-Pair extremes:
-
-```text
-(x1, xn)
-(x2, x_(n-1))
-...
-```
-
-For one pair:
-
-```text
-a <= b
-```
-
-the quantity:
-
-```math
-|x-a|+|x-b|
-```
-
-is minimized by any:
-
-```text
-x in [a,b]
-```
-
-For all pairs simultaneously, the common intersection collapses toward the middle point(s).
-
-Thus the median region minimizes the total.
-
----
-
-## 4.8 Odd and Even N
-
-### Odd
-
-```text
-[1,3,7]
-
-median = 3
-```
-
-Unique median point.
-
-### Even
-
-```text
-[1,3,7,10]
-```
-
-Middle points:
-
-```text
-3 and 7
-```
-
-Every:
-
-```text
-x in [3,7]
-```
-
-has the same minimum continuous cost.
-
-For integer `x`:
-
-```text
-3,4,5,6,7
-```
-
-are all optimal.
-
----
-
-## 4.9 Algorithm
-
-```text
-1. Sort points.
-2. Choose:
-      x[n/2]
-   as one valid median.
-3. Sum absolute distances.
-```
-
-No need to search all possible `x`.
-
----
-
-## 4.10 C++17
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n;
-    cin >> n;
-
-    vector<long long> x(n);
-
-    for (auto& v : x)
-        cin >> v;
-
-    sort(x.begin(), x.end());
-
-    long long median =
-        x[n / 2];
-
-    __int128 cost = 0;
-
-    for (long long v : x) {
-        cost += llabs(v - median);
-    }
-
-    // Use a printer for __int128 if constraints require.
-}
-```
-
----
-
-## 4.11 Recognition Model
-
-When you see:
-
-```text
-choose one point
-+
-minimize sum of absolute distances
-```
-
-immediately think:
-
-```text
-median
-```
-
-Not mean.
-
-Mean minimizes:
-
-```text
-sum of squared distances
-```
-
-Median minimizes:
-
-```text
-sum of absolute distances
-```
-
----
-
-## 4.12 Don't-Memorize Model
-
-Remember the movement argument:
-
-```text
-move x one step right
-
-cost change
-=
-#left - #right
-```
-
-Before median:
-
-```text
-#right > #left
-→ move right helps
-```
-
-After median:
-
-```text
-#left > #right
-→ move right hurts
-```
-
-So median is the turning point.
-
----
-
-# 5. Pattern 4 — Weighted Median
-
-## 5.1 What Changes?
-
-Now each position:
-
-```text
-x_i
-```
-
-has weight:
-
-```text
-k_i
-```
-
-Objective:
-
-```math
-F(x)
-=
-\sum_i k_i|x-x_i|
-```
-
-Interpretation:
-
-```text
-moving away from a high-weight point
-is more expensive
-```
-
----
-
-## 5.2 Class Example
+## 3.4 What happens when N is even?
 
 Positions:
 
 ```text
-x = [1,3,7]
+[1, 3, 7, 10]
+     ↑  ↑
+   middle two
 ```
 
-Weights:
+| Meeting point X | Total distance |
+|---|---:|
+| 3 | `2+0+4+7 = 13` |
+| 5 | `4+2+2+5 = 13` |
+| 7 | `6+4+0+3 = 13` |
 
-```text
-k = [1,1,3]
-```
+Between `3` and `7`, **two people are to the left and two to the right**.
 
-Objective:
+A small move right increases distance for two people and decreases it for two people. These changes cancel.
 
-```math
-F(x)
-=
-|x-1|
-+
-|x-3|
-+
-3|x-7|
-```
+Therefore **every real X in `[3,7]` minimizes total absolute distance**. If X must be an integer, every integer from 3 through 7 is valid.
 
-Conceptually expand:
+The *statistical* median is `(3+7)/2=5`, but for this optimization problem **3, 4, 5, 6, and 7 are all optimal**.
 
-```text
-[1,3,7,7,7]
-```
+## 3.5 Algorithm and dry run
 
-Median of expanded values:
+1. Sort the positions.
+2. Choose `a[n/2]` as one valid median (zero-based indexing).
+3. Add absolute distances from that median.
 
-```text
-7
-```
+| Position | Median | Distance | Running total |
+|---|---:|---:|---:|
+| 1 | 3 | 2 | 2 |
+| 3 | 3 | 0 | 2 |
+| 7 | 3 | 4 | **6** |
 
-Therefore weighted median:
-
-```text
-7
-```
-
----
-
-## 5.3 Verify Numerically
-
-At:
-
-```text
-x = 3
-```
-
-cost:
-
-```text
-|3-1|
-+
-|3-3|
-+
-3|3-7|
-
-= 2 + 0 + 3×4
-
-= 14
-```
-
-At:
-
-```text
-x = 7
-```
-
-cost:
-
-```text
-|7-1|
-+
-|7-3|
-+
-3|7-7|
-
-= 6 + 4 + 0
-
-= 10
-```
-
-So the heavy point at `7` pulls the optimum toward itself.
-
----
-
-## 5.4 Weighted Movement Argument
-
-Let:
-
-```text
-W_left
-=
-total weight strictly left of x
-
-W_right
-=
-total weight strictly right of x
-```
-
-Move `x` one unit right.
-
-Left-side weighted distances increase by:
-
-```text
-W_left
-```
-
-Right-side weighted distances decrease by:
-
-```text
-W_right
-```
-
-Net change:
-
-```math
-\Delta
-=
-W_{left}-W_{right}
-```
-
-Exactly the same median logic, but counts are replaced by weights.
-
----
-
-## 5.5 Weighted Median Condition
-
-Let total weight:
-
-```math
-W=\sum_i k_i
-```
-
-A weighted median is a point where:
-
-```text
-weight strictly to the left <= W/2
-```
-
-and:
-
-```text
-weight strictly to the right <= W/2
-```
-
-For positive integer weights, one convenient implementation is:
-
-```text
-sort by x_i
-
-target =
-(W+1)/2
-
-first x_i whose cumulative weight >= target
-```
-
----
-
-## 5.6 Inline Prefix-Weight Example
-
-```text
-x = [1,3,7]
-k = [1,1,3]
-```
-
-Total:
-
-```text
-W
-= 1+1+3
-= 5
-```
-
-Target:
-
-```text
-(W+1)/2
-= 6/2
-= 3
-```
-
-Prefix weights:
-
-```text
-at x=1:
-1
-
-at x=3:
-1+1
-= 2
-
-at x=7:
-1+1+3
-= 5
-```
-
-First prefix reaching at least `3`:
-
-```text
-x = 7
-```
-
-So weighted median:
-
-```text
-7
-```
-
----
-
-## 5.7 ASCII Visualization
-
-```text
-weight 1        weight 1             weight 3
-   |               |               |||
-   v               v               vvv
-
----1---------------3-----------------7------>
-
-Conceptually:
-
-1 copy at 1
-1 copy at 3
-3 copies at 7
-
-expanded:
-[1, 3, 7, 7, 7]
-
-middle:
-      7
-```
-
----
-
-## 5.8 Do Not Expand Large Weights
-
-Bad:
-
-```text
-k_i = 10^9
-
-repeat x_i one billion times
-```
-
-Impossible.
-
-Instead:
-
-```text
-sort pairs (x_i,k_i)
-compute prefix weight
-stop when prefix >= half total
-```
-
----
-
-## 5.9 C++17
+## 3.6 C++17 (`long long`)
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2735,735 +1122,445 @@ int main() {
 
     int n;
     cin >> n;
+    vector<long long> a(n);
+    for (long long &x : a) cin >> x;
 
-    vector<pair<long long,long long>> p(n);
+    sort(a.begin(), a.end());
+    long long median = a[n / 2];
 
-    for (auto& [x, w] : p) {
-        cin >> x >> w;
+    long long ans = 0;
+    for (long long x : a) {
+        ans += llabs(x - median);
     }
+    cout << ans << '\n';
+}
+```
 
-    sort(p.begin(), p.end());
+**Time:** `O(N log N)`. **Assumptions:** `n≥1`, every `x−median` subtraction and its absolute value fit `long long`, and the sum fits too.
+
+**Recognition:** choose a point on a line + minimize `sum(|X−a[i]|)` → median, **not mean**.
+
+---
+
+# 4. Weighted Median — Where Should Groups Meet?
+
+## 4.1 What is the question asking?
+
+The meeting-place problem is the same, but now a location may represent **more than one person**.
+
+**Goal:** choose X to minimize *everyone's combined walking distance*.
+
+| Location | Number of people (weight) |
+|---|---:|
+| 1 | 1 |
+| 3 | 1 |
+| 7 | 3 |
+
+A group of 3 traveling distance 4 contributes `3×4=12` to the total.
+
+## 4.2 Try a few meeting points
+
+| Meet at X | Group at 1 | Group at 3 | Group at 7 | Total |
+|---|---:|---:|---:|---:|
+| 3 | `1×2=2` | `1×0=0` | `3×4=12` | 14 |
+| 5 | `1×4=4` | `1×2=2` | `3×2=6` | 12 |
+| **7** | **`1×6=6`** | **`1×4=4`** | **`3×0=0`** | **10** |
+| 8 | `1×7=7` | `1×5=5` | `3×1=3` | 15 |
+
+**Observation:** Walking toward the group of 3 helps *three* people at once. Its benefit can outweigh the added distance for two people elsewhere.
+
+## 4.3 Proof — moving right with groups
+
+### Step 1 — See what changes from X=3 to X=7
+
+Meeting point moves `4` units to the right.
+
+| Group at | People | Change **per person** | Total group change |
+|---|---:|---:|---:|
+| 1 | 1 | +4 | +4 |
+| 3 | 1 | +4 | +4 |
+| 7 | 3 | −4 | −12 |
+| **Total** | | | **−4** |
+
+The total distance falls from `14` to `10`.
+
+### Step 2 — Define weight on each side
+
+Between consecutive occupied locations:
+
+```text
+W_L = total number of people to the left
+W_R = total number of people to the right
+h   = how far X moves right
+```
+
+### Step 3 — Work out the total change
+
+The left groups walk farther:
+
+```text
+increase = W_L × h
+```
+
+The right groups walk less:
+
+```text
+decrease = W_R × h
+```
+
+Combine them:
+
+```text
+change = W_L×h - W_R×h
+```
+
+Factor out `h`:
+
+```text
+change = h×(W_L-W_R)
+```
+
+Actual numbers for the interval from 3 to 7:
+
+```text
+W_L = 1+1 = 2
+W_R = 3
+h   = 4
+
+change = 4×(2-3) = -4
+```
+
+This matches `10−14=−4`.
+
+### Step 4 — Why is the weighted median optimal?
+
+- More **total weight** to the right → moving right decreases cost.
+- More total weight to the left → moving right increases cost.
+- The minimum occurs where **no more than half the total weight lies strictly on either side**.
+
+That location is a **weighted median**.
+
+**Note:** `h(W_L−W_R)` is applied between data positions; handle any occupied endpoints by viewing the movement piecewise.
+
+## 4.4 Find weighted median WITHOUT creating repeated people
+
+**Step 1 — Imagine the repeated positions (for understanding only).**
+
+```text
+location 1 has 1 person
+location 3 has 1 person
+location 7 has 3 people
+
+conceptual positions:
+[1, 3, 7, 7, 7]
+       ↑
+third person (middle) = 7
+```
+
+**Step 2 — Count total people.**
+
+```text
+W = 1+1+3 = 5
+```
+
+**Step 3 — Find the middle person's 1-based index.**
+
+```text
+target = ceil(W/2)
+       = 3
+```
+
+For positive integer weights in code, calculate `target = W/2 + W%2` to avoid overflow from `W+1`.
+
+**Step 4 — Use prefix weights instead of expanding.**
+
+| Location | Weight | Prefix people | Have we reached person #3? |
+|---|---:|---:|---|
+| 1 | 1 | 1 | No |
+| 3 | 1 | 2 | No |
+| **7** | **3** | **5** | **Yes** |
+
+First prefix reaching 3 is at location **7**. That is a weighted median.
+
+For even W, this method chooses a valid **lower weighted median**. A whole interval of meeting locations can be equally optimal.
+
+## 4.5 Why prefix weight is equivalent to repeating locations
+
+Expanding `[1,3,7]` with weights `[1,1,3]` gives `[1,3,7,7,7]`.
+
+The unweighted median proof from Pattern 3 already tells us that its middle value minimizes distance.
+
+The prefix sum finds the very same middle person's location **without storing W repeated elements**.
+
+This completes the proof of the algorithm.
+
+## 4.6 Algorithm and C++17 (`long long`)
+
+1. Sort pairs `(position, weight)` by position.
+2. Calculate total weight `W>0`.
+3. Find the first position with cumulative weight at least `ceil(W/2)`.
+4. Calculate weighted distances to that position.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+    vector<pair<long long, long long>> a(n); // position, weight
 
     long long totalWeight = 0;
-
-    for (auto [x, w] : p)
+    for (auto &[x, w] : a) {
+        cin >> x >> w;
         totalWeight += w;
+    }
+    sort(a.begin(), a.end());
 
-    long long target =
-        (totalWeight + 1) / 2;
-
+    long long target = totalWeight / 2 + totalWeight % 2;
     long long prefix = 0;
-    long long median = 0;
+    long long median = a.front().first;
 
-    for (auto [x, w] : p) {
+    for (auto [x, w] : a) {
         prefix += w;
-
         if (prefix >= target) {
             median = x;
             break;
         }
     }
 
-    __int128 answer = 0;
-
-    for (auto [x, w] : p) {
-        answer +=
-            (__int128)w
-            * llabs(x - median);
+    long long ans = 0;
+    for (auto [x, w] : a) {
+        ans += w * llabs(x - median);
     }
-
-    // Print answer with __int128 helper if needed.
+    cout << ans << '\n';
 }
 ```
 
----
+**Time:** `O(N log N)`. **Assumptions:** `n≥1`, weights positive integers and `W>0`, every difference, product, prefix sum and result fits `long long`.
 
-## 5.10 Complexity
-
-```text
-sorting:
-O(N log N)
-
-prefix scan:
-O(N)
-
-cost:
-O(N)
-
-total:
-O(N log N)
-```
+**Recognition:** minimize weighted sum of absolute distances → weighted median + cumulative weights.
 
 ---
 
-## 5.11 Recognition Model
+# 5. Team Performance — Which K Workers Should We Choose?
 
-When you see:
+## 5.1 What is the question asking?
 
-```text
-minimize:
-Σ weight_i × |x-x_i|
-```
-
-think:
-
-```text
-weighted median
-```
-
-Then:
-
-```text
-sort positions
-+
-prefix weights
-+
-cross half total weight
-```
-
----
-
-## 5.12 Don't-Memorize Model
-
-Unweighted median:
-
-```text
-every point has weight 1
-```
-
-Weighted median:
-
-```text
-a point with weight k
-behaves like k copies
-```
-
-That is the whole generalization.
-
----
-
-# 6. Pattern 5 — Team Performance: Sum × Minimum
-
-## 6.1 Model From the Class
-
-There are `N` people.
-
-Each person has:
-
-```text
-speed_i
-efficiency_i
-```
-
-Choose exactly:
-
-```text
-K people
-```
-
-Team metric:
-
-```math
-performance
-=
-\left(
-\sum efficiency_i
-\right)
-\times
-\min(speed_i)
-```
-
-Goal:
-
-```text
-maximize performance
-```
-
-The two parts behave differently:
-
-```text
-sum efficiency
-→ additive
-
-minimum speed
-→ bottleneck
-```
-
----
-
-## 6.2 Class-Style Example
-
-People:
-
-```text
-(speed, efficiency)
-
-(3, 7)
-(2, 100)
-(5, 7)
-```
-
-Choose:
-
-```text
-K = 2
-```
-
-Possible team:
-
-```text
-(3,7) and (5,7)
-```
-
-Sum efficiency:
-
-```text
-7+7
-= 14
-```
-
-Minimum speed:
-
-```text
-3
-```
-
-Performance:
-
-```text
-14×3
-= 42
-```
-
-Another team:
-
-```text
-(2,100) and (5,7)
-```
-
-Sum:
-
-```text
-107
-```
-
-Minimum speed:
-
-```text
-2
-```
-
-Performance:
-
-```text
-107×2
-= 214
-```
-
-So a lower bottleneck may still win if additive sum becomes much larger.
-
-We cannot greedily maximize speed alone or efficiency alone.
-
----
-
-## 6.3 Key Transformation — Fix the Bottleneck
-
-Suppose we temporarily say:
-
-```text
-minimum team speed must be at least S
-```
-
-Then only people with:
-
-```text
-speed >= S
-```
-
-are eligible.
-
-For this fixed threshold, the bottleneck factor is at least:
-
-```text
-S
-```
-
-So to maximize:
-
-```text
-S × sumEfficiency
-```
-
-we should choose the:
-
-```text
-K largest efficiencies
-```
-
-among eligible people.
-
-Therefore:
-
-```text
-sort people by speed descending
-```
-
-and sweep the speed threshold.
-
----
-
-## 6.4 Why Sort Speed Descending?
-
-Sorted:
-
-```text
-speed1 >= speed2 >= ... >= speedN
-```
-
-At index `i`, everyone processed so far has:
-
-```text
-speed >= speed_i
-```
-
-So the processed prefix is exactly the candidate pool for threshold:
-
-```text
-S = speed_i
-```
-
-ASCII:
-
-```text
-speed descending:
-
-[ very fast ][ fast ][ ... ][ current ][ slower ... ]
-<------------ eligible ------------->
-
-current speed = threshold S
-```
-
----
-
-## 6.5 What Must Be Maintained?
-
-For every prefix:
-
-```text
-choose K largest efficiencies
-```
-
-We need their sum quickly.
-
-Use:
-
-```text
-min-heap of size K
-```
-
-because when a new efficiency arrives:
-
-```text
-push it
-```
-
-If size becomes:
-
-```text
-K+1
-```
-
-remove the smallest efficiency.
-
-Then heap contains:
-
-```text
-top K efficiencies in the prefix
-```
-
----
-
-## 6.6 Dry Run of the Class Example
-
-People:
-
-```text
-(3,7)
-(2,100)
-(5,7)
-```
-
-Sort speed descending:
-
-```text
-(5,7)
-(3,7)
-(2,100)
-```
-
-`K=2`.
-
----
-
-### Threshold `S = 5`
-
-Eligible:
-
-```text
-(5,7)
-```
-
-Only one person.
-
-Cannot form size-2 team yet.
-
-Heap:
-
-```text
-[7]
-```
-
----
-
-### Threshold `S = 3`
-
-Add efficiency:
+Each worker has two values:
 
-```text
-7
-```
-
-Heap:
-
-```text
-[7,7]
-```
-
-Top-K sum:
+- `speed` — affects the team's **minimum** speed;
+- `efficiency` — is added to teammates' efficiencies.
 
-```text
-14
-```
+Choose **exactly K** workers to maximize:
 
-Candidate:
-
 ```text
-3×14
-= 42
+team score = (sum of selected efficiencies)
+             × (minimum speed among selected workers)
 ```
-
----
 
-### Threshold `S = 2`
-
-Add efficiency:
-
-```text
-100
-```
+**Example:** Choose exactly `K=2` workers.
 
-Heap temporarily:
+| Worker | Speed | Efficiency |
+|---|---:|---:|
+| A | 6 | 4 |
+| B | 4 | 10 |
+| C | 2 | 20 |
 
-```text
-[7,7,100]
-```
+This is a mathematical score formula; actual team speed need not behave this way in real life.
 
-Need only top 2.
+## 5.2 Understand the goal by checking every team
 
-Remove smallest:
+| Team | Sum efficiencies | Minimum speed | Score |
+|---|---:|---:|---:|
+| A+B | `4+10=14` | 4 | 56 |
+| A+C | `4+20=24` | 2 | 48 |
+| **B+C** | **`10+20=30`** | **2** | **60** |
 
-```text
-7
-```
+**Observation:** Picking the two fastest workers is not enough. A smaller minimum speed might be compensated by a much larger efficiency sum.
 
-Heap:
+So how can we avoid checking every group of K workers?
 
-```text
-[7,100]
-```
+## 5.3 Discover the threshold idea
 
-Sum:
+### Step 1 — Pretend we already know the minimum required speed
 
-```text
-107
-```
+Suppose a selected team must have speed **at least 4** for every member.
 
-Candidate:
+Eligible workers:
 
 ```text
-2×107
-= 214
+A (6,4)
+B (4,10)
 ```
 
-Best:
+Only A and B qualify. Their score at threshold 4 is:
 
 ```text
-214
+4 × (4+10) = 56
 ```
-
----
-
-## 6.7 ASCII Heap View
-
-After processing speed threshold `2`:
-
-```text
-eligible efficiencies:
-
-7, 7, 100
-
-need K=2 largest
-
-sort mentally:
-7, 7, 100
-   ^    ^
- keep 7,100
 
-min-heap stores:
-[7,100]
+### Step 2 — Lower the speed threshold to 2
 
-top = 7
-```
+Now workers A, B, and C are all eligible.
 
-If another efficiency `50` arrives:
+Choose the **two largest efficiencies**: `10` and `20`.
 
 ```text
-push 50
-
-[7,100,50]
-
-size > 2
-→ pop smallest 7
-
-remain:
-[50,100]
+2 × (10+20) = 60
 ```
 
----
+Better answer: `60`.
 
-## 6.8 Correctness Proof — Threshold View
+### Step 3 — Why does fixing speed help?
 
-Let the true optimal team be:
+With **S fixed and nonnegative**, the value we maximize is:
 
 ```text
-OPT
+S × (sum of K efficiencies)
 ```
 
-Its minimum speed is:
+Since S is fixed, choosing the **largest K efficiencies** maximizes this expression.
 
-```text
-S*
-```
+No need to optimize speed and efficiency simultaneously at that step.
 
-At the sweep iteration with threshold:
-
-```text
-S = S*
-```
+## 5.4 Sort speed descending and try each threshold
 
-every member of `OPT` has:
+Sort workers by speed from largest to smallest:
 
 ```text
-speed >= S*
-```
-
-so every OPT member is in the processed prefix.
-
-The heap keeps the `K` largest efficiencies in this prefix.
-
-Therefore its efficiency sum:
-
-```math
-heapSum
-\ge
-OPT\_efficiencySum
-```
-
-Candidate computed:
-
-```math
-S^*\cdot heapSum
+A(6,4) → B(4,10) → C(2,20)
 ```
 
-So:
+At each worker, the current speed becomes the minimum **eligible threshold**.
 
-```math
-S^*\cdot heapSum
-\ge
-S^*\cdot OPT\_efficiencySum
-```
+| Speed threshold S | Eligible | Best 2 efficiencies | Threshold score |
+|---|---|---|---:|
+| 6 | A | only one worker | — |
+| 4 | A, B | 4, 10 | `4×14=56` |
+| 2 | A, B, C | 10, 20 | **`2×30=60`** |
 
-But:
+Answer is **60**.
 
-```math
-S^*
-=
-OPT's minimum speed
-```
+## 5.5 Why use a min-heap?
 
-so the right-hand side is exactly:
+We need to keep the **largest K efficiencies** among workers encountered so far.
 
-```text
-OPT performance
-```
+Let `K=2`:
 
-Thus at this threshold, the sweep reaches at least the optimum value.
+| Efficiency arrives | Heap contents (shown sorted) | Running sum | Explanation |
+|---|---|---:|---|
+| 4 | `[4]` | 4 | not enough workers |
+| 10 | `[4,10]` | 14 | now we have 2 |
+| 20 | `[10,20]` | 30 | inserted 20, discarded smallest 4 |
 
-At the same time, the heap-selected people all have speed at least `S*`, so their actual minimum speed is at least `S*`.
+The heap is a **min-heap**, because we repeatedly need to throw away the smallest kept efficiency.
 
-Therefore their actual performance is at least the candidate we computed.
+A heap is **not stored internally in sorted order**; the table sorts values for teaching only.
 
-So the candidate is feasible, and no candidate can exceed the true optimum.
+## 5.6 Proof — why we cannot miss the best team
 
-Hence the maximum sweep candidate equals the optimal answer.
+This pattern uses a **bottleneck-threshold proof**, not a pair swap.
 
----
+### Step 1 — Imagine the unknown optimal team
 
-## 6.9 A More Intuitive Proof
+Call the true best team `OPT`.
 
-The team score contains:
+Let:
 
 ```text
-min(speed)
+S* = minimum speed in OPT
+E* = sum of efficiencies in OPT
 ```
-
-So every team naturally has a weakest-speed member.
 
-Imagine guessing that weakest speed.
+Its actual score is:
 
-Once it is fixed:
-
 ```text
-all chosen people must be at least that fast
+OPT score = S* × E*
 ```
 
-The remaining problem becomes trivial:
+In our tiny example the best team is B+C:
 
 ```text
-pick K largest efficiencies
+S* = 2
+E* = 10+20 = 30
+OPT score = 2×30 = 60
 ```
-
-The sweep simply tries every possible bottleneck speed efficiently.
 
----
+### Step 2 — What happens when the algorithm reaches speed S*?
 
-## 6.10 Why Sorting by Efficiency Alone Fails
+Every worker in OPT has speed **at least S*** (because S* is OPT's minimum).
 
-Example:
+Therefore, by the time we reach speed S*, **all workers of OPT are eligible**.
 
-```text
-(2,100)
-(3,7)
-(5,7)
-```
+For our numbers, at `S*=2`, workers A, B and C are eligible—including B and C.
 
-Highest efficiency person:
+### Step 3 — Compare efficiency sums
 
-```text
-100
-```
+Our heap keeps the **K largest efficiencies** from all eligible workers.
 
-but has speed:
+So its efficiency sum cannot be smaller than the efficiency sum of OPT:
 
 ```text
-2
+heapSum >= E*
 ```
 
-which may reduce the bottleneck for the whole team.
+Actual numbers:
 
-So:
-
 ```text
-largest efficiency alone
+heapSum = 10+20 = 30
+E* = 30
+30 >= 30
 ```
 
-is not sufficient.
+### Step 4 — Multiply by the fixed threshold
 
-Similarly:
+Because `S*≥0`, multiplying preserves the comparison:
 
 ```text
-largest speed alone
+S*×heapSum >= S*×E*
 ```
-
-may give too little efficiency sum.
 
-We need:
+Actual numbers:
 
 ```text
-enumerate bottleneck
-+
-optimize additive part
+2×30 >= 2×30
+60 >= 60
 ```
 
----
+So at this threshold the algorithm gets a candidate score **at least as large as OPT's score**.
 
-## 6.11 Algorithm
+### Step 5 — Is the candidate valid?
 
-```text
-1. Store people as:
-      (speed, efficiency).
+The heap contains **K actual eligible workers**, all with speed at least S*.
 
-2. Sort speed descending.
+Their real minimum speed is therefore at least S*.
 
-3. minHeap = empty
-   sumEfficiency = 0
-   answer = 0
+Because their efficiencies are nonnegative, their **real score** is at least the computed threshold score.
 
-4. For each person in sorted order:
-      push efficiency
-      add to sum
+So the algorithm never invents an impossibly high candidate score: every candidate is no greater than the actual score of some real team.
 
-      if heap size > K:
-          subtract heap minimum
-          pop minimum
+### Step 6 — Conclusion
 
-      if heap size == K:
-          candidate =
-              current speed
-              ×
-              sumEfficiency
+The scan includes the threshold `S*` belonging to the best team. At that threshold it can match or beat the best team's score, and every candidate corresponds to a feasible team with at least that score.
 
-          answer = max(answer, candidate)
+Therefore the maximum candidate score **equals the true optimum**.
 
-5. Return answer.
-```
+**Equal speeds:** workers with the same speed may be visited in any order; after all workers with speed S have been processed, every worker eligible at that threshold has been considered.
 
----
+## 5.7 Algorithm and C++17 (`long long`)
 
-## 6.12 C++17
+1. Sort workers by decreasing speed.
+2. Add each efficiency to a min-heap and to a running sum.
+3. If heap size exceeds K, remove its smallest efficiency and subtract it from the sum.
+4. Once the heap holds K workers, try `currentSpeed × heapSum`.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-
-struct Person {
-    long long speed;
-    long long efficiency;
-};
-
-void printInt128(__int128 x) {
-    if (x == 0) {
-        cout << 0;
-        return;
-    }
-
-    if (x < 0) {
-        cout << '-';
-        x = -x;
-    }
-
-    string s;
-
-    while (x > 0) {
-        s.push_back(
-            char('0' + x % 10)
-        );
-        x /= 10;
-    }
-
-    reverse(s.begin(), s.end());
-    cout << s;
-}
 
 int main() {
     ios::sync_with_stdio(false);
@@ -3472,380 +1569,113 @@ int main() {
     int n, k;
     cin >> n >> k;
 
-    vector<Person> people(n);
+    vector<pair<long long, long long>> workers(n); // speed, efficiency
+    for (auto &[speed, eff] : workers) cin >> speed >> eff;
+    sort(workers.rbegin(), workers.rend()); // speed descending
 
-    for (auto& p : people) {
-        cin >> p.speed
-            >> p.efficiency;
-    }
+    priority_queue<long long, vector<long long>, greater<long long>> pq;
+    long long sum = 0;
+    long long ans = 0;
 
-    sort(
-        people.begin(),
-        people.end(),
-        [](const Person& a, const Person& b) {
-            if (a.speed != b.speed)
-                return a.speed > b.speed;
-
-            return a.efficiency > b.efficiency;
-        }
-    );
-
-    priority_queue<
-        long long,
-        vector<long long>,
-        greater<long long>
-    > pq;
-
-    __int128 sumEfficiency = 0;
-    __int128 best = 0;
-
-    for (const Person& p : people) {
-        pq.push(p.efficiency);
-        sumEfficiency += p.efficiency;
-
+    for (auto [speed, eff] : workers) {
+        pq.push(eff);
+        sum += eff;
         if ((int)pq.size() > k) {
-            sumEfficiency -= pq.top();
+            sum -= pq.top();
             pq.pop();
         }
-
         if ((int)pq.size() == k) {
-            __int128 candidate =
-                (__int128)p.speed
-                * sumEfficiency;
-
-            best = max(best, candidate);
+            ans = max(ans, sum * speed);
         }
     }
-
-    printInt128(best);
-    cout << '\n';
+    cout << ans << '\n';
 }
 ```
 
----
+**Time:** `O(N log N + N log K)`. **Assumptions:** `1≤K≤N`, nonnegative speeds and efficiencies, exactly K selected, and all intermediate operations fit `long long`.
 
-## 6.13 Complexity
-
-Sorting:
-
-```text
-O(N log N)
-```
-
-For each person:
-
-```text
-heap push/pop:
-O(log K)
-```
-
-Total:
-
-```text
-O(N log N)
-```
-
-Space:
-
-```text
-O(N + K)
-```
+**Recognition:** choose exactly K + `(sum of attribute A) × (minimum attribute B)` → sort by B descending + Top-K heap.
 
 ---
 
-## 6.14 Exactly K vs At Most K
+# 6. Recognition and Revision
 
-The board/code pattern checks:
+## Which greedy proof should I try?
 
-```text
-heap size == K
-```
-
-so this note models:
-
-```text
-choose exactly K people
-```
-
-If a variant says:
-
-```text
-choose at most K
-```
-
-and all additive values are positive, the same sweep often uses as many helpful people as possible, but the exact condition should be read from that problem statement.
-
-Do not silently interchange:
-
-```text
-exactly K
-```
-
-and:
-
-```text
-at most K
-```
-
----
-
-## 6.15 Recognition Model
-
-When you see:
-
-```text
-choose K items
-+
-score =
-(sum of additive attribute)
-×
-(minimum bottleneck attribute)
-```
-
-think:
-
-```text
-sort bottleneck descending
-```
-
-Then:
-
-```text
-sweep threshold
-+
-keep top-K additive values
-using min-heap
-```
-
----
-
-## 6.16 Don't-Memorize Model
-
-Do not memorize:
-
-```text
-sort speed
-minheap efficiency
-```
-
-Remember:
-
-```text
-Every team has a minimum speed.
-
-Fix that minimum speed S.
-
-Then everyone with speed >= S
-is eligible.
-
-For fixed S,
-only one thing remains:
-
-maximize efficiency sum
-
-→ choose top K efficiencies.
-```
-
-That derivation explains both:
-
-```text
-the sorting key
-and
-the heap.
-```
-
----
-
-# 7. Pattern Comparison
-
-| Pattern | Objective | Greedy Structure | Core Proof |
+| What the problem asks | First observation | Greedy answer | Proof method |
 |---|---|---|---|
-| Maximum dot product | maximize `Σ ai*bi` | same-order sorting | swap / rearrangement |
-| Job ordering | maximize decaying total score | sort `D/T` descending | adjacent two-job exchange |
-| Median | minimize `Σ|x-xi|` | choose median | left-vs-right slope |
-| Weighted median | minimize `Σki|x-xi|` | weighted median | weighted left-vs-right slope |
-| Team performance | maximize `Σeff × min(speed)` | threshold + top-K | bottleneck enumeration |
+| Maximize products after rearranging pairings | Uncross two pairs | Align both sorts | Exchange + factor |
+| Order sequential jobs with completion-time loss | One job delays the other | Decreasing `D/T` | Adjacent exchange |
+| Choose X minimizing sum of absolute distances | Moving toward majority helps | Median | Left/right movement |
+| Choose X minimizing weighted distances | People/weights matter, not distinct points | Weighted median | Weighted movement + prefix weight |
+| Select K maximizing sum × minimum | Fix a possible bottleneck | Descending bottleneck + Top-K min-heap | Threshold includes OPT |
 
----
-
-# 8. Final Recognition Checklist
+## Five compact memory formulas
 
 ```text
-1. Can elements be permuted?
-   Is objective Σ product?
-   → rearrangement inequality.
+1. Dot product gain from uncrossing:
+   (b-a)(d-c) >= 0
 
-2. Is there an ordering problem
-   with time and per-time penalty?
-   → compare two adjacent jobs.
+2. Scheduling: choose the order with smaller extra waiting loss.
+   A first: lossPerMinuteJobB × durationJobA
+   B first: lossPerMinuteJobA × durationJobB
+   Sort descending by lossPerMinute / duration.
 
-3. Did a ratio appear?
-   → derive it by exchange;
-      compare with cross multiplication.
+3. Moving meeting point right (between positions):
+   change = h*(count_left-count_right)
 
-4. Is objective:
-      Σ|x-x_i|?
-   → median.
+4. Weighted movement right (between positions):
+   change = h*(weight_left-weight_right)
 
-5. Is objective:
-      Σk_i|x-x_i|?
-   → weighted median.
-
-6. Is objective:
-      additive sum × minimum?
-   → enumerate minimum as threshold.
-
-7. For each threshold,
-   do I need top K values?
-   → min-heap of size K.
-
-8. Are products/sums potentially > 9e18?
-   → use __int128.
+5. Team score at speed threshold S:
+   S * sum(K largest eligible efficiencies)
 ```
 
----
+## Self-test — Think before looking at the answer
 
-# 9. Compact Revision Card
+**1. Dot product:** `A=[1,4]`, `B=[8,2]`. Maximum total?
 
-```text
-ALGOZENITH GREEDY — CLASS 1
-===========================
+<details>
+<summary>Answer</summary>
 
+Sorted pairing: `1×2+4×8=34`.
 
-1. REARRANGEMENT / DOT PRODUCT
-------------------------------
-maximize:
-Σ ai*bi
+</details>
 
-sort both same order
+**2. Scheduling:** A has `D=3,T=6`; B has `D=4,T=2`. Which runs first?
 
-pair proof:
+<details>
+<summary>Answer</summary>
 
-ai <= aj
-bi <= bj
+`3/6=0.5`, `4/2=2`; B first.
 
-same:
-ai*bi + aj*bj
+</details>
 
-crossed:
-ai*bj + aj*bi
+**3. Median:** Meet at positions `[1,2,20]`. Best X?
 
-difference:
-(aj-ai)(bj-bi) >= 0
+<details>
+<summary>Answer</summary>
 
-therefore:
-same-order pairing is optimal
+`X=2`.
 
+</details>
 
-2. SCORE–DECAY–TIME SCHEDULING
-------------------------------
-job i:
-score S_i
-decay D_i
-time T_i
+**4. Weighted median:** Positions `[1,5]`, weights `[1,3]`. Best X?
 
-finish at C_i:
-score = S_i - D_i*C_i
+<details>
+<summary>Answer</summary>
 
-compare:
-P1→P2
-vs
-P2→P1
+Expanded conceptually: `[1,5,5,5]`. Meeting at `5` minimizes total weighted distance.
 
-P1 first is better iff:
+</details>
 
-T1*D2 <= T2*D1
+**5. Team performance:** K=2; workers `(speed,efficiency)` are `(5,3)`, `(3,10)`, `(2,15)`. Best score?
 
-equivalent:
+<details>
+<summary>Answer</summary>
 
-D1/T1 >= D2/T2
+Choose speeds 3 and 2: `(10+15)×2=50`. Other pairs give `39` and `36`.
 
-therefore:
-sort D/T descending
+</details>
 
-use cross multiplication
-
-
-3. MEDIAN
----------
-minimize:
-Σ|x-x_i|
-
-move x right by 1:
-
-cost change:
-#left - #right
-
-before median:
-more on right
-→ moving right helps
-
-after median:
-more on left
-→ moving right hurts
-
-answer:
-median
-
-
-4. WEIGHTED MEDIAN
-------------------
-minimize:
-Σ k_i |x-x_i|
-
-weight k_i behaves like
-k_i copies of x_i
-
-sort by x_i
-
-total weight W
-
-first prefix weight >= ceil(W/2)
-gives a weighted median
-
-
-5. TEAM PERFORMANCE
--------------------
-choose K people
-
-score:
-(sum efficiency)
-×
-minimum speed
-
-sort speed descending
-
-current speed = threshold
-
-among people with
-speed >= threshold:
-
-keep top K efficiencies
-
-data structure:
-min-heap size K
-
-candidate:
-threshold * topKSum
-```
-
----
-
-# Final Mental Model
-
-```text
-                 ALGOZENITH GREEDY CLASS 1
-                            |
-      +---------------------+--------------------+
-      |                     |                    |
-   reordering            location             selection
-      |                     |                    |
-      v                     v                    v
-exchange proof        absolute distance     bottleneck threshold
-      |                     |                    |
-      v                     v                    v
-sort / ratio          median / weighted      top-K min-heap
-```
-
-> **Main lesson:** Greedy becomes much easier when you stop asking *"What should I pick?"* and instead ask *"If two local choices are in the wrong order, can I swap them and prove the objective does not get worse?"*  
-> For non-ordering problems, identify whether the objective is controlled by a **median** or by a **bottleneck threshold**.
+> **Final habit for CF:** Understand the question → Try tiny choices → Identify what changes → Prove one local or threshold choice is safe → Justify global optimality → Code.
