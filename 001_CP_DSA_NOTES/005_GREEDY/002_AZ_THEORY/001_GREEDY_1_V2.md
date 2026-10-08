@@ -1,4 +1,4 @@
-# AlgoZenith Greedy — Class 1 (V5: Prerequisites + Worked Proofs)
+# AlgoZenith Greedy — Class 1 (V4: Understand the Question First)
 
 > **How to study:** Read the **question** first. Predict an answer using the **small example**. Then see the **step-by-step method**, **proof in simple words**, and **C++17**. All numerical examples are illustrative models of the class patterns, not quotations of a particular contest problem.
 >
@@ -6,55 +6,12 @@
 
 ## Contents
 
-0. [Prerequisites — Tools Used by Every Pattern](#0-prerequisites--tools-used-by-every-pattern)
 1. [Maximum Dot Product — Who Should Pair With Whom?](#1-maximum-dot-product--who-should-pair-with-whom)
 2. [Job Ordering — Which Task Should Run First?](#2-job-ordering--which-task-should-run-first)
 3. [Median — Where Should Everyone Meet?](#3-median--where-should-everyone-meet)
 4. [Weighted Median — Where Should Groups Meet?](#4-weighted-median--where-should-groups-meet)
 5. [Team Performance — Which K People Should We Choose?](#5-team-performance--which-k-people-should-we-choose)
 6. [Quick Recognition Card](#6-quick-recognition-card)
-
----
-
-# 0. Prerequisites — Tools Used by Every Pattern
-
-These are the **minimum tools** needed to understand the five problems. Read the example before its formula.
-
-| Tool | Meaning in simple words | Tiny example |
-|---|---|---|
-| Objective function | A number we want largest/smallest | Maximize `2×B[0] + 5×B[1]` |
-| Pair contribution | Part of the answer from one position | `2×7=14` |
-| Exchange / swap | Switch two choices; see if answer improves | `[7,3] → [3,7]`: `29 → 41` |
-| Inversion | Larger element sits before a smaller one | `[1,7,4]`: `7 > 4` |
-| Cancellation | Ignore terms unchanged by a swap | `(10+41)-(10+29)=41-29` |
-| Completion time | When a task ends, including waiting | A takes 5, B takes 3: A→B finish at `5,8` |
-| Ratio comparison | Compare `D/T` without decimals | `2/5 < 10/3` since `2×3 < 10×5` |
-| Absolute distance | Distance is never negative | `|3-7|=4` |
-| Median | Middle person after sorting | `[1,3,7] → 3` |
-| Weighted median | Middle person when positions represent groups | `[1,3,7,7,7] → 7` |
-| Prefix weight | Count people up to a location | weights `1,1,3` → prefix `1,2,5` |
-| Min-heap Top-K | Keep largest K numbers; remove smallest extra | K=2: `[4,10,20] → [10,20]` |
-| Bottleneck | The smallest attribute controls a team | speeds `[6,4]` → minimum is `4` |
-
-### One exchange proof, from start to finish
-
-**Question:** Should we pair small-with-small or cross the partners? Take `A=[2,5]`, `B=[7,3]`.
-
-| Arrangement | Products | Sum |
-|---|---|---:|
-| Crossed | `2×7 + 5×3` | 29 |
-| Aligned | `2×3 + 5×7` | **41** |
-
-1. **Try a swap:** improvement = `41−29=12`.
-2. **Explain it algebraically:** `ac+bd−ad−bc = b(d−c)−a(d−c) = (b−a)(d−c)`.
-3. **Prove the sign:** if `a≤b` and `c≤d`, both differences are `≥0`, so gain is `≥0`.
-4. **Go from local to global:** repeatedly fix inverted partners. Each fix never makes the total worse; eventually both lists have the same order.
-
-**Recognition:** Compare just what changes → subtract OLD from NEW → factor → show the sign → explain why swaps can be repeated.
-
-### How to read the C++ solutions
-
-Every code block uses **`long long` only**, as requested. This is correct **only when inputs, all intermediate products, prefix sums, completion times, and answers fit in signed 64-bit** (`−9.22×10^18` to `+9.22×10^18`). For example, `10^9 × 10^9 = 10^18` fits, but summing `100000` such products does not. Check constraints before submitting; if bounds exceed this, a wider integer type or a problem-specific approach is necessary.
 
 ---
 
@@ -81,31 +38,22 @@ You have two lists of numbers `A` and `B`. You **may rearrange B**. Pair the val
 2. Sort `B` ascending too.
 3. Multiply same-index elements and sum them. (For the **minimum**, sort in opposite orders.)
 
-### Proof — why aligned pairing is always at least as good
+### Why does it always work? Simple exchange proof
 
-**Step 1 — Use the same numbers:** small `A=2`, large `A=5`; small `B=3`, large `B=7`.
-
-| Choice | Calculation | Score |
-|---|---|---:|
-| Crossed | `2×7 + 5×3` | 29 |
-| Aligned | `2×3 + 5×7` | **41** |
-
-**Step 2 — Subtract:** `aligned − crossed = 41−29 = 12`.
-
-**Step 3 — Generalize and factor** (`a≤b`, `c≤d`):
+Take any **crossed** pair: `a ≤ b` and `c ≤ d` but pair `a` with `d` and `b` with `c`.
 
 ```text
-Aligned − crossed
-= (a*c + b*d) − (a*d + b*c)
-= ac + bd − ad − bc
-= bd − bc − ad + ac          (reorder)
-= b(d−c) − a(d−c)           (common factor)
-= (b−a)(d−c)
+Crossed total = a*d + b*c
+Aligned total = a*c + b*d
 
-Numbers: (5−2)(7−3) = 3×4 = 12
+Aligned − Crossed
+= ac + bd − ad − bc
+= bd − bc − ad + ac        (reorder)
+= b(d−c) − a(d−c)         (factor)
+= (b−a)(d−c) ≥ 0
 ```
 
-**Step 4 — Why this is a proof:** `b−a ≥ 0` and `d−c ≥ 0`, so their product is nonnegative for **every** pair. If B has an inversion, swapping that inverted pair never lowers the score. Repeat until B is aligned with sorted A. Thus sorting both the same way is optimal (ties may produce equal scores).
+Both differences are nonnegative. **Undoing any crossed pair never reduces the answer.** Keep removing crossings until both arrays have the same order: that is why sorting is optimal. Equality is possible when values tie.
 
 ### C++17
 
@@ -120,9 +68,10 @@ int main() {
     for (auto &x : b) cin >> x;
     sort(a.begin(), a.end());
     sort(b.begin(), b.end());
-    long long ans = 0;
-    for (int i = 0; i < n; ++i) ans += a[i] * b[i];
-    cout << ans << '\n';
+    __int128 ans = 0;
+    for (int i = 0; i < n; ++i) ans += (__int128)a[i] * b[i];
+    // This example assumes the answer fits in signed long long.
+    cout << (long long)ans << '\n';
 }
 ```
 
@@ -175,44 +124,25 @@ NEW: 0 [Q] 2 [B] 5 [A] 10 [R] 14
 
 Only A and B finish at different times. So **to judge this swap, compare only A and B**. Q and R cancel. This is the *exchange proof* idea.
 
-### Proof — derive the best job order step by step
+### Derive the ordering rule (numbers → algebra)
 
-**Step 1 — Try both orders with numbers.** From the table above, `A→B` scores `110`, while `B→A` scores `154`. Therefore `B→A` wins by `44`.
-
-**Step 2 — Remove base scores.** Both orders earn the same base `S_A+S_B=200`. Only the **lost points** differ:
-
-| Order | A's loss | B's loss | Total loss |
-|---|---:|---:|---:|
-| A→B | `2×5=10` | `10×8=80` | **90** |
-| B→A | `2×8=16` | `10×3=30` | **46** |
-
-So maximize final score = minimize `Σ(D × finish time)`.
-
-**Step 3 — Put variables in place.** Let `T_A,T_B` be durations, `D_A,D_B` be loss per minute, and `p` be the time taken by earlier jobs:
+To maximize score, minimize total lost points (`Σ D×finish_time`), because all base scores stay the same. For two neighboring jobs `A` then `B`, compared with `B` then `A`, let `p` be time already spent before them. It cancels out:
 
 ```text
-Loss(A→B) = DA(p+TA) + DB(p+TA+TB)
-Loss(B→A) = DB(p+TB) + DA(p+TB+TA)
+Loss(A then B) = DA(p+TA) + DB(p+TA+TB)
+Loss(B then A) = DB(p+TB) + DA(p+TB+TA)
 
-Loss(A→B) − Loss(B→A)
-= DA*p + DA*TA + DB*p + DB*TA + DB*TB
-  − DB*p − DB*TB − DA*p − DA*TB − DA*TA
-= DB*TA − DA*TB             (all shared terms cancel)
-
-Numbers: 10×5 − 2×3 = 50−6 = 44
+First loss − second loss = DB*TA − DA*TB
 ```
 
-**Step 4 — Find the rule.** `A` should go first when its loss is no larger:
+**A first is better** when first loss ≤ second loss:
 
 ```text
-DB*TA − DA*TB <= 0
-DB*TA <= DA*TB
-DA/TA >= DB/TB      (TA, TB are positive)
+DB*TA ≤ DA*TB
+      ⇔ DA/TA ≥ DB/TB       (positive times)
 ```
 
-For our input, `2/5 < 10/3`, so **B first**.
-
-**Step 5 — Prove for all jobs.** Swap any two **neighboring** jobs violating descending `D/T`. Earlier jobs are unchanged; later jobs finish at the same time because the pair's total duration is unchanged. The swap cannot worsen total score. Repeat until all jobs follow descending `D/T`.
+With the example: `2/5 = 0.4` and `10/3 ≈ 3.33`; **B first**. Any adjacent pair in the wrong ratio order can be swapped without making the result worse. Repeating swaps sorts every job into the optimal order.
 
 ### Solution steps
 
@@ -227,8 +157,8 @@ For our input, `2/5 < 10/3`, so **B first**.
 using namespace std;
 struct Job { long long s, d, t; };
 bool cmp(const Job& a, const Job& b) {
-    long long x = a.d * b.t;
-    long long y = b.d * a.t;
+    __int128 x = (__int128)a.d * b.t;
+    __int128 y = (__int128)b.d * a.t;
     return x != y ? x > y : a.t < b.t;
 }
 int main() {
@@ -237,12 +167,13 @@ int main() {
     vector<Job> v(n);
     for (auto &j : v) cin >> j.s >> j.d >> j.t;
     sort(v.begin(), v.end(), cmp);
-    long long time = 0, score = 0;
+    __int128 time = 0, score = 0;
     for (auto j : v) {
         time += j.t;
-        score += j.s - j.d * time;
+        score += (__int128)j.s - (__int128)j.d * time;
     }
-    cout << score << '\n';
+    // This example assumes the final score fits in signed long long.
+    cout << (long long)score << '\n';
 }
 ```
 
@@ -274,27 +205,16 @@ Positions: `[1, 3, 7]`.
 2. Pick `x[n/2]` (0-based): one valid median for either odd or even `n`.
 3. Answer = `Σ |x[i] − median|`.
 
-### Proof — see the cost change, then derive it
+### Why does it work? A movement proof
 
-**Step 1 — Use the example** `[1,3,7]`. The cost of meeting at `X=2` is `1+1+5=7`; at `X=3` it is `2+0+4=6`.
+Imagine moving the meeting point **a tiny distance right**, without passing someone's position.
 
-| Person at | Distance at X=2 | Distance at X=3 | Change |
-|---|---:|---:|---:|
-| 1 | 1 | 2 | +1 |
-| 3 | 1 | 0 | −1 |
-| 7 | 5 | 4 | −1 |
-| **Total** | **7** | **6** | **−1** |
+- Each person on the **left** walks that much farther → total cost goes **up**.
+- Each person on the **right** walks that much less → total cost goes **down**.
 
-**Step 2 — General rule:** move the meeting point right by a small distance `h`, **without crossing any person's position**. Every left-side person adds `+h`, every right-side person adds `−h`.
+For one unit of movement *not crossing a position*, change in cost is `#left − #right`. Before the median, more people are to the right, so moving right helps; after the median, moving right hurts. The change of direction happens at the middle.
 
-```text
-newCost − oldCost = h × (#left − #right)
-At X=2, h=1:        1 × (1 − 2) = −1
-```
-
-**Step 3 — Why the median:** Before the middle there are more people on the right, so moving right reduces cost. After the middle there are more on the left, so moving right increases cost. At the middle, the direction changes, giving the minimum.
-
-**Even count:** `[1,3,7,10]` has two middle values `3,7`. For `X` anywhere between them, two people are on each side, so movement does not change total cost: `F(3)=F(5)=F(7)=13`. Pick either middle value in code.
+**Even count:** `[1,3,7,10]` has middle values `3` and `7`; every `X` between `3` and `7` has the same minimum total distance (`13`). You may choose either middle value in code.
 
 ### C++17
 
@@ -308,9 +228,13 @@ int main() {
     for (auto &v : x) cin >> v;
     sort(x.begin(), x.end());
     long long m = x[n/2];
-    long long cost = 0;
-    for (long long v : x) cost += llabs(v - m);
-    cout << cost << '\n';
+    __int128 cost = 0;
+    for (long long v : x) {
+        __int128 d = (__int128)v - m;
+        cost += d < 0 ? -d : d;
+    }
+    // This example assumes the answer fits in signed long long.
+    cout << (long long)cost << '\n';
 }
 ```
 
@@ -356,33 +280,9 @@ Total weight = `1+1+3=5`. Middle person's index in a 1-based expanded list = `(5
 3. Scan cumulative weight. The **first position with prefix weight ≥ target** is a weighted median.
 4. Compute `Σ weight[i] × |X − position[i]|`.
 
-### Proof — weighted movement with actual numbers
+### Why does it work? Simple proof
 
-**Step 1 — Interpret weights as people:** `[1,3,7]` with weights `[1,1,3]` means people at `[1,3,7,7,7]`.
-
-**Step 2 — Move meeting point from `3` to `7`** (4 units):
-
-| Group | People | Change per person | Total change |
-|---|---:|---:|---:|
-| At 1 | 1 | +4 | +4 |
-| At 3 | 1 | +4 | +4 |
-| At 7 | 3 | −4 | −12 |
-| **Total** | | | **−4** |
-
-So cost changes from `14` to `10`.
-
-**Step 3 — Derive the rule:** for a small rightward movement `h` that crosses no group location,
-
-```text
-newCost − oldCost = h × (weight_left − weight_right)
-For the open interval (3,7):
-weight_left=1+1=2, weight_right=3
-h=4: change=4×(2−3)=−4
-```
-
-If more weight is to the right, moving right decreases cost; if more is to the left, it increases cost. Therefore the minimum occurs at a **weighted median** (no more than half the total weight strictly on either side).
-
-**Step 4 — Find it without expanding:** total weight `W=5`, target `(W+1)/2=3`. Prefix weights are `1,2,5`; the first prefix reaching `3` is at location **7**. For even integer total weight, this finds one valid weighted median.
+Imagine a location with weight 3 as **three people standing there**. The unweighted median proof applies to this conceptual expanded population. Instead of moving one person's distance at a time, moving right changes cost by `weight_left − weight_right` (on stretches that cross no location). Hence cost stops decreasing once at least half the total weight is on each side of a median.
 
 ### C++17 (positive integer weights)
 
@@ -393,18 +293,22 @@ int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
     int n; cin >> n;
     vector<pair<long long,long long>> a(n);
-    long long W = 0;
+    __int128 W = 0;
     for (auto &[x,w] : a) { cin >> x >> w; W += w; }
     sort(a.begin(), a.end());
-    long long target = W/2 + W%2, pref = 0;
+    __int128 target = (W+1)/2, pref = 0;
     long long median = a.front().first;
     for (auto [x,w] : a) {
         pref += w;
         if (pref >= target) { median = x; break; }
     }
-    long long cost = 0;
-    for (auto [x,w] : a) cost += w * llabs(x - median);
-    cout << cost << '\n';
+    __int128 cost = 0;
+    for (auto [x,w] : a) {
+        __int128 d = (__int128)x - median;
+        cost += (__int128)w * (d < 0 ? -d : d);
+    }
+    // This example assumes the answer fits in signed long long.
+    cout << (long long)cost << '\n';
 }
 ```
 
@@ -456,30 +360,14 @@ Try every team to understand the question:
 
 Answer = **60**.
 
-### Proof — fix the slowest worker, then maximize the rest
+### Why does this work? Proof in simple words
 
-**Step 1 — Test the example:** at speed threshold `4`, eligible workers are A,B. Their best two efficiencies are `4,10`, yielding `4×(4+10)=56`. At threshold `2`, eligible are A,B,C; the top two are `10,20`, yielding `2×(10+20)=60`.
+1. Imagine the **actual best team** has slowest speed `S`.
+2. At the moment the scan reaches speed `S`, **every worker in that best team is eligible** (already scanned).
+3. Our heap keeps the **largest K efficiencies** among everyone eligible, so its sum is at least as large as the best team's efficiency sum.
+4. Multiplying by the nonnegative threshold `S` means our candidate score is **at least the best team's score** at that step. Since every worker in the heap has speed ≥ `S`, the candidate does not exceed that chosen team's actual performance.
 
-**Step 2 — Write the optimization:** for any team of K people,
-
-```text
-Performance = (sum of efficiencies) × (minimum speed)
-```
-
-The minimum makes direct selection difficult. Instead, **fix a candidate threshold S**. All eligible workers have `speed >= S`. For that fixed S, maximizing `S × efficiency_sum` means taking the largest K efficiencies (assuming `S >= 0`).
-
-**Step 3 — Why scanning all thresholds is enough:** suppose the truly optimal team has minimum speed `S*` and efficiency sum `E*`.
-
-```text
-At threshold S*:
-all members of the optimal team are eligible
-heapSum >= E*                    (heap keeps top K efficiencies)
-S* × heapSum >= S* × E*          (because S* >= 0)
-```
-
-The heap's chosen team has actual minimum speed **at least** `S*`, so its real score is at least the threshold score. Thus the scan cannot miss a better answer.
-
-**Step 4 — Data structure:** sorting speeds descending visits thresholds; a size-K **min-heap** discards the smallest efficiency whenever K+1 people have been seen. Note: this proof assumes **nonnegative speed and efficiency** and **exactly K** members.
+So the scan cannot miss a better team. This is a **fix the bottleneck → optimize the sum** proof, not a swapping proof.
 
 ### Why a *min*-heap?
 
@@ -506,13 +394,14 @@ int main() {
     for (auto &[s,e] : workers) cin >> s >> e;
     sort(workers.rbegin(), workers.rend()); // speed descending
     priority_queue<long long, vector<long long>, greater<long long>> pq;
-    long long sum = 0, ans = 0;
+    __int128 sum = 0, ans = 0;
     for (auto [speed, eff] : workers) {
         pq.push(eff); sum += eff;
         if ((int)pq.size() > k) { sum -= pq.top(); pq.pop(); }
         if ((int)pq.size() == k) ans = max(ans, sum * speed);
     }
-    cout << ans << '\n';
+    // This example assumes the answer fits in signed long long.
+    cout << (long long)ans << '\n';
 }
 ```
 
@@ -532,4 +421,4 @@ int main() {
 
 **The six questions to ask in a contest:** (1) What can I choose/change? (2) What exactly am I maximizing/minimizing? (3) Try 2–3 items. (4) Compare two choices. (5) Why will the same argument hold for all items? (6) Only then code.
 
-**Implementation assumption:** The C++ snippets deliberately use `long long` for clarity. Verify all intermediate arithmetic (not just final answers) stays in 64-bit range; otherwise `long long` is unsafe.
+**Important implementation note:** The examples above use `__int128` for intermediate arithmetic but print by casting to `long long` for brevity. If the problem constraints allow a final result outside signed 64-bit, use a `__int128` decimal-printing helper instead. All sorting/rule assumptions stated within each pattern matter.
