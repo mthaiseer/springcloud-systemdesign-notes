@@ -1571,44 +1571,28 @@ T_i = processing time
 
 ## 3.3 Why Only Two Jobs Are Enough for the Proof
 
-### Worked example — jobs outside an adjacent swap stay unchanged
+**Real-world model:** one computer processes four tasks, one at a time. `Q` and `R` stay in place; swap only the two neighboring tasks `P1` and `P2`.
+
+| Task | Q | P1 | P2 | R |
+|---|---:|---:|---:|---:|
+| Duration (minutes) | 2 | 5 | 3 | 4 |
 
 ```text
-Schedule OLD: Q(2min) | P1(5min) | P2(3min) | R(4min)
-Finish times: Q=2, P1=7, P2=10, R=14
-
-Schedule NEW: Q(2min) | P2(3min) | P1(5min) | R(4min)
-Finish times: Q=2, P2=5, P1=10, R=14
+OLD: 0 --Q-- 2 -----P1----- 7 ---P2--- 10 ----R---- 14
+NEW: 0 --Q-- 2 ---P2--- 5 -----P1----- 10 ----R---- 14
+                ^ swapped adjacent tasks ^
 ```
 
-The jobs before the swapped pair (`Q`) and after it (`R`) finish at the **same times**. Only the two swapped jobs change completion times. This is why comparing an adjacent pair works even in a long schedule.
+| Task | OLD finishes | NEW finishes | Changes? |
+|---|---:|---:|---|
+| Q | 2 | 2 | No |
+| **P1** | **7** | **10** | **Yes** |
+| **P2** | **10** | **5** | **Yes** |
+| R | 14 | 14 | No |
 
+**Observation:** `P1 + P2` always takes `5 + 3 = 8` minutes, whichever comes first. So `R` still starts at minute `10` and ends at `14`; `Q` is untouched. **Only compare the score/penalty of P1 and P2.**
 
-Take two adjacent jobs:
-
-```text
-P1 and P2
-```
-
-All jobs before them contribute the same in both orders.
-
-All jobs after them start after total time:
-
-```text
-T1+T2
-```
-
-in both orders.
-
-Therefore only the contributions of:
-
-```text
-P1 and P2
-```
-
-matter for deciding their relative order.
-
-This is the exchange-proof trick.
+**Exchange-proof rule:** swap *adjacent* jobs → everything outside the pair has the same completion time → compare just the pair → derive the better order (`D/T`, in this problem).
 
 ---
 
@@ -2765,22 +2749,23 @@ So the heavy point at `7` pulls the optimum toward itself.
 
 ## 5.4 Weighted Movement Argument
 
-### Worked example — left weight versus right weight
+### Worked example — a meeting point moves right
 
-Consider `x_i=[1,3,7]` with weights `[1,1,3]` and move the meeting point `x=4` to `x=5` (no data point crossed):
+Imagine `1` person at location `1`, `1` at `3`, and `3` at `7`.
 
 ```text
-Left weight  = 1+1 = 2 -> distance cost increases by 2
-Right weight = 3     -> distance cost decreases by 3
-Change = 2-3 = -1
-
-F(4) = 1×3 + 1×1 + 3×3 = 13
-F(5) = 1×4 + 1×2 + 3×2 = 12
-F(5)-F(4) = -1
+1 (1 person)   3 (1 person)   4 -> 5   7 (3 people)
+|--------------|--------------->------|
+         2 people left            3 right
 ```
 
-**Boundary detail:** `W_left-W_right` for a one-unit move assumes no location lies strictly inside the move and handles points at endpoints according to which side their distance changes on. At a data point, check its weight explicitly rather than blindly applying strict-left/strict-right counts.
+| Move meeting point | Left people's added cost | Right people's saved cost | Total change |
+|---|---:|---:|---:|
+| `4 → 5` | `+2 × 1 = +2` | `−3 × 1 = −3` | **−1** |
 
+Check: `F(4)=13`, `F(5)=12`. Moving right **helps** because more weight is on the right (`3 > 2`).
+
+For a move **within an interval containing no data locations**, `Δ = W_left − W_right` per unit moved. At a location, account for its weight when determining the next interval.
 
 Let:
 
@@ -3313,121 +3298,29 @@ top K efficiencies in the prefix
 
 ## 6.6 Dry Run of the Class Example
 
-People:
+**Real-world analogy:** choose **2 workers**. Each has a speed and an efficiency. Team score = `(sum of efficiencies) × (slowest worker's speed)`.
+
+| Worker | Speed | Efficiency |
+|---|---:|---:|
+| A | 5 | 7 |
+| B | 3 | 7 |
+| C | 2 | 100 |
+
+Process workers by **descending speed**, and keep the top **K = 2** efficiencies in a min-heap.
+
+| Minimum speed threshold | Eligible | Heap: best 2 efficiencies | Candidate score |
+|---|---|---|---:|
+| 5 | A | `[7]` | Not enough workers |
+| 3 | A, B | `[7,7]` | `3 × 14 = 42` |
+| 2 | A, B, C | `[7,100]` (discard one `7`) | `2 × 107 = 214` |
 
 ```text
-(3,7)
-(2,100)
-(5,7)
+Speed threshold:  5 --------> 3 --------> 2
+Eligible count:   1           2           3
+Best score:       —          42         214  <-- maximum
 ```
 
-Sort speed descending:
-
-```text
-(5,7)
-(3,7)
-(2,100)
-```
-
-`K=2`.
-
----
-
-### Threshold `S = 5`
-
-Eligible:
-
-```text
-(5,7)
-```
-
-Only one person.
-
-Cannot form size-2 team yet.
-
-Heap:
-
-```text
-[7]
-```
-
----
-
-### Threshold `S = 3`
-
-Add efficiency:
-
-```text
-7
-```
-
-Heap:
-
-```text
-[7,7]
-```
-
-Top-K sum:
-
-```text
-14
-```
-
-Candidate:
-
-```text
-3×14
-= 42
-```
-
----
-
-### Threshold `S = 2`
-
-Add efficiency:
-
-```text
-100
-```
-
-Heap temporarily:
-
-```text
-[7,7,100]
-```
-
-Need only top 2.
-
-Remove smallest:
-
-```text
-7
-```
-
-Heap:
-
-```text
-[7,100]
-```
-
-Sum:
-
-```text
-107
-```
-
-Candidate:
-
-```text
-2×107
-= 214
-```
-
-Best:
-
-```text
-214
-```
+**Observation:** a lower speed threshold can win because it allows a much larger efficiency sum. **Sort by bottleneck descending + maintain the best K values.**
 
 ---
 
