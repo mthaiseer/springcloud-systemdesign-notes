@@ -1,9 +1,9 @@
 # AlgoZenith Greedy — Class 1
-## V8 · TLE-style explanations: one idea at a time
+## V9 · Clear variable names, simpler scheduling, TLE-style proofs
 
 > **Goal:** first understand **what the question wants**. Next use **small numbers** to discover a choice. Finally prove why it works for *all* valid inputs.
 >
-> **Proof layout:** **Question → Example → Observation → General statement → One algebra step → What that step means → Actual numbers → Why it is always true.**
+> **Proof layout:** **Question in plain English → Define the data → Small table/timeline → Observation → One proof step at a time → Numbers → General rule.**
 >
 > The examples are teaching models of the five class patterns, not quotes from contest statements. C++17 uses `long long`, assuming **every intermediate operation** fits signed 64-bit (see §0.14).
 
@@ -241,35 +241,48 @@ divide by 3
 
 Direction stays the same.
 
-**Important in scheduling:** If `D_B*T_A <= D_A*T_B`, we may divide by positive `T_A` and `T_B` without reversing the inequality. This will reveal the `D/T` rule in Pattern 2.
+**Scheduling example:** A takes 5 minutes and loses 2 points each minute. B takes 3 minutes and loses 10 points each minute. To test whether A should go first, ask whether the extra loss caused by A delaying B is smaller than the extra loss caused by B delaying A:
+
+```text
+Extra loss if A goes first = lossPerMinuteJobB × durationJobA
+                           = 10 × 5 = 50
+
+Extra loss if B goes first = lossPerMinuteJobA × durationJobB
+                           = 2 × 3 = 6
+```
+
+Since `50 > 6`, **B should go first**. The ratio comparison in the next section is simply another way to express this same test.
 
 ## 0.8 Ratio comparison without division
 
-Suppose two jobs have:
+**Question:** How do we compare urgency against job duration without decimal divisions?
 
-| Job | Loss rate D | Time T | Ratio D/T |
+| Job | Loss per minute | Duration | Loss-per-minute / duration |
 |---|---:|---:|---:|
-| A | 2 | 5 | 0.4 |
-| B | 10 | 3 | 3.33… |
+| A | 2 | 5 | `2/5 = 0.4` |
+| B | 10 | 3 | `10/3 ≈ 3.33` |
 
-To compare `D_A/T_A` with `D_B/T_B`, use **cross multiplication** because both times are positive.
+Suppose we want to check whether job A's ratio is at least B's ratio.
 
-Question: Is `D_A/T_A ≥ D_B/T_B`?
+```text
+lossPerMinuteJobA / durationJobA
+  >= lossPerMinuteJobB / durationJobB
+```
+
+Use the real values first:
 
 ```text
 2/5 >= 10/3 ?
 ```
 
-Multiply both sides by `5×3` (positive):
+Because both durations are positive, multiply both sides by `5 × 3`:
 
 ```text
-2×3 >= 10×5 ?
-6 >= 50 ?  NO
+2 × 3 >= 10 × 5 ?
+6 >= 50 ?   NO
 ```
 
-So B has the bigger ratio.
-
-**In C++**, use `a.d*b.t > b.d*a.t` when these products fit `long long`. Do not use floating-point division unless the model specifically requires it.
+So **job B has the larger ratio** and should go first in this score-decay model. In C++, use cross-products (when they fit `long long`), rather than floating-point comparison.
 
 ## 0.9 Waiting time and completion time
 
@@ -575,374 +588,374 @@ int main() {
 
 ## 2.1 What is the question asking?
 
-One computer runs all jobs, **one at a time**. Every job has:
+**Real-world example:** A computer can run **only one task at a time**. Every task starts with some points. Until a task finishes, it **loses points every minute**.
 
-- `T`: minutes needed to process it;
-- `D`: points lost *per minute until it finishes*;
-- `S`: its starting/base score.
+**Your decision:** Choose the order of the tasks.
 
-The job's final score is `S − D×completionTime`.
+**Your goal:** Finish every task while keeping the **largest combined final score**.
 
-**Goal:** Choose an order that **maximizes total final score**. All jobs must be completed, `T>0`, and score may become negative because the mathematical model is linear.
+| Meaning | Clear variable name | Job A | Job B |
+|---|---|---:|---:|
+| Starting points | `baseScoreJobA` / `baseScoreJobB` | 100 | 100 |
+| Minutes needed to run | `durationJobA` / `durationJobB` | 5 | 3 |
+| Points lost per minute until finished | `lossPerMinuteJobA` / `lossPerMinuteJobB` | 2 | 10 |
 
-## 2.2 Start with a small real example
+**Important:** A task loses points for its **entire completion time**, including time waiting for earlier tasks. All jobs must run; the score formula is linear and may become negative.
 
-| Job | Processing time T | Base score S | Loss per minute D |
-|---|---:|---:|---:|
-| A | 5 | 100 | 2 |
-| B | 3 | 100 | 10 |
-
-**Order A then B:**
+For either task:
 
 ```text
-0 -- A (5) -- 5 -- B (3) -- 8
+finalScore = baseScore - lossPerMinute × completionTime
 ```
 
-| Job | Finishes at | Score |
+For example, if job A completes at minute 5:
+
+```text
+finalScoreJobA = 100 - 2 × 5 = 90
+```
+
+## 2.2 Try both possible orders — only TWO jobs first
+
+**Choice 1 — A runs before B**
+
+```text
+Time:    0 -------- 5 -------- 8
+Task:       A (5)       B (3)
+Ends:        A           B
+```
+
+| Job | Finishes at minute | Points left |
 |---|---:|---:|
-| A | 5 | `100−2×5=90` |
-| B | 8 | `100−10×8=20` |
+| A | 5 | `100 − 2×5 = 90` |
+| B | 8 | `100 − 10×8 = 20` |
 | **Total** | | **110** |
 
-**Order B then A:**
+**Choice 2 — B runs before A**
 
 ```text
-0 -- B (3) -- 3 -- A (5) -- 8
+Time:    0 ------ 3 ------------ 8
+Task:       B (3)         A (5)
+Ends:        B             A
 ```
 
-| Job | Finishes at | Score |
+| Job | Finishes at minute | Points left |
 |---|---:|---:|
-| B | 3 | `100−10×3=70` |
-| A | 8 | `100−2×8=84` |
+| B | 3 | `100 − 10×3 = 70` |
+| A | 8 | `100 − 2×8 = 84` |
 | **Total** | | **154** |
 
-**Observation:** B first gives `154−110=44` more points.
+**Observation:** B first gives **44 more points** (`154 − 110 = 44`). Now we need to prove a rule that also works for other durations and loss rates.
 
-**Why?** B is much more expensive to delay, and it is short. But we still need a rule that works for every pair of jobs.
+## 2.3 Why can we compare only LOST points?
 
-## 2.3 First simplification — maximize score = minimize loss
-
-Both orders earn the same combined **base score**:
+Every job gets the same **starting points**, whichever order we choose.
 
 ```text
-S_A + S_B = 100 + 100 = 200
+baseScoreJobA = 100
+baseScoreJobB = 100
+
+totalBaseScore = baseScoreJobA + baseScoreJobB
+               = 100 + 100
+               = 200
 ```
 
-Only the **lost points** change.
+The order changes **when each job finishes**, so it changes the **points lost**, not the starting points.
 
-| Order | A loses | B loses | Total loss |
+| Order | Loss from A | Loss from B | Total lost | Final score |
+|---|---:|---:|---:|---:|
+| A then B | `2×5=10` | `10×8=80` | **90** | `200−90=110` |
+| B then A | `2×8=16` | `10×3=30` | **46** | `200−46=154` |
+
+**Conclusion:** The starting total is fixed at 200. Therefore:
+
+```text
+Maximize final points = Minimize lost points
+```
+
+## 2.4 Why do we swap only TWO neighboring jobs?
+
+First, notice that **A and B together always take 8 minutes**, whichever goes first:
+
+```text
+A then B takes 5 + 3 = 8 minutes
+B then A takes 3 + 5 = 8 minutes
+```
+
+Now imagine other tasks on the same computer. Job **Q runs before** A and B, and job **R runs after** A and B. We are **not swapping Q or R**.
+
+| Task | Q | A | B | R |
+|---|---:|---:|---:|---:|
+| Processing duration (minutes) | 2 | 5 | 3 | 4 |
+
+**Before the swap:**
+
+```text
+0 --[Q:2]-- 2 --[A:5]-- 7 --[B:3]-- 10 --[R:4]-- 14
+```
+
+**After swapping only A and B:**
+
+```text
+0 --[Q:2]-- 2 --[B:3]-- 5 --[A:5]-- 10 --[R:4]-- 14
+```
+
+| Job | Finishes before swap | Finishes after swap | Changes? |
+|---|---:|---:|---|
+| Q | 2 | 2 | No |
+| **A** | **7** | **10** | **Yes** |
+| **B** | **10** | **5** | **Yes** |
+| R | 14 | 14 | No |
+
+**Why?** Q is finished before the pair starts. Both orders of A and B end at minute `2+8=10`, so R starts at minute 10 and finishes at minute 14 either way. **Only A's and B's completion times change.**
+
+This is why we compare **neighboring** jobs. Swapping jobs far apart could change the finishing times of jobs between them.
+
+## 2.5 Discover the greedy rule without long algebra
+
+This is the most important intuition.
+
+Every task must spend its **own processing time** running. That part of its loss happens either way. What changes is the **extra waiting caused by the other task**.
+
+**Choice A first:** B waits for A's 5 minutes.
+
+```text
+extraLossWhenAFirst = lossPerMinuteJobB × durationJobA
+                    = 10 × 5
+                    = 50
+```
+
+**Choice B first:** A waits for B's 3 minutes.
+
+```text
+extraLossWhenBFirst = lossPerMinuteJobA × durationJobB
+                    = 2 × 3
+                    = 6
+```
+
+| Put first | Extra waiting loss imposed on the other job |
+|---|---:|
+| A | 50 points |
+| **B** | **6 points** |
+
+**Choose B first**, because making A wait costs only 6 extra points, while making B wait costs 50. Difference = `50−6=44`, exactly the score improvement we saw earlier.
+
+## 2.6 Mathematical proof — one idea at a time
+
+We will show that **this extra-waiting comparison works even if other jobs run before A and B**.
+
+### Step 1 — What is common to both orders?
+
+Let `timeBeforePair` mean the number of minutes the computer has already worked before reaching A and B. In our four-job example, Q takes 2 minutes, so:
+
+```text
+timeBeforePair = 2
+```
+
+Both A and B wait for Q, no matter which goes first. They also each use their own processing time. Those parts of the loss are **identical** in both orders.
+
+Call the total of those identical losses `sharedLoss`:
+
+```text
+sharedLoss = loss from both jobs waiting for earlier tasks
+           + loss from A's own processing time
+           + loss from B's own processing time
+```
+
+**Write that with descriptive variables:**
+
+```text
+sharedLoss = (lossPerMinuteJobA + lossPerMinuteJobB) × timeBeforePair
+           + lossPerMinuteJobA × durationJobA
+           + lossPerMinuteJobB × durationJobB
+```
+
+**Substitute the numbers:**
+
+```text
+sharedLoss = (2 + 10) × 2 + 2 × 5 + 10 × 3
+           = 24 + 10 + 30
+           = 64
+```
+
+### Step 2 — Calculate loss if A runs before B
+
+The **only additional penalty** is making B wait during A's five minutes.
+
+```text
+totalLossIfAFirst = sharedLoss + extraLossWhenAFirst
+```
+
+**Numerical example:**
+
+```text
+totalLossIfAFirst = 64 + 10 × 5
+                  = 64 + 50
+                  = 114
+```
+
+### Step 3 — Calculate loss if B runs before A
+
+Here the additional penalty is making A wait during B's three minutes.
+
+```text
+totalLossIfBFirst = sharedLoss + extraLossWhenBFirst
+```
+
+**Numerical example:**
+
+```text
+totalLossIfBFirst = 64 + 2 × 3
+                  = 64 + 6
+                  = 70
+```
+
+### Step 4 — Compare the choices and cancel the shared part
+
+```text
+lossDifference = totalLossIfAFirst - totalLossIfBFirst
+               = 114 - 70
+               = 44
+```
+
+**General form:**
+
+```text
+lossDifference = (sharedLoss + extraLossWhenAFirst)
+               - (sharedLoss + extraLossWhenBFirst)
+```
+
+Since `sharedLoss` appears once with `+` and once with `−`, it cancels:
+
+```text
+lossDifference = extraLossWhenAFirst - extraLossWhenBFirst
+```
+
+**Replace these names by the meaning of each extra loss:**
+
+```text
+lossDifference = (lossPerMinuteJobB × durationJobA)
+               - (lossPerMinuteJobA × durationJobB)
+```
+
+**Numerical check:** `10×5 − 2×3 = 50 − 6 = 44`.
+
+**Why this matters:** `timeBeforePair` disappeared. The comparison works anywhere in the schedule, not just at the beginning.
+
+### Step 5 — Determine when A should run first
+
+We want to **minimize** loss. So A should run first if the extra loss it causes is no greater than the extra loss B would cause.
+
+```text
+extraLossWhenAFirst <= extraLossWhenBFirst
+```
+
+Substitute each descriptive formula:
+
+```text
+lossPerMinuteJobB × durationJobA
+   <= lossPerMinuteJobA × durationJobB
+```
+
+**Numerical check:** `50 <= 6` is **false**, so B runs first in this example.
+
+### Step 6 — Turn this into the general sorting rule
+
+Start with the comparison from Step 5:
+
+```text
+lossPerMinuteJobB × durationJobA
+  <= lossPerMinuteJobA × durationJobB
+```
+
+Both durations are **positive**. Divide both sides by `durationJobA × durationJobB`:
+
+```text
+lossPerMinuteJobB / durationJobB
+  <= lossPerMinuteJobA / durationJobA
+```
+
+Read the larger ratio first:
+
+```text
+lossPerMinuteJobA / durationJobA
+  >= lossPerMinuteJobB / durationJobB
+```
+
+**Numbers:** `2/5 = 0.4` for A, and `10/3 ≈ 3.33` for B. So B must come before A.
+
+**Greedy rule: sort jobs by DECREASING `(loss per minute)/(processing duration)`.**
+
+### Step 7 — Why is this rule optimal for all jobs?
+
+Take any schedule with two neighboring jobs in the **wrong ratio order**. From Steps 4–6, swapping this pair cannot increase total loss. From §2.4, jobs outside the pair are unaffected. Repeatedly fix neighboring wrong-order pairs until every job is in decreasing ratio order. Thus the greedy order is optimal, not just a guess.
+
+## 2.7 Solution steps and dry run
+
+1. Sort every job by decreasing `lossPerMinute / duration`.
+2. In C++, compare `jobA.lossPerMinute * jobB.duration` with `jobB.lossPerMinute * jobA.duration`, rather than dividing (assuming safe `long long` products).
+3. Walk through jobs in the chosen order. Increase completion time by the job's duration and add its final score.
+
+| Job executed | Completion time | Job's final score | Total so far |
 |---|---:|---:|---:|
-| A → B | `2×5=10` | `10×8=80` | **90** |
-| B → A | `2×8=16` | `10×3=30` | **46** |
+| B | 3 | `100 − 10×3 = 70` | 70 |
+| A | 8 | `100 − 2×8 = 84` | **154** |
 
-`200−90=110` and `200−46=154`.
-
-Therefore **minimizing total loss** is the same as maximizing total score.
-
-## 2.4 Why we swap only TWO neighboring jobs
-
-What if A and B appear in a long schedule?
-
-Suppose job Q takes 2 minutes and R takes 4 minutes:
-
-```text
-OLD: 0 [Q] 2 [A] 7 [B] 10 [R] 14
-NEW: 0 [Q] 2 [B] 5 [A] 10 [R] 14
-```
-
-| Job | OLD completion | NEW completion |
-|---|---:|---:|
-| Q | 2 | 2 |
-| **A** | **7** | **10** |
-| **B** | **10** | **5** |
-| R | 14 | 14 |
-
-**Key observation:** Q is unchanged. R still starts at minute 10 because A and B occupy `5+3=8` minutes in either order.
-
-Thus only A's and B's losses change. This justifies an **adjacent-pair exchange proof**.
-
-## 2.5 Discover the rule using EXTRA waiting time (easiest proof)
-
-Imagine both jobs start at the same time. In both orders, each job must spend its **own T minutes** processing; those own-time costs are common.
-
-**If A runs first**, B must wait 5 extra minutes.
-
-Additional loss caused to B:
-
-```text
-D_B × T_A = 10 × 5 = 50
-```
-
-**If B runs first**, A must wait 3 extra minutes.
-
-Additional loss caused to A:
-
-```text
-D_A × T_B = 2 × 3 = 6
-```
-
-Which extra loss is smaller?
-
-```text
-6 < 50
-```
-
-Therefore **B should go first**. This also explains the 44-point gain: `50−6=44`.
-
-This comparison already contains the full greedy rule. The next section proves it algebraically, including earlier jobs.
-
-## 2.6 General proof — one short equation, then numbers
-
-Let `p` be time already spent on jobs before A and B. In our four-job schedule, `p=2`.
-
-### Step 1 — Work out the completion times
-
-**A then B:**
-
-```text
-C_A = p + T_A
-C_B = p + T_A + T_B
-```
-
-Actual numbers:
-
-```text
-C_A = 2+5   = 7
-C_B = 2+5+3 = 10
-```
-
-**B then A:**
-
-```text
-C_B = p + T_B
-C_A = p + T_B + T_A
-```
-
-Actual numbers:
-
-```text
-C_B = 2+3   = 5
-C_A = 2+3+5 = 10
-```
-
-### Step 2 — Write total loss in each order
-
-Loss = `D × completionTime`.
-
-**A then B:**
-
-```text
-L_AB = D_A(p+T_A) + D_B(p+T_A+T_B)
-```
-
-Actual numbers:
-
-```text
-L_AB = 2(2+5) + 10(2+5+3)
-     = 14 + 100
-     = 114
-```
-
-**B then A:**
-
-```text
-L_BA = D_B(p+T_B) + D_A(p+T_B+T_A)
-```
-
-Actual numbers:
-
-```text
-L_BA = 10(2+3) + 2(2+3+5)
-     = 50 + 20
-     = 70
-```
-
-### Step 3 — Separate SHARED cost from EXTRA waiting cost
-
-Instead of subtracting ten crowded terms, collect the parts appearing in **both** orders.
-
-The **shared cost** is:
-
-```text
-Common = (D_A+D_B)×p + D_A×T_A + D_B×T_B
-```
-
-Actual numbers:
-
-```text
-Common = (2+10)×2 + 2×5 + 10×3
-       = 24 + 10 + 30
-       = 64
-```
-
-So we can rewrite the two losses as:
-
-**A then B:**
-
-```text
-L_AB = Common + D_B×T_A
-```
-
-Actual numbers:
-
-```text
-L_AB = 64 + 10×5 = 64 + 50 = 114
-```
-
-**B then A:**
-
-```text
-L_BA = Common + D_A×T_B
-```
-
-Actual numbers:
-
-```text
-L_BA = 64 + 2×3 = 64 + 6 = 70
-```
-
-**Why is this allowed?** Expanding either right-hand side gives the original loss expression. We have only **grouped** identical terms, not removed them.
-
-### Step 4 — Cancel what is identical
-
-Subtract the two losses:
-
-```text
-L_AB - L_BA = D_B×T_A - D_A×T_B
-```
-
-The `Common` term cancels.
-
-Actual numbers:
-
-```text
-114 - 70 = 10×5 - 2×3
-         = 50 - 6
-         = 44
-```
-
-**Meaning:** changing the order affects only the **extra waiting loss** each job causes the other. It does not depend on `p`.
-
-### Step 5 — When is A first better?
-
-A first is better when its extra waiting penalty is **no larger** than B first's extra waiting penalty.
-
-```text
-D_B×T_A <= D_A×T_B
-```
-
-Actual numbers:
-
-```text
-10×5 <= 2×3 ?
-50 <= 6 ?  NO
-```
-
-So A first is not optimal for these values.
-
-### Step 6 — Derive a sorting ratio from the comparison
-
-We start with the **general** condition for A first:
-
-```text
-D_B×T_A <= D_A×T_B
-```
-
-Divide both sides by positive `T_A`:
-
-```text
-D_B <= D_A×T_B/T_A
-```
-
-Then divide both sides by positive `T_B`:
-
-```text
-D_B/T_B <= D_A/T_A
-```
-
-Read it in descending order:
-
-```text
-D_A/T_A >= D_B/T_B
-```
-
-Actual ratios:
-
-```text
-A: 2/5  = 0.4
-B: 10/3 = 3.33...
-```
-
-B's ratio is larger, so **B runs first**.
-
-**Why is dividing safe?** Both processing times are strictly positive, so the inequality direction does not change.
-
-### Step 7 — Why does this prove the order for ALL jobs?
-
-Suppose a full schedule contains two **adjacent** jobs in the wrong order of `D/T`.
-
-- Swap them: the pair's combined time stays the same.
-- Earlier and later jobs keep their completion times.
-- The pair's loss cannot increase, by Step 5.
-
-Repeat until no adjacent ratio inversion remains. We obtain jobs sorted by **decreasing `D/T`**, without worsening the total score.
-
-This is an **exchange proof of optimality**, not just a helpful heuristic.
-
-## 2.7 Algorithm and dry run
-
-1. Sort jobs by decreasing `D/T` using cross-products (to avoid floating-point comparisons).
-2. Maintain a running `finishTime`, initially 0.
-3. Add `S - D*finishTime` for every job.
-
-| Job in greedy order | New finish time | Score added | Running total |
-|---|---:|---:|---:|
-| B | 3 | `100−10×3=70` | 70 |
-| A | 8 | `100−2×8=84` | **154** |
-
-## 2.8 C++17 (`long long`)
+## 2.8 C++17 with full variable names (`long long`)
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 struct Job {
-    long long s, d, t;
+    long long baseScore;
+    long long lossPerMinute;
+    long long duration;
 };
 
-bool earlier(const Job& a, const Job& b) {
-    long long left  = a.d * b.t;
-    long long right = b.d * a.t;
-    if (left != right) return left > right;
-    return a.t < b.t;  // ties in ratio: either order is fine
+bool shouldRunFirst(const Job& jobA, const Job& jobB) {
+    // Compare loss rates / durations without floating-point division.
+    long long firstCrossProduct  = jobA.lossPerMinute * jobB.duration;
+    long long secondCrossProduct = jobB.lossPerMinute * jobA.duration;
+
+    if (firstCrossProduct != secondCrossProduct) {
+        return firstCrossProduct > secondCrossProduct;
+    }
+    return jobA.duration < jobB.duration; // either order is optimal for equal ratios
 }
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int n;
-    cin >> n;
-    vector<Job> jobs(n);
-    for (Job& j : jobs) cin >> j.s >> j.d >> j.t;
+    int numberOfJobs;
+    cin >> numberOfJobs;
 
-    sort(jobs.begin(), jobs.end(), earlier);
-
-    long long finishTime = 0;
-    long long totalScore = 0;
-    for (const Job& j : jobs) {
-        finishTime += j.t;
-        totalScore += j.s - j.d * finishTime;
+    vector<Job> jobs(numberOfJobs);
+    for (Job& job : jobs) {
+        cin >> job.baseScore >> job.lossPerMinute >> job.duration;
     }
-    cout << totalScore << '\n';
+
+    sort(jobs.begin(), jobs.end(), shouldRunFirst);
+
+    long long completionTime = 0;
+    long long totalFinalScore = 0;
+
+    for (const Job& job : jobs) {
+        completionTime += job.duration;
+        long long jobFinalScore = job.baseScore - job.lossPerMinute * completionTime;
+        totalFinalScore += jobFinalScore;
+    }
+
+    cout << totalFinalScore << '\n';
 }
 ```
 
-**Time:** `O(N log N)`. **Assumptions:** `T>0`, every job runs, linear loss continues even below zero score, and every intermediate multiplication/sum fits `long long`.
+**Complexity:** `O(N log N)` time. **Assumptions:** duration is positive, every job is completed, score loss is linear even below zero, and all intermediate products/sums fit in `long long`.
 
-**Recognition:** sequence of jobs + penalty based on finish time → adjacent swap → decreasing `D/T`.
+**Recognition:** sequential jobs + penalty until completion → compare the **extra waiting loss** of neighboring jobs → sort by decreasing loss-rate/duration.
 
 ---
+
 # 3. Median — Where Should People Meet?
 
 ## 3.1 What is the question asking?
@@ -1603,9 +1616,10 @@ int main() {
 1. Dot product gain from uncrossing:
    (b-a)(d-c) >= 0
 
-2. Scheduling: A first if its caused delay loss is smaller:
-   D_B*T_A <= D_A*T_B
-   equivalently D_A/T_A >= D_B/T_B
+2. Scheduling: choose the order with smaller extra waiting loss.
+   A first: lossPerMinuteJobB × durationJobA
+   B first: lossPerMinuteJobA × durationJobB
+   Sort descending by lossPerMinute / duration.
 
 3. Moving meeting point right (between positions):
    change = h*(count_left-count_right)
