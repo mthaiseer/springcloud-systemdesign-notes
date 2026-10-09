@@ -1,122 +1,58 @@
 # AlgoZenith Greedy Applications
-## TLE-Style Notes — Running Minimum + Bottleneck Sorting + Top-K Heap
+## Optimized TLE-Style Notes — Running Minimum + Bottleneck Sorting + Top-K Heap
 
-> **Source:** the supplied AlgoZenith Greedy Applications class screenshots.
+> **Goal:** understand *why* the greedy choice works, not just memorize `prefix minimum` or `sort + heap`.
 >
-> **Goal:** understand the *reason* behind the greedy choice instead of memorizing:
->
-> ```text
-> "take prefix minimum"
->
-> or
->
-> "sort by efficiency and use a heap"
-> ```
->
-> **Format used for each problem:**
+> **Problem flow used throughout:**
 >
 > ```text
-> what it asks
-> → concept simplified
-> → prerequisites
-> → variables with full names
-> → tiny example
-> → observation
-> → greedy claim
-> → proof / exchange argument
-> → derivation with actual numbers
-> → ASCII visualization
-> → step-by-step dry run
-> → C++17 using long long
+> What it asks
+> → small dry run
+> → core observation
+> → proof with inline numbers
+> → one detailed dry run
+> → algorithm
+> → C++17
 > → complexity
 > → recognition model
-> → don't-memorize model
 > ```
 >
-> **Variable rule:** descriptive names are used throughout, such as:
+> **Variable rule**
 >
-> ```text
-> minimumPriceSeen
-> distanceToNextStation
-> selectedStrengthSum
-> currentMinimumEfficiency
-> teamPerformance
-> ```
->
-> rather than cryptic one-letter names wherever a full name improves understanding.
-
----
-
-# Clickable Table of Contents
-
-- [0. Class Map](#0-class-map)
-- [1. Prerequisites](#1-prerequisites)
-  - [1.1 Greedy Choice Must Be Safe](#11-greedy-choice-must-be-safe)
-  - [1.2 Running / Prefix Minimum](#12-running--prefix-minimum)
-  - [1.3 Why Future Values Cannot Help the Past](#13-why-future-values-cannot-help-the-past)
-  - [1.4 Local Exchange Argument](#14-local-exchange-argument)
-  - [1.5 Bottleneck Minimum](#15-bottleneck-minimum)
-  - [1.6 Fix the Bottleneck, Optimize the Rest](#16-fix-the-bottleneck-optimize-the-rest)
-  - [1.7 Top-K Largest Values](#17-top-k-largest-values)
-  - [1.8 Why a Min-Heap Maintains Top-K](#18-why-a-min-heap-maintains-top-k)
-  - [1.9 Heap + Running Sum](#19-heap--running-sum)
-  - [1.10 Sorting One Dimension to Make Candidates Eligible](#110-sorting-one-dimension-to-make-candidates-eligible)
-  - [1.11 Overflow and `long long`](#111-overflow-and-long-long)
-  - [1.12 Recognition Checklist](#112-recognition-checklist)
-- [2. Pattern 1 — Minimum Travel Cost on a Line](#2-pattern-1--minimum-travel-cost-on-a-line)
-- [3. Pattern 2 — Maximum Team Performance](#3-pattern-2--maximum-team-performance)
-- [4. How the Two Problems Are Related](#4-how-the-two-problems-are-related)
-- [5. Final Pattern Recognition](#5-final-pattern-recognition)
-- [6. Compact Revision Card](#6-compact-revision-card)
+> - In explanations/code: descriptive names such as `minimumPriceSeen`, `previousStrengthSum`.
+> - In proofs: shorter but readable names such as `minPrice`, `dist`, `currEff`.
 
 ---
 
 # 0. Class Map
 
-The supplied screenshots contain two important greedy application forms.
-
 ```text
 GREEDY APPLICATIONS
 │
-├── 1. Running Best So Far
-│      |
-│      └── line of stations / segments
-│          → every new segment can use
-│            the cheapest valid price seen so far
+├── Running Best So Far
+│   └── line / segments
+│       → use cheapest valid value seen so far
 │
-└── 2. Fix a Bottleneck + Optimize Remaining Choices
-       |
-       └── team of K students
-           performance
-           =
-           sum of strengths
-           *
-           minimum efficiency
-
-           sort by efficiency
-           +
-           maintain strongest K-1 previous students
+└── Fix a Bottleneck + Optimize Rest
+    └── choose K students
+        score = sum(strength) * min(efficiency)
+        → sort by efficiency
+        → keep strongest K-1 previous strengths
 ```
 
-The common idea is:
+Common question:
 
 ```text
-At the current position/candidate,
-what information from the past is sufficient
-to make the optimal local decision?
+At the current position,
+what part of the already-seen prefix
+is sufficient to make the optimal choice?
 ```
 
-For Problem 1:
+For these two problems:
 
 ```text
-only the minimum price seen so far
-```
-
-For Problem 2:
-
-```text
-the K-1 largest strengths
-among students already eligible
+Problem 1 → one best value      → running minimum
+Problem 2 → best K-1 values     → min-heap + running sum
 ```
 
 ---
@@ -125,83 +61,71 @@ among students already eligible
 
 ## 1.1 Greedy Choice Must Be Safe
 
-A greedy choice is not:
+Greedy is not:
 
 ```text
-"I think this is the best option."
+"This looks best now."
 ```
 
-It is:
+Greedy is:
 
 ```text
-"I can replace any worse local choice
-with this choice
-without harming feasibility,
-and the objective becomes same or better."
+local choice
++
+proof that replacing a worse valid choice
+cannot make the answer worse
 ```
 
-Typical flow:
+Basic proof flow:
 
 ```text
-current candidate
-      |
-      v
-make greedy choice
-      |
-      v
-is it still legal?
-      |
-     YES
-      |
-      v
-is the answer non-worse?
-      |
-     YES
-      |
-      v
-choice is safe
+another valid choice
+        |
+        v
+replace with greedy choice
+        |
+        v
+still feasible?
+        |
+       YES
+        |
+        v
+objective same or better?
+        |
+       YES
+        |
+        v
+greedy choice is safe
 ```
-
-Both problems in this class use this idea.
 
 ---
 
 ## 1.2 Running / Prefix Minimum
 
-Given values:
+Example:
 
 ```text
+values:
 [7, 5, 8, 4]
+
+running minimum:
+[7, 5, 5, 4]
 ```
 
-the running minimum is:
+Step by step:
 
 ```text
-index:               0   1   2   3
-value:               7   5   8   4
-
-minimum seen so far: 7   5   5   4
-```
-
-Calculation:
-
-```text
-minimumPriceSeen = 7
+start:
+minValue = 7
 
 see 5:
-min(7,5)
-=
-5
+min(7,5) = 5
 
 see 8:
-min(5,8)
-=
-5
+min(5,8) = 5
 
 see 4:
-min(5,4)
-=
-4
+min(5,4) = 4
 ```
 
 Code pattern:
@@ -209,83 +133,65 @@ Code pattern:
 ```cpp
 long long minimumValueSeen = values[0];
 
-for (...) {
-    minimumValueSeen =
-        min(minimumValueSeen, values[index]);
+for (int index = 1; index < values.size(); ++index) {
+    minimumValueSeen = min(minimumValueSeen, values[index]);
 }
 ```
 
-### Why This Is Useful
-
-If the current decision only needs:
+Use this when:
 
 ```text
-minimum among everything already seen
-```
-
-we do **not** need to scan all previous values again.
-
-Instead maintain one state:
-
-```text
-minimumValueSeen
+current decision
+depends only on
+the minimum among values seen so far
 ```
 
 ---
 
 ## 1.3 Why Future Values Cannot Help the Past
 
-This is critical in left-to-right greedy problems.
-
-Suppose prices are:
+Example prices:
 
 ```text
-station 1 price = 7
-station 2 price = 5
-station 3 price = 8
-station 4 price = 2
+station 1 = 7
+station 2 = 5
+station 3 = 8
+station 4 = 2
 ```
 
-When traveling:
+While traveling:
 
 ```text
 station 1 → station 2
 ```
 
-the future cheap price:
+the future price `2` at station 4 is not available yet.
+
+So the valid set is:
 
 ```text
-2 at station 4
+current + previous stations
 ```
 
-cannot pay for a segment already traveled.
-
-So for each segment, valid candidates are only:
+not:
 
 ```text
-current station
-+
-previous stations
+all stations
 ```
 
-not future stations.
-
-Visual:
+ASCII:
 
 ```text
-PAST / AVAILABLE                  FUTURE / NOT AVAILABLE YET
+AVAILABLE PREFIX                     FUTURE
 
-station1 ---- station2 ---- station3 ---- station4
-   7             5             8             2
-   ^             ^
-   |_____________|
- can affect current segment
+7 -------- 5 -------- 8 -------- 2
+^          ^
+|__________|                         X
 
-                                             X
-                                  cannot affect old segments
+can affect current segment     cannot affect past segment
 ```
 
-Therefore the correct structure is:
+Therefore:
 
 ```text
 prefix minimum
@@ -301,53 +207,29 @@ global minimum
 
 ## 1.4 Local Exchange Argument
 
-Suppose a local requirement can be satisfied by either:
+Suppose one unit can be bought at:
 
 ```text
-expensive valid choice
+usedPrice = 7
 ```
 
-or:
+but another already-valid choice costs:
 
 ```text
-cheaper valid choice
+minPrice = 5
 ```
 
-and changing the source does not break feasibility.
-
-Then replace:
+Then:
 
 ```text
-expensive choice
-→
-cheaper choice
-```
-
-### Tiny Example
-
-One unit can be bought at:
-
-```text
-price 7
-```
-
-or at an already visited station for:
-
-```text
-price 5
-```
-
-Old local cost:
-
-```text
+oldCost
+=
 1 * 7
 =
 7
-```
 
-Greedy local cost:
-
-```text
+greedyCost
+=
 1 * 5
 =
 5
@@ -362,25 +244,23 @@ Difference:
 >= 0
 ```
 
-Therefore buying that unit at price `7` cannot be better.
+If feasibility is unchanged, replacing `7` with `5` is always safe.
 
-This is the proof idea behind the running-minimum travel problem.
+That is the exact proof shape used in the travel problem.
 
 ---
 
 ## 1.5 Bottleneck Minimum
 
-Suppose team performance is:
+Suppose:
 
 ```text
 teamPerformance
 =
-sumOfSelectedStrengths
-*
-minimumSelectedEfficiency
+sumSelectedStrength * minimumSelectedEfficiency
 ```
 
-Example team:
+Example:
 
 ```text
 strengths:
@@ -393,35 +273,26 @@ efficiencies:
 Then:
 
 ```text
-sumOfSelectedStrengths
+sumStrength
 =
 7 + 5 + 3
 =
 15
-```
 
-Minimum efficiency:
-
-```text
+minEfficiency
+=
 min(10,4,8)
 =
 4
-```
 
-Performance:
-
-```text
+performance
+=
 15 * 4
 =
 60
 ```
 
-The important part is:
-
-```text
-only the SMALLEST efficiency
-affects the efficiency factor
-```
+Only the smallest efficiency controls the multiplier.
 
 So that student is the team's:
 
@@ -433,67 +304,65 @@ bottleneck
 
 ## 1.6 Fix the Bottleneck, Optimize the Rest
 
-This is one of the most useful greedy transformations.
-
-Suppose we temporarily say:
+Suppose:
 
 ```text
-currentMinimumEfficiency
-=
-5
+currEff = 5
 ```
 
-Then team performance becomes:
+is fixed as the minimum efficiency.
+
+Then:
 
 ```text
 teamPerformance
 =
-selectedStrengthSum
-*
-5
+selectedStrengthSum * 5
 ```
 
-The multiplier `5` is now fixed.
+The multiplier is fixed.
 
-Therefore maximizing performance is exactly the same as maximizing:
+So maximizing performance is now equivalent to maximizing:
 
 ```text
 selectedStrengthSum
 ```
 
-among students whose efficiency is at least `5`.
-
-So:
+among students satisfying:
 
 ```text
-fix minimum efficiency
-        |
-        v
-efficiency factor becomes constant
-        |
-        v
-maximize only strength sum
+efficiency >= 5
 ```
 
-This is the key modeling step in the team problem.
+Mental model:
+
+```text
+fix MIN
+   |
+   v
+multiplier becomes constant
+   |
+   v
+maximize SUM
+```
 
 ---
 
 ## 1.7 Top-K Largest Values
 
-Suppose eligible strengths are:
+Eligible strengths:
 
 ```text
 [7, 3, 5, 2, 9]
 ```
 
-and we need the largest:
+Need top:
 
 ```text
 K = 3
 ```
 
-The answer is:
+Answer:
 
 ```text
 9, 7, 5
@@ -502,142 +371,72 @@ The answer is:
 Sum:
 
 ```text
-9 + 7 + 5
-=
 21
 ```
 
-If values arrive one by one, repeatedly sorting everything is unnecessary.
-
-We can maintain the current largest `K` values with a heap.
+If values arrive one by one, maintain the best `K` instead of sorting the entire prefix every time.
 
 ---
 
 ## 1.8 Why a Min-Heap Maintains Top-K
 
-To keep the largest `K` values, use a **min-heap**.
+To keep the **largest K values**, use a **min-heap**.
 
-At first this may feel backward:
+Reason:
 
 ```text
-"Why min-heap when I want maximum values?"
+if selected size becomes K+1,
+remove the smallest selected value
 ```
 
-Because when we have too many selected values, we need to remove:
+Example — keep top 2:
 
 ```text
-the smallest among the selected values
-```
-
-A min-heap gives exactly that in:
-
-```text
-O(log K)
-```
-
-### Example — Keep Top 2
-
-Stream:
-
-```text
+stream:
 7, 3, 5, 2
 ```
 
-Start:
+Process:
 
 ```text
-heap = []
-```
-
-Insert `7`:
-
-```text
+7
 heap = [7]
-```
 
-Insert `3`:
-
-```text
+3
 heap = [3,7]
-```
 
-Insert `5`:
-
-```text
+5
 heap = [3,7,5]
-
-size = 3 > 2
-```
-
-Remove smallest:
-
-```text
+size > 2
 remove 3
-```
 
-Now:
-
-```text
-heap contains:
+heap keeps:
 5,7
-```
 
-These are the top 2 values seen so far.
-
-Insert `2`:
-
-```text
-heap temporarily:
-2,5,7
-```
-
-Remove smallest:
-
-```text
 2
+temporary:
+2,5,7
+remove 2
+
+heap still:
+5,7
 ```
 
-Still:
+So the heap always contains:
 
 ```text
-5,7
+top K values seen so far
 ```
 
 ---
 
 ## 1.9 Heap + Running Sum
 
-If we repeatedly need:
-
-```text
-sum of values stored in the heap
-```
-
-do not recalculate the heap sum every time.
-
-Maintain:
-
-```text
-selectedStrengthSum
-```
-
-When inserting:
-
-```text
-selectedStrengthSum += newStrength
-```
-
-When removing the smallest:
-
-```text
-selectedStrengthSum -= smallestStrength
-```
+If we repeatedly need the heap sum, maintain it.
 
 Example:
 
 ```text
-heap keeps top 2
-
 insert 7:
 sum = 7
 
@@ -651,70 +450,67 @@ remove 3:
 sum = 12
 ```
 
-Now top-2 strengths are:
+Pattern:
 
-```text
-7 and 5
+```cpp
+sum += insertedValue;
+
+if (heap.size() > K) {
+    sum -= heap.top();
+    heap.pop();
+}
 ```
 
-and:
+Now both are available efficiently:
 
 ```text
-selectedStrengthSum
-=
-12
+top-K set
++
+sum of top-K
 ```
-
-available in O(1).
 
 ---
 
-## 1.10 Sorting One Dimension to Make Candidates Eligible
+## 1.10 Sorting Makes Candidates Eligible
 
-For team performance:
+For the team problem:
 
 ```text
 performance
 =
-sumStrength
-*
-minimumEfficiency
+sumStrength * minEfficiency
 ```
 
-Suppose students are processed by efficiency from high to low.
+Sort by efficiency descending.
 
-At a current student with:
+Suppose current efficiency is:
 
 ```text
-currentEfficiency = 5
+5
 ```
 
-every previously processed student has:
+Then every previous student has:
 
 ```text
 efficiency >= 5
 ```
 
-Therefore any previous student can join a team whose minimum efficiency is `5`.
-
 ASCII:
 
 ```text
-efficiency:
+HIGH efficiency -------------------------- LOW
 
-HIGH ------------------------------------------ LOW
-
-processed already      current       future
-[ >= current ]           5         [ < current ]
-       |                  |
-       +------------------+
-        eligible partners
+[ already processed ] [ current ] [ future ]
+   all >= current          5        all < current
+          |
+          v
+   eligible teammates
 ```
 
-This sorting step converts:
+Sorting converts:
 
 ```text
-"find students whose efficiency is at least current"
+"find everyone with efficiency >= current"
 ```
 
 into:
@@ -722,8 +518,6 @@ into:
 ```text
 "all previously processed students"
 ```
-
-That is why sorting is so powerful here.
 
 ---
 
@@ -735,76 +529,56 @@ These notes use:
 long long
 ```
 
-as requested.
-
-Always estimate:
-
-```text
-maximum multiplier
-*
-maximum sum
-```
-
 Example:
 
 ```text
-selectedStrengthSum = 10^9
-minimumEfficiency   = 10^9
-
-performance
+10^9 * 10^9
 =
 10^18
 ```
 
-This fits in signed `long long`.
+which fits in signed `long long`.
 
-But if the actual constraints allow a larger strength sum, check again.
-
-Safe contest habit:
+But always estimate the full expression:
 
 ```text
-largest single value
-×
-number of values
-×
+largest value
+*
+number of selected values
+*
 largest multiplier
 ```
 
-before deciding the numeric type.
+before assuming `long long` is safe.
 
 ---
 
 ## 1.12 Recognition Checklist
 
-When reading a new problem, ask:
-
 ```text
-1. Does the current decision depend on
-   minimum/maximum among everything seen so far?
+1. Current choice depends on minimum/maximum seen so far?
    → running min/max.
 
-2. Can future values affect past decisions?
-   If NO:
-   → prefix state may be enough.
+2. Future values cannot affect past?
+   → prefix state may be sufficient.
 
-3. Is the objective:
+3. Objective contains:
       SUM * MIN
-   or
-      SUM * MAX?
-   → try fixing the bottleneck.
+   or:
+      SUM * MAX
+   → fix the bottleneck first.
 
-4. Once the bottleneck is fixed,
-   does the rest become "choose largest K values"?
-   → top-K heap.
+4. After fixing the bottleneck,
+   need the largest K values?
+   → heap.
 
-5. Do candidates become valid after sorting
-   one dimension?
-   → sort + sweep.
+5. One property controls eligibility?
+   → sort by that property.
 
-6. Need top K largest values dynamically?
+6. Need top K largest dynamically?
    → min-heap of size K.
 
-7. Need heap sum repeatedly?
+7. Need their sum repeatedly?
    → maintain running sum.
 ```
 
@@ -812,64 +586,29 @@ When reading a new problem, ask:
 
 # 2. Pattern 1 — Minimum Travel Cost on a Line
 
-## 2.1 What the Class Model Shows
+## 2.1 What It Asks
 
-The board shows:
+There are `N` stations on a line.
 
-```text
-N stations / points arranged on a line
-```
-
-Each station has a price:
+Each station has:
 
 ```text
-priceAtStation
+fuelPrice[station]
 ```
 
-Each consecutive pair has a distance:
+Each outgoing road segment has:
 
 ```text
-distanceToNextStation
+segmentDistance[station]
 ```
 
-A car starts from the left and travels to station `N`.
-
-Visual form from the class:
+The car moves:
 
 ```text
-Station 1      Station 2      Station 3       ...      Station N
- price_1        price_2        price_3
-    O-------------O--------------O-------------------------O
-        dist_1          dist_2          dist_3 ...
-
-    car →
+left → right
 ```
 
-The board's greedy expression is the important part:
-
-```text
-segment distance
-*
-minimum valid previous price
-```
-
-So each segment uses the cheapest price seen before entering that segment.
-
-> **Model assumption needed by this formula:** fuel bought at an earlier station can be carried forward without a restrictive tank-capacity constraint. If a separate problem adds tank capacity or limited purchase, the greedy rule must be reconsidered.
-
----
-
-## 2.2 What It Asks
-
-For each road segment:
-
-```text
-distanceToNextStation[index]
-```
-
-we need enough fuel to travel that segment.
-
-At station `index`, the fuel could have been bought from any already visited station.
+Fuel for the current segment can come from the current or any previously visited station.
 
 Goal:
 
@@ -877,84 +616,15 @@ Goal:
 minimize total travel cost
 ```
 
----
-
-## 2.3 Variables — Full Names
-
-```text
-numberOfStations
-
-fuelPrice[index]
-
-distanceToNextStation[index]
-
-minimumPriceSeen
-
-minimumTravelCost
-```
-
-If there are `N` stations, there are normally:
-
-```text
-N - 1
-```
-
-segments.
+> **Class-model assumption:** fuel bought earlier can be carried forward without a restrictive tank-capacity constraint.
 
 ---
 
-## 2.4 Concept Simplified
-
-Suppose current segment needs:
+## 2.2 Small Dry Run First
 
 ```text
-3 units of fuel
-```
-
-Available previous prices:
-
-```text
-7, 5, 8
-```
-
-Why buy those 3 units at:
-
-```text
-8
-```
-
-if we could have bought them earlier at:
-
-```text
-5
-```
-
-?
-
-So the segment should be charged at:
-
-```text
-minimumPriceSeen
-=
-min(all prices available so far)
-```
-
----
-
-## 2.5 Tiny Example
-
-Stations:
-
-```text
-fuel prices:
-
-[7, 5, 8, 4]
-```
-
-Distances:
-
-```text
-[2, 3, 1]
+prices    = [7, 5, 8, 4]
+distances = [2, 3, 1]
 ```
 
 ASCII:
@@ -963,81 +633,16 @@ ASCII:
 price 7          price 5          price 8          price 4
    O----------------O----------------O----------------O
         dist 2           dist 3           dist 1
+car →
 ```
 
-### Segment 1
+For every segment, use the cheapest valid price seen so far:
 
-Available prices:
-
-```text
-[7]
-```
-
-Cheapest:
-
-```text
-7
-```
-
-Cost:
-
-```text
-2 * 7
-=
-14
-```
-
-### Segment 2
-
-Available prices:
-
-```text
-[7,5]
-```
-
-Cheapest:
-
-```text
-5
-```
-
-Cost:
-
-```text
-3 * 5
-=
-15
-```
-
-### Segment 3
-
-Available prices:
-
-```text
-[7,5,8]
-```
-
-Cheapest:
-
-```text
-5
-```
-
-Notice:
-
-```text
-current station price = 8
-```
-
-but fuel bought earlier at price `5` is cheaper.
-
-Cost:
-
-```text
-1 * 5
-=
-5
-```
+| Segment | Available prices | `minPrice` | Cost |
+|---|---|---:|---:|
+| 1 | `[7]` | 7 | `2 * 7 = 14` |
+| 2 | `[7,5]` | 5 | `3 * 5 = 15` |
+| 3 | `[7,5,8]` | 5 | `1 * 5 = 5` |
 
 Total:
 
@@ -1049,67 +654,46 @@ Total:
 
 ---
 
-## 2.6 Greedy Claim
+## 2.3 Core Observation
 
-For every segment:
+For the current segment:
 
 ```text
-minimum segment cost
+valid prices
 =
-distanceToNextStation
-*
+all prices already seen
+```
+
+Among them:
+
+```text
+minimum price dominates every larger price
+```
+
+Therefore maintain:
+
+```text
 minimumPriceSeen
 ```
 
-where:
+and charge:
 
 ```text
-minimumPriceSeen
-=
-minimum fuel price among stations
-already reachable before this segment
-```
-
-Therefore:
-
-```text
-minimumTravelCost
-
-=
-sum over every segment
-(
-    distanceToNextStation
-    *
-    runningMinimumFuelPrice
-)
+segmentDistance * minimumPriceSeen
 ```
 
 ---
 
-## 2.7 Why the Current Station Price Alone Is Not Enough
-
-Wrong idea:
-
-```text
-pay each segment using
-the price at the station
-where the segment begins
-```
+## 2.4 Why Current Price Alone Is Wrong
 
 Example:
 
 ```text
 prices:
 [7,5,8]
-
-current segment begins at price 8
 ```
 
-But we already passed a station with:
-
-```text
-price 5
-```
+At the station with price `8`, we have already passed price `5`.
 
 If earlier fuel can be carried:
 
@@ -1117,40 +701,34 @@ If earlier fuel can be carried:
 5 < 8
 ```
 
-so buying earlier is better.
+So the current price is not necessarily optimal.
 
-Thus we need:
+Need:
 
 ```text
 minimum price seen so far
 ```
 
-not:
-
-```text
-current price
-```
-
 ---
 
-## 2.8 Why the Global Minimum Is Also Wrong
+## 2.5 Why Global Minimum Is Wrong
 
-Suppose:
+Example:
 
 ```text
 prices:
 [7,5,8,2]
 ```
 
-Global minimum:
+Global minimum is:
 
 ```text
 2
 ```
 
-But station `4` lies in the future.
+But station 4 is in the future.
 
-We cannot use its price for:
+It cannot pay for:
 
 ```text
 station 1 → station 2
@@ -1162,205 +740,106 @@ or:
 station 2 → station 3
 ```
 
-before reaching it.
+before we reach it.
 
-So the correct valid set is:
-
-```text
-prefix of stations
-```
-
-This gives:
+Therefore:
 
 ```text
-prefix minimum
-```
-
----
-
-## 2.9 Exchange Proof — Step by Step
-
-Consider one specific segment.
-
-Suppose its distance is:
-
-```text
-currentSegmentDistance
-```
-
-and a solution pays using:
-
-```text
-somePreviousPrice
-```
-
-but we know:
-
-```text
-minimumPriceSeen
-<=
-somePreviousPrice
-```
-
-Old segment cost:
-
-```text
-oldSegmentCost
-=
-currentSegmentDistance
-*
-somePreviousPrice
-```
-
-Greedy segment cost:
-
-```text
-greedySegmentCost
-=
-currentSegmentDistance
-*
-minimumPriceSeen
-```
-
-Subtract:
-
-```text
-oldSegmentCost
--
-greedySegmentCost
-
-=
-currentSegmentDistance
-*
-somePreviousPrice
-
--
-currentSegmentDistance
-*
-minimumPriceSeen
-```
-
-Factor:
-
-```text
-=
-currentSegmentDistance
-*
-(
-    somePreviousPrice
-    -
-    minimumPriceSeen
-)
-```
-
-We know:
-
-```text
-currentSegmentDistance >= 0
+valid set = prefix
 ```
 
 and:
 
 ```text
-somePreviousPrice - minimumPriceSeen >= 0
+best valid value = prefix minimum
+```
+
+---
+
+## 2.6 Exchange Proof — Compact + Inline Example
+
+Proof variables:
+
+```text
+dist      = current segment distance
+usedPrice = price used by another valid solution
+minPrice  = cheapest valid price so far
+```
+
+We know:
+
+```text
+minPrice <= usedPrice
+```
+
+Compare only this segment:
+
+| General proof | Example: `dist=3`, `usedPrice=7`, `minPrice=5` |
+|---|---|
+| `oldCost = dist * usedPrice` | `3 * 7 = 21` |
+| `greedyCost = dist * minPrice` | `3 * 5 = 15` |
+| `oldCost - greedyCost` | `21 - 15 = 6` |
+| `= dist * (usedPrice - minPrice)` | `= 3 * (7 - 5)` |
+| `>= 0` | `= 6 >= 0` |
+
+Why?
+
+```text
+dist >= 0
+```
+
+and:
+
+```text
+usedPrice - minPrice >= 0
 ```
 
 Therefore:
 
 ```text
-oldSegmentCost
--
-greedySegmentCost
->=
-0
+oldCost >= greedyCost
 ```
 
-So:
+So replacing a more expensive valid price with `minPrice` can never make the answer worse.
+
+ASCII:
 
 ```text
-greedySegmentCost
-<=
-oldSegmentCost
-```
+valid prices:
 
-Hence using the cheapest valid previous price is never worse.
+7     5     8
+      ^
+      |
+   minPrice
+
+another solution:
+uses 7
+
+exchange:
+7 → 5
+
+same segment remains feasible
+cost decreases
+```
 
 ---
 
-## 2.10 Same Proof With Actual Numbers
-
-Suppose:
-
-```text
-currentSegmentDistance = 3
-
-somePreviousPrice = 7
-
-minimumPriceSeen = 5
-```
-
-Old cost:
-
-```text
-3 * 7
-=
-21
-```
-
-Greedy cost:
-
-```text
-3 * 5
-=
-15
-```
-
-Difference:
-
-```text
-21 - 15
-=
-6
-```
-
-Factored form:
-
-```text
-3 * (7 - 5)
-
-=
-3 * 2
-
-=
-6
-```
-
-Since:
-
-```text
-6 >= 0
-```
-
-the cheaper previous price is safe.
-
----
-
-## 2.11 Why the Segment Decisions Combine Globally
+## 2.7 Why This Proves the Whole Answer
 
 Every segment must be traveled.
 
-For each segment, we have proved:
+For each individual segment, using:
 
 ```text
-using minimumPriceSeen
-is no more expensive than
-using any other valid previous price
+minimumPriceSeen
 ```
 
-Therefore choosing the cheapest valid price for **every segment** minimizes the sum:
+is no more expensive than using any other valid price.
+
+Therefore summing those locally optimal segment costs gives the global minimum:
 
 ```text
-minimumTravelCost
+totalCost
 =
 segment1Cost
 +
@@ -1369,85 +848,50 @@ segment2Cost
 ...
 ```
 
-No segment benefits from intentionally paying a higher valid price.
+No segment benefits from intentionally using a larger valid price.
 
 ---
 
-## 2.12 Running-Minimum State
+## 2.8 Detailed Dry Run
 
-We do not need:
-
-```text
-min(
-    fuelPrice[0],
-    fuelPrice[1],
-    ...,
-    fuelPrice[index]
-)
-```
-
-from scratch for every segment.
-
-Maintain:
-
-```text
-minimumPriceSeen
-```
-
-Update:
-
-```text
-minimumPriceSeen
-=
-min(
-    minimumPriceSeen,
-    fuelPrice[currentStation]
-)
-```
-
-Then segment cost:
-
-```text
-minimumPriceSeen
-*
-distanceToNextStation[currentStation]
-```
-
----
-
-## 2.13 ASCII Dry Run
-
-Example:
+Input:
 
 ```text
 prices:
 7       5       8       4
 
-dist:
+distances:
    2       3       1
+```
 
+Visual:
 
+```text
       7              5              8              4
       O--------------O--------------O--------------O
 car →      2                3              1
 ```
 
-Running minimum:
+### Segment 1
 
 ```text
-station 1:
-minimumPriceSeen = 7
+minPrice
+=
+7
 
-segment 1:
+cost
+=
 2 * 7
 =
 14
 ```
 
-Move to station 2:
+### Reach station 2
+
+Update:
 
 ```text
-minimumPriceSeen
+minPrice
 =
 min(7,5)
 =
@@ -1462,10 +906,12 @@ Segment 2:
 15
 ```
 
-Move to station 3:
+### Reach station 3
+
+Update:
 
 ```text
-minimumPriceSeen
+minPrice
 =
 min(5,8)
 =
@@ -1490,36 +936,25 @@ Total:
 
 ---
 
-## 2.14 Algorithm
+## 2.9 Algorithm
 
 ```text
-minimumPriceSeen
-=
-fuelPrice[0]
+minPrice = fuelPrice[0]
+totalCost = 0
 
-minimumTravelCost
-=
-0
-
-for each outgoing segment:
-
-    minimumPriceSeen
-    =
-    min(
-        minimumPriceSeen,
+for each segment:
+    minPrice = min(
+        minPrice,
         fuelPrice[currentStation]
     )
 
-    minimumTravelCost
-    +=
-        minimumPriceSeen
-        *
-        distanceToNextStation[currentStation]
+    totalCost +=
+        minPrice * segmentDistance[currentStation]
 ```
 
 ---
 
-## 2.15 C++17
+## 2.10 C++17
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1533,35 +968,28 @@ int main() {
     cin >> numberOfStations;
 
     vector<long long> fuelPrice(numberOfStations);
-    vector<long long> distanceToNextStation(
-        numberOfStations - 1
-    );
+    vector<long long> segmentDistance(numberOfStations - 1);
 
     for (long long& price : fuelPrice) {
         cin >> price;
     }
 
-    for (long long& distance : distanceToNextStation) {
+    for (long long& distance : segmentDistance) {
         cin >> distance;
     }
 
     long long minimumPriceSeen = fuelPrice[0];
     long long minimumTravelCost = 0;
 
-    for (
-        int stationIndex = 0;
-        stationIndex < numberOfStations - 1;
-        ++stationIndex
-    ) {
+    for (int stationIndex = 0;
+         stationIndex < numberOfStations - 1;
+         ++stationIndex) {
+
         minimumPriceSeen =
-            min(
-                minimumPriceSeen,
-                fuelPrice[stationIndex]
-            );
+            min(minimumPriceSeen, fuelPrice[stationIndex]);
 
         minimumTravelCost +=
-            minimumPriceSeen
-            * distanceToNextStation[stationIndex];
+            minimumPriceSeen * segmentDistance[stationIndex];
     }
 
     cout << minimumTravelCost << '\n';
@@ -1572,7 +1000,7 @@ int main() {
 
 ---
 
-## 2.16 Complexity
+## 2.11 Complexity
 
 ```text
 Time:
@@ -1582,7 +1010,7 @@ Space:
 O(N)
 ```
 
-If input can be streamed appropriately, the greedy state itself only needs:
+The greedy state itself uses:
 
 ```text
 O(1)
@@ -1592,287 +1020,121 @@ extra space.
 
 ---
 
-## 2.17 Recognition Model
+## 2.12 Recognition Model
 
 When you see:
 
 ```text
 move left → right
 +
-every step has a cost
+current step may reuse earlier choices
 +
-a previously seen cheaper option
-can still be reused
+future choices are not available yet
++
+want cheapest valid value
 ```
 
 think:
 
 ```text
-running minimum
+prefix minimum
 ```
 
-Typical form:
+Mental chain:
 
 ```text
-answer
-+=
-currentRequirement
-*
-bestValueSeenSoFar
+current segment
+→ valid candidates are prefix
+→ cheapest prefix value dominates
+→ maintain one running minimum
 ```
-
----
-
-## 2.18 Don't-Memorize Model
 
 Do not memorize only:
 
 ```text
-cost += distance * prefixMinimumPrice
+cost += distance * prefixMinimum
 ```
 
-Remember why:
-
-```text
-For this segment,
-all previous prices are valid.
-
-Among valid prices,
-the smallest price dominates every larger price.
-
-Future prices are not valid yet.
-
-Therefore:
-use the minimum price in the prefix.
-```
-
-That reasoning recreates the formula.
+Remember *why the valid set is the prefix*.
 
 ---
 
 # 3. Pattern 2 — Maximum Team Performance
 
-## 3.1 What the Class Model Shows
+## 3.1 What It Asks
 
-The screenshots show:
+There are `N` students.
 
-```text
-N students
-choose K students
-```
-
-Every student has:
+Each student has:
 
 ```text
 strength
 efficiency
 ```
 
-Team performance is:
+Choose exactly:
 
 ```text
-(
-    sum of selected strengths
-)
-*
-(
-    minimum selected efficiency
-)
+K students
+```
+
+Team performance:
+
+```text
+teamPerformance
+=
+sum(selected strengths) * minimum(selected efficiencies)
 ```
 
 Goal:
 
 ```text
-maximize performance
+maximize teamPerformance
 ```
-
-This is the key formula from the board.
 
 ---
 
-## 3.2 Variables — Full Names
+## 3.2 Small Dry Run First
 
-For each student:
-
-```text
-studentStrength
-studentEfficiency
-```
-
-Global:
+Class example:
 
 ```text
-numberOfStudents
-teamSize
-
-selectedStrengthSum
-
-currentMinimumEfficiency
-
-currentTeamPerformance
-
-maximumTeamPerformance
+strengths    = [1, 100, 100]
+efficiencies = [200, 1, 1]
+K = 2
 ```
 
-Data structure:
-
-```text
-min-heap of strengths
-```
-
-The heap stores the strongest:
-
-```text
-teamSize - 1
-```
-
-previous eligible students.
-
----
-
-## 3.3 Why This Problem Is Not "Take Largest Strengths"
-
-Suppose:
+Team A:
 
 ```text
 strengths:
-[100, 90]
+1, 100
 
-efficiencies:
-[1, 1]
-```
-
-Strength sum is huge:
-
-```text
-190
-```
-
-but minimum efficiency:
-
-```text
-1
-```
-
-Performance:
-
-```text
-190 * 1
-=
-190
-```
-
-Another team might have lower strength but much larger minimum efficiency.
-
-Therefore:
-
-```text
-strength alone is not enough
-```
-
----
-
-## 3.4 Why This Problem Is Not "Take Largest Efficiencies"
-
-Suppose:
-
-```text
-strength = 1
-efficiency = 200
-```
-
-This student has huge efficiency.
-
-But if the rest of the team has tiny total strength:
-
-```text
-performance
-```
-
-may still be small.
-
-Therefore:
-
-```text
-efficiency alone is not enough
-```
-
-The objective mixes:
-
-```text
-SUM
-*
-MINIMUM
-```
-
-That structure is the key.
-
----
-
-## 3.5 Screenshot Example
-
-The class shows:
-
-```text
-strengths:
-[1, 100, 100]
-
-efficiencies:
-[200, 1, 1]
-
-teamSize:
-2
-```
-
-Consider team:
-
-```text
-strengths:
-1 and 100
-```
-
-Strength sum:
-
-```text
-1 + 100
-=
+sum:
 101
-```
 
-Minimum efficiency:
-
-```text
-min(200,1)
-=
+minEff:
 1
-```
 
-Performance:
-
-```text
+score:
 101 * 1
 =
 101
 ```
 
-Consider the two strength-100 students:
+Team B:
 
 ```text
-strength sum:
-100 + 100
-=
+strengths:
+100, 100
+
+sum:
 200
-```
 
-Minimum efficiency:
-
-```text
+minEff:
 1
-```
 
-Performance:
-
-```text
+score:
 200 * 1
 =
 200
@@ -1881,115 +1143,84 @@ Performance:
 So:
 
 ```text
+bestScore
+=
 200
->
-101
 ```
 
-The high efficiency `200` does not automatically make the first team optimal because team efficiency is controlled by the **minimum**.
+This already shows:
+
+```text
+largest efficiency alone is not enough
+```
+
+and:
+
+```text
+largest strength alone is not a complete rule
+```
+
+because the objective combines:
+
+```text
+SUM * MIN
+```
 
 ---
 
-## 3.6 Core Observation — Every Team Has a Bottleneck Student
+## 3.3 Core Observation — Every Team Has a Bottleneck
 
-Take any selected team.
+Every chosen team has a minimum efficiency.
 
-Among its efficiencies:
+Call the student achieving it:
 
 ```text
-one value is the minimum
+bottleneck
 ```
 
-Call it:
+Suppose current student is the bottleneck.
+
+Then every teammate must have:
 
 ```text
-currentMinimumEfficiency
-```
-
-At least one selected student has exactly that efficiency.
-
-That student can be treated as:
-
-```text
-the bottleneck student
-```
-
-Now imagine enumerating:
-
-```text
-which student is the bottleneck?
-```
-
-Once that is fixed, the difficult product becomes much easier.
-
----
-
-## 3.7 Fix the Bottleneck
-
-Suppose current student's efficiency is:
-
-```text
-currentMinimumEfficiency
-```
-
-If this student is the team's minimum-efficiency member, all other selected students must satisfy:
-
-```text
-otherStudentEfficiency
+teammateEfficiency
 >=
-currentMinimumEfficiency
+currentEfficiency
 ```
 
-The performance is:
+and:
 
 ```text
-currentTeamPerformance
-
+teamPerformance
 =
 (
-    currentStudentStrength
+    currentStrength
     +
-    sumOfOtherSelectedStrengths
+    otherSelectedStrengths
 )
 *
-currentMinimumEfficiency
+currentEfficiency
 ```
 
-Now:
+For this candidate:
 
 ```text
-currentMinimumEfficiency
+currentEfficiency
 ```
 
 is fixed.
 
-So maximizing performance means maximizing:
+Therefore we only need to maximize:
 
 ```text
-currentStudentStrength
-+
-sumOfOtherSelectedStrengths
-```
-
-We need:
-
-```text
-teamSize - 1
-```
-
-other students.
-
-Therefore choose:
-
-```text
-the strongest teamSize - 1 eligible students
+strength sum
 ```
 
 ---
 
-## 3.8 Why Sort by Efficiency
+## 3.4 Why Sort by Efficiency
 
-Sort students by:
+Sort students:
 
 ```text
 efficiency descending
@@ -1998,39 +1229,34 @@ efficiency descending
 Example:
 
 ```text
-efficiency:
-
 200, 10, 7, 5, 2, 1
 ```
 
-When processing a student with:
+At current efficiency:
 
 ```text
-currentEfficiency = 5
+5
 ```
 
-all previous students have:
+all previous students satisfy:
 
 ```text
 efficiency >= 5
 ```
 
-So every previous student is eligible to join a team whose minimum efficiency is `5`.
-
 ASCII:
 
 ```text
-sorted by efficiency descending
+HIGH -------------------------------------------- LOW
 
-[ higher efficiency students ][ current ][ lower efficiency students ]
-             eligible              5             not eligible
-                   \_______________/
-                      choose from here
+[ previous students ][ current ][ future students ]
+    all >= current         5         all < current
+          |
+          v
+   eligible teammates
 ```
 
-This removes the need to search for eligible students.
-
-Eligibility becomes:
+Thus sorting turns eligibility into:
 
 ```text
 "already processed"
@@ -2038,357 +1264,163 @@ Eligibility becomes:
 
 ---
 
-## 3.9 Why We Need the Strongest `K-1`
+## 3.5 Why We Need the Strongest `K-1`
 
-For the current bottleneck student:
+For current bottleneck:
 
 ```text
-currentEfficiency
+currEff
 ```
 
 is fixed.
 
-Performance:
+So maximizing:
 
 ```text
-(
-    currentStrength
-    +
-    previousSelectedStrengthSum
-)
-*
-currentEfficiency
+(currStrength + previousStrengthSum) * currEff
 ```
 
-Since:
+means maximizing:
 
 ```text
-currentEfficiency
-```
-
-is a positive constant for this candidate, the best team is obtained by maximizing:
-
-```text
-previousSelectedStrengthSum
+previousStrengthSum
 ```
 
 with exactly:
 
 ```text
-teamSize - 1
+K - 1
 ```
 
 previous students.
 
-Therefore:
+Therefore choose:
 
 ```text
-take top K-1 strengths
-among previous eligible students
+strongest K-1 previous strengths
 ```
 
 ---
 
-## 3.10 Exchange Proof for Top `K-1` Strengths
+## 3.6 Exchange Proof — Compact + Inline Example
 
-Suppose our candidate team contains an eligible previous student with:
-
-```text
-selectedSmallerStrength
-```
-
-but another eligible unselected student has:
+Proof variables:
 
 ```text
-unselectedLargerStrength
+currEff       = current bottleneck efficiency
+smallStrength = weaker selected previous strength
+largeStrength = stronger eligible previous strength
+oldSum        = old team strength sum
 ```
-
-where:
-
-```text
-unselectedLargerStrength
->
-selectedSmallerStrength
-```
-
-Swap them.
-
-Old strength sum:
-
-```text
-oldStrengthSum
-```
-
-New strength sum:
-
-```text
-newStrengthSum
-
-=
-oldStrengthSum
--
-selectedSmallerStrength
-+
-unselectedLargerStrength
-```
-
-Difference:
-
-```text
-newStrengthSum
--
-oldStrengthSum
-
-=
-unselectedLargerStrength
--
-selectedSmallerStrength
-```
-
-Since:
-
-```text
-unselectedLargerStrength
->
-selectedSmallerStrength
-```
-
-we get:
-
-```text
-newStrengthSum
->
-oldStrengthSum
-```
-
-What happens to minimum efficiency?
-
-Nothing bad.
-
-Both students are from the previously processed eligible set, so both satisfy:
-
-```text
-efficiency
->=
-currentMinimumEfficiency
-```
-
-The current bottleneck remains:
-
-```text
-currentMinimumEfficiency
-```
-
-Therefore:
-
-```text
-newPerformance
->
-oldPerformance
-```
-
-So any solution that does not use the top `K-1` eligible strengths can be improved.
-
-Hence:
-
-```text
-top K-1 strengths are optimal
-for a fixed bottleneck
-```
-
----
-
-## 3.11 Put Numbers Into the Exchange Proof
 
 Suppose:
 
 ```text
-currentMinimumEfficiency = 4
-
-currentStudentStrength = 6
+largeStrength > smallStrength
 ```
 
-We need two previous students.
+Swap them.
 
-Selected strengths:
+| General proof | Example: `currEff=4`, `smallStrength=3`, `largeStrength=5` |
+|---|---|
+| `newSum = oldSum - smallStrength + largeStrength` | `16 - 3 + 5 = 18` |
+| `newSum - oldSum = largeStrength - smallStrength` | `18 - 16 = 2` |
+| bottleneck stays `currEff` | bottleneck stays `4` |
+| `newPerf - oldPerf = (largeStrength - smallStrength) * currEff` | `(5 - 3) * 4 = 8` |
+| `>= 0` | `8 >= 0` |
+
+Why does the bottleneck stay unchanged?
+
+Both swapped students are previous students after sorting, so:
 
 ```text
-7 and 3
+their efficiency >= currEff
 ```
 
-but an unselected eligible strength is:
+Therefore current student is still the minimum-efficiency member.
+
+Hence replacing a weaker eligible strength with a stronger one never hurts.
+
+So for fixed bottleneck:
 
 ```text
-5
+take top K-1 previous strengths
 ```
 
-Old sum:
+Visual:
 
 ```text
-6 + 7 + 3
-=
-16
+eligible previous strengths:
+
+7   3   5
+
+selected:
+7,3
+
+but:
+5 > 3
+
+swap:
+7,3
+  ↓
+7,5
+
+min efficiency unchanged
+sum strength increases
+performance increases
 ```
-
-Old performance:
-
-```text
-16 * 4
-=
-64
-```
-
-Swap:
-
-```text
-3 → 5
-```
-
-New sum:
-
-```text
-6 + 7 + 5
-=
-18
-```
-
-New performance:
-
-```text
-18 * 4
-=
-72
-```
-
-Difference:
-
-```text
-72 - 64
-=
-8
-```
-
-or from the strength difference:
-
-```text
-(5 - 3) * 4
-
-=
-2 * 4
-
-=
-8
-```
-
-The bottleneck remained `4`, so replacing the weaker eligible strength is always better.
 
 ---
 
-## 3.12 Why a Min-Heap of Size `K-1`
+## 3.7 Why a Min-Heap of Size `K-1`
 
-We need to repeatedly know:
-
-```text
-the largest K-1 strengths
-among previous students
-```
-
-A min-heap keeps exactly this set.
-
-Why minimum on top?
-
-Because if a new strength enters and we now have too many values, remove:
+Need repeatedly:
 
 ```text
-the smallest selected strength
+largest K-1 previous strengths
 ```
 
-That preserves the largest ones.
+Use a min-heap.
 
-Heap invariant:
+Why min-heap?
+
+```text
+when size becomes K,
+remove the smallest selected strength
+```
+
+Invariant:
 
 ```text
 heap
 =
 largest K-1 strengths
-among all students processed before current
+among previous students
 ```
 
-Running sum invariant:
+Also maintain:
 
 ```text
-selectedStrengthSum
+previousStrengthSum
 =
-sum of all strengths currently in heap
+sum of heap values
+```
+
+So both are immediately available:
+
+```text
+top K-1 set
++
+their sum
 ```
 
 ---
 
-## 3.13 Heap Utility — TLE-Style
+## 3.8 Important Order of Operations
 
-We can encapsulate the idea:
+Current student is the bottleneck candidate.
 
-```cpp
-class TopStrengths {
-private:
-    int maximumCount;
-
-    priority_queue<
-        long long,
-        vector<long long>,
-        greater<long long>
-    > minimumHeap;
-
-    long long selectedStrengthSum = 0;
-
-public:
-    explicit TopStrengths(int maximumCount)
-        : maximumCount(maximumCount) {}
-
-    void insert(long long strength) {
-        if (maximumCount == 0) {
-            return;
-        }
-
-        minimumHeap.push(strength);
-        selectedStrengthSum += strength;
-
-        if (
-            static_cast<int>(minimumHeap.size())
-            > maximumCount
-        ) {
-            selectedStrengthSum -= minimumHeap.top();
-            minimumHeap.pop();
-        }
-    }
-
-    int size() const {
-        return static_cast<int>(minimumHeap.size());
-    }
-
-    long long getSum() const {
-        return selectedStrengthSum;
-    }
-};
-```
-
-Meaning:
-
-```text
-TopStrengths(K-1)
-```
-
-always keeps:
-
-```text
-largest K-1 strengths seen so far
-```
-
----
-
-## 3.14 Important Order of Operations
-
-When current student is the bottleneck, we need:
+Therefore candidate team must be:
 
 ```text
 current student
@@ -2399,136 +1431,114 @@ K-1 PREVIOUS students
 So:
 
 ```text
-1. evaluate candidate using current student
+1. evaluate current candidate
 
-2. only after that,
-   insert current student's strength
-   into the heap for future candidates
+2. then insert current strength
+   for future bottleneck candidates
 ```
 
 ASCII:
 
 ```text
-previous students              current
-[ top K-1 strengths ]       [ bottleneck ]
-          |                       |
-          +----------+------------+
-                     |
-                     v
-              evaluate team
-                     |
-                     v
-          insert current strength
-             for later teams
+previous top K-1             current
+[ strengths ]             [ bottleneck ]
+      |                         |
+      +-----------+-------------+
+                  |
+                  v
+             evaluate team
+                  |
+                  v
+      insert current strength
+         for future states
 ```
-
-This matches the structure shown in the class code.
 
 ---
 
-## 3.15 Screenshot Example — Full Dry Run
+## 3.9 Detailed Dry Run
 
-Input from the board:
+Input:
 
 ```text
-strengths:
-[1, 100, 100]
-
-efficiencies:
-[200, 1, 1]
-
-teamSize:
-2
+strengths    = [1, 100, 100]
+efficiencies = [200, 1, 1]
+K = 2
 ```
 
-Pair students:
+Pair:
 
 ```text
-Student A:
-strength = 1
-efficiency = 200
-
-Student B:
-strength = 100
-efficiency = 1
-
-Student C:
-strength = 100
-efficiency = 1
+A = (strength 1,   efficiency 200)
+B = (strength 100, efficiency 1)
+C = (strength 100, efficiency 1)
 ```
 
-Sort by efficiency descending:
+Already sorted by efficiency descending.
+
+Heap capacity:
 
 ```text
-A: (strength 1,   efficiency 200)
-B: (strength 100, efficiency 1)
-C: (strength 100, efficiency 1)
-```
-
-Need:
-
-```text
-teamSize - 1
+K - 1
 =
 1
 ```
 
-previous strength in the heap.
-
-### Process A
+### Step A
 
 Current:
 
 ```text
-strength = 1
-efficiency = 200
+(1,200)
 ```
 
-Heap:
+Heap before:
 
 ```text
 []
 ```
 
-Not enough previous students to form a team of size 2.
+Not enough previous students to make a team of size 2.
 
-Insert strength:
+Insert:
 
 ```text
-heap:
-[1]
-
-selectedStrengthSum:
 1
 ```
 
-### Process B
+Heap:
+
+```text
+[1]
+```
+
+Running sum:
+
+```text
+1
+```
+
+### Step B
 
 Current:
 
 ```text
-strength = 100
-efficiency = 1
+(100,1)
 ```
 
-Heap already has one previous strength:
+Heap:
 
 ```text
 [1]
 ```
 
-Candidate team strength:
+Candidate:
 
 ```text
+strengthSum
+=
 1 + 100
 =
 101
-```
-
-Current efficiency is the bottleneck:
-
-```text
-1
 ```
 
 Performance:
@@ -2539,7 +1549,7 @@ Performance:
 101
 ```
 
-Best so far:
+Best:
 
 ```text
 101
@@ -2553,11 +1563,7 @@ Temporary heap:
 [1,100]
 ```
 
-Capacity:
-
-```text
-1
-```
+Too large for capacity 1.
 
 Remove smallest:
 
@@ -2577,13 +1583,12 @@ Running sum:
 100
 ```
 
-### Process C
+### Step C
 
 Current:
 
 ```text
-strength = 100
-efficiency = 1
+(100,1)
 ```
 
 Heap:
@@ -2592,9 +1597,11 @@ Heap:
 [100]
 ```
 
-Candidate strength sum:
+Candidate:
 
 ```text
+strengthSum
+=
 100 + 100
 =
 200
@@ -2622,253 +1629,65 @@ Final answer:
 200
 ```
 
----
-
-## 3.16 ASCII Dry Run
+Compact visualization:
 
 ```text
-SORTED BY EFFICIENCY DESCENDING
-
-Student A          Student B          Student C
-
-strength 1         strength 100       strength 100
-eff 200            eff 1             eff 1
-
-     |
-     v
-
-K = 2
-heap capacity = K-1 = 1
-
+A(1,200)        B(100,1)        C(100,1)
 
 Step A:
-current = (1,200)
-
-heap before:
-[]
-
-not enough previous students
-
-insert 1
-
-heap:
-[1]
-
+heap []
+→ insert 1
+heap [1]
 
 Step B:
-current = (100,1)
-
-heap:
-[1]
-
-candidate:
-(1 + 100) * 1
-=
-101
-
+candidate = (1+100)*1 = 101
 insert 100
-
-heap temporarily:
-[1,100]
-
-remove smallest 1
-
-heap:
-[100]
-
+heap [1,100]
+remove 1
+heap [100]
 
 Step C:
-current = (100,1)
+candidate = (100+100)*1 = 200
 
-heap:
-[100]
-
-candidate:
-(100 + 100) * 1
-=
-200
-
-ANSWER:
-200
+ANSWER = 200
 ```
 
 ---
 
-## 3.17 General Algorithm
+## 3.10 Algorithm
 
 ```text
-1. Pair every student's:
-      strength
-      efficiency
+1. Pair each student:
+   (strength, efficiency)
 
 2. Sort students by:
-      efficiency descending
+   efficiency descending
 
-3. Maintain a min-heap containing:
-      top teamSize-1 strengths
-   among PREVIOUS students.
+3. Maintain:
+   min-heap of strongest K-1 previous strengths
+   previousStrengthSum
 
-4. Maintain:
-      selectedStrengthSum
+4. For each current student:
 
-5. For each current student:
+   if heap contains K-1 values:
+       currentStrengthSum =
+           previousStrengthSum + current strength
 
-      if heap has teamSize-1 students:
+       currentPerformance =
+           currentStrengthSum * current efficiency
 
-          currentTotalStrength
-          =
-          selectedStrengthSum
-          +
-          currentStudent.strength
+       update answer
 
-          currentTeamPerformance
-          =
-          currentTotalStrength
-          *
-          currentStudent.efficiency
+   insert current strength
 
-          update maximum
-
-      insert currentStudent.strength
-      into top-(teamSize-1) heap
-
-6. Return maximum performance.
+   if heap size > K-1:
+       remove smallest strength
+       update previousStrengthSum
 ```
 
 ---
 
-## 3.18 C++17 — Clean Full-Name Version
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-struct Student {
-    long long strength;
-    long long efficiency;
-};
-
-class TopStrengths {
-private:
-    int maximumCount;
-
-    priority_queue<
-        long long,
-        vector<long long>,
-        greater<long long>
-    > minimumHeap;
-
-    long long selectedStrengthSum = 0;
-
-public:
-    explicit TopStrengths(int maximumCount)
-        : maximumCount(maximumCount) {}
-
-    void insert(long long strength) {
-        if (maximumCount == 0) {
-            return;
-        }
-
-        minimumHeap.push(strength);
-        selectedStrengthSum += strength;
-
-        if (
-            static_cast<int>(minimumHeap.size())
-            > maximumCount
-        ) {
-            selectedStrengthSum -= minimumHeap.top();
-            minimumHeap.pop();
-        }
-    }
-
-    int size() const {
-        return static_cast<int>(minimumHeap.size());
-    }
-
-    long long getSum() const {
-        return selectedStrengthSum;
-    }
-};
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int numberOfStudents;
-    int teamSize;
-
-    cin >> numberOfStudents >> teamSize;
-
-    vector<Student> students(numberOfStudents);
-
-    for (Student& student : students) {
-        cin >> student.strength >> student.efficiency;
-    }
-
-    sort(
-        students.begin(),
-        students.end(),
-        [](const Student& firstStudent,
-           const Student& secondStudent) {
-            if (
-                firstStudent.efficiency
-                !=
-                secondStudent.efficiency
-            ) {
-                return firstStudent.efficiency
-                     > secondStudent.efficiency;
-            }
-
-            return firstStudent.strength
-                 > secondStudent.strength;
-        }
-    );
-
-    TopStrengths strongestPreviousStudents(
-        teamSize - 1
-    );
-
-    long long maximumTeamPerformance = 0;
-
-    for (const Student& currentStudent : students) {
-        if (
-            strongestPreviousStudents.size()
-            ==
-            teamSize - 1
-        ) {
-            long long currentTotalStrength =
-                strongestPreviousStudents.getSum()
-                +
-                currentStudent.strength;
-
-            long long currentTeamPerformance =
-                currentTotalStrength
-                *
-                currentStudent.efficiency;
-
-            maximumTeamPerformance =
-                max(
-                    maximumTeamPerformance,
-                    currentTeamPerformance
-                );
-        }
-
-        strongestPreviousStudents.insert(
-            currentStudent.strength
-        );
-    }
-
-    cout << maximumTeamPerformance << '\n';
-
-    return 0;
-}
-```
-
----
-
-## 3.19 Same Algorithm Without a Helper Class
-
-If you prefer the contest version:
+## 3.11 C++17
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2883,9 +1702,7 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int numberOfStudents;
-    int teamSize;
-
+    int numberOfStudents, teamSize;
     cin >> numberOfStudents >> teamSize;
 
     vector<Student> students(numberOfStudents);
@@ -2897,10 +1714,8 @@ int main() {
     sort(
         students.begin(),
         students.end(),
-        [](const Student& firstStudent,
-           const Student& secondStudent) {
-            return firstStudent.efficiency
-                 > secondStudent.efficiency;
+        [](const Student& firstStudent, const Student& secondStudent) {
+            return firstStudent.efficiency > secondStudent.efficiency;
         }
     );
 
@@ -2914,48 +1729,23 @@ int main() {
     long long maximumTeamPerformance = 0;
 
     for (const Student& currentStudent : students) {
-        if (
-            static_cast<int>(
-                strongestPreviousStrengths.size()
-            )
-            ==
-            teamSize - 1
-        ) {
-            long long currentTotalStrength =
-                previousStrengthSum
-                +
-                currentStudent.strength;
+        if (strongestPreviousStrengths.size() == teamSize - 1) {
+            long long currentStrengthSum =
+                previousStrengthSum + currentStudent.strength;
 
-            long long currentTeamPerformance =
-                currentTotalStrength
-                *
-                currentStudent.efficiency;
+            long long currentPerformance =
+                currentStrengthSum * currentStudent.efficiency;
 
             maximumTeamPerformance =
-                max(
-                    maximumTeamPerformance,
-                    currentTeamPerformance
-                );
+                max(maximumTeamPerformance, currentPerformance);
         }
 
         if (teamSize > 1) {
-            strongestPreviousStrengths.push(
-                currentStudent.strength
-            );
+            strongestPreviousStrengths.push(currentStudent.strength);
+            previousStrengthSum += currentStudent.strength;
 
-            previousStrengthSum +=
-                currentStudent.strength;
-
-            if (
-                static_cast<int>(
-                    strongestPreviousStrengths.size()
-                )
-                >
-                teamSize - 1
-            ) {
-                previousStrengthSum -=
-                    strongestPreviousStrengths.top();
-
+            if (strongestPreviousStrengths.size() > teamSize - 1) {
+                previousStrengthSum -= strongestPreviousStrengths.top();
                 strongestPreviousStrengths.pop();
             }
         }
@@ -2966,14 +1756,9 @@ int main() {
     return 0;
 }
 ```
-
-The helper-class version is better for learning.
-
-The direct version is shorter for contests.
-
 ---
 
-## 3.20 Complexity
+## 3.12 Complexity
 
 Sorting:
 
@@ -2981,13 +1766,7 @@ Sorting:
 O(N log N)
 ```
 
-Each student enters the heap once and may cause one removal:
-
-```text
-O(log K)
-```
-
-Total heap work:
+Heap operations:
 
 ```text
 O(N log K)
@@ -2999,9 +1778,7 @@ Overall:
 O(N log N)
 ```
 
-because sorting dominates.
-
-Heap memory:
+Heap space:
 
 ```text
 O(K)
@@ -3009,149 +1786,45 @@ O(K)
 
 ---
 
-## 3.21 Why Sorting + Heap Is the Right Combination
+## 3.13 Common Mistakes
 
-We have two requirements:
-
-```text
-1. Respect minimum efficiency.
-
-2. Maximize strength sum.
-```
-
-Sorting solves requirement 1:
-
-```text
-previous students
-=
-students with efficiency
->=
-current efficiency
-```
-
-Heap solves requirement 2:
-
-```text
-among those previous students,
-keep only strongest K-1
-```
-
-Together:
-
-```text
-SORT
-fixes eligibility
-
-HEAP
-optimizes strength
-```
+| Wrong idea | Why it fails |
+|---|---|
+| Sort only by strength | one low-efficiency student may collapse the multiplier |
+| Sort only by efficiency | ignores the strength-sum part |
+| Use all previous strengths | only `K-1` previous teammates are needed |
+| Insert current before evaluating | then current can incorrectly appear among its own previous teammates |
+| Use max-heap for top-K largest maintenance | we need fast removal of the smallest selected strength |
 
 ---
 
-## 3.22 Common Wrong Approach — Sort Only by Strength
+## 3.14 Recognition Model
 
-Suppose we simply choose the largest strengths.
-
-Problem:
+When the objective looks like:
 
 ```text
-one very low-efficiency student
-can reduce the entire team's
-minimum efficiency
-```
-
-Because:
-
-```text
-teamPerformance
-=
-strengthSum
+SUM(selected values)
 *
-minimumEfficiency
-```
-
-A large strength may not compensate for collapsing the minimum efficiency.
-
----
-
-## 3.23 Common Wrong Approach — Sort Only by Efficiency
-
-Choosing the largest efficiencies ignores:
-
-```text
-strength sum
-```
-
-A high-efficiency student with tiny strength may be worse than a slightly lower-efficiency bottleneck paired with huge strengths.
-
-We need to test each possible bottleneck.
-
----
-
-## 3.24 Common Wrong Approach — Heap of Size K Before Fixing Bottleneck
-
-The important reasoning is:
-
-```text
-current student is the bottleneck candidate
-```
-
-So we need:
-
-```text
-current student
-+
-K-1 previous students
-```
-
-This makes the proof direct.
-
-The class code follows this structure:
-
-```text
-evaluate current
-then
-insert current for future candidates
-```
-
-Do not lose this invariant while coding.
-
----
-
-## 3.25 Recognition Model
-
-When you see an objective like:
-
-```text
-(
-    SUM of selected values
-)
-*
-(
-    MINIMUM selected key
-)
+MIN(selected key)
 ```
 
 think:
 
 ```text
-1. Which selected item determines the minimum?
+1. Which selected item determines the MIN?
 
-2. Enumerate that bottleneck by sorting.
+2. Sort so every possible bottleneck
+   becomes the current item.
 
-3. Once bottleneck is fixed,
+3. Once MIN is fixed,
    maximize the SUM.
 
-4. If choosing K items:
-   maintain top K-1 values
-   among eligible previous items.
+4. Need K total items?
+   → keep best K-1 previous values.
+
+5. Dynamic top K-1?
+   → min-heap + running sum.
 ```
-
-This is much more reusable than memorizing a specific team problem.
-
----
-
-## 3.26 Don't-Memorize Model
 
 Do not memorize only:
 
@@ -3161,409 +1834,15 @@ sort efficiency descending
 min-heap
 ```
 
-Remember the derivation:
+Remember the chain:
 
 ```text
-Every team has a minimum-efficiency student.
-                |
-                v
-Pretend current student is that bottleneck.
-                |
-                v
-All teammates must have
-efficiency >= current efficiency.
-                |
-                v
-Sort descending:
-all such candidates are in the prefix.
-                |
-                v
-Current efficiency is now fixed.
-                |
-                v
-Maximize only strength sum.
-                |
-                v
-Take strongest K-1 previous strengths.
-                |
-                v
-Min-heap maintains them efficiently.
-```
-
-If you remember this chain, you can recreate the algorithm in a contest.
-
----
-
-# 4. How the Two Problems Are Related
-
-At first the problems look unrelated:
-
-```text
-car + petrol prices
-```
-
-versus:
-
-```text
-students + team performance
-```
-
-But the greedy modeling is similar.
-
-## Problem 1
-
-At each segment:
-
-```text
-all previous prices are candidates
-```
-
-We need:
-
-```text
-BEST ONE
-=
-minimum
-```
-
-So maintain:
-
-```text
-running minimum
-```
-
-## Problem 2
-
-At each bottleneck student:
-
-```text
-all previous students are eligible candidates
-```
-
-We need:
-
-```text
-BEST K-1
-=
-largest strengths
-```
-
-So maintain:
-
-```text
-top K-1 min-heap
-```
-
-General pattern:
-
-```text
-PROCESS LEFT TO RIGHT
-        |
-        v
-prefix becomes eligible set
-        |
-        v
-keep only sufficient summary of prefix
-        |
-        +----------------------+
-        |                      |
-        v                      v
- one best value          top K best values
-        |                      |
-        v                      v
- running min/max             heap
-```
-
-This is an important contest-recognition pattern.
-
----
-
-# 5. Final Pattern Recognition
-
-## 5.1 Running Best So Far
-
-Signal:
-
-```text
-For the current position,
-I may use any earlier option.
-```
-
-If objective wants:
-
-```text
-cheapest
-```
-
-maintain:
-
-```text
-prefix minimum
-```
-
-If objective wants:
-
-```text
-largest
-```
-
-maintain:
-
-```text
-prefix maximum
-```
-
----
-
-## 5.2 Sort + Sweep + Heap
-
-Signal:
-
-```text
-Each item has two properties.
-
-One property controls eligibility / bottleneck.
-
-The other property should be maximized among eligible items.
-```
-
-Think:
-
-```text
-sort by bottleneck property
-+
-sweep
-+
-heap for best K values
-```
-
----
-
-## 5.3 SUM × MIN Form
-
-Signal:
-
-```text
-score
-=
-SUM(selected contribution)
-*
-MIN(selected bottleneck)
-```
-
-Model:
-
-```text
-fix MIN
-→ SUM becomes the only part left to optimize
-```
-
-This is the key transformation.
-
----
-
-## 5.4 Questions to Ask in Contest
-
-```text
-1. What part of the objective acts as a bottleneck?
-
-2. Can I fix/enumerate that bottleneck by sorting?
-
-3. After fixing it,
-   what remains to maximize/minimize?
-
-4. Do I need:
-      one best previous value?
-   or:
-      top K previous values?
-
-5. Can the prefix be summarized by:
-      min
-      max
-      sum
-      heap
-      multiset?
-
-6. Can an exchange argument prove
-   replacing a worse prefix choice
-   with a better one is safe?
-```
-
----
-
-# 6. Compact Revision Card
-
-```text
-ALGOZENITH GREEDY APPLICATIONS
-==============================
-
-
-1. LINE / PETROL COST
----------------------
-
-Stations:
-
-price_1 --distance_1-- price_2 --distance_2-- ...
-
-For each segment:
-
-valid prices
-=
-prices already seen
-
-best valid price
-=
-minimumPriceSeen
-
-cost:
-
-minimumTravelCost
-+=
-distanceToNextStation
-*
-minimumPriceSeen
-
-Update:
-
-minimumPriceSeen
-=
-min(
-    minimumPriceSeen,
-    currentFuelPrice
-)
-
-WHY?
-
-If:
-
-somePreviousPrice
->
-minimumPriceSeen
-
-then:
-
-distance
-*
-somePreviousPrice
-
->=
-
-distance
-*
-minimumPriceSeen
-
-Future prices cannot pay for past segments.
-
-Pattern:
-PREFIX MINIMUM
-
-Complexity:
-O(N)
-
-
-2. TEAM PERFORMANCE
--------------------
-
-Choose K students.
-
-Each student:
-
-strength
-efficiency
-
-Performance:
-
-sumSelectedStrength
-*
-minimumSelectedEfficiency
-
-CORE TRANSFORMATION:
-
-Every team has a bottleneck:
-minimum efficiency.
-
-Fix current student as bottleneck.
-
-Then:
-
-currentEfficiency
-=
-fixed
-
-So maximize:
-
-strength sum
-
-Eligible teammates:
-
-efficiency
->=
-currentEfficiency
-
-Sort:
-
-efficiency descending
-
-Now all previous students are eligible.
-
-Need:
-
-K-1 strongest previous students.
-
-Maintain:
-
-min-heap of size K-1
-+
-running strength sum
-
-Candidate:
-
-currentTotalStrength
-=
-previousTopStrengthSum
-+
-currentStrength
-
-currentPerformance
-=
-currentTotalStrength
-*
-currentEfficiency
-
-Evaluate BEFORE inserting current.
-
-Then insert current strength
-for future bottlenecks.
-
-Complexity:
-
-sorting:
-O(N log N)
-
-heap:
-O(N log K)
-
-overall:
-O(N log N)
-
-
-MAIN RECOGNITION
-----------------
-
-prefix needs ONE best value
-→ running min/max
-
-prefix needs TOP K best values
-→ heap
-
-objective:
-SUM * MIN
-→ fix the MIN bottleneck first
-
-sorting makes:
-"eligible values"
-become:
-"previously processed values"
+team has a bottleneck
+→ fix it
+→ sorting creates eligible prefix
+→ multiplier fixed
+→ maximize strength sum
+→ top K-1 heap
 ```
 
 ---
@@ -3571,28 +1850,21 @@ become:
 # Final Mental Model
 
 ```text
-                 GREEDY APPLICATION
-                        |
-              process in useful order
-                        |
-                        v
-               PREFIX = CANDIDATES
-                        |
-          +-------------+-------------+
-          |                           |
-          v                           v
- need one best                  need top K best
-          |                           |
-          v                           v
- running min/max                  heap + sum
-          |                           |
-          v                           v
- line travel cost               team performance
-                                      |
-                                      v
-                              fix bottleneck first
+Greedy application
+      |
+      v
+identify valid candidate set
+      |
+      v
+process so candidates form a prefix
+      |
+      v
+keep only the summary you need
+      |
+ +----+----+
+ |         |
+min/max   heap
 ```
 
-> **Core lesson:** the most important step is not the data structure.  
-> First determine **which candidates are valid at the current step** and **what summary of those candidates is sufficient**.  
-> The running minimum and the heap are consequences of that reasoning.
+> **Core lesson:** first derive the valid candidate set and the greedy proof.  
+> The running minimum and heap are implementation consequences of that reasoning.
