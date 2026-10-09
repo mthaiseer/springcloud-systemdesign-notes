@@ -1,38 +1,18 @@
 # AlgoZenith Greedy Techniques — Class 1
-## TLE-Style Self-Study Notes — Prerequisites + Derivations + Inline Examples + ASCII Diagrams + C++17
+## Optimized TLE-Style Notes — Full Variable Names + Inline Examples + ASCII + C++17
 
-> **Goal:** understand how the greedy rule is *derived* and *proved* instead of memorizing a sorting key or a formula.
+> **Goal:** keep the TLE-style clarity—**example first → derivation → proof → dry run → code → recognition**—without repeating the same idea in multiple sections.
 >
-> **Structure used throughout:**
+> **Variable rule:** formulas use descriptive names such as `smallerFirstValue`, `firstDecayPerTime`, `targetValue`, and `meetingPosition`.
 >
-> ```text
-> prerequisite
-> → what the model asks
-> → variables
-> → tiny example
-> → observation
-> → greedy claim
-> → proof / derivation
-> → actual numbers beside the derivation
-> → ASCII visualization
-> → algorithm
-> → C++17
-> → complexity
-> → recognition model
-> → don't-memorize model
-> ```
->
-> **Important:** the supplied lecture screenshots explicitly develop rearrangement/swapping, score-decay-time ordering, reverse operation handling, median/weighted median, and Manhattan-distance minimization.  
-> The board also lists intervals / sweep line / priority as greedy categories, but those topics are only mentioned in the supplied screenshots, so they are not expanded into unsupported lecture content here.
->
-> **Math rendering:** display math uses fenced `math` blocks only.
+> **Rendering rule:** conceptual mathematics uses fenced `math` blocks for clean GitHub rendering. Long step-by-step algebra keeps descriptive variable names in aligned text blocks when that is easier to read.
 
 ---
 
-# Clickable Table of Contents
+# Clickable TOC
 
-- [0. Lecture Map](#0-lecture-map)
-- [1. Shared Greedy Prerequisites](#1-shared-greedy-prerequisites)
+- [0. Greedy Pattern Map](#0-greedy-pattern-map)
+- [1. Prerequisites](#1-prerequisites)
   - [1.1 What Greedy Means](#11-what-greedy-means)
   - [1.2 Local Choice vs Global Optimum](#12-local-choice-vs-global-optimum)
   - [1.3 Exchange / Swapping Proof](#13-exchange--swapping-proof)
@@ -48,409 +28,796 @@
   - [1.13 Median](#113-median)
   - [1.14 Weighted Median](#114-weighted-median)
   - [1.15 Manhattan Distance Separability](#115-manhattan-distance-separability)
-  - [1.16 Overflow](#116-overflow)
-  - [1.17 Universal Greedy Proof Checklist](#117-universal-greedy-proof-checklist)
-- [2. Pattern 1 — Minimum Dot Product / Rearrangement](#2-pattern-1--minimum-dot-product--rearrangement)
-- [3. Pattern 2 — Score–Decay–Time Scheduling](#3-pattern-2--scoredecaytime-scheduling)
-- [4. Pattern 3 — Minimum Operations From 0 to Y](#4-pattern-3--minimum-operations-from-0-to-y)
-- [5. Pattern 4 — Median Minimizes Sum of Absolute Distances](#5-pattern-4--median-minimizes-sum-of-absolute-distances)
-- [6. Pattern 5 — Weighted Median](#6-pattern-5--weighted-median)
-- [7. Pattern 6 — Manhattan Meeting Point in 2D](#7-pattern-6--manhattan-meeting-point-in-2d)
-- [8. Pattern Comparison](#8-pattern-comparison)
-- [9. Final Recognition Checklist](#9-final-recognition-checklist)
+  - [1.16 Overflow / `long long`](#116-overflow--long-long)
+  - [1.17 Quick Greedy Proof Checklist](#117-quick-greedy-proof-checklist)
+- [2. Minimum Dot Product — Rearrangement](#2-minimum-dot-product--rearrangement)
+- [3. Score–Decay–Time Scheduling](#3-scoredecaytime-scheduling)
+- [4. Minimum Operations From 0 to Target](#4-minimum-operations-from-0-to-target)
+- [5. Median — Sum of Absolute Distances](#5-median--sum-of-absolute-distances)
+- [6. Weighted Median](#6-weighted-median)
+- [7. Manhattan Meeting Point](#7-manhattan-meeting-point)
+- [8. Proof Pattern Summary](#8-proof-pattern-summary)
+- [9. Recognition Checklist](#9-recognition-checklist)
 - [10. Compact Revision Card](#10-compact-revision-card)
 
 ---
 
-# 0. Lecture Map
+# 0. Greedy Pattern Map
 
-The board begins with a broad greedy map:
+The class first groups greedy problems into families:
 
 ```text
 GREEDY
-  |
-  +-- Sorting
-  |     |
-  |     +-- Interval-type ordering
-  |     +-- Priority-based ordering
-  |     +-- Sweep-line related forms
-  |
-  +-- Operation handling
-  |     |
-  |     +-- decide which operation is forced / best
-  |     +-- sometimes solve backward
-  |
-  +-- Classical ideas
-        |
-        +-- Rearrangement / swapping
-        +-- Median
-        +-- Manhattan distance
-        +-- ...
+│
+├── Sorting-Based
+│   ├── Interval ordering
+│   │    └── Sweep-line related forms
+│   ├── Priority-based ordering
+│   ├── Rearrangement / pairing
+│   └── Ratio ordering
+│
+├── Operation Handling
+│   ├── choose best / forced operation
+│   └── reverse the process when backward is easier
+│
+└── Classical Mathematical Forms
+    ├── Median
+    ├── Weighted Median
+    ├── Manhattan Distance
+    └── other known greedy structures
 ```
 
-The important lesson is:
+The supplied class develops these concrete forms:
 
 ```text
-Greedy is NOT one algorithm.
+Rearrangement
+→ minimum dot product
 
-It is a proof style:
-choose a locally best/forced action
-and prove that an optimal solution can contain it.
+Sorting + exchange
+→ score-decay-time scheduling
+
+Operation handling
+→ +1 / ×2
+→ reverse greedy
+
+Classical
+→ median
+→ weighted median
+→ Manhattan
 ```
+
+`Interval`, `Sweep Line`, and `Priority` are kept here as **recognition families** because the screenshots only list them; their detailed class derivations are not present in the supplied material.
 
 ---
 
-# 1. Shared Greedy Prerequisites
+# 1. Prerequisites
+
+> **Purpose:** understand the small set of ideas repeatedly used in the class proofs.
+>
+> Use this learning order:
+>
+> ```text
+> tiny example
+>     ↓
+> understand the local choice
+>     ↓
+> write the general form
+>     ↓
+> prove the choice is safe
+> ```
+
+---
 
 ## 1.1 What Greedy Means
 
-A greedy solution usually has:
+A greedy algorithm makes the **best-looking safe local choice now** and does not go back.
+
+But:
 
 ```text
-STATE
-+
+"this looks best"
+```
+
+is not a proof.
+
+The real model is:
+
+```text
+GREEDY
+=
 LOCAL CHOICE
 +
 PROOF THAT THE CHOICE IS SAFE
 ```
 
-Example:
+### Tiny Example
+
+Suppose two pairings are possible:
 
 ```text
-State:
-two values still need to be paired
+small value = 2
+large value = 5
 
-Choice:
-pair small with large
-
-Proof:
-swapping from same-order pairing
-cannot make the minimization worse
+small weight = 3
+large weight = 7
 ```
 
-Without the proof:
+One local choice:
 
 ```text
-"sort this way"
+small with small
+large with large
 ```
 
-is just a guess.
+gives:
+
+```text
+2*3 + 5*7
+=
+41
+```
+
+Another local choice:
+
+```text
+small with large
+large with small
+```
+
+gives:
+
+```text
+2*7 + 5*3
+=
+29
+```
+
+For minimization:
+
+```text
+29 < 41
+```
+
+So the crossed pairing **looks better**.
+
+The greedy proof must now show:
+
+```text
+this remains safe for arbitrary values,
+not only for 2, 5, 3, 7
+```
+
+### Mental Model
+
+```text
+Current state
+     |
+     v
+Choose candidate greedy action
+     |
+     v
+Can I prove it is safe?
+    / \
+  YES  NO
+   |    |
+ take   keep analyzing
+```
 
 ---
 
 ## 1.2 Local Choice vs Global Optimum
 
-Suppose the full answer is:
+A greedy algorithm makes a **local** decision, but the problem asks for the **global** optimum.
+
+Example full objective:
 
 ```text
-term1 + term2 + term3 + ... + termN
+pair1Contribution
++
+pair2Contribution
++
+pair3Contribution
++
+...
++
+pairNContribution
 ```
 
-A greedy proof often changes only a tiny local part:
+A swap may change only:
 
 ```text
-term_i
-term_j
+pairIContribution
+pairJContribution
 ```
 
-All other terms stay unchanged.
-
-So:
-
-```text
-global proof
-can reduce to
-2-item local proof
-```
+Everything else stays identical.
 
 ASCII:
 
 ```text
 FULL SOLUTION
 
-[ same ][ same ][ LOCAL ][ same ][ same ]
-                     |
-                     v
-            compare only this
+[ same ][ same ][ LOCAL CHANGE ][ same ][ same ]
+                      |
+                      v
+             prove only this part
 ```
 
-That is the key reason exchange proofs are powerful.
+### Tiny Example
+
+Suppose:
+
+```text
+wholeAnswerBefore
+=
+10 + 41 + 8
+=
+59
+```
+
+and after changing one local pair:
+
+```text
+wholeAnswerAfter
+=
+10 + 29 + 8
+=
+47
+```
+
+The `10` and `8` never changed.
+
+So the global comparison is really:
+
+```text
+41
+vs
+29
+```
+
+This is why many greedy proofs become **two-item proofs**.
 
 ---
 
 ## 1.3 Exchange / Swapping Proof
 
-Typical structure:
+This is one of the most reusable greedy proofs.
+
+Suppose an optimal solution uses:
 
 ```text
-OPT contains a locally "wrong" pair
-
-        X ... Y
-          |
-          v
-        swap
-          |
-          v
-        Y ... X
-
-Question 1:
-Is the new solution still feasible?
-
-Question 2:
-Is the objective same or better?
-
-If YES:
-the swap is safe.
+OtherChoice
 ```
 
-Repeat safe swaps:
+while greedy wants:
 
 ```text
-remove inversion
-→ remove inversion
-→ remove inversion
-→ greedy order
+GreedyChoice
 ```
 
-So an optimal solution can be transformed into the greedy structure.
+Try exchanging them.
+
+```text
+OPT uses OtherChoice
+        |
+        v
+Greedy wants GreedyChoice
+        |
+        v
+replace / swap locally
+        |
+        v
+still feasible?
+        |
+       YES
+        |
+        v
+objective same or better?
+        |
+       YES
+        |
+        v
+an optimal solution can use GreedyChoice
+```
+
+### What Must Be Checked?
+
+```text
+1. Feasibility
+   → after the swap, is the solution still legal?
+
+2. Objective
+   → after the swap, is the answer non-worse?
+```
+
+### Tiny Numerical Example
+
+For a maximization problem:
+
+```text
+OtherContribution
+=
+20
+
+GreedyContribution
+=
+30
+```
+
+Exchange:
+
+```text
+20 → 30
+```
+
+Difference:
+
+```text
+GreedyContribution - OtherContribution
+
+=
+30 - 20
+
+=
+10
+
+>= 0
+```
+
+So the local exchange is non-worse.
+
+### Important
+
+Not every exchange proof needs long algebra.
+
+Sometimes the proof is simply:
+
+```text
+anything possible after OtherChoice
+is also possible after GreedyChoice
+```
+
+That is enough.
 
 ---
 
 ## 1.4 Why We Compare Only Two Positions
 
-Suppose only positions `i` and `j` change.
-
-Old:
+Suppose two arrangements differ only at positions:
 
 ```text
-... + a_i b_i + ... + a_j b_j + ...
+firstIndex
+secondIndex
 ```
 
-Swapped:
+Before:
 
 ```text
-... + a_i b_j + ... + a_j b_i + ...
+... + oldFirstContribution + ... + oldSecondContribution + ...
 ```
 
-Everything outside `i,j` is identical.
-
-Therefore compare only:
+After:
 
 ```text
-a_i b_i + a_j b_j
-
-vs
-
-a_i b_j + a_j b_i
+... + newFirstContribution + ... + newSecondContribution + ...
 ```
 
-This local comparison is enough.
+All other terms are equal.
+
+Therefore:
+
+```text
+wholeDifference
+
+=
+oldFirstContribution
++
+oldSecondContribution
+-
+newFirstContribution
+-
+newSecondContribution
+```
+
+### Dot-Product Example
+
+Same-order pair:
+
+```text
+smallerFirstValue * smallerSecondValue
++
+largerFirstValue * largerSecondValue
+```
+
+Crossed pair:
+
+```text
+smallerFirstValue * largerSecondValue
++
+largerFirstValue * smallerSecondValue
+```
+
+Only these four products matter.
+
+### Numerical Example
+
+```text
+same:
+2*3 + 5*7
+=
+41
+
+crossed:
+2*7 + 5*3
+=
+29
+```
+
+Difference:
+
+```text
+41 - 29
+=
+12
+```
+
+We never need to recompute the untouched part of the array.
 
 ---
 
 ## 1.5 Inversions
 
-For an ascending order:
+An inversion means a pair violates the desired order.
+
+For ascending order:
 
 ```text
-x1 <= x2 <= x3 <= ...
-```
+earlierIndex < laterIndex
 
-an inversion is:
-
-```text
-i < j
 but
-x[i] > x[j]
+
+earlierValue > laterValue
 ```
 
 Example:
 
 ```text
 [1, 7, 4, 9]
+    ^  ^
+    inversion
 ```
 
-`7,4` is an inversion.
-
-Many greedy sorting proofs show:
+because:
 
 ```text
-if inversion exists
-→ swap it
-→ objective does not get worse
+7 > 4
 ```
 
-Then an optimal sorted arrangement exists.
+### Why Inversions Matter in Greedy Proofs
+
+A common proof is:
+
+```text
+find one inversion
+→ swap it
+→ prove objective does not get worse
+→ repeat
+→ no inversions remain
+→ greedy sorted order
+```
+
+### Tiny Example
+
+```text
+[1,7,4,9]
+
+swap 7 and 4
+
+[1,4,7,9]
+```
+
+One inversion disappeared.
+
+If every such swap is safe, an optimal sorted solution exists.
 
 ---
 
 ## 1.6 Sorting as a Greedy Tool
 
-Sorting is useful when the proof says:
+Sorting itself is not the proof.
+
+Sorting is useful when the proof determines the preferred relative order between **any two items**.
+
+Examples from this class:
 
 ```text
-relative order between ANY two items
-can be decided locally
+Minimum Dot Product:
+Which value should pair with which?
+
+Score–Decay–Time:
+Should firstJob come before secondJob?
 ```
 
-Examples in this class:
+If the two-item proof says:
 
 ```text
-dot product:
-decide relative pairing by value order
-
-scheduling:
-decide P1 before P2
-by comparing D1/T1 vs D2/T2
+whenever pair/order is "wrong",
+swapping it is non-worse
 ```
 
-Sorting then applies this local rule globally.
+then sorting globally applies that local rule.
+
+### Mental Model
+
+```text
+two-item comparison
+       |
+       v
+derive preferred order
+       |
+       v
+remove all inversions
+       |
+       v
+sort
+```
 
 ---
 
 ## 1.7 Cross Multiplication for Ratio Comparators
 
-Suppose we derive:
+Suppose the derivation gives:
 
 ```math
-\frac{D_1}{T_1}
->
-\frac{D_2}{T_2}
+\frac{\mathrm{firstDecayPerTime}}
+     {\mathrm{firstTimeNeeded}}
+\ge
+\frac{\mathrm{secondDecayPerTime}}
+     {\mathrm{secondTimeNeeded}}
 ```
 
-For positive times, compare:
+If both times are positive, compare:
 
 ```math
-D_1T_2
->
-D_2T_1
+\mathrm{firstDecayPerTime}
+\cdot
+\mathrm{secondTimeNeeded}
+\ge
+\mathrm{secondDecayPerTime}
+\cdot
+\mathrm{firstTimeNeeded}
 ```
 
-instead of using floating point.
+This avoids floating-point precision problems.
 
 ### Inline Example
 
 ```text
-D1 = 1
-T1 = 2
+firstDecayPerTime = 1
+firstTimeNeeded   = 2
 
-D2 = 2
-T2 = 3
+secondDecayPerTime = 2
+secondTimeNeeded   = 3
 ```
 
 Ratios:
 
 ```text
-D1/T1
-= 1/2
-= 0.5
+first ratio
+=
+1/2
+=
+0.5
 
-D2/T2
-= 2/3
-≈ 0.667
+second ratio
+=
+2/3
+≈
+0.667
 ```
 
-Cross products:
+Cross multiplication:
 
 ```text
-D1*T2
-= 1×3
-= 3
+first side
+=
+1*3
+=
+3
 
-D2*T1
-= 2×2
-= 4
+second side
+=
+2*2
+=
+4
 ```
 
-Because:
+Since:
 
 ```text
 3 < 4
 ```
 
-job 2 has the larger ratio.
+the second job has the larger ratio.
+
+### C++ Comparator Pattern
+
+```cpp
+long long firstCrossProduct =
+    firstJob.decayPerUnitTime * secondJob.timeNeeded;
+
+long long secondCrossProduct =
+    secondJob.decayPerUnitTime * firstJob.timeNeeded;
+
+return firstCrossProduct > secondCrossProduct;
+```
+
+Use this only when the products fit in `long long`.
 
 ---
 
 ## 1.8 Completion Time
 
-If jobs execute one after another:
+Do not confuse:
 
 ```text
-P1 duration = T1
-P2 duration = T2
+timeNeeded
+```
+
+with:
+
+```text
+completionTime
+```
+
+### Meaning
+
+```text
+timeNeeded
+=
+how long one job itself takes
+
+completionTime
+=
+total elapsed time when that job finishes
+```
+
+### Example
+
+```text
+firstTimeNeeded  = 2
+secondTimeNeeded = 3
 ```
 
 Order:
 
 ```text
-P1 → P2
+firstJob → secondJob
 ```
 
-Completion:
+Then:
 
 ```text
-P1 finishes at T1
+firstCompletionTime
+=
+2
 
-P2 finishes at T1+T2
+secondCompletionTime
+=
+2+3
+=
+5
 ```
 
 ASCII:
 
 ```text
-time:
-0---------------T1----------------T1+T2
-
-|------ P1 ------|------- P2 -------|
-        ^                   ^
-       C1                  C2
+time
+0---------2----------------5
+| first   |     second     |
+      ^              ^
+ first ends       second ends
 ```
 
-This distinction is essential:
+The second job waits for the first job.
 
-```text
-own duration != completion time
-```
-
-A later job waits for earlier jobs.
+That waiting time is exactly why ordering affects the score.
 
 ---
 
 ## 1.9 Reverse Greedy
 
-Some forward operations are hard to choose.
+Some forward processes have many possible next choices.
 
 Example:
 
 ```text
-from x:
-1. x → x+1
-2. x → 2x
+currentValue → currentValue + 1
+currentValue → 2 * currentValue
 ```
 
-Goal:
-
-```text
-reach target y
-with minimum operations
-```
-
-Forward choice can be ambiguous:
+Forward question:
 
 ```text
 Should I +1 now?
 Should I double now?
 ```
 
-But backward from `y`, the last operation may become obvious.
+Backward from the target, the previous move may be forced.
 
-This is a general technique:
+### Odd Target
+
+If:
 
 ```text
-forward:
-many choices
+targetValue
+```
 
-reverse:
+is odd, doubling could not create it because:
+
+```text
+2 * integer
+```
+
+is always even.
+
+So the previous forward move must have been:
+
+```text
++1
+```
+
+Backward:
+
+```text
+targetValue--
+```
+
+Example:
+
+```text
+13 is odd
+
+13
+→
+12
+```
+
+because:
+
+```text
+12 + 1
+=
+13
+```
+
+### Even Target
+
+If:
+
+```text
+targetValue
+```
+
+is even, undo a doubling:
+
+```text
+targetValue /= 2
+```
+
+Example:
+
+```text
+12 → 6
+```
+
+### Mental Model
+
+```text
+FORWARD
+many possible choices
+
+BACKWARD
 last move may be forced
 ```
 
@@ -458,1836 +825,50 @@ last move may be forced
 
 ## 1.10 Binary View of `+1` and `×2`
 
-Binary connection:
-
-```text
-x × 2
-=
-left shift by one bit
-```
+Multiplication by 2 is a binary left shift.
 
 Example:
 
 ```text
-5 = 101
-
-5×2
-= 10
-= 1010
-```
-
-Building a binary number from left to right:
-
-```text
-×2
-→ shift existing bits
-
-+1
-→ create a needed 1 bit
-```
-
-This gives another way to understand the minimum-operation problem later.
-
----
-
-## 1.11 Absolute Distance
-
-Distance between `x` and point `a`:
-
-```math
-|x-a|
-```
-
-Example:
-
-```text
-x = 7
-a = 3
-
-|7-3|
-= 4
-```
-
-For many points:
-
-```math
-F(x)
+5
 =
-\sum_i |x-x_i|
+101₂
 ```
 
-This creates a piecewise-linear V-shaped / convex cost.
-
----
-
-## 1.12 Convex / V-Shaped Cost
-
-One term:
-
-```math
-|x-a|
-```
-
-looks like:
+Double:
 
 ```text
-cost
- ^
- | \       /
- |  \     /
- |   \   /
- |    \ /
- |     V
- +-----a----------> x
-```
-
-A sum of such terms remains convex:
-
-```text
-decreasing
-→ flat/turning region
-→ increasing
-```
-
-So the minimum can be found by understanding where the slope changes sign.
-
----
-
-## 1.13 Median
-
-For sorted:
-
-```text
-x1 <= x2 <= ... <= xn
-```
-
-a median minimizes:
-
-```math
-\sum_i |x-x_i|
-```
-
-Odd `n`:
-
-```text
-one middle point
-```
-
-Even `n`:
-
-```text
-every point between the two middle values
-is optimal
-```
-
-For integer `x`, every integer in that interval is optimal.
-
----
-
-## 1.14 Weighted Median
-
-Weighted objective:
-
-```math
-\sum_i k_i|x-x_i|
-```
-
-Interpret:
-
-```text
-point x_i with weight k_i
-behaves conceptually like
-k_i copies of x_i
-```
-
-So the ordinary median becomes:
-
-```text
-weighted median
-```
-
-Implementation uses cumulative weights, not literal expansion.
-
----
-
-## 1.15 Manhattan Distance Separability
-
-For two points:
-
-```text
-P = (x,y)
-Q = (a,b)
-```
-
-Manhattan distance:
-
-```math
-|x-a|+|y-b|
-```
-
-For many points:
-
-```math
-\sum_i
-(
-|x-x_i|
-+
-|y-y_i|
-)
-```
-
-Separate:
-
-```math
+10
 =
-\sum_i |x-x_i|
-+
-\sum_i |y-y_i|
+1010₂
 ```
 
 So:
 
 ```text
-optimize x independently
-optimize y independently
+×2
+→ shift existing bits left
 ```
 
-Each is a 1D median problem.
+The `+1` operation creates a required `1` bit while constructing the number.
 
----
-
-## 1.16 Overflow
-
-The board shows constraints large enough that products deserve attention.
-
-For example:
-
-```text
-10^9 × 10^9
-= 10^18
-```
-
-This is near signed 64-bit range.
-
-For comparators such as:
-
-```text
-D1*T2
-vs
-D2*T1
-```
-
-use:
-
-```cpp
-__int128
-```
-
-if constraints can make `long long` unsafe.
-
----
-
-## 1.17 Universal Greedy Proof Checklist
-
-Before coding ask:
-
-```text
-1. What exactly am I minimizing/maximizing?
-
-2. Can I compare two local choices?
-
-3. If I swap two items,
-   which terms stay unchanged?
-
-4. Can I factor:
-   Greedy - Other
-   or
-   Other - Greedy?
-
-5. What signs do the factors have?
-
-6. Does that imply a sorted order?
-
-7. Did a ratio appear?
-   Use cross multiplication.
-
-8. Is forward decision ambiguous?
-   Try reversing the operations.
-
-9. Is objective:
-   Σ|x-x_i|?
-   Think median.
-
-10. Is it weighted?
-    Think weighted median.
-
-11. Is it 2D Manhattan distance?
-    Separate x and y.
-```
-
----
-
-# 2. Pattern 1 — Minimum Dot Product / Rearrangement
-
-## 2.1 What the Model Asks
-
-Two arrays:
-
-```text
-A = [a1,a2,...,an]
-B = [b1,b2,...,bn]
-```
-
-We may rearrange one or both arrays.
-
-Goal:
-
-```math
-\min
-\sum_{i=1}^{n} a_i b_i
-```
-
-The board's greedy idea is:
-
-```text
-pair large values from one array
-with small values from the other
-```
-
-Therefore:
-
-```text
-sort one ascending
-sort the other descending
-```
-
----
-
-## 2.2 Tiny Example First
-
-```text
-A = [1,2,3]
-B = [1,2,3]
-```
-
-Same order:
-
-```text
-1×1 + 2×2 + 3×3
-
-= 1+4+9
-
-= 14
-```
-
-Opposite order:
-
-```text
-A = [1,2,3]
-B = [3,2,1]
-```
-
-Cost:
-
-```text
-1×3 + 2×2 + 3×1
-
-= 3+4+3
-
-= 10
-```
-
-So opposite order is smaller.
-
-Now prove it for every input.
-
----
-
-## 2.3 Two-Item Proof With Numbers First
-
-Take:
-
-```text
-small A = 2
-large A = 5
-
-small B = 3
-large B = 7
-```
-
-Same-order:
-
-```text
-2×3 + 5×7
-
-= 6+35
-
-= 41
-```
-
-Crossed/opposite pairing:
-
-```text
-2×7 + 5×3
-
-= 14+15
-
-= 29
-```
-
-So:
-
-```text
-crossed < same
-```
-
-Difference:
-
-```text
-41-29
-= 12
-```
-
----
-
-## 2.4 General Algebra Derivation
-
-Assume:
-
-```math
-a_1\le a_2
-```
-
-and:
-
-```math
-b_1\le b_2
-```
-
-Same-order contribution:
-
-```math
-S
-=
-a_1b_1+a_2b_2
-```
-
-Opposite/crossed contribution:
-
-```math
-C
-=
-a_1b_2+a_2b_1
-```
-
-For minimization, we want to show:
-
-```math
-C\le S
-```
-
-Compute:
-
-```math
-S-C
-=
-a_1b_1+a_2b_2-a_1b_2-a_2b_1
-```
-
-Group:
-
-```math
-=
-a_2b_2-a_2b_1-a_1b_2+a_1b_1
-```
-
-Factor:
-
-```math
-=
-a_2(b_2-b_1)-a_1(b_2-b_1)
-```
-
-Factor common term:
-
-```math
-S-C
-=
-(a_2-a_1)(b_2-b_1)
-```
-
-Because:
-
-```math
-a_2-a_1\ge0
-```
-
-and:
-
-```math
-b_2-b_1\ge0
-```
-
-we get:
-
-```math
-S-C\ge0
-```
-
-Therefore:
-
-```math
-S\ge C
-```
-
-So opposite pairing is never worse for minimization.
-
----
-
-## 2.5 Same Derivation With Actual Numbers
-
-Use:
-
-```text
-a1 = 2
-a2 = 5
-b1 = 3
-b2 = 7
-```
-
-Start:
-
-```text
-S-C
-
-= 2×3 + 5×7
-  - 2×7 - 5×3
-```
-
-Calculate:
-
-```text
-= 6+35-14-15
-
-= 12
-```
-
-Factored form:
-
-```text
-(a2-a1)(b2-b1)
-
-= (5-2)(7-3)
-
-= 3×4
-
-= 12
-```
-
-Same value.
-
-That is the important algebra pattern:
-
-```text
-four terms
-→ group
-→ factor
-→ sign reasoning
-```
-
----
-
-## 2.6 Exchange Proof for the Whole Arrays
-
-Suppose `A` is sorted ascending:
-
-```text
-a1 <= a2 <= ... <= an
-```
-
-For minimum dot product, `B` should be descending.
-
-If `B` has a same-direction pair:
-
-```text
-i < j
-and
-b_i < b_j
-```
-
-then:
-
-```text
-small A is paired with small B
-large A is paired with large B
-```
-
-Swap `b_i` and `b_j`.
-
-The two-item proof says the dot product cannot increase.
-
-Repeat until `B` is descending.
-
-ASCII:
-
-```text
-BAD FOR MINIMUM:
-
-small A -------- small B
-large A -------- large B
-
-
-SWAP:
-
-small A -------- large B
-large A -------- small B
-
-
-small × large
-large × small
-→ smaller/equal total
-```
-
----
-
-## 2.7 Maximum vs Minimum
-
-The same proof gives both directions.
-
-### Maximum
-
-```text
-sort both in same order
-```
-
-### Minimum
-
-```text
-sort in opposite order
-```
-
-Mental rule:
-
-```text
-MAX:
-large with large
-
-MIN:
-large with small
-```
-
----
-
-## 2.8 Negative Values
-
-The proof still works because it only needs:
-
-```text
-a1 <= a2
-b1 <= b2
-```
-
-Then:
-
-```text
-a2-a1 >= 0
-b2-b1 >= 0
-```
-
-The actual values may be negative.
-
-Example:
-
-```text
-A = [-4,2]
-B = [-3,5]
-```
-
-Same:
-
-```text
-(-4)(-3)+2×5
-= 12+10
-= 22
-```
-
-Opposite:
-
-```text
-(-4)(5)+2(-3)
-= -20-6
-= -26
-```
-
-For minimization:
-
-```text
--26 < 22
-```
-
-Opposite order still wins.
-
----
-
-## 2.9 ASCII Visualization
-
-```text
-A ascending:
-
-a1 <= a2 <= a3 <= ... <= an
-
-B descending:
-
-bn >= ... >= b3 >= b2 >= b1
-
-
-pair:
-
-smallest A  -------- largest B
-next A      -------- next-largest B
-...
-largest A   -------- smallest B
-```
-
----
-
-## 2.10 Algorithm
-
-```text
-1. Sort A ascending.
-2. Sort B descending.
-3. Compute Σ A[i]*B[i].
-```
-
----
-
-## 2.11 C++17
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n;
-    cin >> n;
-
-    vector<long long> a(n), b(n);
-
-    for (auto& x : a)
-        cin >> x;
-
-    for (auto& x : b)
-        cin >> x;
-
-    sort(a.begin(), a.end());
-    sort(b.rbegin(), b.rend());
-
-    __int128 answer = 0;
-
-    for (int i = 0; i < n; ++i) {
-        answer +=
-            (__int128)a[i] * b[i];
-    }
-
-    // Print __int128 if the problem constraints require it.
-}
-```
-
----
-
-## 2.12 Complexity
-
-```text
-sorting:
-O(N log N)
-
-sum:
-O(N)
-
-total:
-O(N log N)
-```
-
----
-
-## 2.13 Recognition Model
-
-When you see:
-
-```text
-two arrays
-+
-rearrange pairing
-+
-objective Σ ai*bi
-```
-
-think:
-
-```text
-Rearrangement inequality
-```
-
-Then:
-
-```text
-maximize → same order
-minimize → opposite order
-```
-
----
-
-## 2.14 Don't-Memorize Model
-
-Remember only the local proof:
-
-```text
-same
-=
-smallA×smallB
-+
-largeA×largeB
-
-cross
-=
-smallA×largeB
-+
-largeA×smallB
-```
-
-Difference:
-
-```text
-same-cross
-=
-(largeA-smallA)
-×
-(largeB-smallB)
->= 0
-```
-
-Everything else follows from repeated swaps.
-
----
-
-# 3. Pattern 2 — Score–Decay–Time Scheduling
-
-## 3.1 What the Model Asks
-
-There are `N` questions/jobs.
-
-For each job `i`:
-
-```text
-S_i = initial score
-d_i = score decay per unit time
-t_i = time required
-```
-
-If job `i` finishes at time:
-
-```text
-C_i
-```
-
-score becomes:
-
-```math
-S_i-d_iC_i
-```
-
-Goal:
-
-```text
-choose the order
-that maximizes total score
-```
-
----
-
-## 3.2 Important Variable Meaning
-
-Do not confuse:
-
-```text
-t_i
-=
-duration of job i
-```
-
-with:
-
-```text
-C_i
-=
-time at which job i finishes
-```
-
-If a job runs second:
-
-```text
-completion time
-=
-time of first job
-+
-its own time
-```
-
----
-
-## 3.3 Class-Style Example
-
-Use the values visible in the lecture derivation:
-
-```text
-P1:
-S1 = 10
-d1 = 1
-t1 = 2
-
-P2:
-S2 = 5
-d2 = 2
-t2 = 3
-```
-
-We compare both orders.
-
----
-
-## 3.4 Order `P1 → P2`
-
-Timeline:
-
-```text
-0-------2------------5
-|  P1   |     P2     |
-    ^           ^
-   C1          C2
-```
-
-Completion times:
-
-```text
-C1 = 2
-
-C2 = 2+3
-   = 5
-```
-
-Score P1:
-
-```text
-10 - 1×2
-
-= 8
-```
-
-Score P2:
-
-```text
-5 - 2×5
-
-= 5-10
-
-= -5
-```
-
-Total:
-
-```text
-8 + (-5)
-
-= 3
-```
-
----
-
-## 3.5 Order `P2 → P1`
-
-Timeline:
-
-```text
-0----------3---------5
-|    P2    |   P1    |
-      ^          ^
-     C2         C1
-```
-
-P2 finishes:
-
-```text
-3
-```
-
-P2 score:
-
-```text
-5 - 2×3
-
-= -1
-```
-
-P1 finishes:
-
-```text
-3+2
-= 5
-```
-
-P1 score:
-
-```text
-10 - 1×5
-
-= 5
-```
-
-Total:
-
-```text
--1+5
-
-= 4
-```
-
-So:
-
-```text
-P2 → P1
-```
-
-is better:
-
-```text
-4 > 3
-```
-
----
-
-## 3.6 What Should Determine the Order?
-
-P2 has:
-
-```text
-higher decay rate
-```
-
-but also takes:
-
-```text
-more time
-```
-
-We need one comparison combining both.
-
-This is where the two-job exchange derivation produces a ratio.
-
----
-
-## 3.7 General Two-Job Derivation
-
-Suppose only two adjacent jobs matter:
-
-```text
-P1 and P2
-```
-
-Any time spent before them is the same in both orders, so it cancels from the comparison.
-
-### Order `P1 → P2`
-
-```math
-Score_{12}
-=
-(S_1-d_1t_1)
-+
-(S_2-d_2(t_1+t_2))
-```
-
-### Order `P2 → P1`
-
-```math
-Score_{21}
-=
-(S_2-d_2t_2)
-+
-(S_1-d_1(t_2+t_1))
-```
-
-We prefer `P1 → P2` when:
-
-```math
-Score_{12}\ge Score_{21}
-```
-
-Substitute:
-
-```math
-(S_1-d_1t_1)
-+
-(S_2-d_2(t_1+t_2))
-\ge
-(S_2-d_2t_2)
-+
-(S_1-d_1(t_2+t_1))
-```
-
-Expand left:
-
-```math
-S_1+S_2
--d_1t_1
--d_2t_1
--d_2t_2
-```
-
-Expand right:
-
-```math
-S_1+S_2
--d_2t_2
--d_1t_2
--d_1t_1
-```
-
-Cancel common terms:
-
-```text
-S1
-S2
--d1*t1
--d2*t2
-```
-
-Remain:
-
-```math
--d_2t_1
-\ge
--d_1t_2
-```
-
-Multiply by `-1`, so the inequality reverses:
-
-```math
-d_2t_1
-\le
-d_1t_2
-```
-
-Rearrange:
-
-```math
-d_1t_2
-\ge
-d_2t_1
-```
-
-Divide by positive `t1*t2`:
-
-```math
-\frac{d_1}{t_1}
-\ge
-\frac{d_2}{t_2}
-```
-
-Therefore:
-
-```text
-higher d/t should come earlier
-```
-
-Equivalent:
-
-```text
-lower t/d should come earlier
-```
-
----
-
-## 3.8 Put the Example Into the Formula
-
-For P1:
-
-```text
-d1/t1
-= 1/2
-= 0.5
-```
-
-For P2:
-
-```text
-d2/t2
-= 2/3
-≈ 0.667
-```
-
-So:
-
-```text
-d2/t2 > d1/t1
-```
-
-Therefore:
-
-```text
-P2 before P1
-```
-
-The direct score calculation gave:
-
-```text
-P2→P1 = 4
-P1→P2 = 3
-```
-
-So the formula matches the example.
-
----
-
-## 3.9 Cross Multiplication in Code
-
-Instead of:
-
-```cpp
-(double)a.d / a.t
-```
-
-compare:
-
-```text
-a before b
-iff
-a.d * b.t > b.d * a.t
-```
-
-Example:
-
-```text
-P1:
-1×3 = 3
-
-P2 side:
-2×2 = 4
-
-3 < 4
-```
-
-so P2 comes first.
-
----
-
-## 3.10 Whole-Schedule Exchange Proof
-
-Suppose a schedule contains adjacent jobs:
-
-```text
-P1, P2
-```
-
-but:
-
-```math
-\frac{d_1}{t_1}
-<
-\frac{d_2}{t_2}
-```
-
-Then they are in the wrong order.
-
-Swap them:
-
-```text
-P2, P1
-```
-
-The two-job proof says total score cannot decrease.
-
-Repeat until there are no inversions in `d/t`.
-
-So an optimal schedule exists sorted by:
-
-```text
-d/t descending
-```
-
----
-
-## 3.11 ASCII Mental Model
-
-```text
-Question:
-"Which job is more dangerous to delay?"
-
-high decay d
-+
-small time t
-=
-large d/t
-=
-do earlier
-```
-
-Timeline priority:
-
-```text
-large d/t ----------------------> small d/t
-EARLY                               LATE
-```
-
----
-
-## 3.12 Algorithm
-
-```text
-1. Store each job:
-      S, d, t.
-
-2. Sort by d/t descending
-   using cross multiplication.
-
-3. timeTaken = 0
-   totalScore = 0
-
-4. For every job:
-      timeTaken += t
-      totalScore += S - d*timeTaken
-```
-
----
-
-## 3.13 C++17
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-struct Job {
-    long long score;
-    long long decay;
-    long long time;
-};
-
-bool cmp(const Job& a, const Job& b) {
-    __int128 left =
-        (__int128)a.decay * b.time;
-
-    __int128 right =
-        (__int128)b.decay * a.time;
-
-    if (left != right)
-        return left > right;
-
-    return a.time < b.time;
-}
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n;
-    cin >> n;
-
-    vector<Job> jobs(n);
-
-    for (auto& job : jobs) {
-        cin >> job.score
-            >> job.decay
-            >> job.time;
-    }
-
-    sort(
-        jobs.begin(),
-        jobs.end(),
-        cmp
-    );
-
-    long long elapsed = 0;
-    __int128 total = 0;
-
-    for (const Job& job : jobs) {
-        elapsed += job.time;
-
-        total +=
-            (__int128)job.score
-            -
-            (__int128)job.decay
-            * elapsed;
-    }
-
-    // Print total using an __int128 helper if needed.
-}
-```
-
----
-
-## 3.14 Complexity
-
-```text
-sorting:
-O(N log N)
-
-simulation:
-O(N)
-
-total:
-O(N log N)
-```
-
----
-
-## 3.15 Recognition Model
-
-When you see:
-
-```text
-jobs/questions
-+
-time to complete
-+
-penalty/decay while waiting
-+
-choose an order
-```
-
-do not guess the ratio.
-
-Instead:
-
-```text
-take two jobs
-→ compute order 1→2
-→ compute order 2→1
-→ cancel common terms
-→ derive comparator
-```
-
-Here it becomes:
-
-```text
-d/t descending
-```
-
----
-
-## 3.16 Don't-Memorize Model
-
-Remember this meaning:
-
-```text
-d/t
-=
-"damage caused by delaying this job"
-relative to
-"time consumed by doing it"
-```
-
-Large:
-
-```text
-damage / time
-```
-
-means:
-
-```text
-handle it earlier
-```
-
----
-
-# 4. Pattern 3 — Minimum Operations From 0 to Y
-
-## 4.1 What the Model Asks
-
-Start:
-
-```text
-x = 0
-```
-
-Allowed operations:
-
-```text
-1. x = x + 1
-2. x = 2x
-```
-
-Given large target:
-
-```text
-y
-```
-
-find minimum operations needed to reach `y`.
-
-The board emphasizes:
-
-```text
-"see backward"
-```
-
-because backward decisions are much more forced.
-
----
-
-## 4.2 Why Forward Greedy Is Awkward
-
-Suppose target:
-
-```text
-y = 12
-```
-
-At:
-
-```text
-x = 3
-```
-
-you could:
-
-```text
-+1 → 4
-```
-
-or:
-
-```text
-×2 → 6
-```
-
-Which is globally best?
-
-Not obvious from only the current state.
-
-Backward:
+### Example — Target 12
 
 ```text
 12
+=
+1100₂
 ```
 
-is even.
-
-The previous value could naturally be:
-
-```text
-6
-```
-
-by undoing a doubling.
-
-This shrinks the target dramatically.
-
----
-
-## 4.3 Reverse Operations
-
-Forward:
-
-```text
-x → x+1
-x → 2x
-```
-
-Backward:
-
-```text
-y → y-1
-```
-
-and when `y` is even:
-
-```text
-y → y/2
-```
-
-Now parity tells us what can be forced.
-
----
-
-## 4.4 Odd Target — Last Move Is Forced
-
-If:
-
-```text
-y is odd
-```
-
-could the last forward move have been doubling?
-
-No.
-
-Because:
-
-```text
-2×anything
-```
-
-is even.
-
-Therefore if `y` is odd:
-
-```text
-last forward move MUST have been +1
-```
-
-So backward:
-
-```math
-y\rightarrow y-1
-```
-
-is forced.
-
-### Inline Example
-
-```text
-y = 13
-```
-
-13 is odd.
-
-Last move cannot be:
-
-```text
-2x = 13
-```
-
-for integer `x`.
-
-Therefore last move was:
-
-```text
-12 + 1 = 13
-```
-
-Backward:
-
-```text
-13 → 12
-```
-
----
-
-## 4.5 Even Target — Undo Doubling
-
-If:
-
-```text
-y is even
-```
-
-we can reverse a doubling:
-
-```math
-y\rightarrow y/2
-```
-
-This removes a binary shift in one step.
-
-Example:
-
-```text
-12 → 6
-```
-
-instead of:
-
-```text
-12 → 11 → 10 → ...
-```
-
-The division makes the remaining magnitude much smaller.
-
----
-
-## 4.6 Full Reverse Dry Run — `y = 12`
-
-Start:
-
-```text
-12
-```
-
-Even:
-
-```text
-12 → 6
-```
-
-Even:
-
-```text
-6 → 3
-```
-
-Odd:
-
-```text
-3 → 2
-```
-
-Even:
-
-```text
-2 → 1
-```
-
-Odd:
-
-```text
-1 → 0
-```
-
-Total:
-
-```text
-5 steps
-```
-
-Reverse the path:
-
-```text
-0 → 1 → 2 → 3 → 6 → 12
-```
-
-Forward operations:
-
-```text
-+1
-×2
-+1
-×2
-×2
-```
-
-Also:
-
-```text
-5 steps
-```
-
----
-
-## 4.7 ASCII Visualization
-
-```text
-FORWARD:
-
-0
-|
-+1
-v
-1
-|
-×2
-v
-2
-|
-+1
-v
-3
-|
-×2
-v
-6
-|
-×2
-v
-12
-
-
-BACKWARD:
-
-12
- |
- /2
- v
- 6
- |
- /2
- v
- 3
- |
- -1
- v
- 2
- |
- /2
- v
- 1
- |
- -1
- v
- 0
-```
-
-Backward has the clearer rule:
-
-```text
-odd  → -1
-even → /2
-```
-
----
-
-## 4.8 Binary Interpretation
-
-Take:
-
-```text
-12
-```
-
-Binary:
-
-```text
-1100
-```
-
-Build it from left to right.
-
-Start:
+Construct from left to right:
 
 ```text
 0
-```
-
-First `1`:
-
-```text
-+1
-→ 1
-```
-
-Next bit `1`:
-
-```text
-×2
-→ 10
-
-+1
-→ 11
-```
-
-Next bit `0`:
-
-```text
-×2
-→ 110
-```
-
-Next bit `0`:
-
-```text
-×2
-→ 1100
+→ +1  = 1
+→ ×2  = 10
+→ +1  = 11
+→ ×2  = 110
+→ ×2  = 1100
 ```
 
 Operations:
@@ -2302,121 +883,865 @@ Count:
 5
 ```
 
+This explains the formula:
+
+```text
+minimumOperations
+=
+bitLength(targetValue) - 1
++
+popcount(targetValue)
+```
+
+for positive `targetValue`.
+
 ---
 
-## 4.9 Direct Formula From Binary
+## 1.11 Absolute Distance
 
-For `y > 0`:
-
-```text
-number of ×2 operations
-=
-bit_length(y)-1
-```
-
-Every `1` bit needs one `+1`:
+Distance between:
 
 ```text
-number of +1 operations
-=
-popcount(y)
+meetingPosition
 ```
 
-Therefore:
+and:
+
+```text
+pointPosition
+```
+
+is:
 
 ```math
-minimumSteps
+\left|
+\mathrm{meetingPosition}
+-
+\mathrm{pointPosition}
+\right|
+```
+
+### Example
+
+```text
+meetingPosition = 7
+pointPosition   = 3
+```
+
+Then:
+
+```text
+|7-3|
 =
-(bitLength(y)-1)
-+
-popcount(y)
-```
-
-### Inline Example — `y=12`
-
-Binary:
-
-```text
-1100
-```
-
-Bit length:
-
-```text
 4
 ```
 
-Popcount:
+For many points:
+
+```math
+\mathrm{totalDistance}
+=
+\sum_i
+\left|
+\mathrm{meetingPosition}
+-
+\mathrm{pointPosition}_i
+\right|
+```
+
+This absolute-distance structure is the signal for a median.
+
+---
+
+## 1.12 Convex / V-Shaped Cost
+
+One term:
+
+```math
+\left|
+\mathrm{meetingPosition}
+-
+\mathrm{pointPosition}
+\right|
+```
+
+looks like:
 
 ```text
-2
+cost
+ ^
+ | \       /
+ |  \     /
+ |   \   /
+ |    \ /
+ |     V
+ +-----pointPosition--------> meetingPosition
+```
+
+A sum of absolute-value terms remains convex / piecewise linear.
+
+So total cost behaves like:
+
+```text
+decreasing
+→ minimum / flat region
+→ increasing
+```
+
+### Tiny Example
+
+Points:
+
+```text
+1,3,7
+```
+
+Costs:
+
+```text
+meeting at 1 → 8
+meeting at 2 → 7
+meeting at 3 → 6   minimum
+meeting at 4 → 7
+meeting at 5 → 8
+```
+
+ASCII:
+
+```text
+cost
+ ^
+ |\
+ | \
+ |  \_/
+ |
+ +--------------------------> meetingPosition
+        3
+```
+
+The median is where the slope changes sign.
+
+---
+
+## 1.13 Median
+
+For sorted points:
+
+```text
+point1 <= point2 <= ... <= pointN
+```
+
+a median minimizes:
+
+```math
+\sum_i
+\left|
+\mathrm{meetingPosition}
+-
+\mathrm{pointPosition}_i
+\right|
+```
+
+### Odd Number of Points
+
+Example:
+
+```text
+[1,3,7]
+```
+
+Median:
+
+```text
+3
+```
+
+Cost:
+
+```text
+2 + 0 + 4
+=
+6
+```
+
+### Even Number of Points
+
+Example:
+
+```text
+[1,3,5,8]
+```
+
+The two middle values are:
+
+```text
+3
+and
+5
+```
+
+Every continuous point in:
+
+```text
+[3,5]
+```
+
+is optimal.
+
+For integer positions:
+
+```text
+3,4,5
+```
+
+are all optimal.
+
+Number of optimal integer positions:
+
+```text
+upperMedian - lowerMedian + 1
+
+=
+5 - 3 + 1
+
+=
+3
+```
+
+---
+
+## 1.14 Weighted Median
+
+Now each point has:
+
+```text
+pointPosition
+pointWeight
+```
+
+Objective:
+
+```math
+\sum_i
+\mathrm{pointWeight}_i
+\cdot
+\left|
+\mathrm{meetingPosition}
+-
+\mathrm{pointPosition}_i
+\right|
+```
+
+Interpret:
+
+```text
+pointWeight = 3
+
+behaves conceptually like
+
+3 copies of that point
+```
+
+### Example
+
+```text
+positions = [1,3,7]
+weights   = [1,1,3]
+```
+
+Conceptually:
+
+```text
+[1,3,7,7,7]
+```
+
+Median:
+
+```text
+7
+```
+
+So weighted median:
+
+```text
+7
+```
+
+### Efficient Recognition
+
+Do not expand the points.
+
+Instead:
+
+```text
+sort by position
+→ prefix / cumulative weight
+→ find the half-weight crossing
+```
+
+---
+
+## 1.15 Manhattan Distance Separability
+
+For one point:
+
+```text
+(pointX, pointY)
+```
+
+and a meeting point:
+
+```text
+(meetingX, meetingY)
+```
+
+Manhattan distance is:
+
+```math
+\left|
+\mathrm{meetingX}
+-
+\mathrm{pointX}
+\right|
++
+\left|
+\mathrm{meetingY}
+-
+\mathrm{pointY}
+\right|
+```
+
+For many points:
+
+```math
+\sum_i
+\left(
+\left|
+\mathrm{meetingX}
+-
+\mathrm{pointX}_i
+\right|
++
+\left|
+\mathrm{meetingY}
+-
+\mathrm{pointY}_i
+\right|
+\right)
+```
+
+Split the sum:
+
+```math
+=
+\sum_i
+\left|
+\mathrm{meetingX}
+-
+\mathrm{pointX}_i
+\right|
++
+\sum_i
+\left|
+\mathrm{meetingY}
+-
+\mathrm{pointY}_i
+\right|
 ```
 
 So:
 
 ```text
-steps
-= (4-1)+2
-= 3+2
-= 5
+x-coordinate problem
+and
+y-coordinate problem
+are independent
 ```
 
-Matches the reverse greedy dry run.
-
----
-
-## 4.10 Why the Binary Formula Makes Sense
-
-`×2`:
+Therefore:
 
 ```text
-append a 0 bit
+meetingX
+=
+median of x-coordinates
+
+meetingY
+=
+median of y-coordinates
 ```
 
-`+1`:
+### Tiny Example
+
+Points:
 
 ```text
-introduce a required 1
+(1,1)
+(3,4)
+(7,2)
 ```
 
-To construct:
+X values:
 
 ```text
-b_k b_(k-1) ... b_0
+[1,3,7]
+→ median = 3
 ```
 
-from the most-significant bit:
+Y values:
 
 ```text
-for each next bit:
-    shift left (×2)
-
-if the new bit is 1:
-    +1
+[1,4,2]
+→ sorted [1,2,4]
+→ median = 2
 ```
 
-This constructs exactly the target with no wasted operations.
-
----
-
-## 4.11 Reverse Greedy Algorithm
+Optimal meeting point:
 
 ```text
-steps = 0
-
-while y > 0:
-
-    if y is odd:
-        y--
-    else:
-        y /= 2
-
-    steps++
+(3,2)
 ```
 
 ---
 
-## 4.12 C++17 — Reverse Greedy
+## 1.16 Overflow / `long long`
+
+These notes use:
+
+```cpp
+long long
+```
+
+in the C++ templates as requested.
+
+A signed `long long` is roughly safe up to:
+
+```text
+9.22 * 10^18
+```
+
+### Example — Product
+
+```text
+10^9 * 10^9
+=
+10^18
+```
+
+One such product fits in `long long`.
+
+But always check the **sum** too.
+
+Example:
+
+```text
+N = 100000
+
+each contribution ≈ 10^18
+```
+
+Worst-case sum would be much larger than `long long`.
+
+So the code templates below assume:
+
+```text
+the problem guarantees
+the final answer and comparator products
+fit in long long
+```
+
+If the actual constraints do not guarantee that, a wider integer type is required.
+
+### Safe Contest Habit
+
+Before coding:
+
+```text
+maximum single term
+×
+maximum number of terms
+```
+
+Estimate whether the final answer fits.
+
+---
+
+## 1.17 Quick Greedy Proof Checklist
+
+```text
+1. What exactly is minimized / maximized?
+
+2. What must stay feasible?
+
+3. What is the greedy local choice?
+
+4. Can I compare only two choices?
+
+5. Which terms remain unchanged?
+
+6. Can I subtract the two local contributions?
+
+7. Can I group / factor the result?
+
+8. What signs do the factors have?
+
+9. Does this imply a sorting order?
+
+10. Did a ratio appear?
+    → cross multiply.
+
+11. Is forward reasoning ambiguous?
+    → reverse the operations.
+
+12. Is the objective sum of absolute distances?
+    → median.
+
+13. Is it weighted?
+    → weighted median.
+
+14. Is it 2D Manhattan?
+    → separate x and y.
+```
+
+---
+
+# 2. Minimum Dot Product — Rearrangement
+
+## 2.1 What It Asks
+
+Given:
+
+```text
+firstValues
+secondValues
+```
+
+rearrange pairings to minimize:
+
+```text
+sum(
+    firstValues[index]
+    *
+    secondValues[index]
+)
+```
+
+---
+
+## 2.2 Concept Simplified
+
+For minimum:
+
+```text
+small from one array
+pairs with
+large from the other
+```
+
+Therefore:
+
+```text
+firstValues  ascending
+secondValues descending
+```
+
+---
+
+## 2.3 Tiny Example First
+
+```text
+firstValues  = [1,2,3]
+secondValues = [1,2,3]
+```
+
+Same order:
+
+```text
+1*1 + 2*2 + 3*3
+=
+14
+```
+
+Opposite order:
+
+```text
+1*3 + 2*2 + 3*1
+=
+10
+```
+
+So opposite order is better for minimization.
+
+---
+
+## 2.4 Local Variables
+
+Assume:
+
+```text
+smallerFirstValue <= largerFirstValue
+
+smallerSecondValue <= largerSecondValue
+```
+
+Same-order contribution:
+
+```text
+sameOrderContribution
+=
+smallerFirstValue * smallerSecondValue
++
+largerFirstValue * largerSecondValue
+```
+
+Crossed contribution:
+
+```text
+crossedContribution
+=
+smallerFirstValue * largerSecondValue
++
+largerFirstValue * smallerSecondValue
+```
+
+We want to prove:
+
+```text
+crossedContribution
+<=
+sameOrderContribution
+```
+
+---
+
+## 2.5 Proof — Step by Step
+
+Start:
+
+```text
+sameOrderContribution
+-
+crossedContribution
+```
+
+Substitute:
+
+```text
+=
+smallerFirstValue * smallerSecondValue
++
+largerFirstValue * largerSecondValue
+-
+smallerFirstValue * largerSecondValue
+-
+largerFirstValue * smallerSecondValue
+```
+
+Group:
+
+```text
+=
+largerFirstValue * largerSecondValue
+-
+largerFirstValue * smallerSecondValue
+-
+smallerFirstValue * largerSecondValue
++
+smallerFirstValue * smallerSecondValue
+```
+
+Factor:
+
+```text
+=
+largerFirstValue
+*
+(largerSecondValue - smallerSecondValue)
+
+-
+smallerFirstValue
+*
+(largerSecondValue - smallerSecondValue)
+```
+
+Factor again:
+
+```text
+sameOrderContribution
+-
+crossedContribution
+
+=
+(largerFirstValue - smallerFirstValue)
+*
+(largerSecondValue - smallerSecondValue)
+```
+
+Both factors are non-negative:
+
+```text
+largerFirstValue - smallerFirstValue >= 0
+
+largerSecondValue - smallerSecondValue >= 0
+```
+
+Therefore:
+
+```text
+sameOrderContribution
+-
+crossedContribution
+>=
+0
+```
+
+Hence:
+
+```text
+sameOrderContribution
+>=
+crossedContribution
+```
+
+So crossed/opposite pairing is safe for minimization.
+
+---
+
+## 2.6 Same Derivation With Numbers
+
+Use:
+
+```text
+smallerFirstValue  = 2
+largerFirstValue   = 5
+
+smallerSecondValue = 3
+largerSecondValue  = 7
+```
+
+Same:
+
+```text
+2*3 + 5*7
+=
+41
+```
+
+Crossed:
+
+```text
+2*7 + 5*3
+=
+29
+```
+
+Difference:
+
+```text
+41 - 29
+=
+12
+```
+
+Factored proof:
+
+```text
+(5-2)*(7-3)
+
+=
+3*4
+
+=
+12
+```
+
+Same result.
+
+---
+
+## 2.7 Why This Proves the Whole Array
+
+Fix:
+
+```text
+firstValues
+```
+
+ascending.
+
+Whenever `secondValues` has a pair aligned in the same direction, swap that pair.
+
+ASCII:
+
+```text
+before:
+
+smallFirst -------- smallSecond
+largeFirst -------- largeSecond
+
+after:
+
+smallFirst -------- largeSecond
+largeFirst -------- smallSecond
+```
+
+The local proof says the answer cannot increase.
+
+Repeat until `secondValues` is descending.
+
+Thus:
+
+```text
+MIN → opposite order
+MAX → same order
+```
+
+---
+
+## 2.8 Dry Run
+
+```text
+firstValues
+=
+[4,1,3]
+
+secondValues
+=
+[2,5,1]
+```
+
+Sort:
+
+```text
+firstValues
+=
+[1,3,4]
+
+secondValues
+=
+[5,2,1]
+```
+
+Answer:
+
+```text
+1*5 + 3*2 + 4*1
+
+=
+5 + 6 + 4
+
+=
+15
+```
+
+---
+
+## 2.9 Algorithm + C++17
+
+```text
+sort firstValues ascending
+sort secondValues descending
+sum pair products
+```
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2426,149 +1751,735 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    unsigned long long y;
-    cin >> y;
+    int numberOfValues;
+    cin >> numberOfValues;
 
-    long long steps = 0;
+    vector<long long> firstValues(numberOfValues);
+    vector<long long> secondValues(numberOfValues);
 
-    while (y > 0) {
-        if (y & 1ULL)
-            --y;
-        else
-            y >>= 1;
+    for (long long& value : firstValues)
+        cin >> value;
 
-        ++steps;
+    for (long long& value : secondValues)
+        cin >> value;
+
+    sort(firstValues.begin(), firstValues.end());
+    sort(secondValues.rbegin(), secondValues.rend());
+
+    long long minimumDotProduct = 0;
+
+    for (int index = 0; index < numberOfValues; ++index) {
+        minimumDotProduct +=
+            firstValues[index] * secondValues[index];
     }
-
-    cout << steps << '\n';
 }
+```
+
+Complexity:
+
+```text
+O(N log N)
 ```
 
 ---
 
-## 4.13 C++17 — Bit Formula
+## 2.10 Recognition / Don't Memorize
+
+Recognize:
+
+```text
+two arrays
++
+rearrange
++
+sum of products
+```
+
+Remember the proof:
+
+```text
+same - crossed
+=
+(largerFirst-smallerFirst)
+*
+(largerSecond-smallerSecond)
+>= 0
+```
+
+Not just the sorting direction.
+
+---
+
+# 3. Score–Decay–Time Scheduling
+
+## 3.1 What It Asks
+
+Each job has:
+
+```text
+initialScore
+decayPerUnitTime
+timeNeeded
+```
+
+If it finishes at `completionTime`:
+
+```text
+finalScore
+=
+initialScore
+-
+decayPerUnitTime * completionTime
+```
+
+Choose the order maximizing total score.
+
+---
+
+## 3.2 Tiny Example
+
+First job:
+
+```text
+firstInitialScore = 10
+firstDecayPerTime = 1
+firstTimeNeeded   = 2
+```
+
+Second job:
+
+```text
+secondInitialScore = 5
+secondDecayPerTime = 2
+secondTimeNeeded   = 3
+```
+
+### First → Second
+
+```text
+first completion = 2
+first score      = 10 - 1*2 = 8
+
+second completion = 2+3 = 5
+second score      = 5 - 2*5 = -5
+
+total = 3
+```
+
+### Second → First
+
+```text
+second completion = 3
+second score      = 5 - 2*3 = -1
+
+first completion = 3+2 = 5
+first score      = 10 - 1*5 = 5
+
+total = 4
+```
+
+So second job should be earlier.
+
+---
+
+## 3.3 Greedy Claim
+
+Sort by:
+
+```text
+decayPerUnitTime / timeNeeded
+```
+
+descending.
+
+Now derive it.
+
+---
+
+## 3.4 Two-Job Derivation
+
+First → Second:
+
+```text
+scoreFirstThenSecond
+
+=
+firstInitialScore
+-
+firstDecayPerTime * firstTimeNeeded
+
++
+secondInitialScore
+-
+secondDecayPerTime
+*
+(firstTimeNeeded + secondTimeNeeded)
+```
+
+Second → First:
+
+```text
+scoreSecondThenFirst
+
+=
+secondInitialScore
+-
+secondDecayPerTime * secondTimeNeeded
+
++
+firstInitialScore
+-
+firstDecayPerTime
+*
+(secondTimeNeeded + firstTimeNeeded)
+```
+
+Prefer first job first if:
+
+```text
+scoreFirstThenSecond
+>=
+scoreSecondThenFirst
+```
+
+Expand both sides and cancel common terms:
+
+```text
+-firstDecayPerTime * firstTimeNeeded
+```
+
+appears on both sides.
+
+Also:
+
+```text
+-secondDecayPerTime * secondTimeNeeded
+```
+
+appears on both sides.
+
+Both initial scores also cancel.
+
+Remain:
+
+```text
+-secondDecayPerTime * firstTimeNeeded
+
+>=
+
+-firstDecayPerTime * secondTimeNeeded
+```
+
+Multiply by `-1` and reverse the inequality:
+
+```text
+secondDecayPerTime * firstTimeNeeded
+
+<=
+
+firstDecayPerTime * secondTimeNeeded
+```
+
+Equivalent:
+
+```text
+firstDecayPerTime * secondTimeNeeded
+
+>=
+
+secondDecayPerTime * firstTimeNeeded
+```
+
+Since times are positive:
+
+```text
+firstDecayPerTime / firstTimeNeeded
+
+>=
+
+secondDecayPerTime / secondTimeNeeded
+```
+
+That is the comparator.
+
+---
+
+## 3.5 Example Inside the Comparator
+
+```text
+first ratio
+=
+1/2
+=
+0.5
+
+second ratio
+=
+2/3
+≈
+0.667
+```
+
+So second comes first.
+
+Cross multiplication:
+
+```text
+firstDecayPerTime * secondTimeNeeded
+=
+1*3
+=
+3
+
+secondDecayPerTime * firstTimeNeeded
+=
+2*2
+=
+4
+
+3 < 4
+```
+
+Again, second comes first.
+
+---
+
+## 3.6 Exchange Proof for the Whole Schedule
+
+If adjacent jobs violate descending ratio order:
+
+```text
+smaller ratio first
+larger ratio second
+```
+
+swap them.
+
+All jobs before the pair are unchanged.
+
+All jobs after the pair see the same combined duration:
+
+```text
+firstTimeNeeded + secondTimeNeeded
+```
+
+So only the local pair contribution changes.
+
+The two-job proof shows the swap is non-worse.
+
+Repeat until all ratios are descending.
+
+---
+
+## 3.7 ASCII
+
+```text
+larger decay/time
+=
+more urgent
+
+large ratio -------------------- small ratio
+EARLY                                LATE
+```
+
+---
+
+## 3.8 Dry Run
+
+Three jobs:
+
+```text
+Job A: initial=10, decay=1, time=2
+Job B: initial=5,  decay=2, time=3
+Job C: initial=20, decay=1, time=1
+```
+
+Ratios:
+
+```text
+A = 1/2 = 0.5
+B = 2/3 ≈ 0.667
+C = 1/1 = 1
+```
+
+Order:
+
+```text
+C → B → A
+```
+
+Completion times:
+
+```text
+C = 1
+B = 1+3 = 4
+A = 1+3+2 = 6
+```
+
+Scores:
+
+```text
+C = 20 - 1*1 = 19
+B = 5  - 2*4 = -3
+A = 10 - 1*6 = 4
+```
+
+Total:
+
+```text
+19 - 3 + 4
+=
+20
+```
+
+---
+
+## 3.9 Algorithm + C++17
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
+struct Job {
+    long long initialScore;
+    long long decayPerUnitTime;
+    long long timeNeeded;
+};
+
+bool comesEarlier(
+    const Job& firstJob,
+    const Job& secondJob
+) {
+    long long firstCrossProduct =
+        firstJob.decayPerUnitTime * secondJob.timeNeeded;
+
+    long long secondCrossProduct =
+        secondJob.decayPerUnitTime * firstJob.timeNeeded;
+
+    if (firstCrossProduct != secondCrossProduct)
+        return firstCrossProduct > secondCrossProduct;
+
+    return firstJob.timeNeeded < secondJob.timeNeeded;
+}
+
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    unsigned long long y;
-    cin >> y;
+    int numberOfJobs;
+    cin >> numberOfJobs;
 
-    if (y == 0) {
-        cout << 0 << '\n';
-        return 0;
+    vector<Job> jobs(numberOfJobs);
+
+    for (Job& job : jobs) {
+        cin >> job.initialScore
+            >> job.decayPerUnitTime
+            >> job.timeNeeded;
     }
 
-    int bitLength =
-        64 - __builtin_clzll(y);
+    sort(jobs.begin(), jobs.end(), comesEarlier);
 
-    int ones =
-        __builtin_popcountll(y);
+    long long elapsedTime = 0;
+    long long totalScore = 0;
 
-    long long answer =
-        (bitLength - 1LL) + ones;
+    for (const Job& job : jobs) {
+        elapsedTime += job.timeNeeded;
 
-    cout << answer << '\n';
+        totalScore +=
+            job.initialScore
+            - job.decayPerUnitTime * elapsedTime;
+    }
+
+    cout << totalScore << '\n';
+    return 0;
 }
 ```
 
----
-
-## 4.14 Complexity
-
-Reverse simulation:
+Complexity:
 
 ```text
-O(log y)
-```
-
-because division by 2 repeatedly shrinks the number.
-
-Space:
-
-```text
-O(1)
+O(N log N)
 ```
 
 ---
 
-## 4.15 Recognition Model
+## 3.10 Recognition / Don't Memorize
 
 When you see:
 
 ```text
-start from small x
+order jobs
 +
-operations increase value
+time
 +
-target huge
-+
-forward choice seems ambiguous
+per-time penalty / decay
 ```
 
-ask:
+compare **two jobs**.
+
+Do not memorize the ratio before deriving it.
+
+Mental meaning:
 
 ```text
-Can I reverse the operations?
+high decay
++
+short time
+=
+dangerous to delay
 ```
-
-Especially when one operation becomes:
-
-```text
-division
-```
-
-backward.
 
 ---
 
-## 4.16 Don't-Memorize Model
+# 4. Minimum Operations From 0 to Target
 
-Do not memorize only:
+## 4.1 What It Asks
+
+Start:
 
 ```text
-odd -> -1
-even -> /2
+currentValue = 0
 ```
 
-Understand:
+Operations:
+
+```text
+currentValue = currentValue + 1
+currentValue = 2 * currentValue
+```
+
+Reach:
+
+```text
+targetValue
+```
+
+in minimum operations.
+
+---
+
+## 4.2 Why Reverse Greedy
+
+Forward choice can be unclear.
+
+Backward:
 
 ```text
 odd target
-cannot come from doubling
-→ +1 was forced
+→ cannot be produced by doubling
+→ previous operation was +1
+→ subtract 1
 
 even target
-can undo a doubling
-→ /2 removes one binary shift
+→ undo doubling
+→ divide by 2
 ```
 
 ---
 
-# 5. Pattern 4 — Median Minimizes Sum of Absolute Distances
-
-## 5.1 What the Model Asks
-
-Given points on a line:
+## 4.3 Dry Run — Target 12
 
 ```text
-x1,x2,...,xn
+12 even → 6
+6  even → 3
+3  odd  → 2
+2  even → 1
+1  odd  → 0
 ```
 
-Choose one point `x` minimizing:
+Count:
+
+```text
+5
+```
+
+Forward reconstruction:
+
+```text
+0 → 1 → 2 → 3 → 6 → 12
+
++1
+×2
++1
+×2
+×2
+```
+
+---
+
+## 4.4 ASCII
+
+```text
+FORWARD                     BACKWARD
+
+0                           12
+|                            |
++1                           /2
+v                            v
+1                            6
+|                            |
+×2                           /2
+v                            v
+2                            3
+|                            |
++1                           -1
+v                            v
+3                            2
+|                            |
+×2                           /2
+v                            v
+6                            1
+|                            |
+×2                           -1
+v                            v
+12                           0
+```
+
+---
+
+## 4.5 Binary Interpretation
+
+```text
+12
+=
+1100
+```
+
+Build:
+
+```text
+0
+→ +1  = 1
+→ ×2  = 10
+→ +1  = 11
+→ ×2  = 110
+→ ×2  = 1100
+```
+
+So for positive target:
+
+```text
+numberOfDoublings
+=
+bitLength(targetValue) - 1
+
+numberOfIncrements
+=
+popcount(targetValue)
+```
+
+Therefore:
+
+```text
+minimumOperations
+=
+bitLength(targetValue) - 1
++
+popcount(targetValue)
+```
+
+For 12:
+
+```text
+bitLength = 4
+popcount  = 2
+
+(4-1)+2
+=
+5
+```
+
+---
+
+## 4.6 Algorithm + C++17
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    unsigned long long targetValue;
+    cin >> targetValue;
+
+    long long minimumOperations = 0;
+
+    while (targetValue > 0) {
+        if (targetValue & 1ULL)
+            --targetValue;
+        else
+            targetValue >>= 1;
+
+        ++minimumOperations;
+    }
+
+    cout << minimumOperations << '\n';
+    return 0;
+}
+```
+
+Complexity:
+
+```text
+O(log targetValue)
+```
+
+---
+
+## 4.7 Recognition / Don't Memorize
+
+Recognize:
+
+```text
+forward operations grow value
++
+target is huge
++
+choice is unclear
+```
+
+Try reversing.
+
+Remember the reason:
+
+```text
+odd
+→ doubling impossible
+
+even
+→ /2 removes one doubling
+```
+
+---
+
+# 5. Median — Sum of Absolute Distances
+
+## 5.1 What It Asks
+
+Choose:
+
+```text
+meetingPosition
+```
+
+to minimize:
 
 ```math
-F(x)
-=
-\sum_i |x-x_i|
+\sum_i
+\left|
+\mathrm{meetingPosition}
+-
+\mathrm{pointPosition}_i
+\right|
 ```
 
-This is the classical median form shown on the board.
+Answer:
+
+```text
+median
+```
 
 ---
 
@@ -2577,215 +2488,174 @@ This is the classical median form shown on the board.
 Points:
 
 ```text
-1,3,7
+[1,3,7]
 ```
 
-Try:
+Costs:
 
 ```text
-x=1:
-|1-1|+|1-3|+|1-7|
-= 0+2+6
-= 8
+meeting at 1:
+0+2+6 = 8
+
+meeting at 3:
+2+0+4 = 6
+
+meeting at 7:
+6+4+0 = 10
 ```
+
+Minimum:
 
 ```text
-x=3:
-|3-1|+|3-3|+|3-7|
-= 2+0+4
-= 6
+meetingPosition = 3
 ```
-
-```text
-x=7:
-|7-1|+|7-3|+|7-7|
-= 6+4+0
-= 10
-```
-
-Best:
-
-```text
-x=3
-```
-
-the median.
 
 ---
 
-## 5.3 Step / Slope Derivation
+## 5.3 Derivation
 
-Suppose `x` moves one unit to the right.
+Move the meeting position one unit right.
 
 Let:
 
 ```text
-L = number of points left of x
-R = number of points right of x
+numberOfPointsOnLeft
+numberOfPointsOnRight
 ```
 
-For every left point:
+Each left distance increases by 1:
 
 ```text
-distance increases by 1
++numberOfPointsOnLeft
 ```
 
-Total:
+Each right distance decreases by 1:
 
 ```text
-+L
+-numberOfPointsOnRight
 ```
 
-For every right point:
+Therefore:
 
 ```text
-distance decreases by 1
-```
-
-Total:
-
-```text
--R
-```
-
-So net cost change is:
-
-```math
-F(x+1)-F(x)
+costChangeWhenMovingRight
 =
-L-R
+numberOfPointsOnLeft
+-
+numberOfPointsOnRight
 ```
 
 ---
 
-## 5.4 Inline Example of the Slope Formula
+## 5.4 Inline Example
 
 Points:
 
 ```text
-1,3,7
+[1,3,7]
 ```
 
-Take:
+At meeting position 2:
 
 ```text
-x=2
-```
-
-Left:
-
-```text
+left:
 [1]
+→ 1 point
 
-L=1
-```
-
-Right:
-
-```text
+right:
 [3,7]
-
-R=2
+→ 2 points
 ```
 
-Formula:
+Predicted change when moving to 3:
 
 ```text
-F(3)-F(2)
-= L-R
-= 1-2
-= -1
+1 - 2
+=
+-1
 ```
 
-Calculate directly:
+Actual:
 
 ```text
-F(2)
-= |2-1|+|2-3|+|2-7|
-= 1+1+5
-= 7
-```
+cost(2)
+=
+1+1+5
+=
+7
 
-```text
-F(3)
-= 2+0+4
-= 6
-```
+cost(3)
+=
+2+0+4
+=
+6
 
-Actual change:
-
-```text
 6-7
-= -1
+=
+-1
 ```
 
 Matches.
 
 ---
 
-## 5.5 Why Median Is the Turning Point
+## 5.5 Why Median Is Optimal
 
-Before the median:
-
-```text
-more points lie to the right
-```
-
-Therefore:
+Before median:
 
 ```text
-R > L
+more points on right
+→ moving right decreases cost
 ```
 
-so:
+After median:
 
 ```text
-L-R < 0
+more points on left
+→ moving right increases cost
 ```
 
-Moving right decreases cost.
-
-After the median:
-
-```text
-L > R
-```
-
-so moving right increases cost.
-
-Therefore:
-
-```text
-minimum occurs where left/right balance
-```
-
-which is the median region.
+Therefore the turning point is the median region.
 
 ---
 
-## 5.6 ASCII Cost Graph
+## 5.6 Even Count
 
-Example points:
+Example:
 
 ```text
-1,3,5,8
+[1,3,5,8]
 ```
 
-Cost:
+Median interval:
 
 ```text
-F(x)
+[3,5]
+```
+
+Every integer:
+
+```text
+3,4,5
+```
+
+is optimal.
+
+Count:
+
+```text
+upperMedian - lowerMedian + 1
+
 =
-|x-1|
-+
-|x-3|
-+
-|x-5|
-+
-|x-8|
+5 - 3 + 1
+
+=
+3
 ```
 
-Shape:
+---
+
+## 5.7 ASCII
 
 ```text
 cost
@@ -2796,197 +2666,15 @@ cost
  |   \________
  |            \
  |             \
- +------------------------> x
-      1   3   5      8
-
-          <--->
-       minimum interval
-          [3,5]
-```
-
-With an even number of points, the bottom may be flat.
-
----
-
-## 5.7 Odd Number of Points
-
-Example:
-
-```text
-[1,3,8]
-```
-
-Middle:
-
-```text
-3
-```
-
-Unique median:
-
-```text
-x=3
-```
-
-For integer locations:
-
-```text
-one optimal x
+ +----------------------> meetingPosition
+       3      5
+       <------>
+      minimum region
 ```
 
 ---
 
-## 5.8 Even Number of Points
-
-Example:
-
-```text
-[1,3,5,8]
-```
-
-Middle values:
-
-```text
-3 and 5
-```
-
-Every real:
-
-```text
-x in [3,5]
-```
-
-is optimal.
-
-For integer `x`, optimal values:
-
-```text
-3,4,5
-```
-
-Number of integer minimizers:
-
-```text
-5-3+1
-
-= 3
-```
-
----
-
-## 5.9 Number of Optimal Integer Solutions
-
-Sorted array.
-
-Let:
-
-```text
-leftMedian  = x[(n-1)/2]
-rightMedian = x[n/2]
-```
-
-Then all integer minimizers are:
-
-```text
-leftMedian
-...
-rightMedian
-```
-
-Count:
-
-```math
-rightMedian-leftMedian+1
-```
-
-### Example
-
-```text
-[1,3,5,8]
-```
-
-Then:
-
-```text
-leftMedian = 3
-rightMedian = 5
-```
-
-Count:
-
-```text
-5-3+1
-= 3
-```
-
----
-
-## 5.10 Minimum Cost
-
-Choose any median, e.g.:
-
-```text
-m = x[n/2]
-```
-
-Then:
-
-```math
-minimumCost
-=
-\sum_i |x_i-m|
-```
-
-For even `n`, every point in the median interval produces the same minimum.
-
----
-
-## 5.11 ASCII Number-Line Proof
-
-```text
-points:
-
-----●--------●--------●-------------●----
-    1        3        5             8
-
-choose x:
-
-before 3:
-more weight/points on right
-→ moving right helps
-
-between 3 and 5:
-same amount left/right
-→ cost flat
-
-after 5:
-more points on left
-→ moving right hurts
-```
-
----
-
-## 5.12 Algorithm
-
-```text
-1. Sort points.
-
-2. leftMedian  = x[(n-1)/2]
-   rightMedian = x[n/2]
-
-3. One optimal location:
-      rightMedian
-
-4. Minimum cost:
-      Σ |x[i]-rightMedian|
-
-5. Number of optimal integer locations:
-      rightMedian-leftMedian+1
-```
-
----
-
-## 5.13 C++17
+## 5.8 Algorithm + C++17
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2996,174 +2684,100 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int n;
-    cin >> n;
+    int numberOfPoints;
+    cin >> numberOfPoints;
 
-    vector<long long> x(n);
+    vector<long long> pointPositions(numberOfPoints);
 
-    for (auto& v : x)
-        cin >> v;
+    for (long long& pointPosition : pointPositions)
+        cin >> pointPosition;
 
-    sort(x.begin(), x.end());
+    sort(pointPositions.begin(), pointPositions.end());
 
-    long long leftMedian =
-        x[(n - 1) / 2];
+    long long lowerMedian =
+        pointPositions[(numberOfPoints - 1) / 2];
 
-    long long rightMedian =
-        x[n / 2];
+    long long upperMedian =
+        pointPositions[numberOfPoints / 2];
 
-    long long chosen =
-        rightMedian;
+    long long meetingPosition = upperMedian;
 
-    __int128 minimumCost = 0;
+    long long minimumTotalDistance = 0;
 
-    for (long long v : x) {
-        minimumCost +=
-            llabs(v - chosen);
+    for (long long pointPosition : pointPositions) {
+        minimumTotalDistance +=
+            llabs(pointPosition - meetingPosition);
     }
 
-    long long numberOfIntegerMinimizers =
-        rightMedian
-        -
-        leftMedian
-        +
-        1;
+    long long numberOfOptimalIntegerPositions =
+        upperMedian - lowerMedian + 1;
 
-    // Print values as required by the actual problem.
+    cout << minimumTotalDistance << '\n';
+    cout << numberOfOptimalIntegerPositions << '\n';
+    return 0;
 }
 ```
 
----
-
-## 5.14 Complexity
+Complexity:
 
 ```text
-sorting:
-O(N log N)
-
-cost:
-O(N)
-
-total:
 O(N log N)
 ```
 
-If values are already sorted:
-
-```text
-O(N)
-```
-
 ---
 
-## 5.15 Recognition Model
+## 5.9 Recognition / Don't Memorize
 
-When you see:
+Recognize:
 
 ```text
-choose one location
-+
-cost is sum of absolute distances
+sum of absolute distances
+→ median
 ```
 
-think:
+Remember why:
 
 ```text
-median
-```
-
-Also remember:
-
-```text
-even N
-→ interval of minimizers
-```
-
----
-
-## 5.16 Don't-Memorize Model
-
-Do not memorize:
-
-```text
-answer = middle element
-```
-
-Remember the slope:
-
-```text
-move x right by 1
+move right:
 
 cost change
 =
-#left - #right
+points on left
+-
+points on right
 ```
-
-The sign changes at the median.
-
-That is why median appears.
 
 ---
 
-# 6. Pattern 5 — Weighted Median
+# 6. Weighted Median
 
-## 6.1 What the Variant Asks
+## 6.1 What It Asks
 
-Each point has:
-
-```text
-position x_i
-weight k_i
-```
-
-Cost:
+Minimize:
 
 ```math
-F(x)
-=
-\sum_i k_i|x-x_i|
-```
-
-Example from the lecture form:
-
-```text
-x_i:
-1, 3, 7
-
-k_i:
-1, 1, 3
+\sum_i
+\mathrm{pointWeight}_i
+\cdot
+\left|
+\mathrm{meetingPosition}
+-
+\mathrm{pointPosition}_i
+\right|
 ```
 
 ---
 
-## 6.2 Simplest Mental Model
+## 6.2 Concept Simplified
 
-Weight means:
-
-```text
-importance / multiplicity
-```
-
-A point:
+Example:
 
 ```text
-(x=7, weight=3)
+positions = [1,3,7]
+weights   = [1,1,3]
 ```
 
-behaves conceptually like:
-
-```text
-7,7,7
-```
-
-So:
-
-```text
-x = [1,3,7]
-k = [1,1,3]
-```
-
-becomes conceptually:
+Conceptual expansion:
 
 ```text
 [1,3,7,7,7]
@@ -3183,456 +2797,289 @@ Therefore weighted median:
 
 ---
 
-## 6.3 Verify With Actual Cost
+## 6.3 Verify
 
-At:
-
-```text
-x=3
-```
+Meeting at 3:
 
 ```text
-1×|3-1|
+1*|3-1|
 +
-1×|3-3|
+1*|3-3|
 +
-3×|3-7|
+3*|3-7|
+
+=
+2+0+12
+=
+14
 ```
 
-```text
-= 1×2 + 1×0 + 3×4
-```
+Meeting at 7:
 
 ```text
-= 2+0+12
-```
-
-```text
-= 14
-```
-
-At:
-
-```text
-x=7
-```
-
-```text
-1×|7-1|
+1*6
 +
-1×|7-3|
+1*4
 +
-3×|7-7|
+3*0
+
+=
+10
 ```
 
-```text
-= 6+4+0
-```
-
-```text
-= 10
-```
-
-So heavier point `7` pulls the optimum to the right.
+So 7 is better.
 
 ---
 
-## 6.4 Weighted Slope Derivation
+## 6.4 Weighted Balance Proof
 
-Let:
-
-```text
-W_L
-=
-total weight left of x
-
-W_R
-=
-total weight right of x
-```
-
-Move `x` one unit right.
-
-Left-weight distances increase by:
-
-```text
-W_L
-```
-
-Right-weight distances decrease by:
-
-```text
-W_R
-```
-
-Therefore:
-
-```math
-F(x+1)-F(x)
-=
-W_L-W_R
-```
-
-This is the same proof as ordinary median, with:
+Replace:
 
 ```text
 number of points
 ```
 
-replaced by:
+with:
 
 ```text
 total weight
 ```
 
----
+Moving right changes cost according to:
 
-## 6.5 Weighted Median Condition
+```text
+weightOnLeft
+-
+weightOnRight
+```
 
-Total weight:
+Thus the optimum is where total weight is balanced.
 
-```math
-W
+For positive integer weights:
+
+```text
+weighted median
 =
-\sum_i k_i
-```
-
-For positive integer weights, one convenient weighted median is:
-
-```text
 first position where cumulative weight
-reaches at least ceil(W/2)
+reaches at least half the total weight
 ```
 
 ---
 
-## 6.6 Inline Prefix Example
+## 6.5 Prefix Example
 
 ```text
-positions:
-1,3,7
-
-weights:
-1,1,3
-```
-
-Total:
-
-```text
-W
-= 1+1+3
-= 5
-```
-
-Need at least:
-
-```text
-ceil(5/2)
-= 3
-```
-
-Prefix weights:
-
-```text
-at 1:
-1
-
-at 3:
-2
-
-at 7:
+totalWeight
+=
+1+1+3
+=
 5
+
+requiredPrefixWeight
+=
+ceil(5/2)
+=
+3
 ```
 
-First prefix reaching `3`:
+Cumulative:
 
 ```text
-7
+position 1 → 1
+position 3 → 2
+position 7 → 5
 ```
 
-So:
+First cumulative value `>= 3`:
 
 ```text
-weighted median = 7
+position 7
 ```
 
 ---
 
-## 6.7 ASCII Visualization
-
-```text
-position:
-----1----------3----------------7----
-
-weight:
-    *          *               ***
-
-conceptual copies:
-
-[1, 3, 7, 7, 7]
-       ^
-      median = 7
-```
-
----
-
-## 6.8 Why We Do Not Actually Expand
-
-Weights may be huge:
-
-```text
-k_i = 10^9
-```
-
-Expanding into a billion copies is impossible.
-
-Instead:
-
-```text
-sort (x_i,k_i)
-→ prefix sum of k_i
-→ find half-total crossing
-```
-
----
-
-## 6.9 Algorithm
-
-```text
-1. Sort pairs by position x.
-
-2. totalWeight = Σ k_i.
-
-3. target = ceil(totalWeight/2).
-
-4. Walk left to right:
-      prefix += k_i
-
-5. First x_i with:
-      prefix >= target
-   is a weighted median.
-
-6. Compute:
-      Σ k_i * |x_i-median|
-```
-
----
-
-## 6.10 C++17
+## 6.6 Algorithm + C++17
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
+struct WeightedPoint {
+    long long pointPosition;
+    long long pointWeight;
+};
+
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int n;
-    cin >> n;
+    int numberOfPoints;
+    cin >> numberOfPoints;
 
-    vector<pair<long long,long long>> p(n);
+    vector<WeightedPoint> points(numberOfPoints);
 
-    for (auto& [x, weight] : p) {
-        cin >> x >> weight;
+    for (WeightedPoint& point : points) {
+        cin >> point.pointPosition
+            >> point.pointWeight;
     }
 
-    sort(p.begin(), p.end());
+    sort(
+        points.begin(),
+        points.end(),
+        [](const WeightedPoint& firstPoint,
+           const WeightedPoint& secondPoint) {
+            return firstPoint.pointPosition
+                 < secondPoint.pointPosition;
+        }
+    );
 
     long long totalWeight = 0;
 
-    for (auto [x, weight] : p) {
-        totalWeight += weight;
-    }
+    for (const WeightedPoint& point : points)
+        totalWeight += point.pointWeight;
 
-    long long target =
+    long long requiredPrefixWeight =
         (totalWeight + 1) / 2;
 
-    long long prefix = 0;
-    long long median = 0;
+    long long currentPrefixWeight = 0;
+    long long weightedMedianPosition = 0;
 
-    for (auto [x, weight] : p) {
-        prefix += weight;
+    for (const WeightedPoint& point : points) {
+        currentPrefixWeight += point.pointWeight;
 
-        if (prefix >= target) {
-            median = x;
+        if (currentPrefixWeight >= requiredPrefixWeight) {
+            weightedMedianPosition = point.pointPosition;
             break;
         }
     }
 
-    __int128 cost = 0;
+    long long minimumWeightedDistance = 0;
 
-    for (auto [x, weight] : p) {
-        cost +=
-            (__int128)weight
-            *
-            llabs(x - median);
+    for (const WeightedPoint& point : points) {
+        minimumWeightedDistance +=
+            point.pointWeight
+            * llabs(
+                point.pointPosition
+                - weightedMedianPosition
+            );
     }
 
-    // Print as required.
+    cout << weightedMedianPosition << '\n';
+    cout << minimumWeightedDistance << '\n';
+    return 0;
 }
 ```
 
----
-
-## 6.11 Complexity
+Complexity:
 
 ```text
-sorting:
-O(N log N)
-
-prefix:
-O(N)
-
-cost:
-O(N)
-
-total:
 O(N log N)
 ```
 
 ---
 
-## 6.12 Recognition Model
-
-When you see:
+## 6.7 Recognition / Don't Memorize
 
 ```text
-Σ weight_i × |x-x_i|
+weight * absolute distance
+→ weighted median
 ```
 
-think:
+Remember:
 
 ```text
-weighted median
-```
-
-Mental conversion:
-
-```text
-weight k
-≈
-k conceptual copies
+weight
+=
+conceptual number of copies / votes
 ```
 
 ---
 
-## 6.13 Don't-Memorize Model
+# 7. Manhattan Meeting Point
 
-Ordinary median:
+## 7.1 What It Asks
 
-```text
-each point votes once
-```
-
-Weighted median:
+For points:
 
 ```text
-point i votes k_i times
+(pointX, pointY)
 ```
 
-The optimum is where approximately half of total voting weight lies on each side.
-
----
-
-# 7. Pattern 6 — Manhattan Meeting Point in 2D
-
-## 7.1 What the Model Asks
-
-There are points in 2D:
+choose:
 
 ```text
-P_i = (x_i,y_i)
+(meetingX, meetingY)
 ```
 
-Choose one meeting point:
+minimizing:
 
 ```text
-P = (x,y)
-```
-
-Minimize total Manhattan distance:
-
-```math
-\sum_i
-(
-|x-x_i|
-+
-|y-y_i|
+sum(
+    |meetingX - pointX|
+    +
+    |meetingY - pointY|
 )
 ```
 
-The lecture board also asks the natural extensions:
-
-```text
-1. Where should we meet?
-2. What is the minimum total distance?
-3. How many optimal locations exist?
-```
-
 ---
 
-## 7.2 Key Separation
+## 7.2 Key Derivation
 
 Start:
 
 ```math
-F(x,y)
+\mathrm{totalDistance}
 =
 \sum_i
-(
-|x-x_i|
+\left(
+\left|
+\mathrm{meetingX}
+-
+\mathrm{pointX}_i
+\right|
 +
-|y-y_i|
-)
+\left|
+\mathrm{meetingY}
+-
+\mathrm{pointY}_i
+\right|
+\right)
 ```
 
-Distribute the sum:
+Separate the two sums:
 
 ```math
-F(x,y)
+\mathrm{totalDistance}
 =
-\sum_i |x-x_i|
+\sum_i
+\left|
+\mathrm{meetingX}
+-
+\mathrm{pointX}_i
+\right|
 +
-\sum_i |y-y_i|
+\sum_i
+\left|
+\mathrm{meetingY}
+-
+\mathrm{pointY}_i
+\right|
 ```
 
-Define:
+The first part depends only on `meetingX`.
 
-```math
-F_x(x)
-=
-\sum_i |x-x_i|
-```
-
-and:
-
-```math
-F_y(y)
-=
-\sum_i |y-y_i|
-```
-
-Then:
-
-```math
-F(x,y)
-=
-F_x(x)+F_y(y)
-```
-
-So:
-
-```text
-x and y are independent
-```
+The second depends only on `meetingY`.
 
 Therefore:
 
 ```text
-optimal x = median of all x-coordinates
+meetingX
+=
+median of x-coordinates
 
-optimal y = median of all y-coordinates
+meetingY
+=
+median of y-coordinates
 ```
 
 ---
@@ -3642,355 +3089,121 @@ optimal y = median of all y-coordinates
 Points:
 
 ```text
-A = (1,1)
-B = (3,4)
-C = (7,2)
+(1,1)
+(3,4)
+(7,2)
 ```
 
-x-coordinates:
+X:
 
 ```text
 [1,3,7]
+→ medianX = 3
 ```
 
-Median x:
-
-```text
-3
-```
-
-y-coordinates:
+Y:
 
 ```text
 [1,4,2]
+→ sorted [1,2,4]
+→ medianY = 2
 ```
 
-Sorted:
-
-```text
-[1,2,4]
-```
-
-Median y:
-
-```text
-2
-```
-
-Optimal meeting point:
+Meeting point:
 
 ```text
 (3,2)
 ```
 
----
-
-## 7.4 Verify the Example
-
-Distance from `(3,2)` to A `(1,1)`:
+Distances:
 
 ```text
-|3-1| + |2-1|
+to (1,1):
+2+1 = 3
 
-= 2+1
+to (3,4):
+0+2 = 2
 
-= 3
-```
-
-To B `(3,4)`:
-
-```text
-|3-3| + |2-4|
-
-= 0+2
-
-= 2
-```
-
-To C `(7,2)`:
-
-```text
-|3-7| + |2-2|
-
-= 4+0
-
-= 4
+to (7,2):
+4+0 = 4
 ```
 
 Total:
 
 ```text
-3+2+4
-= 9
+9
 ```
-
-The reason this point is optimal is not trial-and-error:
-
-```text
-x=3 minimizes all horizontal distance
-y=2 minimizes all vertical distance
-```
-
-independently.
 
 ---
 
-## 7.5 ASCII City-Block Visualization
+## 7.4 ASCII
 
 ```text
 y
 ^
 |
-|          B(3,4)
-|          *
+|         Point B
+|          (3,4)
+|            *
+|            |
+|         Meeting -------- Point C
+|          (3,2)           (7,2)
+|            *
+|            |
+| Point A ---+
+|  (1,1)
 |
-|  meeting *
-|    (3,2)              C(7,2)
-|                       *
-|
-| A(1,1)
-| *
 +---------------------------------> x
 ```
 
-Manhattan movement:
-
-```text
-horizontal distance
-+
-vertical distance
-```
-
-No diagonal shortcut is used.
-
 ---
 
-## 7.6 Even Number of Points — Rectangle of Optima
+## 7.5 Even Count — Rectangle of Optima
 
-Suppose x-coordinates:
+Suppose:
 
 ```text
-[1,3,5,8]
+x median interval = [3,5]
+y median interval = [4,7]
 ```
 
-Optimal x interval:
+Every point inside:
 
 ```text
-[3,5]
-```
-
-Suppose y-coordinates:
-
-```text
-[2,4,7,9]
-```
-
-Optimal y interval:
-
-```text
-[4,7]
-```
-
-Then every point inside:
-
-```text
-x in [3,5]
-y in [4,7]
+3 <= meetingX <= 5
+4 <= meetingY <= 7
 ```
 
 is optimal.
 
-ASCII:
+Number of optimal integer points:
 
 ```text
-y
-^
-|
-|          +-------------+
-|          | optimal     |
-|          | rectangle   |
-|          +-------------+
-|
-+------------------------------> x
-           3           5
-
-vertical range:
-4 ... 7
+(upperMedianX - lowerMedianX + 1)
+*
+(upperMedianY - lowerMedianY + 1)
 ```
 
----
-
-## 7.7 Number of Optimal Integer Meeting Points
-
-For x:
+Example:
 
 ```text
-xL = lower median
-xR = upper median
-```
-
-Number of integer optimal x-values:
-
-```math
-xR-xL+1
-```
-
-For y:
-
-```text
-yL = lower median
-yR = upper median
-```
-
-Number of integer optimal y-values:
-
-```math
-yR-yL+1
-```
-
-Since choices are independent:
-
-```math
-numberOfOptimalPoints
-=
-(xR-xL+1)
-(yR-yL+1)
-```
-
----
-
-## 7.8 Inline Counting Example
-
-x interval:
-
-```text
-[3,5]
-```
-
-Integer x:
-
-```text
+x choices:
 3,4,5
-```
+→ 3
 
-Count:
-
-```text
-5-3+1
-= 3
-```
-
-y interval:
-
-```text
-[4,7]
-```
-
-Integer y:
-
-```text
+y choices:
 4,5,6,7
-```
+→ 4
 
-Count:
-
-```text
-7-4+1
-= 4
-```
-
-Total optimal integer meeting points:
-
-```text
-3×4
-= 12
-```
-
----
-
-## 7.9 Minimum Manhattan Sum
-
-Choose any optimal medians:
-
-```text
-mx
-my
-```
-
-Then:
-
-```math
-minimum
+total:
+3*4
 =
-\sum_i |x_i-mx|
-+
-\sum_i |y_i-my|
-```
-
-No 2D search is required.
-
-This is the key modeling simplification.
-
----
-
-## 7.10 ASCII Derivation
-
-```text
-2D problem:
-
-Σ ( |x-x_i| + |y-y_i| )
-
-          |
-          v
-
-split dimensions
-
-Σ |x-x_i|    +    Σ |y-y_i|
-
-     |                    |
-     v                    v
-
-1D median problem     1D median problem
-
-     |                    |
-     +---------+----------+
-               |
-               v
-
-        combine (x,y)
+12
 ```
 
 ---
 
-## 7.11 Algorithm
-
-```text
-1. Store all x-coordinates.
-2. Store all y-coordinates.
-
-3. Sort x.
-4. Sort y.
-
-5. Find lower/upper median interval
-   independently for x and y.
-
-6. One optimal point:
-      (x[n/2], y[n/2])
-
-7. Minimum distance:
-      Σ|x_i-mx|
-      +
-      Σ|y_i-my|
-
-8. Number of integer optima:
-      (xR-xL+1)
-      *
-      (yR-yL+1)
-```
-
----
-
-## 7.12 C++17
+## 7.6 Algorithm + C++17
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4000,187 +3213,134 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int n;
-    cin >> n;
+    int numberOfPoints;
+    cin >> numberOfPoints;
 
-    vector<long long> xs(n);
-    vector<long long> ys(n);
+    vector<long long> xCoordinates(numberOfPoints);
+    vector<long long> yCoordinates(numberOfPoints);
 
-    for (int i = 0; i < n; ++i) {
-        cin >> xs[i] >> ys[i];
+    for (int index = 0; index < numberOfPoints; ++index) {
+        cin >> xCoordinates[index]
+            >> yCoordinates[index];
     }
 
-    sort(xs.begin(), xs.end());
-    sort(ys.begin(), ys.end());
+    sort(xCoordinates.begin(), xCoordinates.end());
+    sort(yCoordinates.begin(), yCoordinates.end());
 
-    long long xL =
-        xs[(n - 1) / 2];
+    long long lowerMedianX =
+        xCoordinates[(numberOfPoints - 1) / 2];
 
-    long long xR =
-        xs[n / 2];
+    long long upperMedianX =
+        xCoordinates[numberOfPoints / 2];
 
-    long long yL =
-        ys[(n - 1) / 2];
+    long long lowerMedianY =
+        yCoordinates[(numberOfPoints - 1) / 2];
 
-    long long yR =
-        ys[n / 2];
+    long long upperMedianY =
+        yCoordinates[numberOfPoints / 2];
 
-    long long mx = xR;
-    long long my = yR;
+    long long meetingX = upperMedianX;
+    long long meetingY = upperMedianY;
 
-    __int128 minimumDistance = 0;
+    long long minimumTotalDistance = 0;
 
-    for (int i = 0; i < n; ++i) {
-        minimumDistance +=
-            llabs(xs[i] - mx);
+    for (long long xCoordinate : xCoordinates)
+        minimumTotalDistance +=
+            llabs(xCoordinate - meetingX);
 
-        minimumDistance +=
-            llabs(ys[i] - my);
-    }
+    for (long long yCoordinate : yCoordinates)
+        minimumTotalDistance +=
+            llabs(yCoordinate - meetingY);
 
-    __int128 numberOfIntegerOptima =
-        (__int128)(xR - xL + 1)
-        *
-        (yR - yL + 1);
+    long long numberOfOptimalMeetingPoints =
+        (upperMedianX - lowerMedianX + 1)
+        * (upperMedianY - lowerMedianY + 1);
 
-    // Print values according to the actual problem.
+    cout << meetingX << ' ' << meetingY << '\n';
+    cout << minimumTotalDistance << '\n';
+    cout << numberOfOptimalMeetingPoints << '\n';
+    return 0;
 }
 ```
 
----
-
-## 7.13 Complexity
+Complexity:
 
 ```text
-sorting:
-O(N log N)
-
-distance sum:
-O(N)
-
-total:
 O(N log N)
 ```
 
 ---
 
-## 7.14 Recognition Model
+## 7.7 Recognition / Don't Memorize
 
-When you see:
+Recognize:
 
 ```text
-points in grid
+2D Manhattan distance
 +
-Manhattan distance
-+
-choose one meeting location
+choose one meeting point
 ```
 
-think:
+Think:
 
 ```text
 separate dimensions
+→ median x
+→ median y
 ```
 
-Then:
-
-```text
-x → median
-y → median
-```
-
-For even count:
-
-```text
-median intervals
-→ rectangle of optimal locations
-```
+Remember the separation formula, not only the final answer.
 
 ---
 
-## 7.15 Don't-Memorize Model
+# 8. Proof Pattern Summary
 
-Do not memorize:
-
-```text
-take median x and median y
-```
-
-Derive:
-
-```text
-Σ(
-  |x-x_i|
-  +
-  |y-y_i|
-)
-
-=
-Σ|x-x_i|
-+
-Σ|y-y_i|
-```
-
-Once separated, both are ordinary 1D median problems.
-
----
-
-# 8. Pattern Comparison
-
-| Pattern | Main Signal | Greedy / Math Rule | Proof Style |
+| Pattern | Local Question | Proof | Greedy Result |
 |---|---|---|---|
-| Minimum Dot Product | rearrange two arrays, minimize product sum | opposite sorting order | exchange / swapping |
-| Score–Decay–Time | order jobs with decay and duration | sort `d/t` descending | two-job exchange |
-| `+1`, `×2` Operations | reach huge target in min steps | solve backward by parity | forced last operation |
-| 1D Absolute Distance | minimize `Σ|x-x_i|` | median | slope / convexity |
-| Weighted Absolute Distance | minimize `Σk_i|x-x_i|` | weighted median | weighted slope |
-| 2D Manhattan | minimize total city-block distance | median independently in x,y | separability |
+| Minimum Dot Product | same pair or crossed pair? | exchange + factorization | opposite sorting |
+| Score–Decay–Time | which of two jobs comes first? | two-job exchange | `decay/time` descending |
+| `+1`, `×2` | what was the last operation? | reverse forced choice | odd `-1`, even `/2` |
+| Median | should meeting point move right? | left/right balance | median |
+| Weighted Median | which side has more total weight? | weighted balance | weighted median |
+| Manhattan | can coordinates separate? | algebraic separation | median x + median y |
 
 ---
 
-# 9. Final Recognition Checklist
-
-When reading a new problem, ask:
+# 9. Recognition Checklist
 
 ```text
-1. Can I reorder elements?
+1. Rearranging two arrays?
+   → exchange / rearrangement.
 
-2. Is the objective:
-      Σ a_i*b_i ?
-   → rearrangement / swap proof.
+2. Sum of pair products?
+   → MAX same order, MIN opposite order.
 
-3. Is it MAX or MIN?
-   MAX → same order
-   MIN → opposite order.
-
-4. Is there a scheduling order
-   with time + penalty/decay?
+3. Scheduling with duration + time penalty?
    → compare two jobs.
 
-5. Did algebra produce a ratio?
-   → use cross multiplication.
+4. Ratio derived?
+   → cross multiply.
 
-6. Do forward operations feel ambiguous?
-   → reverse the process.
+5. Forward operations unclear?
+   → reverse.
 
-7. Does parity make the previous move forced?
+6. Odd/even determines previous move?
+   → forced reverse greedy.
 
-8. Does ×2 correspond to a binary shift?
-
-9. Is objective:
-      Σ|x-x_i| ?
+7. Sum of absolute distances?
    → median.
 
-10. Is objective:
-      Σk_i|x-x_i| ?
-    → weighted median.
+8. Weight * absolute distance?
+   → weighted median.
 
-11. Is distance Manhattan in 2D?
-    → split x and y.
+9. Manhattan in 2D?
+   → separate x and y.
 
-12. Is n even?
-    → there may be an interval/rectangle
-       of optimal answers, not one point.
+10. Even number of points?
+    → interval / rectangle of optimal answers.
+
+11. Interval / sweep line / priority mentioned only as a class family?
+    → keep as recognition category until its specific derivation is learned.
 ```
 
 ---
@@ -4191,171 +3351,118 @@ When reading a new problem, ask:
 ALGOZENITH GREEDY TECHNIQUES — CLASS 1
 =======================================
 
+PATTERN MAP
+-----------
+Sorting-Based
+├── interval / sweep line
+├── priority
+├── rearrangement
+└── ratio ordering
+
+Operation Handling
+└── forward / reverse
+
+Classical
+├── median
+├── weighted median
+└── Manhattan
+
 
 1. MIN DOT PRODUCT
 ------------------
-goal:
-min Σ ai*bi
-
-sort:
-A ascending
-B descending
-
-proof for:
-a1 <= a2
-b1 <= b2
-
-same:
-a1b1 + a2b2
-
-cross:
-a1b2 + a2b1
-
-same-cross
+same-crossed
 =
-(a2-a1)(b2-b1)
+(largerFirst-smallerFirst)
+*
+(largerSecond-smallerSecond)
 >= 0
 
-therefore:
-cross <= same
-
-MIN:
-opposite order
-
-MAX:
-same order
+MIN → opposite order
+MAX → same order
 
 
 2. SCORE–DECAY–TIME
 -------------------
-job i:
-S_i = score
-d_i = decay
-t_i = duration
+first before second iff:
 
-finish at C_i:
-score = S_i-d_i*C_i
+firstDecay*secondTime
+>=
+secondDecay*firstTime
 
-compare P1→P2 vs P2→P1
+Therefore:
 
-P1 first is better iff:
-
-d1*t2 >= d2*t1
-
-therefore:
-
-d1/t1 >= d2/t2
-
-sort:
-d/t descending
-
-code:
-cross multiply
+sort decay/time descending
 
 
-3. +1 AND ×2 OPERATIONS
------------------------
-start:
-x=0
+3. +1 / ×2
+-----------
+reverse:
 
-operations:
-x=x+1
-x=2x
+odd  → target--
+even → target/=2
 
-reverse from y:
+positive target formula:
 
-odd:
-y--
-because odd cannot come from doubling
-
-even:
-y/=2
-
-binary:
-
-×2 = left shift
-
-minimum steps:
-(bitLength-1)
+bitLength(target)-1
 +
-popcount(y)
-
-for y>0
+popcount(target)
 
 
 4. MEDIAN
 ---------
 minimize:
 
-Σ|x-x_i|
+sum |meeting-position|
 
-move x right:
+move right:
 
-cost change
+change
 =
-#left - #right
-
-minimum:
-median
-
-even n:
-all x between
-two middle values are optimal
-
-integer solution count:
-
-rightMedian
+pointsOnLeft
 -
-leftMedian
-+
-1
+pointsOnRight
+
+answer:
+median
 
 
 5. WEIGHTED MEDIAN
 ------------------
 minimize:
 
-Σ k_i|x-x_i|
+sum(
+ weight
+ *
+ |meeting-position|
+)
 
-weight k_i
+weight
 =
-k_i conceptual copies
-
-sort by x
+conceptual copies
 
 first cumulative weight
-reaching half total
+crossing half total
 → weighted median
 
 
-6. MANHATTAN 2D
----------------
-minimize:
-
-Σ(
- |x-x_i|
+6. MANHATTAN
+------------
+sum(
+ |meetingX-pointX|
  +
- |y-y_i|
+ |meetingY-pointY|
 )
 
-separate:
+=
 
-Σ|x-x_i|
+sum |meetingX-pointX|
 +
-Σ|y-y_i|
+sum |meetingY-pointY|
 
-optimal:
-x = median of x's
-y = median of y's
+Therefore:
 
-even n:
-optimal rectangle
-
-integer answer count:
-
-(xR-xL+1)
-×
-(yR-yL+1)
+meetingX = median X
+meetingY = median Y
 ```
 
 ---
@@ -4363,24 +3470,21 @@ integer answer count:
 # Final Mental Model
 
 ```text
-                 GREEDY TECHNIQUES
-                        |
-      +-----------------+-----------------+
-      |                 |                 |
-   REORDER           OPERATIONS         LOCATION
-      |                 |                 |
-      v                 v                 v
- exchange proof     reverse process      |x-a|
-      |                 |                 |
-      v                 v                 v
-sort / ratio      forced parity step    median
-      |                                   |
-      v                                   v
-dot product / jobs                 weighted / Manhattan
+                    GREEDY
+                       |
+        +--------------+--------------+
+        |              |              |
+    REORDER         OPERATIONS      LOCATION
+        |              |              |
+        v              v              v
+ compare 2 items    reverse         |distance|
+        |              |              |
+        v              v              v
+ exchange / ratio   parity          median
+                                      |
+                                      v
+                           weighted / Manhattan
 ```
 
-> **Core lesson:** first identify the structure behind the story.  
-> If the problem is about **ordering**, compare two items.  
-> If it is about **operations**, try reversing them.  
-> If it is about **absolute distance**, look for a median.  
-> The greedy rule should come from the proof—not from memorizing a template.
+> **Core rule:** derive the greedy choice from a small proof.  
+> Do not memorize a sorting key before understanding the two-choice comparison that creates it.
