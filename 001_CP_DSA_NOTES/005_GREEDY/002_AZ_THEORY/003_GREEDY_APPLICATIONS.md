@@ -24,6 +24,54 @@
 
 ---
 
+# Clickable Table of Contents
+
+- [0. Class Map](#0-class-map)
+- [1. Prerequisites](#1-prerequisites)
+  - [1.1 Greedy Choice Must Be Safe](#11-greedy-choice-must-be-safe)
+  - [1.2 Running / Prefix Minimum](#12-running--prefix-minimum)
+  - [1.3 Why Future Values Cannot Help the Past](#13-why-future-values-cannot-help-the-past)
+  - [1.4 Local Exchange Argument](#14-local-exchange-argument)
+  - [1.5 Bottleneck Minimum](#15-bottleneck-minimum)
+  - [1.6 Fix the Bottleneck, Optimize the Rest](#16-fix-the-bottleneck-optimize-the-rest)
+  - [1.7 Top-K Largest Values](#17-top-k-largest-values)
+  - [1.8 Why a Min-Heap Maintains Top-K](#18-why-a-min-heap-maintains-top-k)
+  - [1.9 Heap + Running Sum](#19-heap--running-sum)
+  - [1.10 Sorting Makes Candidates Eligible](#110-sorting-makes-candidates-eligible)
+  - [1.11 Overflow and `long long`](#111-overflow-and-long-long)
+  - [1.12 Recognition Checklist](#112-recognition-checklist)
+- [2. Pattern 1 — Minimum Travel Cost on a Line](#2-pattern-1--minimum-travel-cost-on-a-line)
+  - [2.1 What It Asks](#21-what-it-asks)
+  - [2.2 Small Dry Run First](#22-small-dry-run-first)
+  - [2.3 Core Observation](#23-core-observation)
+  - [2.4 Why Current Price Alone Is Wrong](#24-why-current-price-alone-is-wrong)
+  - [2.5 Why Global Minimum Is Wrong](#25-why-global-minimum-is-wrong)
+  - [2.6 Exchange Proof — Compact + Inline Example](#26-exchange-proof--compact--inline-example)
+  - [2.7 Why This Proves the Whole Answer](#27-why-this-proves-the-whole-answer)
+  - [2.8 Detailed Dry Run](#28-detailed-dry-run)
+  - [2.9 Algorithm](#29-algorithm)
+  - [2.10 C++17](#210-c17)
+  - [2.11 Complexity](#211-complexity)
+  - [2.12 Recognition Model](#212-recognition-model)
+- [3. Pattern 2 — Maximum Team Performance](#3-pattern-2--maximum-team-performance)
+  - [3.1 What It Asks](#31-what-it-asks)
+  - [3.2 Small Dry Run First](#32-small-dry-run-first)
+  - [3.3 Core Observation — Every Team Has a Bottleneck](#33-core-observation--every-team-has-a-bottleneck)
+  - [3.4 Why Sort by Efficiency](#34-why-sort-by-efficiency)
+  - [3.5 Why We Need the Strongest `K-1`](#35-why-we-need-the-strongest-k-1)
+  - [3.6 Exchange Proof — Compact + Inline Example](#36-exchange-proof--compact--inline-example)
+  - [3.7 Why a Min-Heap of Size `K-1`](#37-why-a-min-heap-of-size-k-1)
+  - [3.8 Important Order of Operations](#38-important-order-of-operations)
+  - [3.9 Detailed Dry Run](#39-detailed-dry-run)
+  - [3.10 Algorithm](#310-algorithm)
+  - [3.11 C++17](#311-c17)
+  - [3.12 Complexity](#312-complexity)
+  - [3.13 Common Mistakes](#313-common-mistakes)
+  - [3.14 Recognition Model](#314-recognition-model)
+- [Final Mental Model](#final-mental-model)
+
+---
+
 # 0. Class Map
 
 ```text
@@ -970,34 +1018,21 @@ int main() {
     vector<long long> fuelPrice(numberOfStations);
     vector<long long> segmentDistance(numberOfStations - 1);
 
-    for (long long& price : fuelPrice) {
-        cin >> price;
-    }
-
-    for (long long& distance : segmentDistance) {
-        cin >> distance;
-    }
+    for (long long& price : fuelPrice) cin >> price;
+    for (long long& distance : segmentDistance) cin >> distance;
 
     long long minimumPriceSeen = fuelPrice[0];
     long long minimumTravelCost = 0;
 
-    for (int stationIndex = 0;
-         stationIndex < numberOfStations - 1;
-         ++stationIndex) {
-
-        minimumPriceSeen =
-            min(minimumPriceSeen, fuelPrice[stationIndex]);
-
-        minimumTravelCost +=
-            minimumPriceSeen * segmentDistance[stationIndex];
+    for (int stationIndex = 0; stationIndex < numberOfStations - 1; ++stationIndex) {
+        minimumPriceSeen = min(minimumPriceSeen, fuelPrice[stationIndex]);
+        minimumTravelCost += minimumPriceSeen * segmentDistance[stationIndex];
     }
 
     cout << minimumTravelCost << '\n';
-
     return 0;
 }
 ```
-
 ---
 
 ## 2.11 Complexity
@@ -1663,26 +1698,22 @@ ANSWER = 200
 2. Sort students by:
    efficiency descending
 
-3. Maintain:
-   min-heap of strongest K-1 previous strengths
-   previousStrengthSum
+3. Create TopKStrengths(K-1):
+   priority_queue keeps the strongest K-1 previous strengths
+   running sum is stored inside TopKStrengths
 
 4. For each current student:
 
-   if heap contains K-1 values:
+   if TopK is full:
        currentStrengthSum =
-           previousStrengthSum + current strength
+           TopK.getSum() + current strength
 
        currentPerformance =
            currentStrengthSum * current efficiency
 
        update answer
 
-   insert current strength
-
-   if heap size > K-1:
-       remove smallest strength
-       update previousStrengthSum
+   TopK.insert(current strength)
 ```
 
 ---
@@ -1698,6 +1729,48 @@ struct Student {
     long long efficiency;
 };
 
+bool compareByEfficiency(const Student& firstStudent, const Student& secondStudent) {
+    if (firstStudent.efficiency != secondStudent.efficiency)
+        return firstStudent.efficiency > secondStudent.efficiency;
+
+    return firstStudent.strength > secondStudent.strength;
+}
+
+class TopKStrengths {
+private:
+    int limit;
+    long long strengthSum = 0;
+
+    priority_queue<
+        long long,
+        vector<long long>,
+        greater<long long>
+    > minimumHeap;
+
+public:
+    explicit TopKStrengths(int limit) : limit(limit) {}
+
+    void insert(long long strength) {
+        if (limit == 0) return;
+
+        minimumHeap.push(strength);
+        strengthSum += strength;
+
+        if (minimumHeap.size() > limit) {
+            strengthSum -= minimumHeap.top();
+            minimumHeap.pop();
+        }
+    }
+
+    bool full() const {
+        return minimumHeap.size() == limit;
+    }
+
+    long long getSum() const {
+        return strengthSum;
+    }
+};
+
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -1707,31 +1780,18 @@ int main() {
 
     vector<Student> students(numberOfStudents);
 
-    for (Student& student : students) {
+    for (Student& student : students)
         cin >> student.strength >> student.efficiency;
-    }
 
-    sort(
-        students.begin(),
-        students.end(),
-        [](const Student& firstStudent, const Student& secondStudent) {
-            return firstStudent.efficiency > secondStudent.efficiency;
-        }
-    );
+    sort(students.begin(), students.end(), compareByEfficiency);
 
-    priority_queue<
-        long long,
-        vector<long long>,
-        greater<long long>
-    > strongestPreviousStrengths;
-
-    long long previousStrengthSum = 0;
+    TopKStrengths strongestPreviousStudents(teamSize - 1);
     long long maximumTeamPerformance = 0;
 
     for (const Student& currentStudent : students) {
-        if (strongestPreviousStrengths.size() == teamSize - 1) {
+        if (strongestPreviousStudents.full()) {
             long long currentStrengthSum =
-                previousStrengthSum + currentStudent.strength;
+                strongestPreviousStudents.getSum() + currentStudent.strength;
 
             long long currentPerformance =
                 currentStrengthSum * currentStudent.efficiency;
@@ -1740,19 +1800,10 @@ int main() {
                 max(maximumTeamPerformance, currentPerformance);
         }
 
-        if (teamSize > 1) {
-            strongestPreviousStrengths.push(currentStudent.strength);
-            previousStrengthSum += currentStudent.strength;
-
-            if (strongestPreviousStrengths.size() > teamSize - 1) {
-                previousStrengthSum -= strongestPreviousStrengths.top();
-                strongestPreviousStrengths.pop();
-            }
-        }
+        strongestPreviousStudents.insert(currentStudent.strength);
     }
 
     cout << maximumTeamPerformance << '\n';
-
     return 0;
 }
 ```
