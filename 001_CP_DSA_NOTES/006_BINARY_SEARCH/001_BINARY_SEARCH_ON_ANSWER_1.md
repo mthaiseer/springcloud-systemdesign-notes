@@ -59,7 +59,16 @@
   - [1.12 First True vs Last True](#112-first-true-vs-last-true)
   - [1.13 Search Space Bounds](#113-search-space-bounds)
   - [1.14 Feasibility Check](#114-feasibility-check)
-  - [1.15 Recognition Checklist](#115-recognition-checklist)
+  - [1.15 Math Prerequisites for Binary Search on Answer](#115-math-prerequisites-for-binary-search-on-answer)
+    - [1.15.1 Inequality Manipulation](#1151-inequality-manipulation)
+    - [1.15.2 Integer Division — Floor and Ceil](#1152-integer-division--floor-and-ceil)
+    - [1.15.3 Rearranging Feasibility Equations](#1153-rearranging-feasibility-equations)
+    - [1.15.4 Product Constraints and Overflow-Safe Comparison](#1154-product-constraints-and-overflow-safe-comparison)
+    - [1.15.5 Sum / Maximum Bounds](#1155-sum--maximum-bounds)
+    - [1.15.6 Deriving a Guaranteed Upper Bound](#1156-deriving-a-guaranteed-upper-bound)
+    - [1.15.7 Monotonic Implication](#1157-monotonic-implication)
+    - [1.15.8 Math Recognition Patterns](#1158-math-recognition-patterns)
+  - [1.16 Recognition Checklist](#116-recognition-checklist)
 - [2. Problem 1 — Fair Workload](#2-problem-1--fair-workload)
   - [2.1 What It Asks](#21-what-it-asks)
   - [2.2 Small Dry Run First](#22-small-dry-run-first)
@@ -1096,7 +1105,1057 @@ Workers used:
 
 ---
 
-## 1.15 Recognition Checklist
+## 1.15 Math Prerequisites for Binary Search on Answer
+
+> These are the small math tools that repeatedly appear inside `can(X)`.
+>
+> Binary search itself is usually easy.
+>
+> The hard part is often:
+>
+> ```text
+> convert the problem condition
+> into a correct mathematical feasibility check
+> ```
+>
+> You do **not** need advanced mathematics.
+>
+> You mainly need:
+>
+> ```text
+> inequalities
+> integer floor / ceil
+> algebraic rearrangement
+> safe multiplication / division
+> lower / upper bounds
+> monotonic implication
+> ```
+
+---
+
+### 1.15.1 Inequality Manipulation
+
+A feasibility condition is usually written as an inequality.
+
+Example:
+
+```text
+time * speed >= work
+```
+
+Suppose:
+
+```text
+time = 5
+work = 17
+```
+
+We need the minimum integer `speed`.
+
+Start:
+
+```text
+5 * speed >= 17
+```
+
+Divide both sides by positive `5`:
+
+```text
+speed >= 17 / 5
+```
+
+Real-number value:
+
+```text
+17 / 5
+=
+3.4
+```
+
+But `speed` must be an integer.
+
+So:
+
+```text
+speed >= 4
+```
+
+Therefore:
+
+```text
+minimum speed
+=
+ceil(17 / 5)
+=
+4
+```
+
+ASCII:
+
+```text
+speed
+
+0   1   2   3   4   5   6
+F   F   F   F   T   T   T
+                ^
+                |
+            first feasible
+```
+
+#### Important sign rule
+
+If you multiply or divide an inequality by a **negative** number, the inequality direction flips.
+
+Example:
+
+```text
+-2x <= 10
+```
+
+Divide by:
+
+```text
+-2
+```
+
+So:
+
+```text
+x >= -5
+```
+
+because:
+
+```text
+<=
+```
+
+flips to:
+
+```text
+>=
+```
+
+For most Binary Search on Answer problems, quantities such as:
+
+```text
+time
+speed
+capacity
+distance
+number of workers
+```
+
+are positive, so inequality direction usually stays unchanged.
+
+---
+
+### 1.15.2 Integer Division — Floor and Ceil
+
+This is one of the most important math prerequisites.
+
+C++ integer division performs:
+
+```text
+floor(a / b)
+```
+
+for non-negative integers.
+
+Example:
+
+```text
+17 / 5
+=
+3
+```
+
+because:
+
+```text
+3 * 5 = 15
+```
+
+and the remainder is:
+
+```text
+2
+```
+
+But many feasibility problems need:
+
+```text
+ceil(a / b)
+```
+
+For positive integers:
+
+```text
+ceil(a / b)
+=
+(a + b - 1) / b
+```
+
+#### Dry run
+
+```text
+a = 17
+b = 5
+```
+
+Formula:
+
+```text
+ceil(17 / 5)
+=
+(17 + 5 - 1) / 5
+=
+21 / 5
+=
+4
+```
+
+Correct:
+
+```text
+5 + 5 + 5 + 2
+→ 4 groups
+```
+
+ASCII:
+
+```text
+17 items
+capacity = 5
+
+[1 2 3 4 5]
+[6 7 8 9 10]
+[11 12 13 14 15]
+[16 17]
+
+groups = 4
+```
+
+#### Floor example
+
+How many complete pieces of length `4` can be cut from length `19`?
+
+```text
+19 / 4
+=
+4
+```
+
+Because:
+
+```text
+4 + 4 + 4 + 4
+=
+16
+```
+
+and:
+
+```text
+3
+```
+
+units remain.
+
+So:
+
+```text
+pieces = floor(19 / 4)
+       = 4
+```
+
+#### Binary-search connection
+
+Common predicates:
+
+```text
+pieces += length / candidatePieceSize
+```
+
+or:
+
+```text
+timeNeeded +=
+    ceil(items / candidateSpeed)
+```
+
+These formulas often decide whether:
+
+```text
+can(X)
+```
+
+is `True` or `False`.
+
+---
+
+### 1.15.3 Rearranging Feasibility Equations
+
+Sometimes the statement gives a condition in one form, but `can(X)` needs another.
+
+Example:
+
+```text
+speed * time >= work
+```
+
+Suppose:
+
+```text
+work = 43
+time = 6
+```
+
+We need:
+
+```text
+minimum integer speed
+```
+
+Start:
+
+```text
+6 * speed >= 43
+```
+
+Divide by `6`:
+
+```text
+speed >= 43 / 6
+```
+
+Now apply ceil:
+
+```text
+speed >= ceil(43 / 6)
+```
+
+Compute:
+
+```text
+43 / 6
+=
+7 remainder 1
+```
+
+So:
+
+```text
+ceil(43 / 6)
+=
+8
+```
+
+Check:
+
+```text
+speed = 7
+
+7 * 6
+=
+42
+<
+43
+
+False
+```
+
+Check:
+
+```text
+speed = 8
+
+8 * 6
+=
+48
+>=
+43
+
+True
+```
+
+Boolean shape:
+
+```text
+speed:
+1 2 3 4 5 6 7 8 9 10 ...
+F F F F F F F T T T  ...
+              ^
+              |
+          first True
+```
+
+#### Another common rearrangement
+
+Suppose:
+
+```text
+distance / speed <= timeLimit
+```
+
+For positive values:
+
+```text
+distance <= speed * timeLimit
+```
+
+So instead of floating point:
+
+```cpp
+double time = distance / speed;
+```
+
+we can often compare integer quantities directly:
+
+```text
+distance
+<=
+speed * timeLimit
+```
+
+This avoids precision problems.
+
+---
+
+### 1.15.4 Product Constraints and Overflow-Safe Comparison
+
+A classic Binary Search on Answer problem is:
+
+```text
+find largest x
+such that:
+
+x * x <= N
+```
+
+This appears in integer square root.
+
+Naively:
+
+```cpp
+mid * mid <= n
+```
+
+may overflow if `mid` is large.
+
+Safer:
+
+```cpp
+mid <= n / mid
+```
+
+for positive `mid`.
+
+#### Dry run
+
+Let:
+
+```text
+N = 30
+```
+
+Try:
+
+```text
+mid = 5
+```
+
+Naive check:
+
+```text
+5 * 5
+=
+25
+<=
+30
+
+True
+```
+
+Safe check:
+
+```text
+5 <= 30 / 5
+5 <= 6
+
+True
+```
+
+Try:
+
+```text
+mid = 6
+```
+
+Naive:
+
+```text
+6 * 6
+=
+36
+>
+30
+
+False
+```
+
+Safe:
+
+```text
+6 <= 30 / 6
+6 <= 5
+
+False
+```
+
+So:
+
+```text
+largest x with x*x <= 30
+=
+5
+```
+
+Boolean shape:
+
+```text
+x:
+0 1 2 3 4 5 6 7 ...
+T T T T T T F F ...
+          ^
+          |
+       last True
+```
+
+#### Why this matters
+
+Binary-search bounds can be around:
+
+```text
+1e9
+1e12
+1e18
+```
+
+and products can exceed `long long`.
+
+So before writing:
+
+```cpp
+a * b <= c
+```
+
+ask:
+
+```text
+Can a*b overflow?
+```
+
+If yes, try algebraically equivalent division-based comparisons.
+
+---
+
+### 1.15.5 Sum / Maximum Bounds
+
+Many Binary Search on Answer problems become easier once you derive the search interval mathematically.
+
+For Fair Workload:
+
+```text
+workloads:
+10 20 30 10
+```
+
+#### Lower bound
+
+One job cannot be split.
+
+Largest job:
+
+```text
+max =
+30
+```
+
+So:
+
+```text
+answer >= 30
+```
+
+Trying:
+
+```text
+X = 29
+```
+
+fails immediately because:
+
+```text
+30 > 29
+```
+
+Therefore:
+
+```text
+LOW = max(a[i])
+```
+
+#### Upper bound
+
+One worker can do all jobs.
+
+Total:
+
+```text
+10 + 20 + 30 + 10
+=
+70
+```
+
+So:
+
+```text
+answer <= 70
+```
+
+Therefore:
+
+```text
+HIGH = sum(a[i])
+```
+
+Final search space:
+
+```text
+[30,70]
+```
+
+ASCII:
+
+```text
+impossible                     guaranteed feasible
+    |                                  |
+    v                                  v
+----29----[30--------------------------70]----
+          ^
+          |
+        LOW
+```
+
+#### General lesson
+
+For every answer search, derive:
+
+```text
+LOW  = smallest value that could possibly work
+HIGH = some value guaranteed to work
+```
+
+Do not choose random bounds if better mathematical bounds are available.
+
+---
+
+### 1.15.6 Deriving a Guaranteed Upper Bound
+
+A correct upper bound does not need to be optimal.
+
+It only needs to satisfy:
+
+```text
+answer <= HIGH
+```
+
+for minimum-feasible searches.
+
+Example:
+
+```text
+N workloads
+K workers
+```
+
+If one worker takes everything:
+
+```text
+maximum load
+=
+sum(workloads)
+```
+
+So:
+
+```text
+HIGH = sum(workloads)
+```
+
+is guaranteed feasible.
+
+#### Dry run
+
+```text
+workloads:
+8 12 5 15
+```
+
+Total:
+
+```text
+8 + 12 + 5 + 15
+=
+40
+```
+
+Candidate:
+
+```text
+X = 40
+```
+
+One worker takes:
+
+```text
+[8 12 5 15]
+```
+
+Load:
+
+```text
+40
+```
+
+So:
+
+```text
+can(40) = True
+```
+
+Even if the real optimum is much smaller, `40` is a valid upper bound.
+
+#### Another common style
+
+If a machine needs at most:
+
+```text
+A
+```
+
+time per item and there are:
+
+```text
+N
+```
+
+items, then a crude guaranteed upper bound might be:
+
+```text
+HIGH = A * N
+```
+
+provided that product is safe.
+
+The point is:
+
+```text
+construct one definitely-feasible scenario
+→ derive HIGH
+```
+
+---
+
+### 1.15.7 Monotonic Implication
+
+Before binary searching `can(X)`, prove an implication.
+
+For minimum-feasible problems, usually:
+
+```text
+can(X) = True
+and
+Y >= X
+
+⇒
+
+can(Y) = True
+```
+
+#### Fair Workload dry run
+
+Suppose:
+
+```text
+can(50) = True
+```
+
+with partition:
+
+```text
+[10 20] | [30 10]
+```
+
+Loads:
+
+```text
+30
+40
+```
+
+Now increase candidate capacity:
+
+```text
+Y = 60
+```
+
+The exact same partition still satisfies:
+
+```text
+30 <= 60
+40 <= 60
+```
+
+Therefore:
+
+```text
+can(60) = True
+```
+
+Likewise:
+
+```text
+can(70)
+can(80)
+...
+```
+
+remain `True`.
+
+ASCII:
+
+```text
+capacity:
+
+... 45 46 47 48 49 50 51 52 53 ...
+     F  F  F  F  F  T  T  T  T
+                    ^
+                    |
+                first True
+```
+
+#### Maximum-feasible problems
+
+Sometimes the implication is reversed.
+
+Example:
+
+```text
+Can we keep minimum distance >= X?
+```
+
+If:
+
+```text
+can(10) = True
+```
+
+then any smaller requirement:
+
+```text
+9
+8
+7
+```
+
+is also possible.
+
+So:
+
+```text
+can(X) = True
+and
+Y <= X
+
+⇒
+
+can(Y) = True
+```
+
+Boolean shape:
+
+```text
+T T T T T F F F
+        ^
+        |
+     last True
+```
+
+---
+
+### 1.15.8 Math Recognition Patterns
+
+When building `can(X)`, look for these formulas.
+
+#### Pattern A — Number of groups / trips
+
+```text
+groups =
+ceil(items / capacity)
+```
+
+Example:
+
+```text
+items = 23
+capacity = 6
+
+groups
+=
+ceil(23/6)
+=
+4
+```
+
+---
+
+#### Pattern B — Number of pieces
+
+```text
+pieces =
+floor(length / pieceSize)
+```
+
+Example:
+
+```text
+length = 25
+pieceSize = 6
+
+pieces
+=
+25 / 6
+=
+4
+```
+
+---
+
+#### Pattern C — Minimum rate
+
+```text
+rate * time >= work
+```
+
+Rearrange:
+
+```text
+rate >= ceil(work / time)
+```
+
+Example:
+
+```text
+work = 31
+time = 5
+
+rate >= ceil(31/5)
+     = 7
+```
+
+Check:
+
+```text
+6 * 5 = 30  → False
+7 * 5 = 35  → True
+```
+
+---
+
+#### Pattern D — Square / product boundary
+
+```text
+x*x <= N
+```
+
+Safer:
+
+```text
+x <= N/x
+```
+
+Example:
+
+```text
+N = 50
+
+7 <= 50/7
+7 <= 7
+True
+
+8 <= 50/8
+8 <= 6
+False
+```
+
+So:
+
+```text
+floor(sqrt(50))
+=
+7
+```
+
+---
+
+#### Pattern E — Search-space bounds
+
+```text
+LOW:
+necessary lower limit
+
+HIGH:
+guaranteed feasible upper limit
+```
+
+Example:
+
+```text
+Fair Workload
+
+LOW  = max(a[i])
+HIGH = sum(a[i])
+```
+
+---
+
+#### Math checklist before coding `can(X)`
+
+```text
+1. Is there an inequality?
+
+2. Do I need floor or ceil?
+
+3. Can I rearrange the formula
+   to avoid floating point?
+
+4. Can multiplication overflow?
+
+5. What necessary fact gives LOW?
+
+6. What guaranteed scenario gives HIGH?
+
+7. If can(X) is true,
+   which direction stays true?
+```
+
+If these seven are clear, the binary-search code itself is usually straightforward.
+
+---
+
+## 1.16 Recognition Checklist
 
 Binary search on answer should enter your mind when you see:
 
