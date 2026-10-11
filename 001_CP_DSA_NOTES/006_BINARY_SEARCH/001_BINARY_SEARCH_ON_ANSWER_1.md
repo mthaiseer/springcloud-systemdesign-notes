@@ -1,7 +1,7 @@
 # TLE Eliminators — Binary Search on Answer
-## TLE-Style Notes — Monotonic Predicate + Feasibility Check + Fair Workload
+## Optimized TLE-Style Notes — Monotonic Predicate + Math Toolkit + Fair Workload
 
-> **Source:** supplied TLE Eliminators lecture PDF **Binary Search on Answer** by Priyansh Agarwal.
+> **Source:** supplied TLE Eliminators lecture material for **Binary Search on Answer**.
 >
 > **Main idea**
 >
@@ -9,10 +9,10 @@
 > answer is not directly known
 >        |
 >        v
-> guess a candidate answer X
+> guess candidate answer X
 >        |
 >        v
-> can(X) = True / False
+> build can(X)
 >        |
 >        v
 > prove can(X) is monotonic
@@ -21,14 +21,15 @@
 > binary search the boundary
 > ```
 >
-> **Problem flow used in this note**
+> **Problem flow**
 >
 > ```text
 > What it asks
 > → small dry run
-> → search space
-> → predicate
-> → monotonicity
+> → candidate answer
+> → search bounds
+> → predicate can(X)
+> → monotonicity proof
 > → feasibility check
 > → binary-search boundary
 > → detailed dry run
@@ -37,7 +38,7 @@
 > → recognition model
 > ```
 >
-> **Important:** the final slide introduces `sqrt(x)` as the next problem/class, but this PDF does not develop its solution. It is therefore not solved in these notes.
+> **Important:** the lecture introduces `sqrt(x)` as a later application, but does not develop that problem here. This note keeps only the prerequisite math needed to recognize that form.
 
 ---
 
@@ -45,48 +46,38 @@
 
 - [0. Class Map](#0-class-map)
 - [1. Prerequisites](#1-prerequisites)
-  - [1.1 What Binary Search Does](#11-what-binary-search-does)
-  - [1.2 Why Binary Search Is O(log N)](#12-why-binary-search-is-olog-n)
-  - [1.3 Binary Search Requires Monotonicity](#13-binary-search-requires-monotonicity)
-  - [1.4 Increasing vs Decreasing Monotonic Functions](#14-increasing-vs-decreasing-monotonic-functions)
-  - [1.5 Classic Binary Search on a Sorted Array](#15-classic-binary-search-on-a-sorted-array)
-  - [1.6 Boundary Search — Last Value <= X](#16-boundary-search--last-value--x)
-  - [1.7 Count Values in L <= a[i] <= R](#17-count-values-in-l--ai--r)
-  - [1.8 Predicate Functions](#18-predicate-functions)
-  - [1.9 Monotonic Predicate Functions](#19-monotonic-predicate-functions)
-  - [1.10 Two Boolean Shapes](#110-two-boolean-shapes)
-  - [1.11 Binary Search on Answer](#111-binary-search-on-answer)
-  - [1.12 First True vs Last True](#112-first-true-vs-last-true)
-  - [1.13 Search Space Bounds](#113-search-space-bounds)
-  - [1.14 Feasibility Check](#114-feasibility-check)
-  - [1.15 Math Prerequisites for Binary Search on Answer](#115-math-prerequisites-for-binary-search-on-answer)
-    - [1.15.1 Inequality Manipulation](#1151-inequality-manipulation)
-    - [1.15.2 Integer Division — Floor and Ceil](#1152-integer-division--floor-and-ceil)
-    - [1.15.3 Rearranging Feasibility Equations](#1153-rearranging-feasibility-equations)
-    - [1.15.4 Product Constraints and Overflow-Safe Comparison](#1154-product-constraints-and-overflow-safe-comparison)
-    - [1.15.5 Sum / Maximum Bounds](#1155-sum--maximum-bounds)
-    - [1.15.6 Deriving a Guaranteed Upper Bound](#1156-deriving-a-guaranteed-upper-bound)
-    - [1.15.7 Monotonic Implication](#1157-monotonic-implication)
-    - [1.15.8 Math Recognition Patterns](#1158-math-recognition-patterns)
-  - [1.16 Recognition Checklist](#116-recognition-checklist)
+  - [1.1 Binary Search + O(log N)](#11-binary-search--olog-n)
+  - [1.2 Monotonicity](#12-monotonicity)
+  - [1.3 Sorted-Array Boundary Search](#13-sorted-array-boundary-search)
+  - [1.4 Count Values in L <= a[i] <= R](#14-count-values-in-l--ai--r)
+  - [1.5 Predicate + First True / Last True](#15-predicate--first-true--last-true)
+  - [1.6 Binary Search on Answer](#16-binary-search-on-answer)
+  - [1.7 Math Toolkit for `can(X)`](#17-math-toolkit-for-canx)
+    - [1.7.1 Inequalities + Ceil / Floor](#171-inequalities--ceil--floor)
+    - [1.7.2 Rearranging Feasibility Conditions](#172-rearranging-feasibility-conditions)
+    - [1.7.3 Product Constraints + Overflow](#173-product-constraints--overflow)
+    - [1.7.4 Deriving LOW and HIGH](#174-deriving-low-and-high)
+    - [1.7.5 Monotonic Implication](#175-monotonic-implication)
+    - [1.7.6 Common Math Forms](#176-common-math-forms)
+  - [1.8 Recognition Checklist](#18-recognition-checklist)
 - [2. Problem 1 — Fair Workload](#2-problem-1--fair-workload)
   - [2.1 What It Asks](#21-what-it-asks)
   - [2.2 Small Dry Run First](#22-small-dry-run-first)
-  - [2.3 Convert Optimization Into a Yes-No Question](#23-convert-optimization-into-a-yes-no-question)
+  - [2.3 Candidate Answer + Predicate](#23-candidate-answer--predicate)
   - [2.4 Search Space](#24-search-space)
-  - [2.5 Why the Predicate Is Monotonic](#25-why-the-predicate-is-monotonic)
+  - [2.5 Why `can(X)` Is Monotonic](#25-why-canx-is-monotonic)
   - [2.6 Greedy Feasibility Check](#26-greedy-feasibility-check)
   - [2.7 Why the Greedy Check Is Correct](#27-why-the-greedy-check-is-correct)
   - [2.8 Lecture Dry Run — X = 30, 50, 70](#28-lecture-dry-run--x--30-50-70)
-  - [2.9 Binary Search Dry Run](#29-binary-search-dry-run)
+  - [2.9 Full Binary Search Dry Run](#29-full-binary-search-dry-run)
   - [2.10 Algorithm](#210-algorithm)
   - [2.11 C++17](#211-c17)
   - [2.12 Complexity](#212-complexity)
   - [2.13 Recognition Model](#213-recognition-model)
 - [3. Binary Search Templates](#3-binary-search-templates)
-  - [3.1 First True — F F F T T T](#31-first-true--f-f-f-t-t-t)
-  - [3.2 Last True — T T T F F F](#32-last-true--t-t-t-f-f-f)
-  - [3.3 Common Midpoint Rule](#33-common-midpoint-rule)
+  - [3.1 First True](#31-first-true)
+  - [3.2 Last True](#32-last-true)
+  - [3.3 Safe Midpoint](#33-safe-midpoint)
 - [4. Common Mistakes](#4-common-mistakes)
 - [5. Final Mental Model](#5-final-mental-model)
 
@@ -97,20 +88,18 @@
 ```text
 BINARY SEARCH
 │
-├── Search in sorted data
+├── Sorted data
 │   ├── exact value
-│   ├── first / last position
+│   ├── first / last valid index
 │   └── count in range
 │
 └── Binary Search on Answer
     │
-    ├── candidate answer X
-    │
-    ├── predicate can(X)
-    │
-    ├── monotonic True / False pattern
-    │
-    └── search boundary
+    ├── choose answer variable X
+    ├── derive LOW / HIGH
+    ├── define can(X)
+    ├── prove monotonicity
+    └── find boundary
         ├── first True
         └── last True
 ```
@@ -121,129 +110,26 @@ For **Fair Workload**:
 minimize maximum workload
         |
         v
-guess maximum allowed workload X
+guess maximum allowed load X
         |
         v
-can we split into <= K workers?
+can we split in order
+using <= K workers?
         |
         v
 F F F F T T T T
         ^
         |
-   first True
+    first True
 ```
 
 ---
 
 # 1. Prerequisites
 
-## 1.1 What Binary Search Does
+## 1.1 Binary Search + O(log N)
 
-Binary search repeatedly cuts the current search space approximately in half.
-
-```text
-whole search space
-        |
-        v
-      half
-        |
-        v
-      half
-        |
-        v
-      half
-        |
-        v
-      answer
-```
-
-The lecture describes it as:
-
-```text
-divide and conquer
-+
-reduce search-space size to half at every step
-```
-
-### Tiny example
-
-Sorted array:
-
-```text
-index:  0   1   2   3   4   5   6
-value: 10  20  35  40  50  55  60
-```
-
-Find:
-
-```text
-55
-```
-
-Start:
-
-```text
-L = 0
-R = 6
-
-mid = 3
-a[mid] = 40
-```
-
-Since:
-
-```text
-40 < 55
-```
-
-discard:
-
-```text
-0..3
-```
-
-Search:
-
-```text
-index: 4   5   6
-value: 50  55  60
-```
-
-Now:
-
-```text
-mid = 5
-a[mid] = 55
-```
-
-Found.
-
-ASCII:
-
-```text
-10  20  35  [40]  50  55  60
-              |
-              | 40 < 55
-              v
-             RIGHT
-
-                50 [55] 60
-                    |
-                  FOUND
-```
-
----
-
-## 1.2 Why Binary Search Is O(log N)
-
-The lecture gives:
-
-```text
-T(N) = T(N / 2) + 1
-T(1) = 1
-```
-
-Search-space sizes:
+Binary search repeatedly removes about half of the remaining search space.
 
 ```text
 N
@@ -263,23 +149,9 @@ After `k` halvings:
 
 ```text
 N / 2^k = 1
-```
 
-Multiply both sides by:
-
-```text
-2^k
-```
-
-So:
-
-```text
 N = 2^k
-```
 
-Take log base 2:
-
-```text
 k = log2(N)
 ```
 
@@ -289,114 +161,78 @@ Therefore:
 Time = O(log N)
 ```
 
-### Tiny numeric example
+### Tiny dry run
 
-If:
-
-```text
-N = 1024
-```
-
-then:
+Sorted array:
 
 ```text
-1024 = 2^10
+index:  0   1   2   3   4   5   6
+value: 10  20  35  40  50  55  60
 ```
 
-So only about:
+Find:
 
 ```text
-10
+55
 ```
 
-halving decisions are needed.
+Start:
+
+```text
+L = 0
+R = 6
+mid = 3
+
+a[mid] = 40
+```
+
+Since:
+
+```text
+40 < 55
+```
+
+discard the left half.
+
+```text
+10  20  35  [40]  50  55  60
+              |
+              v
+            RIGHT
+```
+
+Now:
+
+```text
+L = 4
+R = 6
+mid = 5
+
+a[mid] = 55
+```
+
+Found.
 
 ---
 
-## 1.3 Binary Search Requires Monotonicity
+## 1.2 Monotonicity
 
-The lecture's key requirement is:
-
-```text
-MONOTONICITY
-```
-
-Binary search works because after checking the middle, we must know that one entire side can be discarded.
-
-If behavior goes:
-
-```text
-up
-down
-up
-down
-```
-
-there is no reliable side to discard.
-
-### Monotonic
-
-```text
-y
-
-|                    *
-|                *
-|            *
-|        *
-|    *
-+--------------------------> x
-
-x increases
-y increases
-```
-
-Binary search can exploit this order.
-
-### Non-monotonic
-
-```text
-y
-
-|       /\          /
-|      /  \        /
-|     /    \______/
-|____/
-+--------------------------> x
-```
-
-A target value may occur in several disconnected places.
-
-Knowing one midpoint does not identify one side to discard.
-
----
-
-## 1.4 Increasing vs Decreasing Monotonic Functions
-
-The lecture shows both directions.
+Binary search needs an ordered behavior so that one whole side can be discarded.
 
 ### Increasing
 
-As:
-
 ```text
 x increases
+→ f(x) increases
 ```
 
-we have:
-
-```text
-f(x) increases
-```
-
-Example used in the lecture:
+Example from the lecture:
 
 ```text
 f(x) = x^2 + 5x
 ```
 
 for positive `x`.
-
-Values:
 
 ```text
 x:      1   2   3   4   5   6   7   8
@@ -420,82 +256,39 @@ f(x)
       1  2  3  4  5  6  7  8
 ```
 
-For a target output, we can move left/right based on whether the current function value is too small or too large.
-
----
-
 ### Decreasing
 
 ```text
 x increases
-f(x) decreases
+→ f(x) decreases
 ```
 
-ASCII:
+Binary search still works; comparison directions reverse.
+
+### Non-monotonic
 
 ```text
-f(x)
-
-high | *
-     |   *
-     |      *
-     |         *
-low  |             *
-     +----------------------> x
+up
+down
+up
+down
 ```
 
-Binary search still works.
-
-The direction of the comparisons simply reverses.
+cannot be binary-searched by one simple boundary because a midpoint does not tell us which entire side is invalid.
 
 ---
 
-## 1.5 Classic Binary Search on a Sorted Array
+## 1.3 Sorted-Array Boundary Search
 
-A sorted array itself is a monotonic function of its index:
-
-```text
-f(i) = a[i]
-```
-
-Example:
+A sorted array can be viewed as:
 
 ```text
-index: 0   1   2   3   4   5   6   7   8
-value:10  11  17  18  20  22  30  50  60
+f(index) = a[index]
 ```
 
-As:
+which is monotonic in `index`.
 
-```text
-index increases
-```
-
-the value does not decrease.
-
-So:
-
-```text
-index
-→
-array value
-```
-
-is monotonic.
-
-This is why binary search on a sorted array works.
-
----
-
-## 1.6 Boundary Search — Last Value <= X
-
-A very important binary-search form is not:
-
-```text
-find X exactly
-```
-
-but:
+A useful form is:
 
 ```text
 find the last index i
@@ -517,7 +310,7 @@ Predicate:
 a[i] <= 42
 ```
 
-Boolean sequence:
+becomes:
 
 ```text
 10  20  30  40  50  60  70  80
@@ -527,10 +320,10 @@ Boolean sequence:
              last True
 ```
 
-Answer index:
+Answer:
 
 ```text
-3
+index = 3
 ```
 
 Number of values `<= 42`:
@@ -541,32 +334,26 @@ Number of values `<= 42`:
 4
 ```
 
-This boundary-search thinking leads directly to binary search on answer.
+This is the same boundary idea later used for answer-space predicates.
 
 ---
 
-## 1.7 Count Values in L <= a[i] <= R
+## 1.4 Count Values in L <= a[i] <= R
 
-The lecture asks:
+Given sorted:
 
 ```text
-Given a sorted array,
-how many indices satisfy:
-
-L <= a[i] <= R ?
+1 2 3 5 6 7 8 10 11 16 20
 ```
 
-Example:
+and:
 
 ```text
-array:
-1 2 3 5 6 7 8 10 11 16 20
-
 L = 4
 R = 12
 ```
 
-Valid values:
+valid values:
 
 ```text
 5 6 7 8 10 11
@@ -578,13 +365,13 @@ Answer:
 6
 ```
 
-### Step-by-step derivation
+### Derivation
 
 Let:
 
 ```text
-A = number of values <= R
-B = number of values <= L - 1
+A = count(values <= R)
+B = count(values <= L - 1)
 ```
 
 Then:
@@ -593,14 +380,7 @@ Then:
 answer = A - B
 ```
 
-For:
-
-```text
-L = 4
-R = 12
-```
-
-we have:
+For this example:
 
 ```text
 A = count(values <= 12)
@@ -610,7 +390,7 @@ B = count(values <= 3)
   = 3
 ```
 
-Therefore:
+So:
 
 ```text
 answer
@@ -623,39 +403,28 @@ answer
 ASCII:
 
 ```text
-array:
 1  2  3 | 5  6  7  8  10  11 | 16  20
 --------+----------------------+--------
  <= 3       4 <= value <= 12       >12
-
-B = 3
-A = 9
-
-answer = A - B
-       = 9 - 3
-       = 6
 ```
 
-### C++ STL form
+### C++ STL
 
 ```cpp
 long long countLessOrEqualR =
     upper_bound(a.begin(), a.end(), R)
-    -
-    a.begin();
+    - a.begin();
 
 long long countLessOrEqualLMinusOne =
     upper_bound(a.begin(), a.end(), L - 1)
-    -
-    a.begin();
+    - a.begin();
 
 long long answer =
     countLessOrEqualR
-    -
-    countLessOrEqualLMinusOne;
+    - countLessOrEqualLMinusOne;
 ```
 
-Complexity per query:
+Per query:
 
 ```text
 O(log N)
@@ -663,9 +432,9 @@ O(log N)
 
 ---
 
-## 1.8 Predicate Functions
+## 1.5 Predicate + First True / Last True
 
-The lecture defines a predicate function as a function returning:
+A predicate returns:
 
 ```text
 True
@@ -673,30 +442,13 @@ or
 False
 ```
 
-for every input.
-
-Examples from the lecture:
-
-```text
-P(x) = True if x > 10
-       False otherwise
-```
-
-Another example asks whether a value satisfies some property such as:
-
-```text
-x^2 is odd
-```
-
-### Tiny dry run
-
-Take:
+Example:
 
 ```text
 P(x) = (x > 10)
 ```
 
-Then:
+Dry run:
 
 ```text
 x = 7   → False
@@ -705,75 +457,9 @@ x = 11  → True
 x = 20  → True
 ```
 
-A predicate by itself is not enough for binary search.
+A predicate is binary-searchable when its boolean values are monotonic.
 
-It must also be:
-
-```text
-monotonic
-```
-
-over the search space.
-
----
-
-## 1.9 Monotonic Predicate Functions
-
-The lecture highlights two valid boolean patterns.
-
-### Shape A
-
-```text
-T T T T T F F F F
-```
-
-There is one transition:
-
-```text
-True → False
-```
-
-### Shape B
-
-```text
-F F F F F T T T T
-```
-
-There is one transition:
-
-```text
-False → True
-```
-
-ASCII:
-
-```text
-Shape A
-
-T T T T T | F F F F
-          ^
-       boundary
-```
-
-```text
-Shape B
-
-F F F F F | T T T T
-          ^
-       boundary
-```
-
-Binary search is really searching for that:
-
-```text
-boundary
-```
-
----
-
-## 1.10 Two Boolean Shapes
-
-### Last True
+### Shape A — Last True
 
 ```text
 T T T T T F F F
@@ -786,12 +472,10 @@ Typical question:
 
 ```text
 What is the largest X
-for which the condition still holds?
+for which the condition holds?
 ```
 
----
-
-### First True
+### Shape B — First True
 
 ```text
 F F F F T T T T
@@ -807,127 +491,7 @@ What is the smallest X
 for which the condition becomes possible?
 ```
 
-The **Fair Workload** problem has exactly this second shape.
-
----
-
-## 1.11 Binary Search on Answer
-
-Normal binary search:
-
-```text
-search for an element
-inside sorted data
-```
-
-Binary search on answer:
-
-```text
-search over possible ANSWERS
-```
-
-The lecture describes the search space as an:
-
-```text
-ordered set of candidate answers
-```
-
-For every candidate:
-
-```text
-X
-```
-
-define:
-
-```text
-can(X)
-```
-
-Then binary search works if `can(X)` is monotonic.
-
-### Transformation
-
-Suppose the original problem asks:
-
-```text
-minimize some maximum value
-```
-
-Do not immediately search for the optimum.
-
-Ask:
-
-```text
-"If I claim the answer is at most X,
-is that possible?"
-```
-
-That gives:
-
-```text
-can(X)
-```
-
-Now optimization becomes a sequence of yes/no questions.
-
----
-
-## 1.12 First True vs Last True
-
-This is the most important distinction.
-
-### Minimize an answer
-
-Very often:
-
-```text
-small X → impossible
-large X → possible
-```
-
-So:
-
-```text
-F F F F T T T T
-```
-
-We need:
-
-```text
-FIRST TRUE
-```
-
-Example:
-
-```text
-minimum possible maximum workload
-```
-
----
-
-### Maximize an answer
-
-Very often:
-
-```text
-small X → possible
-large X → impossible
-```
-
-So:
-
-```text
-T T T T F F F F
-```
-
-We need:
-
-```text
-LAST TRUE
-```
-
-### Mental rule
+### One rule
 
 ```text
 MINIMUM feasible X
@@ -937,220 +501,124 @@ MAXIMUM feasible X
 → LAST TRUE
 ```
 
----
+Do not separately memorize many binary-search forms.
 
-## 1.13 Search Space Bounds
-
-For binary search on answer, choosing valid bounds is part of the solution.
-
-For Fair Workload:
+First identify:
 
 ```text
-LOW = maximum single workload
-HIGH = sum of all workloads
-```
-
-Why?
-
-### Lower bound
-
-One workload cannot be split.
-
-If:
-
-```text
-max workload = 60
-```
-
-then an answer smaller than:
-
-```text
-60
-```
-
-is impossible.
-
-Therefore:
-
-```text
-answer >= max(a[i])
+which boolean boundary
+the problem is asking for
 ```
 
 ---
 
-### Upper bound
+## 1.6 Binary Search on Answer
 
-Worst case:
-
-```text
-one worker does everything
-```
-
-So:
+Classic binary search:
 
 ```text
-answer <= sum(a[i])
+search inside sorted data
 ```
 
-Hence:
+Binary Search on Answer:
 
 ```text
-max(a[i])
-<=
-answer
-<=
-sum(a[i])
+search inside ordered candidate answers
 ```
 
-ASCII:
+Suppose the original problem says:
 
 ```text
-max element                            sum of all
-    |                                      |
-    v                                      v
-----[--------------------------------------]----
-        valid candidate-answer space
+minimize some maximum value
 ```
 
----
-
-## 1.14 Feasibility Check
-
-For a candidate maximum workload:
+Choose a candidate:
 
 ```text
 X
 ```
 
-we ask:
+and ask:
 
 ```text
-Can the ordered workload array be split
-among at most K workers
-such that every worker gets total workload <= X?
+"If I claim the answer is at most X,
+is that possible?"
 ```
 
-This is the predicate:
+That creates:
 
 ```text
 can(X)
 ```
 
-For a fixed `X`, scan left to right.
-
-Maintain:
-
-```text
-currentWorkerLoad
-workersUsed
-```
-
-Try to place the next workload on the current worker.
-
 If:
 
 ```text
-currentWorkerLoad + workload <= X
+can(X)
 ```
 
-keep it with the same worker.
+is monotonic, the optimization problem becomes a boundary-search problem.
 
-Otherwise:
-
-```text
-start a new worker
-```
-
-### Tiny dry run
+### Core transformation
 
 ```text
-workloads:
-10 20 30 10
-
-X = 50
-```
-
-Start:
-
-```text
-worker 1:
-10
-10+20 = 30 <= 50
-```
-
-Try `30`:
-
-```text
-30 + 30 = 60 > 50
-```
-
-So cut:
-
-```text
-[10 20] | [30 10]
-```
-
-Loads:
-
-```text
-30
-40
-```
-
-Workers used:
-
-```text
-2
+optimization
+     |
+     v
+candidate answer X
+     |
+     v
+yes/no feasibility check
+     |
+     v
+monotonic boolean sequence
+     |
+     v
+binary search boundary
 ```
 
 ---
 
-## 1.15 Math Prerequisites for Binary Search on Answer
+## 1.7 Math Toolkit for `can(X)`
 
-> These are the small math tools that repeatedly appear inside `can(X)`.
->
-> Binary search itself is usually easy.
->
-> The hard part is often:
->
-> ```text
-> convert the problem condition
-> into a correct mathematical feasibility check
-> ```
->
-> You do **not** need advanced mathematics.
->
-> You mainly need:
->
-> ```text
-> inequalities
-> integer floor / ceil
-> algebraic rearrangement
-> safe multiplication / division
-> lower / upper bounds
-> monotonic implication
-> ```
+The binary-search loop is usually simple.
+
+The harder part is often:
+
+```text
+turn the statement
+into a correct mathematical predicate
+```
+
+The math needed most often is:
+
+```text
+inequalities
+floor / ceil
+algebraic rearrangement
+overflow-safe comparison
+search-space bounds
+monotonic implication
+```
 
 ---
 
-### 1.15.1 Inequality Manipulation
+### 1.7.1 Inequalities + Ceil / Floor
 
-A feasibility condition is usually written as an inequality.
-
-Example:
+Suppose:
 
 ```text
 time * speed >= work
 ```
 
-Suppose:
+with:
 
 ```text
 time = 5
 work = 17
 ```
 
-We need the minimum integer `speed`.
+We want minimum integer `speed`.
 
 Start:
 
@@ -1158,13 +626,13 @@ Start:
 5 * speed >= 17
 ```
 
-Divide both sides by positive `5`:
+Divide by positive `5`:
 
 ```text
 speed >= 17 / 5
 ```
 
-Real-number value:
+Real value:
 
 ```text
 17 / 5
@@ -1172,9 +640,7 @@ Real-number value:
 3.4
 ```
 
-But `speed` must be an integer.
-
-So:
+But speed is integer:
 
 ```text
 speed >= 4
@@ -1190,10 +656,10 @@ ceil(17 / 5)
 4
 ```
 
-ASCII:
+Boolean shape:
 
 ```text
-speed
+speed:
 
 0   1   2   3   4   5   6
 F   F   F   F   T   T   T
@@ -1202,91 +668,7 @@ F   F   F   F   T   T   T
             first feasible
 ```
 
-#### Important sign rule
-
-If you multiply or divide an inequality by a **negative** number, the inequality direction flips.
-
-Example:
-
-```text
--2x <= 10
-```
-
-Divide by:
-
-```text
--2
-```
-
-So:
-
-```text
-x >= -5
-```
-
-because:
-
-```text
-<=
-```
-
-flips to:
-
-```text
->=
-```
-
-For most Binary Search on Answer problems, quantities such as:
-
-```text
-time
-speed
-capacity
-distance
-number of workers
-```
-
-are positive, so inequality direction usually stays unchanged.
-
----
-
-### 1.15.2 Integer Division — Floor and Ceil
-
-This is one of the most important math prerequisites.
-
-C++ integer division performs:
-
-```text
-floor(a / b)
-```
-
-for non-negative integers.
-
-Example:
-
-```text
-17 / 5
-=
-3
-```
-
-because:
-
-```text
-3 * 5 = 15
-```
-
-and the remainder is:
-
-```text
-2
-```
-
-But many feasibility problems need:
-
-```text
-ceil(a / b)
-```
+### Integer ceil formula
 
 For positive integers:
 
@@ -1296,17 +678,15 @@ ceil(a / b)
 (a + b - 1) / b
 ```
 
-#### Dry run
+Dry run:
 
 ```text
 a = 17
 b = 5
 ```
 
-Formula:
-
 ```text
-ceil(17 / 5)
+ceil(17/5)
 =
 (17 + 5 - 1) / 5
 =
@@ -1315,18 +695,11 @@ ceil(17 / 5)
 4
 ```
 
-Correct:
-
-```text
-5 + 5 + 5 + 2
-→ 4 groups
-```
-
-ASCII:
+Visual:
 
 ```text
 17 items
-capacity = 5
+capacity 5
 
 [1 2 3 4 5]
 [6 7 8 9 10]
@@ -1336,7 +709,7 @@ capacity = 5
 groups = 4
 ```
 
-#### Floor example
+### Floor example
 
 How many complete pieces of length `4` can be cut from length `19`?
 
@@ -1346,7 +719,7 @@ How many complete pieces of length `4` can be cut from length `19`?
 4
 ```
 
-Because:
+because:
 
 ```text
 4 + 4 + 4 + 4
@@ -1354,67 +727,63 @@ Because:
 16
 ```
 
-and:
+with:
 
 ```text
 3
 ```
 
-units remain.
+remaining.
 
 So:
 
 ```text
-pieces = floor(19 / 4)
+pieces = floor(19/4)
        = 4
 ```
 
-#### Binary-search connection
+### Sign reminder
 
-Common predicates:
-
-```text
-pieces += length / candidatePieceSize
-```
-
-or:
+If multiplying/dividing an inequality by a negative value:
 
 ```text
-timeNeeded +=
-    ceil(items / candidateSpeed)
+inequality direction flips
 ```
 
-These formulas often decide whether:
+Example:
 
 ```text
-can(X)
+-2x <= 10
+
+x >= -5
 ```
 
-is `True` or `False`.
+Most answer-search quantities such as:
+
+```text
+capacity
+time
+speed
+distance
+```
+
+are positive, so this issue appears less often.
 
 ---
 
-### 1.15.3 Rearranging Feasibility Equations
+### 1.7.2 Rearranging Feasibility Conditions
 
-Sometimes the statement gives a condition in one form, but `can(X)` needs another.
-
-Example:
+Suppose:
 
 ```text
 speed * time >= work
 ```
 
-Suppose:
+with:
 
 ```text
 work = 43
 time = 6
-```
-
-We need:
-
-```text
-minimum integer speed
 ```
 
 Start:
@@ -1423,19 +792,17 @@ Start:
 6 * speed >= 43
 ```
 
-Divide by `6`:
+Rearrange:
 
 ```text
 speed >= 43 / 6
 ```
 
-Now apply ceil:
+Since speed is integer:
 
 ```text
-speed >= ceil(43 / 6)
+speed >= ceil(43/6)
 ```
-
-Compute:
 
 ```text
 43 / 6
@@ -1443,12 +810,10 @@ Compute:
 7 remainder 1
 ```
 
-So:
+Therefore:
 
 ```text
-ceil(43 / 6)
-=
-8
+minimum speed = 8
 ```
 
 Check:
@@ -1465,8 +830,6 @@ speed = 7
 False
 ```
 
-Check:
-
 ```text
 speed = 8
 
@@ -1479,7 +842,7 @@ speed = 8
 True
 ```
 
-Boolean shape:
+ASCII:
 
 ```text
 speed:
@@ -1490,70 +853,49 @@ F F F F F F F T T T  ...
           first True
 ```
 
-#### Another common rearrangement
+### Avoid unnecessary floating point
 
-Suppose:
+Instead of:
 
 ```text
 distance / speed <= timeLimit
 ```
 
-For positive values:
+for positive values, rearrange:
 
 ```text
 distance <= speed * timeLimit
 ```
 
-So instead of floating point:
-
-```cpp
-double time = distance / speed;
-```
-
-we can often compare integer quantities directly:
-
-```text
-distance
-<=
-speed * timeLimit
-```
-
-This avoids precision problems.
+This often gives a cleaner integer predicate.
 
 ---
 
-### 1.15.4 Product Constraints and Overflow-Safe Comparison
+### 1.7.3 Product Constraints + Overflow
 
-A classic Binary Search on Answer problem is:
+A common boundary:
 
 ```text
-find largest x
-such that:
-
 x * x <= N
 ```
 
-This appears in integer square root.
+appears in integer square-root style problems.
 
-Naively:
+Naive:
 
 ```cpp
 mid * mid <= n
 ```
 
-may overflow if `mid` is large.
+can overflow for large `mid`.
 
-Safer:
+For positive values, use:
 
 ```cpp
 mid <= n / mid
 ```
 
-for positive `mid`.
-
-#### Dry run
-
-Let:
+### Dry run
 
 ```text
 N = 30
@@ -1565,22 +907,8 @@ Try:
 mid = 5
 ```
 
-Naive check:
-
 ```text
-5 * 5
-=
-25
-<=
-30
-
-True
-```
-
-Safe check:
-
-```text
-5 <= 30 / 5
+5 <= 30/5
 5 <= 6
 
 True
@@ -1592,22 +920,8 @@ Try:
 mid = 6
 ```
 
-Naive:
-
 ```text
-6 * 6
-=
-36
->
-30
-
-False
-```
-
-Safe:
-
-```text
-6 <= 30 / 6
+6 <= 30/6
 6 <= 5
 
 False
@@ -1624,7 +938,6 @@ largest x with x*x <= 30
 Boolean shape:
 
 ```text
-x:
 0 1 2 3 4 5 6 7 ...
 T T T T T T F F ...
           ^
@@ -1632,19 +945,7 @@ T T T T T T F F ...
        last True
 ```
 
-#### Why this matters
-
-Binary-search bounds can be around:
-
-```text
-1e9
-1e12
-1e18
-```
-
-and products can exceed `long long`.
-
-So before writing:
+Before writing:
 
 ```cpp
 a * b <= c
@@ -1656,13 +957,13 @@ ask:
 Can a*b overflow?
 ```
 
-If yes, try algebraically equivalent division-based comparisons.
+If yes, try an equivalent division-based comparison.
 
 ---
 
-### 1.15.5 Sum / Maximum Bounds
+### 1.7.4 Deriving LOW and HIGH
 
-Many Binary Search on Answer problems become easier once you derive the search interval mathematically.
+Good answer-space bounds come from necessary and guaranteed-feasible conditions.
 
 For Fair Workload:
 
@@ -1671,34 +972,23 @@ workloads:
 10 20 30 10
 ```
 
-#### Lower bound
+### LOW
 
-One job cannot be split.
+One workload cannot be split.
 
 Largest job:
 
 ```text
-max =
 30
 ```
 
-So:
+Any:
 
 ```text
-answer >= 30
+X < 30
 ```
 
-Trying:
-
-```text
-X = 29
-```
-
-fails immediately because:
-
-```text
-30 > 29
-```
+fails immediately.
 
 Therefore:
 
@@ -1706,22 +996,14 @@ Therefore:
 LOW = max(a[i])
 ```
 
-#### Upper bound
+### HIGH
 
-One worker can do all jobs.
-
-Total:
+One worker can do everything.
 
 ```text
 10 + 20 + 30 + 10
 =
 70
-```
-
-So:
-
-```text
-answer <= 70
 ```
 
 Therefore:
@@ -1730,7 +1012,7 @@ Therefore:
 HIGH = sum(a[i])
 ```
 
-Final search space:
+Search only:
 
 ```text
 [30,70]
@@ -1739,140 +1021,38 @@ Final search space:
 ASCII:
 
 ```text
-impossible                     guaranteed feasible
+impossible                    guaranteed feasible
     |                                  |
     v                                  v
 ----29----[30--------------------------70]----
           ^
           |
-        LOW
+         LOW
 ```
 
-#### General lesson
-
-For every answer search, derive:
+### General rule
 
 ```text
-LOW  = smallest value that could possibly work
-HIGH = some value guaranteed to work
+LOW
+=
+smallest value that could possibly work
+
+HIGH
+=
+some value guaranteed to work
 ```
 
-Do not choose random bounds if better mathematical bounds are available.
+`HIGH` does not need to be tight.
+
+It only needs to be safely feasible.
 
 ---
 
-### 1.15.6 Deriving a Guaranteed Upper Bound
+### 1.7.5 Monotonic Implication
 
-A correct upper bound does not need to be optimal.
+Before binary searching a predicate, prove an implication.
 
-It only needs to satisfy:
-
-```text
-answer <= HIGH
-```
-
-for minimum-feasible searches.
-
-Example:
-
-```text
-N workloads
-K workers
-```
-
-If one worker takes everything:
-
-```text
-maximum load
-=
-sum(workloads)
-```
-
-So:
-
-```text
-HIGH = sum(workloads)
-```
-
-is guaranteed feasible.
-
-#### Dry run
-
-```text
-workloads:
-8 12 5 15
-```
-
-Total:
-
-```text
-8 + 12 + 5 + 15
-=
-40
-```
-
-Candidate:
-
-```text
-X = 40
-```
-
-One worker takes:
-
-```text
-[8 12 5 15]
-```
-
-Load:
-
-```text
-40
-```
-
-So:
-
-```text
-can(40) = True
-```
-
-Even if the real optimum is much smaller, `40` is a valid upper bound.
-
-#### Another common style
-
-If a machine needs at most:
-
-```text
-A
-```
-
-time per item and there are:
-
-```text
-N
-```
-
-items, then a crude guaranteed upper bound might be:
-
-```text
-HIGH = A * N
-```
-
-provided that product is safe.
-
-The point is:
-
-```text
-construct one definitely-feasible scenario
-→ derive HIGH
-```
-
----
-
-### 1.15.7 Monotonic Implication
-
-Before binary searching `can(X)`, prove an implication.
-
-For minimum-feasible problems, usually:
+For minimum-feasible problems:
 
 ```text
 can(X) = True
@@ -1884,95 +1064,57 @@ Y >= X
 can(Y) = True
 ```
 
-#### Fair Workload dry run
+### Dry run
 
-Suppose:
+Suppose capacity:
 
 ```text
-can(50) = True
+X = 50
 ```
 
-with partition:
+works with:
 
 ```text
 [10 20] | [30 10]
 ```
 
-Loads:
+loads:
 
 ```text
 30
 40
 ```
 
-Now increase candidate capacity:
+Then capacity:
 
 ```text
 Y = 60
 ```
 
-The exact same partition still satisfies:
+also works because:
 
 ```text
 30 <= 60
 40 <= 60
 ```
 
-Therefore:
+The same solution remains valid.
+
+So:
 
 ```text
+can(50) = True
+⇒
 can(60) = True
 ```
 
-Likewise:
+This gives:
 
 ```text
-can(70)
-can(80)
-...
+F F F F T T T T
 ```
 
-remain `True`.
-
-ASCII:
-
-```text
-capacity:
-
-... 45 46 47 48 49 50 51 52 53 ...
-     F  F  F  F  F  T  T  T  T
-                    ^
-                    |
-                first True
-```
-
-#### Maximum-feasible problems
-
-Sometimes the implication is reversed.
-
-Example:
-
-```text
-Can we keep minimum distance >= X?
-```
-
-If:
-
-```text
-can(10) = True
-```
-
-then any smaller requirement:
-
-```text
-9
-8
-7
-```
-
-is also possible.
-
-So:
+For maximum-feasible problems, the direction is often:
 
 ```text
 can(X) = True
@@ -1984,22 +1126,19 @@ Y <= X
 can(Y) = True
 ```
 
-Boolean shape:
+giving:
 
 ```text
-T T T T T F F F
-        ^
-        |
-     last True
+T T T T F F F F
 ```
 
 ---
 
-### 1.15.8 Math Recognition Patterns
+### 1.7.6 Common Math Forms
 
-When building `can(X)`, look for these formulas.
+These patterns appear frequently inside `can(X)`.
 
-#### Pattern A — Number of groups / trips
+#### A. Number of groups / trips
 
 ```text
 groups =
@@ -2019,9 +1158,7 @@ ceil(23/6)
 4
 ```
 
----
-
-#### Pattern B — Number of pieces
+#### B. Number of pieces
 
 ```text
 pieces =
@@ -2041,15 +1178,13 @@ pieces
 4
 ```
 
----
-
-#### Pattern C — Minimum rate
+#### C. Minimum rate
 
 ```text
 rate * time >= work
 ```
 
-Rearrange:
+becomes:
 
 ```text
 rate >= ceil(work / time)
@@ -2061,26 +1196,23 @@ Example:
 work = 31
 time = 5
 
-rate >= ceil(31/5)
-     = 7
+rate >= 7
 ```
 
 Check:
 
 ```text
-6 * 5 = 30  → False
-7 * 5 = 35  → True
+6 * 5 = 30 → False
+7 * 5 = 35 → True
 ```
 
----
-
-#### Pattern D — Square / product boundary
+#### D. Square / product boundary
 
 ```text
 x*x <= N
 ```
 
-Safer:
+prefer:
 
 ```text
 x <= N/x
@@ -2108,56 +1240,25 @@ floor(sqrt(50))
 7
 ```
 
----
-
-#### Pattern E — Search-space bounds
+#### E. Search-space bounds
 
 ```text
-LOW:
-necessary lower limit
-
-HIGH:
-guaranteed feasible upper limit
+LOW  = necessary lower limit
+HIGH = guaranteed-feasible upper limit
 ```
 
-Example:
+For Fair Workload:
 
 ```text
-Fair Workload
-
 LOW  = max(a[i])
 HIGH = sum(a[i])
 ```
 
 ---
 
-#### Math checklist before coding `can(X)`
+## 1.8 Recognition Checklist
 
-```text
-1. Is there an inequality?
-
-2. Do I need floor or ceil?
-
-3. Can I rearrange the formula
-   to avoid floating point?
-
-4. Can multiplication overflow?
-
-5. What necessary fact gives LOW?
-
-6. What guaranteed scenario gives HIGH?
-
-7. If can(X) is true,
-   which direction stays true?
-```
-
-If these seven are clear, the binary-search code itself is usually straightforward.
-
----
-
-## 1.16 Recognition Checklist
-
-Binary search on answer should enter your mind when you see:
+Binary Search on Answer should enter your mind when you see:
 
 ```text
 minimize maximum
@@ -2169,24 +1270,41 @@ maximum distance
 maximum possible value
 ```
 
-Then ask:
+Before coding, answer:
 
 ```text
-1. What exactly is the answer X?
+1. What exactly is candidate answer X?
 
-2. What is the smallest possible X?
+2. What mathematical range contains X?
 
-3. What is the largest possible X?
+3. What is LOW?
 
-4. Can I write can(X)?
+4. What is HIGH?
 
-5. Is can(X) monotonic?
+5. What does can(X) mean?
 
-6. Do I need:
-   FIRST TRUE
+6. How do I compute can(X) efficiently?
+
+7. Why is can(X) monotonic?
+
+8. Is the shape:
+   F F F T T T
    or
-   LAST TRUE?
+   T T T F F F?
+
+9. Do I need:
+   first True
+   or
+   last True?
+
+10. Does can(X) need:
+    floor / ceil
+    inequality rearrangement
+    overflow-safe comparison
+    greedy feasibility?
 ```
+
+If these are clear, the binary-search loop is usually the easy part.
 
 ---
 
@@ -2194,26 +1312,34 @@ Then ask:
 
 ## 2.1 What It Asks
 
-The lecture problem:
+Given an ordered workload array:
 
 ```text
-Given an array of workloads,
-split it among K workers.
+a[0], a[1], ..., a[n-1]
+```
 
-The order of workloads cannot be changed.
+split it among:
+
+```text
+K workers
+```
+
+such that:
+
+```text
+1. workload order is preserved
+2. each worker receives a contiguous block
+3. every workload is assigned
+```
 
 Minimize:
-the maximum total work assigned
-to any one worker.
+
+```text
+maximum total load
+assigned to any one worker
 ```
 
 Lecture example:
-
-```text
-[10,20,30,40,50,60,70,80,90]
-```
-
-with a shown partition:
 
 ```text
 10 20 30 40 50 | 60 70 | 80 90
@@ -2227,40 +1353,41 @@ Worker loads:
 170
 ```
 
-So this partition has:
+For this partition:
 
 ```text
-maximum worker load = 170
+maximum load = 170
 ```
 
-The question is:
+The optimization question is:
 
 ```text
-Can we do better than 170?
+Can we make that maximum smaller?
 ```
-
-That is exactly where binary search on answer begins.
 
 ---
 
 ## 2.2 Small Dry Run First
 
-Use the smaller lecture dry-run array:
+Use the smaller workload array:
 
 ```text
-workloads:
 10 20 30 10 10 20 30 20
+```
 
+with:
+
+```text
 K = 3
 ```
 
-Try candidate:
+Try candidate maximum load:
 
 ```text
 X = 70
 ```
 
-Greedy split:
+Fill worker 1:
 
 ```text
 10 + 20 + 30 + 10
@@ -2268,13 +1395,13 @@ Greedy split:
 70
 ```
 
-Worker 1:
+So:
 
 ```text
 [10 20 30 10]
 ```
 
-Next:
+Fill worker 2:
 
 ```text
 10 + 20 + 30
@@ -2282,7 +1409,7 @@ Next:
 60
 ```
 
-Worker 2:
+So:
 
 ```text
 [10 20 30]
@@ -2294,85 +1421,89 @@ Remaining:
 [20]
 ```
 
-Worker 3.
+goes to worker 3.
 
-So:
-
-```text
-workersUsed = 3
-```
-
-and:
-
-```text
-3 <= K
-```
-
-Therefore:
-
-```text
-can(70) = True
-```
-
-ASCII:
+Final split:
 
 ```text
 10 20 30 10 | 10 20 30 | 20
 ------------+-----------+----
      70           60       20
+```
 
-K = 3
-X = 70
+Workers used:
 
-TRUE
+```text
+3
+```
+
+Since:
+
+```text
+3 <= K
+```
+
+we get:
+
+```text
+can(70) = True
 ```
 
 ---
 
-## 2.3 Convert Optimization Into a Yes-No Question
+## 2.3 Candidate Answer + Predicate
 
-Original optimization:
+Original problem:
 
 ```text
 minimize
 maximum worker load
 ```
 
-Convert it to:
+Choose candidate:
 
 ```text
-For a candidate X:
+X
+=
+maximum load allowed for any worker
+```
 
-"Can I split the array into
-at most K contiguous groups
-such that every group sum <= X?"
+Now ask:
+
+```text
+Can I split the workload array
+into at most K contiguous groups
+such that every group sum <= X?
 ```
 
 Define:
 
 ```text
-can(X) = True
+can(X)
 ```
 
-if such a split exists.
+as the answer to that question.
 
-Otherwise:
+So:
 
 ```text
-can(X) = False
+optimization problem
+        |
+        v
+yes/no feasibility problem
 ```
 
-Now the problem is not:
+We now want:
 
 ```text
-directly find optimum
+smallest X
+such that can(X) = True
 ```
 
-It is:
+Therefore:
 
 ```text
-find the first X
-for which can(X) becomes True
+FIRST TRUE
 ```
 
 ---
@@ -2382,17 +1513,16 @@ for which can(X) becomes True
 For:
 
 ```text
-workloads =
 10 20 30 10 10 20 30 20
 ```
 
-Maximum element:
+largest single workload:
 
 ```text
 30
 ```
 
-Total sum:
+Total:
 
 ```text
 10+20+30+10+10+20+30+20
@@ -2400,12 +1530,28 @@ Total sum:
 150
 ```
 
-Therefore:
+So:
 
 ```text
 LOW  = 30
 HIGH = 150
 ```
+
+Why?
+
+```text
+X < 30
+```
+
+is impossible because the workload `30` cannot be split.
+
+And:
+
+```text
+X = 150
+```
+
+is always feasible because one worker can take everything.
 
 ASCII:
 
@@ -2413,21 +1559,13 @@ ASCII:
 30                                      150
 |-----------------------------------------|
 ^                                         ^
-smallest possible                   always possible
-candidate                           with one worker
+necessary lower                      guaranteed
+bound                                feasible bound
 ```
-
-So binary search only needs to inspect:
-
-```text
-[30,150]
-```
-
-not arbitrary integers outside the valid range.
 
 ---
 
-## 2.5 Why the Predicate Is Monotonic
+## 2.5 Why `can(X)` Is Monotonic
 
 Suppose:
 
@@ -2435,90 +1573,133 @@ Suppose:
 can(70) = True
 ```
 
-That means we already have a partition where every worker receives at most:
+So some valid partition has every group sum:
 
 ```text
-70
+<= 70
 ```
 
-Then with a larger capacity:
+Now choose:
 
 ```text
-71
-80
-100
-...
+Y = 80
 ```
 
-the exact same partition is still valid.
+The exact same partition still satisfies:
+
+```text
+groupSum <= 70 <= 80
+```
 
 Therefore:
 
 ```text
 can(70) = True
 ⇒
-can(71) = True
+can(80) = True
+```
+
+In general:
+
+```text
+can(X) = True
+and
+Y >= X
+
 ⇒
-can(72) = True
-⇒
-...
+can(Y) = True
 ```
 
-So once the predicate becomes `True`, it stays `True`.
-
-Boolean shape:
+So the boolean shape is:
 
 ```text
-X:
-
-30 31 32 ...          answer          ... 150
-F  F  F  F  ...  F | T  T  T  T  T
-                      ^
-                      |
-                  first True
+F F F F F T T T T
+          ^
+          |
+      first True
 ```
 
-This is the monotonicity required for binary search.
-
-### Key proof
-
-```text
-If capacity X is feasible,
-then any capacity Y >= X is also feasible
-because every group sum <= X <= Y.
-```
-
-Therefore:
-
-```text
-can(X)
-```
-
-has the form:
-
-```text
-F F F F ... T T T T
-```
+This proves binary search is valid.
 
 ---
 
 ## 2.6 Greedy Feasibility Check
 
-For a fixed candidate:
+For fixed candidate:
 
 ```text
 X
 ```
 
-scan workloads from left to right.
+scan left to right.
 
-Keep adding to the current worker while possible.
-
-If the next workload would exceed `X`:
+Maintain:
 
 ```text
-cut here
-start another worker
+workersUsed
+currentWorkerLoad
+```
+
+Try to place each new workload on the current worker.
+
+If:
+
+```text
+currentWorkerLoad + workload <= X
+```
+
+keep it there.
+
+Otherwise:
+
+```text
+start a new worker
+```
+
+### Dry run
+
+```text
+workloads:
+10 20 30 10
+
+X = 50
+```
+
+Worker 1:
+
+```text
+10 + 20
+=
+30
+```
+
+Try adding `30`:
+
+```text
+30 + 30
+=
+60
+>
+50
+```
+
+So cut:
+
+```text
+[10 20] | [30 10]
+```
+
+Loads:
+
+```text
+30
+40
+```
+
+Workers used:
+
+```text
+2
 ```
 
 ### Pseudocode
@@ -2539,57 +1720,23 @@ for workload in workloads:
         workersUsed++
         currentLoad = workload
 
-return workersUsed <= K
-```
+        if workersUsed > K:
+            return false
 
-### ASCII
-
-```text
-current worker
-      |
-      v
-
-[10 20 30] next=20
-
-current sum = 60
-X = 70
-
-60 + 20 = 80 > 70
-
-so:
-
-[10 20 30] | [20 ...]
-              ^
-              new worker
+return true
 ```
 
 ---
 
 ## 2.7 Why the Greedy Check Is Correct
 
-For fixed `X`, we want to know whether the array can be split using:
+For a fixed `X`, the check fills each worker with the **longest possible prefix** whose sum does not exceed `X`.
+
+Suppose:
 
 ```text
-<= K workers
-```
-
-The greedy check fills each worker with the **longest possible prefix** whose sum does not exceed `X`.
-
-Suppose current worker has:
-
-```text
-sum = 50
-```
-
-and the next workload is:
-
-```text
-20
-```
-
-with:
-
-```text
+currentLoad = 50
+nextWorkload = 20
 X = 70
 ```
 
@@ -2599,46 +1746,23 @@ Then:
 50 + 20 = 70
 ```
 
-So placing `20` on the current worker is safe.
+So placing `20` on the current worker is allowed.
 
-Why not cut earlier?
+Would cutting before `20` help?
 
-If we cut before `20`, we use a new worker sooner:
+No.
 
-```text
-earlier cut
-→ never reduces workersUsed
-```
-
-Keeping as many consecutive jobs as possible in the current worker leaves:
+An earlier cut:
 
 ```text
-the fewest possible remaining jobs
+uses a new worker sooner
 ```
 
-for later workers.
+and leaves at least as much remaining work for later workers.
 
-Therefore the greedy scan uses the minimum number of workers possible for that fixed `X`.
-
-So:
-
-```text
-greedy workersUsed <= K
-```
-
-means a valid split exists.
-
-And:
-
-```text
-greedy workersUsed > K
-```
-
-means no other earlier-cut strategy can rescue it.
+So an earlier cut cannot reduce the number of workers used.
 
 ### Tiny comparison
-
-Workloads:
 
 ```text
 10 20 30 10
@@ -2653,7 +1777,7 @@ Greedy:
 workers = 2
 ```
 
-Cutting earlier:
+Cut earlier:
 
 ```text
 [10] | [20 30] | [10]
@@ -2661,58 +1785,56 @@ Cutting earlier:
 workers = 3
 ```
 
-The earlier cut did not help.
+The greedy grouping uses no more workers than an earlier-cut strategy.
+
+Therefore, for fixed `X`:
+
+```text
+greedy workersUsed <= K
+→ feasible
+```
+
+and:
+
+```text
+greedy workersUsed > K
+→ no valid split into <= K workers exists
+```
+
+This is the proof behind `can(X)`.
 
 ---
 
 ## 2.8 Lecture Dry Run — X = 30, 50, 70
 
-Lecture array:
+Use:
 
 ```text
+workloads:
 10 20 30 10 10 20 30 20
-```
 
-Workers:
-
-```text
 K = 3
 ```
 
----
-
 ### Candidate X = 30
 
-Process:
+Greedy:
 
 ```text
 [10 20] | [30] | [10 10] | [20] | [30] | [20]
 ```
 
-Loads:
-
-```text
-30
-30
-20
-20
-30
-20
-```
-
-Workers needed:
+Workers:
 
 ```text
 6
 ```
 
-But:
+Since:
 
 ```text
-K = 3
+6 > 3
 ```
-
-Therefore:
 
 ```text
 can(30) = False
@@ -2737,7 +1859,7 @@ Loads:
 20
 ```
 
-Workers needed:
+Workers:
 
 ```text
 4
@@ -2748,8 +1870,6 @@ Since:
 ```text
 4 > 3
 ```
-
-we get:
 
 ```text
 can(50) = False
@@ -2773,79 +1893,49 @@ Loads:
 20
 ```
 
-Workers needed:
+Workers:
 
 ```text
 3
 ```
 
-Since:
-
-```text
-3 <= 3
-```
-
-we get:
+So:
 
 ```text
 can(70) = True
 ```
 
----
-
 ### Predicate picture
-
-```text
-X = 30
-FALSE
-
-X = 50
-FALSE
-
-X = 70
-TRUE
-```
-
-Therefore the transition is somewhere inside:
-
-```text
-(50,70]
-```
-
-ASCII:
 
 ```text
 30----------------50----------------70
 F                 F                 T
                   |-----------------|
-                    answer is here
+                    transition here
 ```
 
-This is exactly what binary search exploits.
+The minimum feasible answer lies in:
+
+```text
+(50,70]
+```
 
 ---
 
-## 2.9 Binary Search Dry Run
+## 2.9 Full Binary Search Dry Run
 
-Use:
+Search:
 
 ```text
-workloads =
-10 20 30 10 10 20 30 20
-
-K = 3
-
 LOW  = 30
 HIGH = 150
 ```
 
-We want:
+Need:
 
 ```text
 first X such that can(X) = True
 ```
-
----
 
 ### Iteration 1
 
@@ -2853,30 +1943,21 @@ first X such that can(X) = True
 L = 30
 R = 150
 
-mid = 30 + (150-30)/2
-    = 90
+mid = 90
 ```
-
-Check:
 
 ```text
-can(90)
+can(90) = True
 ```
 
-A valid split certainly exists with at most 3 workers, so:
-
-```text
-True
-```
-
-Since we want the **first** True:
+So:
 
 ```text
 answer = 90
 R = 89
 ```
 
-Search left.
+Move left.
 
 ---
 
@@ -2889,19 +1970,10 @@ R = 89
 mid = 59
 ```
 
-Greedy split:
+Greedy split needs:
 
 ```text
-[10 20]       = 30
-[30 10 10]    = 50
-[20 30]       = 50
-[20]          = 20
-```
-
-Workers:
-
-```text
-4
+4 workers
 ```
 
 So:
@@ -2910,13 +1982,11 @@ So:
 can(59) = False
 ```
 
-Therefore:
+Move right:
 
 ```text
 L = 60
 ```
-
-Search right.
 
 ---
 
@@ -2929,15 +1999,11 @@ R = 89
 mid = 74
 ```
 
-Greedy can fit the jobs in at most 3 workers.
-
-So:
-
 ```text
 can(74) = True
 ```
 
-Move left:
+So:
 
 ```text
 answer = 74
@@ -2946,35 +2012,140 @@ R = 73
 
 ---
 
-The process continues until:
+### Iteration 4
 
 ```text
-L > R
+L = 60
+R = 73
+
+mid = 66
 ```
 
-and `answer` stores the first feasible capacity.
+Feasible with at most 3 workers:
+
+```text
+can(66) = True
+```
+
+So:
+
+```text
+answer = 66
+R = 65
+```
+
+---
+
+### Iteration 5
+
+```text
+L = 60
+R = 65
+
+mid = 62
+```
+
+Feasible:
+
+```text
+can(62) = True
+```
+
+So:
+
+```text
+answer = 62
+R = 61
+```
+
+---
+
+### Iteration 6
+
+```text
+L = 60
+R = 61
+
+mid = 60
+```
+
+Greedy split:
+
+```text
+[10 20 30] | [10 10 20] | [30 20]
+```
+
+Loads:
+
+```text
+60
+40
+50
+```
+
+Workers:
+
+```text
+3
+```
+
+Therefore:
+
+```text
+can(60) = True
+```
+
+Update:
+
+```text
+answer = 60
+R = 59
+```
+
+Now:
+
+```text
+L = 60
+R = 59
+```
+
+Stop.
+
+Final answer:
+
+```text
+60
+```
 
 ### Search visualization
 
 ```text
 30........................................150
-L                    90                    R
-                     T
+                     90 T
                      |
-         discard everything > 90
-         for finding FIRST True
-
+                     v
 30..................89
-L        59          R
-         F
-         |
-         discard <= 59
-
+         59 F
+          |
+          v
 60.................89
-L      74           R
-       T
+       74 T
        |
-       move left
+       v
+60.....73
+   66 T
+   |
+   v
+60..65
+ 62 T
+ |
+ v
+60 61
+60 T
+ |
+ v
+
+answer = 60
 ```
 
 ---
@@ -2986,7 +2157,7 @@ low =
     maximum workload
 
 high =
-    sum of all workloads
+    sum of workloads
 
 answer = high
 
@@ -2999,13 +2170,13 @@ while low <= high:
 
         answer = mid
 
-        // mid is feasible,
-        // but maybe a smaller answer works
+        // feasible
+        // try smaller
         high = mid - 1
 
     else:
 
-        // mid is too small
+        // too small
         low = mid + 1
 
 return answer
@@ -3019,7 +2190,7 @@ can(X):
     workersUsed = 1
     currentLoad = 0
 
-    for each workload:
+    for workload:
 
         if workload > X:
             return false
@@ -3054,7 +2225,6 @@ bool canSplit(
     long long currentWorkerLoad = 0;
 
     for (long long workload : workloads) {
-
         if (workload > maximumAllowedLoad)
             return false;
 
@@ -3100,7 +2270,6 @@ int main() {
     long long answer = high;
 
     while (low <= high) {
-
         long long mid =
             low + (high - low) / 2;
 
@@ -3135,34 +2304,27 @@ S = sum of workloads
 M = maximum workload
 ```
 
-Search space:
-
-```text
-[M,S]
-```
-
-Each feasibility check scans the array:
+Each feasibility check:
 
 ```text
 O(N)
 ```
 
-Number of binary-search iterations:
+Binary-search iterations:
 
 ```text
 O(log(S-M+1))
 ```
 
-Therefore:
+Total:
 
 ```text
-Time:
 O(
     N * log(S-M+1)
 )
 ```
 
-Often written simply as:
+Common shorthand:
 
 ```text
 O(N log S)
@@ -3189,17 +2351,19 @@ minimize:
 maximum part sum
 ```
 
-immediately think:
+think:
 
 ```text
-ANSWER = maximum allowed part sum
+candidate X
+=
+maximum allowed part sum
 ```
 
 Then:
 
 ```text
-low  = max element
-high = total sum
+LOW  = max element
+HIGH = total sum
 ```
 
 Predicate:
@@ -3207,11 +2371,12 @@ Predicate:
 ```text
 can(X)
 =
-can we split into <= K parts
-with every part sum <= X?
+can we split in order
+into <= K groups
+with each sum <= X?
 ```
 
-Monotonicity:
+Shape:
 
 ```text
 X too small
@@ -3221,7 +2386,7 @@ X large enough
 → True
 
 larger X
-→ remains True
+→ stays True
 ```
 
 So:
@@ -3237,15 +2402,15 @@ F F F F T T T T
 
 # 3. Binary Search Templates
 
-## 3.1 First True — F F F T T T
+## 3.1 First True
 
-Use when asking for:
+Use for:
 
 ```text
 minimum feasible X
 ```
 
-Boolean shape:
+Shape:
 
 ```text
 F F F F F T T T T
@@ -3264,7 +2429,6 @@ long long firstTrue(
     long long answer = high;
 
     while (low <= high) {
-
         long long mid =
             low + (high - low) / 2;
 
@@ -3292,21 +2456,21 @@ TRUE
 because:
 
 ```text
-mid works,
-but maybe something smaller also works
+mid works
+but maybe a smaller value also works
 ```
 
 ---
 
-## 3.2 Last True — T T T F F F
+## 3.2 Last True
 
-Use when asking for:
+Use for:
 
 ```text
 maximum feasible X
 ```
 
-Boolean shape:
+Shape:
 
 ```text
 T T T T T F F F F
@@ -3325,7 +2489,6 @@ long long lastTrue(
     long long answer = low;
 
     while (low <= high) {
-
         long long mid =
             low + (high - low) / 2;
 
@@ -3353,13 +2516,13 @@ TRUE
 because:
 
 ```text
-mid works,
-but maybe something larger also works
+mid works
+but maybe a larger value also works
 ```
 
 ---
 
-## 3.3 Common Midpoint Rule
+## 3.3 Safe Midpoint
 
 Use:
 
@@ -3368,19 +2531,19 @@ long long mid =
     low + (high - low) / 2;
 ```
 
-rather than:
+instead of:
 
 ```cpp
-(low + high) / 2
+(low + high) / 2;
 ```
 
-Reason:
+because:
 
 ```text
 low + high
 ```
 
-may overflow for large bounds.
+may overflow.
 
 ASCII:
 
@@ -3394,171 +2557,46 @@ low----------------mid----------------high
 
 # 4. Common Mistakes
 
-### Mistake 1 — Binary searching without proving monotonicity
-
-Wrong thought:
-
-```text
-"I can test X,
-so I can binary search X."
-```
-
-Not enough.
-
-You need:
-
-```text
-all False then all True
-```
-
-or:
-
-```text
-all True then all False
-```
-
----
-
-### Mistake 2 — Wrong search bounds
-
-For Fair Workload:
-
-```text
-low = 0
-```
-
-works mathematically but wastes search space and hides the key observation.
-
-Better:
-
-```text
-low = max(workload)
-```
-
-because any lower value is impossible.
-
----
-
-### Mistake 3 — Searching the wrong boundary
-
-If the predicate is:
-
-```text
-F F F T T T
-```
-
-and the problem says:
-
-```text
-minimum feasible
-```
-
-you need:
-
-```text
-first True
-```
-
-not last True.
-
----
-
-### Mistake 4 — Reordering workloads
-
-The lecture explicitly says:
-
-```text
-can't change order of workloads
-```
-
-So this is invalid:
-
-```text
-sort workloads
-```
-
-The feasibility check must preserve original order.
-
----
-
-### Mistake 5 — Starting a new worker too early
-
-For fixed `X`, fill the current worker as much as possible.
-
-Do not create unnecessary cuts.
-
-```text
-longest possible prefix per worker
-```
-
-minimizes workers used.
-
----
-
-### Mistake 6 — Forgetting one item may already exceed X
-
-If:
-
-```text
-workload > X
-```
-
-then:
-
-```text
-can(X) = False
-```
-
-immediately.
-
-One indivisible workload cannot fit into any worker's capacity.
-
----
-
-### Mistake 7 — Confusing exact binary search with binary search on answer
-
-Classic:
-
-```text
-find value 55
-```
-
-Answer search:
-
-```text
-find minimum capacity X
-such that can(X) is True
-```
-
-Same binary-search engine.
-
-Different search space.
+| Mistake | Fix |
+|---|---|
+| Binary searching just because `can(X)` can be computed | First prove `can(X)` is monotonic |
+| Using weak/random bounds | Derive `LOW` from a necessary condition and `HIGH` from a guaranteed-feasible scenario |
+| Searching the wrong boundary | Minimum feasible → first True; maximum feasible → last True |
+| Sorting Fair Workload input | Order must remain unchanged |
+| Cutting a worker's block too early | Fill the longest possible prefix within `X` |
+| Forgetting `workload > X` | Immediate `False` |
+| Using floating point when integer algebra works | Rearrange inequalities / use floor-ceil |
+| Multiplying values that may overflow | Use safe algebra such as division-based comparison |
+| Confusing classic BS with answer BS | Classic searches data; answer BS searches candidate answers |
 
 ---
 
 # 5. Final Mental Model
 
 ```text
-                 BINARY SEARCH ON ANSWER
+                BINARY SEARCH ON ANSWER
                           |
                           v
-               define candidate answer X
+                choose answer variable X
                           |
                           v
-                 build predicate can(X)
+                   derive LOW / HIGH
                           |
                           v
-                 prove monotonicity
+                     build can(X)
                           |
-              +-----------+-----------+
-              |                       |
-              v                       v
-      F F F F T T T           T T T T F F F
-              |                       |
-              v                       v
-          FIRST TRUE               LAST TRUE
-              |                       |
-              +-----------+-----------+
+                          v
+                  prove monotonicity
+                          |
+             +------------+------------+
+             |                         |
+             v                         v
+      F F F T T T                 T T T F F F
+             |                         |
+             v                         v
+        FIRST TRUE                 LAST TRUE
+             |                         |
+             +------------+------------+
                           |
                           v
                  binary search boundary
@@ -3568,44 +2606,43 @@ For Fair Workload:
 
 ```text
 workloads
-10 20 30 10 10 20 30 20
-
-K = 3
-
         |
         v
-
-candidate X
-"maximum load any worker may receive"
-
+X = maximum allowed worker load
         |
         v
-
-can(X)?
-split in original order
-using <= K workers?
-
+greedily pack longest possible
+contiguous prefix per worker
         |
         v
-
-greedy feasibility check
-
+workersUsed <= K ?
         |
         v
-
-F F F F F T T T T
-          ^
-          |
-      minimum feasible X
+F F F F T T T T
+        ^
+        |
+    minimum feasible X
 ```
 
-## One Recognition Sentence
+## Math checklist inside `can(X)`
+
+```text
+inequality?
+floor / ceil?
+integer rearrangement?
+overflow?
+LOW?
+HIGH?
+which direction stays feasible?
+```
+
+## One recognition sentence
 
 ```text
 If the answer is a number
-and I can efficiently check
-"Is answer X possible?",
-then test whether that check is monotonic.
+and I can efficiently test
+"Is candidate X possible?",
+check whether that test is monotonic.
 ```
 
 If yes:
@@ -3614,10 +2651,11 @@ If yes:
 binary search on answer
 ```
 
-## One Coding Sentence
+## One coding sentence
 
 ```text
-Optimization problem
-→ convert to predicate
-→ binary search the transition.
+optimization
+→ predicate
+→ monotonic boundary
+→ binary search
 ```
