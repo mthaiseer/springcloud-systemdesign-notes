@@ -413,48 +413,27 @@ low = 2
 high = 3
 ```
 
-A valid answer may be:
-
-```text
-2.5
-2.25
-2.125
-2.0625
-...
-```
-
-There is no single:
-
-```text
-next real number
-```
-
-after `2.5`.
-
-So:
-
-```text
-mid + 1
-```
-
-has no meaning here.
-
-Between two integers:
-
-```text
-2 and 3
-```
-
-there are infinitely many real numbers:
+Between `2` and `3` there are infinitely many real numbers:
 
 ```text
 2.1
 2.01
 2.001
 2.0001
+2.25
 2.5
 2.75
 2.999999
+...
+```
+
+The binary-search sequence itself may look like:
+
+```text
+2.5
+2.25
+2.125
+2.0625
 ...
 ```
 
@@ -466,7 +445,7 @@ ASCII:
  infinitely many real values
 ```
 
-So after:
+After:
 
 ```text
 mid = 2.5
@@ -488,17 +467,29 @@ It could be:
 ...
 ```
 
-Therefore integer updates such as:
+Therefore:
+
+```text
+mid + 1
+```
+
+or:
 
 ```text
 low = mid + 1
 ```
 
-do not make sense on a continuous real search space.
+has no general meaning on a continuous real search space.
 
 ---
 
 ## 1.6 Midpoint on Real Numbers
+
+The midpoint formula stays the same:
+
+```text
+mid = (low + high) / 2
+```
 
 ### Mini Dry Run
 
@@ -507,11 +498,18 @@ low = 2
 high = 5
 ```
 
-Midpoint:
+Then:
 
 ```text
 mid = (2 + 5) / 2
     = 3.5
+```
+
+ASCII:
+
+```text
+2---------------3.5---------------5
+low             mid              high
 ```
 
 If:
@@ -526,40 +524,10 @@ and we want the highest True:
 low = 3.5
 ```
 
-New search interval:
+New interval:
 
 ```text
 [3.5, 5]
-```
-
-The midpoint formula stays the same:
-
-```text
-mid = (low + high) / 2
-```
-
-Example:
-
-```text
-low = 2
-high = 5
-```
-
-Then:
-
-```text
-mid
-=
-(2 + 5) / 2
-=
-3.5
-```
-
-ASCII:
-
-```text
-2---------------3.5---------------5
-low             mid              high
 ```
 
 For real binary search:
@@ -657,6 +625,14 @@ This table is worth memorizing.
 
 ## 1.8 Error Tolerance
 
+The lecture examples use:
+
+```text
+|realAnswer - output|
+<=
+tolerance
+```
+
 ### Mini Dry Run
 
 Real answer:
@@ -693,47 +669,19 @@ then:
 
 So the output is acceptable.
 
-The lecture examples use:
-
-```text
-|realAnswer - output|
-<=
-tolerance
-```
-
-Suppose:
+A second lecture-style check gives the same rule:
 
 ```text
 tolerance = 0.01
-```
+realAnswer = 0.012
+output = 0.020
 
-Real answer:
-
-```text
-0.012
-```
-
-Output:
-
-```text
-0.020
-```
-
-Difference:
-
-```text
 |0.012 - 0.020|
 =
 0.008
+<=
+0.01
 ```
-
-Check:
-
-```text
-0.008 <= 0.01
-```
-
-So this output satisfies that tolerance.
 
 ### Number-line visualization
 
@@ -761,59 +709,41 @@ that the output is inside the accepted error range
 
 ## 1.9 Infinite Candidates → Finite Precision
 
-### Mini Dry Run
-
-Search interval:
-
-```text
-[0, 2]
-```
-
-Need:
-
-```text
-2 decimal places
-```
-
-Resolution:
-
-```text
-0.01
-```
-
-Conceptually relevant grid:
-
-```text
-0.00, 0.01, 0.02, ..., 1.99, 2.00
-```
-
-Approximate candidate count:
-
-```text
-(2 - 0) * 100
-=
-200
-```
-
-So the infinite real space becomes finite at the required precision.
-
 Real numbers give infinitely many candidates.
 
-The lecture handles this by fixing:
+The lecture makes the required search effectively finite by fixing:
 
 ```text
 number of decimal places
 ```
 
-Suppose:
+If:
+
+```text
+k = decimal places
+```
+
+then grid spacing is:
+
+```text
+10^-k
+```
+
+and the approximate number of precision-sized slots in `[L,R]` is:
+
+```text
+(R - L) * 10^k
+```
+
+### Mini Dry Run
 
 ```text
 L = 0
-R = 5
-precision = 2 decimals
+R = 2
+k = 2
 ```
 
-Grid spacing:
+Resolution:
 
 ```text
 10^-2
@@ -821,56 +751,42 @@ Grid spacing:
 0.01
 ```
 
-Conceptually the candidates are:
+Conceptual grid:
 
 ```text
-0.00
-0.01
-0.02
-...
-4.98
-4.99
-5.00
+0.00, 0.01, 0.02, ..., 1.99, 2.00
 ```
 
-Now the required resolution is finite.
-
-Approximate number of precision-sized slots:
+Approximate slots:
 
 ```text
-(R - L) * 10^k
+(2 - 0) * 10²
+=
+200
 ```
 
-where:
-
-```text
-k = decimal places
-```
-
-For:
+Another lecture-scale check:
 
 ```text
 L = 0
 R = 5
 k = 2
-```
 
-```text
 (5 - 0) * 10²
 =
 500
 ```
 
-This is the bridge from:
+So the bridge is:
 
 ```text
 infinite real numbers
-```
-
-to:
-
-```text
-finite precision requirement
+        |
+        v
+required decimal precision
+        |
+        v
+finite resolution to distinguish
 ```
 
 ---
@@ -1192,41 +1108,6 @@ for the required precision?"
 
 ## 1.12 Output Formatting Is Not Accuracy
 
-### Mini Dry Run
-
-Wrong computed value:
-
-```text
-3.1
-```
-
-Printing with:
-
-```cpp
-fixed << setprecision(6)
-```
-
-produces:
-
-```text
-3.100000
-```
-
-But if the true answer is:
-
-```text
-3.162278
-```
-
-the result is still wrong.
-
-So:
-
-```text
-iterations create accuracy
-setprecision controls display
-```
-
 These are different:
 
 ```text
@@ -1239,7 +1120,7 @@ and:
 PRINTING FORMAT
 ```
 
-Example:
+### Mini Dry Run
 
 Suppose the true value is roughly:
 
@@ -1259,7 +1140,7 @@ Printing:
 fixed << setprecision(6)
 ```
 
-gives:
+produces:
 
 ```text
 3.100000
@@ -1441,6 +1322,14 @@ such that:
 y² <= x
 ```
 
+This is a:
+
+```text
+LAST TRUE
+```
+
+problem.
+
 ### What Result Is Expected?
 
 If:
@@ -1462,33 +1351,13 @@ So expected result:
 6
 ```
 
-This is not asking for:
+This is **not** asking for:
 
 ```text
 sqrt(37) ≈ 6.082...
 ```
 
-It asks specifically for the highest valid **integer**.
-
-Given positive integer:
-
-```text
-x
-```
-
-find the largest integer:
-
-```text
-y
-```
-
-such that:
-
-```text
-y² <= x
-```
-
-This is a **last True** problem.
+It asks specifically for the highest valid integer.
 
 ---
 
@@ -1815,7 +1684,15 @@ such that:
 k² <= x
 ```
 
-to the required precision.
+with the required decimal precision / tolerance.
+
+The mathematical boundary is:
+
+```text
+sqrt(x)
+```
+
+but we are learning how to locate it through binary search.
 
 ### What Result Is Expected?
 
@@ -1851,34 +1728,6 @@ The important point is:
 we want a real approximation
 close enough to the true boundary
 ```
-
-Now solve the same idea over:
-
-```text
-real numbers
-```
-
-Find the highest real:
-
-```text
-k
-```
-
-such that:
-
-```text
-k² <= x
-```
-
-with the required decimal precision / tolerance.
-
-The mathematical boundary is:
-
-```text
-sqrt(x)
-```
-
-but we are learning how to locate it through binary search.
 
 ---
 
@@ -2006,91 +1855,67 @@ high = 4
 mid = 3.5
 ```
 
-If:
-
-```text
-mid is too large
-```
-
-we may set:
+If `mid` is too large:
 
 ```text
 high = 3.5
 ```
 
-New interval:
+so the new interval is:
 
 ```text
 [3, 3.5]
 ```
 
-But if `mid` were valid and we wrote:
+If `mid` were valid and we incorrectly used integer logic:
 
 ```text
 low = mid + 1
 ```
 
-then:
+we would get:
 
 ```text
 low = 4.5
 ```
 
-which jumps completely over the real answer near:
+which jumps over the real answer near:
 
 ```text
 3.162...
 ```
 
-Suppose:
+The same issue appears at:
 
 ```text
 mid = 3.125
 ```
 
-and it is True.
-
-For integer binary search we might write:
+because:
 
 ```text
-low = mid + 1
-```
-
-which would give:
-
-```text
+mid + 1
+=
 4.125
 ```
 
-That skips the actual boundary near:
+again skips the real boundary.
 
-```text
-3.162...
-```
-
-Could we instead do:
+Could we use:
 
 ```text
 low = mid + 0.1
 ```
 
-Maybe.
+instead?
 
-But what if we need:
-
-```text
-6 decimal places?
-```
-
-Then maybe:
+That also depends on the requested precision. For six decimal places we might need a scale like:
 
 ```text
 0.000001
 ```
 
-is needed.
-
-And if we later need more precision, the step changes again.
+and for another problem the scale may differ.
 
 There is no universal:
 
@@ -2098,7 +1923,7 @@ There is no universal:
 +1
 ```
 
-for real numbers.
+or fixed decimal step for real numbers.
 
 Therefore:
 
@@ -2121,35 +1946,6 @@ not by a manually chosen increment.
 ---
 
 ## 3.4 Search Space
-
-### Section Dry Run
-
-For:
-
-```text
-x = 10
-```
-
-a safe search space is:
-
-```text
-[0,10]
-```
-
-because:
-
-```text
-sqrt(10)
-≈ 3.162...
-```
-
-is definitely inside that interval.
-
-Expected boundary:
-
-```text
-around 3.162...
-```
 
 For positive:
 
@@ -2176,17 +1972,29 @@ for:
 x >= 1
 ```
 
-Example:
+### Section Dry Run
+
+For:
 
 ```text
 x = 10
 ```
 
-Search:
+search:
 
 ```text
 [0,10]
 ```
+
+The actual boundary:
+
+```text
+sqrt(10)
+≈
+3.162...
+```
+
+is definitely inside the interval.
 
 The range is wider than necessary, but valid.
 
@@ -2198,7 +2006,7 @@ L and R
 
 use those directly.
 
-The lecture's general definition is:
+The lecture's general form is:
 
 ```text
 find the highest real number
@@ -2210,36 +2018,6 @@ for which a monotonic predicate is True
 
 ## 3.5 Predicate
 
-### Section Dry Run
-
-For:
-
-```text
-x = 10
-```
-
-test:
-
-```text
-k = 3.1
-3.1² = 9.61
-True
-```
-
-and:
-
-```text
-k = 3.2
-3.2² = 10.24
-False
-```
-
-Therefore the boundary lies inside:
-
-```text
-[3.1, 3.2]
-```
-
 Define:
 
 ```text
@@ -2248,33 +2026,45 @@ can(k)
 (k² <= x)
 ```
 
+### Section Dry Run
+
 For:
 
 ```text
 x = 10
 ```
 
-examples:
+check several candidates:
 
 ```text
 k = 2
-4 <= 10
+2² = 4 <= 10
 True
 
 k = 3
-9 <= 10
+3² = 9 <= 10
+True
+
+k = 3.1
+3.1² = 9.61 <= 10
 True
 
 k = 3.2
-10.24 > 10
+3.2² = 10.24 > 10
 False
 
 k = 4
-16 > 10
+4² = 16 > 10
 False
 ```
 
-So:
+So the boundary lies inside:
+
+```text
+[3.1, 3.2]
+```
+
+and the predicate shape is:
 
 ```text
 ... T T T T | F F F F ...
@@ -2383,6 +2173,32 @@ last True
 
 ## 3.7 Precision Requirement
 
+Suppose the answer must be accurate to:
+
+```text
+6 decimal places
+```
+
+Relevant scale:
+
+```text
+epsilon
+=
+10^-6
+=
+0.000001
+```
+
+Conceptually we want:
+
+```text
+high - low
+<=
+epsilon
+```
+
+so the true boundary is trapped inside a sufficiently small interval.
+
 ### Section Dry Run
 
 Suppose:
@@ -2402,84 +2218,13 @@ high - low
 7e-7
 ```
 
-If required tolerance is:
-
-```text
-1e-6
-```
-
-then:
+Compare:
 
 ```text
 7e-7 < 1e-6
 ```
 
-So the current uncertainty is already small enough.
-
-Suppose the answer must be accurate to:
-
-```text
-6 decimal places
-```
-
-Relevant scale:
-
-```text
-epsilon
-=
-10^-6
-=
-0.000001
-```
-
-Conceptually we want the remaining search uncertainty to be at most around:
-
-```text
-epsilon
-```
-
-If current interval is:
-
-```text
-[low, high]
-```
-
-and:
-
-```text
-high - low
-<=
-epsilon
-```
-
-then the true boundary is trapped inside a very small interval.
-
-### Example
-
-```text
-low  = 3.1622771
-high = 3.1622778
-```
-
-Width:
-
-```text
-0.0000007
-```
-
-which is:
-
-```text
-7 * 10^-7
-```
-
-and therefore smaller than:
-
-```text
-10^-6
-```
-
-So we have enough resolution for a six-decimal-style requirement.
+So the current uncertainty is already small enough for a six-decimal-style requirement.
 
 ---
 
@@ -2991,41 +2736,6 @@ is simply a small safety margin after the mathematically required count.
 
 ## 3.11 Complexity
 
-### Section Dry Run
-
-Suppose:
-
-```text
-high - low = 100
-k = 3
-```
-
-Then:
-
-```text
-candidate scale
-=
-100 * 10^3
-=
-100000
-```
-
-Since:
-
-```text
-2^17 = 131072
-```
-
-about:
-
-```text
-17 iterations
-```
-
-are enough.
-
-So even though there are many possible decimal candidates, binary search remains very fast.
-
 Let:
 
 ```text
@@ -3077,6 +2787,29 @@ Space:
 O(1)
 ```
 
+### Section Dry Run
+
+From the iteration math in §1.10:
+
+```text
+D = 100
+k = 3
+```
+
+needs about:
+
+```text
+17 iterations
+```
+
+because:
+
+```text
+2^17 = 131072 > 100000
+```
+
+So even many decimal candidates still require only a small number of binary-search steps.
+
 ---
 
 ## 3.12 Recognition Model
@@ -3104,21 +2837,6 @@ precision tolerance
 Expected technique:
 
 ```text
-Binary Search on Decimals
-```
-
-If the problem says something like:
-
-```text
-Find maximum/minimum real X
-such that condition(X) holds
-
-answer accepted within 1e-6
-```
-
-think:
-
-```text
 REAL BINARY SEARCH
 ```
 
@@ -3133,56 +2851,11 @@ Then:
 6. print required precision
 ```
 
+In general, if a problem asks for a maximum/minimum real `X` under a monotonic condition and accepts an error tolerance, use the same model.
+
 ---
 
 # 4. Precision and Iteration Cheat Sheet
-
-### Quick Dry Run
-
-If:
-
-```text
-precision = 4 decimals
-```
-
-then:
-
-```text
-epsilon ≈ 1e-4
-```
-
-If:
-
-```text
-initial width = 16
-```
-
-we need:
-
-```text
-16 / 2^t <= 1e-4
-```
-
-So:
-
-```text
-2^t >= 160000
-```
-
-Since:
-
-```text
-2^17 = 131072
-2^18 = 262144
-```
-
-we need about:
-
-```text
-18 iterations
-```
-
-before adding any safety margin.
 
 | Required scale | Decimal places | Rough interpretation |
 |---|---:|---|
@@ -3212,57 +2885,55 @@ Therefore:
 t
 >=
 log2(D / epsilon)
+=
+log2(D * 10^k)
+```
+
+The full derivation is in §1.10.
+
+### Quick Dry Run
+
+If:
+
+```text
+precision = 4 decimals
+initial width = 16
+```
+
+then:
+
+```text
+epsilon = 1e-4
+```
+
+Need:
+
+```text
+16 / 2^t <= 1e-4
+
+2^t >= 160000
 ```
 
 Since:
 
 ```text
-1 / epsilon
-=
-10^k
-```
-
-we get:
-
-```text
-t
->=
-log2(D * 10^k)
-```
-
-### Example
-
-```text
-D = 100
-k = 3
-```
-
-```text
-D * 10^k
-=
-100 * 1000
-=
-100000
-```
-
-```text
-2^16 = 65536
 2^17 = 131072
+2^18 = 262144
 ```
 
-Therefore:
+we need about:
 
 ```text
-17 iterations
+18 iterations
 ```
 
-are mathematically enough to shrink the interval below `0.001`; adding a few extra iterations is safe.
+before adding a small safety margin.
 
 ### Lecture large-range example
 
 The lecture uses a very large range together with six decimal places to emphasize that even huge real answer spaces need only on the order of tens of iterations, not millions.
 
-The key takeaway is:
+Key takeaway:
 
 ```text
 huge numerical range
@@ -3276,18 +2947,15 @@ because the range is halved every time.
 
 # 5. Common Mistakes
 
-### Quick Dry Run
+### Mistake 1 — Using `mid + 1` on decimals
 
-Suppose:
+Dry run:
 
 ```text
 sqrt(10)
-≈ 3.162...
-```
+≈
+3.162...
 
-and current:
-
-```text
 mid = 3.1
 ```
 
@@ -3311,29 +2979,11 @@ Correct:
 low = mid
 ```
 
-This single example explains the most important decimal-BS mistake.
-
-### Mistake 1 — Using `mid + 1` on decimals
-
-Wrong:
-
-```cpp
-low = mid + 1;
-```
-
 Why?
 
 ```text
 there is no universal next real number
 ```
-
-Correct pattern:
-
-```cpp
-low = mid;
-```
-
-for a True candidate when searching right.
 
 ---
 
@@ -3467,43 +3117,6 @@ For another predicate shape, derive the direction again.
 ---
 
 # 6. Final Mental Model
-
-### Final Dry Run in One Screen
-
-```text
-x = 10
-
-candidate k = 3.0
-3.0² = 9
-True
-→ move low right
-
-candidate k = 3.5
-3.5² = 12.25
-False
-→ move high left
-
-candidate k = 3.25
-3.25² = 10.5625
-False
-→ move high left
-
-candidate k = 3.125
-3.125² = 9.765625
-True
-→ move low right
-
-repeat...
-
-low/high converge near:
-3.162277...
-```
-
-Expected result for six decimals:
-
-```text
-3.162278
-```
 
 ```text
                    REAL BINARY SEARCH
