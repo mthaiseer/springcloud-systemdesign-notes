@@ -129,9 +129,7 @@ GET TOGETHER
 The basic motion formula is:
 
 ```text
-distance
-=
-speed × time
+distance = speed × time
 ```
 
 If a person can move with speed:
@@ -164,11 +162,7 @@ time  = 4
 Then:
 
 ```text
-distance
-=
-3 × 4
-=
-12
+distance = 3 × 4 = 12
 ```
 
 So in four seconds the person can move at most:
@@ -251,35 +245,25 @@ T = 3
 Distance:
 
 ```text
-vT
-=
-2 × 3
-=
-6
+vT = 2 × 3 = 6
 ```
 
 Leftmost reachable coordinate:
 
 ```text
-5 - 6
-=
--1
+5 - 6 = -1
 ```
 
 Rightmost reachable coordinate:
 
 ```text
-5 + 6
-=
-11
+5 + 6 = 11
 ```
 
 So:
 
 ```text
-reachable interval
-=
-[-1, 11]
+reachable interval = [-1, 11]
 ```
 
 ASCII:
@@ -308,9 +292,7 @@ B = [L2, R2]
 They intersect when:
 
 ```text
-max(L1, L2)
-<=
-min(R1, R2)
+max(L1, L2) <= min(R1, R2)
 ```
 
 ### Dry Run — Intersecting
@@ -323,17 +305,13 @@ B = [4, 10]
 Largest left endpoint:
 
 ```text
-max(1,4)
-=
-4
+max(1, 4) = 4
 ```
 
 Smallest right endpoint:
 
 ```text
-min(7,10)
-=
-7
+min(7, 10) = 7
 ```
 
 Check:
@@ -371,17 +349,13 @@ B = [5,8]
 Compute:
 
 ```text
-max(1,5)
-=
-5
+max(1, 5) = 5
 ```
 
 and:
 
 ```text
-min(3,8)
-=
-3
+min(3, 8) = 3
 ```
 
 Check:
@@ -424,33 +398,25 @@ For intervals:
 all intervals have a common point exactly when:
 
 ```text
-max(L1,L2,...,Ln)
-<=
-min(R1,R2,...,Rn)
+max(L1, L2, ..., Ln) <= min(R1, R2, ..., Rn)
 ```
 
 Define:
 
 ```text
-maximumLeft
-=
-max(all left endpoints)
+maximumLeft = max(all left endpoints)
 ```
 
 and:
 
 ```text
-minimumRight
-=
-min(all right endpoints)
+minimumRight = min(all right endpoints)
 ```
 
 Then:
 
 ```text
-common intersection exists
-iff
-maximumLeft <= minimumRight
+common intersection exists iff maximumLeft <= minimumRight
 ```
 
 ### Dry Run
@@ -466,17 +432,13 @@ C = [ 3,10]
 Maximum left endpoint:
 
 ```text
-max(-2,1,3)
-=
-3
+max(-2, 1, 3) = 3
 ```
 
 Minimum right endpoint:
 
 ```text
-min(8,7,10)
-=
-7
+min(8, 7, 10) = 7
 ```
 
 Therefore:
@@ -746,9 +708,7 @@ Initial width:
 After 60 iterations:
 
 ```text
-width
-=
-1e9 / 2^60
+width = 1e9 / 2^60
 ```
 
 Now:
@@ -821,15 +781,7 @@ When you read a problem, ask:
 For this problem:
 
 ```text
-minimum time
-+
-reachable ranges
-+
-common meeting point
-=
-binary search on time
-+
-intersection of intervals
+minimum time + reachable ranges + common meeting point = binary search on time + intersection of intervals
 ```
 
 ---
@@ -849,17 +801,13 @@ on a number line.
 For each person `i`:
 
 ```text
-x[i]
-=
-starting coordinate
+x[i] = starting coordinate
 ```
 
 and:
 
 ```text
-v[i]
-=
-speed
+v[i] = speed
 ```
 
 Each person may move left or right.
@@ -1065,17 +1013,13 @@ v[i] * T
 So:
 
 ```text
-left[i]
-=
-x[i] - v[i]T
+left[i] = x[i] - v[i]T
 ```
 
 and:
 
 ```text
-right[i]
-=
-x[i] + v[i]T
+right[i] = x[i] + v[i]T
 ```
 
 Therefore reachable interval:
@@ -1098,9 +1042,7 @@ T = 4
 Distance:
 
 ```text
-1 × 4
-=
-4
+1 × 4 = 4
 ```
 
 Interval:
@@ -1131,17 +1073,13 @@ ASCII:
 At time `T`, person `i` can occupy any position inside:
 
 ```text
-Li(T)
-=
-x[i] - v[i]T
+Li(T) = x[i] - v[i]T
 ```
 
 to:
 
 ```text
-Ri(T)
-=
-x[i] + v[i]T
+Ri(T) = x[i] + v[i]T
 ```
 
 All people can meet if there exists some coordinate:
@@ -1155,9 +1093,7 @@ belonging to every reachable interval.
 So we need:
 
 ```text
-intersection of all intervals
-!=
-empty
+intersection of all intervals != empty
 ```
 
 For all intervals:
@@ -1172,33 +1108,19 @@ For all intervals:
 common intersection exists iff:
 
 ```text
-max(L1,L2,...,Ln)
-<=
-min(R1,R2,...,Rn)
+max(L1, L2, ..., Ln) <= min(R1, R2, ..., Rn)
 ```
 
 Therefore:
 
 ```text
-checker(T)
-=
-(
-    maximum reachable left endpoint
-    <=
-    minimum reachable right endpoint
-)
+checker(T) = (maximum reachable left endpoint <= minimum reachable right endpoint)
 ```
 
 ### Compact Formula
 
 ```text
-max_i(
-    x[i] - v[i]T
-)
-<=
-min_i(
-    x[i] + v[i]T
-)
+max_i(x[i] - v[i]T) <= min_i(x[i] + v[i]T)
 ```
 
 This is the entire mathematical model.
@@ -1227,23 +1149,17 @@ range =
 Intersect:
 
 ```text
-current.left
-=
-max(current.left, range.left)
+current.left = max(current.left, range.left)
 ```
 
 ```text
-current.right
-=
-min(current.right, range.right)
+current.right = min(current.right, range.right)
 ```
 
 If at any point:
 
 ```text
-current.left
->
-current.right
+current.left > current.right
 ```
 
 then:
@@ -1401,13 +1317,7 @@ Therefore any point reachable at time `T` is still reachable at time `T'`.
 So:
 
 ```text
-checker(T) = True
-and
-T' >= T
-
-⇒
-
-checker(T') = True
+checker(T) = True and T' >= T ⇒ checker(T') = True
 ```
 
 Hence:
@@ -1460,20 +1370,13 @@ v = 2
 Distance:
 
 ```text
-vT
-=
-2 × 2
-=
-4
+vT = 2 × 2 = 4
 ```
 
 Range:
 
 ```text
-[1-4,
- 1+4]
-=
-[-3,5]
+[1-4, 1+4] = [-3, 5]
 ```
 
 ---
@@ -1488,18 +1391,13 @@ v = 3
 Distance:
 
 ```text
-3 × 2
-=
-6
+3 × 2 = 6
 ```
 
 Range:
 
 ```text
-[6-6,
- 6+6]
-=
-[0,12]
+[6-6, 6+6] = [0, 12]
 ```
 
 ---
@@ -1514,18 +1412,13 @@ v = 1
 Distance:
 
 ```text
-1 × 2
-=
-2
+1 × 2 = 2
 ```
 
 Range:
 
 ```text
-[-2-2,
- -2+2]
-=
-[-4,0]
+[-2-2, -2+2] = [-4, 0]
 ```
 
 ---
@@ -1540,18 +1433,13 @@ v = 2
 Distance:
 
 ```text
-2 × 2
-=
-4
+2 × 2 = 4
 ```
 
 Range:
 
 ```text
-[-7-4,
- -7+4]
-=
-[-11,-3]
+[-7-4, -7+4] = [-11, -3]
 ```
 
 ---
@@ -1568,31 +1456,13 @@ P2:                [0---------------------12]
 Compute:
 
 ```text
-maximumLeft
-=
-max(
-    -3,
-     0,
-    -4,
-   -11
-)
-=
-0
+maximumLeft = max(-3, 0, -4, -11) = 0
 ```
 
 Minimum right:
 
 ```text
-minimumRight
-=
-min(
-     5,
-    12,
-     0,
-    -3
-)
-=
--3
+minimumRight = min(5, 12, 0, -3) = -3
 ```
 
 Check:
@@ -1606,9 +1476,7 @@ False.
 Therefore:
 
 ```text
-checker(2)
-=
-False
+checker(2) = False
 ```
 
 ### Visual Reason
@@ -1666,10 +1534,7 @@ vT = 8
 Range:
 
 ```text
-[1-8,
- 1+8]
-=
-[-7,9]
+[1-8, 1+8] = [-7, 9]
 ```
 
 ---
@@ -1686,10 +1551,7 @@ vT = 12
 Range:
 
 ```text
-[6-12,
- 6+12]
-=
-[-6,18]
+[6-12, 6+12] = [-6, 18]
 ```
 
 ---
@@ -1706,10 +1568,7 @@ vT = 4
 Range:
 
 ```text
-[-2-4,
- -2+4]
-=
-[-6,2]
+[-2-4, -2+4] = [-6, 2]
 ```
 
 ---
@@ -1726,10 +1585,7 @@ vT = 8
 Range:
 
 ```text
-[-7-8,
- -7+8]
-=
-[-15,1]
+[-7-8, -7+8] = [-15, 1]
 ```
 
 ---
@@ -1746,27 +1602,13 @@ P2:          [-6----------------------------------------18]
 Maximum left endpoint:
 
 ```text
-max(
-    -7,
-    -6,
-    -6,
-   -15
-)
-=
--6
+max(-7, -6, -6, -15) = -6
 ```
 
 Minimum right endpoint:
 
 ```text
-min(
-     9,
-    18,
-     2,
-     1
-)
-=
-1
+min(9, 18, 2, 1) = 1
 ```
 
 Check:
@@ -1794,9 +1636,7 @@ can be the gathering point.
 Therefore:
 
 ```text
-checker(4)
-=
-True
+checker(4) = True
 ```
 
 ASCII:
@@ -1821,17 +1661,13 @@ P2:          [-6-----[-6========1]----------------18]
 We now know:
 
 ```text
-checker(2)
-=
-False
+checker(2) = False
 ```
 
 and:
 
 ```text
-checker(4)
-=
-True
+checker(4) = True
 ```
 
 So minimum time lies in:
@@ -1854,19 +1690,13 @@ right = 4
 Mid:
 
 ```text
-mid
-=
-(2+4)/2
-=
-3
+mid = (2+4)/2 = 3
 ```
 
 Suppose:
 
 ```text
-checker(3)
-=
-True
+checker(3) = True
 ```
 
 Then minimum time is:
@@ -1892,19 +1722,13 @@ New range:
 ### Iteration 2
 
 ```text
-mid
-=
-(2+3)/2
-=
-2.5
+mid = (2+3)/2 = 2.5
 ```
 
 If:
 
 ```text
-checker(2.5)
-=
-False
+checker(2.5) = False
 ```
 
 then minimum time is:
@@ -1930,11 +1754,7 @@ New range:
 ### Iteration 3
 
 ```text
-mid
-=
-(2.5+3)/2
-=
-2.75
+mid = (2.5+3)/2 = 2.75
 ```
 
 Again:
@@ -1986,29 +1806,19 @@ Store:
 For each person:
 
 ```text
-reachableLeft
-=
-x[i] - v[i]T
-
-reachableRight
-=
-x[i] + v[i]T
+reachableLeft = x[i] - v[i]T reachableRight = x[i] + v[i]T
 ```
 
 Maintain:
 
 ```text
-commonLeft
-=
-max(all reachableLeft)
+commonLeft = max(all reachableLeft)
 ```
 
 and:
 
 ```text
-commonRight
-=
-min(all reachableRight)
+commonRight = min(all reachableRight)
 ```
 
 If:
@@ -2049,17 +1859,13 @@ Repeat:
 Mid:
 
 ```text
-mid
-=
-(left + right) / 2
+mid = (left + right) / 2
 ```
 
 If:
 
 ```text
-checker(mid)
-=
-True
+checker(mid) = True
 ```
 
 we can try a smaller time:
@@ -2094,14 +1900,8 @@ is approximately the minimum feasible time.
 #include <bits/stdc++.h>
 using namespace std;
 
-bool checker(
-    double time,
-    const vector<pair<double, double>>& people
-) {
-    pair<double, double> current = {
-        -1e18,
-         1e18
-    };
+bool checker(double time, const vector<pair<double, double>>& people) {
+    pair<double, double> current = {-1e18, 1e18};
 
     for (auto person : people) {
         double position = person.first;
@@ -2112,20 +1912,12 @@ bool checker(
             position + speed * time
         };
 
-        current.first =
-            max(
-                current.first,
-                reachable.first
-            );
+        current.first = max(current.first, reachable.first);
+        current.second = min(current.second, reachable.second);
 
-        current.second =
-            min(
-                current.second,
-                reachable.second
-            );
-
-        if (current.first > current.second)
+        if (current.first > current.second) {
             return false;
+        }
     }
 
     return true;
@@ -2141,32 +1933,23 @@ int main() {
     vector<pair<double, double>> people(n);
 
     for (int i = 0; i < n; ++i) {
-        cin >> people[i].first
-            >> people[i].second;
+        cin >> people[i].first >> people[i].second;
     }
 
     double left = 0.0;
     double right = 1e9;
 
-    for (int iteration = 0;
-         iteration < 60;
-         ++iteration) {
-
-        double mid =
-            (left + right) / 2.0;
+    for (int iteration = 0; iteration < 60; ++iteration) {
+        double mid = (left + right) / 2.0;
 
         if (checker(mid, people)) {
             right = mid;
-        }
-        else {
+        } else {
             left = mid;
         }
     }
 
-    cout << fixed
-         << setprecision(7)
-         << right
-         << '\n';
+    cout << fixed << setprecision(7) << right << '\n';
 
     return 0;
 }
@@ -2226,31 +2009,7 @@ Checker computes:
 Running intersection:
 
 ```text
-start:
-[-INF,+INF]
-
-after [-3,5]:
-[-3,5]
-
-after [0,12]:
-[0,5]
-
-after [-4,0]:
-[0,0]
-
-after [-11,-3]:
-
-left
-=
-max(0,-11)
-=
-0
-
-right
-=
-min(0,-3)
-=
--3
+start: [-INF, +INF] after [-3, 5]: [-3, 5] after [0, 12]: [0, 5] after [-4, 0]: [0, 0] after [-11, -3]: left = max(0, -11) = 0 right = min(0, -3) = -3
 ```
 
 Now:
@@ -2415,23 +2174,17 @@ For each new interval:
 update:
 
 ```text
-current.left
-=
-max(current.left, L)
+current.left = max(current.left, L)
 ```
 
 ```text
-current.right
-=
-min(current.right, R)
+current.right = min(current.right, R)
 ```
 
 If:
 
 ```text
-current.left
->
-current.right
+current.left > current.right
 ```
 
 stop:
@@ -2510,27 +2263,13 @@ Intervals:
 Maximum left:
 
 ```text
-max(
-    -7,
-    -6,
-    -6,
-   -15
-)
-=
--6
+max(-7, -6, -6, -15) = -6
 ```
 
 Minimum right:
 
 ```text
-min(
-     9,
-    18,
-     2,
-     1
-)
-=
-1
+min(9, 18, 2, 1) = 1
 ```
 
 So:
@@ -2591,9 +2330,7 @@ That implication is not generally safe.
 Instead compute:
 
 ```text
-max(all left endpoints)
-<=
-min(all right endpoints)
+max(all left endpoints) <= min(all right endpoints)
 ```
 
 ---
@@ -2782,32 +2519,19 @@ width.
 ## Core Math
 
 ```text
-Person i:
-
-distance in T seconds
-=
-v[i]T
+Person i: distance in T seconds = v[i]T
 ```
 
 So:
 
 ```text
-reachable range
-=
-[x[i]-v[i]T,
- x[i]+v[i]T]
+reachable range = [x[i]-v[i]T, x[i]+v[i]T]
 ```
 
 All can meet iff:
 
 ```text
-max_i(
-    x[i]-v[i]T
-)
-<=
-min_i(
-    x[i]+v[i]T
-)
+max_i(x[i]-v[i]T) <= min_i(x[i]+v[i]T)
 ```
 
 That single inequality is the mathematical heart of the problem.
