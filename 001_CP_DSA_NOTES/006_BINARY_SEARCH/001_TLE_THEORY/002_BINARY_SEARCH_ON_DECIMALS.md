@@ -568,13 +568,7 @@ mid² <= x
 Then:
 
 ```text
-answer = max(answer, 3.125)
-
-low
-=
-3.125 + 0.001
-=
-3.126
+answer = max(answer, 3.125) low = 3.125 + 0.001 = 3.126
 ```
 
 We continue searching to the right for a larger valid value.
@@ -594,9 +588,7 @@ Suppose we need:
 Then relevant scale is:
 
 ```text
-10^-3
-=
-0.001
+10^-3 = 0.001
 ```
 
 If current search interval is:
@@ -622,17 +614,13 @@ Suppose the answer must be correct up to:
 The relevant decimal scale is:
 
 ```text
-10^-5
-=
-0.00001
+10^-5 = 0.00001
 ```
 
 For:
 
 ```text
-10 / 3
-=
-3.333333333...
+10 / 3 = 3.333333333...
 ```
 
 values very close to the real answer can be accepted under the required tolerance.
@@ -783,9 +771,7 @@ k = 2
 Resolution:
 
 ```text
-10^-2
-=
-0.01
+10^-2 = 0.01
 ```
 
 Conceptual grid:
@@ -797,21 +783,13 @@ Conceptual grid:
 Approximate slots:
 
 ```text
-(2 - 0) * 10²
-=
-200
+(2 - 0) * 10² = 200
 ```
 
 Another lecture-scale check:
 
 ```text
-L = 0
-R = 5
-k = 2
-
-(5 - 0) * 10²
-=
-500
+L = 0 R = 5 k = 2 (5 - 0) * 10² = 500
 ```
 
 So the bridge is:
@@ -866,9 +844,7 @@ width = 8 / 2^5
 This shows exactly why:
 
 ```text
-remaining width
-=
-initial width / 2^iterations
+remaining width = initial width / 2^iterations
 ```
 
 This is the most important math prerequisite for decimal binary search.
@@ -890,9 +866,7 @@ t
 iterations:
 
 ```text
-remaining width
-=
-D / 2^t
+remaining width = D / 2^t
 ```
 
 If we need resolution:
@@ -904,9 +878,7 @@ If we need resolution:
 require:
 
 ```text
-D / 2^t
-<=
-10^-k
+D / 2^t <= 10^-k
 ```
 
 Now derive `t`.
@@ -914,9 +886,7 @@ Now derive `t`.
 Start:
 
 ```text
-D / 2^t
-<=
-10^-k
+D / 2^t <= 10^-k
 ```
 
 Multiply by:
@@ -926,9 +896,7 @@ Multiply by:
 ```
 
 ```text
-D
-<=
-2^t * 10^-k
+D <= 2^t * 10^-k
 ```
 
 Multiply by:
@@ -938,9 +906,7 @@ Multiply by:
 ```
 
 ```text
-D * 10^k
-<=
-2^t
+D * 10^k <= 2^t
 ```
 
 Take:
@@ -950,19 +916,13 @@ log2
 ```
 
 ```text
-log2(D * 10^k)
-<=
-t
+log2(D * 10^k) <= t
 ```
 
 Therefore:
 
 ```text
-t
->=
-log2(
-    (high - low) * 10^k
-)
+t >= log2((high - low) * 10^k)
 ```
 
 Use:
@@ -999,19 +959,13 @@ Required resolution:
 Need:
 
 ```text
-100 / 2^t
-<=
-0.001
+100 / 2^t <= 0.001
 ```
 
 So:
 
 ```text
-2^t
->=
-100 / 0.001
-=
-100000
+2^t >= 100 / 0.001 = 100000
 ```
 
 Since:
@@ -1040,11 +994,7 @@ log2(1000)
 and:
 
 ```text
-log(a*b)
-=
-log(a)
-+
-log(b)
+log(a*b) = log(a) + log(b)
 ```
 
 So multiplying the search resolution by another factor of about:
@@ -1118,9 +1068,7 @@ The lecture recommends:
 Example:
 
 ```cpp
-for (int iteration = 0;
-     iteration < totalIterations;
-     ++iteration) {
+for (int iteration = 0; iteration < totalIterations; ++iteration) {
 
     ...
 }
@@ -1206,9 +1154,7 @@ You need both.
 Suppose the answer is:
 
 ```text
-1 / 3
-=
-0.333333333333...
+1 / 3 = 0.333333333333...
 ```
 
 A floating-point variable stores only a finite approximation.
@@ -1476,9 +1422,7 @@ Expected result:
 Define:
 
 ```text
-can(y)
-=
-(y² <= x)
+can(y) = (y² <= x)
 ```
 
 If:
@@ -1644,19 +1588,14 @@ long long integerSqrt(long long x) {
     long long answer = 0;
 
     while (low <= high) {
-        long long mid =
-            low + (high - low) / 2;
+        long long mid = low + (high - low) / 2;
 
-        bool valid =
-            (mid == 0)
-            ||
-            (mid <= x / mid);
+        bool valid = (mid == 0) || (mid <= x / mid);
 
         if (valid) {
             answer = mid;
             low = mid + 1;
-        }
-        else {
+        } else {
             high = mid - 1;
         }
     }
@@ -1799,11 +1738,7 @@ Now test:
 ```
 
 ```text
-3.5²
-=
-12.25
->
-10
+3.5² = 12.25 > 10
 ```
 
 False.
@@ -1821,11 +1756,7 @@ Test:
 ```
 
 ```text
-3.25²
-=
-10.5625
->
-10
+3.25² = 10.5625 > 10
 ```
 
 False.
@@ -1843,11 +1774,7 @@ Test:
 ```
 
 ```text
-3.125²
-=
-9.765625
-<=
-10
+3.125² = 9.765625 <= 10
 ```
 
 True.
@@ -1885,9 +1812,7 @@ T       F
 For integers:
 
 ```text
-next candidate after 5
-=
-6
+next candidate after 5 = 6
 ```
 
 so:
@@ -1921,9 +1846,7 @@ low = mid + 1;
 because:
 
 ```text
-3.125 + 1
-=
-4.125
+3.125 + 1 = 4.125
 ```
 
 and we jump over the answer.
@@ -1963,11 +1886,7 @@ and `mid` is valid.
 Then:
 
 ```text
-low
-=
-3.125 + 0.001
-=
-3.126
+low = 3.125 + 0.001 = 3.126
 ```
 
 This moves only a tiny amount to the right.
@@ -1981,11 +1900,7 @@ mid = 3.25
 is invalid:
 
 ```text
-high
-=
-3.25 - 0.001
-=
-3.249
+high = 3.25 - 0.001 = 3.249
 ```
 
 ASCII:
@@ -2096,9 +2011,7 @@ for which a monotonic predicate is True
 Define:
 
 ```text
-can(k)
-=
-(k² <= x)
+can(k) = (k² <= x)
 ```
 
 ### Section Dry Run
@@ -2257,19 +2170,13 @@ Suppose the answer must be accurate to:
 Relevant scale:
 
 ```text
-epsilon
-=
-10^-6
-=
-0.000001
+epsilon = 10^-6 = 0.000001
 ```
 
 Conceptually we want:
 
 ```text
-high - low
-<=
-epsilon
+high - low <= epsilon
 ```
 
 so the true boundary is trapped inside a sufficiently small interval.
@@ -2286,11 +2193,7 @@ high = 3.1622778
 Width:
 
 ```text
-high - low
-=
-0.0000007
-=
-7e-7
+high - low = 0.0000007 = 7e-7
 ```
 
 Compare:
@@ -2324,21 +2227,13 @@ mid² <= 10
 ### Iteration 1
 
 ```text
-mid
-=
-(0 + 10) / 2
-=
-5
+mid = (0 + 10) / 2 = 5
 ```
 
 Check:
 
 ```text
-5²
-=
-25
->
-10
+5² = 25 > 10
 ```
 
 False.
@@ -2360,21 +2255,13 @@ Range:
 ### Iteration 2
 
 ```text
-mid
-=
-(0 + 5) / 2
-=
-2.5
+mid = (0 + 5) / 2 = 2.5
 ```
 
 Check:
 
 ```text
-2.5²
-=
-6.25
-<=
-10
+2.5² = 6.25 <= 10
 ```
 
 True.
@@ -2396,21 +2283,13 @@ Range:
 ### Iteration 3
 
 ```text
-mid
-=
-(2.5 + 5) / 2
-=
-3.75
+mid = (2.5 + 5) / 2 = 3.75
 ```
 
 Check:
 
 ```text
-3.75²
-=
-14.0625
->
-10
+3.75² = 14.0625 > 10
 ```
 
 False.
@@ -2432,21 +2311,13 @@ Range:
 ### Iteration 4
 
 ```text
-mid
-=
-(2.5 + 3.75) / 2
-=
-3.125
+mid = (2.5 + 3.75) / 2 = 3.125
 ```
 
 Check:
 
 ```text
-3.125²
-=
-9.765625
-<=
-10
+3.125² = 9.765625 <= 10
 ```
 
 True.
@@ -2468,21 +2339,13 @@ Range:
 ### Iteration 5
 
 ```text
-mid
-=
-(3.125 + 3.75) / 2
-=
-3.4375
+mid = (3.125 + 3.75) / 2 = 3.4375
 ```
 
 Check:
 
 ```text
-3.4375²
-=
-11.81640625
->
-10
+3.4375² = 11.81640625 > 10
 ```
 
 False.
@@ -2504,21 +2367,13 @@ Range:
 ### Iteration 6
 
 ```text
-mid
-=
-(3.125 + 3.4375) / 2
-=
-3.28125
+mid = (3.125 + 3.4375) / 2 = 3.28125
 ```
 
 Check:
 
 ```text
-3.28125²
-=
-10.7666015625
->
-10
+3.28125² = 10.7666015625 > 10
 ```
 
 False.
@@ -2613,31 +2468,19 @@ high = 3.5
 Then:
 
 ```text
-mid
-=
-(3 + 3.5) / 2
-=
-3.25
+mid = (3 + 3.5) / 2 = 3.25
 ```
 
 Check:
 
 ```text
-3.25²
-=
-10.5625
->
-10
+3.25² = 10.5625 > 10
 ```
 
 So:
 
 ```text
-high
-=
-3.25 - 0.001
-=
-3.249
+high = 3.25 - 0.001 = 3.249
 ```
 
 Next midpoint is taken from the smaller interval.
@@ -2771,8 +2614,7 @@ int main() {
         if (mid * mid <= x) {
             answer = max(answer, mid);
             low = mid + precision;
-        }
-        else {
+        } else {
             high = mid - precision;
         }
     }
@@ -2896,9 +2738,7 @@ work.
 Therefore the implemented loop is:
 
 ```text
-O(100)
-=
-O(1)
+O(100) = O(1)
 ```
 
 for a fixed constant of 100 iterations.
@@ -2921,19 +2761,13 @@ D / 2^t <= epsilon
 so:
 
 ```text
-t
->=
-log2(D / epsilon)
+t >= log2(D / epsilon)
 ```
 
 Therefore the general complexity is:
 
 ```text
-O(
-    log2(
-        D / epsilon
-    )
-)
+O(log2(D / epsilon))
 ```
 
 ### Dry Run
@@ -2948,9 +2782,7 @@ epsilon = 1e-14
 Then conceptual precision-sized search space is roughly:
 
 ```text
-1e9 * 1e14
-=
-1e23
+1e9 * 1e14 = 1e23
 ```
 
 and:
@@ -3055,11 +2887,7 @@ D / 2^t <= epsilon
 Therefore:
 
 ```text
-t
->=
-log2(D / epsilon)
-=
-log2(D * 10^k)
+t >= log2(D / epsilon) = log2(D * 10^k)
 ```
 
 The full derivation is in §1.10.
@@ -3276,9 +3104,7 @@ is huge and you need many decimal places, a tiny fixed count may leave too much 
 Use:
 
 ```text
-log2(
-    (high-low) * 10^k
-)
+log2((high-low) * 10^k)
 ```
 
 to understand what is enough.
@@ -3351,9 +3177,7 @@ For another predicate shape, derive the direction again.
 For square root:
 
 ```text
-can(y)
-=
-(y² <= x)
+can(y) = (y² <= x)
 ```
 
 Shape:
@@ -3391,17 +3215,13 @@ D / 2^t
 Need:
 
 ```text
-D / 2^t
-<=
-10^-k
+D / 2^t <= 10^-k
 ```
 
 So:
 
 ```text
-t
->=
-log2(D * 10^k)
+t >= log2(D * 10^k)
 ```
 
 ## 60-Second Recognition

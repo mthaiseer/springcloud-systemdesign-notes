@@ -329,9 +329,7 @@ index = 3
 Number of values `<= 42`:
 
 ```text
-3 + 1
-=
-4
+3 + 1 = 4
 ```
 
 This is the same boundary idea later used for answer-space predicates.
@@ -393,11 +391,7 @@ B = count(values <= 3)
 So:
 
 ```text
-answer
-=
-9 - 3
-=
-6
+answer = 9 - 3 = 6
 ```
 
 ASCII:
@@ -411,17 +405,11 @@ ASCII:
 ### C++ STL
 
 ```cpp
-long long countLessOrEqualR =
-    upper_bound(a.begin(), a.end(), R)
-    - a.begin();
+long long countLessOrEqualR = upper_bound(a.begin(), a.end(), R) - a.begin();
 
-long long countLessOrEqualLMinusOne =
-    upper_bound(a.begin(), a.end(), L - 1)
-    - a.begin();
+long long countLessOrEqualLMinusOne = upper_bound(a.begin(), a.end(), L - 1) - a.begin();
 
-long long answer =
-    countLessOrEqualR
-    - countLessOrEqualLMinusOne;
+long long answer = countLessOrEqualR - countLessOrEqualLMinusOne;
 ```
 
 Per query:
@@ -635,9 +623,7 @@ speed >= 17 / 5
 Real value:
 
 ```text
-17 / 5
-=
-3.4
+17 / 5 = 3.4
 ```
 
 But speed is integer:
@@ -649,11 +635,7 @@ speed >= 4
 Therefore:
 
 ```text
-minimum speed
-=
-ceil(17 / 5)
-=
-4
+minimum speed = ceil(17 / 5) = 4
 ```
 
 Boolean shape:
@@ -673,9 +655,7 @@ F   F   F   F   T   T   T
 For positive integers:
 
 ```text
-ceil(a / b)
-=
-(a + b - 1) / b
+ceil(a / b) = (a + b - 1) / b
 ```
 
 Dry run:
@@ -686,13 +666,7 @@ b = 5
 ```
 
 ```text
-ceil(17/5)
-=
-(17 + 5 - 1) / 5
-=
-21 / 5
-=
-4
+ceil(17/5) = (17 + 5 - 1) / 5 = 21 / 5 = 4
 ```
 
 Visual:
@@ -714,17 +688,13 @@ groups = 4
 How many complete pieces of length `4` can be cut from length `19`?
 
 ```text
-19 / 4
-=
-4
+19 / 4 = 4
 ```
 
 because:
 
 ```text
-4 + 4 + 4 + 4
-=
-16
+4 + 4 + 4 + 4 = 16
 ```
 
 with:
@@ -805,9 +775,7 @@ speed >= ceil(43/6)
 ```
 
 ```text
-43 / 6
-=
-7 remainder 1
+43 / 6 = 7 remainder 1
 ```
 
 Therefore:
@@ -819,27 +787,11 @@ minimum speed = 8
 Check:
 
 ```text
-speed = 7
-
-7 * 6
-=
-42
-<
-43
-
-False
+speed = 7 7 * 6 = 42 < 43 False
 ```
 
 ```text
-speed = 8
-
-8 * 6
-=
-48
->=
-43
-
-True
+speed = 8 8 * 6 = 48 >= 43 True
 ```
 
 ASCII:
@@ -930,9 +882,7 @@ False
 So:
 
 ```text
-largest x with x*x <= 30
-=
-5
+largest x with x*x <= 30 = 5
 ```
 
 Boolean shape:
@@ -1001,9 +951,7 @@ LOW = max(a[i])
 One worker can do everything.
 
 ```text
-10 + 20 + 30 + 10
-=
-70
+10 + 20 + 30 + 10 = 70
 ```
 
 Therefore:
@@ -1033,13 +981,7 @@ impossible                    guaranteed feasible
 ### General rule
 
 ```text
-LOW
-=
-smallest value that could possibly work
-
-HIGH
-=
-some value guaranteed to work
+LOW = smallest value that could possibly work HIGH = some value guaranteed to work
 ```
 
 `HIGH` does not need to be tight.
@@ -1055,13 +997,7 @@ Before binary searching a predicate, prove an implication.
 For minimum-feasible problems:
 
 ```text
-can(X) = True
-and
-Y >= X
-
-⇒
-
-can(Y) = True
+can(X) = True and Y >= X ⇒ can(Y) = True
 ```
 
 ### Dry run
@@ -1103,9 +1039,7 @@ The same solution remains valid.
 So:
 
 ```text
-can(50) = True
-⇒
-can(60) = True
+can(50) = True ⇒ can(60) = True
 ```
 
 This gives:
@@ -1117,13 +1051,7 @@ F F F F T T T T
 For maximum-feasible problems, the direction is often:
 
 ```text
-can(X) = True
-and
-Y <= X
-
-⇒
-
-can(Y) = True
+can(X) = True and Y <= X ⇒ can(Y) = True
 ```
 
 giving:
@@ -1148,14 +1076,7 @@ ceil(items / capacity)
 Example:
 
 ```text
-items = 23
-capacity = 6
-
-groups
-=
-ceil(23/6)
-=
-4
+items = 23 capacity = 6 groups = ceil(23/6) = 4
 ```
 
 #### B. Number of pieces
@@ -1168,14 +1089,7 @@ floor(length / pieceSize)
 Example:
 
 ```text
-length = 25
-pieceSize = 6
-
-pieces
-=
-25 / 6
-=
-4
+length = 25 pieceSize = 6 pieces = 25 / 6 = 4
 ```
 
 #### C. Minimum rate
@@ -1235,9 +1149,7 @@ False
 So:
 
 ```text
-floor(sqrt(50))
-=
-7
+floor(sqrt(50)) = 7
 ```
 
 #### E. Search-space bounds
@@ -1390,9 +1302,7 @@ X = 70
 Fill worker 1:
 
 ```text
-10 + 20 + 30 + 10
-=
-70
+10 + 20 + 30 + 10 = 70
 ```
 
 So:
@@ -1404,9 +1314,7 @@ So:
 Fill worker 2:
 
 ```text
-10 + 20 + 30
-=
-60
+10 + 20 + 30 = 60
 ```
 
 So:
@@ -1463,9 +1371,7 @@ maximum worker load
 Choose candidate:
 
 ```text
-X
-=
-maximum load allowed for any worker
+X = maximum load allowed for any worker
 ```
 
 Now ask:
@@ -1525,9 +1431,7 @@ largest single workload:
 Total:
 
 ```text
-10+20+30+10+10+20+30+20
-=
-150
+10+20+30+10+10+20+30+20 = 150
 ```
 
 So:
@@ -1594,20 +1498,13 @@ groupSum <= 70 <= 80
 Therefore:
 
 ```text
-can(70) = True
-⇒
-can(80) = True
+can(70) = True ⇒ can(80) = True
 ```
 
 In general:
 
 ```text
-can(X) = True
-and
-Y >= X
-
-⇒
-can(Y) = True
+can(X) = True and Y >= X ⇒ can(Y) = True
 ```
 
 So the boolean shape is:
@@ -1668,19 +1565,13 @@ X = 50
 Worker 1:
 
 ```text
-10 + 20
-=
-30
+10 + 20 = 30
 ```
 
 Try adding `30`:
 
 ```text
-30 + 30
-=
-60
->
-50
+30 + 30 = 60 > 50
 ```
 
 So cut:
@@ -2216,11 +2107,7 @@ can(X):
 #include <bits/stdc++.h>
 using namespace std;
 
-bool canSplit(
-    const vector<long long>& workloads,
-    int workerLimit,
-    long long maximumAllowedLoad
-) {
+bool canSplit(const vector<long long>& workloads, int workerLimit, long long maximumAllowedLoad) {
     int workersUsed = 1;
     long long currentWorkerLoad = 0;
 
@@ -2228,12 +2115,10 @@ bool canSplit(
         if (workload > maximumAllowedLoad)
             return false;
 
-        if (currentWorkerLoad + workload
-            <= maximumAllowedLoad) {
+        if (currentWorkerLoad + workload <= maximumAllowedLoad) {
 
             currentWorkerLoad += workload;
-        }
-        else {
+        } else {
             workersUsed++;
             currentWorkerLoad = workload;
 
@@ -2252,8 +2137,7 @@ int main() {
     int numberOfWorkloads;
     int numberOfWorkers;
 
-    cin >> numberOfWorkloads
-        >> numberOfWorkers;
+    cin >> numberOfWorkloads >> numberOfWorkers;
 
     vector<long long> workloads(numberOfWorkloads);
 
@@ -2270,19 +2154,13 @@ int main() {
     long long answer = high;
 
     while (low <= high) {
-        long long mid =
-            low + (high - low) / 2;
+        long long mid = low + (high - low) / 2;
 
-        if (canSplit(
-                workloads,
-                numberOfWorkers,
-                mid
-            )) {
+        if (canSplit( workloads, numberOfWorkers, mid )) {
 
             answer = mid;
             high = mid - 1;
-        }
-        else {
+        } else {
             low = mid + 1;
         }
     }
@@ -2354,9 +2232,7 @@ maximum part sum
 think:
 
 ```text
-candidate X
-=
-maximum allowed part sum
+candidate X = maximum allowed part sum
 ```
 
 Then:
@@ -2369,11 +2245,7 @@ HIGH = total sum
 Predicate:
 
 ```text
-can(X)
-=
-can we split in order
-into <= K groups
-with each sum <= X?
+can(X) = can we split in order into <= K groups with each sum <= X?
 ```
 
 Shape:
@@ -2422,21 +2294,16 @@ F F F F F T T T T
 Template:
 
 ```cpp
-long long firstTrue(
-    long long low,
-    long long high
-) {
+long long firstTrue(long long low, long long high) {
     long long answer = high;
 
     while (low <= high) {
-        long long mid =
-            low + (high - low) / 2;
+        long long mid = low + (high - low) / 2;
 
         if (predicate(mid)) {
             answer = mid;
             high = mid - 1;
-        }
-        else {
+        } else {
             low = mid + 1;
         }
     }
@@ -2482,21 +2349,16 @@ T T T T T F F F F
 Template:
 
 ```cpp
-long long lastTrue(
-    long long low,
-    long long high
-) {
+long long lastTrue(long long low, long long high) {
     long long answer = low;
 
     while (low <= high) {
-        long long mid =
-            low + (high - low) / 2;
+        long long mid = low + (high - low) / 2;
 
         if (predicate(mid)) {
             answer = mid;
             low = mid + 1;
-        }
-        else {
+        } else {
             high = mid - 1;
         }
     }
@@ -2527,8 +2389,7 @@ but maybe a larger value also works
 Use:
 
 ```cpp
-long long mid =
-    low + (high - low) / 2;
+long long mid = low + (high - low) / 2;
 ```
 
 instead of:
