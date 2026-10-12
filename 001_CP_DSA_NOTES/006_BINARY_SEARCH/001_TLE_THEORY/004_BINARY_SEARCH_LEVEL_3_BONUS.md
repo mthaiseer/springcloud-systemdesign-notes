@@ -1024,100 +1024,61 @@ can(x) = [Σ floor(a[i] / x) >= K]
 
 ## 2.6 Why `floor(length / x)`
 
-Suppose:
+This is the direct application of prerequisite **§1.5**.
+
+For a rope of length `L` and candidate piece length `x`:
 
 ```text
-rope = 8
-x = 3
+pieces = floor(L / x)
 ```
 
-Then:
+because only **complete** pieces count.
+
+Example:
 
 ```text
-8 / 3 = 2.666...
+L = 8, x = 3
+floor(8/3) = 2
 ```
 
-But we cannot produce:
-
-```text
-0.666...
-```
-
-of a complete piece.
-
-Actual cut:
+Visual:
 
 ```text
 [3][3] + leftover 2
 ```
 
-So:
+So the checker always adds:
 
 ```text
-floor(8/3) = 2
+floor(a[i] / x)
 ```
 
-### Another Example
-
-```text
-rope = 10
-x = 5
-```
-
-```text
-floor(10/5) = 2
-```
-
-Exact cut:
-
-```text
-[5][5]
-```
+for each rope.
 
 ---
 
 ## 2.7 Monotonicity
 
-Suppose a piece length:
+This is the problem-specific use of prerequisite **§1.6**.
+
+If a candidate piece length `x` works, any smaller piece length also works.
+
+Why?
+
+For every rope:
 
 ```text
-x
+smaller x
+→ floor(length / x) stays same or increases
+→ totalPieces stays same or increases
 ```
 
-works.
-
-Then any smaller piece length:
+Therefore:
 
 ```text
-y < x
-```
-
-also works because each rope can produce the same number or more pieces.
-
-Example:
-
-```text
-rope = 10
-```
-
-```text
-x = 5 → 2 pieces
-x = 4 → 2 pieces
-x = 2 → 5 pieces
-```
-
-So if:
-
-```text
-can(5) = True
-```
-
-then:
-
-```text
-can(4) = True
-can(3) = True
-can(2) = True
+can(x) = True
+⇒
+can(y) = True for every y < x
 ```
 
 Predicate shape:
@@ -1129,7 +1090,7 @@ T T T T T T F F F F
       last True
 ```
 
-This proves binary search is valid.
+So binary search is valid, and we want the **largest feasible** `x`.
 
 ---
 
@@ -1192,30 +1153,14 @@ ropes = [8,4,6,10]
 K = 4
 ```
 
-### Candidate x = 4
-
-```text
-8/4  → 2
-4/4  → 1
-6/4  → 1
-10/4 → 2
-```
-
-```text
-total = 6
-```
-
-So:
-
-```text
-6 >= 4
-```
+The small dry run in **§2.3** already established:
 
 ```text
 can(4) = True
+can(6) = False
 ```
 
----
+Now zoom in near the boundary.
 
 ### Candidate x = 5
 
@@ -1227,16 +1172,14 @@ floor(10/5) = 2
 ```
 
 ```text
-total = 4
+total = 1 + 0 + 1 + 2 = 4
 ```
 
-So:
+Therefore:
 
 ```text
 can(5) = True
 ```
-
----
 
 ### Candidate x = 5.1
 
@@ -1248,16 +1191,16 @@ floor(10/5.1) = 1
 ```
 
 ```text
-total = 3
+total = 1 + 0 + 1 + 1 = 3
 ```
 
-So:
+Therefore:
 
 ```text
 can(5.1) = False
 ```
 
-Therefore:
+Hence the boundary is:
 
 ```text
 maximum feasible x = 5
@@ -1572,11 +1515,10 @@ besides input storage.
 When you see:
 
 ```text
-cut items
-into equal-size pieces
-
+equal-size pieces
++
 need at least K pieces
-
++
 maximize piece size
 ```
 
@@ -1584,27 +1526,17 @@ think:
 
 ```text
 candidate x = piece size
+can(x) = [Σ floor(a[i]/x) >= K]
 ```
 
-Checker:
+Direction:
 
 ```text
-Σ floor(a[i]/x) >= K
+smaller x → easier
+larger x  → harder
 ```
 
-Monotonicity:
-
-```text
-smaller x
-→ more pieces
-→ easier
-
-larger x
-→ fewer pieces
-→ harder
-```
-
-So:
+Therefore:
 
 ```text
 T T T T F F F
@@ -1721,83 +1653,39 @@ So expected answer:
 
 ## 3.3 Small Dry Run First
 
-Start:
+Use:
 
 ```text
-reachable = [0,0]
-```
-
-Try:
-
-```text
+segments = [1,2], [3,6], [3,4]
+start = 0
 x = 2
 ```
 
-### Segment 1 = [1,2]
-
-Expand current interval by `2`:
+Start reachable interval:
 
 ```text
-[0-2, 0+2] = [-2,2]
+[0,0]
 ```
 
-Intersect:
+Process only the first segment to see the idea:
 
 ```text
+expand by x:
+[0-2, 0+2] = [-2,2]
+
+intersect with [1,2]:
 [-2,2] ∩ [1,2] = [1,2]
 ```
 
-So after segment 1:
+So after the first segment:
 
 ```text
 reachable = [1,2]
 ```
 
----
+The same **expand → intersect** transition is repeated for every next segment.
 
-### Segment 2 = [3,6]
-
-Expand:
-
-```text
-[1-2, 2+2] = [-1,4]
-```
-
-Intersect:
-
-```text
-[-1,4] ∩ [3,6] = [3,4]
-```
-
-So:
-
-```text
-reachable = [3,4]
-```
-
----
-
-### Segment 3 = [3,4]
-
-Expand:
-
-```text
-[3-2, 4+2] = [1,6]
-```
-
-Intersect:
-
-```text
-[1,6] ∩ [3,4] = [3,4]
-```
-
-Still non-empty.
-
-Therefore:
-
-```text
-canJump(2) = True
-```
+The complete end-to-end `x = 2` dry run is kept once in **§3.10**.
 
 ---
 
@@ -1844,182 +1732,115 @@ FIRST TRUE
 
 ## 3.5 What Positions Are Reachable After One Jump?
 
-Suppose before the next jump we may currently be anywhere inside:
+This applies prerequisite **§1.7**.
+
+If current reachable positions are:
 
 ```text
 [L,R]
 ```
 
-With maximum jump:
+and maximum jump is:
 
 ```text
 x
 ```
 
-from `L` we can reach left to:
+then before applying the next segment restriction:
 
 ```text
-L-x
+reachable after one jump = [L-x, R+x]
 ```
 
-from `R` we can reach right to:
+Example:
 
 ```text
-R+x
+current = [3,4], x = 2
+→ expanded = [1,6]
 ```
 
-So all positions reachable in one jump lie in:
-
-```text
-[L-x, R+x]
-```
-
-### Dry Run
-
-```text
-current = [3,4]
-x = 2
-```
-
-Expanded:
-
-```text
-[3-2, 4+2] = [1,6]
-```
-
-ASCII:
-
-```text
-current:
-        [3---4]
-
-after jump <= 2:
-    [1-----------6]
-```
+The interval represents **all** positions reachable after one jump.
 
 ---
 
 ## 3.6 Intersect With the Next Segment
 
-The next landing must satisfy two conditions:
+This applies prerequisite **§1.8**.
+
+The next position must be both:
 
 ```text
-1. reachable from previous positions
-2. inside the required segment
+reachable from the previous interval
+AND
+inside the next required segment
 ```
 
-Therefore:
+So if:
 
 ```text
-nextReachable = expandedRange ∩ nextSegment
-```
-
-If:
-
-```text
-expandedRange = [A,B]
-segment       = [L,R]
+expanded = [A,B]
+segment  = [L,R]
 ```
 
 then:
 
 ```text
-nextLeft = max(A,L)
-nextRight = min(B,R)
+nextReachable = [max(A,L), min(B,R)]
 ```
 
-Feasible iff:
+Valid iff:
 
 ```text
-nextLeft <= nextRight
+max(A,L) <= min(B,R)
 ```
 
-### Dry Run
+Example:
 
 ```text
 expanded = [-1,4]
 segment  = [3,6]
-```
 
-Intersection:
-
-```text
-[max(-1,3), min(4,6)] = [3,4]
-```
-
-ASCII:
-
-```text
-expanded: [-1----------------4]
-segment:             [3------------6]
-
-result:              [3----4]
+nextReachable = [max(-1,3), min(4,6)] = [3,4]
 ```
 
 ---
 
 ## 3.7 Build `canJump(x)`
 
-Start before any segment:
+This is the full checker built from prerequisites **§1.7–§1.9**.
+
+Start:
 
 ```text
 left = 0
 right = 0
 ```
 
-For every segment:
+For every segment `[Li,Ri]`:
 
 ```text
-[segmentLeft, segmentRight]
-```
+1. expand by x
+   [left-x, right+x]
 
-### Step 1 — Expand
+2. intersect with segment
+   left  = max(left-x, Li)
+   right = min(right+x, Ri)
 
-```text
-left  = left - x
-right = right + x
-```
-
-### Step 2 — Intersect
-
-```text
-left  = max(left, segmentLeft)
-right = min(right, segmentRight)
-```
-
-### Step 3 — Check
-
-If:
-
-```text
-left > right
-```
-
-then no valid landing position remains.
-
-Return:
-
-```text
-False
+3. if left > right
+   → no reachable position remains
+   → return false
 ```
 
 If every segment is processed:
 
 ```text
-True
+return true
 ```
 
-### Compact Transition
+Compact transition:
 
 ```text
 [L,R] → [L-x,R+x] → intersection with [Li,Ri]
-```
-
-Equivalent update:
-
-```text
-L = max(L-x, Li)
-R = min(R+x, Ri)
 ```
 
 ---
@@ -2032,33 +1853,21 @@ Suppose:
 canJump(x) = True
 ```
 
-Now allow a larger maximum jump:
+Now allow:
 
 ```text
 y >= x
 ```
 
-Every jump that was valid with maximum distance `x` is still valid with limit `y`.
+Every jump that was valid with limit `x` is still valid with the larger limit `y`.
 
-Also, every expanded reachable range becomes the same size or larger:
-
-```text
-[L-x,R+x]
-```
-
-becomes:
+Equivalently:
 
 ```text
-[L-y,R+y]
+larger jump limit
+→ reachable interval stays same or expands
+→ intersections cannot become harder only because of the larger limit
 ```
-
-where:
-
-```text
-y >= x
-```
-
-So increasing the allowed jump cannot destroy an existing path.
 
 Therefore:
 
@@ -2077,7 +1886,7 @@ F F F F F T T T T
       first True
 ```
 
-Binary search is valid.
+So binary search is valid.
 
 ---
 
@@ -2579,48 +2388,36 @@ O(1)
 When you see:
 
 ```text
-start from a point
-
+start from one point
++
 visit segments in order
-
-each move has maximum distance X
-
++
+each jump has maximum distance X
++
 minimize X
 ```
 
 think:
 
 ```text
-candidate x = allowed jump
+candidate x = max jump
 ```
 
-Do **not** track one exact position.
+Do not track one exact position.
 
 Track:
 
 ```text
-all currently reachable positions
-=
-interval [L,R]
+all reachable positions = interval [L,R]
 ```
 
 Transition:
 
 ```text
-[L,R]
-→ expand by x
-→ [L-x,R+x]
-→ intersect with next segment
+[L,R] → [L-x,R+x] → intersect with next segment
 ```
 
-Checker:
-
-```text
-does reachable interval remain non-empty
-through all segments?
-```
-
-Monotonicity:
+Direction:
 
 ```text
 bigger x
@@ -2628,7 +2425,7 @@ bigger x
 → easier
 ```
 
-So:
+Therefore:
 
 ```text
 F F F F T T T
@@ -2642,7 +2439,7 @@ Technique:
 ```text
 Binary Search on Answer
 +
-Interval DP / Reachable Range
+Reachable Interval
 ```
 
 ---
@@ -2975,6 +2772,7 @@ maintain possible positions?
 ## One Sentence to Remember
 
 ```text
-Binary Search Level 3 is mostly about inventing the checker:
-once `can(x)` is correct and monotonic, the binary search itself is routine.
+Invent checker(x) first.
+Prove it is monotonic.
+Then binary search the required boundary.
 ```
