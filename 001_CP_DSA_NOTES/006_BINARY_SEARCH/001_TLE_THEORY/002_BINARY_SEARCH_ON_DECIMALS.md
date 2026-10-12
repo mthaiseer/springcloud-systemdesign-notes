@@ -108,9 +108,10 @@ BINARY SEARCH
 └── Real / decimal search space
     ├── infinitely many candidates
     ├── no universal "next real"
-    ├── use low = mid / high = mid
-    ├── require precision / tolerance
-    └── run fixed number of iterations
+    ├── use a tiny precision step
+    ├── low = mid + precision
+    ├── high = mid - precision
+    └── run a fixed number of iterations
 ```
 
 For square root:
@@ -530,17 +531,53 @@ New interval:
 [3.5, 5]
 ```
 
-For real binary search:
+For the **lecture implementation**, after checking `mid`:
 
 ```text
 predicate(mid) = True
-→ low = mid
+→ answer = max(answer, mid)
+→ low = mid + precision
 
 predicate(mid) = False
-→ high = mid
+→ high = mid - precision
 ```
 
-We keep shrinking the interval containing the boundary.
+The important point is:
+
+```text
+precision is tiny
+```
+
+so we move past the tested value without making a huge integer-style jump.
+
+### Tiny Dry Run
+
+Suppose:
+
+```text
+mid = 3.125
+precision = 0.001
+```
+
+and:
+
+```text
+mid² <= x
+```
+
+Then:
+
+```text
+answer = max(answer, 3.125)
+
+low
+=
+3.125 + 0.001
+=
+3.126
+```
+
+We continue searching to the right for a larger valid value.
 
 ---
 
@@ -1843,105 +1880,143 @@ T       F
 
 ---
 
-## 3.3 Why low = mid + 1 Does Not Work
+## 3.3 Why `low = mid + 1` Does Not Work — Use `precision`
 
-### Section Dry Run
-
-Suppose:
+For integers:
 
 ```text
-low = 3
-high = 4
-mid = 3.5
+next candidate after 5
+=
+6
 ```
 
-If `mid` is too large:
+so:
 
-```text
-high = 3.5
+```cpp
+low = mid + 1;
 ```
 
-so the new interval is:
+makes sense.
+
+For real numbers, after:
 
 ```text
-[3, 3.5]
+3.125
 ```
 
-If `mid` were valid and we incorrectly used integer logic:
+there is no unique next real number.
+
+The actual answer might be:
 
 ```text
-low = mid + 1
+3.162277...
 ```
 
-we would get:
+So this is wrong:
 
-```text
-low = 4.5
-```
-
-which jumps over the real answer near:
-
-```text
-3.162...
-```
-
-The same issue appears at:
-
-```text
-mid = 3.125
+```cpp
+low = mid + 1;
 ```
 
 because:
 
 ```text
-mid + 1
+3.125 + 1
 =
 4.125
 ```
 
-again skips the real boundary.
+and we jump over the answer.
 
-Could we use:
+### Lecture Fix
 
-```text
-low = mid + 0.1
-```
-
-instead?
-
-That also depends on the requested precision. For six decimal places we might need a scale like:
+Use a very small step:
 
 ```text
-0.000001
+precision
 ```
 
-and for another problem the scale may differ.
-
-There is no universal:
+For example:
 
 ```text
-+1
+precision = 1e-14
 ```
 
-or fixed decimal step for real numbers.
+Then:
 
-Therefore:
+```cpp
+low = mid + precision;
+high = mid - precision;
+```
+
+### Dry Run
+
+Suppose:
 
 ```text
-True
-→ low = mid
-
-False
-→ high = mid
+mid = 3.125
+precision = 0.001
 ```
 
-and precision is controlled by:
+and `mid` is valid.
+
+Then:
 
 ```text
-number of halvings
+low
+=
+3.125 + 0.001
+=
+3.126
 ```
 
-not by a manually chosen increment.
+This moves only a tiny amount to the right.
+
+If:
+
+```text
+mid = 3.25
+```
+
+is invalid:
+
+```text
+high
+=
+3.25 - 0.001
+=
+3.249
+```
+
+ASCII:
+
+```text
+3.125                         3.25
+  T                             F
+  |                             |
+  v                             v
+low = 3.126              high = 3.249
+```
+
+### Why Fixed Iterations Are Still Used
+
+With floating point, `low` and `high` can become extremely close and may even cross because of the precision step.
+
+So the lecture does **not** rely on:
+
+```text
+while (low <= high)
+```
+
+It uses:
+
+```text
+iterations = 100
+```
+
+and runs exactly 100 binary-search steps.
+
+That makes termination guaranteed.
 
 ---
 
@@ -2506,264 +2581,309 @@ ASCII:
 
 ## 3.9 Algorithm
 
-### Section Dry Run
+The lecture implementation uses:
 
-For:
+```text
+precision = very small value
+iterations = 100
+```
+
+and keeps the best valid midpoint in:
+
+```text
+answer
+```
+
+### Dry Run
+
+Take:
 
 ```text
 x = 10
-k = 3 decimal places
+precision = 0.001
 ```
 
-Start:
+Suppose current:
 
 ```text
-low = 0
-high = 10
+low = 3
+high = 3.5
 ```
 
-After enough iterations, suppose:
+Then:
 
 ```text
-low  = 3.1621
-high = 3.1624
+mid
+=
+(3 + 3.5) / 2
+=
+3.25
 ```
 
-Width:
+Check:
 
 ```text
-0.0003
+3.25²
+=
+10.5625
+>
+10
 ```
 
-which is below:
+So:
 
 ```text
-0.001
+high
+=
+3.25 - 0.001
+=
+3.249
 ```
 
-So this is enough for roughly 3-decimal resolution.
+Next midpoint is taken from the smaller interval.
+
+If a midpoint is valid:
+
+```text
+mid² <= x
+```
+
+we do:
+
+```text
+answer = max(answer, mid)
+low = mid + precision
+```
+
+### Pseudocode
 
 ```text
 INPUT:
 x
-required decimal places k
 
 low = 0
-high = x
+high = max(1, x)
 
-width =
-high - low
+precision = 1e-14
+answer = 0
 
-iterations =
-ceil(
-    log2(
-        width * 10^k
-    )
-)
-+ a few extra iterations
+iterations = 100
 
-repeat iterations times:
+repeat 100 times:
 
     mid =
         (low + high) / 2
 
     if mid² <= x:
 
-        // mid is feasible
-        // answer may be larger
+        answer =
+            max(answer, mid)
 
-        low = mid
+        low =
+            mid + precision
 
     else:
 
-        // mid is too large
+        high =
+            mid - precision
 
-        high = mid
-
-answer ≈ low
+print answer
 ```
 
-For a general `TTTTFFFF` real predicate:
+### Why `answer = max(answer, mid)`?
+
+We are searching for:
 
 ```text
-True
-→ low = mid
-
-False
-→ high = mid
+the highest valid real value
 ```
 
-For the opposite monotonic shape:
+Whenever:
 
 ```text
-FFFFTTTT
+mid² <= x
 ```
 
-the movement direction changes according to which boundary is required.
+that `mid` is a valid candidate.
+
+So we preserve the best one seen so far:
+
+```text
+answer = max(answer, mid)
+```
 
 ---
 
 ## 3.10 C++17
+
+This version follows the lecture code style from the screenshot:
+
+```text
+setprecision(18) << fixed
+iterations = 100
+answer = max(answer, mid)
+low  = mid + precision
+high = mid - precision
+```
 
 ### Expected Code Result
 
 Input:
 
 ```text
-10 6
+10
 ```
 
-Expected output approximately:
+Output is approximately:
 
 ```text
-3.162278
+3.162277660168379...
 ```
 
-Input:
+The exact printed trailing digits depend on floating-point representation.
 
-```text
-25 4
-```
-
-Expected output:
-
-```text
-5.0000
-```
+### Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-long double squareRootDecimal(
-    long double x,
-    int decimalPlaces
-) {
-    long double low = 0.0L;
-
-    long double high =
-        max(1.0L, x);
-
-    long double width =
-        high - low;
-
-    long double scale =
-        powl(10.0L, decimalPlaces);
-
-    long double candidateCount =
-        max(
-            1.0L,
-            width * scale
-        );
-
-    int iterations =
-        (int)ceill(
-            log2l(candidateCount)
-        )
-        + 5;
-
-    for (int iteration = 0;
-         iteration < iterations;
-         ++iteration) {
-
-        long double mid =
-            (low + high) / 2.0L;
-
-        if (mid * mid <= x) {
-            low = mid;
-        }
-        else {
-            high = mid;
-        }
-    }
-
-    return low;
-}
-
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    long double x;
-    int decimalPlaces;
+    double x;
+    cin >> x;
 
-    cin >> x >> decimalPlaces;
+    double low = 0.0;
+    double high = max(1.0, x);
 
-    long double answer =
-        squareRootDecimal(
-            x,
-            decimalPlaces
-        );
+    double precision = 1e-14;
+    double answer = 0.0;
 
-    cout << fixed
-         << setprecision(decimalPlaces)
-         << answer
-         << '\n';
+    cout << setprecision(18) << fixed;
+
+    int iterations = 100;
+
+    for (int i = 0; i < iterations; ++i) {
+        double mid = (low + high) / 2.0;
+
+        if (mid * mid <= x) {
+            answer = max(answer, mid);
+            low = mid + precision;
+        }
+        else {
+            high = mid - precision;
+        }
+    }
+
+    cout << answer << '
+';
 
     return 0;
 }
 ```
 
-### Code meaning
+### Code Dry Run
+
+Suppose:
 
 ```text
-powl(10, decimalPlaces)
+x = 10
+precision = 0.001
 ```
 
-creates:
+and current state is:
 
 ```text
-10^k
+low  = 3.0
+high = 3.5
 ```
 
-The iteration formula comes from:
+Then:
 
 ```text
-(high-low) / 2^t
-<=
-10^-k
+mid = 3.25
 ```
 
-The extra:
+Check:
 
 ```text
-+5
+3.25² = 10.5625 > 10
 ```
 
-is simply a small safety margin after the mathematically required count.
+So:
+
+```text
+high = 3.25 - 0.001
+     = 3.249
+```
+
+Later suppose:
+
+```text
+mid = 3.125
+```
+
+Check:
+
+```text
+3.125² = 9.765625 <= 10
+```
+
+Then:
+
+```text
+answer = max(answer, 3.125)
+low    = 3.125 + 0.001
+       = 3.126
+```
+
+### Why 100 Iterations?
+
+The lecture comments reason in terms of:
+
+```text
+iterations
+≈
+log2(search space)
+```
+
+For a very large range and very fine precision, the needed count is still only on the order of tens of halvings.
+
+Using:
+
+```text
+100
+```
+
+is a simple safe constant for the demonstrated constraints.
+
+### Why `setprecision(18) << fixed`?
+
+```cpp
+cout << setprecision(18) << fixed;
+```
+
+means:
+
+```text
+print 18 digits after the decimal point
+```
+
+It controls display precision.
+
+The binary-search iterations and the `precision` step control the actual approximation.
 
 ---
 
 ## 3.11 Complexity
 
-Let:
+In the lecture implementation:
 
 ```text
-D = high - low
-k = required decimal places
+iterations = 100
 ```
-
-Required iterations:
-
-```text
-O(
-    log2(
-        D * 10^k
-    )
-)
-```
-
-Using log rules:
-
-```text
-log2(D * 10^k)
-=
-log2(D)
-+
-k * log2(10)
-```
-
-So every extra decimal digit adds only a constant number of binary-search iterations.
 
 Each iteration does:
 
@@ -2773,42 +2893,93 @@ O(1)
 
 work.
 
-Therefore:
+Therefore the implemented loop is:
 
 ```text
-Time:
-O(
-    log(
-        (high-low) * 10^k
-    )
-)
-
-Space:
+O(100)
+=
 O(1)
 ```
 
-### Section Dry Run
+for a fixed constant of 100 iterations.
 
-From the iteration math in §1.10:
+### General Mathematical View
 
-```text
-D = 100
-k = 3
-```
-
-needs about:
+If instead we derive the required number of iterations from:
 
 ```text
-17 iterations
+search width = D
+precision ≈ epsilon
 ```
 
-because:
+then we need roughly:
 
 ```text
-2^17 = 131072 > 100000
+D / 2^t <= epsilon
 ```
 
-So even many decimal candidates still require only a small number of binary-search steps.
+so:
+
+```text
+t
+>=
+log2(D / epsilon)
+```
+
+Therefore the general complexity is:
+
+```text
+O(
+    log2(
+        D / epsilon
+    )
+)
+```
+
+### Dry Run
+
+Suppose:
+
+```text
+D = 1e9
+epsilon = 1e-14
+```
+
+Then conceptual precision-sized search space is roughly:
+
+```text
+1e9 * 1e14
+=
+1e23
+```
+
+and:
+
+```text
+log2(1e23)
+```
+
+is only on the order of:
+
+```text
+~80
+```
+
+iterations.
+
+So:
+
+```text
+100 iterations
+```
+
+is comfortably enough for this lecture-style implementation.
+
+Space:
+
+```text
+O(1)
+```
 
 ---
 
@@ -2847,8 +3018,10 @@ Then:
 2. define monotonic predicate
 3. determine True/False shape
 4. calculate enough iterations
-5. use low=mid / high=mid
-6. print required precision
+5. use a tiny `precision` step
+6. keep the best valid midpoint in `answer`
+7. run a fixed number of iterations
+8. print with the required precision
 ```
 
 In general, if a problem asks for a maximum/minimum real `X` under a monotonic condition and accepts an error tolerance, use the same model.
@@ -2973,11 +3146,19 @@ gives:
 
 which destroys the search.
 
-Correct:
+Lecture-style correction:
 
 ```text
-low = mid
+low = mid + precision
 ```
+
+where:
+
+```text
+precision
+```
+
+is a very small value tied to the required accuracy.
 
 Why?
 
@@ -2987,25 +3168,38 @@ there is no universal next real number
 
 ---
 
-### Mistake 2 — Using a magic epsilon step
+### Mistake 2 — Using an Arbitrary Precision Step
+
+The lecture **does** use:
+
+```cpp
+low = mid + precision;
+high = mid - precision;
+```
+
+The mistake is choosing `precision` randomly.
 
 Example:
 
-```cpp
-low = mid + 0.000001;
+```text
+required accuracy ≈ 1e-14
 ```
 
-This hard-codes the precision into the boundary movement.
+Then a lecture-style choice is:
 
-Better:
+```cpp
+double precision = 1e-14;
+```
+
+So the step should match the required scale.
+
+Also keep:
 
 ```text
-low = mid
-high = mid
-
-+
-fixed number of halvings
+fixed iterations
 ```
+
+so the loop always terminates even if `low` crosses `high`.
 
 ---
 
@@ -3171,14 +3365,15 @@ T T T T T T F F F
        sqrt(x)
 ```
 
-Update:
+Lecture-style update:
 
 ```text
 True
-→ low = mid
+→ answer = max(answer, mid)
+→ low = mid + precision
 
 False
-→ high = mid
+→ high = mid - precision
 ```
 
 Precision math:
@@ -3230,7 +3425,7 @@ BINARY SEARCH ON DECIMALS
 ## One sentence to remember
 
 ```text
-For decimals, we do not move to the "next value";
-we repeatedly halve the uncertainty until it is smaller
-than the required precision.
+For decimals, there is no universal "next value";
+the lecture uses a tiny precision step around `mid`
+and a fixed number of binary-search iterations.
 ```
