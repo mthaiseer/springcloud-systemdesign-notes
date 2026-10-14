@@ -924,57 +924,11 @@ Because the array is sorted.
 ```text
 arr = [1,5,10,15,21,35,100]
 x = 35
-```
 
-### Iteration 1
+Iter 1: low=0, high=6 → mid=3 → arr[3]=15 < 35 → search RIGHT → low=4
+Iter 2: low=4, high=6 → mid=5 → arr[5]=35 == 35 → FOUND
 
-```text
-low = 0
-high = 6
-mid = 3
-arr[mid] = 15
-```
-
-```text
-15 < 35
-```
-
-So:
-
-```text
-low = 4
-```
-
-### Iteration 2
-
-```text
-low = 4
-high = 6
-mid = 5
-arr[mid] = 35
-```
-
-Found:
-
-```text
 answer = 5
-```
-
-ASCII:
-
-```text
-[1,5,10,15,21,35,100]
- 0 1  2  3  4  5   6
-          ^
-        mid=3
-
-discard left side
-
-            [21,35,100]
-              4  5  6
-                 ^
-               mid=5
-               found
 ```
 
 ---
@@ -1157,89 +1111,14 @@ So search right.
 ## 3.4 Detailed Dry Run
 
 ```text
-[0,0,0,0,1,1,1,1,1]
- 0 1 2 3 4 5 6 7 8
-```
+arr = [0,0,0,0,1,1,1,1,1]
 
-### Iteration 1
+Iter 1: low=0, high=8 → mid=4 → arr[4]=1 → save ans=4 → search LEFT → high=3
+Iter 2: low=0, high=3 → mid=1 → arr[1]=0 → search RIGHT → low=2
+Iter 3: low=2, high=3 → mid=2 → arr[2]=0 → search RIGHT → low=3
+Iter 4: low=3, high=3 → mid=3 → arr[3]=0 → search RIGHT → low=4
 
-```text
-low = 0
-high = 8
-mid = 4
-```
-
-```text
-arr[4] = 1
-```
-
-Save:
-
-```text
-ans = 4
-```
-
-Go left:
-
-```text
-high = 3
-```
-
-### Iteration 2
-
-```text
-low = 0
-high = 3
-mid = 1
-```
-
-```text
-arr[1] = 0
-```
-
-Go right:
-
-```text
-low = 2
-```
-
-### Iteration 3
-
-```text
-low = 2
-high = 3
-mid = 2
-```
-
-```text
-0
-```
-
-Go right:
-
-```text
-low = 3
-```
-
-### Iteration 4
-
-```text
-mid = 3
-arr[3] = 0
-```
-
-Go right:
-
-```text
-low = 4
-```
-
-Stop.
-
-Answer:
-
-```text
-4
+answer = 4
 ```
 
 ---
@@ -1405,94 +1284,12 @@ first True of arr[i] >= x
 ```text
 arr = [1,1,3,5,5,5,7,7,9]
 x = 5
-```
 
-Initial:
+Iter 1: low=0, high=8 → mid=4 → arr[4]=5 >= 5 → save ans=4 → search LEFT → high=3
+Iter 2: low=0, high=3 → mid=1 → arr[1]=1 < 5  → search RIGHT → low=2
+Iter 3: low=2, high=3 → mid=2 → arr[2]=3 < 5  → search RIGHT → low=3
+Iter 4: low=3, high=3 → mid=3 → arr[3]=5 >= 5 → save ans=3 → search LEFT → high=2
 
-```text
-low = 0
-high = 8
-answer = 9
-```
-
-### Iteration 1
-
-```text
-mid = 4
-arr[4] = 5
-```
-
-Check:
-
-```text
-5 >= 5
-True
-```
-
-Save:
-
-```text
-answer = 4
-```
-
-Search left:
-
-```text
-high = 3
-```
-
-### Iteration 2
-
-```text
-mid = 1
-arr[1] = 1
-```
-
-```text
-1 >= 5
-False
-```
-
-Search right:
-
-```text
-low = 2
-```
-
-### Iteration 3
-
-```text
-low = 2
-high = 3
-mid = 2
-arr[2] = 3
-```
-
-False:
-
-```text
-low = 3
-```
-
-### Iteration 4
-
-```text
-mid = 3
-arr[3] = 5
-```
-
-True:
-
-```text
-answer = 3
-high = 2
-```
-
-Stop.
-
-Result:
-
-```text
 lower_bound = 3
 ```
 
@@ -1686,75 +1483,13 @@ upper_bound(5) = 6
 ## 5.4 Detailed Dry Run
 
 ```text
-low = 0
-high = 8
-answer = 9
-```
+arr = [1,1,3,5,5,5,7,7,9]
+x = 5
 
-### Iteration 1
+Iter 1: low=0, high=8 → mid=4 → arr[4]=5 <= 5 → search RIGHT → low=5
+Iter 2: low=5, high=8 → mid=6 → arr[6]=7 > 5  → save ans=6 → search LEFT → high=5
+Iter 3: low=5, high=5 → mid=5 → arr[5]=5 <= 5 → search RIGHT → low=6
 
-```text
-mid = 4
-arr[4] = 5
-```
-
-Check:
-
-```text
-5 > 5
-False
-```
-
-Go right:
-
-```text
-low = 5
-```
-
-### Iteration 2
-
-```text
-low = 5
-high = 8
-mid = 6
-arr[6] = 7
-```
-
-```text
-7 > 5
-True
-```
-
-Save:
-
-```text
-answer = 6
-```
-
-Go left:
-
-```text
-high = 5
-```
-
-### Iteration 3
-
-```text
-mid = 5
-arr[5] = 5
-```
-
-False:
-
-```text
-low = 6
-```
-
-Stop.
-
-Result:
-
-```text
 upper_bound = 6
 ```
 
@@ -2018,81 +1753,14 @@ rotated array
 
 ```text
 arr = [3,5,9,1,2]
-```
 
-Initialize:
+check(i) = arr[i] < arr[0] = arr[i] < 3
 
-```text
-low = 0
-high = 4
-answer = 0
-```
+Iter 1: low=0, high=4 → mid=2 → arr[2]=9 → check=False → search RIGHT → low=3
+Iter 2: low=3, high=4 → mid=3 → arr[3]=1 → check=True  → save ans=3 → search LEFT → high=2
 
-Since this array is rotated and:
-
-```text
-arr[4] < arr[0]
-```
-
-a second block exists.
-
-Search first `arr[i] < arr[0]`.
-
-### Iteration 1
-
-```text
-mid = 2
-arr[2] = 9
-```
-
-Check:
-
-```text
-9 < 3
-False
-```
-
-Go right:
-
-```text
-low = 3
-```
-
-### Iteration 2
-
-```text
-low = 3
-high = 4
-mid = 3
-arr[3] = 1
-```
-
-Check:
-
-```text
-1 < 3
-True
-```
-
-Save:
-
-```text
-answer = 3
-```
-
-Go left:
-
-```text
-high = 2
-```
-
-Stop.
-
-Result:
-
-```text
 rotation index = 3
-minimum = 1
+minimum = arr[3] = 1
 ```
 
 ---
@@ -2349,94 +2017,15 @@ This is the core lecture transformation.
 
 ```text
 arr = [1,5,9,11,9,2,1]
-index  0 1 2  3 4 5 6
-```
 
-Search:
+check(i) = arr[i] > arr[i+1]
 
-```text
-low = 0
-high = 6
-```
+Iter 1: low=0, high=6 → mid=3 → 11 > 9 → True  → save ans=3 → search LEFT → high=2
+Iter 2: low=0, high=2 → mid=1 → 5 > 9  → False → search RIGHT → low=2
+Iter 3: low=2, high=2 → mid=2 → 9 > 11 → False → search RIGHT → low=3
 
-### Iteration 1
-
-```text
-mid = 3
-```
-
-Check:
-
-```text
-arr[3] > arr[4]
-11 > 9
-True
-```
-
-So peak is:
-
-```text
-at mid or left of mid
-```
-
-Save:
-
-```text
-answer = 3
-```
-
-Search left:
-
-```text
-high = 2
-```
-
-### Iteration 2
-
-```text
-low = 0
-high = 2
-mid = 1
-```
-
-```text
-arr[1] > arr[2]
-5 > 9
-False
-```
-
-Still climbing.
-
-Peak must be right:
-
-```text
-low = 2
-```
-
-### Iteration 3
-
-```text
-mid = 2
-```
-
-```text
-9 > 11
-False
-```
-
-Go right:
-
-```text
-low = 3
-```
-
-Stop.
-
-Answer:
-
-```text
-index 3
-value 11
+peak index = 3
+peak value = 11
 ```
 
 ---
