@@ -713,17 +713,14 @@ Again all ten digits are used exactly once.
 
 # 10. Approach 1 — Generate All 10! Digit Mappings
 
-A direct brute-force method is:
+The lecture's first option is:
 
 ```text
-permute digits 0..9
-
-first five digits  → A
-last five digits   → B
-
-check:
-A == N * B
+generate using permutation
+→ check the equation
 ```
+
+Because every permutation of `0..9` already uses every digit exactly once, the digit-uniqueness condition is automatically satisfied.
 
 ---
 
@@ -732,10 +729,6 @@ A == N * B
 ```text
 10! = 3,628,800
 ```
-
-Each candidate needs only constant/small work.
-
-So this is a perfectly meaningful brute-force baseline.
 
 ---
 
@@ -746,392 +739,399 @@ Permutation:
 
 9 4 7 3 6 0 1 5 2 8
 |-------| |-------|
-    A         B
+  abcde     fghij
 
-A = 94736
-B = 01528
+abcde = 94736
+fghij = 01528
 ```
 
-Checker:
+Then check:
 
 ```text
-94736 == 62 × 1528
-94736 == 94736
-TRUE
+abcde = N × fghij
 ```
+
+For `N = 62`:
+
+```text
+94736 = 62 × 1528
+94736 = 94736
+```
+
+so the candidate is valid.
 
 ---
 
-## C++17 Skeleton Using `next_permutation`
+## Same Lecture Code Structure — `option_one()`
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-void solve(int n) {
-    vector<int> digits = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+void option_one(int n) {
+    // Generate using permutation, check equation.
+    int arr[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    int cnt = 0;
 
     do {
-        long long a = 0;
-        long long b = 0;
+        int abcde = 10000 * arr[0] + 1000 * arr[1] + 100 * arr[2] + 10 * arr[3] + arr[4];
+        int fghij = 10000 * arr[5] + 1000 * arr[6] + 100 * arr[7] + 10 * arr[8] + arr[9];
 
-        for (int i = 0; i < 5; i++) {
-            a = a * 10 + digits[i];
+        if (abcde == fghij * n) {
+            cout << setw(5) << setfill('0') << abcde << " ";
+            cout << setw(5) << setfill('0') << fghij << '\n';
+            cnt++;
         }
+    } while (next_permutation(arr, arr + 10));
 
-        for (int i = 5; i < 10; i++) {
-            b = b * 10 + digits[i];
-        }
-
-        if (b != 0 && a == 1LL * n * b) {
-            cout << setw(5) << setfill('0') << a;
-            cout << " / ";
-            cout << setw(5) << setfill('0') << b;
-            cout << " = " << n << '\n';
-        }
-    } while (next_permutation(digits.begin(), digits.end()));
+    cout << "count = " << cnt << '\n';
 }
 ```
 
-This method is easy to reason about because uniqueness is guaranteed by the permutation itself.
+### Flow
 
-But it generates more candidates than necessary.
+```text
+arr = [0,1,2,3,4,5,6,7,8,9]
+                |
+                v
+       next_permutation()
+                |
+                v
+      one complete mapping
+                |
+        +-------+-------+
+        |               |
+        v               v
+ first 5 digits     last 5 digits
+     abcde             fghij
+        \               /
+         \             /
+          v           v
+        check abcde = n * fghij
+```
+
+> The lecture screen shows the quotient-style idea `abcde / fghij == n`.  
+> Here we use the exact equivalent `abcde == fghij * n`, which avoids integer-division false positives.
 
 ---
 
 # 11. Approach 2 — Generate One Number and Derive the Other
 
-From:
+The lecture's second option is:
 
 ```text
-A / B = N
+generate using equation
+→ check permutation/distinct digits
 ```
 
-we derive:
+Start from:
 
 ```text
-A = N × B
+abcde / fghij = N
 ```
 
-So only enumerate `B`.
-
-For each `B`:
+Rearrange:
 
 ```text
-B
-↓
-A = N * B
-↓
-A must fit in five decimal positions
-↓
-A and B together must use all ten digits once
+abcde = fghij × N
 ```
 
----
+Now `abcde` does not need to be generated independently.
 
-## Search-Space Diagram
+Generate only:
 
 ```text
-Brute permutation approach
-──────────────────────────
-all assignments of 10 digits
-        |
-        v
-      10!
-        |
-        v
-check equation
-
-
-Derived approach
-────────────────
-B = 00000
-B = 00001
-B = 00002
-...
-B = 99999
-        |
-        v
-A = N * B
-        |
-        v
-check 10 digits
+fghij
 ```
 
-The second generator has at most about:
+then derive:
 
 ```text
-100,000
-```
-
-values instead of:
-
-```text
-3,628,800
-```
-
-and usually fewer because:
-
-```text
-N × B <= 99999
-```
-
-Therefore:
-
-```text
-B <= 99999 / N
+abcde = fghij * N
 ```
 
 ---
 
-## Why This Is Better
+## Search-Space Reduction
 
-We removed an entire independent search dimension.
-
-Bad model:
+### Option 1
 
 ```text
-choose A
-choose B
-check A = N * B
+generate all digit mappings
+→ 10!
+→ check equation
 ```
 
-Better model:
+### Option 2
 
 ```text
-choose B
-compute A = N * B
+generate fghij
+→ abcde = fghij * N
+→ check 10 distinct digit positions
 ```
 
-Whenever an equation uniquely determines one variable from another, try to **derive instead of enumerate**.
+ASCII:
+
+```text
+OPTION 1
+
+all permutations of 0..9
+          |
+          v
+     3,628,800
+          |
+          v
+   check equation
+
+
+OPTION 2
+
+fghij = 01234
+fghij = 01235
+fghij = 01236
+      ...
+          |
+          v
+ abcde = fghij * N
+          |
+          v
+ check the 10 digits
+```
+
+Since:
+
+```text
+abcde <= 98765
+```
+
+we need:
+
+```text
+fghij * N <= 98765
+```
+
+so:
+
+```text
+fghij <= 98765 / N
+```
 
 ---
 
 # 12. Step-by-Step Checker for All Ten Digits
 
-We need to verify:
+The lecture uses:
 
-```text
-A has 5 digit positions
-B has 5 digit positions
-
-and across all 10 positions:
-every digit 0..9 appears exactly once
+```cpp
+set<int> st;
 ```
 
-There are two clean methods.
+A set stores unique digits only.
+
+If the ten digit positions together contain every decimal digit exactly once:
+
+```text
+0,1,2,3,4,5,6,7,8,9
+```
+
+then:
+
+```text
+st.size() == 10
+```
 
 ---
 
-## Method A — Frequency Array
+## Why We Process Exactly Five Digits
+
+Suppose:
+
+```text
+fghij = 01283
+```
+
+As an integer:
+
+```text
+fghij = 1283
+```
+
+But the conceptual field still has five positions:
+
+```text
+0 1 2 8 3
+```
+
+So the lecture checks exactly five times:
 
 ```cpp
-bool validDigits(int a, int b) {
-    int frequency[10] = {};
-
-    for (int i = 0; i < 5; i++) {
-        frequency[a % 10]++;
-        a /= 10;
-    }
-
-    for (int i = 0; i < 5; i++) {
-        frequency[b % 10]++;
-        b /= 10;
-    }
-
-    for (int digit = 0; digit <= 9; digit++) {
-        if (frequency[digit] != 1) {
-            return false;
-        }
-    }
-
-    return true;
+for (int i = 0; i < 5; i++) {
+    st.insert(temp % 10);
+    temp /= 10;
 }
 ```
 
-This is very easy to understand.
+Dry run:
+
+```text
+temp = 1283
+
+i=0 → digit=3 → temp=128
+i=1 → digit=8 → temp=12
+i=2 → digit=2 → temp=1
+i=3 → digit=1 → temp=0
+i=4 → digit=0 → temp=0
+```
+
+The last iteration correctly recovers the leading zero.
 
 ---
 
-## Method B — 10-bit Mask
-
-Since there are exactly ten possible digits, use one bit per digit.
-
-```text
-digit 0 → bit 0
-digit 1 → bit 1
-...
-digit 9 → bit 9
-```
-
-Initially:
-
-```text
-mask = 0000000000
-```
-
-When digit `d` appears:
-
-```text
-bit = 1 << d
-```
-
-If:
-
-```text
-mask & bit
-```
-
-is already non-zero, `d` appeared before.
-
-Otherwise:
-
-```text
-mask |= bit
-```
-
----
-
-## Dry Run — `79546` and `01283`
-
-Read exactly five positions from each number.
-
-```text
-A = 79546
-digits from right: 6,4,5,9,7
-
-B = 01283
-integer value 1283
-five extracted positions: 3,8,2,1,0
-```
-
-Combined order:
-
-```text
-6,4,5,9,7,3,8,2,1,0
-```
-
-All are different.
-
-Final mask:
-
-```text
-1111111111₂
-```
-
-which is:
-
-```text
-(1 << 10) - 1
-```
-
----
-
-## Mask Checker
+## Lecture Checker
 
 ```cpp
-bool validDigits(int a, int b) {
-    int mask = 0;
+set<int> st;
 
-    for (int i = 0; i < 5; i++) {
-        int digit = a % 10;
-        int bit = 1 << digit;
+int temp = abcde;
+for (int i = 0; i < 5; i++) {
+    st.insert(temp % 10);
+    temp /= 10;
+}
 
-        if (mask & bit) {
-            return false;
-        }
+temp = fghij;
+for (int i = 0; i < 5; i++) {
+    st.insert(temp % 10);
+    temp /= 10;
+}
 
-        mask |= bit;
-        a /= 10;
-    }
-
-    for (int i = 0; i < 5; i++) {
-        int digit = b % 10;
-        int bit = 1 << digit;
-
-        if (mask & bit) {
-            return false;
-        }
-
-        mask |= bit;
-        b /= 10;
-    }
-
-    return mask == (1 << 10) - 1;
+if (st.size() == 10) {
+    // Valid mapping.
 }
 ```
 
-Notice the fixed five iterations.
+---
 
-That is what preserves leading zeros.
+## Detailed Example — `79546 / 01283 = 62`
+
+### Step 1 — Generate `fghij`
+
+```text
+fghij = 1283
+```
+
+Conceptually:
+
+```text
+01283
+```
+
+### Step 2 — Derive `abcde`
+
+```text
+abcde = fghij × N
+      = 1283 × 62
+      = 79546
+```
+
+### Step 3 — Insert five digits of `abcde`
+
+```text
+79546
+
+6 → insert
+4 → insert
+5 → insert
+9 → insert
+7 → insert
+```
+
+Set:
+
+```text
+{4,5,6,7,9}
+```
+
+### Step 4 — Insert five positions of `fghij`
+
+```text
+01283
+
+3 → insert
+8 → insert
+2 → insert
+1 → insert
+0 → insert
+```
+
+Final set:
+
+```text
+{0,1,2,3,4,5,6,7,8,9}
+```
+
+Therefore:
+
+```text
+st.size() = 10
+```
+
+and the candidate is valid.
 
 ---
 
-# 13. Complete C++17 Solution
-
-This implementation follows the reduced search:
-
-```text
-generate denominator
-→ derive numerator
-→ check digits
-```
+# 13. Complete C++17 Solution — Same Lecture Code
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-bool validDigits(int numerator, int denominator) {
-    int mask = 0;
+void option_one(int n) {
+    // Generate using permutation, check equation.
+    int arr[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    int cnt = 0;
 
-    for (int i = 0; i < 5; i++) {
-        int digit = numerator % 10;
-        int bit = 1 << digit;
+    do {
+        int abcde = 10000 * arr[0] + 1000 * arr[1] + 100 * arr[2] + 10 * arr[3] + arr[4];
+        int fghij = 10000 * arr[5] + 1000 * arr[6] + 100 * arr[7] + 10 * arr[8] + arr[9];
 
-        if (mask & bit) {
-            return false;
+        if (abcde == fghij * n) {
+            cout << setw(5) << setfill('0') << abcde << " ";
+            cout << setw(5) << setfill('0') << fghij << '\n';
+            cnt++;
         }
+    } while (next_permutation(arr, arr + 10));
 
-        mask |= bit;
-        numerator /= 10;
-    }
-
-    for (int i = 0; i < 5; i++) {
-        int digit = denominator % 10;
-        int bit = 1 << digit;
-
-        if (mask & bit) {
-            return false;
-        }
-
-        mask |= bit;
-        denominator /= 10;
-    }
-
-    return mask == (1 << 10) - 1;
+    cout << "count = " << cnt << '\n';
 }
 
-void solve(int n) {
-    bool found = false;
+void option_two(int n) {
+    // Generate using equation, check distinct digits.
+    int cnt = 0;
 
-    for (int denominator = 0; 1LL * denominator * n <= 99999; denominator++) {
-        int numerator = denominator * n;
+    // Conceptually starts from 01234.
+    for (int fghij = 1234; fghij <= 98765 / n; fghij++) {
+        int abcde = fghij * n;
 
-        if (!validDigits(numerator, denominator)) {
-            continue;
+        set<int> st;
+
+        int temp = abcde;
+        for (int i = 0; i < 5; i++) {
+            st.insert(temp % 10);
+            temp /= 10;
         }
 
-        found = true;
+        temp = fghij;
+        for (int i = 0; i < 5; i++) {
+            st.insert(temp % 10);
+            temp /= 10;
+        }
 
-        cout << setw(5) << setfill('0') << numerator;
-        cout << " / ";
-        cout << setw(5) << setfill('0') << denominator;
-        cout << " = " << n << '\n';
+        if (st.size() == 10) {
+            cnt++;
+
+            cout << setw(5) << setfill('0') << abcde << " ";
+            cout << setw(5) << setfill('0') << fghij << '\n';
+        }
     }
 
-    if (!found) {
-        cout << "No valid solution\n";
-    }
+    cout << "count = " << cnt << '\n';
 }
 
 int main() {
@@ -1141,7 +1141,7 @@ int main() {
     int n;
     cin >> n;
 
-    solve(n);
+    option_two(n);
 
     return 0;
 }
@@ -1149,30 +1149,60 @@ int main() {
 
 ---
 
-## Compact Dry Run for `N = 62`
+## Why the Code Uses `1234` Instead of Writing `01234`
 
-We do **not** need to manually trace all denominators.
-
-Focus on one successful candidate.
+The lecture visually represents the lower value as:
 
 ```text
-denominator = 1283
-
-numerator = 1283 * 62
-          = 79546
-
-Check fixed-width fields:
-
-numerator   = 79546
-denominator = 01283
-
-digits:
-7,9,5,4,6,0,1,2,8,3
-
-all 10 digits unique → VALID
-
-79546 / 01283 = 62
+01234
 ```
+
+That is correct as a **five-position decimal representation**.
+
+In C++ source code, write:
+
+```cpp
+1234
+```
+
+and restore the leading zero only when printing:
+
+```cpp
+cout << setw(5) << setfill('0') << fghij;
+```
+
+Output:
+
+```text
+01234
+```
+
+This preserves the lecture logic safely.
+
+---
+
+## Option 1 vs Option 2
+
+| Property | Option 1 | Option 2 |
+|---|---|---|
+| Generate | permutation of digits | `fghij` |
+| Derive | nothing | `abcde = fghij * n` |
+| Checker | equation | distinct digits |
+| Candidate count | `10!` | at most about `10^5` |
+| Main idea | generate mapping | generate from equation |
+| Better approach | baseline | **preferred** |
+
+The important brute-force design lesson is:
+
+```text
+There are usually two parts:
+
+GENERATOR + CHECKER
+```
+
+If one condition lets us **derive** part of the candidate, move that work from the generator into the checker/derivation.
+
+That can dramatically reduce the search space.
 
 ---
 
