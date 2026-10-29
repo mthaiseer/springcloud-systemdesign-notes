@@ -1,8 +1,22 @@
-# 001 — CP Math Fundamentals: Step-by-Step Self-Learning Notes (C++17)
+# 001 — CP MATH FUNDAMENTALS · Visual Self-Study Master Notes (C++17)
+
+> **Visual Edition V4** · Learn from first principles · Tiny examples → observation → formula → dry run → C++
 
 > **Purpose:** Learn the mathematics behind competitive-programming solutions, not just memorize formulas. Based on the **60-page *Repovive CP Maths*** handout, expanded with beginner-friendly prerequisites, small examples, derivations, dry runs, working C++17 functions, common mistakes and recognition cues.
 >
 > **Source vs expansion:** The **topic order and core subjects** follow the PDF. Worked proofs, extra examples, implementations and practice questions are **teaching additions**. Four topics marked **SUPPLEMENT** were only placeholders or incomplete in the original: binomial theorem (p.40), Stars and Bars (p.41), rotations (p.59), and Big-O (p.60). A few ambiguous/inaccurate handwritten statements are clarified rather than copied literally.
+
+## How to use these visual notes
+
+| Symbol | Meaning | What you should do |
+|---|---|---|
+| 🧱 | **Prerequisite** | Understand the small building block first |
+| 🔎 | **Discover** | Look for a pattern before reading a formula |
+| 🧮 | **Derivation** | Follow one mathematical step at a time |
+| 🧪 | **Dry run** | Track variables or values in a table |
+| 💻 | **C++17** | Understand code and verify constraints |
+| ⚠️ | **Pitfall** | Check edge cases, overflow and assumptions |
+| 🧠 | **Recognition** | Know when to use the technique in a new problem |
 
 ## How to learn from this note
 
@@ -10,7 +24,7 @@
 2. Cover the next line of a **Discovery / Derivation** and predict it yourself.
 3. Work through the **Dry run** with pencil; track variables horizontally.
 4. Type the **C++** function without copying it, then test small and edge cases.
-5. Use **Recognize it when...** during mixed Codeforces/LeetCode practice.
+5. Use **🧠 Recognize it when...** during mixed Codeforces/LeetCode practice.
 6. Attempt the short questions at the end; explanations above should be sufficient.
 
 **C++ convention.** Snippets below are functions to add to this skeleton, unless shown as a complete program:
@@ -26,7 +40,22 @@ int main() {
 }
 ```
 
-**Numeric safety:** `int` is usually 32-bit (up to about 2.1 billion); `long long` is usually 64-bit (up to about 9.22 × 10^18). `1LL * a * b` promotes arithmetic to `long long`, but **does not prevent overflow** if the product itself exceeds its range. All examples here use standard C++17 types. We reduce overflow risk by dividing before multiplying, cancelling common factors, or checking algebraically equivalent inequalities. Always read input constraints.
+### C++ number types — read this first
+
+| Type | Typical range | When to use |
+|---|---|---|
+| `int` | about ±2.1 billion | indexes, counters, small values |
+| `long long` | about ±9.22 × 10¹⁸ | sums, large products when safe |
+
+**⚠️ Important:** `1LL * a * b` performs `long long` multiplication, **not unlimited-precision multiplication**.
+
+**Overflow checklist**
+
+1. Read the maximum input values.
+2. Check intermediate expressions—not only the final result.
+3. Divide before multiplying or cancel common factors where appropriate.
+4. All examples use standard C++17 integral types.
+
 
 ## Contents
 
@@ -56,6 +85,10 @@ int main() {
 
 *Source: p.3.*
 
+> 🧭 **Concept map:** `Division → quotient + remainder → ceil division → repeating cycles`
+>
+> 🎯 **Guiding question:** How can a repeated action be reduced to just the leftover part?
+
 ### 1.1 Prerequisites — quotient, remainder and integer types
 
 Division answers two different questions:
@@ -63,7 +96,7 @@ Division answers two different questions:
 - **How many full groups?** Quotient, `a / b` for nonnegative integers.
 - **How many left over?** Remainder, `a % b`.
 
-**Tiny example:** 17 candies, 5 candies per full bag:
+**🔎 Tiny example:** 17 candies, 5 candies per full bag:
 
 ```text
 17 = 5 + 5 + 5 + 2
@@ -103,13 +136,13 @@ ll ceilDivNonnegative(ll items, ll capacity) {
 }
 ```
 
-**Recognition:** arranging students into rooms, pages to print, pizzas to buy, minimum moves of fixed size.
+**🧠 Recognize:** arranging students into rooms, pages to print, pizzas to buy, minimum moves of fixed size.
 
 ### 1.3 Remainder as a repeating cycle
 
 The days of a week repeat every 7 days. Instead of moving 100 times, discard complete cycles.
 
-**Example:** Today is Wednesday. What day is it after 100 days?
+**🔎 Example:** Today is Wednesday. What day is it after 100 days?
 
 1. A complete 7-day cycle returns to Wednesday.
 2. `100 = 7×14 + 2`.
@@ -118,7 +151,7 @@ The days of a week repeat every 7 days. Instead of moving 100 times, discard com
 
 Use zero-based IDs: Monday=0, ..., Sunday=6. `next = (today + steps % 7) % 7`.
 
-**Dry run:** `today=2`, `steps=100` → `100%7=2` → `(2+2)%7=4` → Friday.
+**🧪 Dry run:** `today=2`, `steps=100` → `100%7=2` → `(2+2)%7=4` → Friday.
 
 ```cpp
 int dayAfter(int today, ll days) {  // today in [0,6], days >= 0
@@ -153,15 +186,24 @@ int digitalRoot(ll n) {  // n >= 0
 }
 ```
 
-**Mistakes to avoid:** C++ division of negative numbers truncates toward zero, not toward mathematical negative infinity; a negative `%` can be negative. The above ceil and modulo examples deliberately assume nonnegative inputs.
+**⚠️ Mistakes to avoid:** C++ division of negative numbers truncates toward zero, not toward mathematical negative infinity; a negative `%` can be negative.
 
-**Check yourself:** How many capacity-8 boxes for 65 items? How many days beyond Monday is 50 days?
+- The above ceil and modulo examples deliberately assume nonnegative inputs.
+
+**✍️ Check yourself:** How many capacity-8 boxes for 65 items? How many days beyond Monday is 50 days?
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 2. Exponents, roots and binary exponentiation
 
 *Source: pp.4–6.*
+
+> 🧭 **Concept map:** `Repeated multiplication → squares of powers → binary exponent → roots`
+>
+> 🎯 **Guiding question:** How can an enormous exponent be computed with only logarithmically many steps?
 
 ### 2.1 Prerequisites — powers mean repeated multiplication
 
@@ -207,7 +249,7 @@ Suppose the exponent is `e`:
 3. Update `base = base×base` and `e = floor(e/2)`.
 4. Repeat until `e=0`.
 
-**Dry run — `3^13`:** (`answer` starts at 1)
+**🧪 Dry run — `3^13`:** (`answer` starts at 1)
 
 | Before `e` | Before `base` | Odd? | New `answer` | Next `base` | Next `e` |
 |---:|---:|---|---:|---:|---:|
@@ -228,13 +270,22 @@ ll binaryPower(ll base, ll exponent) { // exponent >= 0; result must fit ll
 }
 ```
 
-**Complexity derivation:** `e → floor(e/2) → floor(e/4) → ... → 0`; after about `log2(e)+1` rounds, it is zero. **Time `O(log e)`, extra space `O(1)`**. Compare with naive `O(e)`.
+**⏱️ Complexity derivation:** `e → floor(e/2) → floor(e/4) → ... → 0`; after about `log2(e)+1` rounds, it is zero.
+
+- **Time `O(log e)`, extra space `O(1)`**.
+- Compare with naive `O(e)`.
 
 **Integer-overflow warning:** `3^40` exceeds signed 64-bit. When a problem asks `base^e mod m`, use **modular fast power** in §17 instead.
 
 ### 2.4 Exact integer roots vs floating point
 
-`pow(largeNumber, 1.0/3)` may be slightly imprecise. A floating-point square root is a **candidate**, not proof of a perfect square. Check using integer division instead of multiplying two large numbers.
+**Problem:** Floating-point roots are approximate, even when the true answer is an integer.
+
+1. Use `sqrtl(n)` only to obtain a **candidate** root.
+2. Adjust that candidate if rounding put it one step too high or low.
+3. Check exactness with division and remainder, rather than risk `root * root` overflow.
+
+**Goal:** Confirm `root² = n` using integer arithmetic.
 
 ```cpp
 bool isPerfectSquare(ll n) {
@@ -250,17 +301,31 @@ bool isPerfectSquare(ll n) {
 }
 ```
 
-**Tiny dry run:** `n=36`, candidate `root=6`: `36/6=6` and `36%6=0` → true. For `n=35`, candidate `root=5`: `35/5=7`, not 5 → false. The adjustment loops also guard against floating-point rounding. **Time:** constant-size root adjustment for 64-bit integers.
+**🧪 Dry run — exact perfect-square test**
 
-**Recognize it when...** the exponent is huge, operations repeatedly double, or an answer uses powers of two.
+| `n` | Candidate root | Check | Answer |
+|---:|---:|---|---|
+| 36 | 6 | `36/6=6`, `36%6=0` | Perfect square |
+| 35 | 5 | `35/5=7` | Not a perfect square |
 
-**Check yourself:** Explain how to compute `5^11` using `11 = 8+2+1`. Why does binary exponentiation take `O(log e)`?
+The adjustment loops handle small rounding errors. For 64-bit inputs the number of adjustments is tiny.
+
+**🧠 Recognize it when...** the exponent is huge, operations repeatedly double, or an answer uses powers of two.
+
+**✍️ Check yourself:** Explain how to compute `5^11` using `11 = 8+2+1`. Why does binary exponentiation take `O(log e)`?
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 3. Logarithms, binary length and halving
 
 *Source: pp.7–10.*
+
+> 🧭 **Concept map:** `Powers → inverse question (log) → repeated halving → bit length`
+>
+> 🎯 **Guiding question:** How many times does a value double or halve?
 
 ### 3.1 Prerequisite — reverse the exponent question
 
@@ -278,13 +343,47 @@ Steps:           0   1   2   3    4
 
 ### 3.2 Derive the logarithm rules
 
-**Product rule:** Let `x=b^p` and `y=b^q`. Then `xy=b^(p+q)`; therefore `log_b(xy)=p+q=log_b(x)+log_b(y)`.
+Start with a single idea: **a logarithm records an exponent**.
 
-**Quotient rule:** `x/y=b^(p-q)`; so `log_b(x/y)=log_b(x)-log_b(y)`.
+#### Rule 1 — Multiplication becomes addition
 
-**Power rule:** `(b^p)^k=b^(pk)`; so `log_b(x^k)=k·log_b(x)`.
+1. Suppose `x=b^p` and `y=b^q`.
+2. Multiply: `x×y = b^p × b^q = b^(p+q)`.
+3. The exponent of the product is `p+q`.
 
-**Change of base:** from `b^k=x`, take any other logarithm on both sides: `k log(b)=log(x)` → **`log_b(x)=log(x)/log(b)`**.
+```text
+log_b(x × y) = log_b(x) + log_b(y)
+```
+
+#### Rule 2 — Division becomes subtraction
+
+1. Divide: `x/y = b^p/b^q = b^(p-q)`.
+2. The exponent is `p-q`.
+
+```text
+log_b(x/y) = log_b(x) - log_b(y)
+```
+
+#### Rule 3 — Power moves in front
+
+1. `(b^p)^k = b^(p×k)`.
+2. The exponent becomes `k` times larger.
+
+```text
+log_b(x^k) = k × log_b(x)
+```
+
+#### Rule 4 — Change the logarithm base
+
+1. Write `b^k=x`.
+2. Take a logarithm of both sides: `k×log(b)=log(x)`.
+3. Divide by `log(b)`:
+
+```text
+log_b(x) = log(x) / log(b)
+```
+
+> 🧱 **Prerequisite:** `b>0`, `b≠1`, and log arguments must be positive.
 
 | Formula | Small example |
 |---|---|
@@ -306,9 +405,21 @@ Steps:           0   1   2   3    4
 | 6 | 3 | 1 |
 | 7 | 1 | 0 |
 
-At each step, the search space is halved. After `k` steps, roughly `n/2^k` remains. Set this near 1: `2^k ≈ n`, so `k ≈ log₂n`.
+**Derive the number of steps**
 
-This is the fundamental reason **binary search, binary exponentiation and repeated division** are logarithmic.
+1. Start with `n` items.
+2. After 1 halving: approximately `n/2` remain.
+3. After 2 halvings: approximately `n/4` remain.
+4. After `k` halvings: approximately `n/2^k` remain.
+5. To reach one item, solve `n/2^k ≈ 1`.
+
+```text
+n / 2^k ≈ 1
+2^k ≈ n
+k   ≈ log₂(n)
+```
+
+**🧠 Recognize:** Binary search, binary exponentiation and repeated division all use this pattern.
 
 ### 3.4 Bits needed, decimal digits and base conversion
 
@@ -333,15 +444,22 @@ int decimalDigits(ll n) {  // works for negative ll too
 }
 ```
 
-**Dry run — bit length of 13:** `13 → 6 → 3 → 1 → 0`, count **4**. (Do not confuse *number of bits* with *number of shifts until value becomes 1*.)
+**🧪 Dry run — bit length of 13:** `13 → 6 → 3 → 1 → 0`, count **4**. (Do not confuse *number of bits* with *number of shifts until value becomes 1*.)
 
-**Recognize:** binary search, divide-and-conquer, bits of an integer, digits of a number, repeated doubling or halving.
+**🧠 Recognize:** binary search, divide-and-conquer, bits of an integer, digits of a number, repeated doubling or halving.
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 4. Algebra, inequalities, equations and formulas
 
 *Source: pp.11–13.*
+
+> 🧭 **Concept map:** `Unknown variable → equation → transformation → verify`
+>
+> 🎯 **Guiding question:** How do you turn a word problem into a solvable equation?
 
 ### 4.1 Prerequisites — variable, expression, equation
 
@@ -350,17 +468,37 @@ int decimalDigits(ll n) {  // works for negative ll too
 - **Equation:** `3*x+4=19` (two sides are equal).
 - **Inequality:** `3*x+4>=19` (one side is at least the other).
 
-**Solve `3x+4=19`:** subtract 4 from both sides: `3x=15`; divide both sides by 3: **`x=5`**. Always keep both sides balanced.
+**🧪 Solve `3x+4=19` — one operation at a time**
+
+```text
+3x + 4 = 19   Start
+3x     = 15   Subtract 4 from BOTH sides
+x      =  5   Divide BOTH sides by 3
+```
+
+**Verify:** `3×5+4=19` ✓. A valid transformation preserves equality.
 
 ### 4.2 Substitution, distribution and factoring
 
-**Substitution:** when `x=5`, evaluate `3x+2` by replacing `x`: `3×5+2=17`.
+These three operations appear repeatedly in contest math:
 
-**Distribution:** `a(b+c)=ab+ac`; e.g. `3(x+2)=3x+6`.
+| Tool | What you do | Tiny example |
+|---|---|---|
+| **Substitution** | Replace a variable by its value | `x=5 → 3x+2=17` |
+| **Distribute** | Multiply every term inside brackets | `3(x+2)=3x+6` |
+| **Factor** | Pull out a common multiplier | `6x+9=3(2x+3)` |
 
-**Factoring** reverses distribution: `6x+9=3(2x+3)`; `n²+2n=n(n+2)`.
+**Step-by-step factoring `n²+2n`:**
 
-These are the basic tools for turning contest stories into small formulas.
+1. Both terms contain `n`.
+2. Take `n` outside the parentheses.
+3. The remaining terms are `n` and `2`.
+
+```text
+n² + 2n = n × n + n × 2 = n(n + 2)
+```
+
+**🧠 Recognize:** Look for repeated terms, common factors, or variables you can eliminate.
 
 ### 4.3 Inequality — remember to flip for negative multipliers
 
@@ -370,7 +508,7 @@ Solve `-2x < 6`:
 2. Dividing by a negative reverses the ordering.
 3. Thus **`x > -3`**, not `x < -3`.
 
-**Why?** Since `2<4`, multiplying by `-1` gives `-2 > -4`. Negative scaling reverses left and right on the number line.
+**🔎 Why?** Since `2<4`, multiplying by `-1` gives `-2 > -4`. Negative scaling reverses left and right on the number line.
 
 ### 4.4 Two equations: substitution and elimination
 
@@ -398,7 +536,7 @@ The expression **`D=b²-4ac`** tells the number of real roots:
 - `D=0`: one repeated real root.
 - `D<0`: no real roots.
 
-**Example:** `x²-5x+6=0` → `D=25-24=1` → `x=(5±1)/2` → **2 and 3**. Verify `(x-2)(x-3)=0`.
+**🔎 Example:** `x²-5x+6=0` → `D=25-24=1` → `x=(5±1)/2` → **2 and 3**. Verify `(x-2)(x-3)=0`.
 
 ### 4.6 Standard sums: derive rather than memorize
 
@@ -429,15 +567,22 @@ ll sumFirstN(ll n) { // assumes result fits long long
 }
 ```
 
-**Recognition:** two unknown quantities with two constraints, minimize number of boxes/moves, sum of first `n`, equations derived from rates or prices.
+**🧠 Recognize:** two unknown quantities with two constraints, minimize number of boxes/moves, sum of first `n`, equations derived from rates or prices.
 
-**Check yourself:** Solve `2x+y=11`, `x-y=1`. Find the sum 1 to 100.
+**✍️ Check yourself:** Solve `2x+y=11`, `x-y=1`. Find the sum 1 to 100.
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 5. Sequences and progressions
 
 *Source: pp.14–17.*
+
+> 🧭 **Concept map:** `Fixed difference → AP | Fixed ratio → GP → nth term and sum`
+>
+> 🎯 **Guiding question:** Is the sequence growing by addition or by multiplication?
 
 ### 5.1 Prerequisites — sequence, position, difference, ratio
 
@@ -460,13 +605,32 @@ term n: 5+(n-1) copies  = 5 + (n-1)×3
 
 So **`aₙ = first + (n-1)*difference`**.
 
-**Dry run:** fourth term: `5+(4-1)*3=14`.
+**🧪 Dry run:** fourth term: `5+(4-1)*3=14`.
 
-**Sum of an AP:** first and last terms add to the same amount as second and second-last:
+#### Derive the AP sum visually
 
-`Sₙ = n * (first + last) / 2`.
+Pair terms from opposite ends:
 
-For `5,8,11,14,17`, `n=5`, `S=5*(5+17)/2=55`.
+```text
+5    8   11   14   17
+│    │    │    │    │
+└───────────────┘  5 + 17 = 22
+     └──────┘     8 + 14 = 22
+          11       Middle term when n is odd
+```
+
+**Step 1:** Write the sequence forward and backward.
+
+**Step 2:** Every matching pair sums to `first + last`.
+
+**Step 3:** Double the total to count exactly `count` pairs:
+
+```text
+2 × sum = count × (first + last)
+sum     = count × (first + last) / 2
+```
+
+**🧪 Dry run:** `5,8,11,14,17` → `count=5`, `first=5`, `last=17` → `sum=5×22/2=55`.
 
 ### 5.3 Geometric progression (GP): repeated multiplication
 
@@ -474,17 +638,31 @@ Example `3,6,12,24,48,...`: `first=3`, ratio `r=2`.
 
 `a₁=3×2⁰`, `a₂=3×2¹`, `a₃=3×2²`; therefore **`aₙ=first×r^(n-1)`**.
 
-**Sum of GP** (for `r≠1`):
+#### Derive the GP sum by cancellation
 
-1. `S = a + ar + ar² + ... + ar^(n-1)`.
-2. Multiply by `r`: `rS = ar + ar² + ... + ar^n`.
-3. Subtract: `rS - S = ar^n - a` (middle terms cancel).
-4. `(r-1)S = a(r^n-1)`.
-5. Thus **`S = a(r^n-1)/(r-1)`**.
+For a geometric sequence starting at `a` with common ratio `r`:
+
+```text
+ S = a + ar + ar² + ... + arⁿ⁻¹
+rS =     ar + ar² + ... + arⁿ⁻¹ + arⁿ
+-----------------------------------------
+rS - S = arⁿ - a
+```
+
+**Step 1:** Multiply the original sum by `r`.
+
+**Step 2:** Subtract the two expressions. All middle terms cancel.
+
+**Step 3:** Factor and solve for `S`:
+
+```text
+(r - 1) × S = a × (rⁿ - 1)
+S = a × (rⁿ - 1) / (r - 1), for r != 1
+```
 
 If `r=1`, every term is `a`; sum is simply `n*a`.
 
-**Dry run:** `1+2+4+8+16` → `a=1`, `r=2`, `n=5`; `S=(2⁵-1)/(2-1)=31`.
+**🧪 Dry run:** `1+2+4+8+16` → `a=1`, `r=2`, `n=5`; `S=(2⁵-1)/(2-1)=31`.
 
 **Power-of-two connection:** levels of a binary tree can contain `1,2,4,...,2^(h-1)` nodes; total maximum is `2^h-1` for `h` levels.
 
@@ -510,14 +688,53 @@ ll gpNth(ll first, ll ratio, ll position) { // position >= 1
 }
 ```
 
-**Why divide first?** The formula is `count × (first + last) / 2`. If `count` is even, divide `count` by 2 first. If `count` is odd, `first` and `last` have the same parity, so their sum is even; divide that sum by 2 first. This avoids an unnecessarily large intermediate product. **Limits:** the `(position-1)*difference` calculation inside `apNth`, its addition to `first`, and the final sum must each fit `long long`. Even when the mathematical answer fits, these intermediate operations may not fit for extreme signed inputs. Contest constraints typically make these limits easy to check. `binaryPower` is defined in §2.
+#### Why divide before multiplying?
 
-**Recognize:** equally spaced values → AP; repeated doubling, growth, branching and powers → GP.
+**Start with the AP sum formula:**
+
+```text
+sum = count × (first + last) / 2
+```
+
+**Step 1 — Find an even factor.** At least one of `count` and `first + last` is even for an integer AP.
+
+| Situation | Divide first | Then multiply |
+|---|---|---|
+| `count` is even | `count / 2` | `(count / 2) × (first + last)` |
+| `count` is odd | `(first + last) / 2` | `count × ((first + last) / 2)` |
+
+**Step 2 — Tiny dry run: AP = `5, 8, 11, 14, 17`.**
+
+| Variable | Value |
+|---|---:|
+| `count` | 5 (odd) |
+| `first` | 5 |
+| `last` | 17 |
+| `pairSum` | 22 |
+| `pairSum / 2` | 11 |
+| **Final sum** | **`5 × 11 = 55`** |
+
+**Step 3 — Why this helps.** Dividing first avoids unnecessarily creating a large product.
+
+> ⚠️ **Still check overflow:** `first + last`, `(position-1) * difference`, the addition in `apNth`, and the final result must each fit `long long`. The `gpNth` function uses `binaryPower` from Chapter 2.
+
+**🧠 Recognize the pattern**
+
+- Equal difference between consecutive numbers → **AP**.
+- Equal ratio, repeated doubling or branching → **GP**.
+
+
+[↑ Contents](#contents)
 
 ---
+
 ## 6. Summations, telescoping, nested loops and prefix sums
 
 *Source: pp.15–20.*
+
+> 🧭 **Concept map:** `Sigma → loop counts → cancellation → prefix sums`
+>
+> 🎯 **Guiding question:** How can repeated summation be turned into a formula or precomputation?
 
 ### 6.1 Prerequisites — sigma notation and array indexing
 
@@ -584,7 +801,7 @@ Consider `Σ(i=1..4) [i²-(i-1)²]`:
 
 General pattern: `Σ(i=1..n)(aᵢ-a_(i-1)) = aₙ-a₀`.
 
-**Recognition:** adjacent differences, consecutive fractions that decompose into differences, sequence endpoints.
+**🧠 Recognize:** adjacent differences, consecutive fractions that decompose into differences, sequence endpoints.
 
 ### 6.4 Prefix sums — answer range queries quickly
 
@@ -608,7 +825,7 @@ To find `[l..r]`:
 2. `prefix[l]` includes elements `0..l-1`.
 3. Subtract the unwanted left portion: **`sum(l,r)=prefix[r+1]-prefix[l]`**.
 
-**Dry run:** `[2..4]` → `prefix[5]-prefix[2] = 15-3 = 12`.
+**🧪 Dry run:** `[2..4]` → `prefix[5]-prefix[2] = 15-3 = 12`.
 
 ```cpp
 vector<ll> buildPrefix(const vector<int>& a) {
@@ -623,7 +840,7 @@ ll rangeSum(const vector<ll>& prefix, int left, int right) {
 }
 ```
 
-**Cost:** build once in `O(n)`, answer each query in **`O(1)`**. For `q` queries: `O(n+q)` instead of potentially `O(nq)`.
+**⏱️ Complexity:** build once in `O(n)`, answer each query in **`O(1)`**. For `q` queries: `O(n+q)` instead of potentially `O(nq)`.
 
 ### 6.5 When the common formulas help
 
@@ -634,13 +851,20 @@ ll rangeSum(const vector<ll>& prefix, int left, int right) {
 | `1³+...+n³` | `[n(n+1)/2]²` | 36 |
 | `1+2+4+...+2^(n-1)` | `2^n-1` | 7 |
 
-**Recognize:** many interval-sum queries, repeated subarray totals, loop-count proofs, cancellation of adjacent terms.
+**🧠 Recognize:** many interval-sum queries, repeated subarray totals, loop-count proofs, cancellation of adjacent terms.
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 7. Number bases and two's complement
 
 *Source: pp.21–23.*
+
+> 🧭 **Concept map:** `Positional value → convert base → binary/hex → signed representation`
+>
+> 🎯 **Guiding question:** What does each digit mean in a different number base?
 
 ### 7.1 Prerequisites — place value
 
@@ -685,7 +909,7 @@ string toBase(unsigned long long n, int base) { // 2 <= base <= 16
 }
 ```
 
-**Cost:** repeated division decreases `n` by a factor of `base`: **`O(log_base n)`** steps.
+**⏱️ Complexity:** repeated division decreases `n` by a factor of `base`: **`O(log_base n)`** steps.
 
 ### 7.3 Binary ↔ hexadecimal: group exactly 4 bits
 
@@ -720,15 +944,22 @@ add 1     = 11111011  (-5 in 8-bit two's complement)
 
 `+5 + (-5)` gives `1 00000000`; discard the carry beyond 8 bits → `00000000`.
 
-**Important distinction:** actual signed C++ integer types have fixed widths and overflow rules; do not implement negative numbers by manually flipping bits of an arbitrary `int`. Use normal signed arithmetic. When masking bits, use unsigned types.
+> ⚠️ **C++ safety:** The 8-bit two's-complement diagram is for understanding representation, **not** a recipe for implementing negatives. Use signed arithmetic for negative values and unsigned types for bit masking. Never assume signed overflow wraps around.
 
-**Recognize:** bitwise tasks, binary representation, extracting digits in a base, hexadecimal color or address values.
+**🧠 Recognize:** bitwise tasks, binary representation, extracting digits in a base, hexadecimal color or address values.
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 8. Bitwise operations and subset masks
 
 *Source: pp.24–27, with related examples on p.26.*
+
+> 🧭 **Concept map:** `Bits → masks → bit tricks → XOR → subset enumeration`
+>
+> 🎯 **Guiding question:** Can an entire state or subset be encoded in a few bits?
 
 ### 8.1 Prerequisites — a number is a sequence of bits
 
@@ -866,15 +1097,22 @@ void printAllSubsets(const vector<int>& a) { // practical only for small n
 }
 ```
 
-**Cost:** `2^n` masks, check `n` items each → `O(n·2^n)` time, `O(1)` extra memory aside from output.
+**⏱️ Complexity:** `2^n` masks, check `n` items each → `O(n·2^n)` time, `O(1)` extra memory aside from output.
 
-**Recognize:** flags/permissions, powers of two, subsets of `n<=20`, one unpaired element, toggles and XOR properties.
+**🧠 Recognize:** flags/permissions, powers of two, subsets of `n<=20`, one unpaired element, toggles and XOR properties.
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 9. Boolean logic and De Morgan's laws
 
 *Source: p.28.*
+
+> 🧭 **Concept map:** `True/false → AND/OR/NOT → De Morgan → safe conditions`
+>
+> 🎯 **Guiding question:** How can a complex condition be simplified correctly?
 
 ### 9.1 Prerequisite — truth values
 
@@ -905,7 +1143,7 @@ Hence:
 
 A simple memory aid: **NOT moves inside, flipping AND ↔ OR**, while negating each part.
 
-**Example:** `!(x < 5 || x > 10)` = `x >= 5 && x <= 10` (inside inclusive range).
+**🔎 Example:** `!(x < 5 || x > 10)` = `x >= 5 && x <= 10` (inside inclusive range).
 
 ### 9.3 Operator precedence and readable C++
 
@@ -921,15 +1159,22 @@ bool outsideRange(int x, int low, int high) {
 }
 ```
 
-**Dry run:** `age=20, hasId=true, banned=true` → true && true && false = **false**.
+**🧪 Dry run:** `age=20, hasId=true, banned=true` → true && true && false = **false**.
 
-**Recognize:** multiple constraints in statements, interval conditions, negating invalid states, simplifying an if condition.
+**🧠 Recognize:** multiple constraints in statements, interval conditions, negating invalid states, simplifying an if condition.
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 10. Sets and set operations
 
 *Source: p.29.*
+
+> 🧭 **Concept map:** `Distinct members → set operations → power set → overlap`
+>
+> 🎯 **Guiding question:** Which elements are unique, shared or missing?
 
 ### 10.1 Prerequisites — membership, distinctness, order
 
@@ -951,9 +1196,17 @@ Take `A={1,2,3}` and `B={2,3,4}`.
 | `A \ B` difference | In A but **not** B | `{1}` |
 | Complement `U\A` | In universe U but not A | depends on `U` |
 | Subset `A⊆C` | Every A element belongs to C | e.g. `{1,2}⊆A` |
-| Cardinality `|A|` | number of distinct members | `|A|=3` |
+| Cardinality `\|A\|` | number of distinct members | `\|A\|=3` |
 
-**Venn idea:** overlap is the intersection; the outer parts belong to just one of the sets.
+**Visualize the overlap:**
+
+```text
+A only       In both A and B       B only
+ {1}              {2,3}             {4}
+  └──────────── A ∪ B ──────────────┘
+```
+
+The intersection contains only what is shared. The union contains **everything**, counted once.
 
 ### 10.3 Power set: all possible subsets
 
@@ -975,15 +1228,22 @@ vector<int> uniqueSorted(vector<int> values) {
 }
 ```
 
-**Dry run:** `[3,1,3,2,2]` → sort `[1,2,2,3,3]` → unique `[1,2,3]`.
+**🧪 Dry run:** `[3,1,3,2,2]` → sort `[1,2,2,3,3]` → unique `[1,2,3]`.
 
-**Recognize:** distinct values, membership queries, union/intersection, duplicate removal, subset problems.
+**🧠 Recognize:** distinct values, membership queries, union/intersection, duplicate removal, subset problems.
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 11. Counting principles and inclusion–exclusion
 
 *Source: pp.30–33.*
+
+> 🧭 **Concept map:** `OR/AND counting → complement → overlap → pigeonhole`
+>
+> 🎯 **Guiding question:** Should you add, multiply, subtract the opposite, or remove duplicates?
 
 ### 11.1 Prerequisites — distinguish **OR** from **AND**
 
@@ -1023,7 +1283,7 @@ If the OR alternatives **overlap**, plain addition double-counts: use inclusion�
 2. No digit (letters only): `26⁴`.
 3. At least one digit: **`36⁴ - 26⁴`**.
 
-**Recognize:** *at least one*, *not all*, *anything except*, *some forbidden property*.
+**🧠 Recognize:** *at least one*, *not all*, *anything except*, *some forbidden property*.
 
 ### 11.3 Avoid double counting unordered pairs
 
@@ -1040,9 +1300,9 @@ If the OR alternatives **overlap**, plain addition double-counts: use inclusion�
 
 If `n+1` objects are assigned to `n` boxes, at least one box contains two or more objects.
 
-**Example:** 13 people, 12 possible birth months → at least **two** people share a birth month.
+**🔎 Example:** 13 people, 12 possible birth months → at least **two** people share a birth month.
 
-**Why?** If every month had at most one person, there could be at most 12 people. But 13 people exist → contradiction.
+**🔎 Why?** If every month had at most one person, there could be at most 12 people. But 13 people exist → contradiction.
 
 Generalized form: among `N` objects placed in `k` boxes, **some box has at least `ceil(N/k)`** objects.
 
@@ -1088,12 +1348,20 @@ ll divisibleByEither(ll n, ll a, ll b) { // a,b > 0
 }
 ```
 
-**Recognize:** AND/OR, at least one, groups/categories, guaranteed collision, overlapping multiples, divisor counting.
+**🧠 Recognize:** AND/OR, at least one, groups/categories, guaranteed collision, overlapping multiples, divisor counting.
+
+
+[↑ Contents](#contents)
 
 ---
+
 ## 12. Factorials, permutations and derangements
 
 *Source: pp.34–36.*
+
+> 🧭 **Concept map:** `Arrangement → factorial → repeated elements → circular → derangement`
+>
+> 🎯 **Guiding question:** Does switching the positions change the result?
 
 ### 12.1 Prerequisites — counting arrangements
 
@@ -1136,9 +1404,11 @@ Formula: **`P(n,r) = n!/(n-r)!`** for `0<=r<=n`. This cancels the tail of the fa
 
 **Without repetition:** `10×9×8=720` 3-digit strings with no repeated digits.
 
-**Careful:** If the problem means **three-digit integers**, the first digit cannot be 0. Without repetitions the count becomes `9×9×8=648` (first: 1..9; second: remaining digits including 0; third: remaining 8).
+**Careful:** If the problem means **three-digit integers**, the first digit cannot be 0.
 
-**Recognition:** repeated allowed → powers `n^r`; repeated forbidden → falling product `P(n,r)`.
+- Without repetitions the count becomes `9×9×8=648` (first: 1..9; second: remaining digits including 0; third: remaining 8).
+
+**🧠 Recognize:** repeated allowed → powers `n^r`; repeated forbidden → falling product `P(n,r)`.
 
 ### 12.4 Equal objects: multiset permutations
 
@@ -1154,7 +1424,7 @@ General count for `n` objects where each symbol appears `c₁,c₂,...,cₖ` tim
 
 **`n! / (c₁! c₂! ... cₖ!)`**, with `c₁+...+cₖ=n`.
 
-**Dry run:** `BOOK` has two O's → `4!/2!=12` arrangements.
+**🧪 Dry run:** `BOOK` has two O's → `4!/2!=12` arrangements.
 
 ### 12.5 Circular permutations: rotations are equivalent
 
@@ -1163,7 +1433,9 @@ For `n` distinct people seated around a round table, if only relative order matt
 - Fix person A as an anchor.
 - Arrange remaining `n-1` people → **`(n-1)!`**.
 
-For 4 people: `3!=6` circular seatings. If reflections are also considered identical, counting changes; don't divide by 2 unless the problem explicitly treats mirror images as identical.
+**🧪 Dry run:** 4 people around a table → fix one person → arrange the other 3 → `3! = 6`.
+
+> ⚠️ **⚠️ Important:** Rotations are treated as identical here. Reflections are **not** automatically identical—only identify mirror arrangements when the problem says so.
 
 ### 12.6 Derangements: nobody stays in their original slot
 
@@ -1191,7 +1463,7 @@ So `D(3)=2`.
 
 **`D(n)=(n-1)[D(n-1)+D(n-2)]`**, with `D(0)=1`, `D(1)=0`.
 
-**Dry run:** `D(2)=1×(0+1)=1`; `D(3)=2×(1+0)=2`; `D(4)=3×(2+1)=9`.
+**🧪 Dry run:** `D(2)=1×(0+1)=1`; `D(3)=2×(1+0)=2`; `D(4)=3×(2+1)=9`.
 
 ```cpp
 vector<ll> derangements(int n) { // values grow fast: suitable only for small n
@@ -1204,17 +1476,27 @@ vector<ll> derangements(int n) { // values grow fast: suitable only for small n
 }
 ```
 
-**Cost:** `O(n)` time and space. For large `n`, a problem will often supply a modulus; use modular DP to avoid overflow. The classic approximation `D(n)≈n!/e` is helpful for intuition, **not** an exact substitute in code.
+**⏱️ Complexity:** `O(n)` time and space.
 
-**Recognize:** rankings, seating, passwords, distinct vs repeated objects, arranging selected items, “no one gets their own item”.
+- For large `n`, a problem will often supply a modulus; use modular DP to avoid overflow.
+- The classic approximation `D(n)≈n!/e` is helpful for intuition, **not** an exact substitute in code.
 
-**Check yourself:** How many 4-letter strings from A, B, C with repetitions? How many arrangements of `BANANA`?
+**🧠 Recognize:** rankings, seating, passwords, distinct vs repeated objects, arranging selected items, “no one gets their own item”.
+
+**✍️ Check yourself:** How many 4-letter strings from A, B, C with repetitions? How many arrangements of `BANANA`?
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 13. Combinations, Pascal's triangle and repetition
 
 *Source: pp.37–42. Binomial theorem and Stars and Bars are supplements; the handout flags them as TODO.*
+
+> 🧭 **Concept map:** `Selection → combination → Pascal → repetition → Stars and Bars`
+>
+> 🎯 **Guiding question:** Does order matter, and can a choice be repeated?
 
 ### 13.1 Prerequisite — distinguish selection from arrangement
 
@@ -1235,7 +1517,7 @@ But `Alice=leader, Bob=assistant` differs from the reverse → **permutation**.
 
 Thus **`C(n,r)=P(n,r)/r! = n!/[r!(n-r)!]`** for `0<=r<=n`.
 
-**Dry run — choose 2 from {1,2,3,4}:**
+**🧪 Dry run — choose 2 from {1,2,3,4}:**
 
 `{1,2}, {1,3}, {1,4}, {2,3}, {2,4}, {3,4}` → `6 = C(4,2)`.
 
@@ -1250,7 +1532,9 @@ Thus **`C(n,r)=P(n,r)/r! = n!/[r!(n-r)!]`** for `0<=r<=n`.
 
 `C(n,r) = C(n-1,r-1) + C(n-1,r)`.
 
-**Why?** Choose one special person X. Any selected group of size `r` either **includes X** (choose `r-1` from remaining `n-1`) or **excludes X** (choose all `r` from remaining `n-1`). These cases don't overlap, so add counts.
+- **🔎 Why?** Choose one special person X.
+- Any selected group of size `r` either **includes X** (choose `r-1` from remaining `n-1`) or **excludes X** (choose all `r` from remaining `n-1`).
+- These cases don't overlap, so add counts.
 
 ### 13.4 Pascal triangle — build combinations by addition
 
@@ -1279,7 +1563,7 @@ vector<vector<ll>> pascal(int n) { // choose n small enough for ll
 }
 ```
 
-**Cost:** `O(n²)` time and space; good for moderate `n` when many combinations are queried.
+**⏱️ Complexity:** `O(n²)` time and space; good for moderate `n` when many combinations are queried.
 
 ### 13.5 Computing `C(n,r)` without creating huge factorials
 
@@ -1291,7 +1575,17 @@ For one query with small `r`, use `r=min(r,n-r)` then multiply/divide incrementa
 
 `1×8/1=8` → `8×9/2=36` → `36×10/3=120`.
 
-General recurrence: `result_after_i = result_before × (n-r+i)/i`, starting at `result=1`. Each new answer is an integer, but multiplying **before** dividing can overflow. Cancel the denominator first using GCD.
+**How the incremental formula arises**
+
+```text
+answer starts at 1
+for i = 1 to r:
+    answer = answer × (n - r + i) / i
+```
+
+Each step produces an integer. However, multiplying before dividing can create an intermediate value that does not fit `long long`.
+
+**Fix:** Cancel common factors using GCD **before multiplying**.
 
 ```cpp
 ll chooseSmall(int n, int r) { // exact result must fit long long
@@ -1317,7 +1611,7 @@ ll chooseSmall(int n, int r) { // exact result must fit long long
 }
 ```
 
-**Dry run:**
+**🧪 Dry run:**
 
 | `i` | New numerator / denominator | `answer` before | Cancel denominator | `answer` after |
 |---:|---|---:|---|---:|
@@ -1325,19 +1619,31 @@ ll chooseSmall(int n, int r) { // exact result must fit long long
 | 2 | `9/2` | 8 | Cancel 2 with 8 → `4×9` | 36 |
 | 3 | `10/3` | 36 | Cancel 3 with 36 → `12×10` | **120** |
 
-**Why it works:** Each intermediate result is `C(n-r+i,i)`, an integer. Any denominator left after cancelling with the numerator must divide the existing answer. With the precondition that the exact combination fits `long long`, this method avoids intermediate multiplication overflow. **Time:** `O(r log n)` using GCD.
+#### Why GCD cancellation works
+
+1. At step `i`, the intended value is `C(n-r+i, i)`—an **integer**.
+2. First cancel common factors between the new numerator and denominator.
+3. Any denominator still left must divide the existing `answer` exactly.
+4. Multiply only **after** both cancellations.
+
+> ✅ **Result:** When the exact answer fits `long long`, this method avoids an oversized intermediate product. **Time:** `O(r log n)` with GCD.
 
 ### 13.6 [SUPPLEMENT] Binomial theorem — expand `(a+b)^n`
 
 *The source p.40 says TODO; this is added instruction.*
 
-When multiplying `(a+b)(a+b)...` `n` times, choose `a` or `b` from every bracket. To obtain the term `a^(n-r)b^r`, choose `b` from exactly `r` brackets. There are `C(n,r)` choices.
+**Discover the coefficients**
+
+1. Expand `(a+b)^n` by choosing one term from each of the `n` brackets.
+2. To produce `a^(n-r) × b^r`, choose `b` from **exactly `r` brackets**.
+3. The number of ways to choose those brackets is `C(n,r)`.
+4. Therefore, `C(n,r)` is the coefficient of that term.
 
 Therefore:
 
 `(a+b)^n = Σ(r=0..n) C(n,r) a^(n-r) b^r`.
 
-**Example:** `(a+b)^3 = a³ + 3a²b + 3ab² + b³`.
+**🔎 Example:** `(a+b)^3 = a³ + 3a²b + 3ab² + b³`.
 
 Setting `a=b=1` yields `2^n = Σ C(n,r)`, explaining the Pascal row sum.
 
@@ -1363,7 +1669,12 @@ Example: 5 candies among 3 children, allowing zero candies:
 ** | *** |        → child1=2, child2=3, child3=0
 ```
 
-There are `r` stars + `n-1` bars = `r+n-1` total positions. Choose which `n-1` positions are bars (or which `r` are stars).
+**Count the possible arrangements**
+
+1. Put down `r` identical stars.
+2. Add `n-1` bars to separate them into `n` labeled boxes.
+3. Total positions = `r + n - 1`.
+4. Choose the `n-1` bar positions—or equivalently the `r` star positions.
 
 **Nonnegative solutions** of `x₁+...+xₙ=r`:
 
@@ -1373,17 +1684,26 @@ There are `r` stars + `n-1` bars = `r+n-1` total positions. Choose which `n-1` p
 
 **`C(r-1,n-1)`** when `r>=n`; otherwise zero.
 
-**Dry run:** `x+y+z=5`, `x,y,z>=1` → remove 1 each → `x'+y'+z'=2`, nonnegative → `C(2+3-1,3-1)=C(4,2)=6`.
+**🧪 Dry run:** `x+y+z=5`, `x,y,z>=1` → remove 1 each → `x'+y'+z'=2`, nonnegative → `C(2+3-1,3-1)=C(4,2)=6`.
 
-**Caution:** Stars and Bars applies to **identical** items going into labeled containers, with no upper bound on a container except the total. Distinct items or individual capacities change the counting method.
+**⚠️ Caution:** Stars and Bars applies to **identical** items going into labeled containers, with no upper bound on a container except the total.
 
-**Recognize:** selecting a team vs ranking winners, combinations of item types, sums of nonnegative integers, binomial coefficients.
+- Distinct items or individual capacities change the counting method.
+
+**🧠 Recognize:** selecting a team vs ranking winners, combinations of item types, sums of nonnegative integers, binomial coefficients.
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 14. Elementary probability
 
 *Source: pp.43–44.*
+
+> 🧭 **Concept map:** `Outcomes → favorable count → probability → complement`
+>
+> 🎯 **Guiding question:** Which possible outcomes satisfy the event?
 
 ### 14.1 Prerequisites — sample space, event and equal likelihood
 
@@ -1405,7 +1725,7 @@ For an even die result: `P(E)=3/6=1/2`.
 3. Count favorable = 2, total = 6.
 4. Probability `2/6=1/3`.
 
-**Dry run:** `P(roll=4)=1/6`; `P(roll is even)=3/6=1/2`; sum of mutually exclusive events `P(roll=4 or roll=5)=2/6`.
+**🧪 Dry run:** `P(roll=4)=1/6`; `P(roll is even)=3/6=1/2`; sum of mutually exclusive events `P(roll=4 or roll=5)=2/6`.
 
 ### 14.3 Complement probability
 
@@ -1413,7 +1733,7 @@ If an event does not happen, its **complement** happens. Exactly one of the two 
 
 **`P(not E)=1-P(E)`**.
 
-**Example:** If probability of rain is 0.3, probability of no rain is `1-0.3=0.7`.
+**🔎 Example:** If probability of rain is 0.3, probability of no rain is `1-0.3=0.7`.
 
 **At least one success in independent trials:** It is often easier to calculate the complement, *no successes*.
 
@@ -1426,7 +1746,15 @@ Independence matters for multiplying probabilities. Two dependent events cannot 
 
 ### 14.4 Probability versus modular arithmetic
 
-Probability such as `1/3` is a rational number. In basic code, use `double` or `long double` where the problem requests an approximate decimal answer. Some CP problems ask for a fraction **modulo a prime**, in which case use modular inverse (§17); ordinary C++ integer division is **not** the same as modular division.
+**First ask: what type of answer does the problem expect?**
+
+| Required output | Method | Example |
+|---|---|---|
+| Decimal approximation | `double` / `long double` | `1.0 / 3` |
+| Reduced fraction | GCD on numerator and denominator | `2/6 → 1/3` |
+| Fraction modulo a prime | Modular inverse (Chapter 17) | `a × inverse(b) % mod` |
+
+> ⚠️ Plain integer division `a / b` is **not** modular division.
 
 ```cpp
 double probability(int favorable, int total) { // 0 <= favorable <= total
@@ -1439,12 +1767,20 @@ double atLeastOneSuccess(double successP, int trials) {
 }
 ```
 
-**Recognize:** equally likely cases, dice/coins/cards, at least one success, complementary cases, favorable/total counting.
+**🧠 Recognize:** equally likely cases, dice/coins/cards, at least one success, complementary cases, favorable/total counting.
+
+
+[↑ Contents](#contents)
 
 ---
+
 ## 15. Divisibility, factors and prime numbers
 
 *Source: pp.45–47.*
+
+> 🧭 **Concept map:** `Factors → sqrt pairs → primality → sieve → prime powers`
+>
+> 🎯 **Guiding question:** What can be learned by finding the prime structure of an integer?
 
 ### 15.1 Prerequisites — factors, multiples, prime and composite
 
@@ -1531,7 +1867,13 @@ bool isPrime(ll n) {
 
 The idea is to start with every integer `>=2` as potentially prime. Whenever `p` is prime, mark multiples `p²,p²+p,...` as composite.
 
-**Why begin at `p²`?** Smaller multiples `2p,3p,...,(p-1)p` were already marked by smaller prime factors.
+**🔎 Why start crossing out at `p²`?**
+
+1. Multiples `2p, 3p, ...` below `p²` contain a factor smaller than `p`.
+2. Those were already crossed out in an earlier sieve step.
+3. The first multiple that could still be unmarked is `p²`.
+
+Example: when `p=5`, `10,15,20` were already removed by 2 or 3. Start at **25**.
 
 **Dry run up to 20:**
 
@@ -1590,15 +1932,24 @@ vector<pair<ll,int>> primeFactorization(ll n) { // n >= 1
 }
 ```
 
-**Cost:** worst-case `O(sqrt n)` time for simple trial division. Factorization is useful for divisor counts (§11), GCD/LCM reasoning (§16), and many number-theory problems.
+**⏱️ Complexity:** worst-case `O(sqrt n)` time for simple trial division.
 
-**Recognize:** primality, prime factors, count factors, perfect numbers, divisibility constraints, many prime queries.
+- Factorization is useful for divisor counts (§11), GCD/LCM reasoning (§16), and many number-theory problems.
+
+**🧠 Recognize:** primality, prime factors, count factors, perfect numbers, divisibility constraints, many prime queries.
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 16. GCD, LCM and the Euclidean algorithm
 
 *Source: pp.47–52.*
+
+> 🧭 **Concept map:** `Common factors → Euclid → GCD → LCM → synchronization`
+>
+> 🎯 **Guiding question:** Do we need the largest common unit or the earliest common multiple?
 
 ### 16.1 Prerequisites — common factors and common multiples
 
@@ -1615,11 +1966,19 @@ For 12 and 18:
 
 ### 16.2 Why the Euclidean algorithm works
 
-Suppose `a = b*q + r` (as in §1). Any number that divides **both `a` and `b`** must also divide `a-b*q = r`. Conversely, anything dividing **both `b` and `r`** divides `b*q+r=a`.
+**Derive Euclid's rule without skipping steps**
 
-So the common divisors of `(a,b)` and `(b,r)` are identical:
+1. Divide `a` by `b`: `a = b×q + r`.
+2. Suppose `d` divides both `a` and `b`.
+3. Then `d` divides their difference `a - b×q = r`.
+4. Conversely, if `d` divides `b` and `r`, it divides `b×q+r=a`.
+5. Therefore, the two pairs have **exactly the same common divisors**.
 
-**`gcd(a,b)=gcd(b,a%b)`**.
+```text
+gcd(a, b) = gcd(b, a % b)
+```
+
+The second argument gets smaller each step, so the process finishes.
 
 This lets us replace the larger number by a smaller remainder until one side is zero.
 
@@ -1715,15 +2074,24 @@ This works because division by the same nonzero quantity does not change the fra
 | Smallest quantity divisible by `a` and `b` | LCM | Minimum shared multiple |
 | Maximum size of uniform square tiles fitting both sides | GCD | Side length divides both dimensions |
 
-**Optional context:** p.50 mentions extended Euclid (useful later for modular inverse) and p.52 sketches binary/Stein GCD. These are advanced alternatives, not prerequisites for the basic approach; `std::gcd` is preferred in ordinary C++17 solutions.
+**Optional context:** p.50 mentions extended Euclid (useful later for modular inverse) and p.52 sketches binary/Stein GCD.
 
-**Check yourself:** `gcd(84,30)`? `lcm(8,12)`? Why is `gcd(15,8)=1` even though 15 is composite?
+- These are advanced alternatives, not prerequisites for the basic approach; `std::gcd` is preferred in ordinary C++17 solutions.
+
+**✍️ Check yourself:** `gcd(84,30)`? `lcm(8,12)`? Why is `gcd(15,8)=1` even though 15 is composite?
+
+
+[↑ Contents](#contents)
 
 ---
 
 ## 17. Modular arithmetic, inverse and fast power
 
 *Source: pp.53–55; inverse details below are an explicit teaching expansion.*
+
+> 🧭 **Concept map:** `Remainders → mod arithmetic → fast power → inverses`
+>
+> 🎯 **Guiding question:** How do we keep huge arithmetic inside a fixed modulus safely?
 
 ### 17.1 Prerequisites — remainder and equivalence classes
 
@@ -1743,7 +2111,7 @@ Normalize by:
 
 **`((a % m) + m) % m`**.
 
-**Dry run:** `a=-2`, `m=5`: `a%m=-2` → add 5 → 3 → `%5=3`.
+**🧪 Dry run:** `a=-2`, `m=5`: `a%m=-2` → add 5 → 3 → `%5=3`.
 
 ```cpp
 ll normalizeMod(ll value, ll mod) { // mod > 0
@@ -1763,7 +2131,18 @@ The most important property: reducing inputs before a compatible operation does 
 - `(a-b)%m = ((a%m)-(b%m)+m)%m` when residues are in `[0,m)` and intermediate addition fits.
 - `(a*b)%m = ((a%m)*(b%m))%m`.
 
-**Why multiplication works:** write `a=q₁m+r₁` and `b=q₂m+r₂`. Multiplying gives terms containing `m` (which have remainder 0), plus `r₁r₂`. So only `r₁r₂` matters.
+**🔎 Why can we multiply the remainders?**
+
+1. Write `a = q₁×m + r₁` and `b = q₂×m + r₂`.
+2. Multiply the two expressions.
+3. Every term except `r₁×r₂` contains a factor of `m`.
+4. Such terms leave remainder zero when divided by `m`.
+
+```text
+(a × b) % m = (r₁ × r₂) % m
+```
+
+This explains **why reducing the inputs first is mathematically valid**. It does not guarantee the product fits the C++ type—see §17.4.
 
 **Dry run under mod 7:**
 
@@ -1775,11 +2154,13 @@ The most important property: reducing inputs before a compatible operation does 
 | Subtract | `4%7` | `(2-5+7)%7` | 4 |
 | Multiply | `192%7` | `(2×5)%7` | 3 |
 
-**Important:** A problem sets the modulus. `1,000,000,007` is common, **not universal**. Read the statement before choosing `m`.
+**⚠️ Important:** A problem sets the modulus. `1,000,000,007` is common, **not universal**. Read the statement before choosing `m`.
 
 ### 17.4 Safe modular operations for a common CP prime
 
-When `0<=a,b<mod` and `mod<=1,000,000,007`, their product fits signed 64-bit. **For larger moduli**, avoid direct `a*b`; use repeated doubling with overflow-safe modular addition (shown below). Both methods use standard C++17.
+- When `0<=a,b<mod` and `mod<=1,000,000,007`, their product fits signed 64-bit.
+- **For larger moduli**, avoid direct `a*b`; use repeated doubling with overflow-safe modular addition (shown below).
+- Both methods use standard C++17.
 
 ```cpp
 ll addMod(ll a, ll b, ll mod) { // 0<=a,b<mod, mod<=1e9+7
@@ -1793,7 +2174,9 @@ ll subMod(ll a, ll b, ll mod) { // 0<=a,b<mod, mod<=1e9+7
 }
 ```
 
-**Only when the modulus can be as large as `LLONG_MAX`:** the following optional helper adds two normalized residues *without ever forming* `a+b` if it would be too large. Repeated doubling then multiplies safely in `O(log b)` time:
+**Only when the modulus can be as large as `LLONG_MAX`:** the following optional helper adds two normalized residues *without ever forming* `a+b` if it would be too large.
+
+- Repeated doubling then multiplies safely in `O(log b)` time:
 
 ```cpp
 ll addModLarge(ll a, ll b, ll mod) { // 0<=a,b<mod, mod>0
@@ -1849,7 +2232,7 @@ ll modPower(ll base, ll exponent, ll mod) {
 }
 ```
 
-**Cost:** `O(log exponent)` time, `O(1)` extra space. `mod=1` correctly gives 0.
+**⏱️ Complexity:** `O(log exponent)` time, `O(1)` extra space. `mod=1` correctly gives 0.
 
 ### 17.6 Modular **division** is not integer division
 
@@ -1919,14 +2302,22 @@ ll powerFromDecimalDigits(ll base, const vector<int>& digits, ll mod) {
 }
 ```
 
-**Recognize:** very large exponent, answer modulo `m`, permutations/combinations modulo a prime, repeated products, handling negative remainders.
+**🧠 Recognize:** very large exponent, answer modulo `m`, permutations/combinations modulo a prime, repeated products, handling negative remainders.
 
-**Check yourself:** Compute `2^10 mod 7`. Is dividing by 2 modulo 6 always valid? Why not?
+**✍️ Check yourself:** Compute `2^10 mod 7`. Is dividing by 2 modulo 6 always valid? Why not?
+
+
+[↑ Contents](#contents)
 
 ---
+
 ## 18. Coordinate and grid geometry
 
 *Source: pp.56–59; rotation is a supplement because p.59 labels it TODO.*
+
+> 🧭 **Concept map:** `Coordinates → distances → area → slopes → grid geometry`
+>
+> 🎯 **Guiding question:** Can the geometry be expressed through integer differences?
 
 ### 18.1 Prerequisites — coordinates, axes and quadrants
 
@@ -1946,7 +2337,7 @@ A point `(x,y)` tells us how far to move from the origin `(0,0)`:
                |
 ```
 
-**Dry run:** `(3,-2)` is 3 units right, 2 units down → quadrant IV. A point on an axis is not in any of the four open quadrants.
+**🧪 Dry run:** `(3,-2)` is 3 units right, 2 units down → quadrant IV. A point on an axis is not in any of the four open quadrants.
 
 ### 18.2 Euclidean distance — derive using Pythagoras
 
@@ -1970,7 +2361,11 @@ long double euclideanDistance(ll x1, ll y1, ll x2, ll y2) {
 }
 ```
 
-**When to avoid floating point:** If comparing squared distances, compare `dx²+dy²` as integers **when the constraints guarantee it fits**. For example, when each coordinate lies in `[-10^9,10^9]`, `|dx|,|dy| <= 2×10^9`, so the sum of squares is at most `8×10^18`, which fits `long long`. For larger differences, this calculation could overflow; use a problem-appropriate exact method rather than silently overflowing. Taking square roots can introduce precision issues.
+**When to avoid floating point:** If comparing squared distances, compare `dx²+dy²` as integers **when the constraints guarantee it fits**.
+
+- For example, when each coordinate lies in `[-10^9,10^9]`, `|dx|,|dy| <= 2×10^9`, so the sum of squares is at most `8×10^18`, which fits `long long`.
+- For larger differences, this calculation could overflow; use a problem-appropriate exact method rather than silently overflowing.
+- Taking square roots can introduce precision issues.
 
 ```cpp
 ll squaredDistance(ll x1, ll y1, ll x2, ll y2) {
@@ -1986,7 +2381,7 @@ If allowed to move only up/down/left/right, you cannot take the diagonal shortcu
 
 **`Manhattan(A,B) = |x₂-x₁| + |y₂-y₁|`**.
 
-**Dry run:** `(1,2)→(4,6)` requires 3 right moves + 4 up moves = **7 moves**.
+**🧪 Dry run:** `(1,2)→(4,6)` requires 3 right moves + 4 up moves = **7 moves**.
 
 ```text
 A=(1,2) ──→──→──→ (4,2)
@@ -2004,7 +2399,7 @@ ll manhattanDistance(ll x1, ll y1, ll x2, ll y2) {
 }
 ```
 
-**Recognize:** robots on grids, chessboard-like movement (with specified moves), shortest path without obstacles using four directions.
+**🧠 Recognize:** robots on grids, chessboard-like movement (with specified moves), shortest path without obstacles using four directions.
 
 ### 18.4 Triangle validity — three inequalities
 
@@ -2018,7 +2413,7 @@ Three lengths `a,b,c` form a **nondegenerate** triangle precisely when:
 
 If the sides are sorted `a<=b<=c`, the first two inequalities are automatically satisfied for positive lengths; only **`a+b>c`** needs checking.
 
-**Dry run:** `[2,3,6]`: `2+3=5`, which is not greater than 6 → invalid. `[3,4,5]`: `3+4=7>5` → valid.
+**🧪 Dry run:** `[2,3,6]`: `2+3=5`, which is not greater than 6 → invalid. `[3,4,5]`: `3+4=7>5` → valid.
 
 ```cpp
 bool validTriangle(ll a, ll b, ll c) {
@@ -2040,7 +2435,7 @@ bool validTriangle(ll a, ll b, ll c) {
 
 **Axis-aligned rectangle from two opposite corners:** `width=abs(x₂-x₁)`, `height=abs(y₂-y₁)`, so area = width × height. This differs from the area of a tilted rectangle.
 
-**Dry run:** corners `(2,1)` and `(7,4)` → width=5, height=3 → **area=15**, perimeter=16.
+**🧪 Dry run:** corners `(2,1)` and `(7,4)` → width=5, height=3 → **area=15**, perimeter=16.
 
 For Euclidean plane problems, do not round area or distance unless output requirements instruct it.
 
@@ -2052,9 +2447,22 @@ Slope of a nonvertical line through two different points is `(y₂-y₁)/(x₂-x
 
 **`(x₂-x₁)(y₃-y₁) - (y₂-y₁)(x₃-x₁) = 0`**.
 
-**Derivation:** If vectors have the same slope, `(y₂-y₁)/(x₂-x₁)=(y₃-y₁)/(x₃-x₁)`. Cross-multiplying yields exactly the zero-cross-product equation, and also handles vertical lines.
+**Derive the integer test step by step**
 
-**Dry run:** A=(1,2), B=(2,4), C=(3,6): `1×4-2×2=0` → collinear.
+1. Vector `AB` is `(x₂-x₁, y₂-y₁)`.
+2. Vector `AC` is `(x₃-x₁, y₃-y₁)`.
+3. Parallel vectors have a zero 2D cross product.
+4. Compute this expression using integers:
+
+```text
+(x₂-x₁) × (y₃-y₁) - (y₂-y₁) × (x₃-x₁)
+```
+
+5. **Zero → collinear.** Nonzero → not collinear.
+
+Unlike dividing slopes, this also works for vertical lines (subject to overflow limits).
+
+**🧪 Dry run:** A=(1,2), B=(2,4), C=(3,6): `1×4-2×2=0` → collinear.
 
 ```cpp
 struct Point { ll x, y; };
@@ -2067,7 +2475,11 @@ bool collinear(Point a, Point b, Point c) {
 }
 ```
 
-**Why the bound matters:** Under `|coordinate| <= 10^9`, each difference has absolute value at most `2×10^9`. Each product therefore has absolute value at most `4×10^18`, which fits signed `long long`. Comparing the two products directly avoids subtracting potentially large terms. If the problem allows much larger coordinates, this short version is **not** safe: verify bounds or use an exact big-integer technique instead.
+**Why the bound matters:** Under `|coordinate| <= 10^9`, each difference has absolute value at most `2×10^9`.
+
+- Each product therefore has absolute value at most `4×10^18`, which fits signed `long long`.
+- Comparing the two products directly avoids subtracting potentially large terms.
+- If the problem allows much larger coordinates, this short version is **not** safe: verify bounds or use an exact big-integer technique instead.
 
 ### 18.7 Midpoint — average the coordinates
 
@@ -2075,9 +2487,9 @@ The midpoint of `(x₁,y₁)` and `(x₂,y₂)` is:
 
 **`((x₁+x₂)/2, (y₁+y₂)/2)`**.
 
-**Why?** Halfway in the x-direction is `x₁+(x₂-x₁)/2=(x₁+x₂)/2`; same for y.
+**🔎 Why?** Halfway in the x-direction is `x₁+(x₂-x₁)/2=(x₁+x₂)/2`; same for y.
 
-**Dry run:** midpoint of `(2,3)` and `(8,7)` → `((2+8)/2,(3+7)/2)=(5,5)`.
+**🧪 Dry run:** midpoint of `(2,3)` and `(8,7)` → `((2+8)/2,(3+7)/2)=(5,5)`.
 
 For integer coordinates, a midpoint may be fractional: `(0,0)` and `(1,1)` → `(0.5,0.5)`. Don't accidentally use integer division.
 
@@ -2088,7 +2500,7 @@ For a shape made from filled unit cells:
 - **Area:** count filled cells.
 - **Perimeter:** count only cell sides exposed to empty space or outside the grid.
 
-**Example:** two adjacent unit cells:
+**🔎 Example:** two adjacent unit cells:
 
 ```text
 +---+---+
@@ -2122,7 +2534,7 @@ int gridPerimeter(const vector<string>& g) { // '#' filled, '.' empty
 }
 ```
 
-**Cost:** `O(rows×cols)` time and `O(1)` auxiliary space.
+**⏱️ Complexity:** `O(rows×cols)` time and `O(1)` auxiliary space.
 
 ### 18.9 [SUPPLEMENT] Rotations by 90° around the origin
 
@@ -2134,11 +2546,14 @@ int gridPerimeter(const vector<string>& g) { // '#' filled, '.' empty
 
 **Discover 90° CCW:** the unit vector `(1,0)` along positive x goes to `(0,1)` along positive y, while `(0,1)` goes to `(-1,0)`. Combining contributions gives `(-y,x)`.
 
-**Dry run:** `(2,3)` → CCW `(-3,2)`; clockwise `(3,-2)`; 180° `(-2,-3)`.
+**🧪 Dry run:** `(2,3)` → CCW `(-3,2)`; clockwise `(3,-2)`; 180° `(-2,-3)`.
 
 **Note:** Rotating around a point `P` instead of origin requires: subtract P, rotate, then add P back.
 
-**Recognize:** coordinate movements, grid geometry, validity of shapes, distances, polygon orientation, rotations.
+**🧠 Recognize:** coordinate movements, grid geometry, validity of shapes, distances, polygon orientation, rotations.
+
+
+[↑ Contents](#contents)
 
 ---
 
@@ -2146,11 +2561,16 @@ int gridPerimeter(const vector<string>& g) { // '#' filled, '.' empty
 
 *Source: p.60 contains only the “Big O notation” heading; this is a SUPPLEMENT teaching section.*
 
+> 🧭 **Concept map:** `Input constraints → operation count → Big-O → feasibility`
+>
+> 🎯 **Guiding question:** Will the algorithm finish fast enough for the input size?
+
 ### 19.1 Prerequisites — time vs space, input size `n`
 
 **Time complexity** describes how the amount of work grows as the input gets larger. **Space complexity** describes extra memory used, often excluding the input itself.
 
-Big-O is an **upper bound on growth rate**, not a stopwatch measurement or an exact number of operations. Ignore constant factors and lower-order terms when expressing the main growth.
+- Big-O is an **upper bound on growth rate**, not a stopwatch measurement or an exact number of operations.
+- Ignore constant factors and lower-order terms when expressing the main growth.
 
 Example: if an algorithm performs `3n+10` primitive actions, we call it `O(n)`, because for large `n` the linear part dominates.
 
@@ -2167,7 +2587,10 @@ Example: if an algorithm performs `3n+10` primitive actions, we call it `O(n)`, 
 | `O(2^n)` | generate all subsets | each element in/out |
 | `O(n!)` | generate all permutations | n×(n−1)×...×1 |
 
-**Same result, different costs:** To answer a sum over many intervals, scanning each interval may take `O(n)` *per query*. Building prefix sums takes `O(n)` once and `O(1)` per query. Choosing the math representation changes the algorithm.
+**Same result, different costs:** To answer a sum over many intervals, scanning each interval may take `O(n)` *per query*.
+
+- Building prefix sums takes `O(n)` once and `O(1)` per query.
+- Choosing the math representation changes the algorithm.
 
 ### 19.3 A loop doesn't necessarily mean linear time
 
@@ -2210,6 +2633,9 @@ For `n=20`, `2^n≈1,048,576` masks, often feasible; for `n=50`, `2^n` is astron
 3. Are all pairs examined? → think **quadratic**.
 4. Are all subsets/permutations explicitly generated? → think **exponential/factorial**.
 5. Do I need many repeated range totals or repeated primality tests? → consider **precomputation**.
+
+
+[↑ Contents](#contents)
 
 ---
 
@@ -2263,7 +2689,7 @@ Try these without looking at earlier sections. Write the math model, solve, then
 | 8 | Array `[4,1,7,2]`: sum at zero-based indices 1 through 3 via prefix. | prefix sums |
 | 9 | Convert decimal 26 to binary and hexadecimal. | number bases |
 | 10 | List subsets represented by mask `101₂` of `{A,B,C}`. | bitmask |
-| 11 | Simplify `!(x<3 || x>7)`. | Boolean logic |
+| 11 | Simplify `!(x<3 \|\| x>7)`. | Boolean logic |
 | 12 | How many values in `A={1,2,4}`, `B={2,3,4}`'s union? | sets |
 | 13 | How many integers in `1..60` are divisible by 2 or 5? | IEP |
 | 14 | How many distinct rearrangements of `AABC`? | multiset perm. |
@@ -2328,3 +2754,4 @@ Try these without looking at earlier sections. Write the math model, solve, then
 - **Supplement sections:** Binomial theorem p.40; Stars and Bars p.41; rotations p.59; Big-O p.60. These were labeled as TODO or left without lessons in the handout.
 - **Convention clarifications:** C++ negative `%` differs from canonical modulo; modular division requires an inverse; exact integer math needs overflow care; ordinary combinations differ from arrangements; square root is not an exact-integer method by itself.
 - **Suggested next practice:** After finishing each chapter, solve 2–3 form-wise problems, then one unseen mixed problem; note the observation, not just the formula.
+
