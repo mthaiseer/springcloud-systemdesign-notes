@@ -1,4 +1,4 @@
-# Number Theory 01 - Units Digits and Last Two Digits
+# Number Theory 01 - Visual Learning Notes
 
 ## Table of Contents
 
@@ -25,923 +25,863 @@
 
 ## 1. How to use this note
 
-This is a student-friendly rewrite of **NT1.pdf - Vedantu Olympiad Mathematics, Number Theory, Session 01**. It preserves the mathematical topics and distinct problems, combines repeated question/solution slides, and adds the background needed to understand each method.
+**Goal:** find the last digit or last two digits of a huge number without calculating the whole number.
 
-Read the prerequisites first. For each worked problem, cover the answer, attempt the first step, and then compare your reasoning. You do not need to calculate enormous powers.
+```text
+LOOK at a small example
+          |
+          v
+NOTICE what repeats
+          |
+          v
+FOLLOW a worked problem
+          |
+          v
+TRY a similar problem yourself
+```
 
-**Our goal:** find a small piece of information about a huge number: its final digit or final two digits.
+The diagrams use plain text inside fenced blocks to keep their alignment. Read `^` as “raised to the power” and `*` as “multiplied by.” These are mathematical notes, not programming code.
 
-Unless stated otherwise, bases and exponents in the worked problems are positive integers. The cycle tables start at exponent **1**, not exponent 0.
+| Symbol | Meaning | Example |
+|---|---|---|
+| `a^n` | Multiply n copies of a | `2^3 = 2 * 2 * 2` |
+| `U(number)` | Units digit | `U(347) = 7` |
+| `mod` | Remainder after division | `14 mod 4 = 2` |
+| `>=` | At least | `n >= 2` |
 
-
-### Reading the notation
-
-This version uses ordinary Markdown and plain-text mathematics. No LaTeX renderer is required.
-
-| Notation | Read it as |
-|---|---|
-| `2^5` | 2 raised to the power 5 |
-| `3 × 4` | 3 multiplied by 4 |
-| `17 mod 4` | Remainder when 17 is divided by 4 |
-| `U(347)` | Units digit of 347 |
-| `a >= 2` | a is at least 2 |
-| `a^(b^c)` | a raised to the entire exponent b^c |
-
-Here `^` denotes a mathematical power. It is not multiplication. In programming languages its meaning can differ; no code is needed for this lesson.
-
-**Study order:** understand the small example, discover the pattern, then use the shortcut on a large exponent.
+**Scope:** the units-digit and last-two-digit lesson in NT1.pdf. Positive integer bases and exponents are used unless stated otherwise.
 
 ## 2. Prerequisites
 
-Learn these in order. Each is used later in this lesson.
+Study one small idea at a time. You can return here when a later example needs it.
 
-- [2.0 Numbers, digits, and symbols](#20-numbers-digits-and-symbols)
-- [2.1 Place value and the units digit](#21-place-value-and-the-units-digit)
-- [2.2 Powers mean repeated multiplication](#22-powers-mean-repeated-multiplication)
-- [2.3 Two exponent rules we will use](#23-two-exponent-rules-we-will-use)
-- [2.4 Division with a remainder](#24-division-with-a-remainder)
-- [2.5 Even and odd numbers](#25-even-and-odd-numbers)
-- [2.6 Why the last two digits determine the remainder modulo 4](#26-why-the-last-two-digits-determine-the-remainder-modulo-4)
-- [2.7 Reading brackets and operation order](#27-reading-brackets-and-operation-order)
-- [2.8 Factors, multiples, and divisibility](#28-factors-multiples-and-divisibility)
-- [2.9 Expanding brackets without skipping steps](#29-expanding-brackets-without-skipping-steps)
-- [2.10 Powers of products](#210-powers-of-products)
-- [2.11 Remainders as endings](#211-remainders-as-endings)
-- [2.12 Cycle position and starting point](#212-cycle-position-and-starting-point)
-- [2.13 Prerequisite checkpoint](#213-prerequisite-checkpoint)
+- [2.1 Numbers and place value](#21-numbers-and-place-value)
+- [2.2 Variables and equality](#22-variables-and-equality)
+- [2.3 Powers and exponents](#23-powers-and-exponents)
+- [2.4 Rules for combining powers](#24-rules-for-combining-powers)
+- [2.5 Division and remainders](#25-division-and-remainders)
+- [2.6 Factors, multiples, and even or odd](#26-factors-multiples-and-even-or-odd)
+- [2.7 Why two factors of 2 matter](#27-why-two-factors-of-2-matter)
+- [2.8 Brackets and expansion](#28-brackets-and-expansion)
+- [2.9 Remainders as endings](#29-remainders-as-endings)
+- [2.10 Finding the remainder modulo 4](#210-finding-the-remainder-modulo-4)
+- [2.11 Cycle position and starting point](#211-cycle-position-and-starting-point)
 
-### 2.0 Numbers, digits, and symbols
+### 2.1 Numbers and place value
 
-**Step 1 - Distinguish a number from a digit.**
+A **digit** is one symbol from 0 to 9. The number 347 contains three digits.
 
-The digits are 0 through 9. A number can contain several digits: 347 is one number made of three digits.
+```text
+                3       4       7
+                |       |       |
+                v       v       v
+Place:       hundreds   tens   units
+Value:          300      40      7
 
-**Step 2 - Understand the numbers used here.**
+347 = 300 + 40 + 7
+```
 
-Positive integers are 1, 2, 3, and so on. Integers also include 0 and negative whole numbers. The powers in this lesson normally use positive integer bases and positive integer exponents.
+**Step 1:** look at the rightmost digit: 7. That is the units digit.
 
-**Step 3 - Understand a variable.**
+**Step 2:** look at the rightmost pair: 47. Those are the last two digits.
 
-A letter stands for a number. In `a^n`, the letter `a` represents the base and `n` represents the exponent. If `a = 3` and `n = 4`, then `a^n = 3^4`.
+```text
+1207 = [12][07]
+           ^^ last TWO digits: 07
+            ^ last ONE digit:   7
+```
 
-**Step 4 - Understand equality.**
+### 2.2 Variables and equality
 
-An equals sign means the complete values are equal. For example, `2^3 = 8`. Having the same last digit is weaker: 18 and 28 end in the same digit, but they are not equal.
+A letter is a placeholder for a number. Positive integers are 1, 2, 3, and so on; integers also include zero and negative whole numbers.
 
-**Check:** In `7^3`, the base is 7 and the exponent is 3. Its value is 343, and its units digit is 3.
+```text
+a^n       choose a = 3 and n = 4       3^4
 
-### 2.1 Place value and the units digit
+18 and 28 have the same last digit.
+          BUT 18 is not equal to 28.
 
-In the number 347:
+U(18) = U(28) = 8     <-- only the endings match
+```
 
-| Hundreds | Tens | Units |
-|---:|---:|---:|
-| 3 | 4 | 7 |
+An equals sign means the values on both sides are equal. Always distinguish a number from its ending.
 
-This means:
+### 2.3 Powers and exponents
 
-`347 = 3 × 100 + 4 × 10 + 7`
+```text
+           3^4
+           | |
+           | +---- exponent: how many copies?
+           +------ base: which number?
 
-The **units digit**, also called the **last digit**, is 7. We write `U(347) = 7`.
+3^4 = [3] * [3] * [3] * [3] = 81
+       1     2     3     4     copies
+```
 
-The **last two digits** are 47. For a two-digit ending below 10, keep the leading zero: the last two digits of 1207 are **07**.
+`3^4` is not `3 * 4`. One is 81; the other is 12.
 
-### 2.2 Powers mean repeated multiplication
+For a nonzero base, exponent zero gives 1: `7^0 = 1`. The cycles below start at exponent **1**, so handle exponent zero separately. We do not use `0^0` in this lesson.
 
-In `3^4`, 3 is the **base** and 4 is the **exponent**:
+### 2.4 Rules for combining powers
 
-`3^4 = 3 × 3 × 3 × 3 = 81`
+**Rule A: same base, multiplied powers - add exponents.**
 
-Do not confuse `3^4` with `3 × 4 = 12`.
+```text
+2^3 * 2^2
+   |     |
+   v     v
+(2*2*2)*(2*2) = five copies of 2 = 2^5
 
-| Expression | Meaning | Value |
-|---|---|---:|
-| `2^1` | One factor of 2 | 2 |
-| `2^2` | `2 × 2` | 4 |
-| `2^3` | `2 × 2 × 2` | 8 |
-| `2^4` | `2 × 2 × 2 × 2` | 16 |
+a^m * a^n = a^(m+n)
+```
 
-For a nonzero base, `a^0 = 1`. Handle exponent 0 separately; do not apply a positive-exponent cycle blindly.
+**Rule B: a power raised to a power - multiply exponents.**
 
-### 2.3 Two exponent rules we will use
+```text
+(2^3)^2 = (2*2*2) * (2*2*2)
+          3 copies   3 copies
+                    |
+                    v
+              3 * 2 = 6 copies
 
-**Multiplying powers with the same base adds the exponents:**
+(a^m)^n = a^(m*n)
+```
 
-`a^m × a^n = a^(m + n)`
+**Rule C: a product raised to a power - each factor repeats.**
 
-For example, `2^3 × 2^2` contains five factors of 2, so it equals `2^5`.
+```text
+(2*3)^2 = (2*3)*(2*3)
+        = (2*2)*(3*3)
+        = 2^2 * 3^2
 
-**Raising a power to another power multiplies the exponents:**
+(a*b)^n = a^n * b^n
+```
 
-`(a^m)^n = a^(m × n)`
+### 2.5 Division and remainders
 
-For example:
+**Question:** how many complete groups of four fit into 14?
 
-`(2^3)^2 = 2^3 × 2^3 = 2^6`
+```text
+14 objects:
 
-This second rule will help us rewrite `2^1120` later.
+[o o o o] [o o o o] [o o o o]   o o
+ group 1   group 2   group 3    left over
 
-### 2.4 Division with a remainder
+14 = 4 * 3 + 2
+     |   |   |
+     |   |   +---- remainder
+     |   +-------- complete groups (quotient)
+     +------------ group size (divisor)
+```
 
-When we divide 14 by 4, three full groups of 4 fit, with 2 left over:
+14 is the **dividend**, the number being divided. Thus `14 mod 4 = 2`.
 
-`14 = 4 × 3 + 2`
+The remainder must be smaller than the divisor. If four objects remained, we could form another complete group.
 
-| Term | In this example | Meaning |
-|---|---:|---|
-| Dividend | 14 | Number being divided |
-| Divisor | 4 | Size of each group |
-| Quotient | 3 | Number of complete groups |
-| Remainder | 2 | Amount left over |
+```text
+number = divisor * quotient + remainder
 
-In general:
+For a positive divisor:
+0 <= remainder < divisor
+```
 
-`N = d × q + r; 0 <= r < d`
+### 2.6 Factors, multiples, and even or odd
 
-We say “`N` modulo `d`” to mean this remainder, and write `N mod d`.
+```text
+24 = 4 * 6
+     |   |
+     +---+---- factors of 24
 
-Examples: `14 mod 4 = 2`, `28 mod 4 = 0`, and `17 mod 10 = 7`.
+24 is a multiple of 4.
+24 / 4 leaves NO remainder: divisible by 4.
+```
 
-**Divisible** means the remainder is zero. Thus 28 is divisible by 4 because `28 = 4 × 7`.
+```text
+Even: [o o] [o o] [o o]       6 = 2*3
+Odd:  [o o] [o o] [o o] o     7 = 2*3 + 1
+                        ^ one left over
+```
 
-### 2.5 Even and odd numbers
+**Step 1:** an even number divides into pairs with nothing left over.
 
-An even number is divisible by 2. An odd number leaves remainder 1 when divided by 2.
+**Step 2:** an odd number leaves one object unpaired.
 
-| Type | Examples | General form |
+**Step 3:** a positive power of an even number is even. A positive power of an odd number is odd.
+
+| Product | Small example | Result type |
 |---|---|---|
-| Even | 2, 4, 6, 8 | `2 × k` |
-| Odd | 1, 3, 5, 7 | `2 × k + 1` |
+| Even * integer | `6 * 3 = 18` | Even |
+| Odd * odd | `3 * 5 = 15` | Odd |
 
-Here `k` is an integer chosen to represent the number. For positive odd numbers, `k` can be 0, 1, 2, …
+### 2.7 Why two factors of 2 matter
 
-Multiplying even numbers gives an even number. Multiplying odd numbers gives an odd number. Therefore, for a positive exponent:
+```text
+One factor of 2:    6 = 2 * 3       even
+Two factors of 2:  12 = 2 * 2 * 3
+                       \___/
+                         4         divisible by 4
+```
 
-- An even base raised to that exponent is even.
-- An odd base raised to that exponent is odd.
+For `2022^2`, each copy of 2022 contributes a factor of 2:
 
-Example: `2022^2023` is even because it is a product of even factors. We do not need its value.
+```text
+2022 * 2022 = (2*1011) * (2*1011)
+            = (2*2) * (1011*1011)
+            = 4 * (1011*1011)
+```
 
-### 2.6 Why the last two digits determine the remainder modulo 4
+Therefore any power `2022^n` with `n >= 2` is divisible by 4. Being even alone would not prove this: 6 is even but not divisible by 4.
 
-Write `2341 = 2300 + 41`. The number 2300 is divisible by 4 because `100 = 4 × 25`.
+### 2.8 Brackets and expansion
 
-So 2341 and 41 leave the same remainder when divided by 4:
+First work inside brackets, then perform the remaining operations. Powers come before multiplication; multiplication comes before addition and subtraction.
 
-`41 = 4 × 10 + 1`
+```text
+(4+1) * (6+9)
+  |       |
+  v       v
+  5   *  15 = 75
+```
 
-Therefore `2341 mod 4 = 1`.
+To expand two sums, multiply each term in the first by each term in the second:
 
-> To find an integer's remainder modulo 4, you may examine its last two digits. Its last digit alone is not enough: 12 and 22 both end in 2, but their remainders modulo 4 are 0 and 2.
+```text
+(20+3) * (10+7)
 
-### 2.7 Reading brackets and operation order
+             10       7
+          +--------+--------+
+       20 |  200   |  140   |
+          +--------+--------+
+        3 |   30   |   21   |
+          +--------+--------+
 
-In `(A + B) × (C + D)`, add inside each bracket, then multiply the bracket results.
+Add all four cells: 200 + 140 + 30 + 21 = 391
+```
 
-Example: `(4 + 1) × (6 + 9) = 5 × 15 = 75`.
+A square of a sum uses the same four products:
 
-In powers, brackets also matter: `(2^3)^2 = 64`, whereas `2^(3^2) = 512`. We will return to this distinction in power towers.
+`(100+23)^2 = 10000 + 2300 + 2300 + 529`.
 
-### 2.8 Factors, multiples, and divisibility
+### 2.9 Remainders as endings
 
-**Step 1 - Begin with an exact multiplication.**
+```text
+347 = 10 * 34 + 7       keep one digit:   7
+347 = 100 * 3 + 47      keep two digits: 47
+```
 
-`24 = 4 × 6`.
+Numbers with the same remainder modulo 10 have the same last digit. Numbers with the same remainder modulo 100 have the same last two digits.
 
-So 4 and 6 are factors of 24. The number 24 is a multiple of 4 and a multiple of 6.
+**Example:** 123 and 23 differ by 100, so their two-digit endings match.
 
-**Step 2 - Translate this into division.**
+### 2.10 Finding the remainder modulo 4
 
-`24 ÷ 4 = 6` with no remainder. We say 24 is divisible by 4.
+The last two digits are enough because 100 is divisible by 4.
 
-**Step 3 - Notice that two factors of 2 make a factor of 4.**
+```text
+2341 = [2300] + [41]
+         |       |
+         |       +---- 41 = 4*10 + 1
+         +------------ 2300 = 4*575
 
-`24 = 2 × 2 × 6 = 4 × 6`.
+No remainder from 2300.
+Remainder 1 from 41.
+So 2341 mod 4 = 1.
+```
 
-This explains why a product containing at least two factors of 2 is divisible by 4. Merely having one factor of 2 guarantees evenness, but not divisibility by 4: 6 is even and is not divisible by 4.
+The last digit alone is not enough: 12 and 22 end in 2, but their remainders modulo 4 are 0 and 2.
 
-**Example:** `2022^2 = (2 × 1011) × (2 × 1011)`. Regroup the two factors of 2 to get `4 × 1011 × 1011`. Therefore the square is divisible by 4.
+### 2.11 Cycle position and starting point
 
-### 2.9 Expanding brackets without skipping steps
+```text
+Position:   1   2   3   4  |  5   6   7   8
+Digit:      2   4   8   6  |  2   4   8   6
+           first group     second group
+```
 
-**Step 1 - Multiply everything inside a bracket.**
+A **cycle** is a repeating list. Its **length** is the number of positions in one complete repeat. Here the length is 4.
 
-`3 × (10 + 2) = 3 × 10 + 3 × 2 = 30 + 6 = 36`.
+Always note where a cycle starts. Some two-digit patterns start repeating only after the first exponent.
 
-**Step 2 - Apply the same idea when both factors have brackets.**
+**Try first:** what are the digits at positions 6 and 8?
 
-To expand `(20 + 3) × (10 + 7)`, multiply each term in the first bracket by each term in the second:
-
-1. `20 × 10 = 200`.
-2. `20 × 7 = 140`.
-3. `3 × 10 = 30`.
-4. `3 × 7 = 21`.
-5. Add: `200 + 140 + 30 + 21 = 391`.
-
-This is the distributive rule. It explains why most terms disappear when we track only the final digit.
-
-**Step 3 - Understand a square of a sum.**
-
-`(100 + 23)^2` means `(100 + 23) × (100 + 23)`.
-
-The four products are 10000, 2300, 2300, and 529. Their sum is `10000 + 4600 + 529`. The middle term must not be omitted.
-
-### 2.10 Powers of products
-
-**Step 1 - Write out a small example.**
-
-`(2 × 3)^2 = (2 × 3) × (2 × 3)`.
-
-**Step 2 - Regroup equal factors.**
-
-`(2 × 2) × (3 × 3) = 2^2 × 3^2`.
-
-**Step 3 - State the pattern.**
-
-`(a × b)^n = a^n × b^n` for a positive integer exponent n.
-
-This is why `(2 × 1011)^2023` contains 2023 factors of 2. It certainly contains the two factors of 2 needed for divisibility by 4.
-
-### 2.11 Remainders as endings
-
-**Step 1 - Divide by 10 for one digit.**
-
-`347 = 10 × 34 + 7`, so its units digit is the remainder 7.
-
-**Step 2 - Divide by 100 for two digits.**
-
-`347 = 100 × 3 + 47`, so its final two digits are 47.
-
-**Step 3 - Keep a leading zero when needed.**
-
-`1207 = 100 × 12 + 7`. The remainder is the number 7, but the requested two-digit ending is written **07**.
-
-**Step 4 - Connect equal remainders.**
-
-23 and 3 differ by 20, a multiple of 10, so they have the same remainder modulo 10. Likewise, 123 and 23 differ by 100 and have the same remainder modulo 100.
-
-You may see this called modular arithmetic. Here it simply means calculating with remainders.
-
-### 2.12 Cycle position and starting point
-
-**Step 1 - Number the entries starting at 1.**
-
-In the cycle `2, 4, 8, 6`, position 1 contains 2, position 2 contains 4, position 3 contains 8, and position 4 contains 6.
-
-**Step 2 - Count full repetitions.**
-
-The next four positions repeat the same list. Position 6 is two positions after a complete group of four, so it contains 4.
-
-**Step 3 - Record where the cycle begins.**
-
-Some patterns begin repeating later. The final-two-digit pattern of powers of 6 starts repeating at exponent 2, not exponent 1. Always record both the cycle length and the starting exponent.
-
-### 2.13 Prerequisite checkpoint
-
-Try these before continuing:
-
-1. What does `2^4` mean?
-2. What is the remainder when 23 is divided by 4?
-3. Why is `2022^3` even?
-4. Why is `2022^3` divisible by 4?
-5. How do `(2^3)^2` and `2^(3^2)` differ?
-6. What are the final two digits of 1007?
-
-**Answers with reasons:**
-
-1. Four factors of 2: `2 × 2 × 2 × 2 = 16`.
-2. `23 = 4 × 5 + 3`, so the remainder is 3.
-3. Its factors include an even number, so the product is even.
-4. Each of its three factors of 2022 contributes a factor of 2; two of those make 4.
-5. The first is `8^2 = 64`; the second is `2^9 = 512`.
-6. **07**, because `1007 = 100 × 10 + 7`.
+**Check:** 4 and 6. They occupy the second and fourth positions of the second group.
 
 ## 3. Why only the last digit matters
 
-**Before you start:** Place value, repeated multiplication, and expanding brackets (Sections 2.1, 2.2, and 2.9).
+**You need:** place value and bracket expansion.
 
-**Goal:** Understand why replacing a base by its last digit preserves the answer.
+**Question:** can we find the last digit of `23 * 17` using only 3 and 7?
 
-**Question:** to find the last digit of `173^37`, must we use all of 173?
+```text
+23 * 17 = (20+3) * (10+7)
+        = 200 + 140 + 30 + 21
+          \___________/    |
+           all end in 0    last digit 1
+```
 
-No. We can work with its last digit, 3.
+1. All products involving a tens part end in 0.
+2. The product of the units digits is `3 * 7 = 21`.
+3. Therefore the complete answer ends in 1.
 
-### Discover the idea with a small multiplication
+A power repeats this multiplication rule:
 
-1. Write `23 = 20 + 3` and `17 = 10 + 7`.
-2. Multiply:
+```text
+173^37   --same final digit-->   3^37
+ ^                              ^
+keep only the base's final digit
+```
 
-   `(20 + 3) × (10 + 7) = 200 + 140 + 30 + 21`
-
-3. The first three terms end in 0.
-4. Only `3 × 7 = 21` affects the units digit.
-5. Therefore `23 × 17` ends in 1.
-
-The same reasoning works every time we multiply. A power is repeated multiplication, so:
-
-`U(a^n) = U(U(a)^n)`
-
-In words: **replace the base by its units digit, but keep the exponent**.
-
-For example:
-
-`U(173^37) = U(3^37)`
-
-This does **not** say that `173^37 = 3^37`. Only their last digits are equal.
+**Important:** keep the original exponent. Only the ending is preserved; the two full numbers are not equal.
 
 ## 4. Discovering a repeating cycle
 
-**Before you start:** Powers and the base-reduction rule from Section 3.
+**You need:** powers and the last-digit multiplication rule.
 
-**Goal:** Generate a pattern by multiplying one small digit at a time.
+Build the cycle for 2 one multiplication at a time:
 
-Let us build the last digits of powers of 2 without calculating large numbers.
+```text
+Start: 2
 
-| Exponent | Calculation using the previous last digit | New last digit |
-|---:|---|---:|
-| 1 | Start with 2 | 2 |
-| 2 | `2 × 2 = 4` | 4 |
-| 3 | `4 × 2 = 8` | 8 |
-| 4 | `8 × 2 = 16` | 6 |
-| 5 | `6 × 2 = 12` | 2 |
-| 6 | `2 × 2 = 4` | 4 |
+2 * 2 =  4   keep 4
+4 * 2 =  8   keep 8
+8 * 2 = 16   keep 6
+6 * 2 = 12   keep 2  <-- back to the start
 
-At exponent 5 we return to 2. Since the next step always multiplies by 2, the same sequence starts again.
+      +-----------------------+
+      |                       |
+      v                       |
+     [2] --> [4] --> [8] --> [6]
+```
 
-**Cycle:** `2,4,8,6` - four positions.
+**Why repeat?** Once the current last digit returns to 2, multiplying by the same number produces the same next digits again.
 
-| Exponents | Last digit |
-|---|---:|
-| 1 and 5 | 2 |
-| 2 and 6 | 4 |
-| 3 and 7 | 8 |
-| 4 and 8 | 6 |
+For 3, use the same process:
 
-Now discover the cycle for 3:
+```text
+3*3 = 9    9*3 = 27    7*3 = 21    1*3 = 3
+keep 9     keep 7      keep 1      restart
 
-1. Start with 3.
-2. `3 × 3 = 9`: keep 9.
-3. `9 × 3 = 27`: keep 7.
-4. `7 × 3 = 21`: keep 1.
-5. `1 × 3 = 3`: back to the start.
+Cycle: [3] [9] [7] [1]
+```
 
-**Cycle:** `3,9,7,1`.
+**Try:** what is the fifth cycle entry for 3?
 
-> A cycle is a repeating list. Its length tells us how many positions occur before the list starts again.
+**Check:** 3, because the first four entries complete one group.
 
 ## 5. Complete units-digit cycle table
 
-**Before you start:** Cycle length and cycle positions from Sections 2.12 and 4.
+**You need:** cycle length and position.
 
-**Goal:** Recognize which digits need no exponent calculation, parity, or a remainder.
+| Base ending | Cycle from exponent 1 | Length |
+|---:|---|---:|
+| 0 | 0 | 1 |
+| 1 | 1 | 1 |
+| 2 | 2, 4, 8, 6 | 4 |
+| 3 | 3, 9, 7, 1 | 4 |
+| 4 | 4, 6 | 2 |
+| 5 | 5 | 1 |
+| 6 | 6 | 1 |
+| 7 | 7, 9, 3, 1 | 4 |
+| 8 | 8, 4, 2, 6 | 4 |
+| 9 | 9, 1 | 2 |
 
-The first entry in each row corresponds to exponent 1.
+### See why the cycles work
 
-| Last digit of base | Repeating units digits | Cycle length | What you need about the exponent |
-|---:|---|---:|---|
-| 0 | 0 | 1 | Only that it is positive |
-| 1 | 1 | 1 | Only that it is positive |
-| 2 | 2, 4, 8, 6 | 4 | Remainder modulo 4 |
-| 3 | 3, 9, 7, 1 | 4 | Remainder modulo 4 |
-| 4 | 4, 6 | 2 | Odd or even |
-| 5 | 5 | 1 | Only that it is positive |
-| 6 | 6 | 1 | Only that it is positive |
-| 7 | 7, 9, 3, 1 | 4 | Remainder modulo 4 |
-| 8 | 8, 4, 2, 6 | 4 | Remainder modulo 4 |
-| 9 | 9, 1 | 2 | Odd or even |
+```text
+Fixed endings:
+0*0 = 0     1*1 = 1     5*5 = 25     6*6 = 36
+keep 0      keep 1      keep 5       keep 6
 
-### Why the shorter cycles work
+Two positions:
+4*4 = 16 -> keep 6 -> 6*4 = 24 -> keep 4
+9*9 = 81 -> keep 1 -> 1*9 =  9 -> keep 9
 
-- **0:** multiplying a number ending in 0 by another such number still gives a last digit of 0.
-- **1:** `1 × 1 = 1`.
-- **5:** `5 × 5 = 25`, so the last digit stays 5.
-- **6:** `6 × 6 = 36`, so the last digit stays 6.
-- **4:** `4 × 4 = 16` gives 6, then `6 × 4 = 24` returns to 4.
-- **9:** `9 × 9 = 81` gives 1, then `1 × 9 = 9` returns to 9.
+Four positions:
+7*7 = 49 -> 9*7 = 63 -> 3*7 = 21 -> 1*7 = 7
+keep 9      keep 3      keep 1      restart
 
-### Build the cycle for 7
+8*8 = 64 -> 4*8 = 32 -> 2*8 = 16 -> 6*8 = 48
+keep 4      keep 2      keep 6      restart
+```
 
-1. Start with 7: the first entry is 7.
-2. Multiply `7 × 7 = 49`: keep 9.
-3. Multiply `9 × 7 = 63`: keep 3.
-4. Multiply `3 × 7 = 21`: keep 1.
-5. Multiply `1 × 7 = 7`: the starting entry returns.
+### Two small applications
 
-The cycle is **7, 9, 3, 1**. For example, exponent 3 selects the third entry, so `7^3` ends in 3.
+**Find the units digit of `271^127`.**
 
-### Build the cycle for 8
-
-1. Start with 8.
-2. Multiply `8 × 8 = 64`: keep 4.
-3. Multiply `4 × 8 = 32`: keep 2.
-4. Multiply `2 × 8 = 16`: keep 6.
-5. Multiply `6 × 8 = 48`: keep 8, returning to the start.
-
-The cycle is **8, 4, 2, 6**. For example, `8^3` ends in 2.
-
-### Quick examples
-
-**Find `U(271^127)`.**
-
-1. The base ends in 1.
-2. Every positive power of a number ending in 1 ends in 1.
+1. 271 ends in 1.
+2. The cycle contains only 1.
+3. Any positive exponent selects 1.
 
 **Answer: 1.**
 
-**Find `U(239^729)`.**
+**Find the units digit of `239^729`.**
 
-1. The base ends in 9.
-2. Powers of 9 have cycle `9,1`.
-3. The exponent 729 is odd, so choose the first entry.
+```text
+239 ends in 9.
+Cycle positions:  odd  even  odd  even
+Digits:            9     1    9     1
+729 is odd -> choose 9.
+```
 
 **Answer: 9.**
 
 ## 6. Using remainders to choose a cycle position
 
-**Before you start:** Division with a remainder and cycles (Sections 2.4 and 4).
+**You need:** complete groups and remainders.
 
-**Goal:** Turn a large exponent into a small cycle position.
+For `2^50`, one group has four positions:
 
-Suppose the cycle has length 4 and the exponent is 50.
+```text
+50 = 4 * 12 + 2
+     \____/   |
+       48     2 more positions
 
-`50 = 4 × 12 + 2`
+12 full groups finish at exponent 48.
 
-The first 48 positions form 12 complete cycles. Two positions remain, so choose the **second** entry of the next cycle.
+Exponent:    49     50     51     52
+Position:     1      2      3      4
+Last digit:   2     [4]     8      6
+                    ^
+                stop here
+```
 
-| Exponent remainder modulo 4 | Cycle position |
-|---:|---:|
+**Answer: 4.** We used the second entry after 12 complete groups.
+
+### What if the remainder is zero?
+
+```text
+Exponent:  1  2  3  4 | 5  6  7  8
+Digit:     2  4  8  6 | 2  4  8 [6]
+                                ^
+                     end of a complete group
+
+8 = 4*2 + 0 -> choose position 4, NOT position 0
+```
+
+| Exponent remainder | Cycle position |
+|---:|---|
 | 1 | First |
 | 2 | Second |
 | 3 | Third |
 | 0 | Fourth |
 
-### Why remainder 0 means the final position
+The forms `4*k+1`, `4*k+2`, and `4*k+3` mean k complete groups plus 1, 2, or 3 positions. A positive exponent of the form `4*k` ends a complete group.
 
-Take exponent 8. There are exactly two complete cycles. Position 8 is the **end** of the second cycle, not the beginning of a nonexistent “zeroth” cycle position.
+**Try:** find the last digit of `2^23`.
 
-For powers of 2, position 8 therefore has last digit 6.
-
-> For positive exponents, remainder 0 means the last entry of the cycle. It does not mean “use exponent 0.”
-
-### What do forms such as 4k + 1 mean?
-
-They describe remainders:
-
-| Form | Example exponents | Remainder modulo 4 |
-|---|---|---:|
-| `4 × k + 1` | 1, 5, 9, 13 | 1 |
-| `4 × k + 2` | 2, 6, 10, 14 | 2 |
-| `4 × k + 3` | 3, 7, 11, 15 | 3 |
-| `4 × k` | 4, 8, 12, 16 | 0 |
-
-For instance, `13 = 4 × 3 + 1`, so `2^13` ends like `2^1`, giving 2. Similarly, `23 = 4 × 5 + 3`, so `2^23` ends like `2^3`, giving 8.
+**Check:** `23 = 4*5+3`; third entry of 2, 4, 8, 6 gives **8**.
 
 ## 7. Worked examples with a single power
 
-**Before you start:** The cycle table and remainder selection (Sections 5 and 6).
+**You need:** base ending, cycle, and remainder.
 
-**Goal:** Apply the same four actions: base digit, cycle, remainder, answer.
+### Example 1 - Find the last digit of 2^50
 
-### Example 1 - Last digit of 2 to the power 50
+```text
+Base digit       2
+Cycle            [2] [4] [8] [6]
+Exponent         50 = 4*12 + 2
+Position         second
+Answer           4
+```
 
-**Problem:** Find the last digit of `2^50`.
+The two leftover positions select the second digit, as shown in Section 6.
 
-1. The base digit is 2.
-2. Its cycle is `2,4,8,6`, of length 4.
-3. Divide the exponent: `50 = 4 × 12 + 2`.
-4. Remainder 2 means the second entry, which is 4.
+### Example 2 - Find the last digit of 1989^1989
 
-> **Answer: 4.** We found the last digit without calculating `2^50`.
-
-### Example 2 - Last digit of 1989 to the power 1989
-
-**Problem:** Find `U(1989^1989)`.
-
-1. Replace the base by its last digit: use `9^1989`.
-2. Powers of 9 alternate: `9,1,9,1,...`.
+1. Keep the base ending: 9.
+2. Use the cycle 9, 1.
 3. The exponent 1989 is odd.
-4. Odd positions contain 9.
 
-> **Answer: 9.**
+```text
+9^odd  -> 9
+9^even -> 1
+```
 
-### Example 3 - Last digit of 3 to the power 28
+**Answer: 9.**
 
-**Problem:** Find `U(3^28)`.
+### Example 3 - Find the last digit of 3^28
 
-1. The cycle for 3 is `3,9,7,1`.
-2. `28 = 4 × 7 + 0`.
-3. Remainder 0 means the fourth entry.
-4. The fourth entry is 1.
+```text
+28 = 4*7 + 0       seven complete groups
 
-> **Answer: 1.** The remainder is 0; the answer is not 0.
+Cycle: [3] [9] [7] [1]
+                    ^ end of the group
+```
 
-### Example 4 - A large base and a large exponent
+Remainder zero selects the fourth entry. **Answer: 1.**
 
-**Problem:** Find `U(2357^2341)`.
+### Example 4 - Find the last digit of 2357^2341
 
-1. The base ends in 7, whose cycle is `7,9,3,1`.
-2. `2341 = 4 × 585 + 1`.
-3. Remainder 1 selects the first entry.
+1. Keep the base ending: 7.
+2. Its cycle is 7, 9, 3, 1.
+3. `2341 = 4*585+1`: one position remains.
 
-> **Answer: 7.**
+```text
+Cycle: [7] [9] [3] [1]
+        ^ first position
+```
 
-### More small examples from the lesson
+**Answer: 7.**
 
-| Problem | Exponent calculation | Selected entry | Answer |
-|---|---|---|---:|
-| `U(2^10)` | `10 = 4 × 2 + 2` | Second in `2,4,8,6` | 4 |
-| `U(2^36)` | `36 = 4 × 9` | Fourth in `2,4,8,6` | 6 |
-| `U(173^37)` | `37 = 4 × 9 + 1` | First in `3,9,7,1` | 3 |
+### More small lesson examples
+
+| Power | Exponent grouping | Ending |
+|---|---|---:|
+| `2^10` | `10 = 4*2+2`: second entry | 4 |
+| `2^13` | `13 = 4*3+1`: first entry | 2 |
+| `2^36` | `36 = 4*9`: fourth entry | 6 |
+| `173^37` | Use 3; `37 = 4*9+1` | 3 |
 
 ## 8. Working backwards to find the base digit
 
-**Before you start:** Even and odd numbers, cycles, and remainder selection.
+**Problem:** `n^2023` ends in 2. What is the last digit of n?
 
-**Goal:** Test possible base digits when the final digit of the power is already known.
+**Step 1 - Find the cycle position.**
 
-**Problem:** If `n^2023` has units digit 2, what can the units digit of `n` be?
+`2023 = 4*505+3`: third position for four-entry cycles. The exponent is also odd.
 
-This time the output digit is known, and the input digit is unknown.
+**Step 2 - Remove odd base digits.**
 
-**Step 1 - Find the exponent's cycle position.**
+An odd base raised to a positive exponent remains odd. Our answer ends in an even digit, so the base is even.
 
-`2023 = 4 × 505 + 3`
+```text
+Possible base endings: 0, 2, 4, 6, 8
+                         |
+                         v
+                    test each one
+```
 
-For four-entry cycles, we need the third entry. Also, 2023 is odd.
+| Base ending | Ending after exponent 2023 | Keep it? |
+|---:|---:|---|
+| 0 | 0: fixed | No |
+| 2 | 8: third cycle entry | No |
+| 4 | 4: odd exponent | No |
+| 6 | 6: fixed | No |
+| 8 | 2: third cycle entry | Yes |
 
-**Step 2 - Eliminate impossible base digits.**
-
-An odd number raised to a positive power stays odd. Since the result ends in 2, the base must be even. Its possible last digits are 0, 2, 4, 6, and 8.
-
-**Step 3 - Check each even digit.**
-
-| Last digit of `n` | Reason | Last digit of `n^2023` |
-|---:|---|---:|
-| 0 | Fixed digit | 0 |
-| 2 | Third entry of `2,4,8,6` | 8 |
-| 4 | Odd exponent | 4 |
-| 6 | Fixed digit | 6 |
-| 8 | Third entry of `8,4,2,6` | 2 |
-
-Only 8 produces the required last digit.
-
-> **Answer: the units digit of `n` is 8.** This determines its final digit, not the whole number; 8, 18, 28, … all work.
+**Answer: n ends in 8.** This does not determine the complete number: 8, 18, 28, and so on all work.
 
 ## 9. Adding and multiplying last digits
 
-**Before you start:** Place value and expanding brackets (Sections 2.1 and 2.9).
+**You need:** place value and operation order.
 
-**Goal:** Combine endings without losing the original operation order.
+### Addition: keep the final digit after carrying
 
-### Addition
+```text
+47 + 38
+ |    |
+ v    v
+ 7 +  8 = 15
+           |
+           +--> keep 5; the 1 is carried to tens
 
-**Step 1 - Separate tens from units.**
+Check: 47 + 38 = 85 -> last digit 5
+```
 
-47 is 40 + 7. The number 38 is 30 + 8.
+### Multiplication: multiply the endings
 
-**Step 2 - Add the units.**
+```text
+23 * 17
+ |    |
+ v    v
+ 3 *  7 = 21 -> keep 1
 
-`7 + 8 = 15`. Keep 5 and carry 1 ten.
+Check: 23 * 17 = 391 -> last digit 1
+```
 
-**Step 3 - Check the complete addition.**
-
-`47 + 38 = 85`. Its units digit is also 5.
-
-The units digits give `7 + 8 = 15`, which also ends in 5. A carry affects the next column, not the final digit we keep.
-
-`U(A + B) = U(U(A) + U(B))`
-
-### Multiplication
-
-1. The last digits of 23 and 17 are 3 and 7.
-2. Multiply them: `3 × 7 = 21`.
-3. Keep the units digit, 1.
-4. Check: `23 × 17 = 391`, which ends in 1.
-
-The other products in the bracket expansion are multiples of 10, so they cannot change that final digit.
-
-`U(A × B) = U(U(A) × U(B))`
-
-### The method for an expression
-
-1. Find the last digit of each power separately.
-2. Keep the original brackets and operations.
-3. Perform the smaller additions or multiplications.
-4. Keep the final digit of the result.
-
-You may discard tens after any addition or multiplication. For example, a bracket ending in 15 can be replaced by 5 when only a units digit is needed.
+**Method:** find each power's ending, preserve brackets and operations, then keep the final digit after combining.
 
 ## 10. Worked examples with sums and products
 
-**Before you start:** Units-digit cycles, addition, multiplication, and bracket order.
+### Example 5 - Find the last digit of 17^1989 + 89^2009
 
-**Goal:** Solve each power first, then combine its ending with the others.
+```text
+17^1989                         89^2009
+   |                               |
+base ends in 7                  base ends in 9
+1989 = 4*497+1                 2009 is odd
+   |                               |
+   v                               v
+   7               +               9
+                   |
+                   v
+                  16 -> keep 6
+```
 
-### Example 5 - Sum of two powers
-
-**Problem:** Find the last digit of `17^1989 + 89^2009`.
-
-1. For `17^1989`, use base digit 7 and cycle `7,9,3,1`.
-2. `1989 = 4 × 497 + 1`, so this term ends in 7.
-3. For `89^2009`, use base digit 9. The exponent is odd, so this term ends in 9.
-4. Add the final digits: `7 + 9 = 16`.
-5. Keep the last digit of 16.
-
-> **Answer: 6.**
+**Answer: 6.** The first term uses position 1 of 7, 9, 3, 1; the second uses the odd position of 9, 1.
 
 ### Example 6 - Two brackets multiplied
 
-**Problem:** Find the last digit of
+Find the last digit of `(54^99 + 99^54) * (144^144 + 199^199)`.
 
-`(54^99 + 99^54) × (144^144 + 199^199)`
+**Step 1 - Find the four endings.**
 
-**Step 1 - Find each term's last digit.**
+| Power | Reason | Ending |
+|---|---|---:|
+| `54^99` | 4 to an odd power | 4 |
+| `99^54` | 9 to an even power | 1 |
+| `144^144` | 4 to an even power | 6 |
+| `199^199` | 9 to an odd power | 9 |
 
-| Term | Base digit | Exponent type | Last digit |
-|---|---:|---|---:|
-| `54^99` | 4 | Odd | 4 |
-| `99^54` | 9 | Even | 1 |
-| `144^144` | 4 | Even | 6 |
-| `199^199` | 9 | Odd | 9 |
+**Step 2 - Follow the brackets.**
 
-**Step 2 - Work inside the brackets.**
+```text
+(4 + 1) * (6 + 9)
+   |         |
+   v         v
+   5    *   15
+             |
+           keep 5
 
-The first bracket ends like `4 + 1 = 5`.
+   5 * 5 = 25 -> keep 5
+```
 
-The second bracket ends like `6 + 9 = 15`, so its final digit is 5.
+**Answer: 5.**
 
-**Step 3 - Multiply the bracket endings.**
+### Example 7 - Find the last digit of 27^50 * 73^100
 
-`5 × 5 = 25`
+```text
+27^50                        73^100
+  |                             |
+use 7                        use 3
+50 = 4*12+2                 100 = 4*25
+second entry                fourth entry
+  |                             |
+  9             *               1 = 9
+```
 
-> **Answer: 5.** Using `5 × 15 = 75` also gives the same final digit.
-
-### Example 7 - Product of two powers
-
-**Problem:** Find the last digit of `27^50 × 73^100`.
-
-1. `27^50` has the same final digit as `7^50`.
-2. `50 = 4 × 12 + 2`: choose the second entry of `7,9,3,1`, giving 9.
-3. `73^100` has the same final digit as `3^100`.
-4. `100 = 4 × 25`: choose the fourth entry of `3,9,7,1`, giving 1.
-5. Multiply: `9 × 1 = 9`.
-
-> **Answer: 9.**
+**Answer: 9.**
 
 ### Example 8 - A sum of two products
 
-**Problem:** Find the last digit of
+Find the last digit of `162^162 * 197^150 + 543^540 * 698^638`.
 
-`162^162 × 197^150 + 543^540 × 698^638`
+**Step 1 - Reduce each power separately.**
 
-**Step 1 - Calculate each exponent remainder.**
+| Power | Exponent grouping | Ending |
+|---|---|---:|
+| `162^162` | `162 = 4*40+2`; cycle for 2, entry 2 | 4 |
+| `197^150` | `150 = 4*37+2`; cycle for 7, entry 2 | 9 |
+| `543^540` | `540 = 4*135`; cycle for 3, entry 4 | 1 |
+| `698^638` | `638 = 4*159+2`; cycle for 8, entry 2 | 4 |
 
-1. `162 = 4 × 40 + 2`.
-2. `150 = 4 × 37 + 2`.
-3. `540 = 4 × 135 + 0`.
-4. `638 = 4 × 159 + 2`.
+**Step 2 - Multiply before adding.**
 
-**Step 2 - Choose the matching cycle entries.**
+```text
+4 * 9     +     1 * 4
+  |               |
+  v               v
+ 36       +       4 = 40 -> keep 0
+```
 
-| Power | Relevant cycle | Exponent remainder modulo 4 | Last digit |
-|---|---|---:|---:|
-| `162^162` | `2,4,8,6` | 2 | 4 |
-| `197^150` | `7,9,3,1` | 2 | 9 |
-| `543^540` | `3,9,7,1` | 0 | 1 |
-| `698^638` | `8,4,2,6` | 2 | 4 |
-
-**Step 3 - Multiply before adding.**
-
-`4 × 9 + 1 × 4 = 36 + 4 = 40`
-
-**Step 4 - Keep the last digit.**
-
-> **Answer: 0.**
+**Answer: 0.**
 
 ## 11. Subtraction and borrowing
 
-**Before you start:** Subtraction, place value, and the meaning of a remainder modulo 10.
+**You need:** column subtraction and remainders modulo 10.
 
-**Goal:** Handle borrowing when the difference of two final digits is negative.
+```text
+  25          units: 5 - 9 cannot stay nonnegative
+- 19          borrow 1 ten: 15 - 9 = 6
+----
+   6
 
-Subtraction needs one extra step when the smaller calculation is negative.
+Using remainders: 5 - 9 = -4
+                         |
+                      add 10
+                         v
+                         6
+```
 
-For example, `25-19 = 6`. Subtracting just the final digits gives `5-9 = -4`. Add 10 to obtain the corresponding digit: `-4 + 10 = 6`.
-
-This is the same borrowing used in column subtraction: `15-9 = 6`.
-
-### Example 9 - Difference of two powers
-
-**Problem:** Find the units digit of `5^2018-3^2018`.
+### Example 9 - Find the last digit of 5^2018 - 3^2018
 
 1. Every positive power of 5 ends in 5.
-2. The cycle for 3 is `3,9,7,1`.
-3. `2018 = 4 × 504 + 2`, so `3^2018` ends in 9.
-4. Subtract the endings: `5-9 = -4`.
-5. Add 10: `-4 + 10 = 6`.
+2. `2018 = 4*504+2`, so the cycle 3, 9, 7, 1 selects 9.
+3. Subtract the endings and handle borrowing:
 
-> **Answer: 6.** Here the original difference is positive because `5^2018>3^2018`.
+```text
+5 - 9 = -4
+-4 + 10 = 6
+```
 
-When subtracting two individual units digits, one addition of 10 is enough if their difference is negative. For longer expressions, take the final remainder modulo 10 in the range 0 to 9.
+**Answer: 6.** The complete difference is positive. When subtracting two individual digits, one addition of 10 is enough if their difference is negative.
 
 ## 12. Power towers explained
 
-**Before you start:** Powers, brackets, and the distinction between a power of a power and a tower.
+**You need:** powers and careful bracket reading.
 
-**Goal:** Identify the complete exponent before looking for its parity or remainder.
+```text
+2^(3^2)                    (2^3)^2
+    |                        |
+  first                    first
+  3^2 = 9                  2^3 = 8
+    |                        |
+    v                        v
+  2^9 = 512                8^2 = 64
+```
 
-A power tower has another power in its exponent:
+These are different expressions. In `a^(b^c)`, the **whole exponent** is `b^c`.
 
-`a^(b^c)`
+### Ask only what the outer base needs
 
-Read it from the top: the exponent on `a` is the entire number `b^c`.
+```text
+Expression: a^E
+              ^ E may itself be a huge power
 
-### A small comparison
+Base ends in 0,1,5,6 -> Is E positive?
+Base ends in 4,9     -> Is E odd or even?
+Base ends in 2,3,7,8 -> What is E mod 4?
+```
 
-| Expression | First step | Result |
-|---|---|---:|
-| `2^(3^2)` | `3^2 = 9`, then `2^9` | 512 |
-| `(2^3)^2` | `2^3 = 8`, then `8^2` | 64 |
-
-The expressions are different. The rule `(a^b)^c = a^(b × c)` does not turn `a^(b^c)` into `a^(b × c)`.
-
-### How to solve a tower without calculating it
-
-Call the entire exponent `E`. First inspect the outer base.
-
-| Outer base's last digit | Information needed about `E` |
-|---|---|
-| 0, 1, 5, 6 | Is `E` positive? |
-| 4, 9 | Is `E` odd or even? |
-| 2, 3, 7, 8 | What is `E mod 4`? |
-
-> Let the outer cycle tell you what to find about the exponent. Usually you need only parity or a small remainder.
+**Key idea:** you rarely need the exact value of E.
 
 ## 13. Worked examples with power towers
 
-**Before you start:** Section 12 plus parity and factors of 4 from Sections 2.5 and 2.8.
+### Example 10 - Find the last digit of 6^(2022^2023)
 
-**Goal:** Find only the information the outer cycle requires.
+```text
+E = 2022^2023 -> positive
 
-### Example 10 - A fixed final digit
+6^E -> fixed units digit 6
+```
 
-**Problem:** Find the last digit of `6^(2022^2023)`.
+**Answer: 6.** A positive exponent is all this cycle needs.
 
-1. Set `E = 2022^2023`.
-2. We know `E` is positive.
-3. Every positive power of 6 ends in 6.
+### Example 11 - Find the last digit of 4^(2022^2023)
 
-> **Answer: 6.** No further information about `E` is needed.
+```text
+E = 2022 * 2022 * ... * 2022
+     even   even        even
+                  |
+                  v
+                E is even
 
-### Example 11 - Only parity is needed
+Powers of 4: odd -> 4; even -> 6
+```
 
-**Problem:** Find the last digit of `4^(2022^2023)`.
+**Answer: 6.** We use the parity of the entire exponent.
 
-1. Set `E = 2022^2023`.
-2. Powers of 4 have final digits `4,6`: odd exponent gives 4, even exponent gives 6.
-3. The number `E` is a product of 2023 even factors, so it is even.
-4. Choose the even-exponent ending.
-
-> **Answer: 6.**
-
-### Example 12 - An odd exponent inside a tower
-
-**Problem:** Find the last digit of `2019^(2019^2019)`.
+### Example 12 - Find the last digit of 2019^(2019^2019)
 
 1. The outer base ends in 9.
-2. A power of 9 ends in 9 for odd exponents and in 1 for even exponents.
-3. The entire exponent is `E = 2019^2019`.
-4. It is odd because it is a product of odd factors.
+2. Set `E = 2019^2019`.
+3. A product of odd factors is odd.
 
-> **Answer: 9.**
+```text
+E is odd -> 9^E -> last digit 9
+```
 
-### Handwritten extension - A four-entry outer cycle
+**Answer: 9.**
 
-**Problem:** Find the last digit of `3^(2022^2023)`.
+### Handwritten extension - Outer base 3
 
-**Step 1 - Identify what is needed.**
+Find the last digit of `3^(2022^2023)`.
 
-The cycle for 3 is `3,9,7,1`. We need `E mod 4`, where `E = 2022^2023`.
+**Step 1:** the cycle for 3 has four entries; find `E mod 4`.
 
-**Step 2 - Show that `E` is divisible by 4.**
+**Step 2:** show that E contains a factor of 4.
 
-Since `2022 = 2 × 1011`:
+```text
+E = 2022^2023
+  = (2*1011)^2023
 
-`E = (2 × 1011)^2023 = 2^2023 × 1011^2023`
+Among its factors:
+     2 * 2 * remaining factors
+     \___/
+       4
 
-There are at least two factors of 2, so there is a factor `2 × 2 = 4`. Thus `E mod 4 = 0`.
+E is divisible by 4 -> remainder 0
+```
 
-**Step 3 - Choose the fourth entry.**
+**Step 3:** choose the fourth entry of 3, 9, 7, 1.
 
-The fourth entry of `3,9,7,1` is 1.
+**Answer: 1.**
 
-> **Answer: 1.**
+### Handwritten homework - Outer base 2
 
-### Handwritten homework - Tower with outer base 2
+Find the last digit of `2^(2022^2023)`.
 
-**Problem:** Find the last digit of `2^(2022^2023)`.
-
-1. Set `E = 2022^2023` so the outer expression becomes `2^E`.
-2. The units-digit cycle for 2 is 2, 4, 8, 6; it has length 4.
-3. As established above, E contains at least two factors of 2, so E is divisible by 4.
-4. The remainder is 0, which selects the fourth entry.
+1. The exponent E is the same as above.
+2. It leaves remainder 0 modulo 4.
+3. Choose the fourth entry of 2, 4, 8, 6.
 
 **Answer: 6.**
 
-**Why “even” alone is not enough here:** even exponents can leave remainder 0 or 2 modulo 4. For example, `3^2` ends in 9, but `3^4` ends in 1.
+**Watch out:** “even” alone is not enough for a four-entry cycle. Exponents 2 and 4 are both even, but `3^2` ends in 9 and `3^4` ends in 1.
 
 ## 14. Understanding the last two digits
 
-**Before you start:** Remainders modulo 100, leading zeros, and expanding squares.
+**You need:** place value, remainders modulo 100, and bracket expansion.
 
-**Goal:** Keep two digits throughout a last-two-digit question.
+```text
+12347 = [123 hundreds] + [47]
+        100 * 123       remainder
 
-For one final digit, discard multiples of 10. For two final digits, discard multiples of 100.
+Keep the remainder modulo 100: 47
+```
 
-Example:
+### Why keeping the base's last two digits works
 
-`12347 = 100 × 123 + 47`
+```text
+123^2 = (100+23)*(100+23)
+      = 10000 + 2300 + 2300 + 529
+        \________________/    |
+         multiples of 100     529 = 500 + 29
+                                         |
+                                         v
+                                        keep 29
+```
 
-The remainder modulo 100 is 47, so the last two digits are 47.
+Thus `123^2` and `23^2` have the same final two digits. Repeating this multiplication argument lets us reduce the base to its final two digits for any positive integer exponent.
 
-### Why we may reduce the base to its last two digits
+**Important:** one digit does not contain enough information.
 
-**Step 1 - Separate complete hundreds from the ending.**
-
-`123 = 100 + 23`.
-
-**Step 2 - Expand the square using Section 2.9.**
-
-`123^2 = (100 + 23)^2 = 10000 + 4600 + 529`
-
-**Step 3 - Remove complete hundreds.**
-
-10000 and 4600 are multiples of 100, so they contribute nothing to the remainder modulo 100.
-
-**Step 4 - Reduce the remaining term.**
-
-`529 = 100 × 5 + 29`. Its remainder modulo 100 is 29.
-
-**Answer:** the last two digits of `123^2` are **29**.
-
-Thus `123^2` and `23^2` have the same last two digits.
-
-This works for every positive integer exponent: **replace the base by its last two digits, then keep only the last two digits after each multiplication**.
-
-### One digit is not enough for a two-digit question
-
-The numbers 7 and 17 have the same units digit, but:
-
-`7^2 = 49; 17^2 = 289`
-
-Their last two digits are 49 and 89, which differ.
-
-> For last-two-digit problems, keep two digits of the base. Do not reduce 17 to 7.
+```text
+ 7^2 =  49 -> last two digits 49
+17^2 = 289 -> last two digits 89
+```
 
 ## 15. Discovering last-two-digit patterns
 
-**Before you start:** The two-digit reduction rule from Section 14 and cycle starting points.
+**You need:** keep the remainder modulo 100 after each multiplication.
 
-**Goal:** Build each pattern from actual multiplications before using it.
+### 15.1 Powers of 5
 
-### 15.1 Powers of 5 end in 25 from exponent 2 onward
-
-| Exponent | Power | Last two digits |
-|---:|---:|---:|
-| 1 | 5 | 05 |
-| 2 | 25 | 25 |
-| 3 | 125 | 25 |
-| 4 | 625 | 25 |
-| 5 | 3125 | 25 |
-
-Powers of 5 end in **25 for every exponent at least 2**. The pattern follows because `25 × 5 = 125`, returning to 25.
+```text
+Exponent:     1     2      3      4       5
+Value:        5    25    125    625    3125
+Ending:      05    25     25     25      25
+```
 
 1. Start at `5^2 = 25`.
-2. Multiply its ending by 5: `25 × 5 = 125`.
-3. Keep 25 again.
-4. Repeat: the ending stays 25.
+2. Multiply the ending by 5: `25*5 = 125`.
+3. Keep 25 again; each new multiplication repeats this.
 
-**Example:** `5^2023` ends in **25**, because `2023 >= 2`.
+**Rule:** `5^n` ends in 25 for `n >= 2`. For example, `5^2023` ends in **25**.
 
-### 15.2 Powers of 6 have a five-entry cycle after exponent 1
+### 15.2 Powers of 6: notice the starting point
 
-| Exponent | Calculation | Last two digits |
-|---:|---|---:|
-| 1 | `6` | 06 |
-| 2 | `6 × 6 = 36` | 36 |
-| 3 | `36 × 6 = 216` | 16 |
-| 4 | `16 × 6 = 96` | 96 |
-| 5 | `96 × 6 = 576` | 76 |
-| 6 | `76 × 6 = 456` | 56 |
-| 7 | `56 × 6 = 336` | 36 |
+```text
+Exponent 1: 06  <-- outside the repeating group
 
-The repeating list **starts at exponent 2**:
+Exponent:    2     3     4     5     6  |  7
+Ending:     36    16    96    76    56  | 36
+           \________________________/   restart
+                  five entries
+```
 
-`36,16,96,76,56`
+Build each entry by multiplying the previous ending by 6:
 
-For `n >= 2`, the correct remainder mapping is:
+```text
+36*6 = 216 -> 16
+16*6 =  96 -> 96
+96*6 = 576 -> 76
+76*6 = 456 -> 56
+56*6 = 336 -> 36  <-- repeats
+```
 
-| Exponent remainder modulo 5 | Ending for exponents at least 2 |
+| Exponent remainder modulo 5 | Ending when exponent >= 2 |
 |---:|---:|
 | 0 | 76 |
 | 1 | 56 |
@@ -949,170 +889,151 @@ For `n >= 2`, the correct remainder mapping is:
 | 3 | 16 |
 | 4 | 96 |
 
-Notice that exponent 1 is exceptional: `6^1` ends in 06, but `6^6` ends in 56. Do not extend the repeating portion backwards.
+Do not use 06 for exponent 6. The repeating part begins at exponent 2.
 
-### 15.3 Powers of 7 have a four-entry cycle
+### 15.3 Powers of 7
 
-| Exponent | Calculation | Last two digits |
-|---:|---|---:|
-| 1 | `7` | 07 |
-| 2 | `7 × 7 = 49` | 49 |
-| 3 | `49 × 7 = 343` | 43 |
-| 4 | `43 × 7 = 301` | 01 |
-| 5 | `1 × 7 = 7` | 07 |
+```text
+7^1:                     07
+7^2:  7*7 =  49 -> keep 49
+7^3: 49*7 = 343 -> keep 43
+7^4: 43*7 = 301 -> keep 01
+7^5:  1*7 =   7 -> keep 07  <-- restart
 
-The cycle is **07, 49, 43, 01**, starting at exponent 1.
+Cycle: [07] [49] [43] [01]
+```
 
-| Exponent remainder modulo 4 | Last two digits |
-|---:|---:|
-| 1 | 07 |
-| 2 | 49 |
-| 3 | 43 |
-| 0 | 01 |
+The cycle begins at exponent 1. Remainders 1, 2, 3, 0 modulo 4 select 07, 49, 43, 01 respectively.
 
-### 15.4 Every positive power of 76 ends in 76
+### 15.4 Powers of 76
 
-1. Start with `76^1 = 76`.
-2. Calculate `76 × 76 = 5776`.
-3. Keep the final two digits: 76.
-4. The same multiplication of endings occurs at the next step.
+```text
+Start: 76
+       |
+       v
+76*76 = 5776 -> keep 76
+                       |
+                       +--> multiply by 76 again
+                            same ending returns
+```
 
-Therefore `76^n` ends in **76** for every positive integer `n`.
-
-**Example:** `76^56` ends in **76**. This fact is useful when a large expression can be rewritten as a power of something ending in 76.
+**Rule:** every positive power of 76 ends in 76. In particular, `76^56` ends in **76**.
 
 ## 16. Worked examples with last two digits
 
-**Before you start:** Two-digit patterns and the rule (a^m)^n = a^(m × n).
+### Example 13 - Last two digits of 7^511
 
-**Goal:** Choose a cycle or rewrite a power to reach a stable ending.
+```text
+511 = 4*127 + 3
 
-### Example 13 - Last two digits of 7 to the power 511
+Cycle: [07] [49] [43] [01]
+                  ^
+              third entry
+```
 
-**Problem:** Find the last two digits of `7^511`.
+**Answer: 43.** There are three positions after the complete groups.
 
-1. Use the cycle `07,49,43,01`, of length 4.
-2. Divide the exponent:
+### Example 14 - Last two digits of 2^1120
 
-   `511 = 4 × 127 + 3`
+**How do we choose a starting point?** We know `2^10 = 1024`. Squaring it gives a manageable ending and exponent 20, which divides 1120 exactly.
 
-3. Remainder 3 selects the third entry, 43.
+**Step 1 - Find the ending of 2^20.**
 
-> **Answer: 43.**
+```text
+2^10 = 1024 -> keep 24
+                   |
+                 square
+                   v
+2^20 ends like 24^2 = 576 -> keep 76
+```
 
-### Example 14 - Last two digits of 2 to the power 1120
+**Step 2 - Split the large exponent into groups of 20.**
 
-**Problem:** Find the last two digits of `2^1120`.
+```text
+1120 = 20*56
 
-We will build a useful smaller power, then reuse it.
+2^1120 = (2^20)^56
+             |
+       inner base ends in 76
+             v
+Find the ending of 76^56
+```
 
-**Step 1 - Start with a familiar power.**
+**Step 3 - Use the stable ending.** Every positive power of 76 ends in 76.
 
-`2^10 = 1024`
+**Answer: 76.**
 
-Its last two digits are 24.
+### Example 15 - Last two digits of 6^112
 
-**Step 2 - Square to obtain exponent 20.**
+**Step 1:** start from exponent 2, where the ending is 36.
 
-`2^20 = (2^10)^2`
+```text
+Start exponent:     2
+Target exponent:  112
+Distance:         110 = 5*22
+                         |
+                   22 full cycles
 
-For the final two digits, square 24:
+Exponent 2                          Exponent 112
+Ending 36  --22 complete cycles-->   Ending 36
+```
 
-`24^2 = 576`
+**Step 2:** complete cycles return to the same ending.
 
-So `2^20` ends in 76.
-
-**Step 3 - Rewrite the original exponent.**
-
-`1120 = 20 × 56`
-
-Using `(a^m)^n = a^(m × n)`:
-
-`2^1120 = (2^20)^56`
-
-**Step 4 - Replace the inner base by its ending.**
-
-The last two digits are the same as those of `76^56`.
-
-**Step 5 - Apply the stable ending.**
-
-Every positive power of 76 ends in 76.
-
-> **Answer: 76.** We did not assume that the units-digit cycle for 2 also works for two digits.
-
-### Example 15 - Last two digits of 6 to the power 112
-
-**Problem:** Find the last two digits of `6^112`.
-
-**Step 1 - Recall the starting point of the cycle.**
-
-At exponents `2,3,4,5,6`, the endings are `36,16,96,76,56`.
-
-**Step 2 - Compare the exponent with the starting exponent 2.**
-
-`112-2 = 110 = 5 × 22`
-
-So exponent 112 is exactly 22 full cycles after exponent 2.
-
-**Step 3 - Use the ending at exponent 2.**
-
-`6^2 = 36`
-
-> **Answer: 36.** Equivalently, `112 mod 5 = 2`, and the mapping for powers of 6 assigns remainder 2 to 36.
+**Answer: 36.**
 
 ## 17. Choosing the right method
 
-**Before you start:** The methods in Sections 3 through 16.
+```text
+What do you need?
+|
++-- ONE final digit
+|   |
+|   +-- One power -> base digit -> cycle -> position
+|   +-- Sum/product -> each ending -> combine
+|   +-- Difference -> endings -> subtract -> borrow
+|   +-- Tower -> outer cycle -> information about E
+|
++-- TWO final digits
+    |
+    +-- Keep base modulo 100
+    +-- Build a two-digit cycle
+    +-- Or rewrite using a useful power
+```
 
-**Goal:** Identify what to track before beginning a calculation.
+### Five traps to check
 
-| What the question asks | First action | Next action |
-|---|---|---|
-| Units digit of `a^n` | Keep last digit of `a` | Use its cycle and the exponent remainder |
-| Base digit from a known output digit | Find the exponent's cycle position | Test possible base digits |
-| Units digit of a sum or product | Find each term's last digit | Preserve operations and brackets |
-| Units digit of a positive difference | Find both endings | Subtract; if negative, add 10 |
-| Units digit of a power tower | Inspect the outer base's cycle | Find only the needed exponent information |
-| Last two digits | Keep the base's last two digits | Build a two-digit pattern or a useful power |
+1. **Remainder 0:** select the final cycle entry, not exponent zero.
+2. **Tower brackets:** `a^(b^c)` differs from `(a^b)^c`.
+3. **One digit versus two:** a units-digit cycle does not automatically solve a two-digit question.
+4. **Starting point:** the two-digit cycle for powers of 6 begins at exponent 2.
+5. **Equal endings:** they do not mean equal complete numbers.
 
-### Common mistakes to avoid
-
-| Mistake | Why it fails | Better habit |
-|---|---|---|
-| Replacing the exponent by its units digit | Cycle positions depend on the cycle length | Take the remainder modulo that length |
-| Treating remainder 0 as exponent 0 | Cycle tables start at exponent 1 | Choose the final entry of the cycle |
-| Writing `7^(4 × k + 1) = 7` | Only the last digits match | Write `U(7^(4 × k + 1)) = 7` |
-| Treating every even exponent the same | A four-entry cycle distinguishes remainders 0 and 2 | Calculate modulo 4 when required |
-| Reading `a^(b^c)` as `(a^b)^c` | These are different expressions | Put brackets around the whole exponent |
-| Reusing a one-digit cycle for two digits | More information is needed | Build the cycle modulo 100 |
-| Starting the cycle of `6^n` at exponent 1 | Its two-digit cycle starts at exponent 2 | Record the starting exponent explicitly |
-| Calculating the complete huge power | It creates unnecessary work | Track only the required ending |
+**Explain aloud:** why can we avoid calculating the huge power? Because the required ending depends on a small repeating pattern or a small remainder.
 
 ## 18. Practice problems
 
-**Before you start:** Complete Sections 2 through 16 first.
+Cover the solutions. For each problem, write the pattern, the needed exponent information, and the answer. The methods are deliberately not labelled.
 
-**Goal:** Attempt each problem with the answer covered; write your cycle and remainder.
+| No. | Problem |
+|---:|---|
+| 1 | Find the units digit of `146^85`. |
+| 2 | Find the units digit of `234^17`. |
+| 3 | Find the units digit of `128^23`. |
+| 4 | Find the units digit of `73^40`. |
+| 5 | If `n^2023` ends in 3, find the last digit of n. |
+| 6 | Find the units digit of `12^15 + 19^20`. |
+| 7 | Find the units digit of `23^14 * 17^9`. |
+| 8 | Find the units digit of `7^10 - 3^9`. |
+| 9 | Find the units digit of `4^(3^5)`. |
+| 10 | Find the units digit of `2^(6^3)`. |
+| 11 | Find the last two digits of `7^2025`. |
+| 12 | Find the last two digits of `6^26`. |
+| 13 | Find the last two digits of `5^17`. |
+| 14 | Find the last two digits of `176^23`. |
+| 15 | Find the last two digits of `2^60`. |
 
-These are **additional practice**, not extra questions claimed to be in the PDF. Try them before reading the solutions.
-
-| No. | Problem | Skill |
-|---:|---|---|
-| 1 | Find `U(146^85)`. | Fixed final digit |
-| 2 | Find `U(234^17)`. | Two-entry cycle |
-| 3 | Find `U(128^23)`. | Four-entry cycle |
-| 4 | Find `U(73^40)`. | Remainder 0 |
-| 5 | If `n^2023` ends in 3, find the last digit of `n`. | Reverse reasoning |
-| 6 | Find `U(12^15 + 19^20)`. | Sum |
-| 7 | Find `U(23^14 × 17^9)`. | Product |
-| 8 | Find `U(7^10-3^9)`. | Difference |
-| 9 | Find `U(4^(3^5))`. | Tower and parity |
-| 10 | Find `U(2^(6^3))`. | Tower modulo 4 |
-| 11 | Find the last two digits of `7^2025`. | Two-digit cycle |
-| 12 | Find the last two digits of `6^26`. | Cycle starting at exponent 2 |
-| 13 | Find the last two digits of `5^17`. | Stable ending |
-| 14 | Find the last two digits of `176^23`. | Reducing the base modulo 100 |
-| 15 | Find the last two digits of `2^60`. | Reusing `2^20` |
+These are additional practice questions; they are not presented as extra questions from the PDF.
 
 ## 19. Practice solutions
 
