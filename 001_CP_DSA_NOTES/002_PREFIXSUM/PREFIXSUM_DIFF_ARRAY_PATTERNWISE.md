@@ -297,6 +297,9 @@ No `__int128` is needed for the standard examples in this note.
 
 # 3. How to Study Each Pattern
 
+> **Visual-learning rule:** Every pattern now contains one concrete visual walk-through. Read the visual first, then derive the formula, then read the code.
+
+
 For each pattern below, do this before reading the code:
 
 ```text
@@ -341,6 +344,29 @@ Many static range queries ask for sum/count/cost on `[L,R]`.
 ## State meaning
 
 `pref[i]` = total contribution from index `1` through `i`.
+
+## Visual Example — Walk It Through
+
+```text
+A = [3, 1, 4, 2, 5]
+
+index:    1   2   3   4   5
+A[i]:     3   1   4   2   5
+pref:  0  3   4   8  10  15
+
+Query: sum(2,4)
+
+              L       R
+              |<----->|
+A:        [3] [1] [4] [2] [5]
+
+pref[4]   = 10   -> sum of [1..4]
+pref[1]   =  3   -> remove [1..1]
+                         ----
+answer     =  7   -> 1 + 4 + 2
+```
+
+**Visual rule:** take the large prefix, then cut away the unwanted left prefix.
 
 ## Step-by-step derivation
 
@@ -407,6 +433,33 @@ Choose/split/remove at index `i`; compare everything left of `i` with everything
 ## State meaning
 
 Prefix gives the left side; `total - prefix` gives the right side.
+
+## Visual Example — Walk It Through
+
+```text
+A = [2, 5, 1, 4, 2]
+             ^
+             i = 3
+
+LEFT of i:
+[2, 5]        = 7
+
+PIVOT:
+[1]           = ignored
+
+RIGHT of i:
+      [4, 2]  = 6
+
+Using prefix:
+left  = pref[i-1] = pref[2] = 7
+right = total - pref[i]     = 14 - 8 = 6
+
+[  LEFT  ] [pivot] [ RIGHT ]
+[ 2   5  ] [  1  ] [ 4  2 ]
+    7                 6
+```
+
+**Visual rule:** freeze `i`, then treat the array as **left | pivot | right**.
 
 ## Step-by-step derivation
 
@@ -478,6 +531,40 @@ Count/find subarrays with sum exactly `K`; negatives may exist, so sliding windo
 
 At current prefix `P`, we need an earlier prefix equal to `P-K`.
 
+## Visual Example — Walk It Through
+
+```text
+A = [1, 2, 1, 2], K = 3
+
+prefix values:
+index:    0   1   2   3   4
+pref:     0   1   3   4   6
+
+At R = 2:
+current = 3
+need    = 3 - K = 0
+seen 0? YES
+=> subarray [1..2] = [1,2]
+
+At R = 3:
+current = 4
+need    = 4 - 3 = 1
+seen 1? YES
+=> subarray [2..3] = [2,1]
+
+At R = 4:
+current = 6
+need    = 6 - 3 = 3
+seen 3? YES
+=> subarray [3..4] = [1,2]
+
+Visual equation:
+oldPrefix ---- K ----> currentPrefix
+oldPrefix = currentPrefix - K
+```
+
+**Visual rule:** at every position, look backward for the prefix value that would make the gap exactly `K`.
+
 ## Step-by-step derivation
 
 1. Start from `sum(L..R) = K`.
@@ -547,6 +634,34 @@ Subarray sum must be divisible by `K`, or only the prefix remainder matters.
 ## State meaning
 
 Two prefixes with the same remainder differ by a multiple of `K`.
+
+## Visual Example — Walk It Through
+
+```text
+A = [2, 3, 1, 4], K = 5
+
+prefix:      0   2   5   6   10
+remainder:   0   2   0   1    0
+
+Remainder 0 appears at prefix positions:
+0, 2, 4
+
+position 0 ---- position 2
+sum [1..2] = 5       -> divisible by 5
+
+position 2 ---- position 4
+sum [3..4] = 5       -> divisible by 5
+
+position 0 ---------------- position 4
+sum [1..4] = 10      -> divisible by 5
+
+Same remainder
+      ↓
+[prefix A] -------- [prefix B]
+      difference is a multiple of K
+```
+
+**Visual rule:** equal remainders mean the distance between two prefixes is divisible by `K`.
 
 ## Step-by-step derivation
 
@@ -620,6 +735,35 @@ Condition says equal counts, average equals something, good/bad balance, odd/eve
 ## State meaning
 
 Transform each element so the awkward condition becomes a normal prefix equation.
+
+## Visual Example — Walk It Through
+
+```text
+Story: longest subarray with equal number of 0 and 1
+
+Original:
+0   1   0   1   1
+
+Transform:
+0 -> -1
+1 -> +1
+
+-1  +1  -1  +1  +1
+
+prefix:
+0  -1   0  -1   0   1
+^       ^        ^
+|       |        |
+same prefix value 0 repeats
+
+From prefix position 0 to 4:
+[-1,+1,-1,+1] has sum 0
+
+Therefore original [0,1,0,1]
+has equal zeros and ones.
+```
+
+**Visual rule:** choose a transformation that turns the story condition into a simple sum condition.
 
 ## Step-by-step derivation
 
@@ -697,6 +841,36 @@ Range XOR, parity/toggle state, or categories where only odd/even occurrence mat
 
 `px[i]` = XOR of elements `1..i`; range XOR is `px[R] ^ px[L-1]`.
 
+## Visual Example — Walk It Through
+
+```text
+A = [5, 2, 7, 2]
+Query XOR(2,4)
+
+prefix XOR:
+index:    0   1   2   3   4
+px:       0   5   7   0   2
+
+Range XOR:
+px[4] ^ px[1]
+= 2 ^ 5
+= 7
+
+Direct check:
+2 ^ 7 ^ 2
+= (2 ^ 2) ^ 7
+= 0 ^ 7
+= 7
+
+Visual cancellation:
+[5][2][7][2]
+ ^[5]
+--------------
+    [2][7][2]
+```
+
+**Visual rule:** the common prefix appears twice, so XOR cancels it automatically.
+
 ## Step-by-step derivation
 
 1. Build prefix XOR.
@@ -766,6 +940,38 @@ Contribution contains position/frequency weights such as `1*A[L] + 2*A[L+1] + ..
 ## State meaning
 
 Maintain both ordinary prefix `P0 = ΣA[i]` and weighted prefix `P1 = Σi*A[i]`.
+
+## Visual Example — Walk It Through
+
+```text
+A = [4, 2, 3]
+Query [L,R] = [2,3]
+
+Wanted local-weighted value:
+1*A[2] + 2*A[3]
+= 1*2 + 2*3
+= 8
+
+Global weighted prefix uses i*A[i]:
+index i:       1   2   3
+A[i]:          4   2   3
+i*A[i]:        4   4   9
+
+Range Σ i*A[i] = 4 + 9 = 13
+Range Σ A[i]   = 2 + 3 = 5
+
+Convert global weight to local weight:
+13 - (L-1)*5
+= 13 - 1*5
+= 8
+
+Global index:  2      3
+Local weight:  1      2
+               ↓      ↓
+              [2]    [3]
+```
+
+**Visual rule:** weighted-prefix problems are usually ordinary sums plus a second prefix of `i*A[i]`.
 
 ## Step-by-step derivation
 
@@ -840,6 +1046,37 @@ Need sum of many prefix sums, weighted subarray contributions, or a formula cont
 
 Build prefix once, then prefix the prefix array again.
 
+## Visual Example — Walk It Through
+
+```text
+A = [2, 1, 3]
+
+First prefix P:
+P[1] = 2
+P[2] = 2+1   = 3
+P[3] = 2+1+3 = 6
+
+P = [2, 3, 6]
+
+Now prefix P again:
+Q[1] = 2
+Q[2] = 2+3   = 5
+Q[3] = 2+3+6 = 11
+
+A  :  2   1   3
+      ↓   ↓   ↓
+P  :  2   3   6
+      ↓   ↓   ↓
+Q  :  2   5  11
+
+Need P[2] + P[3]?
+= Q[3] - Q[1]
+= 11 - 2
+= 9
+```
+
+**Visual rule:** when the query asks for a sum of prefix values, prefix the prefix array.
+
 ## Step-by-step derivation
 
 1. Build `pref[i] = Σ A`.
@@ -910,6 +1147,42 @@ Many rectangle/submatrix sum or count queries.
 ## State meaning
 
 `pref[r][c]` stores the total inside rectangle `(1,1)` to `(r,c)`.
+
+## Visual Example — Walk It Through
+
+```text
+Matrix:
+
+      c1 c2 c3
+r1    1  2  3
+r2    4 [5  6]
+r3    7 [8  9]
+         ^^^^^
+         target rectangle
+
+Wanted:
+5 + 6 + 8 + 9 = 28
+
+Using 2D prefix:
+
+big rectangle to (3,3)        = 45
+remove rows above target       = -6
+remove cols left of target     = -12
+add top-left overlap back      = +1
+                                  --
+answer                         = 28
+
+          remove TOP
+      +-------------+
+      | x x x       |
+      | x [TARGET]  |
+      | x [TARGET]  |
+      +-------------+
+        ^
+     remove LEFT
+```
+
+**Visual rule:** **big - top - left + overlap**.
 
 ## Step-by-step derivation
 
@@ -992,6 +1265,41 @@ Many offline range-add updates; applying each update element-by-element is too s
 
 `diff[i]` stores how much the running value changes when we enter index `i`.
 
+## Visual Example — Walk It Through
+
+```text
+n = 6
+
+Update 1: +3 on [2,4]
+Update 2: +2 on [4,6]
+
+Start diff:
+index:  1   2   3   4   5   6   7
+        0   0   0   0   0   0   0
+
+Update [2,4] +3:
+            +3          -3
+index:  1   2   3   4   5   6   7
+        0   3   0   0  -3   0   0
+
+Update [4,6] +2:
+                    +2          -2
+final diff:
+        0   3   0   2  -3   0  -2
+
+Prefix diff -> actual additions:
+        0   3   3   5   2   2
+
+Visual overlap:
+[1][2][3][4][5][6]
+    +3 +3 +3
+          +2 +2 +2
+------------------
+ 0   3  3  5  2  2
+```
+
+**Visual rule:** difference array marks only where an effect **starts** and **stops**.
+
 ## Step-by-step derivation
 
 1. For add `X` on `[L,R]`, start the effect at `L`.
@@ -1058,6 +1366,38 @@ Intervals start/end at different coordinates; need maximum overlap, active cost,
 ## State meaning
 
 Start/end points are events; between consecutive events, the active state is constant.
+
+## Visual Example — Walk It Through
+
+```text
+Intervals (half-open):
+A = [1,4)
+B = [2,5)
+C = [4,6)
+
+Timeline:
+1----2----3----4----5----6
+A:  [-------------)
+B:       [-------------)
+C:                 [---------)
+
+Events:
+1: +1
+2: +1
+4: -1 +1
+5: -1
+6: -1
+
+Sweep:
+[1,2) active = 1
+[2,4) active = 2
+[4,5) active = 2
+[5,6) active = 1
+
+Maximum overlap = 2
+```
+
+**Visual rule:** nothing changes between event points; only endpoints matter.
 
 ## Step-by-step derivation
 
@@ -1142,6 +1482,37 @@ First compute coverage/frequency/net effect; then queries are asked on the deriv
 
 One prefix materializes updates; another prefix answers range queries over the materialized property.
 
+## Visual Example — Walk It Through
+
+```text
+Intervals:
+[1,3], [2,5], [4,5]
+Threshold k = 2
+
+Step 1: difference events
+Step 2: prefix -> coverage
+
+index:       1  2  3  4  5
+coverage:    1  2  2  2  2
+
+Step 3: transform to good[i] = coverage[i] >= 2
+
+good:        0  1  1  1  1
+
+Step 4: prefix good[]
+
+prefGood:    0  1  2  3  4
+
+Query: how many good positions in [2,4]?
+= prefGood[4] - prefGood[1]
+= 3 - 0
+= 3
+
+updates -> diff -> coverage -> good[] -> prefix -> query
+```
+
+**Visual rule:** sometimes one prefix creates the data, and a second prefix answers questions about that created data.
+
 ## Step-by-step derivation
 
 1. Use a difference array for range updates/events.
@@ -1225,6 +1596,35 @@ Coordinates are huge (`1e9`, `1e18`) but only O(N) endpoints actually matter.
 
 Compress only change-points, but keep their real coordinate values so segment lengths remain correct.
 
+## Visual Example — Walk It Through
+
+```text
+Intervals:
+[10,100]
+[90,1000]
+
+Useful event coordinates for inclusive ranges:
+10, 101, 90, 1001
+
+Sorted unique coordinates:
+xs = [10, 90, 101, 1001]
+
+Compressed indices:
+real:       10        90        101                 1001
+index:       0---------1----------2--------------------3
+
+Coverage by real segment:
+[10,90)      -> 1     length = 80
+[90,101)     -> 2     length = 11
+[101,1001)   -> 1     length = 900
+
+Important:
+compressed distance 1 -> 2 is only one index step,
+but real distance is 101 - 90 = 11.
+```
+
+**Visual rule:** compress the event points, never the actual physical distance between them.
+
 ## Step-by-step derivation
 
 1. Collect every important endpoint.
@@ -1306,6 +1706,33 @@ Given cumulative/prefix data and asked to reconstruct or validate the original l
 
 Prefix is discrete integration; consecutive difference is discrete differentiation.
 
+## Visual Example — Walk It Through
+
+```text
+Given prefix checkpoints:
+
+pref = [0, 3, 8, 10, 17]
+
+Imagine walking:
+0 ----3------8---10---------17
+     +3     +5   +2          +7
+
+Recover local values by consecutive difference:
+
+A[1] = 3  - 0  = 3
+A[2] = 8  - 3  = 5
+A[3] = 10 - 8  = 2
+A[4] = 17 - 10 = 7
+
+Recovered:
+A = [3, 5, 2, 7]
+
+PREFIX  --difference--> ORIGINAL
+ORIGINAL --prefix-----> PREFIX
+```
+
+**Visual rule:** prefix and difference are inverse operations.
+
 ## Step-by-step derivation
 
 1. Start from `pref[i] = pref[i-1] + A[i]`.
@@ -1368,6 +1795,41 @@ A range update adds `x, x+d, x+2d, ...`; update value changes linearly with posi
 ## State meaning
 
 An AP can be written as `p*i + q`; maintain boundary changes for slope/intercept (or an equivalent higher-order difference).
+
+## Visual Example — Walk It Through
+
+```text
+Update [2,5]
+first value = 3
+difference  = 2
+
+index:  1   2   3   4   5   6
+add:    0   3   5   7   9   0
+              +2  +2  +2
+
+At position i:
+add(i) = 3 + (i-2)*2
+       = 2*i - 1
+
+Check:
+i=2 -> 2*2-1 = 3
+i=3 -> 2*3-1 = 5
+i=4 -> 2*4-1 = 7
+i=5 -> 2*5-1 = 9
+
+So the range update is not a constant.
+It is a LINE:
+
+value
+ 9 |          *
+ 7 |       *
+ 5 |    *
+ 3 | *
+   +------------ index
+     2  3  4  5
+```
+
+**Visual rule:** basic difference handles constant updates; AP updates additionally carry a slope.
 
 ## Step-by-step derivation
 
@@ -1452,6 +1914,35 @@ Range update follows GP/Fibonacci/another recurrence; each next contribution dep
 
 Store the small recurrence state at range boundaries rather than every interior value.
 
+## Visual Example — Walk It Through
+
+```text
+GP update on [2,5]
+start = 3
+ratio = 2
+
+index:  1   2   3    4    5    6
+add:    0   3   6   12   24    0
+
+Propagation:
+        seed
+         3
+         |
+         v
+         3 --x2--> 6 --x2--> 12 --x2--> 24 --x2--> 48
+                                                |
+                                      cancel after R
+
+At R+1 = 6,
+we must cancel the value that would have continued:
+48
+
+The interior values do not need separate updates;
+the recurrence generates them.
+```
+
+**Visual rule:** store enough boundary state to start the recurrence and enough state after `R` to stop it.
+
 ## Step-by-step derivation
 
 1. Write the recurrence explicitly.
@@ -1532,6 +2023,34 @@ Need the first position where cumulative count/sum reaches a target, or the k-th
 
 Prefix array becomes a monotone search space when contributions are nonnegative.
 
+## Visual Example — Walk It Through
+
+```text
+Frequency by value/index:
+index:  1   2   3   4   5
+freq:   2   3   0   4   3
+
+Prefix counts:
+pref:   2   5   5   9  12
+
+Question: where is the 8th item?
+
+items 1..2   -> index 1
+items 3..5   -> index 2
+items 6..9   -> index 4
+
+k = 8
+
+pref:
+2   5   5   9   12
+            ^
+            first value >= 8
+
+answer = index 4
+```
+
+**Visual rule:** convert "k-th" into "first prefix that reaches at least `k`".
+
 ## Step-by-step derivation
 
 1. Build cumulative counts or sums.
@@ -1599,6 +2118,38 @@ Every element acts as min/max over many subarrays; need sum/min-product/weighted
 ## State meaning
 
 The stack finds where an element is responsible; prefix sums evaluate the sum/value over that span.
+
+## Visual Example — Walk It Through
+
+```text
+A = [5, 3, 4, 2, 6]
+         ^
+       A[2]=3
+
+Find where 3 can remain the minimum.
+
+Left side:
+5 > 3, and there is no smaller value before it
+=> previous smaller boundary = none
+
+Right side:
+4 > 3, then 2 < 3
+=> next smaller boundary = index 4
+
+Valid span owned by value 3:
+[5, 3, 4]
+ |<----->|
+
+sum of span = 5 + 3 + 4 = 12
+
+If problem asks min-product:
+3 * 12 = 36
+
+STACK  -> finds boundaries
+PREFIX -> gets sum inside boundaries
+```
+
+**Visual rule:** the stack answers **where**, the prefix array answers **how much inside that range**.
 
 ## Step-by-step derivation
 
@@ -1685,6 +2236,41 @@ Path/subtree query on a tree that resembles an array prefix problem after rootin
 ## State meaning
 
 A root-to-node prefix stores cumulative information along the DFS path; general path values can combine root-prefix states and LCA.
+
+## Visual Example — Walk It Through
+
+```text
+Node values:
+
+          1(2)
+         /    \
+      2(3)    3(1)
+      /
+   4(4)
+
+Root-prefix sums:
+pref[1] = 2
+pref[2] = 2+3   = 5
+pref[3] = 2+1   = 3
+pref[4] = 2+3+4 = 9
+
+Root -> 4:
+1 -> 2 -> 4
+2 + 3 + 4 = 9
+
+Path 4 -> 3:
+4 -> 2 -> 1 -> 3
+4 + 3 + 2 + 1 = 10
+
+LCA(4,3) = 1
+
+pathSum(4,3)
+= pref[4] + pref[3] - 2*pref[1] + value[1]
+= 9 + 3 - 4 + 2
+= 10
+```
+
+**Visual rule:** tree prefix is the same cumulative idea as an array prefix, except the "previous position" is the parent on the current root path.
 
 ## Step-by-step derivation
 
