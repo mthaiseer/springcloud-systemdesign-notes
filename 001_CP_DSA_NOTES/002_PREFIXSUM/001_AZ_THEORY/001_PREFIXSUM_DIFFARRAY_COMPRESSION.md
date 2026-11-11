@@ -1,4 +1,4 @@
-# Prefix Sums, Difference Arrays & Coordinate Compression — Level 2 Master Tutorial
+# Prefix Sums, Difference Arrays & Coordinate Compression — Visual Step-by-Step Master Note
 
 > A problem-solving notebook built from the uploaded TLE Level-2 lecture PDFs, the linked `PriyamTLE/Level-2-Lecture-Codes` GitHub module, and extra AP/GP extensions requested for competitive programming.
 >
@@ -8,6 +8,7 @@
 
 ## Table of Contents
 
+0. [Prerequisites — Learn These First](#0-prerequisites--learn-these-first)
 1. [The Core Mental Model](#1-the-core-mental-model)
 2. [1D Prefix Sum — Range Sum in O(1)](#2-1d-prefix-sum--range-sum-in-o1)
 3. [2D Prefix Sum — Rectangle Sum in O(1)](#3-2d-prefix-sum--rectangle-sum-in-o1)
@@ -24,6 +25,255 @@
 14. [Pattern Recognition Cheat Sheet](#14-pattern-recognition-cheat-sheet)
 15. [Complexity Cheat Sheet](#15-complexity-cheat-sheet)
 16. [Practice Checklist](#16-practice-checklist)
+
+---
+
+
+# 0. Prerequisites — Learn These First
+
+Use this order before the advanced sections:
+
+```text
+ARRAY + INDEXING
+      |
+      v
+INCLUSIVE RANGE [L,R]
+      |
+      v
+RUNNING / CUMULATIVE SUM
+      |
+      +--------------------+
+      |                    |
+      v                    v
+ PREFIX SUM          DIFFERENCE ARRAY
+      |                    |
+      v                    v
+RANGE QUERY          RANGE UPDATE
+      |                    |
+      +---------+----------+
+                |
+                v
+        AP / GP WEIGHTS
+                |
+                v
+       PREFIX-STATE PATTERNS
+                |
+                v
+     COORDINATE COMPRESSION
+                |
+                v
+       COMBINED CP PROBLEMS
+```
+
+## 0.1 Indexing and range length
+
+Most algebra in this note uses **1-based indexing**.
+
+```text
+index:   1   2   3   4   5
+A:      [8] [3] [6] [2] [7]
+```
+
+For an inclusive range `[L,R]`:
+
+```text
+length = R - L + 1
+```
+
+Example:
+
+```text
+L = 2
+R = 4
+
+index:  1 | 2   3   4 | 5
+           <--------->
+             [L,R]
+
+length = 4 - 2 + 1 = 3
+```
+
+## 0.2 Running sum → Prefix sum
+
+A running sum keeps everything seen so far.
+
+```text
+A:        2   5   3   4
+running:  2   7  10  14
+```
+
+Step by step:
+
+```text
+2
+2 + 5       = 7
+2 + 5 + 3   = 10
+2 + 5 + 3+4 = 14
+```
+
+Saving every running total gives a prefix-sum array.
+
+## 0.3 Prefix cancellation
+
+The central idea:
+
+```text
+P[R]   = [before L] + [L ........ R]
+P[L-1] = [before L]
+
+subtract
+
+P[R] - P[L-1] = [L ........ R]
+```
+
+Remember:
+
+```text
+BIG PREFIX - UNWANTED PREFIX = WANTED RANGE
+```
+
+## 0.4 Difference-array boundary idea
+
+Suppose an update says:
+
+```text
+add +5 to every index in [2,4]
+```
+
+Direct effect:
+
+```text
+index:   1   2   3   4   5
+add:     0   5   5   5   0
+```
+
+Difference representation:
+
+```text
+index:   1   2   3   4   5
+diff:    0  +5   0   0  -5
+             ^           ^
+           START        STOP
+```
+
+A prefix pass reconstructs the actual effect.
+
+## 0.5 Arithmetic Progression prerequisite
+
+An AP changes by a fixed difference.
+
+```text
+5, 7, 9, 11, ...
+   +2 +2 +2
+```
+
+If the range starts at index `L`, then at index `i`:
+
+```text
+steps from L = i - L
+```
+
+So:
+
+```text
+AP value = a + (i-L)*d
+```
+
+This becomes important in both AP prefix queries and AP difference-array updates.
+
+## 0.6 Geometric Progression prerequisite
+
+A GP changes by multiplication.
+
+```text
+1, 2, 4, 8, 16, ...
+   x2 x2 x2 x2
+```
+
+General local weights:
+
+```text
+1, r, r^2, r^3, ...
+```
+
+At global index `i` for a range starting at `L`:
+
+```text
+weight(i) = r^(i-L)
+```
+
+Know:
+
+```text
+r^(x-y) = r^x / r^y
+```
+
+For modular GP sections, also know binary exponentiation and modular inverse.
+
+## 0.7 Prefix-state prerequisite
+
+Prefix techniques can store a **state**, not only a sum.
+
+```text
+same prefix state at j and i
+          |
+          v
+
+----- j ------------------------- i -----
+        <----- middle part ----->
+
+net change in the middle = 0
+```
+
+This is the core idea behind the Contiguous Array section.
+
+## 0.8 Coordinate-compression prerequisite
+
+You should know:
+
+```text
+sort
+unique
+lower_bound
+```
+
+Example:
+
+```text
+values:       1000000   5   900   5
+sort+unique:  5   900   1000000
+rank:         0    1       2
+```
+
+The huge coordinates are replaced by small ordered IDs.
+
+## 0.9 Numeric safety
+
+Use `long long` for:
+
+```text
+prefix sums
+weighted sums
+frequency * value
+operation count * update value
+large accumulated changes
+```
+
+because intermediate products may exceed `int`.
+
+## 0.10 Study procedure for every topic
+
+```text
+1. Decode the problem.
+2. Draw a tiny example.
+3. Mark L, R, i, or the important coordinates.
+4. Write the slow/direct answer.
+5. Identify what repeats.
+6. Derive the optimized formula one step at a time.
+7. Verify every position in the tiny example.
+8. Check time complexity.
+9. Only then write C++.
+```
 
 ---
 
@@ -104,6 +354,24 @@ The uploaded lecture states the same high-level goal: prefix sums preprocess arr
 ---
 
 # 2. 1D Prefix Sum — Range Sum in O(1)
+
+### Visual roadmap
+
+```text
+many [L,R] sum queries
+        |
+        v
+build prefix once
+        |
+        v
+P[R] includes wanted + unwanted left part
+        |
+        v
+subtract P[L-1]
+        |
+        v
+answer = P[R] - P[L-1]
+```
 
 ## Read the notation first
 
@@ -302,6 +570,23 @@ Space:   O(N)
 
 # 3. 2D Prefix Sum — Rectangle Sum in O(1)
 
+### Visual roadmap
+
+```text
+many rectangle queries
+        |
+        v
+take big prefix rectangle
+        |
+        +--> subtract TOP
+        |
+        +--> subtract LEFT
+        |
+        +--> add TOP-LEFT overlap back
+        v
+wanted rectangle
+```
+
 ## First understand the 1D idea inside 2D
 
 In 1D we do:
@@ -464,6 +749,25 @@ This is the exact pattern used in problems such as **CSES Forest Queries**.
 ---
 
 # 4. AP on Prefix Sum — Weighted Range Query
+
+### Visual roadmap
+
+```text
+local weights 1,2,3,...
+        |
+        v
+weight at global i = i-L+1
+        |
+        v
+A[i]*(i-L+1)
+        |
+        v
+i*A[i] - (L-1)*A[i]
+        |
+        +--> prefix of A[i]
+        |
+        +--> prefix of i*A[i]
+```
 
 ## Start with the easiest possible weighted example
 
@@ -1022,6 +1326,24 @@ prefix(A[i]) + prefix(i*A[i])
 
 # 5. GP on Prefix Sum — Geometric Weighted Query
 
+### Visual roadmap
+
+```text
+local weights 1,r,r^2,...
+        |
+        v
+weight = r^(i-L)
+        |
+        v
+r^(i-L) = r^i * r^(-L)
+        |
+        v
+prefix transformed A[i]*r^i
+        |
+        v
+multiply range answer by r^(-L)
+```
+
 ## First see what a GP weight means
 
 A geometric progression changes by multiplication, not addition.
@@ -1287,6 +1609,27 @@ prefix(A[i] * r^i)
 ---
 
 # 6. Prefix-State Pattern — Contiguous Array
+
+### Visual roadmap
+
+```text
+equal 0s and 1s
+        |
+        v
+0 -> -1, 1 -> +1
+        |
+        v
+wanted sum = 0
+        |
+        v
+same prefix appears twice
+        |
+        v
+middle segment has sum 0
+        |
+        v
+keep earliest occurrence
+```
 
 ## The key idea before the formula
 
@@ -1650,6 +1993,24 @@ use prefix state + hash map
 
 # 7. Ordinary Difference Array — Range Addition
 
+### Visual roadmap
+
+```text
+many range additions
+        |
+        v
+mark only boundaries
+        |
+        +--> +X at L
+        |
+        +--> -X at R+1
+        v
+one prefix pass
+        |
+        v
+actual value added at every index
+```
+
 ## Think of a range update as turning an effect ON and OFF
 
 Suppose:
@@ -1809,6 +2170,27 @@ Total:       O(N + Q)
 ---
 
 # 8. Difference Array Problem 1 — Greg and Array
+
+### Visual roadmap
+
+```text
+queries select ranges of OPERATIONS
+        |
+        v
+difference array over operation numbers
+        |
+        v
+count how many times each operation runs
+        |
+        v
+scale each operation
+        |
+        v
+difference array over actual array positions
+        |
+        v
+final array
+```
 
 This problem is important because it uses **difference arrays twice**.
 
@@ -2014,6 +2396,27 @@ range queries choose ranges of range operations
 ---
 
 # 9. AP on Partial Sum / Difference Array — AP Range Updates
+
+### Visual roadmap
+
+```text
+AP update: a, a+d, a+2d,...
+        |
+        v
+at i: a + (i-L)d
+        |
+        v
+rewrite = d*i + (a-dL)
+        |
+        v
+linear form C*i + B
+        |
+        +--> diff for C
+        |
+        +--> diff for B
+        v
+reconstruct C[i]*i + B[i]
+```
 
 ## First decode the AP update visually
 
@@ -2383,6 +2786,24 @@ This idea generalizes: polynomial updates of degree `k` can often be represented
 
 # 10. GP on Partial Sum / Difference Array — GP Range Updates
 
+### Visual roadmap
+
+```text
+GP update: a, ar, ar^2,...
+        |
+        v
+ordinary diff is not enough
+        |
+        v
+store GP-aware boundary changes
+        |
+        v
+sweep left -> right using recurrence
+        |
+        v
+recover active GP contributions
+```
+
 ## Why ordinary difference arrays are not enough
 
 For an AP such as:
@@ -2699,6 +3120,24 @@ This is the GP analogue of a difference array.
 
 # 11. Coordinate Compression
 
+### Visual roadmap
+
+```text
+coordinates as large as 1e9
+        |
+        v
+only a few coordinates matter
+        |
+        v
+collect
+        |
+        v
+sort + unique
+        |
+        v
+replace real coordinates with ranks
+```
+
 ## Why compression is needed
 
 Suppose coordinates can be up to `10^12`.
@@ -2794,6 +3233,25 @@ The last step is crucial. If compressed coordinates are `[2,4,6,9]`, the segment
 ---
 
 # 12. Difference Array Problem 2 — Snuke Prime
+
+### Visual roadmap
+
+```text
+many active intervals over time
+        |
+        v
++cost at start
+-cost at end+1
+        |
+        v
+difference / sweep line
+        |
+        v
+running active total
+        |
+        v
+apply the problem's contribution rule
+```
 
 This problem combines:
 
@@ -2929,6 +3387,27 @@ Sweep:       O(N)
 ---
 
 # 13. Kth Val — Difference Array + Sorting + Frequency Prefix
+
+### Visual roadmap
+
+```text
+range operations
+        |
+        v
+difference array gives frequency per index
+        |
+        v
+pair value with frequency
+        |
+        v
+sort by value
+        |
+        v
+prefix frequencies
+        |
+        v
+lower_bound locates the K-th occurrence
+```
 
 ## First decode what the statement is really doing
 
