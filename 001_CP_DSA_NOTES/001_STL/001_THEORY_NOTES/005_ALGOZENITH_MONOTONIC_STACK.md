@@ -1,50 +1,301 @@
 # AlgoZenith — Stack & Monotonic Stack Mastery
+## Visual Self-Learning Version
 
-> **Goal:** Learn the stack patterns that repeatedly appear in CP: matching, nearest greater/smaller, greedy deletion, boundary finding, histogram area, and rain water.
+> **Goal:** Learn the stack patterns that repeatedly appear in CP:
+> matching, nearest greater/smaller, greedy deletion, boundary finding,
+> histogram area, rain water, and nearest taller/shorter queries.
 
-## Table of Contents
+# Table of Contents
 
-1. [Stack Core](#1-stack-core)
-2. [Valid Parentheses](#2-valid-parentheses)
-3. [Next Greater Element](#3-next-greater-element)
-4. [Smallest Number After Removing K Digits](#4-smallest-number-after-removing-k-digits)
-5. [Monotonic Stack Core](#5-monotonic-stack-core)
-6. [Nearest Smaller Values AZ101](#6-nearest-smaller-values-az101)
-7. [Largest Rectangle](#7-largest-rectangle)
-8. [Rain Water](#8-rain-water)
-9. [Height of Soldiers](#9-height-of-soldiers)
-10. [Templates & Complexity](#10-templates--complexity)
+- [0. Prerequisites](#0-prerequisites)
+- [1. Stack Core](#1-stack-core)
+- [2. Valid Parentheses](#2-valid-parentheses)
+- [3. Next Greater Element](#3-next-greater-element)
+- [4. Smallest Number After Removing K Digits](#4-smallest-number-after-removing-k-digits)
+- [5. Monotonic Stack Core](#5-monotonic-stack-core)
+- [6. Nearest Smaller Values AZ101](#6-nearest-smaller-values-az101)
+- [7. Largest Rectangle](#7-largest-rectangle)
+- [8. Rain Water](#8-rain-water)
+- [9. Height of Soldiers](#9-height-of-soldiers)
+- [10. Four Core Templates](#10-four-core-templates)
+- [11. Recognition Checklist](#11-recognition-checklist)
+- [12. Complexity](#12-complexity)
+- [13. Final Pattern Map](#13-final-pattern-map)
+
+---
+
+# 0. Prerequisites
+
+Before monotonic stack, make sure these ideas are clear.
+
+## 0.1 What Is a Stack?
+
+A stack follows:
+
+```text
+LIFO
+
+Last In
+First Out
+```
+
+Think of plates:
+
+```text
+        top
+         |
+         v
+
+       [ 8 ]   <- newest plate
+       [ 5 ]
+       [ 2 ]
+       -----
+```
+
+If we remove one:
+
+```text
+8 is removed first
+```
+
+C++:
+
+```cpp
+stack<int> st;
+
+st.push(2);
+st.push(5);
+st.push(8);
+
+cout << st.top(); // 8
+
+st.pop();
+
+cout << st.top(); // 5
+```
+
+---
+
+## 0.2 Stack Operations
+
+| Operation | C++ | Complexity |
+|---|---|---:|
+| push | `st.push(x)` | `O(1)` |
+| pop | `st.pop()` | `O(1)` |
+| top | `st.top()` | `O(1)` |
+| empty | `st.empty()` | `O(1)` |
+| size | `st.size()` | `O(1)` |
+
+---
+
+## 0.3 Index vs Value
+
+This distinction is very important.
+
+Use **values** when you only need:
+
+```text
+nearest greater value
+nearest smaller value
+```
+
+Use **indices** when you need:
+
+```text
+distance
+width
+left boundary
+right boundary
+number of choices
+```
+
+Example:
+
+```text
+index:   0   1   2   3
+value:   2   5   1   4
+```
+
+If nearest smaller to index `3` is index `2`:
+
+```text
+value answer    = 1
+index answer    = 2
+distance answer = 3 - 2 = 1
+```
+
+Same stack idea, different output.
+
+---
+
+## 0.4 What Does "Nearest" Mean?
+
+Example:
+
+```text
+a = [2, 7, 4, 6]
+```
+
+For `6`:
+
+```text
+smaller values on left:
+
+2
+4
+
+nearest smaller:
+4
+```
+
+We care about the closest valid element, not the smallest value globally.
+
+---
+
+## 0.5 Brute Force Boundary Search
+
+For each index `i`, we could scan:
+
+```text
+left until condition is satisfied
+right until condition is satisfied
+```
+
+Example:
+
+```text
+for each i:
+    walk left
+    walk right
+```
+
+Worst case:
+
+```text
+O(n^2)
+```
+
+Monotonic stack compresses all these repeated scans into:
+
+```text
+O(n)
+```
+
+---
+
+## 0.6 Monotonic Means Ordered Inside the Stack
+
+Two important forms:
+
+```text
+INCREASING STACK
+----------------
+small -> large
+
+useful for:
+smaller-element boundaries
+minimum problems
+histogram
+
+
+DECREASING STACK
+----------------
+large -> small
+
+useful for:
+greater-element boundaries
+maximum problems
+next greater
+```
+
+The exact view from top-to-bottom or bottom-to-top depends on implementation.
+
+More important than memorizing wording is remembering the pop condition.
+
+---
+
+## 0.7 Strict vs Non-Strict Comparison
+
+Duplicates matter.
+
+These are different:
+
+```cpp
+a[st.top()] >= a[i]
+```
+
+and:
+
+```cpp
+a[st.top()] > a[i]
+```
+
+When counting subarray ownership, using strict on one side and non-strict on the other avoids double counting equal values.
+
+For simple nearest-smaller queries, follow the exact statement:
+
+```text
+strictly smaller?
+smaller-or-equal?
+```
 
 ---
 
 # 1. Stack Core
 
-A stack is:
+A normal stack is useful when:
 
 ```text
-LIFO = Last In, First Out
+the latest unresolved item
+must be processed first
 ```
 
-Useful when the **latest unresolved item** must be processed first.
-
-| Operation | C++ | Cost |
-|---|---|---:|
-| insert | `st.push(x)` | `O(1)` |
-| remove top | `st.pop()` | `O(1)` |
-| read top | `st.top()` | `O(1)` |
-| empty? | `st.empty()` | `O(1)` |
-| size | `st.size()` | `O(1)` |
-
-Typical stack thinking:
+Mental flow:
 
 ```text
 current item arrives
-        ↓
-does it resolve / invalidate stack top?
-        ↓
-YES → pop
-NO  → push current
+        |
+        v
+does it resolve / invalidate top?
+      /       \
+    yes        no
+     |          |
+    pop        push
 ```
+
+This same pattern appears in:
+
+```text
+parentheses
+next greater/smaller
+greedy deletion
+histogram boundaries
+rain water
+```
+
+---
+
+## 1.1 Why Stack Works
+
+Suppose unresolved items are:
+
+```text
+A
+B
+C
+```
+
+and `C` is newest.
+
+If the next event must interact with the newest unresolved item first:
+
+```text
+A
+B
+C <- check this first
+```
+
+that is exactly stack behavior.
 
 ---
 
@@ -52,45 +303,144 @@ NO  → push current
 
 Problem: [LeetCode 20 — Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)
 
-## Problem
+## 2.1 What Is the Problem Asking?
 
-Check whether every closing bracket matches the **latest unmatched opening bracket**.
+We need to verify:
 
 ```text
-()[]{} → valid
-([)]   → invalid
+every closing bracket
+matches the latest unmatched opening bracket
 ```
 
-## Why Stack?
+Examples:
 
-For:
+```text
+()[]{}  -> valid
+
+([)]    -> invalid
+```
+
+---
+
+## 2.2 Why Stack?
+
+Take:
 
 ```text
 ([ ])
 ```
 
-when `]` arrives, it must match the most recent opening bracket:
+When `]` arrives:
 
 ```text
-[
+latest unmatched opening bracket = [
 ```
 
-That is exactly LIFO.
+It must match that one first.
 
-## Dry Run — `([])`
+ASCII:
+
+```text
+read '('
+stack:
+(
+
+read '['
+stack:
+(
+[   <- top
+
+read ']'
+must match top '['
+pop
+
+stack:
+(
+
+read ')'
+must match top '('
+pop
+
+empty -> valid
+```
+
+This is pure LIFO.
+
+---
+
+## 2.3 Step-by-Step Algorithm
+
+```text
+Step 1:
+Create empty stack.
+
+Step 2:
+Scan string left to right.
+
+Step 3:
+If opening bracket:
+push it.
+
+Step 4:
+If closing bracket:
+stack must not be empty.
+
+Step 5:
+Top opening bracket must match closing bracket.
+
+Step 6:
+If it matches:
+pop.
+
+Step 7:
+After scanning:
+stack must be empty.
+```
+
+---
+
+## 2.4 Dry Run — `([])`
 
 | char | action | stack |
 |---|---|---|
 | `(` | push | `(` |
 | `[` | push | `([` |
-| `]` | match `[` → pop | `(` |
-| `)` | match `(` → pop | empty |
+| `]` | pop `[` | `(` |
+| `)` | pop `(` | empty |
+
+Result:
 
 ```text
-stack empty → valid
+valid
 ```
 
-## C++
+---
+
+## 2.5 ASCII Invalid Example — `([)]`
+
+```text
+read '('
+stack:
+(
+
+read '['
+stack:
+(
+[ <- top
+
+read ')'
+
+expected top '('
+
+but top is '['
+
+mismatch
+=> invalid
+```
+
+---
+
+## 2.6 C++17
 
 ```cpp
 class Solution {
@@ -102,16 +452,18 @@ public:
             if (c == '(' || c == '[' || c == '{') {
                 st.push(c);
             } else {
-                if (st.empty())
+                if (st.empty()) {
                     return false;
+                }
 
-                char x = st.top();
+                char open = st.top();
                 st.pop();
 
-                if ((c == ')' && x != '(') ||
-                    (c == ']' && x != '[') ||
-                    (c == '}' && x != '{'))
+                if ((c == ')' && open != '(') ||
+                    (c == ']' && open != '[') ||
+                    (c == '}' && open != '{')) {
                     return false;
+                }
             }
         }
 
@@ -120,9 +472,34 @@ public:
 };
 ```
 
+---
+
+## 2.7 Recognition Signal
+
+Think normal stack when:
+
 ```text
-Time  = O(n)
-Space = O(n)
+latest unmatched thing
+must be resolved first
+```
+
+Common clues:
+
+```text
+brackets
+nested structure
+undo
+latest unfinished operation
+```
+
+---
+
+## 2.8 Common Mistakes
+
+```text
+1. Calling top() before checking empty().
+2. Forgetting unmatched opening brackets at the end.
+3. Matching by bracket type incorrectly.
 ```
 
 ---
@@ -131,72 +508,218 @@ Space = O(n)
 
 Problem: [LeetCode 496 — Next Greater Element I](https://leetcode.com/problems/next-greater-element-i/)
 
-## Problem
+## 3.1 What Is the Problem Asking?
 
-For every value, find the first greater value on its right.
+For each value:
+
+```text
+find the first greater value on its right
+```
 
 Example:
 
 ```text
 a = [2,1,4,3]
 
-NGE:
-2 → 4
-1 → 4
-4 → -1
-3 → -1
+2 -> 4
+1 -> 4
+4 -> -1
+3 -> -1
 ```
 
-## Monotonic Idea
+---
 
-Scan right → left.
+## 3.2 Brute Force
 
-Keep only useful greater candidates.
-
-For current `a[i]`:
+For every `i`:
 
 ```text
-while top <= a[i]:
-    pop
+scan i+1, i+2, ...
+until greater element appears
+```
+
+Worst case:
+
+```text
+O(n^2)
+```
+
+---
+
+## 3.3 Key Observation
+
+Scan:
+
+```text
+right -> left
+```
+
+Why?
+
+Because when processing `a[i]`, we want information about everything on its right.
+
+We maintain only useful greater candidates.
+
+---
+
+## 3.4 What Becomes Useless?
+
+Suppose current value is:
+
+```text
+x = a[i]
+```
+
+If stack top is:
+
+```text
+<= x
+```
+
+then top cannot be next greater for `x`.
+
+It also becomes useless as a candidate behind `x` for relevant future positions because `x` is closer and at least as large.
+
+So:
+
+```cpp
+while (!st.empty() && st.top() <= a[i]) {
+    st.pop();
+}
 ```
 
 After popping:
 
 ```text
-top = nearest greater
+top is the nearest greater value
 ```
 
-Then push `a[i]`.
+---
 
-Stack stays:
+## 3.5 ASCII Example
 
 ```text
-strictly decreasing from top toward bottom
+a = [2,1,4,3]
+
+scan right -> left
 ```
 
-## Dry Run — `[2,1,4,3]`
+Start:
 
-| i | x | pops | NGE | stack after |
-|---:|---:|---|---:|---|
-| 3 | 3 | — | -1 | `3` |
-| 2 | 4 | `3` | -1 | `4` |
-| 1 | 1 | — | 4 | `4,1` |
-| 0 | 2 | `1` | 4 | `4,2` |
+```text
+i=3, x=3
 
-## C++
+stack empty
+
+NGE = -1
+
+push 3
+
+stack:
+3
+```
+
+Next:
+
+```text
+i=2, x=4
+
+top 3 <= 4
+pop 3
+
+stack empty
+
+NGE = -1
+
+push 4
+
+stack:
+4
+```
+
+Next:
+
+```text
+i=1, x=1
+
+top 4 > 1
+
+NGE = 4
+
+push 1
+
+stack:
+4
+1 <- top
+```
+
+Next:
+
+```text
+i=0, x=2
+
+top 1 <= 2
+pop 1
+
+top 4 > 2
+
+NGE = 4
+
+push 2
+```
+
+Final:
+
+```text
+[4,4,-1,-1]
+```
+
+---
+
+## 3.6 Stack Picture
+
+At `x = 2`:
+
+```text
+stack before:
+
+4
+1 <- top
+
+1 is useless because:
+1 <= 2
+
+pop 1
+
+stack:
+
+4 <- top
+
+4 is greater than 2
+and is nearest valid candidate
+
+answer = 4
+```
+
+---
+
+## 3.7 C++17
 
 ```cpp
 vector<int> nextGreater(vector<int>& a) {
     int n = a.size();
+
     vector<int> ans(n, -1);
     stack<int> st;
 
     for (int i = n - 1; i >= 0; i--) {
-        while (!st.empty() && st.top() <= a[i])
+        while (!st.empty() && st.top() <= a[i]) {
             st.pop();
+        }
 
-        if (!st.empty())
+        if (!st.empty()) {
             ans[i] = st.top();
+        }
 
         st.push(a[i]);
     }
@@ -205,22 +728,42 @@ vector<int> nextGreater(vector<int>& a) {
 }
 ```
 
-### Why `O(n)`?
+---
 
-An element is:
+## 3.8 Complexity
+
+Even though we have:
+
+```cpp
+for (...)
+    while (...)
+```
+
+the total is still:
+
+```text
+O(n)
+```
+
+because every element is:
 
 ```text
 pushed once
 popped at most once
 ```
 
-Therefore total stack work is:
+---
+
+## 3.9 Recognition Signal
+
+Think next greater when:
 
 ```text
-O(n)
+first greater on right
+nearest greater on right
+next warmer day
+next higher price
 ```
-
-not `O(n²)`.
 
 ---
 
@@ -228,94 +771,243 @@ not `O(n²)`.
 
 Problem: [LeetCode 402 — Remove K Digits](https://leetcode.com/problems/remove-k-digits/)
 
-## Problem
+## 4.1 What Is the Problem Asking?
 
 Remove exactly `k` digits so the remaining number is minimum.
 
 Example:
 
 ```text
-1432219, k=3
-→ 1219
+1432219
+k = 3
+
+answer = 1219
 ```
 
-## Greedy + Monotonic Stack
+---
 
-A large digit before a smaller digit hurts the number most.
+## 4.2 Greedy Observation
 
-So when digit `d` arrives:
-
-```text
-while:
-    k > 0
-    AND stack.top > d
-
-pop stack.top
-```
-
-This maintains increasing digits as much as the deletion budget allows.
-
-## Algebra / Greedy Reason
-
-Compare:
+Consider:
 
 ```text
 ... x y ...
 ```
 
-where:
+with:
 
 ```text
 x > y
 ```
 
-If one of them must be deleted:
+If we must delete one of them:
 
 ```text
-delete x → ... y ...
-delete y → ... x ...
+delete x:
+... y ...
+
+delete y:
+... x ...
 ```
 
-At the first differing position:
+The first differing digit becomes:
+
+```text
+y vs x
+```
+
+Since:
 
 ```text
 y < x
 ```
 
-so deleting `x` gives the smaller number.
+deleting `x` gives the smaller number.
 
-## Dry Run — `1432219`, `k=3`
+Therefore:
 
 ```text
-1 → [1]
-
-4 → [1,4]
-
-3:
-4 > 3 → pop 4, k=2
-push 3
-[1,3]
-
-2:
-3 > 2 → pop 3, k=1
-[1,2]
-
-2 → [1,2,2]
-
-1:
-2 > 1 → pop 2, k=0
-[1,2,1]
-
-9 → [1,2,1,9]
+when smaller digit arrives,
+remove larger previous digits
+while deletion budget remains
 ```
 
-Result:
+---
+
+## 4.3 Monotonic Stack Rule
+
+For current digit `d`:
+
+```text
+while:
+
+k > 0
+AND stack not empty
+AND stack.top > d
+
+pop
+```
+
+This tries to maintain increasing digits.
+
+---
+
+## 4.4 ASCII Example — `1432219`
+
+Start:
+
+```text
+k = 3
+```
+
+Read `1`:
+
+```text
+[1]
+```
+
+Read `4`:
+
+```text
+1 <= 4
+push
+
+[1,4]
+```
+
+Read `3`:
+
+```text
+4 > 3
+
+delete 4
+k = 2
+
+[1]
+
+push 3
+
+[1,3]
+```
+
+Read `2`:
+
+```text
+3 > 2
+
+delete 3
+k = 1
+
+[1]
+
+push 2
+
+[1,2]
+```
+
+Read next `2`:
+
+```text
+top 2 > 2 ? no
+
+[1,2,2]
+```
+
+Read `1`:
+
+```text
+top 2 > 1
+
+delete one 2
+k = 0
+
+[1,2]
+
+push 1
+
+[1,2,1]
+```
+
+Read `9`:
+
+```text
+[1,2,1,9]
+```
+
+Answer:
 
 ```text
 1219
 ```
 
-## C++
+---
+
+## 4.5 Why Remove from End if k Remains?
+
+Example:
+
+```text
+12345
+k = 2
+```
+
+No decreasing pair appears.
+
+To minimize:
+
+```text
+remove largest suffix digits
+```
+
+So:
+
+```text
+12345
+remove 5
+remove 4
+=> 123
+```
+
+Hence after scan:
+
+```cpp
+while (k > 0) {
+    pop_back();
+}
+```
+
+---
+
+## 4.6 Leading Zeros
+
+Example:
+
+```text
+10200
+remove 1
+```
+
+Result may start with zeros:
+
+```text
+0200
+```
+
+Normalize to:
+
+```text
+200
+```
+
+If everything disappears:
+
+```text
+return "0"
+```
+
+---
+
+## 4.7 C++17
 
 ```cpp
 class Solution {
@@ -323,13 +1015,13 @@ public:
     string removeKdigits(string num, int k) {
         string st;
 
-        for (char d : num) {
-            while (!st.empty() && k > 0 && st.back() > d) {
+        for (char digit : num) {
+            while (!st.empty() && k > 0 && st.back() > digit) {
                 st.pop_back();
                 k--;
             }
 
-            st.push_back(d);
+            st.push_back(digit);
         }
 
         while (k > 0 && !st.empty()) {
@@ -337,87 +1029,257 @@ public:
             k--;
         }
 
-        int i = 0;
-        while (i < (int)st.size() && st[i] == '0')
-            i++;
+        int firstNonZero = 0;
 
-        string ans = st.substr(i);
+        while (firstNonZero < (int)st.size() &&
+               st[firstNonZero] == '0') {
+            firstNonZero++;
+        }
+
+        string ans = st.substr(firstNonZero);
 
         return ans.empty() ? "0" : ans;
     }
 };
 ```
 
+---
+
+## 4.8 Recognition Signal
+
+Think greedy monotonic stack when:
+
 ```text
-Time  = O(n)
-Space = O(n)
+remove k items
+make sequence lexicographically / numerically smallest
 ```
+
+Key clue:
+
+```text
+earlier positions matter more
+```
+
+So remove a bad earlier large item when a smaller one arrives.
 
 ---
 
 # 5. Monotonic Stack Core
 
-A monotonic stack keeps elements in sorted order **inside the stack**.
+A monotonic stack is not just "a sorted stack."
 
-Two major forms:
+Its deeper purpose is:
 
 ```text
-Increasing stack
-→ useful for smaller-element / minimum-boundary problems
-
-Decreasing stack
-→ useful for greater-element / maximum-boundary problems
+remove elements that can never be useful again
 ```
 
-## Four Core Queries
+Main question:
 
-| Need | Typical pop condition |
+```text
+What becomes permanently useless
+when current element arrives?
+```
+
+Those are the elements you pop.
+
+---
+
+## 5.1 Four Core Queries
+
+| Need | Typical Pop Condition |
 |---|---|
-| previous smaller | `while top >= current → pop` |
-| next smaller | `while top >= current → pop` |
-| previous greater | `while top <= current → pop` |
-| next greater | `while top <= current → pop` |
+| previous smaller | `top >= current` |
+| next smaller | `top >= current` |
+| previous greater | `top <= current` |
+| next greater | `top <= current` |
 
-Use **indices** when you need:
+Direction determines previous vs next.
 
 ```text
-distance
-width
-boundary
+left -> right
+often gives PREVIOUS information
+
+right -> left
+often gives NEXT information
 ```
 
-Use values only when you need the answer value itself.
+---
 
-Core boundary form:
+## 5.2 Previous Smaller
+
+Need:
+
+```text
+nearest index j < i
+with a[j] < a[i]
+```
+
+Scan left -> right.
+
+Pop:
+
+```cpp
+while (!st.empty() && a[st.top()] >= a[i]) {
+    st.pop();
+}
+```
+
+Then:
+
+```text
+top = previous smaller
+```
+
+---
+
+## 5.3 Next Smaller
+
+Need:
+
+```text
+nearest index j > i
+with a[j] < a[i]
+```
+
+Scan right -> left.
+
+Same pop idea:
+
+```cpp
+while (!st.empty() && a[st.top()] >= a[i]) {
+    st.pop();
+}
+```
+
+Then:
+
+```text
+top = next smaller
+```
+
+---
+
+## 5.4 Previous Greater
+
+Scan left -> right.
+
+Pop:
+
+```cpp
+while (!st.empty() && a[st.top()] <= a[i]) {
+    st.pop();
+}
+```
+
+---
+
+## 5.5 Next Greater
+
+Scan right -> left.
+
+Pop:
+
+```cpp
+while (!st.empty() && a[st.top()] <= a[i]) {
+    st.pop();
+}
+```
+
+---
+
+## 5.6 Boundary Formula
+
+If index `i` is bounded by:
+
+```text
+L = blocker on left
+R = blocker on right
+```
+
+then common formulas are:
 
 ```text
 leftChoices  = i - L
 rightChoices = R - i
 ```
 
-where `L/R` are blocking indices.
+ASCII:
+
+```text
+        valid ownership region
+
+L          i                 R
+|----------|-----------------|
+           ^
+        fixed index
+```
+
+For full span width:
+
+```text
+width = R - L - 1
+```
 
 ---
 
 # 6. Nearest Smaller Values AZ101
 
-Problem: [Maang — Nearest Smaller Values AZ101](https://maang.in/problems/Nearest-Smaller-Values-AZ101-378)
+Problem title from the source:
+[Maang — Nearest Smaller Values AZ101](https://maang.in/problems/Nearest-Smaller-Values-AZ101-378)
 
-> The exact Maang statement was not available from the provided material/search, so this section uses the standard **nearest smaller to the left** monotonic-stack formulation associated with this title.
+> The provided source explicitly says the exact Maang statement was unavailable.
+> This section therefore keeps the same source framing and explains the standard
+> **nearest smaller to the left** formulation associated with the title.
+> Do not treat this as a guaranteed reconstruction of the original Maang statement.
 
-## Problem
+## 6.1 Standard Formulation
 
-For every `a[i]`, find the nearest index/value on its left that is strictly smaller.
+For each `a[i]`, find the nearest value/index on the left that is strictly smaller.
 
 Example:
 
 ```text
-a = [2,5,1,4,8,3]
+a = [2,5,1,4]
 ```
 
-## Idea
+Answers by value:
 
-Before using the stack top:
+```text
+2 -> -1
+5 -> 2
+1 -> -1
+4 -> 1
+```
+
+---
+
+## 6.2 Brute Force
+
+For every `i`:
+
+```text
+j = i-1
+
+while j >= 0:
+    if a[j] < a[i]:
+        answer found
+        break
+
+    j--
+```
+
+Worst case:
+
+```text
+O(n^2)
+```
+
+---
+
+## 6.3 Monotonic Observation
+
+Before using stack top for current `a[i]`:
 
 ```text
 remove everything >= a[i]
@@ -425,47 +1287,106 @@ remove everything >= a[i]
 
 Why?
 
-```text
-If top >= current,
-it cannot be the smaller answer for current.
+If:
 
-Current is also closer and no larger,
-so that top is useless for future relevant smaller queries.
+```text
+top >= current
 ```
 
-After popping:
+then top cannot answer:
+
+```text
+"nearest STRICTLY smaller"
+```
+
+So pop it.
+
+After all invalid values disappear:
 
 ```text
 top = nearest smaller on left
 ```
 
-## Dry Run
+---
+
+## 6.4 ASCII Dry Run — `[2,5,1,4]`
+
+### i = 0, x = 2
 
 ```text
-a = [2,5,1,4]
+stack empty
+
+answer = -1
+
+push index 0
+
+stack values:
+2
 ```
 
-| i | x | action | nearest smaller |
-|---:|---:|---|---:|
-| 0 | 2 | stack empty | -1 |
-| 1 | 5 | `2 < 5` | 2 |
-| 2 | 1 | pop 5, pop 2 | -1 |
-| 3 | 4 | `1 < 4` | 1 |
+### i = 1, x = 5
 
-## C++
+```text
+top 2 < 5
+
+answer = 2
+
+push 5
+
+stack:
+2
+5 <- top
+```
+
+### i = 2, x = 1
+
+```text
+top 5 >= 1
+pop 5
+
+top 2 >= 1
+pop 2
+
+empty
+
+answer = -1
+
+push 1
+```
+
+### i = 3, x = 4
+
+```text
+top 1 < 4
+
+answer = 1
+```
+
+Final:
+
+```text
+[-1, 2, -1, 1]
+```
+
+---
+
+## 6.5 C++17
 
 ```cpp
 vector<int> nearestSmallerLeft(vector<int>& a) {
     int n = a.size();
+
     vector<int> ans(n, -1);
-    stack<int> st; // indices
+    stack<int> st;
 
     for (int i = 0; i < n; i++) {
-        while (!st.empty() && a[st.top()] >= a[i])
+        while (!st.empty() && a[st.top()] >= a[i]) {
             st.pop();
+        }
 
-        if (!st.empty())
+        if (!st.empty()) {
             ans[i] = a[st.top()];
+        }
 
         st.push(i);
     }
@@ -474,36 +1395,92 @@ vector<int> nearestSmallerLeft(vector<int>& a) {
 }
 ```
 
+---
+
+## 6.6 Recognition Signal
+
+Think this form when the statement asks:
+
 ```text
-Time  = O(n)
-Space = O(n)
+nearest smaller on left
+previous smaller
+closest earlier smaller
 ```
 
 ---
 
 # 7. Largest Rectangle
 
-Problem: [Maang — Largest Rectangle](https://maang.in/problems/Largest-Rectangle-461)
+Problem:
+[Maang — Largest Rectangle](https://maang.in/problems/Largest-Rectangle-461)
 
-Equivalent standard problem: [LeetCode 84 — Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/)
+Equivalent standard problem:
+[LeetCode 84 — Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/)
 
-## Problem
+## 7.1 What Is the Problem Asking?
 
-Each `a[i]` is a histogram bar height.
-
-Find the maximum rectangle completely inside the histogram.
-
-## Fix One Bar
-
-Assume:
+Histogram:
 
 ```text
-height = a[i]
+each a[i] = bar height
 ```
 
-is the minimum height of a rectangle.
+Find maximum rectangle fully contained in the histogram.
 
-It can extend until a smaller bar blocks it.
+Example:
+
+```text
+heights = [2,1,5,6,2,3]
+```
+
+---
+
+## 7.2 Brute Force Idea
+
+For every possible interval:
+
+```text
+find minimum height in interval
+
+area =
+minimumHeight × width
+```
+
+Too slow.
+
+Contribution-style reversal:
+
+```text
+fix one bar as the rectangle's minimum height
+```
+
+Then ask:
+
+```text
+how far can this height extend?
+```
+
+---
+
+## 7.3 Boundary Observation
+
+Fix bar:
+
+```text
+height = h[i]
+```
+
+It can extend left until:
+
+```text
+a smaller bar blocks it
+```
+
+and right until:
+
+```text
+a smaller bar blocks it
+```
 
 Let:
 
@@ -512,7 +1489,7 @@ L = previous smaller index
 R = next smaller index
 ```
 
-Valid rectangle:
+Then valid bars are:
 
 ```text
 L+1 ... R-1
@@ -521,61 +1498,134 @@ L+1 ... R-1
 Width:
 
 ```text
+(R-1) - (L+1) + 1
+=
+R - L - 1
+```
+
+Area:
+
+```text
+h[i] × (R-L-1)
+```
+
+---
+
+## 7.4 ASCII Visual
+
+For:
+
+```text
+[2,1,5,6,2,3]
+     ^ ^
+     5 6
+```
+
+Focus on height `5` at index `2`.
+
+Previous smaller:
+
+```text
+index 1
+height 1
+```
+
+Next smaller:
+
+```text
+index 4
+height 2
+```
+
+Picture:
+
+```text
+index:   0   1   2   3   4   5
+height:  2   1   5   6   2   3
+             ^   ^   ^
+             L   i   R
+
+valid rectangle span:
+
+            [5][6]
+
+width = 2
+height = 5
+
+area = 10
+```
+
+More explicit boundary view:
+
+```text
+      smaller            smaller
+         |                  |
+         v                  v
+
+... [1] [5] [6] [2] ...
+
+        |<---->|
+        width 2
+```
+
+---
+
+## 7.5 Step-by-Step Derivation
+
+```text
+Step 1:
+Fix bar i as rectangle height.
+
+Step 2:
+Move left while bars are >= h[i].
+
+Step 3:
+Stop at first smaller bar L.
+
+Step 4:
+Move right while bars are >= h[i].
+
+Step 5:
+Stop at first smaller bar R.
+
+Step 6:
+Valid width = R-L-1.
+
+Step 7:
+Area = h[i] × width.
+
+Step 8:
+Take maximum over all i.
+```
+
+---
+
+## 7.6 Why Use Indices?
+
+We need:
+
+```text
 width
-= (R-1) - (L+1) + 1
-= R-L-1
 ```
 
-Area contributed by choosing `a[i]` as height:
+So values are insufficient.
+
+We need boundary positions:
 
 ```text
-area(i)
-= a[i] × (R-L-1)
+L
+R
 ```
 
-Answer:
+Hence stack stores:
 
 ```text
-max area(i)
+indices
 ```
 
-## Dry Run — `[2,1,5,6,2,3]`
+---
 
-Focus on height `5`, index `2`.
-
-```text
-previous smaller = index 1 → height 1
-next smaller     = index 4 → height 2
-```
-
-Thus:
-
-```text
-L = 1
-R = 4
-
-width
-= 4-1-1
-= 2
-
-area
-= 5×2
-= 10
-```
-
-Rectangle uses:
-
-```text
-[5,6]
-```
-
-and the maximum answer is:
-
-```text
-10
-```
-
-## C++
+## 7.7 C++17
 
 ```cpp
 class Solution {
@@ -586,22 +1636,23 @@ public:
         vector<int> left(n), right(n);
         stack<int> st;
 
-        // Previous smaller
         for (int i = 0; i < n; i++) {
-            while (!st.empty() && h[st.top()] >= h[i])
+            while (!st.empty() && h[st.top()] >= h[i]) {
                 st.pop();
+            }
 
             left[i] = st.empty() ? -1 : st.top();
             st.push(i);
         }
 
-        while (!st.empty())
+        while (!st.empty()) {
             st.pop();
+        }
 
-        // Next smaller
         for (int i = n - 1; i >= 0; i--) {
-            while (!st.empty() && h[st.top()] >= h[i])
+            while (!st.empty() && h[st.top()] >= h[i]) {
                 st.pop();
+            }
 
             right[i] = st.empty() ? n : st.top();
             st.push(i);
@@ -619,123 +1670,268 @@ public:
 };
 ```
 
+---
+
+## 7.8 Recognition Signal
+
+Think histogram-boundary stack when:
+
 ```text
-Time  = O(n)
-Space = O(n)
+fix value as minimum height
+need maximum span where all values >= it
+```
+
+Formula:
+
+```text
+height × width
+```
+
+with:
+
+```text
+width = R-L-1
 ```
 
 ---
 
 # 8. Rain Water
 
-Problem: [Maang — Rain Water](https://maang.in/problems/Rain-Water-462)
+Problem:
+[Maang — Rain Water](https://maang.in/problems/Rain-Water-462)
 
-Equivalent standard problem: [LeetCode 42 — Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/)
+Equivalent standard problem:
+[LeetCode 42 — Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/)
 
-## Problem
+## 8.1 What Is the Problem Asking?
 
-Bars represent heights.
+Bars form elevations.
 
-Find how much water remains trapped after rain.
+We need total trapped water.
 
-## Water Formula
-
-For a valley:
-
-```text
-left wall     = h[L]
-bottom        = h[mid]
-right wall    = h[R]
-```
-
-Water level is limited by the shorter wall:
+Example:
 
 ```text
-waterHeight
-= min(h[L], h[R]) - h[mid]
+[3,0,2]
 ```
 
-Horizontal width between the walls:
+Water:
 
 ```text
-width = R-L-1
+2 units
 ```
 
-So:
+---
+
+## 8.2 Valley Model
+
+A trapped-water region needs:
 
 ```text
-addedWater
-= waterHeight × width
+left wall
+bottom
+right wall
 ```
 
-The monotonic stack discovers the valley when a taller right boundary arrives.
-
-## Dry Run — `[3,0,2]`
-
-Stack initially empty.
+ASCII:
 
 ```text
-3 → push index 0
-0 → push index 1
+left wall       right wall
+    |               |
+    v               v
+
+    █               █
+    █ ~ ~ ~ ~ ~ ~   █
+    █     bottom    █
+    █       █       █
 ```
 
-Current `2` is greater than stack-top height `0`:
+Water level is limited by the shorter wall.
+
+---
+
+## 8.3 Formula
+
+Let:
+
+```text
+L   = left wall index
+mid = valley bottom index
+R   = right wall index
+```
+
+Bounded water height:
+
+```text
+min(h[L], h[R]) - h[mid]
+```
+
+Width:
+
+```text
+R - L - 1
+```
+
+Added water:
+
+```text
+boundedHeight × width
+```
+
+---
+
+## 8.4 Why Monotonic Stack?
+
+While scanning left -> right:
+
+```text
+a taller current bar
+may close a valley
+```
+
+So while:
+
+```text
+current height > stack top height
+```
+
+we pop the valley bottom.
+
+After popping:
+
+```text
+new top = left wall
+current = right wall
+popped item = bottom
+```
+
+---
+
+## 8.5 ASCII Dry Run — `[3,0,2]`
+
+Start:
+
+```text
+i=0, h=3
+push 0
+```
+
+Stack:
+
+```text
+3
+```
+
+Next:
+
+```text
+i=1, h=0
+push 1
+```
+
+Stack values:
+
+```text
+3
+0 <- top
+```
+
+Current:
+
+```text
+i=2, h=2
+```
+
+Since:
+
+```text
+2 > 0
+```
+
+pop bottom:
 
 ```text
 mid = 1
-pop it
-
-left = 0
-right = 2
+height = 0
 ```
 
-Now:
+Now stack top:
 
 ```text
-boundedHeight
-= min(3,2) - 0
-= 2
+left = index 0
+height = 3
+```
 
-width
-= 2-0-1
+Current is right wall:
+
+```text
+right = index 2
+height = 2
+```
+
+Water height:
+
+```text
+min(3,2) - 0
+= 2
+```
+
+Width:
+
+```text
+2 - 0 - 1
 = 1
+```
 
-water
-= 2×1
+Water:
+
+```text
+2 × 1
 = 2
 ```
 
-Answer:
+---
+
+## 8.6 Visual
 
 ```text
-2
+index:   0   1   2
+height:  3   0   2
+
+         █
+         █ ~ █
+         █ ~ █
+         -----
+
+water above index 1:
+2 units
 ```
 
-## C++
+---
+
+## 8.7 C++17
 
 ```cpp
 class Solution {
 public:
     int trap(vector<int>& h) {
         int n = h.size();
-        stack<int> st;
 
+        stack<int> st;
         long long water = 0;
 
         for (int i = 0; i < n; i++) {
-
             while (!st.empty() && h[i] > h[st.top()]) {
-
                 int mid = st.top();
                 st.pop();
 
-                if (st.empty())
+                if (st.empty()) {
                     break;
+                }
 
                 int left = st.top();
 
                 long long width = i - left - 1;
-
                 long long boundedHeight =
                     min(h[left], h[i]) - h[mid];
 
@@ -750,85 +1946,185 @@ public:
 };
 ```
 
+---
+
+## 8.8 Recognition Signal
+
+Think valley stack when:
+
 ```text
-Time  = O(n)
-Space = O(n)
+a new higher right boundary
+can close a basin formed by previous bars
+```
+
+Mental picture:
+
+```text
+left wall
+bottom
+right wall arrives
 ```
 
 ---
 
 # 9. Height of Soldiers
 
-Problem: [Maang — Height of Soldiers](https://maang.in/problems/Height-of-Soldiers-88)
+Problem title from source:
+[Maang — Height of Soldiers](https://maang.in/problems/Height-of-Soldiers-88)
 
-> The exact Maang statement was not available from the provided material/search. Do **not** memorize an invented solution from the title alone. Use the following monotonic-stack decision framework once you read the statement.
+> The provided source explicitly says the exact Maang statement was unavailable.
+> Therefore this section preserves the source's **decision framework** instead of
+> inventing a specific solution.
 
-## Convert the Statement
+## 9.1 First Decode the Statement
 
-If it asks for:
+Ask:
 
 ```text
-nearest taller soldier
+Is it asking for nearest taller?
+
+or
+
+nearest shorter?
 ```
 
-use a decreasing stack:
+Then ask:
+
+```text
+left or right?
+```
+
+Then decide:
+
+```text
+greater stack
+or
+smaller stack
+```
+
+---
+
+## 9.2 Nearest Taller on Left
+
+Need:
+
+```text
+nearest previous value > h[i]
+```
+
+Scan:
+
+```text
+left -> right
+```
+
+Pop useless values:
 
 ```cpp
-while (!st.empty() && h[st.top()] <= h[i])
+while (!st.empty() && h[st.top()] <= h[i]) {
     st.pop();
+}
 ```
 
-If it asks for:
+After popping:
 
 ```text
-nearest shorter soldier
+top = nearest taller on left
 ```
 
-use an increasing stack:
+---
 
-```cpp
-while (!st.empty() && h[st.top()] >= h[i])
-    st.pop();
-```
-
-If it asks for distance:
-
-```text
-distance = i - st.top();
-```
-
-If it asks for the index:
-
-```text
-answer = st.top();
-```
-
-If it asks for height:
-
-```text
-answer = h[st.top()];
-```
-
-## Example — Nearest Taller on Left
+## 9.3 ASCII Example
 
 ```text
 h = [4,2,5,3]
 ```
 
-Dry run:
+For `2`:
 
 ```text
-4 → none
+4 is on left
+4 > 2
 
-2 → nearest taller = 4
-
-5 → pop 2, pop 4
-     none
-
-3 → nearest taller = 5
+nearest taller = 4
 ```
 
-### C++ Pattern
+For `5`:
+
+```text
+stack has 4,2
+
+2 <= 5 -> pop
+4 <= 5 -> pop
+
+none taller
+```
+
+For `3`:
+
+```text
+5 remains
+
+5 > 3
+
+nearest taller = 5
+```
+
+Answers:
+
+```text
+[-1, 4, -1, 5]
+```
+
+---
+
+## 9.4 If Statement Asks Distance
+
+If top index is answer boundary:
+
+```text
+distance = i - st.top()
+```
+
+Example:
+
+```text
+index:   0   1   2   3
+height:  4   2   5   3
+                 ^   ^
+                 2   3
+
+nearest taller left of index 3
+= index 2
+
+distance
+= 3 - 2
+= 1
+```
+
+---
+
+## 9.5 If Statement Asks Index
+
+Return:
+
+```cpp
+st.top()
+```
+
+---
+
+## 9.6 If Statement Asks Height
+
+Return:
+
+```cpp
+h[st.top()]
+```
+
+---
+
+## 9.7 C++ Pattern — Nearest Taller Left
 
 ```cpp
 vector<int> nearestTallerLeft(vector<int>& h) {
@@ -838,12 +2134,13 @@ vector<int> nearestTallerLeft(vector<int>& h) {
     stack<int> st;
 
     for (int i = 0; i < n; i++) {
-
-        while (!st.empty() && h[st.top()] <= h[i])
+        while (!st.empty() && h[st.top()] <= h[i]) {
             st.pop();
+        }
 
-        if (!st.empty())
+        if (!st.empty()) {
             ans[i] = st.top();
+        }
 
         st.push(i);
     }
@@ -852,34 +2149,52 @@ vector<int> nearestTallerLeft(vector<int>& h) {
 }
 ```
 
+---
+
+# 10. Four Core Templates
+
+These are the four forms worth memorizing after understanding why they work.
+
+## 10.1 Previous Smaller
+
+```cpp
+stack<int> st;
+
+for (int i = 0; i < n; i++) {
+    while (!st.empty() && a[st.top()] >= a[i]) {
+        st.pop();
+    }
+
+    ans[i] = st.empty() ? -1 : st.top();
+
+    st.push(i);
+}
+```
+
+Visual:
+
 ```text
-Time  = O(n)
-Space = O(n)
+scan:
+left -> right
+
+want:
+previous smaller
+
+remove:
+>= current
 ```
 
 ---
 
-# 10. Templates & Complexity
-
-## Previous Smaller
+## 10.2 Next Smaller
 
 ```cpp
-for (int i = 0; i < n; i++) {
-    while (!st.empty() && a[st.top()] >= a[i])
-        st.pop();
+stack<int> st;
 
-    ans[i] = st.empty() ? -1 : st.top();
-
-    st.push(i);
-}
-```
-
-## Next Smaller
-
-```cpp
 for (int i = n - 1; i >= 0; i--) {
-    while (!st.empty() && a[st.top()] >= a[i])
+    while (!st.empty() && a[st.top()] >= a[i]) {
         st.pop();
+    }
 
     ans[i] = st.empty() ? n : st.top();
 
@@ -887,12 +2202,30 @@ for (int i = n - 1; i >= 0; i--) {
 }
 ```
 
-## Previous Greater
+Visual:
+
+```text
+scan:
+right -> left
+
+want:
+next smaller
+
+remove:
+>= current
+```
+
+---
+
+## 10.3 Previous Greater
 
 ```cpp
+stack<int> st;
+
 for (int i = 0; i < n; i++) {
-    while (!st.empty() && a[st.top()] <= a[i])
+    while (!st.empty() && a[st.top()] <= a[i]) {
         st.pop();
+    }
 
     ans[i] = st.empty() ? -1 : st.top();
 
@@ -900,12 +2233,30 @@ for (int i = 0; i < n; i++) {
 }
 ```
 
-## Next Greater
+Visual:
+
+```text
+scan:
+left -> right
+
+want:
+previous greater
+
+remove:
+<= current
+```
+
+---
+
+## 10.4 Next Greater
 
 ```cpp
+stack<int> st;
+
 for (int i = n - 1; i >= 0; i--) {
-    while (!st.empty() && a[st.top()] <= a[i])
+    while (!st.empty() && a[st.top()] <= a[i]) {
         st.pop();
+    }
 
     ans[i] = st.empty() ? n : st.top();
 
@@ -913,68 +2264,166 @@ for (int i = n - 1; i >= 0; i--) {
 }
 ```
 
-## The One Formula to Remember
-
-For a fixed index `i` bounded by:
+Visual:
 
 ```text
-L = blocker on left
-R = blocker on right
+scan:
+right -> left
+
+want:
+next greater
+
+remove:
+<= current
 ```
 
-choices are often:
+---
+
+## 10.5 Tiny Memory Table
+
+| Need | Direction | Pop |
+|---|---|---|
+| Previous Smaller | left → right | `>= current` |
+| Next Smaller | right → left | `>= current` |
+| Previous Greater | left → right | `<= current` |
+| Next Greater | right → left | `<= current` |
+
+---
+
+# 11. Recognition Checklist
+
+When a stack-looking problem appears, ask:
 
 ```text
-leftChoices  = i-L
-rightChoices = R-i
+1. Is this normal LIFO matching?
+   -> normal stack
+
+2. Do I need nearest smaller/greater?
+   -> monotonic stack
+
+3. Is answer on LEFT or RIGHT?
+   -> choose scan direction
+
+4. Need SMALLER or GREATER?
+   -> choose pop condition
+
+5. Need VALUE or INDEX?
+   -> decide what to store/output
+
+6. Need WIDTH / DISTANCE?
+   -> store indices
+
+7. Are duplicates important?
+   -> decide strict vs non-strict carefully
+
+8. Does a new element permanently make old candidates useless?
+   -> those old candidates should be popped
+
+9. Is this a boundary contribution problem?
+   -> compute L and R
+
+10. Is this a valley problem?
+    -> popped item may be valley bottom
 ```
 
-For full interval width:
+---
+
+# 12. Complexity
+
+The most important monotonic-stack complexity fact:
 
 ```text
-width = R-L-1
+every index is pushed once
+every index is popped at most once
 ```
 
-Examples:
+Even if code looks like:
 
-```text
-Subarray minimum contribution:
-a[i] × (i-L) × (R-i)
+```cpp
+for (...) {
+    while (...) {
+        pop();
+    }
 
-Histogram rectangle:
-a[i] × (R-L-1)
+    push();
+}
 ```
 
-## Why Monotonic Stack Is `O(n)`
-
-Even with a nested `while`:
+it is not:
 
 ```text
-each index is pushed once
-each index is popped at most once
+O(n^2)
+```
+
+Total pushes:
+
+```text
+<= n
+```
+
+Total pops:
+
+```text
+<= n
 ```
 
 Therefore:
 
 ```text
-total pushes ≤ n
-total pops   ≤ n
-
 Time = O(n)
 ```
 
-## Final Pattern Map
+Typical stack space:
 
-| Problem | Stack Pattern | Core Formula / Action |
+```text
+O(n)
+```
+
+---
+
+# 13. Final Pattern Map
+
+| Problem | Stack Type | Main Idea |
 |---|---|---|
-| Valid Parentheses | normal stack | latest opening matches closing |
-| Next Greater | decreasing | pop `<= current` |
-| Remove K Digits | increasing greedy | pop larger previous digit |
-| Nearest Smaller | increasing | pop `>= current` |
-| Largest Rectangle | increasing boundaries | `h[i](R-L-1)` |
-| Rain Water | decreasing valley | `(min(L,R)-bottom)×width` |
-| Soldier taller query | decreasing | pop `<= current` |
-| Soldier shorter query | increasing | pop `>= current` |
+| Valid Parentheses | normal stack | latest unmatched opening |
+| Next Greater | monotonic decreasing candidates | pop `<= current` |
+| Remove K Digits | greedy increasing sequence | pop larger previous digit |
+| Nearest Smaller | monotonic increasing candidates | pop `>= current` |
+| Largest Rectangle | smaller boundaries | `height × (R-L-1)` |
+| Rain Water | valley detection | right wall closes basin |
+| Nearest Taller | greater candidates | pop `<= current` |
+| Nearest Shorter | smaller candidates | pop `>= current` |
 
-> **Main question:** What elements become permanently useless when the current element arrives?  
-> Those are exactly the elements you pop.
+---
+
+## Final Visual Mental Model
+
+```text
+CURRENT ELEMENT ARRIVES
+          |
+          v
+Which old elements are now
+PERMANENTLY USELESS?
+          |
+          v
+        POP THEM
+          |
+          v
+What remains at stack top?
+          |
+          +-----------------------------+
+          |                             |
+          v                             v
+   nearest useful                left/right boundary
+     candidate                           |
+                                         v
+                                contribution / width
+```
+
+And the one question to remember:
+
+```text
+"What becomes useless when current arrives?"
+```
+
+That is the heart of monotonic-stack thinking.
