@@ -1,60 +1,316 @@
 # AlgoZenith — Contribution Technique Practice
+## Visual Self-Learning Version
 
-## Table of Contents
+# Table of Contents
 
-1. [Count Distinct Char in Substrings](#1-count-distinct-char-in-substrings)
-2. [Count Unique Char in Substrings](#2-count-unique-char-in-substrings)
-3. [Super Minimum Sum](#3-super-minimum-sum)
-4. [Final Formula Summary](#4-final-formula-summary)
+- [0. Prerequisites](#0-prerequisites)
+- [1. Common Contribution Framework](#1-common-contribution-framework)
+- [2. Base Formula — LEFT × RIGHT](#2-base-formula--left--right)
+- [3. Count Distinct Char in Substrings](#3-count-distinct-char-in-substrings)
+- [4. Count Unique Char in Substrings](#4-count-unique-char-in-substrings)
+- [5. Super Minimum Sum](#5-super-minimum-sum)
+- [6. Pattern Comparison](#6-pattern-comparison)
+- [7. Contest Recognition Checklist](#7-contest-recognition-checklist)
+- [8. Final Formula Summary](#8-final-formula-summary)
 
 ---
 
+# 0. Prerequisites
 
-## Base Formula Used in Every Problem
+Before solving these contribution problems, be comfortable with the following ideas.
+
+## 0.1 Substring / Subarray
+
+A substring or subarray is contiguous.
+
+```text
+s = A B A C
+
+valid substrings:
+
+A
+AB
+ABA
+BAC
+ABAC
+
+not a substring:
+
+AC
+```
+
+The same idea applies to arrays.
+
+---
+
+## 0.2 Contribution Technique
+
+Instead of enumerating every substring:
+
+```text
+all substrings
+    ↓
+compute answer for each
+    ↓
+sum everything
+```
+
+reverse the thinking:
+
+```text
+fix one occurrence / index
+        ↓
+count how many substrings
+let this occurrence contribute
+        ↓
+contribution
+=
+value × frequency
+```
+
+For character-count problems:
+
+```text
+value = 1
+```
+
+For minimum-sum problems:
+
+```text
+value = a[i]
+```
+
+---
+
+## 0.3 Multiplication Principle
+
+If:
+
+```text
+left boundary has A valid choices
+
+and
+
+right boundary has B valid choices
+```
+
+then:
+
+```text
+number of valid substrings
+=
+A × B
+```
+
+Why?
+
+Every valid left endpoint can pair with every valid right endpoint.
+
+---
+
+## 0.4 Previous / Next Occurrence
+
+For a character occurrence at index `i`:
+
+```text
+prev = previous index containing same character
+next = next index containing same character
+```
+
+If none exists:
+
+```text
+prev = -1
+next = n
+```
+
+These virtual boundaries make formulas clean.
+
+---
+
+## 0.5 Monotonic Stack
+
+For minimum-contribution problems, we need:
+
+```text
+previous smaller
+next smaller or equal
+```
+
+A monotonic stack finds these boundaries in:
+
+```text
+O(n)
+```
+
+instead of scanning left/right for every index.
+
+---
+
+## 0.6 Strict vs Non-Strict Comparison
+
+With duplicate values, two equal elements must not claim the same subarray.
+
+Typical ownership rule:
+
+```text
+left:
+previous strictly smaller
+
+right:
+next smaller-or-equal
+```
+
+This assigns every subarray to exactly one equal occurrence.
+
+---
+
+# 1. Common Contribution Framework
+
+Use this same thinking for all three problems.
+
+```text
+STEP 1
+Fix one occurrence/index i.
+
+STEP 2
+Start from the normal number of substrings containing i.
+
+STEP 3
+Ask:
+"What blocks this occurrence from contributing?"
+
+STEP 4
+Restrict LEFT and/or RIGHT choices.
+
+STEP 5
+frequency
+=
+validLeftChoices × validRightChoices
+
+STEP 6
+contribution
+=
+value × frequency
+
+STEP 7
+Sum all contributions.
+```
+
+ASCII memory map:
+
+```text
+                 FIX i
+                   |
+        +----------+----------+
+        |                     |
+   valid LEFT             valid RIGHT
+    choices                 choices
+        |                     |
+        +----------+----------+
+                   |
+                   v
+             frequency
+          = LEFT × RIGHT
+                   |
+                   v
+            contribution
+        = value × frequency
+```
+
+---
+
+# 2. Base Formula — LEFT × RIGHT
 
 For a normal subarray containing index `i`:
 
 ```text
-left choices  = i + 1
-right choices = n - i
+0 ... i ... n-1
+```
+
+How many left endpoints?
+
+```text
+L can be:
+
+0
+1
+2
+...
+i
+
+leftChoices = i + 1
+```
+
+How many right endpoints?
+
+```text
+R can be:
+
+i
+i+1
+...
+n-1
+
+rightChoices = n - i
 ```
 
 Therefore:
 
 ```text
 total subarrays containing i
-= (i + 1) × (n - i)
+=
+(i + 1) × (n - i)
 ```
 
-If every such subarray allows `a[i]` to contribute:
+ASCII:
 
 ```text
-contribution(i)
-= a[i] × (i + 1) × (n - i)
+index:
+
+0   1   2   3   4   5
+            ^
+            i
+
+LEFT choices:
+0 -> i
+1 -> i
+2 -> i
+
+RIGHT choices:
+i -> 3
+i -> 4
+i -> 5
+
+Every LEFT can pair with every RIGHT.
 ```
 
-For the problems below, use this as the **starting formula** and restrict the left/right boundaries when another equal/smaller element blocks the contribution.
+This is the starting point for every problem below.
+
+Normal:
 
 ```text
-NORMAL:
-(i+1) × (n-i)
+(i+1)(n-i)
+```
 
-RESTRICTED:
+Restricted:
+
+```text
 validLeftChoices × validRightChoices
 ```
 
 ---
 
-# 1. Count Distinct Char in Substrings
+# 3. Count Distinct Char in Substrings
 
 **Problem:** [Maang — Count Distinct Char in Substrings](https://maang.in/problems/Count-Distinct-Char-in-Substrings-62)
 
-## What is the problem asking?
+## 3.1 What is the problem asking?
 
 For every substring:
 
 ```text
-count how many different characters it contains
+count how many DIFFERENT characters it contains
 ```
 
 Then add those counts.
@@ -74,110 +330,211 @@ s = "ABA"
 answer = 9
 ```
 
-Brute force generates all substrings.
+---
 
-Contribution technique asks:
+## 3.2 Brute Force
+
+Generate every substring.
+
+For each substring:
 
 ```text
-For this occurrence s[i],
-how many substrings get +1 distinct-character contribution from it?
+use a set / frequency array
+count distinct characters
 ```
 
-## Start From `(i+1) × (n-i)`
+This is far too slow for large `n`.
 
-Normally, index `i` belongs to:
+Contribution question:
 
 ```text
-(i+1) × (n-i)
+For occurrence s[i],
+how many substrings should receive
++1 distinct-character contribution
+from THIS occurrence?
+```
+
+---
+
+## 3.3 Start from the Base Formula
+
+Normally index `i` belongs to:
+
+```text
+(i+1)(n-i)
 ```
 
 substrings.
 
-But for **distinct-character contribution**, if the substring also starts before the previous same character, this occurrence must not contribute another `+1`.
+But for **distinct** contribution, if the substring already contains the previous same character, this occurrence should not add another `+1`.
 
-So restrict the normal left choices:
+So only the LEFT side gets restricted.
 
 ```text
-normal left choices = i+1
-valid left choices  = i-prev
+normal:
+
+left  = i + 1
+right = n - i
+
+distinct:
+
+left  = i - prev
+right = n - i
 ```
 
-The right side is unrestricted:
+---
+
+## 3.4 Visual Example
+
+Take:
 
 ```text
-right choices = n-i
+s = A B A C
+        ^
+        i = 2
+        current = A
 ```
 
-Hence:
+Previous `A`:
 
 ```text
-(i+1)(n-i)
-        ↓ restrict left
-(i-prev)(n-i)
+prev = 0
 ```
 
-## Contribution Idea
-
-Fix occurrence `s[i]`.
-
-Let:
+For this second `A` to be the occurrence responsible for distinct `A`:
 
 ```text
-prev = previous index containing s[i]
+L must start AFTER index 0
 ```
 
-To make this occurrence responsible for the character's distinct contribution:
+Valid left endpoints:
 
 ```text
-L must be after prev
-L <= i
+L = 1
+L = 2
+```
+
+ASCII:
+
+```text
+index:   0   1   2   3
+char:    A   B   A   C
+         ^       ^
+        prev     i
+
+INVALID starts:
+
+L = 0
+[A B A ...]
+contains previous A already
+
+VALID starts:
+
+L = 1
+[B A ...]
+
+L = 2
+[A ...]
+```
+
+Right endpoint is unrestricted:
+
+```text
+R = 2
+R = 3
 ```
 
 So:
 
 ```text
-L ∈ [prev+1 ... i]
+leftChoices  = 2 - 0 = 2
+rightChoices = 4 - 2 = 2
 
+contribution = 2 × 2 = 4
+```
+
+Substrings where second `A` contributes distinct `A`:
+
+```text
+"A"
+"AC"
+"BA"
+"BAC"
+```
+
+---
+
+## 3.5 Step-by-Step Derivation
+
+Fix:
+
+```text
+s[i]
+```
+
+Let:
+
+```text
+prev = previous occurrence of s[i]
+```
+
+To make current occurrence responsible:
+
+```text
+prev < L <= i
+```
+
+Therefore:
+
+```text
+L ∈ [prev+1 ... i]
+```
+
+Number of choices:
+
+```text
 leftChoices = i - prev
 ```
 
-The substring may end anywhere:
+Right endpoint may be anywhere:
 
 ```text
 R ∈ [i ... n-1]
+```
 
+Number of choices:
+
+```text
 rightChoices = n - i
+```
+
+So:
+
+```text
+frequency(i)
+=
+(i-prev)(n-i)
+```
+
+Each valid substring gets:
+
+```text
++1 distinct character
 ```
 
 Therefore:
 
 ```text
 contribution(i)
-= (i-prev)(n-i)
+=
+(i-prev)(n-i)
 ```
 
-## Algebraic Derivation
+No character value multiplication is needed.
 
-```text
-left choices  = i - prev
-right choices = n - i
+---
 
-number of substrings
-= leftChoices × rightChoices
-
-contribution(i)
-= (i-prev)(n-i)
-```
-
-Why no `s[i]` multiplication?
-
-```text
-Each occurrence contributes +1
-to the DISTINCT COUNT,
-not its character value.
-```
-
-## Dry Run — `"ABA"`
+## 3.6 Dry Run — `"ABA"`
 
 ```text
 n = 3
@@ -192,10 +549,10 @@ prev = -1
 left  = 0-(-1) = 1
 right = 3-0    = 3
 
-contribution = 1×3 = 3
+contribution = 3
 ```
 
-These are:
+Substrings:
 
 ```text
 "A"
@@ -211,12 +568,10 @@ prev = -1
 left  = 1-(-1) = 2
 right = 3-1    = 2
 
-contribution = 2×2 = 4
+contribution = 4
 ```
 
 ### `i = 2`, second `'A'`
-
-Previous `A` is at index `0`.
 
 ```text
 prev = 0
@@ -224,18 +579,22 @@ prev = 0
 left  = 2-0 = 2
 right = 3-2 = 1
 
-contribution = 2×1 = 2
+contribution = 2
 ```
 
-Therefore:
+Final:
 
 ```text
 answer
-= 3 + 4 + 2
-= 9
+=
+3 + 4 + 2
+=
+9
 ```
 
-## C++
+---
+
+## 3.7 C++17
 
 ```cpp
 #include <bits/stdc++.h>
@@ -248,29 +607,75 @@ long long solve(const string& s) {
     long long ans = 0;
 
     for (int i = 0; i < n; i++) {
-        int prev = last[s[i]];
+        int prev = last[(unsigned char)s[i]];
 
-        long long left  = i - prev;
-        long long right = n - i;
+        long long leftChoices = i - prev;
+        long long rightChoices = n - i;
 
-        ans += left * right;
+        ans += leftChoices * rightChoices;
 
-        last[s[i]] = i;
+        last[(unsigned char)s[i]] = i;
     }
 
     return ans;
 }
 ```
 
-**Complexity:** `O(n)` time, `O(1)` alphabet space.
+---
+
+## 3.8 Complexity
+
+```text
+Time  = O(n)
+Space = O(1) for fixed alphabet
+```
 
 ---
 
-# 2. Count Unique Char in Substrings
+## 3.9 Recognition Signal
+
+Think of this pattern when:
+
+```text
+for every substring,
+count DISTINCT categories/characters
+```
+
+Mental question:
+
+```text
+Which occurrence should be responsible
+for this character's +1 contribution?
+```
+
+Answer:
+
+```text
+current occurrence owns substrings
+whose L starts after previous same occurrence
+```
+
+---
+
+## 3.10 Common Mistake
+
+Wrong:
+
+```text
+use next same occurrence too
+```
+
+For **distinct count**, only previous occurrence restricts ownership.
+
+The right boundary is unrestricted.
+
+---
+
+# 4. Count Unique Char in Substrings
 
 **Problem:** [Maang — Count Unique Char in Substrings](https://maang.in/problems/Count-Unique-Char-in-Substrings-63)
 
-## What is the problem asking?
+## 4.1 What is the problem asking?
 
 For every substring:
 
@@ -290,58 +695,107 @@ s = "ABA"
 "A"   → 1
 "AB"  → 2
 "BA"  → 2
-"ABA" → 1   // only B occurs exactly once
+"ABA" → 1
 
 answer = 8
 ```
 
-## Start From `(i+1) × (n-i)`
+---
 
-Normally:
+## 4.2 Difference from DISTINCT
 
-```text
-left  = i+1
-right = n-i
-```
-
-and:
+For DISTINCT:
 
 ```text
-subarrays containing i
-= (i+1)(n-i)
+at least one occurrence is enough
 ```
 
-For `s[i]` to be **unique**, we cannot include either the previous or the next occurrence of the same character.
-
-Therefore both sides become restricted:
+For UNIQUE:
 
 ```text
-normal:
-(i+1)(n-i)
-
-restricted:
-(i-prev)(next-i)
+exactly one occurrence must be present
 ```
 
-## Contribution Idea
+So current occurrence `s[i]` must avoid both:
 
-Fix occurrence:
+```text
+previous same character
+next same character
+```
+
+Therefore both LEFT and RIGHT are restricted.
+
+---
+
+## 4.3 Visual Example
+
+Take:
+
+```text
+s = A B A C A
+        ^
+        i = 2
+        current = A
+```
+
+Previous `A`:
+
+```text
+prev = 0
+```
+
+Next `A`:
+
+```text
+next = 4
+```
+
+For index `2` to be the **only** `A` inside substring:
+
+```text
+L must be after prev
+
+and
+
+R must be before next
+```
+
+ASCII:
+
+```text
+index:   0   1   2   3   4
+char:    A   B   A   C   A
+         ^       ^       ^
+        prev     i      next
+
+valid region:
+
+            +-------+
+            | A  C  |
+        B   | A  C  |
+            +-------+
+
+L ∈ {1,2}
+R ∈ {2,3}
+```
+
+So:
+
+```text
+leftChoices  = 2 - 0 = 2
+rightChoices = 4 - 2 = 2
+
+frequency = 2 × 2 = 4
+```
+
+---
+
+## 4.4 Step-by-Step Derivation
+
+Fix:
 
 ```text
 s[i] = c
-```
-
-For this occurrence to be **unique** inside a substring, that substring must contain:
-
-```text
-this c
-```
-
-but must NOT contain:
-
-```text
-previous c
-next c
 ```
 
 Let:
@@ -351,67 +805,82 @@ prev = previous occurrence of c
 next = next occurrence of c
 ```
 
-Then the left boundary can be:
-
-```text
-L ∈ [prev+1 ... i]
-```
-
-so:
-
-```text
-leftChoices = i-prev
-```
-
-The right boundary can be:
-
-```text
-R ∈ [i ... next-1]
-```
-
-so:
-
-```text
-rightChoices = next-i
-```
-
-Therefore:
-
-```text
-contribution(i)
-= (i-prev)(next-i)
-```
-
-## Algebraic Derivation
-
-For occurrence `i`:
+For current `c` to appear exactly once:
 
 ```text
 prev < L <= i <= R < next
 ```
 
-Number of `(L,R)` pairs:
+Left choices:
 
 ```text
-(i-prev) × (next-i)
+L ∈ [prev+1 ... i]
+
+leftChoices = i - prev
 ```
 
-Hence:
+Right choices:
 
 ```text
-answer
-= Σ (i-prev[i])(next[i]-i)
+R ∈ [i ... next-1]
+
+rightChoices = next - i
 ```
 
-Again, each valid occurrence adds:
+Therefore:
+
+```text
+frequency(i)
+=
+(i-prev)(next-i)
+```
+
+Each valid substring gets:
 
 ```text
 +1 unique character
 ```
 
-so there is no multiplication by the character itself.
+So:
 
-## Dry Run — `"ABA"`
+```text
+contribution(i)
+=
+(i-prev)(next-i)
+```
+
+Final:
+
+```text
+answer
+=
+Σ (i-prev[i])(next[i]-i)
+```
+
+---
+
+## 4.5 ASCII Ownership Picture
+
+```text
+previous c            current c            next c
+    |                     |                   |
+    v                     v                   v
+
+----P---------------------i-------------------N----
+
+Valid L:
+P+1 ... i
+
+Valid R:
+i ... N-1
+
+Every pair (L,R) creates
+one substring where current c is UNIQUE.
+```
+
+---
+
+## 4.6 Dry Run — `"ABA"`
 
 Indices:
 
@@ -426,32 +895,42 @@ A B A
 prev = -1
 next = 2
 
-left  = 0-(-1) = 1
-right = 2-0    = 2
+left  = 1
+right = 2
 
 contribution = 2
 ```
 
-Valid substrings:
+Valid:
 
 ```text
 "A"
 "AB"
 ```
 
-Not `"ABA"` because it contains another `A`.
+Not:
+
+```text
+"ABA"
+```
+
+because `A` appears twice.
+
+---
 
 ### `B`, `i = 1`
 
 ```text
 prev = -1
-next = n = 3
+next = 3
 
-left  = 1-(-1) = 2
-right = 3-1    = 2
+left  = 2
+right = 2
 
 contribution = 4
 ```
+
+---
 
 ### Second `A`, `i = 2`
 
@@ -459,27 +938,25 @@ contribution = 4
 prev = 0
 next = 3
 
-left  = 2-0 = 2
-right = 3-2 = 1
+left  = 2
+right = 1
 
 contribution = 2
 ```
 
-Therefore:
+Final:
 
 ```text
 answer
-= 2 + 4 + 2
-= 8
+=
+2 + 4 + 2
+=
+8
 ```
 
-## C++
+---
 
-Store all occurrence positions. Add virtual boundaries:
-
-```text
--1 and n
-```
+## 4.7 C++17
 
 ```cpp
 #include <bits/stdc++.h>
@@ -490,8 +967,9 @@ long long solve(const string& s) {
 
     vector<vector<int>> pos(256);
 
-    for (int i = 0; i < n; i++)
-        pos[s[i]].push_back(i);
+    for (int i = 0; i < n; i++) {
+        pos[(unsigned char)s[i]].push_back(i);
+    }
 
     long long ans = 0;
 
@@ -502,10 +980,10 @@ long long solve(const string& s) {
             int prev = (j == 0 ? -1 : p[j - 1]);
             int next = (j + 1 == (int)p.size() ? n : p[j + 1]);
 
-            long long left  = i - prev;
-            long long right = next - i;
+            long long leftChoices = i - prev;
+            long long rightChoices = next - i;
 
-            ans += left * right;
+            ans += leftChoices * rightChoices;
         }
     }
 
@@ -513,15 +991,65 @@ long long solve(const string& s) {
 }
 ```
 
-**Complexity:** `O(n)` time, `O(n)` occurrence storage.
+---
+
+## 4.8 Complexity
+
+```text
+Time  = O(n)
+Space = O(n)
+```
 
 ---
 
-# 3. Super Minimum Sum
+## 4.9 Recognition Signal
+
+Think of this pattern when:
+
+```text
+for every substring,
+count characters/categories appearing EXACTLY ONCE
+```
+
+Mental picture:
+
+```text
+previous same
+      |
+      v
+------P------i------N------
+             ^
+          current
+                    ^
+                 next same
+
+current owns only substrings
+fully inside (P,N)
+and containing i
+```
+
+---
+
+## 4.10 Common Mistake
+
+Distinct and unique are different.
+
+```text
+DISTINCT:
+previous same blocks LEFT only
+
+UNIQUE:
+previous same blocks LEFT
+next same blocks RIGHT
+```
+
+---
+
+# 5. Super Minimum Sum
 
 **Problem:** [Maang — Super Minimum Sum](https://maang.in/problems/Super-Minimum-Sum-78)
 
-## What is the problem asking?
+## 5.1 What is the problem asking?
 
 For every contiguous subarray:
 
@@ -529,7 +1057,7 @@ For every contiguous subarray:
 find its minimum
 ```
 
-Then add all those minimums.
+Then add all minimum values.
 
 Example:
 
@@ -546,153 +1074,318 @@ a = [3,1,2]
 answer = 9
 ```
 
-Instead of processing every subarray, fix `a[i]`.
+---
 
-Ask:
+## 5.2 Brute Force
 
-```text
-In how many subarrays is a[i] the minimum?
-```
+Enumerate all subarrays.
 
-## Start From `(i+1) × (n-i)`
-
-If there were no minimum restriction, `a[i]` belongs to:
+For each:
 
 ```text
-(i+1)(n-i)
+scan to find minimum
 ```
 
-subarrays.
+Too slow.
 
-For `a[i]` to contribute as the **minimum**, we cannot extend through a blocking smaller element.
-
-So replace the normal boundaries:
+Contribution question:
 
 ```text
-normal left  = i+1
-normal right = n-i
+For a[i],
+how many subarrays choose THIS occurrence
+as their minimum?
 ```
 
-with:
+---
+
+## 5.3 Start from the Base Formula
+
+Without restrictions:
 
 ```text
-valid left  = i-P
-valid right = N-i
+left  = i+1
+right = n-i
 ```
 
-where:
+But a smaller value blocks the expansion.
+
+Let:
 
 ```text
 P = previous strictly smaller index
 N = next smaller-or-equal index
 ```
 
-Thus:
+Then:
 
 ```text
-a[i](i+1)(n-i)
-        ↓ restrict boundaries
+valid left  = i - P
+valid right = N - i
+```
+
+So:
+
+```text
+frequency(i)
+=
+(i-P)(N-i)
+```
+
+Contribution:
+
+```text
 a[i](i-P)(N-i)
 ```
 
-## Contribution Idea
+---
 
-For `a[i]` to remain the chosen minimum, expand:
+## 5.4 ASCII Boundary Example
+
+Take:
 
 ```text
-left  until a smaller element blocks us
-right until a smaller/equal element blocks us
+a = [4, 2, 3, 1, 5]
+         ^
+         i = 1
+         value = 2
+```
+
+Previous smaller than `2`:
+
+```text
+none
+P = -1
+```
+
+Next smaller-or-equal:
+
+```text
+1 at index 3
+N = 3
+```
+
+ASCII:
+
+```text
+index:   -1   0   1   2   3   4
+               4   2   3   1   5
+                   ^
+                   i
+
+P = -1 -------------------|
+                          |
+                 valid zone
+                 [4,2,3]
+                          |
+                          N = 3 blocks
+```
+
+Left choices:
+
+```text
+L = 0 or 1
+
+leftChoices = 2
+```
+
+Right choices:
+
+```text
+R = 1 or 2
+
+rightChoices = 2
+```
+
+So value `2` is minimum in:
+
+```text
+[2]
+[2,3]
+[4,2]
+[4,2,3]
+```
+
+Frequency:
+
+```text
+2 × 2 = 4
+```
+
+Contribution:
+
+```text
+2 × 4 = 8
+```
+
+---
+
+## 5.5 Step-by-Step Derivation
+
+Fix index `i`.
+
+To keep `a[i]` as minimum:
+
+```text
+we may expand left
+until a strictly smaller value appears
+
+we may expand right
+until a smaller-or-equal value appears
 ```
 
 Let:
 
 ```text
-P = index of previous strictly smaller element
-N = index of next smaller-or-equal element
+P = previous strictly smaller
+N = next smaller-or-equal
 ```
 
-Then:
+Valid starts:
 
 ```text
-leftChoices  = i-P
-rightChoices = N-i
+L ∈ [P+1 ... i]
+```
+
+Count:
+
+```text
+leftChoices = i - P
+```
+
+Valid ends:
+
+```text
+R ∈ [i ... N-1]
+```
+
+Count:
+
+```text
+rightChoices = N - i
 ```
 
 Therefore:
 
 ```text
 frequency(i)
-= (i-P)(N-i)
+=
+(i-P)(N-i)
 ```
 
-Since every such subarray contributes minimum `a[i]`:
+Each such subarray contributes:
+
+```text
+a[i]
+```
+
+So:
 
 ```text
 contribution(i)
-= a[i](i-P)(N-i)
+=
+a[i](i-P)(N-i)
 ```
 
 Final:
 
 ```text
 answer
-= Σ a[i](i-P)(N-i)
+=
+Σ a[i](i-P)(N-i)
 ```
 
-A monotonic stack finds `P` and `N` in `O(n)`.
+---
 
-## Why One Side Strict and One Side Non-Strict?
+## 5.6 Why One Side Strict and One Side Non-Strict?
 
-With duplicates:
+Consider:
 
 ```text
 [2,2]
 ```
 
-both `2`s must not claim the same subarray.
-
-Use:
+Subarrays:
 
 ```text
+[first 2]
+[second 2]
+[2,2]
+```
+
+For `[2,2]`, both elements are minimum.
+
+But contribution counting must assign the subarray to only one occurrence.
+
+So choose one ownership convention.
+
+Example used here:
+
+```text
+LEFT:
 previous strictly smaller
+
+RIGHT:
 next smaller-or-equal
 ```
 
-to give every subarray to exactly one occurrence.
-
-## Dry Run — `[3,1,2]`
-
-### `3` at `i=0`
+ASCII:
 
 ```text
-previous smaller = -1
-next <= 3        = index 1
+index:  0   1
+value:  2   2
+        A   B
 
-left  = 0-(-1) = 1
-right = 1-0    = 1
+With asymmetric tie rule:
 
-contribution
-= 3×1×1
-= 3
+A owns:
+[A]
+
+B owns:
+[B]
+[A,B]
+
+No double count.
 ```
 
-### `1` at `i=1`
+---
 
-No smaller element exists on either side:
+## 5.7 Dry Run — `[3,1,2]`
+
+### `3` at `i = 0`
+
+```text
+P = -1
+N = 1
+
+left  = 1
+right = 1
+
+contribution
+=
+3×1×1
+=
+3
+```
+
+---
+
+### `1` at `i = 1`
 
 ```text
 P = -1
 N = 3
 
-left  = 1-(-1) = 2
-right = 3-1    = 2
+left  = 2
+right = 2
 
 contribution
-= 1×2×2
-= 4
+=
+1×2×2
+=
+4
 ```
 
-It owns:
+Owned subarrays:
 
 ```text
 [1]
@@ -701,29 +1394,67 @@ It owns:
 [3,1,2]
 ```
 
-### `2` at `i=2`
+---
+
+### `2` at `i = 2`
 
 ```text
 P = 1
 N = 3
 
-left  = 2-1 = 1
-right = 3-2 = 1
+left  = 1
+right = 1
 
 contribution
-= 2×1×1
-= 2
+=
+2×1×1
+=
+2
 ```
 
-Therefore:
+Final:
 
 ```text
 answer
-= 3 + 4 + 2
-= 9
+=
+3 + 4 + 2
+=
+9
 ```
 
-## C++
+---
+
+## 5.8 Why Monotonic Stack?
+
+Naively, for every `i`:
+
+```text
+scan left until smaller
+scan right until smaller/equal
+```
+
+Worst case:
+
+```text
+O(n^2)
+```
+
+Monotonic stack finds all boundaries in:
+
+```text
+O(n)
+```
+
+because every index is:
+
+```text
+pushed once
+popped at most once
+```
+
+---
+
+## 5.9 C++17
 
 ```cpp
 #include <bits/stdc++.h>
@@ -737,20 +1468,23 @@ long long solve(vector<long long>& a) {
 
     // Previous strictly smaller
     for (int i = 0; i < n; i++) {
-        while (!st.empty() && a[st.top()] >= a[i])
+        while (!st.empty() && a[st.top()] >= a[i]) {
             st.pop();
+        }
 
         left[i] = st.empty() ? -1 : st.top();
         st.push(i);
     }
 
-    while (!st.empty())
+    while (!st.empty()) {
         st.pop();
+    }
 
     // Next smaller-or-equal
     for (int i = n - 1; i >= 0; i--) {
-        while (!st.empty() && a[st.top()] > a[i])
+        while (!st.empty() && a[st.top()] > a[i]) {
             st.pop();
+        }
 
         right[i] = st.empty() ? n : st.top();
         st.push(i);
@@ -759,7 +1493,7 @@ long long solve(vector<long long>& a) {
     long long ans = 0;
 
     for (int i = 0; i < n; i++) {
-        long long leftChoices  = i - left[i];
+        long long leftChoices = i - left[i];
         long long rightChoices = right[i] - i;
 
         ans += a[i] * leftChoices * rightChoices;
@@ -769,51 +1503,273 @@ long long solve(vector<long long>& a) {
 }
 ```
 
-**Complexity:** `O(n)` time, `O(n)` space.
+---
+
+## 5.10 Complexity
+
+```text
+Time  = O(n)
+Space = O(n)
+```
 
 ---
 
-# 4. Final Formula Summary
+## 5.11 Recognition Signal
 
-Start every subarray contribution problem with:
+Think:
 
 ```text
-LEFT × RIGHT
-
-= (i+1) × (n-i)
+fix each element as MINIMUM/MAXIMUM
 ```
 
-Then ask whether the problem imposes a restriction.
-
-| Problem | Base | Restriction | Final Contribution |
-|---|---|---|---|
-| Normal subarray sum | `(i+1)(n-i)` | none | `a[i](i+1)(n-i)` |
-| Distinct chars | `(i+1)(n-i)` | previous same char blocks left | `(i-prev)(n-i)` |
-| Unique chars | `(i+1)(n-i)` | previous + next same char | `(i-prev)(next-i)` |
-| Subarray minimum | `(i+1)(n-i)` | smaller elements block both sides | `a[i](i-P)(N-i)` |
-
-The common contribution model is:
+Then ask:
 
 ```text
-FIX one occurrence
-        ↓
-find valid LEFT choices
-        ↓
-find valid RIGHT choices
-        ↓
+How far left can it own?
+How far right can it own?
+```
+
+This very often means:
+
+```text
+monotonic stack
++
+LEFT × RIGHT
+```
+
+---
+
+## 5.12 Common Mistakes
+
+```text
+1. Using smaller on both sides with duplicates.
+2. Using smaller-or-equal on both sides.
+3. Multiplying wrong boundary distances.
+4. Forgetting virtual boundaries:
+   -1 and n.
+```
+
+---
+
+# 6. Pattern Comparison
+
+All three problems start from the same base:
+
+```text
+normal containing-i count
+=
+(i+1)(n-i)
+```
+
+Then the problem tells us what blocks contribution.
+
+---
+
+## 6.1 Distinct Character
+
+Restriction:
+
+```text
+previous same character blocks LEFT
+```
+
+Formula:
+
+```text
+(i-prev)(n-i)
+```
+
+ASCII:
+
+```text
+prev same      current
+    |             |
+----P-------------i-------------------->
+
+L must be after P
+R unrestricted
+```
+
+---
+
+## 6.2 Unique Character
+
+Restriction:
+
+```text
+previous same blocks LEFT
+next same blocks RIGHT
+```
+
+Formula:
+
+```text
+(i-prev)(next-i)
+```
+
+ASCII:
+
+```text
+previous        current         next
+   |               |              |
+---P---------------i--------------N---
+
+L inside (P,i]
+R inside [i,N)
+```
+
+---
+
+## 6.3 Subarray Minimum
+
+Restriction:
+
+```text
+smaller value blocks LEFT
+smaller/equal value blocks RIGHT
+```
+
+Formula:
+
+```text
+a[i](i-P)(N-i)
+```
+
+ASCII:
+
+```text
+smaller          current        smaller/equal
+   |                |                |
+---P----------------i----------------N---
+
+all subarrays inside this ownership zone
+that contain i choose a[i] as minimum
+```
+
+---
+
+# 7. Contest Recognition Checklist
+
+When you see a contribution problem, ask these in order.
+
+```text
+1. Can I FIX one occurrence/index?
+
+2. What is the normal LEFT × RIGHT count?
+
+3. What makes this occurrence invalid?
+
+4. Does something block the LEFT side?
+
+5. Does something block the RIGHT side?
+
+6. Are the blockers:
+   same value?
+   same character?
+   smaller value?
+   greater value?
+
+7. Can I find those blockers in O(n)?
+   last occurrence?
+   next occurrence?
+   monotonic stack?
+
+8. What does each valid substring contribute?
+   1?
+   a[i]?
+   frequency?
+   another weight?
+```
+
+---
+
+# 8. Final Formula Summary
+
+| Problem | Left Choices | Right Choices | Per-Occurrence Contribution |
+|---|---:|---:|---:|
+| Normal subarray sum | `i+1` | `n-i` | `a[i](i+1)(n-i)` |
+| Distinct chars | `i-prev` | `n-i` | `(i-prev)(n-i)` |
+| Unique chars | `i-prev` | `next-i` | `(i-prev)(next-i)` |
+| Subarray minimum | `i-P` | `N-i` | `a[i](i-P)(N-i)` |
+
+---
+
+## Final Memory Diagram
+
+```text
+NORMAL
+======
+
+             i
+             |
+0 -----------|------------- n-1
+
+LEFT  = i+1
+RIGHT = n-i
+
+
+DISTINCT
+========
+
+prev same    i
+    |        |
+----P--------|-------------------->
+
+LEFT  = i-P
+RIGHT = n-i
+
+
+UNIQUE
+======
+
+prev same    i       next same
+    |        |           |
+----P--------|-----------N--------
+
+LEFT  = i-P
+RIGHT = N-i
+
+
+MINIMUM
+=======
+
+prev smaller i    next smaller/equal
+      |       |            |
+------P-------|------------N--------
+
+LEFT  = i-P
+RIGHT = N-i
+
+contribution
+=
+a[i] × LEFT × RIGHT
+```
+
+---
+
+# Final Takeaway
+
+Do not memorize three unrelated formulas.
+
+Remember one framework:
+
+```text
+START:
+(i+1)(n-i)
+
+THEN ASK:
+what blocks LEFT?
+what blocks RIGHT?
+
+REPLACE:
+normal boundaries
+with restricted boundaries
+
+THEN:
 frequency = LEFT × RIGHT
-        ↓
+
+FINALLY:
 contribution = value × frequency
 ```
 
-For character-count problems:
-
-```text
-value = 1
-```
-
-For minimum-sum problems:
-
-```text
-value = a[i]
-```
+That is the reusable contribution pattern behind all three problems.
