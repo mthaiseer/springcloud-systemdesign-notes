@@ -1,270 +1,768 @@
-# AlgoZenith --- Structuring State: Dynamic Dashboard
+# AlgoZenith — Structuring State: Dynamic Dashboard
+## Visual Self-Learning Version
 
-> **Core idea:** If a query is expensive to recompute but easy to
-> update, **store that answer as state and maintain it after every
-> modification**.
+> **Core idea:** If a query is expensive to recompute but easy to update,
+> **store that answer as state and maintain it after every modification**.
 
-## Table of Contents
+# Table of Contents
 
--   [1. Problem](#1-problem)
--   [2. Design Backward from Queries](#2-design-backward-from-queries)
--   [3. State and Invariants](#3-state-and-invariants)
--   [4. Insert](#4-insert)
--   [5. Remove](#5-remove)
--   [6. Sum](#6-sum)
--   [7. Get Maximum](#7-get-maximum)
--   [8. Get Distinct](#8-get-distinct)
--   [9. Complete C++](#9-complete-c)
--   [10. Dry Run](#10-dry-run)
--   [11. Complexity](#11-complexity)
--   [12. Common Mistakes](#12-common-mistakes)
--   [13. Final Mental Model](#13-final-mental-model)
+- [0. Prerequisites](#0-prerequisites)
+- [1. Problem](#1-problem)
+- [2. Design Backward from Queries](#2-design-backward-from-queries)
+- [3. Choosing the State](#3-choosing-the-state)
+- [4. State Invariants](#4-state-invariants)
+- [5. Insert](#5-insert)
+- [6. Remove](#6-remove)
+- [7. Sum Query](#7-sum-query)
+- [8. Get Maximum](#8-get-maximum)
+- [9. Get Distinct](#9-get-distinct)
+- [10. Complete C++17](#10-complete-c17)
+- [11. Full Dry Run](#11-full-dry-run)
+- [12. Complexity](#12-complexity)
+- [13. Common Mistakes](#13-common-mistakes)
+- [14. Recognition Checklist](#14-recognition-checklist)
+- [15. Final Mental Model](#15-final-mental-model)
 
-------------------------------------------------------------------------
+---
+
+# 0. Prerequisites
+
+Before this pattern, understand these small ideas.
+
+## 0.1 Frequency Counting
+
+If active values are:
+
+```text
+[5, 3, 5, 8]
+```
+
+frequencies are:
+
+```text
+3 -> 1
+5 -> 2
+8 -> 1
+```
+
+Store them as:
+
+```cpp
+map<int, int> mp;
+```
+
+Meaning:
+
+```text
+mp[x] = number of active copies of x
+```
+
+---
+
+## 0.2 Why Duplicates Matter
+
+For:
+
+```text
+[5,5,5]
+```
+
+a `set` only remembers:
+
+```text
+5 exists
+```
+
+But after removing one `5`, two copies must remain.
+
+So we need:
+
+```text
+5 -> 3
+```
+
+not only presence/absence.
+
+---
+
+## 0.3 Ordered Map
+
+`std::map` keeps keys sorted.
+
+Example:
+
+```text
+3 -> 1
+5 -> 2
+8 -> 1
+```
+
+Visual:
+
+```text
+smallest ---------------------- largest
+
+   3             5               8
+   ^                             ^
+   |                             |
+begin()                       rbegin()
+```
+
+Therefore:
+
+```cpp
+mp.rbegin()->first
+```
+
+gives the largest active key.
+
+---
+
+## 0.4 Cached State
+
+Suppose we repeatedly ask for the total sum.
+
+Naive:
+
+```text
+scan everything
+recompute sum
+```
+
+Better:
+
+```text
+maintain curSum
+```
+
+On insert:
+
+```text
+curSum += x
+```
+
+On remove:
+
+```text
+curSum -= x
+```
+
+Then:
+
+```text
+Sum() = O(1)
+```
+
+This is **cached state**.
+
+---
+
+## 0.5 Invariant
+
+An invariant is a condition that must remain true after every operation.
+
+Example:
+
+```text
+curSum
+=
+sum of all active occurrences
+```
+
+If an update breaks this, later queries become wrong.
+
+---
 
 # 1. Problem
 
 Maintain a dynamic collection supporting:
 
-``` text
-Insert(x)       → add one x
-Remove(x)       → remove one x
-Sum()           → sum of all active values
-GetMax()        → largest active value
-GetDistinct()   → number of distinct active values
+```text
+Insert(x)       -> add one x
+Remove(x)       -> remove one x
+Sum()           -> sum of all active values
+GetMax()        -> largest active value
+GetDistinct()   -> number of distinct active values
 ```
 
 Duplicates are allowed.
 
-Target:
+Target query time:
 
-``` text
-Sum()         → O(1)
-GetMax()      → O(1)
-GetDistinct() → O(1)
+```text
+Sum()         -> O(1)
+GetMax()      -> O(1)
+GetDistinct() -> O(1)
 ```
 
-------------------------------------------------------------------------
+---
+
+## 1.1 Tiny Example
+
+Active values:
+
+```text
+[3,5,5,8]
+```
+
+Queries:
+
+```text
+Sum        = 21
+Max        = 8
+Distinct   = 3
+```
+
+Frequency representation:
+
+```text
+3 -> 1
+5 -> 2
+8 -> 1
+```
+
+---
 
 # 2. Design Backward from Queries
 
 Do **not** start with:
 
-``` text
+```text
 "Which STL container should I use?"
 ```
 
 Start with:
 
-``` text
+```text
 "What information must each query know?"
 ```
 
-  Query             Required State
-  ----------------- -------------------------
-  `Sum()`           running sum
-  `GetMax()`        values kept ordered
-  `GetDistinct()`   active distinct keys
-  `Insert/Remove`   frequency of each value
+---
 
-Therefore maintain:
+## 2.1 Query -> Required Information
 
-``` cpp
-long long curSum;
-map<int,int> mp;
+```text
+Sum()
+  |
+  v
+need total of all active occurrences
+  |
+  v
+running sum
+
+
+GetMax()
+  |
+  v
+need largest active value
+  |
+  v
+ordered keys
+
+
+GetDistinct()
+  |
+  v
+need number of active different values
+  |
+  v
+one key per active value
+
+
+Insert / Remove
+  |
+  v
+need multiplicity
+  |
+  v
+frequency map
 ```
+
+So maintain:
+
+```cpp
+long long curSum = 0;
+map<int, int> mp;
+```
+
+---
+
+# 3. Choosing the State
 
 Meaning:
 
-``` text
-curSum = sum of all active occurrences
-mp[x]  = frequency of x
+```text
+curSum
+=
+sum of all active occurrences
+
+mp[x]
+=
+frequency of x
 ```
 
-Why `map`?
+This small state is enough to answer every operation.
 
-``` text
-ordered keys
-+ frequencies
-+ largest key through rbegin()
+---
+
+## 3.1 Visual State
+
+For:
+
+```text
+[3,5,5,8]
 ```
 
-------------------------------------------------------------------------
+we store:
 
-# 3. State and Invariants
+```text
+curSum = 21
 
-The data structure must always preserve:
+mp:
+3 -> 1
+5 -> 2
+8 -> 1
+```
 
-``` text
+ASCII:
+
+```text
+                 Dashboard
+                    |
+         +----------+----------+
+         |                     |
+         v                     v
+     curSum = 21          map<x,freq>
+                              |
+                    +---------+---------+
+                    |                   |
+                    v                   v
+              rbegin()->first         size()
+                    |                   |
+                    v                   v
+                  max=8             distinct=3
+```
+
+---
+
+# 4. State Invariants
+
+The data structure must always preserve these rules.
+
+```text
 1. curSum = sum of all active occurrences
 
-2. mp[x] > 0 for every stored key
+2. every stored key has positive frequency
 
 3. mp.size() = number of distinct active values
 
 4. mp.rbegin()->first = maximum active value
+   when map is non-empty
 ```
 
-The crucial rule is:
+---
 
-``` text
+## 4.1 Most Important Invariant
+
+```text
 frequency becomes 0
-        ↓
-erase the key
+        |
+        v
+ERASE THE KEY
 ```
 
-Otherwise both:
+Why?
 
-``` text
+Because leaving:
+
+```text
+5 -> 0
+```
+
+would make both:
+
+```text
 GetDistinct()
 GetMax()
 ```
 
-can become wrong.
+potentially wrong.
 
-------------------------------------------------------------------------
+---
 
-# 4. Insert
+## 4.2 Visual Example
+
+Invalid state:
+
+```text
+3 -> 1
+5 -> 0
+8 -> 1
+```
+
+`5` is not active anymore.
+
+Correct state:
+
+```text
+3 -> 1
+8 -> 1
+```
+
+Now:
+
+```text
+distinct = 2
+max      = 8
+```
+
+---
+
+# 5. Insert
 
 Insert one occurrence of `x`.
 
-## State Transition
+## 5.1 What Changes?
 
-``` text
+```text
 sum increases by x
 frequency of x increases by 1
 ```
 
 Algebra:
 
-``` text
+```text
 S' = S + x
 f'(x) = f(x) + 1
 ```
 
-C++:
+---
 
-``` cpp
+## 5.2 Step-by-Step
+
+```text
+Insert(x)
+
+Step 1:
+curSum += x
+
+Step 2:
+mp[x]++
+```
+
+That is all.
+
+---
+
+## 5.3 ASCII Dry Run
+
+Before:
+
+```text
+curSum = 8
+
+mp:
+3 -> 1
+5 -> 1
+```
+
+Operation:
+
+```text
+Insert(3)
+```
+
+Update sum:
+
+```text
+8 + 3 = 11
+```
+
+Update frequency:
+
+```text
+3 -> 1
+becomes
+3 -> 2
+```
+
+After:
+
+```text
+curSum = 11
+
+mp:
+3 -> 2
+5 -> 1
+```
+
+Distinct remains:
+
+```text
+2
+```
+
+because `3` already existed.
+
+---
+
+## 5.4 New Value vs Duplicate
+
+New value:
+
+```text
+Insert(8)
+
+before:
+3 -> 1
+5 -> 2
+
+after:
+3 -> 1
+5 -> 2
+8 -> 1
+
+distinct:
+2 -> 3
+```
+
+Duplicate:
+
+```text
+Insert(5)
+
+5 -> 2
+becomes
+5 -> 3
+
+distinct unchanged
+```
+
+---
+
+## 5.5 C++17
+
+```cpp
 void insert(int x) {
     curSum += x;
     mp[x]++;
 }
 ```
 
-Example:
+---
 
-``` text
-before:
-sum = 8
-mp = {3:1, 5:1}
-
-Insert(3)
-
-after:
-sum = 11
-mp = {3:2, 5:1}
-```
-
-Distinct count stays `2`.
-
-------------------------------------------------------------------------
-
-# 5. Remove
+# 6. Remove
 
 Remove **one occurrence** of `x`.
 
-First verify that `x` exists.
+This needs more care.
 
-## State Transition
+---
 
-``` text
+## 6.1 Step 1 — Check Existence
+
+Never update sum before checking.
+
+```cpp
+auto it = mp.find(x);
+
+if (it == mp.end()) {
+    return false;
+}
+```
+
+---
+
+## 6.2 State Transition
+
+If `x` exists:
+
+```text
 S' = S - x
 f'(x) = f(x) - 1
 ```
 
-If:
+Then:
 
-``` text
-f'(x) = 0
+```text
+if f'(x) == 0
+erase x
 ```
 
-erase `x`.
+---
 
-## C++
+## 6.3 Step-by-Step
 
-``` cpp
+```text
+Remove(x)
+
+Step 1:
+find x
+
+Step 2:
+if missing -> return false
+
+Step 3:
+curSum -= x
+
+Step 4:
+frequency--
+
+Step 5:
+if frequency == 0
+erase key
+
+Step 6:
+return true
+```
+
+---
+
+## 6.4 ASCII Dry Run
+
+Start:
+
+```text
+curSum = 11
+
+mp:
+3 -> 2
+5 -> 1
+```
+
+### Remove(3)
+
+```text
+sum:
+11 - 3 = 8
+
+frequency:
+3 -> 2
+becomes
+3 -> 1
+```
+
+State:
+
+```text
+3 -> 1
+5 -> 1
+```
+
+Do not erase `3`.
+
+---
+
+### Remove(3) Again
+
+```text
+sum:
+8 - 3 = 5
+
+frequency:
+3 -> 1
+becomes
+3 -> 0
+```
+
+Now:
+
+```text
+erase 3
+```
+
+Final:
+
+```text
+mp:
+5 -> 1
+
+sum      = 5
+max      = 5
+distinct = 1
+```
+
+---
+
+## 6.5 Why Erasing at Zero Matters
+
+Bad:
+
+```text
+3 -> 0
+5 -> 1
+```
+
+Then:
+
+```text
+mp.size() = 2
+```
+
+but active distinct count is:
+
+```text
+1
+```
+
+So zero-frequency keys must not stay.
+
+---
+
+## 6.6 C++17
+
+```cpp
 bool remove(int x) {
     auto it = mp.find(x);
 
-    if (it == mp.end())
+    if (it == mp.end()) {
         return false;
+    }
 
     curSum -= x;
     it->second--;
 
-    if (it->second == 0)
+    if (it->second == 0) {
         mp.erase(it);
+    }
 
     return true;
 }
 ```
 
-## Dry Run
+---
 
-``` text
-sum = 11
-mp = {3:2, 5:1}
-```
-
-`Remove(3)`:
-
-``` text
-sum = 8
-mp[3] = 1
-
-mp = {3:1, 5:1}
-```
-
-Remove `3` again:
-
-``` text
-sum = 5
-mp[3] = 0
-```
-
-Erase key:
-
-``` text
-mp = {5:1}
-```
-
-Now:
-
-``` text
-distinct = 1
-max = 5
-```
-
-------------------------------------------------------------------------
-
-# 6. Sum
+# 7. Sum Query
 
 Naive:
 
-``` text
-scan every value
-→ O(n)
+```text
+scan map
+value × frequency
+add everything
+```
+
+Cost:
+
+```text
+O(D)
+```
+
+where:
+
+```text
+D = number of distinct active values
 ```
 
 Better:
 
-``` text
-maintain sum during every update
+```text
+maintain curSum during updates
 ```
 
 Then:
 
-``` cpp
+```cpp
 long long sum() const {
     return curSum;
 }
@@ -272,108 +770,139 @@ long long sum() const {
 
 Complexity:
 
-``` text
+```text
 O(1)
 ```
 
-This is **cached state**:
+---
 
-``` text
+## 7.1 Core Cached-State Pattern
+
+```text
 expensive to recompute
-+
+        +
 cheap to update
-        ↓
-store it
+        |
+        v
+STORE IT
 ```
 
-------------------------------------------------------------------------
+This is the main design lesson.
 
-# 7. Get Maximum
+---
 
-`map` keeps keys sorted:
+# 8. Get Maximum
 
-``` text
-smallest ................ largest
-begin()                  rbegin()
+`map` keeps keys ordered:
+
+```text
+smallest .................... largest
+
+begin()                      rbegin()
 ```
 
 Therefore:
 
-``` cpp
+```cpp
 int getMax() const {
     return mp.rbegin()->first;
 }
 ```
 
-Complexity:
+---
 
-``` text
-O(1)
-```
+## 8.1 ASCII Example
 
-Precondition:
-
-``` text
-map must not be empty
-```
-
-------------------------------------------------------------------------
-
-# 8. Get Distinct
-
-Because zero-frequency keys are erased:
-
-``` text
-one map key
-=
-one distinct active value
-```
-
-Therefore:
-
-``` cpp
-int getDistinct() const {
-    return mp.size();
-}
-```
-
-Complexity:
-
-``` text
-O(1)
-```
-
-Example:
-
-``` text
-values = [2,2,5,8,8,8]
-
+```text
 mp:
-2 → 2
-5 → 1
-8 → 3
 
-mp.size() = 3
+2 -> 2
+5 -> 1
+8 -> 3
+
+keys:
+
+2   5   8
+        ^
+        |
+      maximum
 ```
 
 So:
 
-``` text
-distinct = 3
+```text
+GetMax() = 8
 ```
 
-------------------------------------------------------------------------
+---
 
-# 9. Complete C++
+## 8.2 Important Precondition
 
-``` cpp
+The map must not be empty.
+
+If the problem allows empty state, handle that case explicitly.
+
+---
+
+# 9. Get Distinct
+
+Because zero-frequency keys are erased:
+
+```text
+one map key
+=
+one active distinct value
+```
+
+Therefore:
+
+```cpp
+int getDistinct() const {
+    return (int)mp.size();
+}
+```
+
+---
+
+## 9.1 ASCII Example
+
+Active:
+
+```text
+[2,2,5,8,8,8]
+```
+
+Map:
+
+```text
+2 -> 2
+5 -> 1
+8 -> 3
+```
+
+Number of keys:
+
+```text
+3
+```
+
+Therefore:
+
+```text
+Distinct = 3
+```
+
+---
+
+# 10. Complete C++17
+
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 struct Dashboard {
-
     long long curSum = 0;
-    map<int,int> mp;
+    map<int, int> mp;
 
     void insert(int x) {
         curSum += x;
@@ -381,17 +910,18 @@ struct Dashboard {
     }
 
     bool remove(int x) {
-
         auto it = mp.find(x);
 
-        if (it == mp.end())
+        if (it == mp.end()) {
             return false;
+        }
 
         curSum -= x;
         it->second--;
 
-        if (it->second == 0)
+        if (it->second == 0) {
             mp.erase(it);
+        }
 
         return true;
     }
@@ -410,340 +940,391 @@ struct Dashboard {
 };
 ```
 
-------------------------------------------------------------------------
+---
 
-# 10. Dry Run
+# 11. Full Dry Run
 
 Start:
 
 ```text
 curSum = 0
-mp     = {}
+mp = {}
 ```
 
-### Step 1 — `Insert(5)`
+## Step 1 — Insert(5)
 
 ```text
 curSum = 0 + 5 = 5
-mp[5]  = 0 + 1 = 1
 
-State → {5:1}
-Max = 5 | Distinct = 1
+mp:
+5 -> 1
+
+Max      = 5
+Distinct = 1
 ```
 
-### Step 2 — `Insert(3)`
+---
+
+## Step 2 — Insert(3)
 
 ```text
 curSum = 5 + 3 = 8
-mp[3]  = 0 + 1 = 1
 
-State → {3:1, 5:1}
-Max = 5 | Distinct = 2
+mp:
+3 -> 1
+5 -> 1
+
+Max      = 5
+Distinct = 2
 ```
 
-### Step 3 — `Insert(5)`
+---
+
+## Step 3 — Insert(5)
 
 ```text
 curSum = 8 + 5 = 13
-mp[5]  = 1 + 1 = 2
 
-State → {3:1, 5:2}
-Max = 5 | Distinct = 2
+5:
+1 -> 2
+
+mp:
+3 -> 1
+5 -> 2
+
+Max      = 5
+Distinct = 2
 ```
 
-Notice:
+Observation:
 
 ```text
-5 already existed
-→ frequency changes 1 → 2
-→ distinct does NOT change
+duplicate inserted
+-> frequency changes
+-> distinct unchanged
 ```
 
-### Step 4 — `Insert(8)`
+---
+
+## Step 4 — Insert(8)
 
 ```text
 curSum = 13 + 8 = 21
-mp[8]  = 0 + 1 = 1
 
-State → {3:1, 5:2, 8:1}
-Max = 8 | Distinct = 3
+mp:
+3 -> 1
+5 -> 2
+8 -> 1
+
+Max      = 8
+Distinct = 3
 ```
 
-### Step 5 — `Remove(5)`
+---
+
+## Step 5 — Remove(5)
 
 ```text
 curSum = 21 - 5 = 16
-mp[5]  = 2 - 1 = 1
 
-State → {3:1, 5:1, 8:1}
-Max = 8 | Distinct = 3
+5:
+2 -> 1
+
+mp:
+3 -> 1
+5 -> 1
+8 -> 1
+
+Max      = 8
+Distinct = 3
 ```
 
-`5` is **not erased** because one occurrence remains.
+---
 
-### Step 6 — `Remove(5)` Again
+## Step 6 — Remove(5)
 
 ```text
 curSum = 16 - 5 = 11
-mp[5]  = 1 - 1 = 0
+
+5:
+1 -> 0
 ```
 
-Frequency reached zero:
+Erase key:
 
 ```text
-erase(5)
+5
 ```
 
 Final state:
 
 ```text
-mp       = {3:1, 8:1}
+mp:
+3 -> 1
+8 -> 1
+
 curSum   = 11
 Max      = 8
 Distinct = 2
 ```
 
-### Complete State Transition
+---
 
-| Step | Operation | Sum Update | Frequency Update | State `mp` | Max | Distinct |
-|---:|---|---|---|---|---:|---:|
-| 0 | Start | `0` | — | `{}` | — | 0 |
-| 1 | `Insert(5)` | `0+5=5` | `5: 0→1` | `{5:1}` | 5 | 1 |
-| 2 | `Insert(3)` | `5+3=8` | `3: 0→1` | `{3:1, 5:1}` | 5 | 2 |
-| 3 | `Insert(5)` | `8+5=13` | `5: 1→2` | `{3:1, 5:2}` | 5 | 2 |
-| 4 | `Insert(8)` | `13+8=21` | `8: 0→1` | `{3:1, 5:2, 8:1}` | 8 | 3 |
-| 5 | `Remove(5)` | `21-5=16` | `5: 2→1` | `{3:1, 5:1, 8:1}` | 8 | 3 |
-| 6 | `Remove(5)` | `16-5=11` | `5: 1→0 → erase` | `{3:1, 8:1}` | 8 | 2 |
+## 11.1 State Transition Table
 
-### What to Observe
+| Step | Operation | Sum | Map | Max | Distinct |
+|---:|---|---:|---|---:|---:|
+| 0 | Start | 0 | `{}` | — | 0 |
+| 1 | `Insert(5)` | 5 | `{5:1}` | 5 | 1 |
+| 2 | `Insert(3)` | 8 | `{3:1,5:1}` | 5 | 2 |
+| 3 | `Insert(5)` | 13 | `{3:1,5:2}` | 5 | 2 |
+| 4 | `Insert(8)` | 21 | `{3:1,5:2,8:1}` | 8 | 3 |
+| 5 | `Remove(5)` | 16 | `{3:1,5:1,8:1}` | 8 | 3 |
+| 6 | `Remove(5)` | 11 | `{3:1,8:1}` | 8 | 2 |
+
+---
+
+# 12. Complexity
+
+Let:
 
 ```text
-Insert new value
-→ sum changes
-→ new map key
-→ distinct +1
+D = number of distinct active values
+```
 
-Insert duplicate
-→ sum changes
-→ frequency +1
-→ distinct unchanged
+| Operation | Complexity |
+|---|---:|
+| `Insert(x)` | `O(log D)` |
+| `Remove(x)` | `O(log D)` |
+| `Sum()` | `O(1)` |
+| `GetMax()` | `O(1)` |
+| `GetDistinct()` | `O(1)` |
+| Space | `O(D)` |
 
-Remove but frequency > 0
-→ sum changes
-→ frequency -1
-→ key remains
+Why updates are logarithmic:
 
-Remove last occurrence
-→ frequency becomes 0
-→ erase key
-→ distinct -1
-→ maximum may also change
+```text
+std::map
+-> ordered balanced tree
+-> find / insert / erase = O(log D)
 ```
 
 ---
 
-# 11. Complexity
+# 13. Common Mistakes
 
-Let:
-
-``` text
-D = number of distinct active values
-```
-
-  Operation           Complexity
-  ----------------- ------------
-  `Insert(x)`         `O(log D)`
-  `Remove(x)`         `O(log D)`
-  `Sum()`                 `O(1)`
-  `GetMax()`              `O(1)`
-  `GetDistinct()`         `O(1)`
-  Space                   `O(D)`
-
-Why updates are `O(log D)`:
-
-``` text
-std::map
-→ ordered balanced-tree structure
-→ find / insert / erase = O(log D)
-```
-
-------------------------------------------------------------------------
-
-# 12. Common Mistakes
-
-## Mistake 1 --- Recalculate Sum
+## Mistake 1 — Recalculate Sum
 
 Bad:
 
-``` cpp
-for (auto [x, freq] : mp)
+```cpp
+long long sum = 0;
+
+for (auto [x, freq] : mp) {
     sum += 1LL * x * freq;
+}
 ```
 
-That makes every query:
+This makes every sum query:
 
-``` text
+```text
 O(D)
 ```
 
-Instead maintain:
+Better:
 
-``` cpp
-curSum += x;
-curSum -= x;
+```text
+curSum += x
+curSum -= x
 ```
 
-------------------------------------------------------------------------
+---
 
-## Mistake 2 --- Keep Zero Frequencies
+## Mistake 2 — Keep Zero Frequencies
 
 Bad:
 
-``` cpp
-mp[x]--;
-```
-
-and leave:
-
-``` text
-x → 0
+```text
+5 -> 0
 ```
 
 Then:
 
-``` text
+```text
 mp.size()
 ```
 
-is no longer the number of active distinct values.
-
-Also `x` may incorrectly affect maximum.
+is not the number of active distinct values.
 
 Correct:
 
-``` cpp
-if (it->second == 0)
+```cpp
+if (it->second == 0) {
     mp.erase(it);
+}
 ```
 
-------------------------------------------------------------------------
+---
 
-## Mistake 3 --- Remove Missing Value
+## Mistake 3 — Remove Missing Value
 
 Bad:
 
-``` cpp
+```cpp
 curSum -= x;
 mp[x]--;
 ```
 
-If `x` does not exist, `mp[x]` creates it with `0`.
+If missing, `mp[x]` creates a new zero entry and changes it to:
 
-Then:
-
-``` text
-0 → -1
+```text
+-1
 ```
 
-and `curSum` is corrupted.
+The sum is corrupted too.
 
 Correct:
 
-``` cpp
+```cpp
 auto it = mp.find(x);
 
-if (it == mp.end())
+if (it == mp.end()) {
     return false;
+}
 ```
 
-------------------------------------------------------------------------
+---
 
-## Mistake 4 --- Use `set`
+## Mistake 4 — Use `set`
 
-A set stores only:
+A set stores:
 
-``` text
+```text
 present / absent
 ```
 
-It loses frequency.
+But duplicates require:
+
+```text
+frequency
+```
 
 For:
 
-``` text
+```text
 [5,5,5]
 ```
 
 we need:
 
-``` text
-mp[5] = 3
+```text
+5 -> 3
 ```
 
-because removing one `5` must leave two copies.
+---
 
-------------------------------------------------------------------------
+## Mistake 5 — Use `int` for Sum
 
-## Mistake 5 --- Use `int` for Sum
-
-Even if:
-
-``` text
-x fits in int
-```
-
-the total may overflow.
+Individual values may fit in `int`, but their total may not.
 
 Prefer:
 
-``` cpp
+```cpp
 long long curSum;
 ```
 
-------------------------------------------------------------------------
+---
 
-# 13. Final Mental Model
+## Mistake 6 — Get Max from Empty State
 
-Start from the required operations:
+This is invalid on an empty map:
 
-``` text
-Need Sum in O(1)?
-      ↓
-maintain curSum
-
-Need duplicates?
-      ↓
-maintain frequency
-
-Need Max quickly?
-      ↓
-keep keys ordered
-
-Need Distinct in O(1)?
-      ↓
-one key per active value
-      ↓
-erase frequency 0
+```cpp
+mp.rbegin()->first
 ```
 
-So the final state is:
+Handle emptiness if the problem does not guarantee at least one active value.
 
-``` text
-        Dashboard
-            │
-     ┌──────┴──────┐
-     │             │
-  curSum       map<x,freq>
-     │             │
-     │             ├── rbegin() → maximum
-     │             │
-     │             └── size()   → distinct
-     │
-     └── sum() → total
+---
+
+# 14. Recognition Checklist
+
+Think of this pattern when you see:
+
+```text
+dynamic updates
++
+many repeated aggregate queries
 ```
 
-## One Sentence to Remember
+Ask:
 
-> **Design the state from the queries backward: cache aggregates that
-> are cheap to update, and maintain invariants after every
-> modification.**
+```text
+1. What queries must be fast?
+
+2. What information does each query need?
+
+3. Which answer is expensive to recompute?
+
+4. Is it cheap to update after Insert/Remove?
+
+5. Can I cache that answer?
+
+6. Do duplicates matter?
+
+7. Do I need ordered keys for min/max?
+
+8. What invariants must stay true?
+
+9. What must happen when frequency becomes zero?
+
+10. Am I designing state from queries backward?
+```
+
+---
+
+# 15. Final Mental Model
+
+```text
+             QUERY REQUIREMENTS
+                     |
+                     v
+          DESIGN STATE BACKWARD
+                     |
+        +------------+------------+
+        |                         |
+        v                         v
+ cached aggregate          structural state
+    curSum                 map<value,freq>
+        |                         |
+        |               +---------+---------+
+        |               |                   |
+        v               v                   v
+      Sum()          GetMax()          GetDistinct()
+```
+
+Every update:
+
+```text
+Insert / Remove
+      |
+      v
+update cached state
+      |
+      v
+update frequencies
+      |
+      v
+restore invariants
+      |
+      v
+queries remain cheap
+```
+
+The sentence to remember:
+
+```text
+If an answer is expensive to recompute
+but cheap to update,
+store it as state and maintain it.
+```
