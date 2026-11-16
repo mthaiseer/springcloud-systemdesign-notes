@@ -1,33 +1,144 @@
-# AlgoZenith --- Min Stack (STL)
+# AlgoZenith — Min Stack (STL)
+## Visual Self-Learning Version
 
-> **Core idea:** `push()` can calculate a new minimum easily. The
-> challenge is `pop()` --- after removing the current minimum, restore
-> the **previous minimum in O(1)**.
+> **Core idea:** `push()` can calculate a new minimum easily. The real challenge is `pop()` — after removing the current minimum, restore the **previous minimum in O(1)**.
 
-## TOC
+# Table of Contents
 
--   [1. Problem](#1-problem)
--   [2. Why One Minimum Fails](#2-why-one-minimum-fails)
--   [3. Approach 1 --- Pair Snapshot](#3-approach-1--pair-snapshot)
--   [4. Pair Dry Run](#4-pair-dry-run)
--   [5. Pair C++](#5-pair-c)
--   [6. Approach 2 --- Two Stacks](#6-approach-2--two-stacks)
--   [7. Two-Stack Dry Run](#7-two-stack-dry-run)
--   [8. Approach 3 --- Arithmetic
-    Encoding](#8-approach-3--arithmetic-encoding)
--   [9. Encoding Algebra](#9-encoding-algebra)
--   [10. Encoding Dry Run](#10-encoding-dry-run)
--   [11. Encoding C++](#11-encoding-c)
--   [12. Complexity & Mistakes](#12-complexity--mistakes)
--   [13. Mental Model](#13-mental-model)
+- [0. Prerequisites](#0-prerequisites)
+- [1. Problem](#1-problem)
+- [2. Why One Minimum Variable Fails](#2-why-one-minimum-variable-fails)
+- [3. Core State-Restoration Idea](#3-core-state-restoration-idea)
+- [4. Approach 1 — Pair Snapshot](#4-approach-1--pair-snapshot)
+- [5. Pair Snapshot Dry Run](#5-pair-snapshot-dry-run)
+- [6. Pair Snapshot C++17](#6-pair-snapshot-c17)
+- [7. Approach 2 — Two Stacks](#7-approach-2--two-stacks)
+- [8. Two-Stack Dry Run](#8-two-stack-dry-run)
+- [9. Two-Stack C++17](#9-two-stack-c17)
+- [10. Approach 3 — Arithmetic Encoding](#10-approach-3--arithmetic-encoding)
+- [11. Encoding Algebra — Step by Step](#11-encoding-algebra--step-by-step)
+- [12. Encoding Dry Run](#12-encoding-dry-run)
+- [13. Encoding C++17](#13-encoding-c17)
+- [14. Complexity Comparison](#14-complexity-comparison)
+- [15. Common Mistakes](#15-common-mistakes)
+- [16. Recognition Checklist](#16-recognition-checklist)
+- [17. Final Mental Model](#17-final-mental-model)
 
-------------------------------------------------------------------------
+---
+
+# 0. Prerequisites
+
+## 0.1 Normal Stack
+
+A stack follows:
+
+```text
+LIFO = Last In, First Out
+```
+
+Example:
+
+```text
+push 5
+push 7
+push 3
+```
+
+Stack:
+
+```text
+top
+ |
+ v
+
+[3]
+[7]
+[5]
+```
+
+`3` is removed first.
+
+---
+
+## 0.2 Stack Operations
+
+```cpp
+stack<int> st;
+
+st.push(x);
+st.pop();
+st.top();
+st.empty();
+```
+
+Typical complexity:
+
+```text
+push -> O(1)
+pop  -> O(1)
+top  -> O(1)
+```
+
+Min Stack adds:
+
+```text
+getMin() -> O(1)
+```
+
+---
+
+## 0.3 Running Minimum
+
+For:
+
+```text
+5, 7, 3, 8
+```
+
+running minimum is:
+
+```text
+after 5 -> 5
+after 7 -> 5
+after 3 -> 3
+after 8 -> 3
+```
+
+Visual:
+
+```text
+value:        5   7   3   8
+min so far:   5   5   3   3
+```
+
+---
+
+## 0.4 Why Pop Is Harder Than Push
+
+On push:
+
+```text
+newMin = min(x, oldMin)
+```
+
+Easy.
+
+But on pop:
+
+```text
+if current minimum disappears,
+what was the previous minimum?
+```
+
+That old information must be saved or reconstructed.
+
+---
 
 # 1. Problem
 
 Support:
 
-``` text
+```text
 push(x)
 pop()
 top()
@@ -36,305 +147,594 @@ getMin()
 
 Target:
 
-``` text
-push / pop / top / getMin → O(1)
+```text
+push   -> O(1)
+pop    -> O(1)
+top    -> O(1)
+getMin -> O(1)
 ```
 
 Main question:
 
-``` text
-push smaller value → minimum changes
-pop that value     → how do we restore old minimum?
+```text
+push smaller value
+      |
+      v
+minimum changes
+
+later pop that value
+      |
+      v
+how do we restore old minimum?
 ```
 
-------------------------------------------------------------------------
+---
 
-# 2. Why One Minimum Fails
+# 2. Why One Minimum Variable Fails
 
-``` text
+Suppose:
+
+```text
 stack = [5,7,3]
 min   = 3
 ```
 
-Pop `3`:
+Visual:
 
-``` text
+```text
+top
+ |
+ v
+
+[3]  <- current min
+[7]
+[5]
+```
+
+Pop `3`.
+
+Now:
+
+```text
 stack = [5,7]
 ```
 
-New minimum is `5`, but a single `min = 3` variable has forgotten it.
+Correct minimum is:
 
-So:
+```text
+5
+```
 
-> **A pop returns us to an earlier stack depth. Save enough state to
-> restore the answer for that depth.**
+But one variable:
 
-------------------------------------------------------------------------
+```text
+min = 3
+```
 
-# 3. Approach 1 --- Pair Snapshot
+has forgotten the old minimum.
+
+So we need:
+
+```text
+minimum history
+```
+
+---
+
+# 3. Core State-Restoration Idea
+
+Each stack depth has its own valid minimum.
+
+```text
+depth 1:
+[5]
+min = 5
+
+depth 2:
+[5,7]
+min = 5
+
+depth 3:
+[5,7,3]
+min = 3
+```
+
+Pop once:
+
+```text
+depth 3 -> depth 2
+```
+
+So minimum must restore:
+
+```text
+3 -> 5
+```
+
+All three approaches solve the same question:
+
+```text
+How do we remember the minimum
+for the previous stack depth?
+```
+
+---
+
+# 4. Approach 1 — Pair Snapshot
 
 Store:
 
-``` text
+```text
 {actual value, minimum up to this depth}
 ```
 
-``` cpp
+Use:
+
+```cpp
 vector<pair<int,int>> st;
 ```
 
-Push:
+---
 
-``` text
-newMin = min(x, previousMin)
-store {x,newMin}
+## 4.1 Push Logic
+
+If empty:
+
+```text
+newMin = x
 ```
 
-Example:
+Otherwise:
 
-``` text
-push 5 → {5,5}
-push 7 → {7,5}
-push 3 → {3,3}
-push 8 → {8,3}
+```text
+newMin = min(x, previousMin)
+```
+
+Store:
+
+```text
+{x, newMin}
+```
+
+---
+
+## 4.2 ASCII Example
+
+Push:
+
+```text
+5, 7, 3, 8
+```
+
+Stored pairs:
+
+```text
+push 5 -> {5,5}
+push 7 -> {7,5}
+push 3 -> {3,3}
+push 8 -> {8,3}
 ```
 
 Stack:
 
-``` text
-top    {8,3}
-       {3,3}
-       {7,5}
-bottom {5,5}
+```text
+top
+ |
+ v
+
+{8,3}
+{3,3}
+{7,5}
+{5,5}
 ```
 
-Queries:
+Meaning:
 
-``` text
-top()    = st.back().first
-getMin() = st.back().second
+```text
+first  = actual value
+second = minimum up to this depth
 ```
+
+---
+
+## 4.3 Why Pop Is Easy
 
 Pop:
 
-``` text
-remove top pair
-→ previous minimum snapshot is automatically exposed
+```text
+{8,3}
 ```
 
-------------------------------------------------------------------------
+Now top:
 
-# 4. Pair Dry Run
+```text
+{3,3}
+```
 
-Push `5,7,3,8`.
+Minimum still:
 
-``` text
-push(5)
+```text
+3
+```
+
+Pop again:
+
+```text
+{3,3}
+```
+
+Now top:
+
+```text
+{7,5}
+```
+
+Minimum automatically restores to:
+
+```text
+5
+```
+
+No scan.
+
+---
+
+# 5. Pair Snapshot Dry Run
+
+Push:
+
+```text
+5, 7, 3, 8
+```
+
+### push(5)
+
+```text
 newMin = 5
-stack  = {5,5}
 
-push(7)
+stack:
+{5,5}
+```
+
+### push(7)
+
+```text
 newMin = min(7,5) = 5
-stack  = {5,5} {7,5}
 
-push(3)
+stack:
+{5,5} {7,5}
+```
+
+### push(3)
+
+```text
 newMin = min(3,5) = 3
-stack  = {5,5} {7,5} {3,3}
 
-push(8)
+stack:
+{5,5} {7,5} {3,3}
+```
+
+### push(8)
+
+```text
 newMin = min(8,3) = 3
-stack  = {5,5} {7,5} {3,3} {8,3}
+
+stack:
+{5,5} {7,5} {3,3} {8,3}
 ```
 
 Now:
 
-``` text
-top = 8
-min = 3
+```text
+top    = 8
+getMin = 3
 ```
 
 Pop `8`:
 
-``` text
+```text
 {5,5} {7,5} {3,3}
-min = 3
+
+getMin = 3
 ```
 
 Pop `3`:
 
-``` text
+```text
 {5,5} {7,5}
-min = 5
+
+getMin = 5
 ```
 
-No scan. The previous snapshot becomes current.
+Previous snapshot becomes current automatically.
 
-------------------------------------------------------------------------
+---
 
-# 5. Pair C++
+# 6. Pair Snapshot C++17
 
-``` cpp
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 class MinStack {
     // {value, minimum up to this depth}
-    vector<pair<int,int>> st;
+    vector<pair<int, int>> st;
 
 public:
     void push(int x) {
-        int mn = st.empty()
-               ? x
-               : min(x, st.back().second);
+        int mn;
+
+        if (st.empty()) {
+            mn = x;
+        } else {
+            mn = min(x, st.back().second);
+        }
 
         st.push_back({x, mn});
     }
 
     void pop() {
-        if (!st.empty())
+        if (!st.empty()) {
             st.pop_back();
+        }
     }
 
     int top() const {
-        return st.empty() ? -1
-                          : st.back().first;
+        if (st.empty()) {
+            return -1;
+        }
+
+        return st.back().first;
     }
 
     int getMin() const {
-        return st.empty() ? -1
-                          : st.back().second;
+        if (st.empty()) {
+            return -1;
+        }
+
+        return st.back().second;
     }
 };
 ```
 
-------------------------------------------------------------------------
+---
 
-# 6. Approach 2 --- Two Stacks
+# 7. Approach 2 — Two Stacks
 
 Maintain:
 
-``` text
-st       → all values
-minStack → minimum history
+```text
+st       -> actual values
+minStack -> minimum history
 ```
 
-Push into `minStack` when:
+Push every value into:
 
-``` text
+```text
+st
+```
+
+Push into `minStack` only when:
+
+```text
 minStack empty
 OR
 x <= minStack.top()
 ```
 
-Why `<=`?
+---
+
+## 7.1 Why `<=`?
 
 Duplicate minima must be remembered.
 
 Example:
 
-``` text
+```text
+push 3
+push 3
+```
+
+Correct:
+
+```text
 st       = [3,3]
 minStack = [3,3]
 ```
 
-After one `3` is popped:
+After one pop:
 
-``` text
+```text
 st       = [3]
 minStack = [3]
 ```
 
-Minimum is still `3`.
+Minimum remains:
 
-C++:
-
-``` cpp
-class MinStack {
-    stack<int> st, minStack;
-
-public:
-    void push(int x) {
-        st.push(x);
-
-        if (minStack.empty() ||
-            x <= minStack.top())
-            minStack.push(x);
-    }
-
-    void pop() {
-        if (st.empty()) return;
-
-        if (st.top() == minStack.top())
-            minStack.pop();
-
-        st.pop();
-    }
-
-    int top() const {
-        return st.empty() ? -1 : st.top();
-    }
-
-    int getMin() const {
-        return minStack.empty()
-             ? -1
-             : minStack.top();
-    }
-};
+```text
+3
 ```
 
-------------------------------------------------------------------------
+Using only `<` would lose this history.
 
-# 7. Two-Stack Dry Run
+---
 
-Push `5,3,4,3`.
+## 7.2 Pop Logic
 
-``` text
-push 5
+Before popping main stack:
+
+```text
+if st.top() == minStack.top()
+    pop minStack
+```
+
+Then:
+
+```text
+pop st
+```
+
+---
+
+# 8. Two-Stack Dry Run
+
+Push:
+
+```text
+5, 3, 4, 3
+```
+
+### push(5)
+
+```text
 st       = [5]
 minStack = [5]
+```
 
-push 3
+### push(3)
+
+```text
 3 <= 5
+```
+
+Push to both:
+
+```text
 st       = [5,3]
 minStack = [5,3]
+```
 
-push 4
+### push(4)
+
+```text
 4 > 3
+```
+
+Push only to `st`:
+
+```text
 st       = [5,3,4]
 minStack = [5,3]
+```
 
-push 3
+### push(3)
+
+```text
 3 <= 3
+```
+
+Push to both:
+
+```text
 st       = [5,3,4,3]
 minStack = [5,3,3]
 ```
 
 Pop:
 
-``` text
-top == minStack.top == 3
-→ pop both
+```text
+st.top() == minStack.top() == 3
+```
 
+So pop both:
+
+```text
 st       = [5,3,4]
 minStack = [5,3]
 
 getMin() = 3
 ```
 
-------------------------------------------------------------------------
+---
 
-# 8. Approach 3 --- Arithmetic Encoding
+## 8.1 ASCII Synchronization
+
+```text
+actual values         minimum history
+
+     st                  minStack
+
+      3  <----------->      3
+      4
+      3  <----------->      3
+      5  <----------->      5
+```
+
+Only new or duplicate minima appear in `minStack`.
+
+---
+
+# 9. Two-Stack C++17
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class MinStack {
+    stack<int> st;
+    stack<int> minStack;
+
+public:
+    void push(int x) {
+        st.push(x);
+
+        if (minStack.empty() ||
+            x <= minStack.top()) {
+
+            minStack.push(x);
+        }
+    }
+
+    void pop() {
+        if (st.empty()) {
+            return;
+        }
+
+        if (st.top() == minStack.top()) {
+            minStack.pop();
+        }
+
+        st.pop();
+    }
+
+    int top() const {
+        if (st.empty()) {
+            return -1;
+        }
+
+        return st.top();
+    }
+
+    int getMin() const {
+        if (minStack.empty()) {
+            return -1;
+        }
+
+        return minStack.top();
+    }
+};
+```
+
+---
+
+# 10. Approach 3 — Arithmetic Encoding
 
 Maintain:
 
-``` text
-stack<long long> st
-long long minEle
+```text
+one stack
++
+one current minimum
+```
+
+```cpp
+stack<long long> st;
+long long minEle;
 ```
 
 If:
 
-``` text
+```text
 x >= minEle
 ```
 
@@ -342,193 +742,268 @@ push normally.
 
 If:
 
-``` text
+```text
 x < minEle
 ```
 
-store a marker:
+store an encoded marker:
 
-``` text
+```text
 encoded = 2*x - oldMin
 ```
 
 then:
 
-``` text
+```text
 minEle = x
 ```
 
-Why can we detect the marker?
+The marker secretly stores enough information to restore `oldMin`.
 
-Since:
+---
 
-``` text
+# 11. Encoding Algebra — Step by Step
+
+Suppose:
+
+```text
 x < oldMin
-```
-
-then:
-
-``` text
-2x - oldMin < x
-```
-
-So:
-
-``` text
-encoded < new minEle
-```
-
-Therefore:
-
-``` text
-st.top() < minEle
-→ encoded marker
-```
-
-------------------------------------------------------------------------
-
-# 9. Encoding Algebra
-
-When a new minimum `x` arrives:
-
-``` text
-encoded = 2*x - oldMin
-```
-
-Later, during pop, we know:
-
-``` text
-encoded
-current minEle = x
-```
-
-Recover `oldMin`.
-
-Start:
-
-``` text
-encoded = 2*x - oldMin
-```
-
-Move terms:
-
-``` text
-oldMin = 2*x - encoded
-```
-
-Since:
-
-``` text
-x = current minEle
-```
-
-final restoration formula:
-
-``` text
-┌──────────────────────────────┐
-│ oldMin = 2*minEle - encoded  │
-└──────────────────────────────┘
-```
-
-That is the entire trick.
-
-------------------------------------------------------------------------
-
-# 10. Encoding Dry Run
-
-Push `5,3,7`.
-
-### `push(5)`
-
-``` text
-st     = [5]
-minEle = 5
-```
-
-### `push(3)`
-
-`3 < 5`, so encode:
-
-``` text
-encoded
-= 2*3 - 5
-= 1
 ```
 
 Store:
 
-``` text
+```text
+encoded = 2*x - oldMin
+```
+
+Then:
+
+```text
+minEle = x
+```
+
+---
+
+## 11.1 Why Is the Marker Detectable?
+
+Since:
+
+```text
+x < oldMin
+```
+
+we get:
+
+```text
+2*x - oldMin < x
+```
+
+But:
+
+```text
+x = new minEle
+```
+
+Therefore:
+
+```text
+encoded < minEle
+```
+
+So later:
+
+```text
+stored < minEle
+```
+
+means:
+
+```text
+stored value is an encoded marker
+```
+
+---
+
+## 11.2 Restore the Previous Minimum
+
+We know:
+
+```text
+encoded = 2*x - oldMin
+```
+
+Rearrange:
+
+```text
+oldMin = 2*x - encoded
+```
+
+And because:
+
+```text
+x = current minEle
+```
+
+final formula:
+
+```text
++--------------------------------+
+| oldMin = 2*minEle - encoded    |
++--------------------------------+
+```
+
+---
+
+## 11.3 ASCII Flow
+
+New minimum arrives:
+
+```text
+oldMin
+   |
+   | x < oldMin
+   v
+encoded = 2*x - oldMin
+   |
+   v
+push encoded
+   |
+   v
+minEle = x
+```
+
+Later pop marker:
+
+```text
+encoded < minEle
+      |
+      v
+logical value = minEle
+      |
+      v
+oldMin = 2*minEle - encoded
+```
+
+---
+
+# 12. Encoding Dry Run
+
+Push:
+
+```text
+5, 3, 7
+```
+
+### push(5)
+
+```text
+st     = [5]
+minEle = 5
+```
+
+### push(3)
+
+Since:
+
+```text
+3 < 5
+```
+
+encode:
+
+```text
+encoded = 2*3 - 5
+        = 1
+```
+
+Store:
+
+```text
 st     = [5,1]
 minEle = 3
 ```
 
 Notice:
 
-``` text
+```text
 1 < 3
 ```
 
 so `1` is recognizable as encoded.
 
-### `push(7)`
+### push(7)
 
-``` text
+```text
 7 >= 3
-→ push normally
+```
 
+Push normally:
+
+```text
 st     = [5,1,7]
 minEle = 3
 ```
 
-### `pop()` → `7`
+### pop()
 
-Normal value:
+Top is:
 
-``` text
+```text
+7
+```
+
+Normal value.
+
+After pop:
+
+```text
 st     = [5,1]
 minEle = 3
 ```
 
-### `top()`
+### top()
 
 Stored top:
 
-``` text
+```text
+1
+```
+
+Since:
+
+```text
 1 < minEle
 ```
 
-So it is encoded.
+it is a marker.
 
-Actual top is:
+Logical top is:
 
-``` text
+```text
 minEle = 3
 ```
 
-### `pop()` → logical value `3`
+### pop() logical 3
 
-Restore old minimum:
+Restore:
 
-``` text
-oldMin
-= 2*minEle - encoded
-
-= 2*3 - 1
-= 5
+```text
+oldMin = 2*3 - 1
+       = 5
 ```
 
 Final:
 
-``` text
+```text
 st     = [5]
 minEle = 5
 ```
 
-------------------------------------------------------------------------
+---
 
-# 11. Encoding C++
+# 13. Encoding C++17
 
-``` cpp
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -546,8 +1021,7 @@ public:
 
         if (x >= minEle) {
             st.push(x);
-        }
-        else {
+        } else {
             long long encoded =
                 2LL * x - minEle;
 
@@ -557,122 +1031,264 @@ public:
     }
 
     void pop() {
-        if (st.empty()) return;
+        if (st.empty()) {
+            return;
+        }
 
-        long long y = st.top();
+        long long stored = st.top();
         st.pop();
 
-        if (y < minEle)
-            minEle = 2LL * minEle - y;
+        if (stored < minEle) {
+            minEle = 2LL * minEle - stored;
+        }
     }
 
     long long top() const {
-        if (st.empty()) return -1;
+        if (st.empty()) {
+            return -1;
+        }
 
-        long long y = st.top();
+        long long stored = st.top();
 
-        return (y < minEle)
-             ? minEle
-             : y;
+        if (stored < minEle) {
+            return minEle;
+        }
+
+        return stored;
     }
 
     long long getMin() const {
-        return st.empty() ? -1 : minEle;
+        if (st.empty()) {
+            return -1;
+        }
+
+        return minEle;
     }
 };
 ```
 
-Use a sufficiently wide type because:
+Important:
 
-``` text
+```text
 2*x - minEle
 ```
 
-may overflow the original integer type.
+can exceed the original integer range.
 
-------------------------------------------------------------------------
+Use a sufficiently wide type and respect the problem constraints.
 
-# 12. Complexity & Mistakes
+---
 
-  ------------------------------------------------------------------------------
-  Approach             Push          Pop          Top          Min Extra Minimum
-                                                                           State
-  ------------ ------------ ------------ ------------ ------------ -------------
-  Pair            amortized       `O(1)`       `O(1)`       `O(1)`        `O(N)`
-  snapshot           `O(1)`                                        
-  (`vector`)                                                       
+# 14. Complexity Comparison
 
-  Two stacks         `O(1)`       `O(1)`       `O(1)`       `O(1)`    worst-case
-                                                                          `O(N)`
+| Approach | Push | Pop | Top | getMin | Extra Minimum State |
+|---|---:|---:|---:|---:|---:|
+| Pair snapshot | amortized `O(1)` | `O(1)` | `O(1)` | `O(1)` | `O(N)` |
+| Two stacks | `O(1)` | `O(1)` | `O(1)` | `O(1)` | worst-case `O(N)` |
+| Encoding | `O(1)` | `O(1)` | `O(1)` | `O(1)` | `O(1)` bookkeeping |
 
-  Encoding           `O(1)`       `O(1)`       `O(1)`       `O(1)`        `O(1)`
-                                                                     bookkeeping
-  ------------------------------------------------------------------------------
+Note:
 
-Common mistakes:
-
-``` text
-store only current minimum                   ✗
-recalculate minimum after pop                ✗
-use < instead of <= in two-stack approach    ✗
-treat encoded marker as real top             ✗
-forget oldMin = 2*minEle - encoded           ✗
-ignore overflow in 2*x - minEle              ✗
+```text
+all approaches still store the actual stack content
 ```
 
-------------------------------------------------------------------------
+The encoding approach only reduces extra minimum-history state.
 
-# 13. Mental Model
+---
+
+# 15. Common Mistakes
+
+## 15.1 Store Only Current Minimum
+
+Not enough.
+
+After popping that minimum, previous minimum is lost.
+
+---
+
+## 15.2 Recalculate Minimum After Pop
+
+That would require scanning:
+
+```text
+O(N)
+```
+
+and breaks the O(1) requirement.
+
+---
+
+## 15.3 Use `<` Instead of `<=` in Two Stacks
+
+Wrong with duplicate minima.
+
+Correct:
+
+```cpp
+x <= minStack.top()
+```
+
+---
+
+## 15.4 Treat Encoded Marker as Real Top
+
+If:
+
+```text
+stored < minEle
+```
+
+then logical top is:
+
+```text
+minEle
+```
+
+not the stored marker.
+
+---
+
+## 15.5 Forget Restoration Formula
+
+```text
+oldMin = 2*minEle - encoded
+```
+
+---
+
+## 15.6 Ignore Overflow
+
+Encoding arithmetic can overflow narrow integer types.
+
+Use:
+
+```cpp
+long long
+```
+
+and check constraints.
+
+---
+
+# 16. Recognition Checklist
+
+Think Min Stack when you see:
+
+```text
+stack operations
++
+minimum query in O(1)
+```
+
+Ask:
+
+```text
+1. What happens when a new minimum is pushed?
+
+2. What happens when that minimum is popped?
+
+3. Where is the previous minimum stored?
+
+4. Simplest design?
+   -> pair snapshot
+
+5. Separate minimum history?
+   -> two stacks
+
+6. Duplicate minima?
+   -> use <=
+
+7. O(1) extra minimum bookkeeping?
+   -> arithmetic encoding
+
+8. Encoding marker test?
+   -> stored < minEle
+
+9. Restore previous minimum?
+   -> 2*minEle - encoded
+
+10. Are numeric limits safe?
+```
+
+---
+
+# 17. Final Mental Model
+
+All approaches solve the same state-restoration problem.
+
+```text
+NEW MINIMUM ARRIVES
+       |
+       v
+old minimum must be remembered
+       |
+       v
+later pop
+       |
+       v
+restore old minimum
+```
 
 ### Pair Snapshot
 
-``` text
+```text
 push x
-  ↓
+  |
+  v
 newMin = min(x, oldMin)
-  ↓
+  |
+  v
 store {x,newMin}
 
 pop
- ↓
-remove pair
- ↓
-old snapshot returns automatically
+ |
+ v
+previous snapshot becomes visible
 ```
 
 ### Two Stacks
 
-``` text
-actual values      minimum history
+```text
+actual values        minimum history
 
-     st    ←sync→    minStack
+     st   <------->    minStack
 
-x <= current min
-→ record x in both
+x <= current minimum
+      |
+      v
+record x in both
 ```
 
-### Encoding
+### Arithmetic Encoding
 
-``` text
+```text
 x >= min
-→ push x
+-> push x
 
 x < min
-→ encoded = 2*x - oldMin
-→ push encoded
-→ min = x
+-> encode old minimum
+-> push marker
+-> min = x
 ```
 
-Pop encoded:
+Encoded pop:
 
-``` text
-encoded < min
-      ↓
+```text
+stored < min
+      |
+      v
 actual top = min
-      ↓
-oldMin = 2*min - encoded
+      |
+      v
+oldMin = 2*min - stored
 ```
 
-> **Remember:** **Min Stack is a state-restoration problem: a pop must
-> expose or reconstruct the minimum that was valid before the popped
-> value arrived.**
+The one sentence to remember:
+
+```text
+Min Stack is a state-restoration problem:
+a pop must expose or reconstruct
+the minimum that was valid before
+the popped value arrived.
+```
