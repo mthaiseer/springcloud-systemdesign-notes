@@ -1,329 +1,678 @@
-# AlgoZenith --- Product of Last K Numbers (STL)
+# AlgoZenith — Product of Last K Numbers (STL)
+## Visual Self-Learning Version
 
-> **Core idea:** Maintain **prefix products** for the current zero-free
-> segment. A suffix product becomes one division. When `0` arrives,
-> reset the segment.
+> **Core idea:** Maintain **prefix products** for the current zero-free segment.  
+> A suffix product becomes one division. When `0` arrives, reset the segment.
 
-## TOC
+# Table of Contents
 
--   [1. Problem](#1-problem)
--   [2. Naive vs Optimal](#2-naive-vs-optimal)
--   [3. Prefix Product Idea](#3-prefix-product-idea)
--   [4. Algebraic Derivation](#4-algebraic-derivation)
--   [5. Why Zero Is Special](#5-why-zero-is-special)
--   [6. Operations](#6-operations)
--   [7. Dry Run](#7-dry-run)
--   [8. Complete C++](#8-complete-c)
--   [9. Complexity](#9-complexity)
--   [10. Common Mistakes](#10-common-mistakes)
--   [11. Mental Model](#11-mental-model)
+- [0. Prerequisites](#0-prerequisites)
+- [1. Problem](#1-problem)
+- [2. Naive vs Optimal](#2-naive-vs-optimal)
+- [3. Prefix Product Idea](#3-prefix-product-idea)
+- [4. Algebraic Derivation](#4-algebraic-derivation)
+- [5. Why Zero Is Special](#5-why-zero-is-special)
+- [6. State Design](#6-state-design)
+- [7. add(x) — Step by Step](#7-addx--step-by-step)
+- [8. getProduct(k) — Step by Step](#8-getproductk--step-by-step)
+- [9. Full Dry Run](#9-full-dry-run)
+- [10. Complete C++17](#10-complete-c17)
+- [11. Complexity](#11-complexity)
+- [12. Common Mistakes](#12-common-mistakes)
+- [13. Recognition Checklist](#13-recognition-checklist)
+- [14. Final Mental Model](#14-final-mental-model)
 
-------------------------------------------------------------------------
+---
+
+# 0. Prerequisites
+
+## 0.1 Product
+
+```text
+[3,2,5]
+
+product
+=
+3 × 2 × 5
+=
+30
+```
+
+---
+
+## 0.2 Suffix
+
+A suffix ends at the final position.
+
+```text
+a = [3,2,5,4]
+
+last 1 = [4]
+last 2 = [5,4]
+last 3 = [2,5,4]
+```
+
+So `getProduct(k)` asks for a **suffix product**.
+
+---
+
+## 0.3 Prefix Product
+
+For:
+
+```text
+[3,2,5]
+```
+
+store cumulative products:
+
+```text
+prefix = [1,3,6,30]
+```
+
+Meaning:
+
+```text
+1
+3
+3×2
+3×2×5
+```
+
+---
+
+## 0.4 Why Start With 1?
+
+`1` is the multiplicative identity:
+
+```text
+1 × x = x
+```
+
+It lets us query the entire current segment without a special case.
+
+---
+
+## 0.5 Division Cancels Earlier Factors
+
+```text
+3×2×5×4
+---------
+   3×2
+
+=
+5×4
+```
+
+That cancellation is the key observation.
+
+---
 
 # 1. Problem
 
-Maintain a stream supporting:
+Support:
 
-``` text
+```text
 add(x)
 getProduct(k)
 ```
 
 Example:
 
-``` text
-stream = [3, 2, 5, 4]
+```text
+stream = [3,2,5,4]
 
 getProduct(2)
-→ 5 * 4
-→ 20
+-> 5×4
+-> 20
+```
+
+Target:
+
+```text
+add(x)        -> amortized O(1)
+getProduct(k) -> O(1)
+```
+
+---
+
+# 2. Naive vs Optimal
+
+## 2.1 Naive
+
+For every query:
+
+```text
+take last k values
+      |
+      v
+multiply all k
+      |
+      v
+O(k)
+```
+
+Example:
+
+```text
+last 4 = [5,4,7,6]
+
+5×4×7×6
+```
+
+---
+
+## 2.2 Better
+
+Do work when values are added:
+
+```text
+new values
+   |
+   v
+prefix products
+   |
+   v
+query last k
+   |
+   v
+one division
 ```
 
 Goal:
 
-``` text
-add(x)        → amortized O(1)
-getProduct(k) → O(1)
+```text
+O(1) query
 ```
 
-------------------------------------------------------------------------
-
-# 2. Naive vs Optimal
-
-Naive query:
-
-``` text
-last k values
-     ↓
-multiply all
-     ↓
-    O(k)
-```
-
-Instead, do work during insertion:
-
-``` text
-incoming values
-      ↓
-prefix products
-      ↓
-one division per query
-```
-
-------------------------------------------------------------------------
+---
 
 # 3. Prefix Product Idea
 
-For:
+Take:
 
-``` text
-[3, 2, 5, 4]
+```text
+values = [3,2,5,4]
 ```
 
-store:
+Start:
 
-``` text
-index       0   1   2    3     4
-prefix     [1,  3,  6,  30,  120]
-             │   │   │    │     │
-             1   3  3·2  3·2·5  3·2·5·4
+```text
+prefix = [1]
 ```
 
-The leading `1` is the multiplicative identity.
+### add(3)
 
-It makes querying the entire segment work without a special case.
+```text
+1×3 = 3
 
-------------------------------------------------------------------------
+prefix = [1,3]
+```
+
+### add(2)
+
+```text
+3×2 = 6
+
+prefix = [1,3,6]
+```
+
+### add(5)
+
+```text
+6×5 = 30
+
+prefix = [1,3,6,30]
+```
+
+### add(4)
+
+```text
+30×4 = 120
+
+prefix = [1,3,6,30,120]
+```
+
+ASCII:
+
+```text
+values:
+
+      3      2      5      4
+      |      |      |      |
+      v      v      v      v
+
+prefix:
+
+1 --> 3 --> 6 --> 30 --> 120
+      3      3×2    3×2×5   3×2×5×4
+```
+
+---
 
 # 4. Algebraic Derivation
 
 Suppose:
 
-``` text
-values = [A, B, C, D]
+```text
+values = [A,B,C,D]
 ```
 
-Prefix:
+Prefix products:
 
-``` text
+```text
 P0 = 1
 P1 = A
-P2 = A·B
-P3 = A·B·C
-P4 = A·B·C·D
+P2 = A×B
+P3 = A×B×C
+P4 = A×B×C×D
 ```
 
-Want the last `2`:
+Want last `2`:
 
-``` text
-C·D
+```text
+C×D
 ```
 
-We know:
+Use:
 
-``` text
-P4 = A·B·C·D
-P2 = A·B
-```
-
-Divide:
-
-``` text
+```text
 P4 / P2
-
-= (A·B·C·D) / (A·B)
-
-= C·D
 ```
 
-General formula with `m` active values:
+Because:
 
-``` text
-┌─────────────────────────────────────┐
-│ last k product = prefix[m]          │
-│                  ───────────        │
-│                  prefix[m-k]        │
-└─────────────────────────────────────┘
+```text
+A×B×C×D
+---------
+   A×B
+
+=
+C×D
 ```
 
-With a vector:
+ASCII:
 
-``` cpp
-prefix.back()
-/
-prefix[prefix.size() - k - 1]
+```text
+[A] [B] | [C] [D]
+ \___/      \___/
+ remove       want
 ```
 
-### Visual
+General formula:
 
-``` text
-[A  B | C  D]
- \___/   \___/
- remove   want
+```text
+m = number of values in current segment
 
-A·B·C·D
-───────── = C·D
-   A·B
+last k product
+=
+prefix[m] / prefix[m-k]
 ```
 
-------------------------------------------------------------------------
+Example:
+
+```text
+prefix = [1,3,6,30,120]
+m = 4
+k = 2
+
+120 / 6
+=
+20
+```
+
+---
 
 # 5. Why Zero Is Special
 
 Suppose:
 
-``` text
-stream = [3, 2, 0, 4]
+```text
+stream = [3,2,0,4]
 ```
 
-If we continued ordinary prefix multiplication:
+If we keep multiplying:
 
-``` text
-[1, 3, 6, 0, 0]
+```text
+prefix = [1,3,6,0,0]
 ```
 
-Now asking for the last value should return:
+Now `getProduct(1)` should return:
 
-``` text
+```text
 4
 ```
 
-but division would become:
+but division would involve:
 
-``` text
-0 / 0   ✗
+```text
+0 / 0
 ```
 
-So `0` divides the stream into independent segments.
+which is invalid.
 
-``` text
-3 ─ 2 ─ 0 ─ 4 ─ 5
-        ↑
-      RESET
+So zero must be handled differently.
 
-before zero      current segment
-[3,2]            [4,5]
-                    ↓
-              prefix [1,4,20]
+---
+
+## 5.1 Zero as a Wall
+
+```text
+OLD SEGMENT          ACTIVE SEGMENT
+
+3 --- 2 --- 0 | 4 --- 5
+              ^
+              |
+          ZERO WALL
 ```
 
-On `add(0)`:
+Anything crossing zero has product:
 
-``` text
+```text
+0
+```
+
+Anything fully after zero can use prefix division.
+
+---
+
+## 5.2 Reset on Zero
+
+When:
+
+```text
+add(0)
+```
+
+reset:
+
+```text
 prefix = [1]
 ```
 
-We only remember products **after the latest zero**.
+For:
 
-Why is that enough?
-
-``` text
-query stays after zero
-→ use prefix division
-
-query crosses zero
-→ product = 0
+```text
+3,2,0,4,5
 ```
 
-------------------------------------------------------------------------
+we only keep the active segment:
 
-# 6. Operations
+```text
+[4,5]
+```
 
-## `add(x)`
+and:
 
-### Nonzero
+```text
+prefix = [1,4,20]
+```
 
-``` cpp
+---
+
+## 5.3 Two Query Cases
+
+### Query stays after zero
+
+```text
+last 2 = [4,5]
+
+use prefix division
+```
+
+### Query crosses zero
+
+```text
+last 3 = [0,4,5]
+
+answer = 0
+```
+
+---
+
+# 6. State Design
+
+Maintain:
+
+```cpp
+vector<long long> prefix{1};
+```
+
+Meaning:
+
+```text
+prefix stores products
+after the latest zero
+```
+
+Example:
+
+```text
+full stream:
+3 --- 2 --- 0 | 4 --- 5
+
+stored:
+prefix = [1,4,20]
+```
+
+---
+
+# 7. add(x) — Step by Step
+
+Two cases.
+
+## 7.1 Nonzero
+
+```text
+newPrefix
+=
+prefix.back() × x
+```
+
+Code:
+
+```cpp
 prefix.push_back(prefix.back() * x);
 ```
 
 Example:
 
-``` text
+```text
 prefix = [1,3,6]
 
 add(5)
 
+6×5 = 30
+
 prefix = [1,3,6,30]
 ```
 
-### Zero
+---
 
-``` cpp
+## 7.2 Zero
+
+Zero ends the current segment.
+
+```cpp
 prefix.clear();
 prefix.push_back(1);
 ```
 
-Conceptually:
+ASCII:
 
-``` text
-... 3 ─ 2 ─ 0
-            ↑
-       old segment ends
+```text
+before:
 
-prefix
-[1,3,6] → [1]
+3 --- 2
+prefix = [1,3,6]
+
+add(0)
+
+3 --- 2 --- 0
+              ^
+              |
+            reset
+
+after:
+
+prefix = [1]
 ```
 
-------------------------------------------------------------------------
+---
 
-## `getProduct(k)`
+## 7.3 Flow
+
+```text
+add(x)
+  |
+  v
+x == 0 ?
+ /      \
+yes      no
+ |        |
+ v        v
+reset    prefix.back() × x
+[1]        |
+            v
+        append result
+```
+
+---
+
+# 8. getProduct(k) — Step by Step
 
 Let:
 
-``` text
+```text
 m = prefix.size() - 1
 ```
 
-### Case 1 --- `k <= m`
+`m` is the number of values after the latest zero.
 
-Query stays inside current zero-free segment.
+---
 
-``` text
-answer = prefix[m] / prefix[m-k]
+## 8.1 Case 1 — k <= m
+
+The query stays inside the current zero-free segment.
+
+```text
+answer
+=
+prefix[m] / prefix[m-k]
 ```
 
-### Case 2 --- `k > m`
+---
 
-Query extends beyond the current segment.
+## 8.2 Case 2 — k > m
 
-For a valid stream query, it must cross the latest zero:
+The query needs more values than exist after the latest zero.
 
-``` text
+Therefore it crosses zero.
+
+```text
 answer = 0
 ```
 
-Code:
+---
 
-``` cpp
-if (k >= prefix.size())
+## 8.3 Why k == m Is Valid
+
+Suppose:
+
+```text
+active segment = [4,5]
+m = 2
+```
+
+Query:
+
+```text
+getProduct(2)
+```
+
+This is the whole active segment.
+
+Formula:
+
+```text
+prefix[2] / prefix[0]
+=
+20 / 1
+=
+20
+```
+
+So zero-crossing condition is:
+
+```text
+k > m
+```
+
+not:
+
+```text
+k >= m
+```
+
+Equivalent:
+
+```cpp
+if (k >= (int)prefix.size()) {
     return 0;
-
-return prefix.back()
-     / prefix[prefix.size() - k - 1];
+}
 ```
 
-Note:
+because:
 
-``` text
-k = m
+```text
+prefix.size() = m + 1
 ```
 
-does **not** cross zero.
+---
 
-It divides by:
+## 8.4 ASCII Query
 
-``` text
-prefix[0] = 1
+```text
+active segment:
+
+[4] [5] [2]
+
+prefix:
+
+1   4   20   40
 ```
 
-------------------------------------------------------------------------
+Last `2`:
 
-# 7. Dry Run
+```text
+[4] | [5] [2]
+      \_____/
+       want
+```
+
+Compute:
+
+```text
+40 / 4
+=
+10
+```
+
+Correct:
+
+```text
+5×2
+=
+10
+```
+
+---
+
+# 9. Full Dry Run
 
 Operations:
 
-``` text
+```text
 add(3)
 add(2)
 add(0)
@@ -331,252 +680,356 @@ add(4)
 add(5)
 ```
 
-### Build state
+### Start
 
-  Operation   Current segment   `prefix`
-  ----------- ----------------- ------------
-  start       `[]`              `[1]`
-  `add(3)`    `[3]`             `[1,3]`
-  `add(2)`    `[3,2]`           `[1,3,6]`
-  `add(0)`    `[]`              `[1]`
-  `add(4)`    `[4]`             `[1,4]`
-  `add(5)`    `[4,5]`           `[1,4,20]`
-
-Current:
-
-``` text
-full stream
-3 ─ 2 ─ 0 ─ 4 ─ 5
-        │   \_____/
-        │   active segment
-        │
-      reset
+```text
+prefix = [1]
 ```
 
-### `getProduct(1)`
+### add(3)
 
-``` text
+```text
+prefix = [1,3]
+```
+
+### add(2)
+
+```text
+prefix = [1,3,6]
+```
+
+### add(0)
+
+Reset:
+
+```text
+prefix = [1]
+```
+
+### add(4)
+
+```text
+prefix = [1,4]
+```
+
+### add(5)
+
+```text
+prefix = [1,4,20]
+```
+
+Full stream:
+
+```text
+3 --- 2 --- 0 | 4 --- 5
+```
+
+Current segment:
+
+```text
+[4,5]
+```
+
+---
+
+## getProduct(1)
+
+```text
 last 1 = [5]
 
 20 / 4
-= 5
+=
+5
 ```
 
-### `getProduct(2)`
+---
 
-``` text
+## getProduct(2)
+
+```text
 last 2 = [4,5]
 
 20 / 1
-= 20
+=
+20
 ```
 
-### `getProduct(3)`
+---
 
-``` text
-last 3 = [0,4,5]
-```
+## getProduct(3)
 
-Current zero-free segment length:
+Current segment length:
 
-``` text
+```text
 m = 2
 ```
 
-Since:
+But:
 
-``` text
-3 > 2
+```text
+k = 3
 ```
 
-the query crosses zero:
+Therefore:
 
-``` text
-answer = 0
+```text
+k > m
 ```
 
-------------------------------------------------------------------------
+Query crosses zero:
 
-# 8. Complete C++
+```text
+[0,4,5]
+```
 
-``` cpp
+Answer:
+
+```text
+0
+```
+
+---
+
+## State Table
+
+| Operation | Active Segment | Prefix |
+|---|---|---|
+| Start | `[]` | `[1]` |
+| `add(3)` | `[3]` | `[1,3]` |
+| `add(2)` | `[3,2]` | `[1,3,6]` |
+| `add(0)` | `[]` | `[1]` |
+| `add(4)` | `[4]` | `[1,4]` |
+| `add(5)` | `[4,5]` | `[1,4,20]` |
+
+---
+
+# 10. Complete C++17
+
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 class ProductOfNumbers {
     // Prefix products after latest zero.
-    vector<int> prefix{1};
+    vector<long long> prefix{1};
 
 public:
-
-    void add(int num) {
-
+    void add(long long num) {
         if (num == 0) {
-
-            // Start a new zero-free segment.
             prefix.clear();
             prefix.push_back(1);
-
-        } else {
-
-            prefix.push_back(
-                prefix.back() * num
-            );
+            return;
         }
+
+        prefix.push_back(
+            prefix.back() * num
+        );
     }
 
-    int getProduct(int k) {
+    long long getProduct(int k) {
+        int m = (int)prefix.size() - 1;
 
-        // Query crosses latest zero.
-        if (k >= (int)prefix.size())
+        if (k > m) {
             return 0;
+        }
 
-        int m = prefix.size() - 1;
-
-        return prefix[m]
-             / prefix[m - k];
+        return prefix[m] / prefix[m - k];
     }
 };
 ```
 
-The problem must guarantee that stored products fit the chosen numeric
-type. Use a wider type if the constraints require it.
+Use a numeric type that safely fits the products allowed by the problem constraints.
 
-------------------------------------------------------------------------
+---
 
-# 9. Complexity
+# 11. Complexity
 
-  Operation                               Time Reason
-  ----------------- -------------------------- -----------------------
-  `add(nonzero)`              amortized `O(1)` vector append
-  `getProduct(k)`                       `O(1)` one division
-  `add(0)`            amortized over additions reset current segment
-  Space                                 `O(N)` prefix products
+| Operation | Time |
+|---|---:|
+| `add(nonzero)` | amortized `O(1)` |
+| `add(0)` | amortized `O(1)` |
+| `getProduct(k)` | `O(1)` |
+| Space | `O(N)` for current segment |
 
 Optimization:
 
-``` text
+```text
 Before:
-
 getProduct(k)
-→ multiply k values
-→ O(k)
+-> multiply k values
+-> O(k)
 
 After:
-
 getProduct(k)
-→ numerator / denominator
-→ O(1)
+-> one division
+-> O(1)
 ```
 
-------------------------------------------------------------------------
+---
 
-# 10. Common Mistakes
+# 12. Common Mistakes
 
-### 1. Forget leading `1`
+## 12.1 Forget leading 1
 
 Wrong:
 
-``` text
+```text
 [3,6,30]
 ```
 
 Better:
 
-``` text
+```text
 [1,3,6,30]
 ```
 
-Now querying the whole active segment divides by `1`.
+So whole-segment query can divide by `1`.
 
-### 2. Keep multiplying after zero
+---
 
-``` text
-[1,3,6,0,0,0]   ✗
+## 12.2 Continue multiplying after zero
+
+Wrong:
+
+```text
+[1,3,6,0,0,0]
 ```
 
-Reset:
+Correct:
 
-``` text
+```text
 add(0)
-→ prefix = [1]
+-> prefix = [1]
 ```
 
-### 3. Wrong zero-crossing condition
+---
 
-Active values:
+## 12.3 Wrong zero-crossing condition
 
-``` text
-m = prefix.size()-1
+Let:
+
+```text
+m = prefix.size() - 1
 ```
 
 Crosses zero only when:
 
-``` text
+```text
 k > m
 ```
 
-Equivalent:
+---
 
-``` cpp
-k >= prefix.size()
+## 12.4 Use k >= m
+
+Wrong.
+
+When:
+
+```text
+k == m
 ```
 
-### 4. Use `>=` against `m`
+the query is exactly the whole current segment.
 
-Wrong:
+---
 
-``` text
-k >= m → zero
+## 12.5 Forget overflow
+
+Prefix products can become large.
+
+Use a type compatible with the problem guarantees.
+
+---
+
+# 13. Recognition Checklist
+
+Think of this pattern when you see:
+
+```text
+stream
++
+product of last k
++
+many queries
 ```
 
-because `k == m` means querying the entire active segment.
+Ask:
 
-### 5. Overflow
+```text
+1. Is the query a suffix product?
 
-Prefix products are intermediate state too.
+2. Can prefix products turn it into division?
 
-Choose a type that can hold them under the problem's guarantees.
+3. What is the multiplicative identity?
+   -> 1
 
-------------------------------------------------------------------------
+4. What breaks prefix division?
+   -> zero
 
-# 11. Mental Model
+5. Can zero be a reset boundary?
+   -> yes
 
-Think of zero as a **wall**:
+6. What state is needed?
+   -> prefix products after latest zero
 
-``` text
-OLD SEGMENT          ACTIVE SEGMENT
+7. How many active values are after zero?
+   -> prefix.size() - 1
 
-3 ─ 2 ─ 7 ── 0 ┃ 4 ─ 5 ─ 2
-                ┃
-              ZERO WALL
+8. When does query cross zero?
+   -> k > active length
+
+9. What if k == active length?
+   -> divide by prefix[0] = 1
+
+10. Are products safe in the chosen type?
 ```
 
-We only store:
+---
 
-``` text
+# 14. Final Mental Model
+
+Think of zero as a wall:
+
+```text
+OLD SEGMENT              ACTIVE SEGMENT
+
+3 --- 2 --- 7 --- 0 | 4 --- 5 --- 2
+                    ^
+                    |
+                ZERO WALL
+```
+
+Store only:
+
+```text
 [4,5,2]
+```
 
-prefix:
+Prefix:
 
-1 ── 4 ── 20 ── 40
+```text
+1 --> 4 --> 20 --> 40
 ```
 
 Query last `2`:
 
-``` text
-4 ─ 5 ─ 2
-    \___/
-     want
+```text
+[4] | [5] [2]
+      \_____/
+       want
 
-40 / 4 = 10
+40 / 4
+=
+10
 ```
 
 Query last `4`:
 
-``` text
-0 ─ 4 ─ 5 ─ 2
-↑
+```text
+0 | 4 5 2
+^
+|
 crosses zero
 
 answer = 0
@@ -584,7 +1037,7 @@ answer = 0
 
 Remember:
 
-``` text
+```text
 ADD nonzero
 prefix.push_back(prefix.back() * x)
 
@@ -592,12 +1045,17 @@ ADD zero
 prefix = [1]
 
 QUERY
-if k > activeSegmentLength:
+m = prefix.size() - 1
+
+if k > m:
     return 0
 
 return prefix[m] / prefix[m-k]
 ```
 
-> **One sentence:** **Prefix product converts a suffix product into
-> division; zero becomes a reset boundary because every suffix crossing
-> it already has answer `0`.**
+The one sentence to remember:
+
+```text
+Prefix product converts a suffix product into division;
+zero becomes a reset wall because every query crossing it has product 0.
+```
