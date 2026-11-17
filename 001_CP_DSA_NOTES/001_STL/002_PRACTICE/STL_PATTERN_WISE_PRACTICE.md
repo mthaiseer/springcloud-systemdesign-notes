@@ -2,48 +2,51 @@
 
 > Compact **form-wise STL mastery index** for Competitive Programming, Codeforces and FAANG-style interviews.
 > Each form contains **3–5 benchmark problems**. Exact benchmark problems are not repeated across forms.
-
-<a id="toc"></a>
 ## Table of Contents
 
-1. [Form 1 — Sorting / Basic Ordering](#form-1)
-2. [Form 2 — Custom Comparator / Multi-Key Sorting](#form-2)
-3. [Form 3 — Lower Bound / Upper Bound](#form-3)
-4. [Form 4 — Next Permutation / Arrangement Generation](#form-4)
-5. [Form 5 — Frequency Counting / Hash Map](#form-5)
-6. [Form 6 — Set / Membership / Distinct Values](#form-6)
-7. [Form 7 — Ordered Set / Predecessor / Successor](#form-7)
-8. [Form 8 — Multiset / Dynamic Ordered Collection](#form-8)
-9. [Form 9 — Stack: Matching / Valid Parentheses](#form-9)
-10. [Form 10 — Stack: Cancellation / Remove Elements](#form-10)
-11. [Form 11 — Monotonic Stack: Next Greater / Smaller](#form-11)
-12. [Form 12 — Monotonic Stack: Greedy Removal](#form-12)
-13. [Form 13 — Monotonic Stack + Contribution](#form-13)
-14. [Form 14 — Queue / FIFO Processing](#form-14)
-15. [Form 15 — Monotonic Deque / Sliding Window Min-Max](#form-15)
-16. [Form 16 — Priority Queue / Repeated Best Choice](#form-16)
-17. [Form 17 — Top K Elements](#form-17)
-18. [Form 18 — Two Heaps / Running Median](#form-18)
-19. [Form 19 — Atomic / Element Contribution](#form-19)
-20. [Form 20 — Pivot / Left × Right Contribution](#form-20)
-21. [Form 21 — Pair Contribution](#form-21)
-22. [Form 22 — Bit Contribution](#form-22)
-23. [Form 23 — Stream Mean / Variance / Running Statistics](#form-23)
-24. [Form 24 — Min Stack / Maintain Aggregate State](#form-24)
-25. [Form 25 — Stack / Queue Transformation](#form-25)
-26. [Form 26 — Lazy Stack Increment](#form-26)
-27. [Form 27 — Product of Last K / Prefix State](#form-27)
-28. [Form 28 — Snapshot / Versioned Data](#form-28)
-29. [Form 29 — LRU Cache](#form-29)
-30. [Form 30 — LFU / Frequency-Based Cache](#form-30)
-31. [Form 31 — Randomized Data Structure](#form-31)
+1. Form 1 — Sorting / Basic Ordering
+2. Form 2 — Custom Comparator / Multi-Key Sorting
+3. Form 3 — Lower Bound / Upper Bound
+4. Form 4 — Next Permutation / Arrangement Generation
+5. Form 5 — Frequency Counting / Hash Map
+6. Form 6 — Set / Membership / Distinct Values
+7. Form 7 — Ordered Set / Predecessor / Successor
+8. Form 8 — Multiset / Dynamic Ordered Collection
+9. Form 9 — Stack: Matching / Valid Parentheses
+10. Form 10 — Stack: Cancellation / Remove Elements
+11. Form 11 — Monotonic Stack: Next Greater / Smaller
+12. Form 12 — Monotonic Stack: Greedy Removal
+13. Form 13 — Monotonic Stack + Contribution
+14. Form 14 — Queue / FIFO Processing
+15. Form 15 — Monotonic Deque / Sliding Window Min-Max
+16. Form 16 — Priority Queue / Repeated Best Choice
+17. Form 17 — Top K Elements
+18. Form 18 — Two Heaps / Running Median
+19. Form 19 — Atomic / Element Contribution
+20. Form 20 — Pivot / Left × Right Contribution
+21. Form 21 — Pair Contribution
+22. Form 22 — Bit Contribution
+23. Form 23 — Stream Mean / Variance / Running Statistics
+24. Form 24 — Min Stack / Maintain Aggregate State
+25. Form 25 — Stack / Queue Transformation
+26. Form 26 — Lazy Stack Increment
+27. Form 27 — Product of Last K / Prefix State
+28. Form 28 — Snapshot / Versioned Data
+29. Form 29 — LRU Cache
+30. Form 30 — LFU / Frequency-Based Cache
+31. Form 31 — Randomized Data Structure
 
 ---
-
-<a id="form-1"></a>
 ## Form 1 — Sorting / Basic Ordering
 
 **Recognition:** Ordering exposes structure or enables greedy/two-pointer processing.
+
+**Prerequisites — know these first:**
+- Arrays / vectors and basic indexing.
+- Ascending vs descending order.
+- Basic time complexity: `O(N)`, `O(N log N)`.
+- Why sorting can reveal structure for greedy or two-pointer processing.
+
 
 **Problems: 5**
 
@@ -55,14 +58,18 @@
 | 4 | [Business trip](https://codeforces.com/problemset/problem/149/A) | CF |
 | 5 | [Apartments](https://cses.fi/problemset/task/1084/) | CSES |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-2"></a>
 ## Form 2 — Custom Comparator / Multi-Key Sorting
 
 **Recognition:** Sort by multiple keys or by a non-standard ordering relation.
+
+**Prerequisites — know these first:**
+- Form 1: basic sorting.
+- Pairs / tuples and primary vs secondary keys.
+- Tie-breaking rules.
+- Strict ordering idea: if two items are equal under all keys, neither should come before the other.
+
 
 **Problems: 4**
 
@@ -73,14 +80,19 @@
 | 3 | [Relative Sort Array](https://leetcode.com/problems/relative-sort-array/) | LC |
 | 4 | [Rank List](https://codeforces.com/problemset/problem/166/A) | CF |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-3"></a>
 ## Form 3 — Lower Bound / Upper Bound
 
 **Recognition:** Sorted data + first/last valid position, predecessor/successor, or count.
+
+**Prerequisites — know these first:**
+- Sorted arrays / vectors.
+- Standard binary-search idea.
+- Difference between first valid position and last valid position.
+- Predecessor / successor intuition.
+- Counting values in a sorted range.
+
 
 **Problems: 5**
 
@@ -92,14 +104,19 @@
 | 4 | [Fast Search](https://codeforces.com/edu/course/2/lesson/6/1/practice/contest/283911/problem/D) | CF |
 | 5 | [Towers](https://cses.fi/problemset/task/1073/) | CSES |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-4"></a>
 ## Form 4 — Next Permutation / Arrangement Generation
 
 **Recognition:** Need next lexicographic arrangement or enumerate/order permutations.
+
+**Prerequisites — know these first:**
+- Arrays / strings.
+- Lexicographic order.
+- Permutation meaning.
+- Basic factorial / number of arrangements intuition.
+- Ability to reason about the longest suffix that is already in decreasing order.
+
 
 **Problems: 4**
 
@@ -110,14 +127,19 @@
 | 3 | [Creating Strings](https://cses.fi/problemset/task/1622/) | CSES |
 | 4 | [Permutation Sequence](https://leetcode.com/problems/permutation-sequence/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-5"></a>
 ## Form 5 — Frequency Counting / Hash Map
 
 **Recognition:** Need value→count/position/state or grouping by a key.
+
+**Prerequisites — know these first:**
+- Arrays / strings.
+- Key → value mapping.
+- Frequency counting.
+- Hashing idea and average `O(1)` lookup.
+- Prefix-sum basics are useful for problems such as transformed-frequency subarray counting.
+
 
 **Problems: 5**
 
@@ -129,14 +151,18 @@
 | 4 | [Registration System](https://codeforces.com/problemset/problem/4/C) | CF |
 | 5 | [Good Subarrays](https://codeforces.com/problemset/problem/1398/C) | CF |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-6"></a>
 ## Form 6 — Set / Membership / Distinct Values
 
 **Recognition:** Need uniqueness, fast membership, or distinct-value processing.
+
+**Prerequisites — know these first:**
+- Hash map / membership lookup.
+- Difference between duplicates and distinct values.
+- Set semantics: one copy per value.
+- Basic union / intersection ideas.
+
 
 **Problems: 4**
 
@@ -147,14 +173,19 @@
 | 3 | [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/) | LC |
 | 4 | [Distinct Numbers](https://cses.fi/problemset/task/1621/) | CSES |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-7"></a>
 ## Form 7 — Ordered Set / Predecessor / Successor
 
 **Recognition:** Need sorted unique keys plus nearest smaller/larger lookup.
+
+**Prerequisites — know these first:**
+- Form 6: set / uniqueness.
+- Sorted order.
+- Lower bound / upper bound.
+- Predecessor = nearest smaller value.
+- Successor = nearest larger value.
+
 
 **Problems: 4**
 
@@ -165,14 +196,19 @@
 | 3 | [My Calendar I](https://leetcode.com/problems/my-calendar-i/) | LC |
 | 4 | [Room Allocation](https://cses.fi/problemset/task/1164/) | CSES |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-8"></a>
 ## Form 8 — Multiset / Dynamic Ordered Collection
 
 **Recognition:** Need sorted duplicates with insertion, deletion, min/max or median-like access.
+
+**Prerequisites — know these first:**
+- Ordered set.
+- Duplicates and frequency.
+- Iterator-based deletion of exactly one occurrence.
+- Accessing minimum / maximum in ordered data.
+- Basic balancing intuition for median-style problems.
+
 
 **Problems: 4**
 
@@ -183,14 +219,19 @@
 | 3 | [Sliding Window Cost](https://cses.fi/problemset/task/1077/) | CSES |
 | 4 | [Multiset](https://codeforces.com/problemset/problem/1354/D) | CF |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-9"></a>
 ## Form 9 — Stack: Matching / Valid Parentheses
 
 **Recognition:** Latest unresolved symbol determines matching/nesting validity.
+
+**Prerequisites — know these first:**
+- Stack = LIFO.
+- Push / pop / top.
+- Matching pairs such as `()`, `{}`, `[]`.
+- Nested structure intuition.
+- “Latest unresolved item” pattern.
+
 
 **Problems: 5**
 
@@ -202,14 +243,18 @@
 | 4 | [Minimum Remove to Make Valid Parentheses](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/) | LC |
 | 5 | [Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-10"></a>
 ## Form 10 — Stack: Cancellation / Remove Elements
 
 **Recognition:** Current item may repeatedly cancel/interact with the stack top.
+
+**Prerequisites — know these first:**
+- Form 9: basic stack operations.
+- While-loop interaction with stack top.
+- Simulation.
+- Understanding that one incoming item may repeatedly remove previous items.
+
 
 **Problems: 4**
 
@@ -220,14 +265,19 @@
 | 3 | [Asteroid Collision](https://leetcode.com/problems/asteroid-collision/) | LC |
 | 4 | [Make The String Great](https://leetcode.com/problems/make-the-string-great/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-11"></a>
 ## Form 11 — Monotonic Stack: Next Greater / Smaller
 
 **Recognition:** Nearest previous/next <, ≤, >, ≥ or boundary of influence.
+
+**Prerequisites — know these first:**
+- Basic stack.
+- Previous / next element questions.
+- Strict vs non-strict comparisons: `<`, `<=`, `>`, `>=`.
+- Index-based distance.
+- Idea of removing elements that can never be useful again.
+
 
 **Problems: 5**
 
@@ -239,14 +289,19 @@
 | 4 | [Nearest Smaller Values](https://cses.fi/problemset/task/1645/) | CSES |
 | 5 | [Stock Span Problem](https://www.geeksforgeeks.org/problems/stock-span-problem-1587115621/1) | GFG |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-12"></a>
 ## Form 12 — Monotonic Stack: Greedy Removal
 
 **Recognition:** Pop previous choices while the current value produces a better feasible sequence.
+
+**Prerequisites — know these first:**
+- Monotonic stack basics.
+- Greedy choice intuition.
+- Lexicographic ordering.
+- Ability to ask: “Can the current value make an earlier choice permanently worse?”
+- Remaining-elements / feasibility reasoning.
+
 
 **Problems: 4**
 
@@ -257,14 +312,19 @@
 | 3 | [Smallest Subsequence of Distinct Characters](https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/) | LC |
 | 4 | [132 Pattern](https://leetcode.com/problems/132-pattern/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-13"></a>
 ## Form 13 — Monotonic Stack + Contribution
 
 **Recognition:** Monotonic boundaries determine how many ranges use an element as min/max/pivot.
+
+**Prerequisites — know these first:**
+- Monotonic stack.
+- Previous / next smaller or greater boundaries.
+- Contribution technique.
+- Counting subarrays containing a fixed index.
+- Left choices × right choices.
+
 
 **Problems: 5**
 
@@ -276,14 +336,18 @@
 | 4 | [Maximum Subarray Min-Product](https://leetcode.com/problems/maximum-subarray-min-product/) | LC |
 | 5 | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-14"></a>
 ## Form 14 — Queue / FIFO Processing
 
 **Recognition:** Process or simulate items in arrival order.
+
+**Prerequisites — know these first:**
+- Queue = FIFO.
+- Push / pop / front.
+- Simulation in arrival order.
+- Basic circular-processing intuition.
+
 
 **Problems: 4**
 
@@ -294,14 +358,19 @@
 | 3 | [Dota2 Senate](https://leetcode.com/problems/dota2-senate/) | LC |
 | 4 | [Reveal Cards In Increasing Order](https://leetcode.com/problems/reveal-cards-in-increasing-order/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-15"></a>
 ## Form 15 — Monotonic Deque / Sliding Window Min-Max
 
 **Recognition:** Maintain useful candidates in a moving window; discard dominated elements.
+
+**Prerequisites — know these first:**
+- Queue / deque basics.
+- Sliding window.
+- Window expiry by index.
+- Monotonic stack intuition.
+- Dominated candidate idea: remove values that can never become the future min/max.
+
 
 **Problems: 4**
 
@@ -312,14 +381,19 @@
 | 3 | [Shortest Subarray with Sum at Least K](https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/) | LC |
 | 4 | [Constrained Subsequence Sum](https://leetcode.com/problems/constrained-subsequence-sum/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-16"></a>
 ## Form 16 — Priority Queue / Repeated Best Choice
 
 **Recognition:** Repeatedly extract the current min/max/best candidate.
+
+**Prerequisites — know these first:**
+- Heap / priority queue idea.
+- Min-heap vs max-heap.
+- Repeatedly choosing the current best candidate.
+- Greedy basics.
+- Difference between sorting once and maintaining the best dynamically.
+
 
 **Problems: 4**
 
@@ -330,14 +404,19 @@
 | 3 | [Jesse and Cookies](https://www.hackerrank.com/challenges/jesse-and-cookies/problem) | HR |
 | 4 | [Minimum Cost of Ropes](https://www.geeksforgeeks.org/problems/minimum-cost-of-ropes-1587115620/1) | GFG |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-17"></a>
 ## Form 17 — Top K Elements
 
 **Recognition:** Keep only the K best elements/candidates instead of sorting everything.
+
+**Prerequisites — know these first:**
+- Priority queue / heap.
+- Kth largest / smallest meaning.
+- Maintaining only `K` useful candidates.
+- Min-heap for Top-K largest and max-heap for Top-K smallest.
+- Frequency counting for Top-K frequency problems.
+
 
 **Problems: 5**
 
@@ -349,14 +428,19 @@
 | 4 | [Kth Largest Element in a Stream](https://leetcode.com/problems/kth-largest-element-in-a-stream/) | LC |
 | 5 | [Find K Pairs with Smallest Sums](https://leetcode.com/problems/find-k-pairs-with-smallest-sums/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-18"></a>
 ## Form 18 — Two Heaps / Running Median
 
 **Recognition:** Maintain lower and upper halves around a dynamic median.
+
+**Prerequisites — know these first:**
+- Priority queue.
+- Max-heap and min-heap.
+- Median definition for odd/even sizes.
+- Balancing two groups around a boundary.
+- Invariant thinking: lower half ≤ upper half.
+
 
 **Problems: 3**
 
@@ -366,14 +450,19 @@
 | 2 | [Sliding Window Median](https://leetcode.com/problems/sliding-window-median/) | LC |
 | 3 | [IPO](https://leetcode.com/problems/ipo/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-19"></a>
 ## Form 19 — Atomic / Element Contribution
 
 **Recognition:** Fix one element and count how many generated objects contain/use it.
+
+**Prerequisites — know these first:**
+- Subarrays / subsequences.
+- Basic combinatorics / counting choices.
+- Fix-one-element thinking.
+- Ask: “How many generated objects contain this element?”
+- Multiplication principle.
+
 
 **Problems: 4**
 
@@ -384,14 +473,19 @@
 | 3 | [Sum of All Odd Length Subarrays](https://leetcode.com/problems/sum-of-all-odd-length-subarrays/) | LC |
 | 4 | [Total Appeal of A String](https://leetcode.com/problems/total-appeal-of-a-string/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-20"></a>
 ## Form 20 — Pivot / Left × Right Contribution
 
 **Recognition:** Fix a pivot/occurrence and multiply valid choices on its left and right.
+
+**Prerequisites — know these first:**
+- Form 19: element contribution.
+- Previous / next occurrence or boundary.
+- Counting valid choices on the left and right.
+- Multiplication principle: `leftChoices × rightChoices`.
+- Pivot-based counting.
+
 
 **Problems: 4**
 
@@ -402,14 +496,19 @@
 | 3 | [Count Number of Nice Subarrays](https://leetcode.com/problems/count-number-of-nice-subarrays/) | LC |
 | 4 | [Subarray Product Less Than K](https://leetcode.com/problems/subarray-product-less-than-k/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-21"></a>
 ## Form 21 — Pair Contribution
 
 **Recognition:** Aggregate over many pairs by sorting/algebra instead of enumerating O(n²) pairs.
+
+**Prerequisites — know these first:**
+- Sorting.
+- Prefix sums.
+- Pair counting.
+- Algebraic rearrangement of pair expressions.
+- Replacing `O(N²)` pair enumeration with aggregate contribution.
+
 
 **Problems: 4**
 
@@ -420,14 +519,20 @@
 | 3 | [Minimum Cost to Make Array Equal](https://leetcode.com/problems/minimum-cost-to-make-array-equal/) | LC |
 | 4 | [Manhattan Distances](https://cses.fi/problemset/task/3411/) | CSES |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-22"></a>
 ## Form 22 — Bit Contribution
 
 **Recognition:** Treat each bit independently and count zeros/ones or pair contributions.
+
+**Prerequisites — know these first:**
+- Binary representation.
+- Bit positions.
+- Bitwise AND / OR / XOR.
+- Counting set and unset bits.
+- Independent-bit contribution idea.
+- Basic powers of two.
+
 
 **Problems: 4**
 
@@ -438,14 +543,20 @@
 | 3 | [XOR Beauty of Array](https://leetcode.com/problems/find-xor-beauty-of-array/) | LC |
 | 4 | [Bitwise AND of Numbers Range](https://leetcode.com/problems/bitwise-and-of-numbers-range/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-23"></a>
 ## Form 23 — Stream Mean / Variance / Running Statistics
 
 **Recognition:** Maintain statistics incrementally instead of recomputing over the whole stream.
+
+**Prerequisites — know these first:**
+- Running sum and count.
+- Mean definition.
+- Squares and `x²`.
+- Population variance idea.
+- Algebra identity `(a-b)² = a² - 2ab + b²`.
+- Maintaining small aggregate state instead of storing the full stream.
+
 
 **Problems: 3**
 
@@ -455,14 +566,19 @@
 | 2 | [MKAverage](https://leetcode.com/problems/finding-mk-average/) | LC |
 | 3 | [Stock Price Fluctuation](https://leetcode.com/problems/stock-price-fluctuation/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-24"></a>
 ## Form 24 — Min Stack / Maintain Aggregate State
 
 **Recognition:** Each push/pop also maintains min/max/other aggregate state.
+
+**Prerequisites — know these first:**
+- Stack operations.
+- Running minimum / maximum.
+- State restoration after `pop`.
+- Snapshot idea: each stack depth may need its own aggregate state.
+- Duplicate minimum handling.
+
 
 **Problems: 4**
 
@@ -473,14 +589,19 @@
 | 3 | [Maximum Frequency Stack](https://leetcode.com/problems/maximum-frequency-stack/) | LC |
 | 4 | [All O`one Data Structure](https://leetcode.com/problems/all-oone-data-structure/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-25"></a>
 ## Form 25 — Stack / Queue Transformation
 
 **Recognition:** Implement one access discipline using another or balance multiple queues/deques.
+
+**Prerequisites — know these first:**
+- Stack = LIFO.
+- Queue = FIFO.
+- Deque basics.
+- Simulation of access order.
+- Amortized-analysis intuition is helpful for two-stack queue designs.
+
 
 **Problems: 4**
 
@@ -491,14 +612,19 @@
 | 3 | [Design Circular Queue](https://leetcode.com/problems/design-circular-queue/) | LC |
 | 4 | [Design Front Middle Back Queue](https://leetcode.com/problems/design-front-middle-back-queue/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-26"></a>
 ## Form 26 — Lazy Stack Increment
 
 **Recognition:** Delay/batch updates so a range-like stack operation stays efficient.
+
+**Prerequisites — know these first:**
+- Stack / vector indexing.
+- Prefix range `[0..k-1]`.
+- Lazy / deferred-update idea.
+- Difference-array intuition is useful.
+- Understanding that pending updates can be propagated when elements are removed.
+
 
 **Problems: 3**
 
@@ -508,14 +634,19 @@
 | 2 | [Fancy Sequence](https://leetcode.com/problems/fancy-sequence/) | LC |
 | 3 | [Corporate Flight Bookings](https://leetcode.com/problems/corporate-flight-bookings/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-27"></a>
 ## Form 27 — Product of Last K / Prefix State
 
 **Recognition:** Maintain prefix-like state so recent aggregate queries are O(1) or logarithmic.
+
+**Prerequisites — know these first:**
+- Prefix sums, then generalize to prefix products.
+- Multiplicative identity `1`.
+- Suffix queries.
+- Division as cancellation of an earlier prefix.
+- Why zero breaks product division and creates a reset boundary.
+
 
 **Problems: 3**
 
@@ -525,14 +656,20 @@
 | 2 | [Range Product Queries of Powers](https://leetcode.com/problems/range-product-queries-of-powers/) | LC |
 | 3 | [Range Sum Query - Immutable](https://leetcode.com/problems/range-sum-query-immutable/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-28"></a>
 ## Form 28 — Snapshot / Versioned Data
 
 **Recognition:** Store only changes and query historical state by version/time.
+
+**Prerequisites — know these first:**
+- Arrays.
+- Version / snapshot idea.
+- Store-only-changes thinking.
+- Sorted change history.
+- Binary search / upper bound.
+- Predecessor query: latest version `<= target`.
+
 
 **Problems: 3**
 
@@ -542,14 +679,19 @@
 | 2 | [Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/) | LC |
 | 3 | [Design Underground System](https://leetcode.com/problems/design-underground-system/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-29"></a>
 ## Form 29 — LRU Cache
 
 **Recognition:** O(1) lookup plus recency ordering and eviction.
+
+**Prerequisites — know these first:**
+- Hash map.
+- Doubly linked list.
+- Iterators / direct node references.
+- MRU vs LRU.
+- O(1) deletion / movement when the node is already known.
+
 
 **Problems: 3**
 
@@ -559,14 +701,20 @@
 | 2 | [Design Browser History](https://leetcode.com/problems/design-browser-history/) | LC |
 | 3 | [Design Linked List](https://leetcode.com/problems/design-linked-list/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-30"></a>
 ## Form 30 — LFU / Frequency-Based Cache
 
 **Recognition:** Track frequency plus recency/tie-breaking efficiently.
+
+**Prerequisites — know these first:**
+- LRU Cache.
+- Frequency counting.
+- Hash maps.
+- Doubly linked lists / frequency buckets.
+- MRU/LRU ordering inside one frequency.
+- Maintaining a minimum-frequency invariant.
+
 
 **Problems: 3**
 
@@ -576,14 +724,20 @@
 | 2 | [Design Twitter](https://leetcode.com/problems/design-twitter/) | LC |
 | 3 | [Food Ratings](https://leetcode.com/problems/design-a-food-rating-system/) | LC |
 
-[↑ Back to TOC](#toc)
 
 ---
-
-<a id="form-31"></a>
 ## Form 31 — Randomized Data Structure
 
 **Recognition:** Combine arrays/maps or probabilistic sampling for efficient random operations.
+
+**Prerequisites — know these first:**
+- Arrays / vectors.
+- Hash map.
+- Swapping elements.
+- Uniform random choice.
+- Prefix sums are needed for weighted random selection.
+- Probability basics: equal probability vs weighted probability.
+
 
 **Problems: 4**
 
@@ -594,7 +748,30 @@
 | 3 | [Shuffle an Array](https://leetcode.com/problems/shuffle-an-array/) | LC |
 | 4 | [Linked List Random Node](https://leetcode.com/problems/linked-list-random-node/) | LC |
 
-[↑ Back to TOC](#toc)
+
+---
+
+## How to Use the Prerequisites
+
+For each form:
+
+```text
+Prerequisites understood?
+        |
+       yes
+        |
+        v
+Read Recognition
+        |
+        v
+Solve benchmark problems
+        |
+        v
+Can recognize unlabeled variation?
+```
+
+If a prerequisite is weak, revise only that prerequisite first; then return to the form.  
+You do **not** need to master every advanced STL topic before starting the earlier forms.
 
 ---
 
