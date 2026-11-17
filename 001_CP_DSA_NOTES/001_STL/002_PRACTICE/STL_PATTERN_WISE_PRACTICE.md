@@ -4,37 +4,37 @@
 > Each form contains **3–5 benchmark problems**. Exact benchmark problems are not repeated across forms.
 ## Table of Contents
 
-1. Form 1 — Sorting / Basic Ordering
-2. Form 2 — Custom Comparator / Multi-Key Sorting
-3. Form 3 — Lower Bound / Upper Bound
-4. Form 4 — Next Permutation / Arrangement Generation
-5. Form 5 — Frequency Counting / Hash Map
-6. Form 6 — Set / Membership / Distinct Values
-7. Form 7 — Ordered Set / Predecessor / Successor
-8. Form 8 — Multiset / Dynamic Ordered Collection
-9. Form 9 — Stack: Matching / Valid Parentheses
-10. Form 10 — Stack: Cancellation / Remove Elements
-11. Form 11 — Monotonic Stack: Next Greater / Smaller
-12. Form 12 — Monotonic Stack: Greedy Removal
-13. Form 13 — Monotonic Stack + Contribution
-14. Form 14 — Queue / FIFO Processing
-15. Form 15 — Monotonic Deque / Sliding Window Min-Max
-16. Form 16 — Priority Queue / Repeated Best Choice
-17. Form 17 — Top K Elements
-18. Form 18 — Two Heaps / Running Median
-19. Form 19 — Atomic / Element Contribution
-20. Form 20 — Pivot / Left × Right Contribution
-21. Form 21 — Pair Contribution
-22. Form 22 — Bit Contribution
-23. Form 23 — Stream Mean / Variance / Running Statistics
-24. Form 24 — Min Stack / Maintain Aggregate State
-25. Form 25 — Stack / Queue Transformation
-26. Form 26 — Lazy Stack Increment
-27. Form 27 — Product of Last K / Prefix State
-28. Form 28 — Snapshot / Versioned Data
-29. Form 29 — LRU Cache
-30. Form 30 — LFU / Frequency-Based Cache
-31. Form 31 — Randomized Data Structure
+1. [Form 1 — Sorting / Basic Ordering](#form-1-sorting-basic-ordering)
+2. [Form 2 — Custom Comparator / Multi-Key Sorting](#form-2-custom-comparator-multi-key-sorting)
+3. [Form 3 — Lower Bound / Upper Bound](#form-3-lower-bound-upper-bound)
+4. [Form 4 — Next Permutation / Arrangement Generation](#form-4-next-permutation-arrangement-generation)
+5. [Form 5 — Frequency Counting / Hash Map](#form-5-frequency-counting-hash-map)
+6. [Form 6 — Set / Membership / Distinct Values](#form-6-set-membership-distinct-values)
+7. [Form 7 — Ordered Set / Predecessor / Successor](#form-7-ordered-set-predecessor-successor)
+8. [Form 8 — Multiset / Dynamic Ordered Collection](#form-8-multiset-dynamic-ordered-collection)
+9. [Form 9 — Stack: Matching / Valid Parentheses](#form-9-stack-matching-valid-parentheses)
+10. [Form 10 — Stack: Cancellation / Remove Elements](#form-10-stack-cancellation-remove-elements)
+11. [Form 11 — Monotonic Stack: Next Greater / Smaller](#form-11-monotonic-stack-next-greater-smaller)
+12. [Form 12 — Monotonic Stack: Greedy Removal](#form-12-monotonic-stack-greedy-removal)
+13. [Form 13 — Monotonic Stack + Contribution](#form-13-monotonic-stack-contribution)
+14. [Form 14 — Queue / FIFO Processing](#form-14-queue-fifo-processing)
+15. [Form 15 — Monotonic Deque / Sliding Window Min-Max](#form-15-monotonic-deque-sliding-window-min-max)
+16. [Form 16 — Priority Queue / Repeated Best Choice](#form-16-priority-queue-repeated-best-choice)
+17. [Form 17 — Top K Elements](#form-17-top-k-elements)
+18. [Form 18 — Two Heaps / Running Median](#form-18-two-heaps-running-median)
+19. [Form 19 — Atomic / Element Contribution](#form-19-atomic-element-contribution)
+20. [Form 20 — Pivot / Left × Right Contribution](#form-20-pivot-left-right-contribution)
+21. [Form 21 — Pair Contribution](#form-21-pair-contribution)
+22. [Form 22 — Bit Contribution](#form-22-bit-contribution)
+23. [Form 23 — Stream Mean / Variance / Running Statistics](#form-23-stream-mean-variance-running-statistics)
+24. [Form 24 — Min Stack / Maintain Aggregate State](#form-24-min-stack-maintain-aggregate-state)
+25. [Form 25 — Stack / Queue Transformation](#form-25-stack-queue-transformation)
+26. [Form 26 — Lazy Stack Increment](#form-26-lazy-stack-increment)
+27. [Form 27 — Product of Last K / Prefix State](#form-27-product-of-last-k-prefix-state)
+28. [Form 28 — Snapshot / Versioned Data](#form-28-snapshot-versioned-data)
+29. [Form 29 — LRU Cache](#form-29-lru-cache)
+30. [Form 30 — LFU / Frequency-Based Cache](#form-30-lfu-frequency-based-cache)
+31. [Form 31 — Randomized Data Structure](#form-31-randomized-data-structure)
 
 ---
 ## Form 1 — Sorting / Basic Ordering
@@ -59,6 +59,9 @@
 | 5 | [Apartments](https://cses.fi/problemset/task/1084/) | CSES |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 2 — Custom Comparator / Multi-Key Sorting
 
@@ -80,6 +83,9 @@
 | 3 | [Relative Sort Array](https://leetcode.com/problems/relative-sort-array/) | LC |
 | 4 | [Rank List](https://codeforces.com/problemset/problem/166/A) | CF |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 3 — Lower Bound / Upper Bound
@@ -105,6 +111,9 @@
 | 5 | [Towers](https://cses.fi/problemset/task/1073/) | CSES |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 4 — Next Permutation / Arrangement Generation
 
@@ -127,6 +136,9 @@
 | 3 | [Creating Strings](https://cses.fi/problemset/task/1622/) | CSES |
 | 4 | [Permutation Sequence](https://leetcode.com/problems/permutation-sequence/) | LC |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 5 — Frequency Counting / Hash Map
@@ -152,6 +164,9 @@
 | 5 | [Good Subarrays](https://codeforces.com/problemset/problem/1398/C) | CF |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 6 — Set / Membership / Distinct Values
 
@@ -173,6 +188,9 @@
 | 3 | [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/) | LC |
 | 4 | [Distinct Numbers](https://cses.fi/problemset/task/1621/) | CSES |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 7 — Ordered Set / Predecessor / Successor
@@ -197,6 +215,9 @@
 | 4 | [Room Allocation](https://cses.fi/problemset/task/1164/) | CSES |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 8 — Multiset / Dynamic Ordered Collection
 
@@ -219,6 +240,9 @@
 | 3 | [Sliding Window Cost](https://cses.fi/problemset/task/1077/) | CSES |
 | 4 | [Multiset](https://codeforces.com/problemset/problem/1354/D) | CF |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 9 — Stack: Matching / Valid Parentheses
@@ -244,6 +268,9 @@
 | 5 | [Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 10 — Stack: Cancellation / Remove Elements
 
@@ -265,6 +292,9 @@
 | 3 | [Asteroid Collision](https://leetcode.com/problems/asteroid-collision/) | LC |
 | 4 | [Make The String Great](https://leetcode.com/problems/make-the-string-great/) | LC |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 11 — Monotonic Stack: Next Greater / Smaller
@@ -290,6 +320,9 @@
 | 5 | [Stock Span Problem](https://www.geeksforgeeks.org/problems/stock-span-problem-1587115621/1) | GFG |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 12 — Monotonic Stack: Greedy Removal
 
@@ -312,6 +345,9 @@
 | 3 | [Smallest Subsequence of Distinct Characters](https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/) | LC |
 | 4 | [132 Pattern](https://leetcode.com/problems/132-pattern/) | LC |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 13 — Monotonic Stack + Contribution
@@ -337,6 +373,9 @@
 | 5 | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 14 — Queue / FIFO Processing
 
@@ -358,6 +397,9 @@
 | 3 | [Dota2 Senate](https://leetcode.com/problems/dota2-senate/) | LC |
 | 4 | [Reveal Cards In Increasing Order](https://leetcode.com/problems/reveal-cards-in-increasing-order/) | LC |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 15 — Monotonic Deque / Sliding Window Min-Max
@@ -382,6 +424,9 @@
 | 4 | [Constrained Subsequence Sum](https://leetcode.com/problems/constrained-subsequence-sum/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 16 — Priority Queue / Repeated Best Choice
 
@@ -404,6 +449,9 @@
 | 3 | [Jesse and Cookies](https://www.hackerrank.com/challenges/jesse-and-cookies/problem) | HR |
 | 4 | [Minimum Cost of Ropes](https://www.geeksforgeeks.org/problems/minimum-cost-of-ropes-1587115620/1) | GFG |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 17 — Top K Elements
@@ -429,6 +477,9 @@
 | 5 | [Find K Pairs with Smallest Sums](https://leetcode.com/problems/find-k-pairs-with-smallest-sums/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 18 — Two Heaps / Running Median
 
@@ -450,6 +501,9 @@
 | 2 | [Sliding Window Median](https://leetcode.com/problems/sliding-window-median/) | LC |
 | 3 | [IPO](https://leetcode.com/problems/ipo/) | LC |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 19 — Atomic / Element Contribution
@@ -474,6 +528,9 @@
 | 4 | [Total Appeal of A String](https://leetcode.com/problems/total-appeal-of-a-string/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 20 — Pivot / Left × Right Contribution
 
@@ -497,6 +554,9 @@
 | 4 | [Subarray Product Less Than K](https://leetcode.com/problems/subarray-product-less-than-k/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 21 — Pair Contribution
 
@@ -519,6 +579,9 @@
 | 3 | [Minimum Cost to Make Array Equal](https://leetcode.com/problems/minimum-cost-to-make-array-equal/) | LC |
 | 4 | [Manhattan Distances](https://cses.fi/problemset/task/3411/) | CSES |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 22 — Bit Contribution
@@ -544,6 +607,9 @@
 | 4 | [Bitwise AND of Numbers Range](https://leetcode.com/problems/bitwise-and-of-numbers-range/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 23 — Stream Mean / Variance / Running Statistics
 
@@ -566,6 +632,9 @@
 | 2 | [MKAverage](https://leetcode.com/problems/finding-mk-average/) | LC |
 | 3 | [Stock Price Fluctuation](https://leetcode.com/problems/stock-price-fluctuation/) | LC |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 24 — Min Stack / Maintain Aggregate State
@@ -590,6 +659,9 @@
 | 4 | [All O`one Data Structure](https://leetcode.com/problems/all-oone-data-structure/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 25 — Stack / Queue Transformation
 
@@ -613,6 +685,9 @@
 | 4 | [Design Front Middle Back Queue](https://leetcode.com/problems/design-front-middle-back-queue/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 26 — Lazy Stack Increment
 
@@ -635,6 +710,9 @@
 | 3 | [Corporate Flight Bookings](https://leetcode.com/problems/corporate-flight-bookings/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 27 — Product of Last K / Prefix State
 
@@ -656,6 +734,9 @@
 | 2 | [Range Product Queries of Powers](https://leetcode.com/problems/range-product-queries-of-powers/) | LC |
 | 3 | [Range Sum Query - Immutable](https://leetcode.com/problems/range-sum-query-immutable/) | LC |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 28 — Snapshot / Versioned Data
@@ -680,6 +761,9 @@
 | 3 | [Design Underground System](https://leetcode.com/problems/design-underground-system/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 29 — LRU Cache
 
@@ -701,6 +785,9 @@
 | 2 | [Design Browser History](https://leetcode.com/problems/design-browser-history/) | LC |
 | 3 | [Design Linked List](https://leetcode.com/problems/design-linked-list/) | LC |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 ## Form 30 — LFU / Frequency-Based Cache
@@ -725,6 +812,9 @@
 | 3 | [Food Ratings](https://leetcode.com/problems/design-a-food-rating-system/) | LC |
 
 
+
+[↑ Back to TOC](#table-of-contents)
+
 ---
 ## Form 31 — Randomized Data Structure
 
@@ -748,6 +838,9 @@
 | 3 | [Shuffle an Array](https://leetcode.com/problems/shuffle-an-array/) | LC |
 | 4 | [Linked List Random Node](https://leetcode.com/problems/linked-list-random-node/) | LC |
 
+
+
+[↑ Back to TOC](#table-of-contents)
 
 ---
 
