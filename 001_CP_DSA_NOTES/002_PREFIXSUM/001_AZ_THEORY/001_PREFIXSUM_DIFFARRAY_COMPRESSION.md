@@ -4,6 +4,9 @@
 >
 > **Indexing convention:** most algebra below uses **1-based indexing** because it makes weighted-range formulas easier to read. Code explicitly states its indexing.
 
+> **Updated learning structure:** each major section now starts with the exact prerequisites needed for that topic and a compact step-by-step ASCII learning flow. Read that block first, then continue into the existing visual derivation and dry run.
+
+
 ---
 
 ## Table of Contents
@@ -30,6 +33,42 @@
 
 
 # 0. Prerequisites — Learn These First
+
+## Section Prerequisites
+
+Start here with only:
+
+- Arrays and basic indexing.
+- Inclusive range notation `[L,R]`.
+- Running / cumulative sum.
+- Basic algebra with `+`, `-`, `*`, `/`.
+- `long long` and why accumulated values can exceed `int`.
+
+### Learn this section in this order
+
+```text
+ARRAY + INDEX
+     |
+     v
+RANGE [L,R]
+     |
+     v
+RUNNING SUM
+     |
+     +------------------+
+     |                  |
+     v                  v
+ PREFIX              DIFFERENCE
+     |                  |
+     v                  v
+ QUERY                UPDATE
+     |
+     v
+AP / GP / STATE / COMPRESSION
+```
+
+The goal of Section 0 is not to memorize formulas. It is to make every later section feel like a variation of the same few ideas.
+
 
 Use this order before the advanced sections:
 
@@ -279,6 +318,42 @@ because intermediate products may exceed `int`.
 
 # 1. The Core Mental Model
 
+## Prerequisites for This Section
+
+Know these first:
+
+- Section 0: indexing, range length, running sum.
+- Prefix cancellation: **big prefix − unwanted prefix**.
+- Difference-array boundary idea: **turn an effect ON at `L`, OFF at `R+1`**.
+- Basic coordinate ordering.
+
+### Learn this section step by step
+
+```text
+WHAT DOES THE PROBLEM REPEAT?
+            |
+            v
+     QUERY or UPDATE?
+       /          \
+      v            v
+ PREFIX         DIFFERENCE
+      \            /
+       \          /
+        v        v
+      SMALL STORED STATE
+            |
+            v
+      FAST RECONSTRUCTION
+```
+
+Mental question:
+
+```text
+Can I preprocess the repeated work once,
+or represent a whole range using only boundaries?
+```
+
+
 ## How to use this notebook
 
 For every formula-heavy section, read in this order:
@@ -354,6 +429,40 @@ The uploaded lecture states the same high-level goal: prefix sums preprocess arr
 ---
 
 # 2. 1D Prefix Sum — Range Sum in O(1)
+
+## Prerequisites for This Section
+
+Know:
+
+- 1-based indexing.
+- Inclusive range length `R-L+1`.
+- Running sum.
+- Prefix cancellation.
+
+### Learn it in this order
+
+```text
+A[1..N]
+   |
+   v
+BUILD P[i] = P[i-1] + A[i]
+   |
+   v
+QUERY [L,R]
+   |
+   v
+P[R] contains:
+[unwanted left] + [wanted]
+   |
+   v
+subtract P[L-1]
+   |
+   v
+ANSWER = P[R] - P[L-1]
+```
+
+Before using the formula, always draw one tiny array and physically cancel the left prefix.
+
 
 ### Visual roadmap
 
@@ -570,6 +679,48 @@ Space:   O(N)
 
 # 3. 2D Prefix Sum — Rectangle Sum in O(1)
 
+## Prerequisites for This Section
+
+Know:
+
+- 1D prefix sum.
+- Rows and columns in a matrix.
+- Rectangle coordinates `(r1,c1)` and `(r2,c2)`.
+- Inclusion-exclusion: if an area is subtracted twice, add it back once.
+
+### Learn it in this order
+
+```text
+1D RANGE
+big prefix - left
+       |
+       v
+EXTEND TO 2D
+       |
+       v
+big rectangle
+- top
+- left
++ top-left overlap
+       |
+       v
+wanted rectangle
+```
+
+ASCII memory:
+
+```text
++----------------------+
+|      TOP             |
+|----------------------|
+|LEFT |    WANTED      |
+|     |                |
++----------------------+
+
+BIG - TOP - LEFT + OVERLAP
+```
+
+
 ### Visual roadmap
 
 ```text
@@ -749,6 +900,53 @@ This is the exact pattern used in problems such as **CSES Forest Queries**.
 ---
 
 # 4. AP on Prefix Sum — Weighted Range Query
+
+## Prerequisites for This Section
+
+Know:
+
+- Ordinary 1D prefix sum.
+- AP basics: `a, a+d, a+2d, ...`.
+- Local position inside `[L,R]`.
+- Simple algebraic expansion.
+- Prefix of both `A[i]` and `i*A[i]`.
+
+### Learn it in this order
+
+```text
+LOCAL WEIGHTS
+1,2,3,...
+    |
+    v
+global index i
+    |
+    v
+local weight = i-L+1
+    |
+    v
+rewrite:
+i-(L-1)
+    |
+    v
+A[i]*i - (L-1)*A[i]
+    |
+    +------------------+
+    |                  |
+    v                  v
+prefix(i*A[i])     prefix(A[i])
+    |                  |
+    +--------+---------+
+             v
+         O(1) query
+```
+
+Main recognition:
+
+```text
+weight is linear in i
+-> store prefixes of A[i] and i*A[i]
+```
+
 
 ### Visual roadmap
 
@@ -1326,6 +1524,46 @@ prefix(A[i]) + prefix(i*A[i])
 
 # 5. GP on Prefix Sum — Geometric Weighted Query
 
+## Prerequisites for This Section
+
+Know:
+
+- Ordinary prefix sums.
+- GP basics: `1, r, r², r³, ...`.
+- Exponent rule `r^(x-y) = r^x / r^y`.
+- Modular exponentiation.
+- Modular inverse when working modulo a prime.
+
+### Learn it in this order
+
+```text
+LOCAL GP WEIGHT
+r^(i-L)
+    |
+    v
+separate query shift
+    |
+    v
+r^i * r^(-L)
+    |
+    v
+build prefix of
+A[i] * r^i
+    |
+    v
+range transformed sum
+    |
+    v
+multiply by r^(-L)
+```
+
+Key idea:
+
+```text
+move the "local start L" outside the summation
+```
+
+
 ### Visual roadmap
 
 ```text
@@ -1609,6 +1847,56 @@ prefix(A[i] * r^i)
 ---
 
 # 6. Prefix-State Pattern — Contiguous Array
+
+## Prerequisites for This Section
+
+Know:
+
+- Prefix sum identity.
+- Hash map / first occurrence.
+- Mapping one category to `+1` and another to `-1`.
+- Zero-sum subarray idea.
+- Difference between an array index and a prefix position.
+
+### Learn it in this order
+
+```text
+equal 0s and 1s
+      |
+      v
+0 -> -1
+1 -> +1
+      |
+      v
+balanced subarray
+= sum 0
+      |
+      v
+prefix[R] = prefix[L-1]
+      |
+      v
+same prefix seen twice
+      |
+      v
+middle segment is balanced
+      |
+      v
+store earliest occurrence
+```
+
+Critical indexing picture:
+
+```text
+old prefix at j
+      |
+      v
+... j | j+1 ... i
+      |<-------->|
+       answer range
+
+length = i-j
+```
+
 
 ### Visual roadmap
 
@@ -1993,6 +2281,43 @@ use prefix state + hash map
 
 # 7. Ordinary Difference Array — Range Addition
 
+## Prerequisites for This Section
+
+Know:
+
+- Prefix accumulation.
+- Inclusive range `[L,R]`.
+- Boundary/event thinking.
+- Why an effect that starts at `L` should stop at `R+1`.
+
+### Learn it in this order
+
+```text
+RANGE UPDATE [L,R] += X
+          |
+          v
+do not touch every index
+          |
+          v
+diff[L]     += X
+diff[R+1]   -= X
+          |
+          v
+prefix diff once
+          |
+          v
+effect appears on every index in [L,R]
+```
+
+ASCII memory:
+
+```text
+L                         R   R+1
+|-------------------------|    |
++X starts here                 -X stops here
+```
+
+
 ### Visual roadmap
 
 ```text
@@ -2170,6 +2495,48 @@ Total:       O(N + Q)
 ---
 
 # 8. Difference Array Problem 1 — Greg and Array
+
+## Prerequisites for This Section
+
+Know:
+
+- Ordinary difference arrays.
+- Range update `[L,R] += X`.
+- Prefixing a difference array to recover counts.
+- Multiplication of:
+  `number of executions × operation value`.
+
+### Learn it in this order
+
+```text
+QUERIES choose OPERATIONS
+          |
+          v
+diff over operation numbers
+          |
+          v
+how many times each operation runs
+          |
+          v
+scale each operation
+          |
+          v
+diff over actual array positions
+          |
+          v
+final array
+```
+
+Think of it as:
+
+```text
+DIFFERENCE ARRAY #1
+    counts operations
+
+DIFFERENCE ARRAY #2
+    applies scaled operations
+```
+
 
 ### Visual roadmap
 
@@ -2396,6 +2763,52 @@ range queries choose ranges of range operations
 ---
 
 # 9. AP on Partial Sum / Difference Array — AP Range Updates
+
+## Prerequisites for This Section
+
+Know:
+
+- Ordinary difference arrays.
+- AP formula `a + (i-L)d`.
+- Algebraic rewrite into a linear function of `i`.
+- Range-adding a constant coefficient.
+
+### Learn it in this order
+
+```text
+AP UPDATE
+a, a+d, a+2d, ...
+       |
+       v
+at index i:
+a + (i-L)d
+       |
+       v
+rewrite:
+d*i + (a-dL)
+       |
+       v
+C*i + B
+       |
+       +----------------+
+       |                |
+       v                v
+range-add C        range-add B
+       |                |
+       +--------+-------+
+                v
+reconstruct
+C[i]*i + B[i]
+```
+
+Main recognition:
+
+```text
+AP over a range
+-> value is linear in index
+-> maintain coefficient and constant separately
+```
+
 
 ### Visual roadmap
 
@@ -2786,6 +3199,52 @@ This idea generalizes: polynomial updates of degree `k` can often be represented
 
 # 10. GP on Partial Sum / Difference Array — GP Range Updates
 
+## Prerequisites for This Section
+
+Know:
+
+- Ordinary difference arrays.
+- GP basics.
+- Recurrence relation idea.
+- Why ordinary first differences are constant for AP but not for GP.
+- Modular arithmetic if the section uses modulo.
+
+### Learn it in this order
+
+```text
+GP RANGE UPDATE
+a, ar, ar², ...
+      |
+      v
+ordinary diff is not constant
+      |
+      v
+use GP-aware recurrence
+      |
+      v
+store only boundary corrections
+      |
+      v
+sweep left -> right
+      |
+      v
+each position derives from previous
+using ratio r
+```
+
+Mental comparison:
+
+```text
+AP:
+next = previous + d
+
+GP:
+next = previous * r
+```
+
+So the deferred-update structure must respect multiplication by `r`.
+
+
 ### Visual roadmap
 
 ```text
@@ -3120,6 +3579,48 @@ This is the GP analogue of a difference array.
 
 # 11. Coordinate Compression
 
+## Prerequisites for This Section
+
+Know:
+
+- Sorting.
+- Removing duplicates.
+- `lower_bound` concept.
+- Relative order of coordinates.
+- Difference-array / sweep-line event points.
+
+### Learn it in this order
+
+```text
+HUGE COORDINATES
+1 ................. 10^12
+        |
+        v
+only a few points matter
+        |
+        v
+collect important coordinates
+        |
+        v
+sort + unique
+        |
+        v
+map each real coordinate -> rank
+        |
+        v
+process compact indices
+```
+
+Important warning:
+
+```text
+compression preserves ORDER,
+not physical distance
+```
+
+If interval length matters, keep the original coordinates too.
+
+
 ### Visual roadmap
 
 ```text
@@ -3233,6 +3734,51 @@ The last step is crucial. If compressed coordinates are `[2,4,6,9]`, the segment
 ---
 
 # 12. Difference Array Problem 2 — Snuke Prime
+
+## Prerequisites for This Section
+
+Know:
+
+- Difference arrays / sweep line.
+- Coordinate compression.
+- Inclusive interval `[a,b]`.
+- Event boundary `b+1`.
+- Segment length between consecutive compressed coordinates.
+- Running active cost.
+
+### Learn it in this order
+
+```text
+service interval [a,b]
+       |
+       v
++cost at a
+-cost at b+1
+       |
+       v
+collect event coordinates
+       |
+       v
+sort / compress
+       |
+       v
+running active total
+       |
+       v
+for each span:
+min(activeCost, cap)
+*
+span length
+```
+
+Critical idea:
+
+```text
+after compression,
+do not count "one compressed index" as one day;
+multiply by the real coordinate distance
+```
+
 
 ### Visual roadmap
 
@@ -3387,6 +3933,51 @@ Sweep:       O(N)
 ---
 
 # 13. Kth Val — Difference Array + Sorting + Frequency Prefix
+
+## Prerequisites for This Section
+
+Know:
+
+- Ordinary difference arrays.
+- Sorting `(value, frequency)` pairs.
+- Prefix sums of frequencies.
+- `lower_bound`.
+- Meaning of the K-th occurrence in a multiset-like sequence.
+
+### Learn it in this order
+
+```text
+many selected ranges
+       |
+       v
+coverage frequency per original index
+       |
+       v
+pair:
+(value, how many times it appears)
+       |
+       v
+sort by value
+       |
+       v
+prefix the frequencies
+       |
+       v
+find first cumulative frequency >= K
+       |
+       v
+that value is the K-th
+```
+
+This is a useful conversion:
+
+```text
+range selections
+-> occurrence counts
+-> sorted weighted values
+-> order statistic
+```
+
 
 ### Visual roadmap
 
@@ -4086,6 +4677,45 @@ An element may appear zero times, once, or many times. Its multiplicity is the e
 
 # 14. Pattern Recognition Cheat Sheet
 
+## Prerequisites for This Section
+
+Before using the cheat sheet, be comfortable with:
+
+- 1D and 2D prefix sums.
+- Prefix-state / repeated-prefix idea.
+- Ordinary difference arrays.
+- AP/GP weighted forms.
+- Coordinate compression.
+- Binary search / `lower_bound`.
+
+### Use this section step by step
+
+```text
+READ STATEMENT
+      |
+      v
+identify repeated operation
+      |
+      +--> many range queries?
+      |
+      +--> many range updates?
+      |
+      +--> weighted range?
+      |
+      +--> repeated prefix state?
+      |
+      +--> huge sparse coordinates?
+      |
+      v
+match signal to pattern
+      |
+      v
+derive before coding
+```
+
+Do not use the table as a formula lookup only. First explain **why** the pattern applies.
+
+
 ## Prefix-sum patterns
 
 | Signal in statement | Transformation | Data to precompute |
@@ -4142,6 +4772,46 @@ When you read a problem, ask in this order:
 
 # 15. Complexity Cheat Sheet
 
+## Prerequisites for This Section
+
+Know the meaning of:
+
+- `O(1)`
+- `O(N)`
+- `O(N log N)`
+- `O(NM)`
+- preprocessing vs per-query cost
+- amortized thinking for a full batch of operations
+
+### Read the complexity table like this
+
+```text
+TECHNIQUE
+   |
+   v
+what is done once?
+   |
+   v
+what is done per query/update?
+   |
+   v
+how many times does that happen?
+   |
+   v
+TOTAL COMPLEXITY
+```
+
+Example:
+
+```text
+prefix build: O(N)
+Q queries:    Q * O(1)
+
+total:
+O(N + Q)
+```
+
+
 ```text
 1D prefix build                      O(N)
 1D range query                      O(1)
@@ -4160,6 +4830,52 @@ Kth Val                             O(M + N log N + Q log N)
 ---
 
 # 16. Practice Checklist
+
+## Prerequisites for This Section
+
+Before checking items off, you should be able to:
+
+- Draw a tiny example without notes.
+- Derive the key formula from the direct/slow form.
+- Explain the indexing.
+- State time complexity.
+- Recognize the pattern from an unlabeled problem.
+
+### Final mastery loop
+
+```text
+READ PROBLEM
+     |
+     v
+DRAW SMALL CASE
+     |
+     v
+WRITE SLOW FORM
+     |
+     v
+FIND REPEATED WORK
+     |
+     v
+DERIVE PREFIX / DIFF / STATE
+     |
+     v
+VERIFY BY HAND
+     |
+     v
+SOLVE WITHOUT NOTES
+     |
+     v
+MIXED PRACTICE / CONTEST
+```
+
+Mastery means:
+
+```text
+recognition + derivation + implementation
+```
+
+not memorizing one formula.
+
 
 After studying this notebook, you should be able to derive these without memorizing code:
 
