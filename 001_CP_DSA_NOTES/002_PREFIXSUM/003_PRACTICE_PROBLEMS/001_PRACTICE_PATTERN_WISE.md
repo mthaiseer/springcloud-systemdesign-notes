@@ -2,6 +2,8 @@
 
 > Compact pattern index generated from the full Prefix Sum & Difference Array roadmap.
 
+> **Learning order:** Before solving a form, read its prerequisite block first. If one prerequisite is weak, revise only that dependency, then return to the form.
+
 <a id="top"></a>
 
 ## Clickable Table of Contents
@@ -32,6 +34,13 @@
 
 ## Form 1 — Basic Range Sum / Static Queries
 
+**Prerequisites — know these first:**
+- Arrays / vectors and indexing.
+- Inclusive range `[L,R]`.
+- Running / cumulative sum.
+- Prefix cancellation: `prefix[R] - prefix[L-1]`.
+- Basic complexity: preprocessing `O(N)` vs query `O(1)`.
+
 **Problems:** 4
 
 | # | Problem | Platform |
@@ -48,6 +57,13 @@
 <a id="form-2"></a>
 
 ## Form 2 — Prefix + Suffix / Split at i
+
+**Prerequisites — know these first:**
+- Form 1: basic prefix sum.
+- Prefix and suffix sums.
+- Total sum of an array.
+- Split-point thinking: left part vs right part around index `i`.
+- Basic algebra for converting a suffix into `total - prefix`.
 
 **Problems:** 5
 
@@ -67,6 +83,13 @@
 
 ## Form 3 — Prefix Sum + Hash Map: Subarray Sum = K
 
+**Prerequisites — know these first:**
+- Form 1: prefix sum.
+- Hash map / frequency map.
+- Subarray sum identity: `prefix[R] - prefix[L-1]`.
+- Rearrangement: `prefix[L-1] = prefix[R] - K`.
+- Counting previous prefix states.
+
 **Problems:** 5
 
 | # | Problem | Platform |
@@ -85,6 +108,13 @@
 
 ## Form 4 — Prefix Modulo / Divisibility
 
+**Prerequisites — know these first:**
+- Prefix sum.
+- Modulo arithmetic.
+- Equivalent remainders.
+- Normalizing negative remainder values.
+- Key idea: same prefix remainder means the difference is divisible by `K`.
+
 **Problems:** 4
 
 | # | Problem | Platform |
@@ -101,6 +131,13 @@
 <a id="form-5"></a>
 
 ## Form 5 — Transform Values, Then Prefix
+
+**Prerequisites — know these first:**
+- Prefix sum + hash map.
+- Transforming values before processing.
+- Mapping categories to numeric contributions such as `0 -> -1`, `1 -> +1`.
+- Repeated-prefix-state idea.
+- Earliest occurrence vs frequency counting depending on longest-length vs count queries.
 
 **Problems:** 5
 
@@ -120,6 +157,13 @@
 
 ## Form 6 — Prefix XOR / Prefix State
 
+**Prerequisites — know these first:**
+- Prefix-state idea.
+- XOR basics: `x ^ x = 0`, `x ^ 0 = x`.
+- Prefix XOR cancellation.
+- Bitmask representation.
+- Parity / even-odd state tracking.
+
 **Problems:** 5
 
 | # | Problem | Platform |
@@ -137,6 +181,14 @@
 <a id="form-7"></a>
 
 ## Form 7 — Weighted Prefix Sum / Index * A[i]
+
+**Prerequisites — know these first:**
+- Basic prefix sum.
+- Weighted sums.
+- Algebraic expansion.
+- Understanding `i * A[i]`.
+- Linear weight form such as `c*i + d`.
+- `long long` for weighted intermediate values.
 
 **Problems:** 5
 
@@ -156,6 +208,12 @@
 
 ## Form 8 — Prefix of Prefix / Double Prefix
 
+**Prerequisites — know these first:**
+- Ordinary prefix sum.
+- Prefixing an already-prefixed array.
+- Cumulative frequency / cumulative contribution.
+- Understanding that one prefix layer answers one level of accumulated quantity.
+
 **Problems:** 4
 
 | # | Problem | Platform |
@@ -172,6 +230,13 @@
 <a id="form-9"></a>
 
 ## Form 9 — 2D Prefix Sum
+
+**Prerequisites — know these first:**
+- 1D prefix sum.
+- Matrix / grid indexing.
+- Rectangle coordinates.
+- Inclusion-exclusion.
+- Why top-left overlap must be added back after subtracting top and left.
 
 **Problems:** 5
 
@@ -191,6 +256,14 @@
 
 ## Form 10 — Basic Range Addition
 
+**Prerequisites — know these first:**
+- Prefix accumulation.
+- Inclusive range `[L,R]`.
+- Difference-array boundary idea.
+- Start event at `L`.
+- Stop event at `R+1`.
+- Final prefix pass to reconstruct actual additions.
+
 **Problems:** 5
 
 | # | Problem | Platform |
@@ -208,6 +281,13 @@
 <a id="form-11"></a>
 
 ## Form 11 — Difference Array as Event / Sweep Line
+
+**Prerequisites — know these first:**
+- Form 10: difference arrays.
+- Event / sweep-line thinking.
+- Sorting event coordinates when coordinates are sparse.
+- Running active count / active value.
+- Start and end events.
 
 **Problems:** 5
 
@@ -227,6 +307,13 @@
 
 ## Form 12 — Difference + Prefix + Another Prefix
 
+**Prerequisites — know these first:**
+- Difference arrays.
+- Prefix sums.
+- Applying a prefix pass more than once.
+- Difference over operation indices.
+- Frequency-of-operations idea such as Greg and Array.
+
 **Problems:** 5
 
 | # | Problem | Platform |
@@ -245,6 +332,14 @@
 
 ## Form 13 — Difference Array + Coordinate Compression
 
+**Prerequisites — know these first:**
+- Difference arrays / sweep line.
+- Sorting.
+- `unique`.
+- Coordinate compression.
+- Compression preserves order, not physical distance.
+- Keep original coordinate gaps when interval length matters.
+
 **Problems:** 4
 
 | # | Problem | Platform |
@@ -262,6 +357,13 @@
 
 ## Form 14 — Difference of a Prefix Array / Reconstruct Original
 
+**Prerequisites — know these first:**
+- Prefix sum definition.
+- Difference between adjacent prefix values.
+- Reconstruction identity: `A[i] = P[i] - P[i-1]`.
+- Validity constraints on reconstructed values.
+- Sorting / permutation basics for reconstruction problems.
+
 **Problems:** 3
 
 | # | Problem | Platform |
@@ -277,6 +379,13 @@
 <a id="form-15"></a>
 
 ## Form 15 — AP Range Update (Linear Difference)
+
+**Prerequisites — know these first:**
+- Ordinary difference arrays.
+- Arithmetic progression: `a, a+d, a+2d, ...`.
+- Linear expression in index.
+- Rewrite AP term into coefficient × index + constant.
+- Maintaining multiple coefficient/difference states.
 
 **Problems:** 3
 
@@ -294,6 +403,13 @@
 
 ## Form 16 — GP / Recurrence-Based Range Update
 
+**Prerequisites — know these first:**
+- Difference arrays.
+- Geometric progression / recurrence basics.
+- Fibonacci-style recurrences.
+- Why AP has constant first difference but GP/recurrence updates do not.
+- Deferred updates based on recurrence propagation.
+
 **Problems:** 3
 
 | # | Problem | Platform |
@@ -310,6 +426,14 @@
 
 ## Form 17 — Prefix Sum + Binary Search / K-th Value
 
+**Prerequisites — know these first:**
+- Prefix sums / cumulative frequencies.
+- Sorted data.
+- Binary search.
+- `lower_bound` idea.
+- K-th element / order-statistic meaning.
+- Monotonic cumulative count function.
+
 **Problems:** 3
 
 | # | Problem | Platform |
@@ -325,6 +449,14 @@
 <a id="form-18"></a>
 
 ## Form 18 — Prefix Sum + Monotonic Stack / Boundaries
+
+**Prerequisites — know these first:**
+- Prefix sums.
+- Monotonic stack.
+- Previous / next smaller or greater boundaries.
+- Contribution technique.
+- Left choices × right choices.
+- Using prefix sums after boundaries are known.
 
 **Problems:** 4
 
@@ -343,6 +475,15 @@
 
 ## Form 19 — Prefix on Trees / Paths
 
+**Prerequisites — know these first:**
+- Tree basics: parent, child, depth, subtree.
+- DFS traversal.
+- Root-to-node path.
+- Prefix sum / prefix state.
+- Hash map along a DFS path.
+- Euler tour for subtree/path indexing.
+- LCA basics for advanced path queries.
+
 **Problems:** 6
 
 | # | Problem | Platform |
@@ -357,3 +498,30 @@
 [↑ Back to TOC](#top)
 
 ---
+
+---
+
+## How to Use This Index
+
+For each form:
+
+```text
+PREREQUISITES
+      |
+      v
+UNDERSTAND THE FORM
+      |
+      v
+SOLVE 2 REPRESENTATIVE PROBLEMS
+      |
+      v
+SOLVE REMAINING BENCHMARKS
+      |
+      v
+TRY AN UNLABELED VARIATION
+      |
+      v
+MIXED PRACTICE / CONTEST
+```
+
+**Mastery test:** You can identify the form from the statement, explain why it applies, derive the key relation, and solve without opening the notes.
